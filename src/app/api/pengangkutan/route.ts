@@ -1,0 +1,121 @@
+import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/auth";
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const tanggal = searchParams.get("tanggal");
+  const petugasId = searchParams.get("petugasId");
+  const status = searchParams.get("status");
+  const pelangganId = searchParams.get("pelangganId");
+  // ?saya=1 → petugas login: hanya tugas miliknya (resolve via link userId)
+  const saya = searchParams.get("saya") === "1";
+
+  const where: Prisma.PengangkutanWhereInput = { deletedAt: null };
+  if (tanggal) {
+    const d = new Date(tanggal);
+    where.tanggal = {
+      gte: new Date(d.getFullYear(), d.getMonth(), d.getDate()),
+      lt: new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1),
+    };
+  }
+  if (petugasId) where.petugasId = parseInt(petugasId);
+  if (saya) {
+    const session = await getSession();
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const profil = await prisma.petugas.findUnique({
+      where: { userId: session.id },
+      select: { id: true },
+    });
+    if (!profil) {
+      return NextResponse.json({ error: "Akun belum ter-link ke profil petugas" }, { status: 403 });
+    }
+    where.petugasId = profil.id;
+  }
+  if (status) where.status = status;
+  if (pelangganId) where.pelangganId = parseInt(pelangganId);
+
+  const pengangkutan = await prisma.pengangkutan.findMany({
+    where,
+    include: {
+      pelanggan: { select: { id: true, nama: true, alamat: true, kodePelanggan: true } },
+      petugas: { select: { id: true, nama: true } },
+      jadwal: { select: { hari: true } },
+      tpa: { select: { id: true, nama: true } },
+      kendaraan: { select: { id: true, nama: true, platNomor: true, jenis: true } },
+    },
+    orderBy: [{ tanggal: "desc" }, { pelanggan: { nama: "asc" } }],
+  });
+
+  return NextResponse.json(pengangkutan);
+}
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const { tanggal, status, catatan, volume, berat, jenisSampah, pelangganId, petugasId, jadwalId, fotoBukti, tpaId, latitude, longitude, kendaraanId } = body;
+
+    if (!pelangganId) {
+      return NextResponse.json({ error: "Pelanggan harus diisi" }, { status: 400 });
+    }
+
+    // Petugas login → petugasId dari profil (link userId), bukan dari body
+    let petugasIdAkhir = petugasId ? parseInt(petugasId) : null;
+    const kendaraanIdAkhir = kendaraanId ? parseInt(kendaraanId) : null;
+    const session = await getSession();
+    if (session && session.role === "petugas") {
+      const profil = await prisma.petugas.findUnique({
+        where: { userId: session.id },
+        select: { id: true },
+      });
+      if (profil) petugasIdAkhir = profil.id;
+      // Kendaraan yang dipakai harus milik petugas ini (pengemudi)
+      if (kendaraanIdAkhir) {
+        const k = await prisma.kendaraan.findFirst({
+          where: { id: kendaraanIdAkhir, deletedAt: null, petugasId: profil?.id },
+          select: { id: true },
+        });
+        if (!k) {
+          return NextResponse.json({ error: "Kendaraan bukan milik Anda" }, { status: 403 });
+        }
+      }
+    }
+
+    const pengangkutan = await prisma.pengangkutan.create({
+      data: {
+        tanggal: tanggal ? new Date(tanggal) : new Date(),
+        status: status || "terjadwal",
+        catatan,
+        fotoBukti,
+        latitude: latitude ? parseFloat(latitude) : null,
+        longitude: longitude ? parseFloat(longitude) : null,
+        volume: volume ? parseFloat(volume) : null,
+        berat: berat ? parseFloat(berat) : null,
+        jenisSampah: jenisSampah || null,
+        pelangganId: parseInt(pelangganId),
+        petugasId: petugasIdAkhir,
+        kendaraanId: kendaraanIdAkhir,
+        jadwalId: jadwalId ? parseInt(jadwalId) : null,
+        tpaId: tpaId ? parseInt(tpaId) : null,
+      },
+      include: {
+        pelanggan: { select: { id: true, nama: true } },
+      },
+    });
+
+    // Audit log
+    await prisma.auditLog.create({
+      data: {
+        aksi: "create",
+        entitas: "Pengangkutan",
+        entitasId: pengangkutan.id,
+        dataBaru: JSON.stringify({ pelangganId: parseInt(pelangganId), status }),
+      },
+    });
+
+    return NextResponse.json(pengangkutan, { status: 201 });
+  } catch {
+    return NextResponse.json({ error: "Gagal mencatat pengangkutan" }, { status: 500 });
+  }
+}

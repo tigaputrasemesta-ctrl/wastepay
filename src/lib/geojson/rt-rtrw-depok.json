@@ -1,0 +1,569 @@
+[
+ {
+  "id": "1543",
+  "kode": "3276050001",
+  "kelurahan": "Beji",
+  "kecamatan": "Beji",
+  "lat": -6.381,
+  "lng": 106.813,
+  "warna": "#9bb22a"
+ },
+ {
+  "id": "1564",
+  "kode": "3276050002",
+  "kelurahan": "Beji Timur",
+  "kecamatan": "Beji",
+  "lat": -6.381,
+  "lng": 106.823,
+  "warna": "#9bb22a"
+ },
+ {
+  "id": "10731",
+  "kode": "3276050003",
+  "kelurahan": "Kemirimuka",
+  "kecamatan": "Beji",
+  "lat": -6.38,
+  "lng": 106.831,
+  "warna": "#9bb22a"
+ },
+ {
+  "id": "11915",
+  "kode": "3276050005",
+  "kelurahan": "Kukusan",
+  "kecamatan": "Beji",
+  "lat": -6.365,
+  "lng": 106.819,
+  "warna": "#9bb22a"
+ },
+ {
+  "id": "17510",
+  "kode": "3276050004",
+  "kelurahan": "Pondok Cina",
+  "kecamatan": "Beji",
+  "lat": -6.365,
+  "lng": 106.833,
+  "warna": "#9bb22a"
+ },
+ {
+  "id": "22858",
+  "kode": "3276050006",
+  "kelurahan": "Tanah Baru",
+  "kecamatan": "Beji",
+  "lat": -6.377,
+  "lng": 106.803,
+  "warna": "#9bb22a"
+ },
+ {
+  "id": "2202",
+  "kode": "3276011004",
+  "kelurahan": "Bojongsari Baru",
+  "kecamatan": "Bojongsari",
+  "lat": -6.39,
+  "lng": 106.743,
+  "warna": "#2ab240"
+ },
+ {
+  "id": "2203",
+  "kode": "3276011003",
+  "kelurahan": "Bojongsari Lama",
+  "kecamatan": "Bojongsari",
+  "lat": -6.399,
+  "lng": 106.744,
+  "warna": "#2ab240"
+ },
+ {
+  "id": "4693",
+  "kode": "3276011005",
+  "kelurahan": "Bojongsari Lama",
+  "kecamatan": "Bojongsari",
+  "lat": -6.4,
+  "lng": 106.736,
+  "warna": "#45d35d"
+ },
+ {
+  "id": "5343",
+  "kode": "3276011002",
+  "kelurahan": "Duren Mekar",
+  "kecamatan": "Bojongsari",
+  "lat": -6.417,
+  "lng": 106.742,
+  "warna": "#2ab240"
+ },
+ {
+  "id": "5345",
+  "kode": "3276011001",
+  "kelurahan": "Duren Seribu",
+  "kecamatan": "Bojongsari",
+  "lat": -6.43,
+  "lng": 106.744,
+  "warna": "#2ab240"
+ },
+ {
+  "id": "17530",
+  "kode": "3276011006",
+  "kelurahan": "Pondok Petir",
+  "kecamatan": "Bojongsari",
+  "lat": -6.371,
+  "lng": 106.727,
+  "warna": "#2ab240"
+ },
+ {
+  "id": "19795",
+  "kode": "3276011007",
+  "kelurahan": "Serua",
+  "kecamatan": "Bojongsari",
+  "lat": -6.372,
+  "lng": 106.739,
+  "warna": "#2ab240"
+ },
+ {
+  "id": "4003",
+  "kode": "3276031004",
+  "kelurahan": "Cilodong",
+  "kecamatan": "Cilodong",
+  "lat": -6.43,
+  "lng": 106.845,
+  "warna": "#95d00b"
+ },
+ {
+  "id": "7356",
+  "kode": "3276031002",
+  "kelurahan": "Jatimulya",
+  "kecamatan": "Cilodong",
+  "lat": -6.448,
+  "lng": 106.83,
+  "warna": "#95d00b"
+ },
+ {
+  "id": "8333",
+  "kode": "3276031003",
+  "kelurahan": "Kalibaru",
+  "kecamatan": "Cilodong",
+  "lat": -6.436,
+  "lng": 106.835,
+  "warna": "#95d00b"
+ },
+ {
+  "id": "8519",
+  "kode": "3276031001",
+  "kelurahan": "Kalimulya",
+  "kecamatan": "Cilodong",
+  "lat": -6.434,
+  "lng": 106.821,
+  "warna": "#95d00b"
+ },
+ {
+  "id": "21304",
+  "kode": "3276031005",
+  "kelurahan": "Sukamaju",
+  "kecamatan": "Cilodong",
+  "lat": -6.414,
+  "lng": 106.854,
+  "warna": "#95d00b"
+ },
+ {
+  "id": "4435",
+  "kode": "3276040010",
+  "kelurahan": "Cisalak Pasar",
+  "kecamatan": "Cimanggis",
+  "lat": -6.376,
+  "lng": 106.873,
+  "warna": "#2ab284"
+ },
+ {
+  "id": "6819",
+  "kode": "3276040009",
+  "kelurahan": "Harjamukti",
+  "kecamatan": "Cimanggis",
+  "lat": -6.375,
+  "lng": 106.897,
+  "warna": "#2ab284"
+ },
+ {
+  "id": "13680",
+  "kode": "3276040011",
+  "kelurahan": "Mekarsari",
+  "kecamatan": "Cimanggis",
+  "lat": -6.363,
+  "lng": 106.871,
+  "warna": "#2ab284"
+ },
+ {
+  "id": "16403",
+  "kode": "3276040013",
+  "kelurahan": "Pasir Gunung Selatan",
+  "kecamatan": "Cimanggis",
+  "lat": -6.346,
+  "lng": 106.845,
+  "warna": "#2ab284"
+ },
+ {
+  "id": "24226",
+  "kode": "3276040012",
+  "kelurahan": "Tugu",
+  "kecamatan": "Cimanggis",
+  "lat": -6.36,
+  "lng": 106.849,
+  "warna": "#51d6aa"
+ },
+ {
+  "id": "4694",
+  "kode": "3276040007",
+  "kelurahan": "Tugu",
+  "kecamatan": "Cimanggis",
+  "lat": -6.389,
+  "lng": 106.873,
+  "warna": "#51d6aa"
+ },
+ {
+  "id": "4138",
+  "kode": "3276061001",
+  "kelurahan": "Cinere",
+  "kecamatan": "Cinere",
+  "lat": -6.337,
+  "lng": 106.782,
+  "warna": "#2ab29b"
+ },
+ {
+  "id": "5593",
+  "kode": "3276061002",
+  "kelurahan": "Gandul",
+  "kecamatan": "Cinere",
+  "lat": -6.338,
+  "lng": 106.791,
+  "warna": "#2ab29b"
+ },
+ {
+  "id": "16038",
+  "kode": "3276061004",
+  "kelurahan": "Pangkalanjati",
+  "kecamatan": "Cinere",
+  "lat": -6.321,
+  "lng": 106.788,
+  "warna": "#2ab29b"
+ },
+ {
+  "id": "16039",
+  "kode": "3276061003",
+  "kelurahan": "Pangkalanjati Baru",
+  "kecamatan": "Cinere",
+  "lat": -6.324,
+  "lng": 106.803,
+  "warna": "#2ab29b"
+ },
+ {
+  "id": "2122",
+  "kode": "3276021002",
+  "kelurahan": "Bojong Pondok Terong",
+  "kecamatan": "Cipayung",
+  "lat": -6.44,
+  "lng": 106.804,
+  "warna": "#35b22a"
+ },
+ {
+  "id": "4273",
+  "kode": "3276021005",
+  "kelurahan": "Cipayung",
+  "kecamatan": "Cipayung",
+  "lat": -6.433,
+  "lng": 106.803,
+  "warna": "#35b22a"
+ },
+ {
+  "id": "4277",
+  "kode": "3276021001",
+  "kelurahan": "Cipayung Jaya",
+  "kecamatan": "Cipayung",
+  "lat": -6.439,
+  "lng": 106.794,
+  "warna": "#35b22a"
+ },
+ {
+  "id": "17514",
+  "kode": "3276021003",
+  "kelurahan": "Pondok Jaya",
+  "kecamatan": "Cipayung",
+  "lat": -6.435,
+  "lng": 106.811,
+  "warna": "#35b22a"
+ },
+ {
+  "id": "18422",
+  "kode": "3276021004",
+  "kelurahan": "Ratujaya",
+  "kecamatan": "Cipayung",
+  "lat": -6.421,
+  "lng": 106.812,
+  "warna": "#35b22a"
+ },
+ {
+  "id": "6452",
+  "kode": "3276060002",
+  "kelurahan": "Grogol",
+  "kecamatan": "Limo",
+  "lat": -6.376,
+  "lng": 106.788,
+  "warna": "#2ab26e"
+ },
+ {
+  "id": "13867",
+  "kode": "3276060001",
+  "kelurahan": "Krukut",
+  "kecamatan": "Limo",
+  "lat": -6.377,
+  "lng": 106.772,
+  "warna": "#45d38c"
+ },
+ {
+  "id": "12647",
+  "kode": "3276060004",
+  "kelurahan": "Limo",
+  "kecamatan": "Limo",
+  "lat": -6.36,
+  "lng": 106.777,
+  "warna": "#2ab26e"
+ },
+ {
+  "id": "11865",
+  "kode": "3276060003",
+  "kelurahan": "Meruyung",
+  "kecamatan": "Limo",
+  "lat": -6.359,
+  "lng": 106.79,
+  "warna": "#2ab26e"
+ },
+ {
+  "id": "5020",
+  "kode": "3276020011",
+  "kelurahan": "Depok",
+  "kecamatan": "Pancoran Mas",
+  "lat": -6.401,
+  "lng": 106.824,
+  "warna": "#57b22a"
+ },
+ {
+  "id": "5031",
+  "kode": "3276020010",
+  "kelurahan": "Depok Jaya",
+  "kecamatan": "Pancoran Mas",
+  "lat": -6.394,
+  "lng": 106.811,
+  "warna": "#57b22a"
+ },
+ {
+  "id": "13002",
+  "kode": "3276020008",
+  "kelurahan": "Mampang",
+  "kecamatan": "Pancoran Mas",
+  "lat": -6.391,
+  "lng": 106.795,
+  "warna": "#57b22a"
+ },
+ {
+  "id": "15836",
+  "kode": "3276020009",
+  "kelurahan": "Pancoran Mas",
+  "kecamatan": "Pancoran Mas",
+  "lat": -6.402,
+  "lng": 106.806,
+  "warna": "#57b22a"
+ },
+ {
+  "id": "18395",
+  "kode": "3276020007",
+  "kelurahan": "Rangkapan Jaya",
+  "kecamatan": "Pancoran Mas",
+  "lat": -6.399,
+  "lng": 106.789,
+  "warna": "#57b22a"
+ },
+ {
+  "id": "18396",
+  "kode": "3276020006",
+  "kelurahan": "Rangkapan Jaya Baru",
+  "kecamatan": "Pancoran Mas",
+  "lat": -6.4,
+  "lng": 106.779,
+  "warna": "#57b22a"
+ },
+ {
+  "id": "1500",
+  "kode": "3276010004",
+  "kelurahan": "Bedahan",
+  "kecamatan": "Sawangan",
+  "lat": -6.421,
+  "lng": 106.767,
+  "warna": "#2ab262"
+ },
+ {
+  "id": "4125",
+  "kode": "3276010014",
+  "kelurahan": "Cinangka",
+  "kecamatan": "Sawangan",
+  "lat": -6.37,
+  "lng": 106.761,
+  "warna": "#2ab262"
+ },
+ {
+  "id": "10187",
+  "kode": "3276010013",
+  "kelurahan": "Kedaung",
+  "kecamatan": "Sawangan",
+  "lat": -6.373,
+  "lng": 106.752,
+  "warna": "#2ab262"
+ },
+ {
+  "id": "16423",
+  "kode": "3276010005",
+  "kelurahan": "Pasir Putih",
+  "kecamatan": "Sawangan",
+  "lat": -6.423,
+  "lng": 106.782,
+  "warna": "#2ab262"
+ },
+ {
+  "id": "16934",
+  "kode": "3276010003",
+  "kelurahan": "Pengasinan",
+  "kecamatan": "Sawangan",
+  "lat": -6.423,
+  "lng": 106.755,
+  "warna": "#2ab262"
+ },
+ {
+  "id": "19187",
+  "kode": "3276010006",
+  "kelurahan": "Sawangan Baru",
+  "kecamatan": "Sawangan",
+  "lat": -6.401,
+  "lng": 106.77,
+  "warna": "#2ab262"
+ },
+ {
+  "id": "19188",
+  "kode": "3276010007",
+  "kelurahan": "Sawangan Lama",
+  "kecamatan": "Sawangan",
+  "lat": -6.397,
+  "lng": 106.757,
+  "warna": "#2ab262"
+ },
+ {
+  "id": "1",
+  "kode": "3276030009",
+  "kelurahan": "Abadijaya",
+  "kecamatan": "Sukmajaya",
+  "lat": -6.396,
+  "lng": 106.85,
+  "warna": "#79b22a"
+ },
+ {
+  "id": "499",
+  "kode": "3276030010",
+  "kelurahan": "Bakti Jaya",
+  "kecamatan": "Sukmajaya",
+  "lat": -6.381,
+  "lng": 106.85,
+  "warna": "#79b22a"
+ },
+ {
+  "id": "4433",
+  "kode": "3276030011",
+  "kelurahan": "Cisalak",
+  "kecamatan": "Sukmajaya",
+  "lat": -6.387,
+  "lng": 106.862,
+  "warna": "#79b22a"
+ },
+ {
+  "id": "13518",
+  "kode": "3276030008",
+  "kelurahan": "Mekar Jaya",
+  "kecamatan": "Sukmajaya",
+  "lat": -6.391,
+  "lng": 106.837,
+  "warna": "#79b22a"
+ },
+ {
+  "id": "21651",
+  "kode": "3276030006",
+  "kelurahan": "Sukmajaya",
+  "kecamatan": "Sukmajaya",
+  "lat": -6.414,
+  "lng": 106.841,
+  "warna": "#79b22a"
+ },
+ {
+  "id": "23852",
+  "kode": "3276030007",
+  "kelurahan": "Tirtajaya",
+  "kecamatan": "Sukmajaya",
+  "lat": -6.413,
+  "lng": 106.828,
+  "warna": "#79b22a"
+ },
+ {
+  "id": "3941",
+  "kode": "3276041001",
+  "kelurahan": "Cilangkap",
+  "kecamatan": "Tapos",
+  "lat": -6.43,
+  "lng": 106.87,
+  "warna": "#2ab2a6"
+ },
+ {
+  "id": "4103",
+  "kode": "3276041002",
+  "kelurahan": "Cimpaeun",
+  "kecamatan": "Tapos",
+  "lat": -6.446,
+  "lng": 106.875,
+  "warna": "#2ab2a6"
+ },
+ {
+  "id": "7305",
+  "kode": "3276041005",
+  "kelurahan": "Jatijajar",
+  "kecamatan": "Tapos",
+  "lat": -6.417,
+  "lng": 106.865,
+  "warna": "#2ab2a6"
+ },
+ {
+  "id": "12612",
+  "kode": "3276041004",
+  "kelurahan": "Leuwinaggung",
+  "kecamatan": "Tapos",
+  "lat": -6.41,
+  "lng": 106.906,
+  "warna": "#2ab2a6"
+ },
+ {
+  "id": "21309",
+  "kode": "3276041006",
+  "kelurahan": "Sukamaju Baru",
+  "kecamatan": "Tapos",
+  "lat": -6.407,
+  "lng": 106.875,
+  "warna": "#2ab2a6"
+ },
+ {
+  "id": "21621",
+  "kode": "3276041007",
+  "kelurahan": "Sukatani",
+  "kecamatan": "Tapos",
+  "lat": -6.394,
+  "lng": 106.889,
+  "warna": "#2ab2a6"
+ },
+ {
+  "id": "23179",
+  "kode": "3276041003",
+  "kelurahan": "Tapos",
+  "kecamatan": "Tapos",
+  "lat": -6.418,
+  "lng": 106.888,
+  "warna": "#2ab2a6"
+ }
+]

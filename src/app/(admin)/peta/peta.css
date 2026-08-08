@@ -1,0 +1,131 @@
+/* Label nama kecamatan (tooltip permanen Leaflet) */
+.leaflet-tooltip.kec-label {
+  background: rgba(19, 21, 23, 0.88);
+  border: 1px solid rgba(245, 165, 36, 0.4);
+  border-radius: 2px;
+  color: #f5a524;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 3px 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  text-transform: uppercase;
+}
+.leaflet-tooltip.kec-label::before {
+  display: none;
+}
+
+/* Cluster marker (diamond vest) */
+.marker-cluster {
+  background: transparent;
+}
+
+/* ── Marker petugas realtime (truk) ── */
+.petugas-marker {
+  position: relative;
+  transform: translate(-50%, -50%);
+}
+.petugas-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(199, 240, 77, 0.16);
+  border: 2px solid #c8f04d;
+  box-shadow: 0 0 0 4px rgba(200, 240, 77, 0.18), 0 0 18px rgba(200, 240, 77, 0.45);
+  font-size: 16px;
+  animation: petugas-pulse 1.8s ease-out infinite;
+}
+.petugas-label {
+  display: block;
+  margin-top: 3px;
+  text-align: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #c8f04d;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  white-space: nowrap;
+}
+@keyframes petugas-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(200, 240, 77, 0.5); }
+  70% { box-shadow: 0 0 0 14px rgba(200, 240, 77, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(200, 240, 77, 0); }
+}
+
+/* ── Marker kendaraan (dump truck amber / pickup lime) ── */
+.kendaraan-marker {
+  position: relative;
+  transform: translate(-50%, -50%);
+}
+.kendaraan-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(19, 21, 23, 0.85);
+  border: 2px solid var(--warna, #b7e13c);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--warna, #b7e13c) 20%, transparent), 0 0 16px color-mix(in srgb, var(--warna, #b7e13c) 55%, transparent);
+  font-size: 18px;
+  animation: kendaraan-pulse 2.2s ease-out infinite;
+}
+.kendaraan-label {
+  display: block;
+  margin-top: 3px;
+  text-align: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--warna, #b7e13c);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  white-space: nowrap;
+}
+@keyframes kendaraan-pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--warna, #b7e13c) 45%, transparent); }
+  70% { box-shadow: 0 0 0 16px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* ── Marker titik transit / lapak (amber) ── */
+.transit-marker {
+  position: relative;
+  transform: translate(-50%, -100%);
+}
+.transit-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  background: rgba(245, 165, 36, 0.18);
+  border: 2px solid #f5a524;
+  box-shadow: 0 0 0 4px rgba(245, 165, 36, 0.15);
+  font-size: 15px;
+  color: #f5a524;
+  transform: rotate(45deg);
+  margin: 0 auto;
+}
+.transit-head::after {
+  content: "▲";
+  transform: rotate(-45deg);
+  font-size: 13px;
+}
+.transit-label {
+  display: block;
+  margin-top: 6px;
+  text-align: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #f5a524;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  white-space: nowrap;
+}

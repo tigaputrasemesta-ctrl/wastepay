@@ -1,0 +1,460 @@
+/* ═══════════════════════════════════════════════════════════
+   INVOICE WASTEPAY — gaya tiket resmi / surat tagihan kota
+   Tetap light & print-friendly (A4). Font dari next/font vars.
+   ═══════════════════════════════════════════════════════════ */
+
+.invoice-page-bg {
+  background-color: #131517;
+  min-height: 100vh;
+  padding: 1.5rem 1rem;
+}
+
+.invoice-wrapper {
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+/* ── Toolbar (layar saja) ── */
+.invoice-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 4px 16px;
+  color: #a3a49c;
+  font-family: var(--font-jetbrains), monospace;
+}
+
+.invoice-toolbar .left-section {
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+}
+
+.invoice-toolbar .right-section {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.invoice-toolbar .right-section a {
+  font-size: 12px;
+  color: #b7e13c;
+  text-decoration: underline;
+  font-family: var(--font-jetbrains), monospace;
+}
+
+.print-invoice-btn {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  font-family: var(--font-jetbrains), monospace;
+  cursor: pointer;
+  border-radius: 0;
+  background: #b7e13c;
+  color: #13150a !important;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 10px 18px;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+
+.print-invoice-btn:hover {
+  background: #c9ef4e;
+}
+
+/* ── Lembar kertas: tepi perforasi ala tiket ── */
+.invoice-sheet {
+  width: 800px;
+  margin: auto;
+  padding: 0;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+  page-break-after: always;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+  background: #fcfcfa;
+  position: relative;
+}
+
+/* Tepi perforasi kiri (garis putus-putus) + bar hazard di pinggir */
+.invoice-sheet::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 8px;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    #b7e13c 0 6px,
+    transparent 6px 12px
+  );
+  opacity: 0.85;
+}
+
+/* Kepala invoice: band gelap */
+.invoice-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 28px 18px 30px;
+  background: #17191d;
+  color: #e9e6dd;
+}
+
+.invoice-head .logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.invoice-head .logo-box {
+  width: 46px;
+  height: 46px;
+  background: #b7e13c;
+  color: #17191d;
+  font-family: var(--font-anton), sans-serif;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+}
+
+.invoice-head .logo-text {
+  font-family: var(--font-anton), sans-serif;
+  font-weight: 400;
+  font-size: 20px;
+  letter-spacing: 0.04em;
+  color: #f2efe6;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.invoice-head .logo-text::after {
+  content: "UNIT PENGELOLA SAMPAH";
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 7.5px;
+  letter-spacing: 0.22em;
+  color: #8a8d84;
+  margin-top: 4px;
+}
+
+.invoice-head .invoice-number {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.invoice-head .invoice-number h4 {
+  font-family: var(--font-jetbrains), monospace;
+  letter-spacing: 0.24em;
+  font-size: 9px;
+  color: #8a8d84;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+}
+
+.invoice-head .invoice-number span {
+  color: #b7e13c;
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: rgba(183, 225, 60, 0.1);
+  border: 1px solid rgba(183, 225, 60, 0.35);
+  padding: 4px 10px;
+}
+
+/* Strip hazard pembatas */
+.invoice-sheet::after {
+  content: "";
+  display: block;
+  height: 5px;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    #17191d 0 8px,
+    #fcfcfa 8px 16px
+  );
+  opacity: 0.9;
+}
+
+/* ── Pihak ── */
+.invoice-parties {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 22px 30px 8px;
+}
+
+.invoice-parties > div {
+  min-width: 36%;
+  max-width: 48%;
+}
+
+.invoice-parties .party-label {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: #8b8e86;
+  margin-bottom: 6px;
+}
+
+.invoice-parties strong {
+  color: #22252a;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.invoice-parties .party-address {
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 6px 0 0;
+  color: #3a3d43;
+}
+
+.invoice-parties .party-row {
+  display: flex;
+  align-items: flex-start;
+  margin: 0 0 4px;
+}
+
+.invoice-parties .party-row > span {
+  color: #8b8e86;
+  line-height: 20px;
+  width: 115px;
+  min-width: 115px;
+  font-size: 11px;
+}
+
+.invoice-parties .party-row p {
+  margin: 0;
+  color: #22252a;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 20px;
+}
+
+/* ── Tabel layanan ── */
+.invoice-items {
+  margin: 10px 30px 0;
+  border: 1.5px solid #17191d;
+}
+
+.invoice-items .items-header {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  background: #17191d;
+  color: #f2efe6;
+}
+
+.invoice-items .col-name {
+  width: 80%;
+  text-align: left;
+  text-transform: uppercase;
+  font-family: var(--font-jetbrains), monospace;
+  letter-spacing: 0.14em;
+  font-size: 9.5px;
+  font-weight: 600;
+  color: #b7e13c;
+}
+
+.invoice-items .col-price {
+  width: 20%;
+  text-align: right;
+  text-transform: uppercase;
+  font-family: var(--font-jetbrains), monospace;
+  letter-spacing: 0.14em;
+  font-size: 9.5px;
+  font-weight: 600;
+  color: #b7e13c;
+}
+
+.invoice-items .item-row {
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  border-bottom: 1px solid #e3e3de;
+  background: #fcfcfa;
+}
+
+.invoice-items .item-row:last-child {
+  border-bottom: none;
+}
+
+.invoice-items .item-row .col-price p {
+  margin: 0;
+  color: #22252a;
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.invoice-items .item-title {
+  font-size: 13px;
+  color: #22252a;
+  font-weight: 600;
+}
+
+/* ── Ringkasan ── */
+.invoice-summary {
+  display: block;
+  margin: 16px 30px 0 0;
+  margin-left: auto;
+  width: 48%;
+}
+
+.invoice-summary .summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+  padding: 0 0 0 16px;
+}
+
+.invoice-summary .summary-row p {
+  margin: 0;
+  color: #3a3d43;
+  font-size: 12px;
+}
+
+.invoice-summary .summary-total {
+  border-top: 2px dashed #17191d;
+  border-bottom: 2px dashed #17191d;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0 10px 16px;
+  align-items: center;
+  background: rgba(183, 225, 60, 0.08);
+}
+
+.invoice-summary .summary-total h5 {
+  font-family: var(--font-jetbrains), monospace;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  color: #17191d;
+  margin: 0;
+}
+
+.invoice-summary .summary-total h4 {
+  font-family: var(--font-jetbrains), monospace;
+  font-weight: 700;
+  font-size: 19px;
+  color: #17191d;
+  margin: 0;
+}
+
+/* ── Status + QR ── */
+.invoice-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 24px 30px 0;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e3e3de;
+}
+
+.invoice-footer .footer-text {
+  font-size: 12px;
+  color: #3a3d43;
+  margin: 6px 0 2px;
+}
+
+.invoice-footer h6 {
+  font-size: 14px;
+  color: #17191d;
+  margin: 0 0 6px;
+  font-family: var(--font-jetbrains), monospace;
+  font-weight: 700;
+}
+
+.invoice-footer .footer-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 10px;
+  border-left: 3px solid #b7e13c;
+  padding-left: 10px;
+}
+
+.invoice-footer .footer-note svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: #3a3d43;
+}
+
+.invoice-footer .footer-note p {
+  font-size: 11px;
+  color: #3a3d43;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.invoice-footer .qr-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+  padding: 10px;
+  border: 1.5px dashed #17191d;
+  background: #fff;
+}
+
+.invoice-footer .qr-caption {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 8.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #6b6e66;
+}
+
+.invoice-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 30px 18px;
+}
+
+.invoice-bottom p {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: #17191d;
+  margin: 0;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.invoice-bottom span {
+  font-size: 10px;
+  color: #8b8e86;
+  font-family: var(--font-jetbrains), monospace;
+}
+
+/* ═══ PRINT ═══ */
+@media print {
+  .invoice-page-bg {
+    background: white !important;
+    padding: 0;
+    min-height: auto;
+  }
+
+  .invoice-toolbar {
+    display: none !important;
+  }
+
+  .invoice-sheet {
+    box-shadow: none;
+    width: 100%;
+    margin-top: 0;
+    page-break-after: auto;
+  }
+
+  .invoice-sheet::before {
+    width: 4px; /* perforasi tetap ada saat print */
+  }
+}
