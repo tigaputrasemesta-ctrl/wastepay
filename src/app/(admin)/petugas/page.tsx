@@ -28,9 +28,9 @@ const JABATAN_OPTIONS = [
 function badgeJabatan(jabatan?: string | null) {
   if (!jabatan) return null;
   const warna: Record<string, string> = {
-    angkut: "bg-vest/10 text-emerald-800",
-    tagih: "bg-amber-100 text-amber-800",
-    survei: "bg-indigo-50 text-indigo-700",
+    angkut: "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30",
+    tagih: "bg-amber-400/10 text-amber-400 border border-amber-500/30",
+    survei: "bg-purple-400/10 text-purple-300 border border-purple-500/30",
   };
   return jabatan.split(",").filter(Boolean).map((j) => (
     <span key={j} className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium mr-1 ${warna[j] ?? "bg-asphalt-raised text-bone-dim"}`}>
@@ -276,7 +276,7 @@ export default function PetugasPage() {
               <button
                 onClick={() => toggleAktif(p)}
                 className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                  p.aktif ? "bg-vest/10 text-emerald-800" : "bg-asphalt-raised text-bone"
+                  p.aktif ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" : "bg-asphalt-raised text-bone-dim border border-asphalt-line"
                 }`}
               >
                 {p.aktif ? "Aktif" : "Nonaktif"}
@@ -288,8 +288,8 @@ export default function PetugasPage() {
               <span>{p._count.pengangkutan} angkut</span>
             </div>
             <div className="flex gap-2 mt-3">
-              <button onClick={() => openEdit(p)} className="flex-1 text-center text-sm bg-indigo-50 text-indigo-700 py-2 rounded-lg hover:bg-asphalt-raised transition">Edit</button>
-              <button onClick={() => setDeleteTarget(p)} className="flex-1 text-center text-sm bg-danger/5 text-red-700 py-2 rounded-lg hover:bg-danger/10 transition">Hapus</button>
+              <button onClick={() => openEdit(p)} className="flex-1 text-center text-sm bg-asphalt-raised border border-asphalt-line text-bone hover:border-vest hover:text-vest py-2 rounded-lg transition">Edit</button>
+              <button onClick={() => setDeleteTarget(p)} className="flex-1 text-center text-sm bg-danger/10 border border-danger/30 text-red-400 py-2 rounded-lg hover:bg-danger/20 transition">Hapus</button>
             </div>
           </div>
         ))}

@@ -145,41 +145,41 @@ function popupHtml(p: PelangganPeta): string {
   const zona =
     p.latitude != null && p.longitude != null ? deteksiZona([p.latitude, p.longitude]) : null;
   const statusTxt = TAGIHAN_LABEL[p.statusTagihan ?? ""] ?? "—";
-  const warnaTxt = p.statusTagihan === "tunggakan" ? "#ff5c5c" : "#b7e13c";
+  const warnaTxt = p.statusTagihan === "tunggakan" ? "#f87171" : "#4ade80";
   const wa = p.noTelepon
     ? `<a href="https://wa.me/${String(p.noTelepon).replace(/^0/, "62")}" target="_blank" rel="noreferrer" style="display:inline-block;margin-top:6px;color:#131517;background:#b7e13c;font-family:ui-monospace,monospace;font-size:10px;font-weight:700;padding:4px 8px;border-radius:2px;text-decoration:none;letter-spacing:0.06em">WA ${esc(p.noTelepon)}</a>`
     : "";
-  return `<div style="font-family:ui-monospace,monospace;font-size:11px;color:#e8e6df;min-width:190px">
-    <div style="font-weight:700;font-size:13px;color:#f5f4ef">${esc(p.nama)}</div>
-    <div style="color:#b7e13c;font-size:10px;margin:2px 0 6px">${esc(p.kodePelanggan)}</div>
-    <div style="color:#8b8f84;line-height:1.5">${esc(p.alamat)}${p.rtRw ? " · RT/RW " + esc(p.rtRw) : ""}</div>
-    ${p.wilayah ? `<div style="color:#8b8f84">Wilayah: ${esc(p.wilayah.nama)}</div>` : ""}
-    <div style="color:#8b8f84">Kategori: ${KATEGORI_LABEL[p.kategori] ?? p.kategori}</div>
+  return `<div style="font-family:ui-monospace,monospace;font-size:11px;color:#f0eee6;min-width:190px">
+    <div style="font-weight:700;font-size:13px;color:#ffffff">${esc(p.nama)}</div>
+    <div style="color:#b7e13c;font-size:10px;font-weight:700;margin:2px 0 6px">${esc(p.kodePelanggan)}</div>
+    <div style="color:#c5c8bc;line-height:1.5">${esc(p.alamat)}${p.rtRw ? " · RT/RW " + esc(p.rtRw) : ""}</div>
+    ${p.wilayah ? `<div style="color:#c5c8bc">Wilayah: ${esc(p.wilayah.nama)}</div>` : ""}
+    <div style="color:#c5c8bc">Kategori: ${KATEGORI_LABEL[p.kategori] ?? p.kategori}</div>
     ${
       zona
-        ? `<div style="color:#b7e13c;margin-top:6px;line-height:1.5">ZONA: ${esc(
+        ? `<div style="color:#b7e13c;margin-top:6px;line-height:1.5;font-weight:600">ZONA: ${esc(
             zona.kelurahan.toUpperCase()
           )} · KEC. ${esc(zona.kecamatan.toUpperCase())}<br/>RT RTRW #${zona.rtId} (±${zona.jarakRtM} m)</div>`
         : ""
     }
-    <div style="color:${warnaTxt};margin-top:6px">TAGIHAN: ${statusTxt}</div>
+    <div style="color:${warnaTxt};margin-top:6px;font-weight:700">TAGIHAN: ${statusTxt}</div>
     ${wa}
   </div>`;
 }
 
 function popupKomplainHtml(k: KomplainPeta): string {
   const wa = k.pelanggan.noTelepon
-    ? `<a href="https://wa.me/${String(k.pelanggan.noTelepon).replace(/^0/, "62")}" target="_blank" rel="noreferrer" style="display:inline-block;margin-top:6px;color:#131517;background:#ff5c5c;font-family:ui-monospace,monospace;font-size:10px;font-weight:700;padding:4px 8px;border-radius:2px;text-decoration:none;letter-spacing:0.06em">HUBUNGI WA</a>`
+    ? `<a href="https://wa.me/${String(k.pelanggan.noTelepon).replace(/^0/, "62")}" target="_blank" rel="noreferrer" style="display:inline-block;margin-top:6px;color:#131517;background:#f87171;font-family:ui-monospace,monospace;font-size:10px;font-weight:700;padding:4px 8px;border-radius:2px;text-decoration:none;letter-spacing:0.06em">HUBUNGI WA</a>`
     : "";
-  return `<div style="font-family:ui-monospace,monospace;font-size:11px;color:#e8e6df;min-width:200px">
+  return `<div style="font-family:ui-monospace,monospace;font-size:11px;color:#f0eee6;min-width:200px">
     <div style="display:flex;align-items:center;gap:6px">
       <span style="width:8px;height:8px;border-radius:50%;background:${KOMPLAIN_WARNA[k.status] ?? "#ff5c5c"}"></span>
-      <span style="font-weight:700;font-size:12px;color:#f5f4ef;text-transform:uppercase">${esc(KOMPLAIN_LABEL[k.jenis] ?? k.jenis)}</span>
+      <span style="font-weight:700;font-size:12px;color:#ffffff;text-transform:uppercase">${esc(KOMPLAIN_LABEL[k.jenis] ?? k.jenis)}</span>
     </div>
-    <div style="color:#8b8f84;font-size:10px;margin:3px 0 8px">${esc(k.pelanggan.nama)} · ${esc(k.pelanggan.kodePelanggan)} · ${formatWaktuRelatif(k.createdAt)}</div>
-    <div style="color:#e8e6df;line-height:1.5;border-left:2px solid ${KOMPLAIN_WARNA[k.status] ?? "#ff5c5c"};padding-left:8px">${esc(k.deskripsi)}</div>
-    ${k.tanggapan ? `<div style="color:#b7e13c;margin-top:6px">RESPON: ${esc(k.tanggapan)}</div>` : ""}
-    <div style="color:#8b8f84;margin-top:6px;text-transform:uppercase">STATUS: ${esc(k.status)}</div>
+    <div style="color:#c5c8bc;font-size:10px;margin:3px 0 8px">${esc(k.pelanggan.nama)} · ${esc(k.pelanggan.kodePelanggan)} · ${formatWaktuRelatif(k.createdAt)}</div>
+    <div style="color:#f0eee6;line-height:1.5;border-left:2px solid ${KOMPLAIN_WARNA[k.status] ?? "#ff5c5c"};padding-left:8px">${esc(k.deskripsi)}</div>
+    ${k.tanggapan ? `<div style="color:#b7e13c;margin-top:6px;font-weight:600">RESPON: ${esc(k.tanggapan)}</div>` : ""}
+    <div style="color:#c5c8bc;margin-top:6px;text-transform:uppercase;font-weight:600">STATUS: ${esc(k.status)}</div>
     ${wa}
   </div>`;
 }
@@ -207,7 +207,7 @@ function PinsKendaraan({ kendaraan }: { kendaraan: KendaraanPeta[] }) {
             icon={L.divIcon({
               className: "",
               html: `<div class="kendaraan-marker" style="--warna:${warna}"><span class="kendaraan-head">${icon}</span><span class="kendaraan-label">${esc(k.nama)}${k.platNomor ? ` · ${esc(k.platNomor)}` : ""}</span></div>`,
-              iconSize: [0, 0],
+              iconSize: [1, 1],
             })}
           >
             <Tooltip sticky>
@@ -239,7 +239,7 @@ function PinsTransit({ transit }: { transit: TransitPeta[] }) {
           icon={L.divIcon({
             className: "",
             html: `<div class="transit-marker"><span class="transit-head">▲</span><span class="transit-label">${esc(t.nama)}</span></div>`,
-            iconSize: [0, 0],
+            iconSize: [1, 1],
           })}
         >
           <Tooltip sticky>
@@ -273,7 +273,7 @@ function PinsPetugas({ petugas }: { petugas: PetugasPeta[] }) {
             icon={L.divIcon({
               className: "",
               html: `<div class="petugas-marker ${label ? "" : ""}"><span class="petugas-head">🚛</span><span class="petugas-label">${esc(p.nama)}</span></div>`,
-              iconSize: [0, 0],
+              iconSize: [1, 1],
             })}
           >
             <Tooltip sticky>
@@ -405,6 +405,21 @@ function InvalidateSize({ invalidateKey }: { invalidateKey: number }) {
   return null;
 }
 
+// Guard komponen agar hanya me-render layer Leaflet saat map container sudah siap di DOM.
+function MapReadyWrapper({ children }: { children: React.ReactNode }) {
+  const map = useMap();
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    if (map && map.getContainer()) {
+      setIsReady(true);
+    }
+  }, [map]);
+
+  if (!isReady) return null;
+  return <>{children}</>;
+}
+
 // Zoom otomatis: rute terpilih > titik pelanggan.
 function FitBounds({
   rutePoints,
@@ -474,13 +489,14 @@ export default function MapView({
       className="h-full w-full"
       style={{ background: "#0d0e10" }}
     >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
-        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-        subdomains="abcd"
-      />
-      <ZoomTracker onZoom={setZoom} />
-      <InvalidateSize invalidateKey={invalidateKey} />
+      <MapReadyWrapper>
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          subdomains="abcd"
+        />
+        <ZoomTracker onZoom={setZoom} />
+        <InvalidateSize invalidateKey={invalidateKey} />
 
       {/* Batas kecamatan resmi (BPS) */}
       {tampilkanBatas && (
@@ -509,7 +525,7 @@ export default function MapView({
               <Marker
                 key={`lb-${k.kode}`}
                 position={titikTengah(k.koordinat)}
-                icon={L.divIcon({ className: "", html: "", iconSize: [0, 0] })}
+                icon={L.divIcon({ className: "", html: "", iconSize: [1, 1] })}
                 interactive={false}
               >
                 <Tooltip permanent direction="center" className="kec-label" opacity={1}>
@@ -616,6 +632,7 @@ export default function MapView({
 
       <FlyTo center={pusatFly} />
       <FitBounds rutePoints={ruteUrut} points={titik} />
+      </MapReadyWrapper>
     </MapContainer>
   );
 }

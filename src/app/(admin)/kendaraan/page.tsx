@@ -194,7 +194,7 @@ export default function KendaraanPage() {
                     <td className="px-4 py-3">
                       <button
                         onClick={() => toggleAktif(k)}
-                        className={`text-[10px] font-mono px-2 py-1 rounded ${k.aktif ? "bg-vest/10 text-emerald-800" : "bg-asphalt-raised text-bone-faint"}`}
+                        className={`text-[10px] font-mono px-2 py-1 rounded ${k.aktif ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30 font-medium" : "bg-asphalt-raised text-bone-dim border border-asphalt-line"}`}
                       >
                         {k.aktif ? "AKTIF" : "NONAKTIF"}
                       </button>

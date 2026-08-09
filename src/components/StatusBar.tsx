@@ -29,11 +29,11 @@ export default function StatusBar() {
     : "";
 
   return (
-    <div className="flex items-center gap-4 font-mono text-[11px] uppercase tracking-stencil text-bone-dim">
-      <span className="hidden md:inline text-bone-faint">{tanggal}</span>
-      <span className="hidden md:inline w-px h-4 bg-asphalt-line" />
-      <span className="flex items-center gap-2 text-vest">
-        <span className="w-1.5 h-1.5 rounded-full bg-vest animate-blink" />
+    <div className="flex items-center gap-4 font-mono text-[10px] uppercase tracking-widest text-slate-500">
+      <span className="hidden md:inline">{tanggal}</span>
+      <span className="hidden md:inline w-px h-4 bg-[var(--neon-cyan)]/30" />
+      <span className="flex items-center gap-2 text-[var(--neon-lime)]">
+        <span className="w-1.5 h-1.5 rounded-full bg-[var(--neon-lime)] animate-pulse shadow-[0_0_5px_var(--neon-lime)]" />
         {waktu} WIB
       </span>
     </div>

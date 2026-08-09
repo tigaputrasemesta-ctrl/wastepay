@@ -185,36 +185,12 @@ export default async function PetaPage() {
   }
 
   return (
-    <div className="space-y-5">
-      {profilSaya && <LacakLokasi profil={profilSaya} kendaraan={kendaraanSaya} />}
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="stencil text-vest flex items-center gap-2">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-            </svg>
-            GIS / WILAYAH
-          </p>
-          <h1 className="font-display text-4xl sm:text-5xl tracking-wide text-bone leading-none mt-2">
-            PETA DEPOK
-          </h1>
-          <p className="stencil text-bone-faint mt-2">
-            Sebaran {data.length} pelanggan · {totalBerkoordinat} berkoordinat ·{" "}
-            {wilayahList.length} wilayah · {rutePeta.length} rute
-          </p>
+    <div className="h-full w-full relative">
+      {profilSaya && (
+        <div className="absolute top-4 right-4 z-[1001]">
+          <LacakLokasi profil={profilSaya} kendaraan={kendaraanSaya} />
         </div>
-        <div className="flex items-center gap-2 font-mono text-xs text-bone-faint">
-          <span className="w-2 h-2 bg-vest rounded-[2px] inline-block"></span>
-          aktif&nbsp;·&nbsp;
-          <span className="w-2 h-2 bg-amber rounded-[2px] inline-block"></span>
-          calon&nbsp;·&nbsp;
-          <span className="w-2 h-2 bg-bone/40 rounded-[2px] inline-block"></span>
-          nonaktif&nbsp;·&nbsp;
-          <span className="w-2 h-2 border border-dashed border-bone/50 rounded-[2px] inline-block"></span>
-          belum terpetakan
-        </div>
-      </div>
-
+      )}
       <PetaMap pelanggan={data} wilayah={wilayahList} rute={rutePeta} petugasAwal={petugasPeta} kendaraanAwal={kendaraanPeta} transitAwal={transitPeta} />
     </div>
   );

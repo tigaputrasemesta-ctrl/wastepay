@@ -92,7 +92,7 @@ export default function PengumumanPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <h3 className="font-semibold text-bone">{p.judul}</h3>
-                      {p.penting && <span className="text-xs bg-danger/10 text-red-700 px-2 py-0.5 rounded-full">Penting</span>}
+                      {p.penting && <span className="text-xs bg-danger/10 text-red-400 border border-red-500/30 px-2 py-0.5 rounded-full">Penting</span>}
                     </div>
                     <p className="text-sm text-bone-dim mt-1 whitespace-pre-wrap">{p.isi}</p>
                     <div className="flex items-center gap-3 mt-3 text-xs text-bone-faint">

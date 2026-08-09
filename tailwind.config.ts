@@ -9,42 +9,41 @@ export default {
   theme: {
     extend: {
       colors: {
-        panel: "#1a1d21",
+        panel: "rgba(3,4,11,0.8)",
         asphalt: {
-          DEFAULT: "#131517",
-          deep: "#0e1012",
-          panel: "#1a1d21",
-          raised: "#21252b",
-          line: "#2a2f36",
+          DEFAULT: "#000000",
+          deep: "#030811", // instead of rgba
+          panel: "#07121a", // instead of rgba
+          raised: "#0c1d29", // instead of rgba
+          line: "#183b4c", // instead of rgba
         },
         vest: {
-          // safety-lime — warna rompi petugas kebersihan
-          DEFAULT: "#b7e13c",
-          bright: "#c9ef4e",
-          dim: "#8fb322",
-          deep: "#6f8d1a",
+          DEFAULT: "#39ff14", // neon-lime
+          bright: "#4aff24",
+          dim: "#22c55e",
+          deep: "#166534",
         },
         bone: {
-          DEFAULT: "#e9e6dd",
-          dim: "#a3a49c",
-          faint: "#6d7069",
+          DEFAULT: "#ffffff",
+          dim: "#cbd5e1", // slate-300
+          faint: "#64748b", // slate-500
         },
         amber: {
-          DEFAULT: "#f5a524",
-          deep: "#b97a10",
+          DEFAULT: "#fcee0a", // neon-yellow
+          deep: "#ca8a04",
         },
         danger: {
-          DEFAULT: "#ff5c5c",
-          deep: "#c23b3b",
+          DEFAULT: "#ff00ea", // neon-pink
+          deep: "#be185d",
         },
         steel: {
-          DEFAULT: "#3d4550",
-          dim: "#2c323a",
+          DEFAULT: "#334155",
+          dim: "#1e293b",
         },
       },
       fontFamily: {
-        display: ["var(--font-anton)", "Impact", "sans-serif"],
-        sans: ["var(--font-archivo)", "system-ui", "sans-serif"],
+        display: ["var(--font-outfit)", "system-ui", "sans-serif"],
+        sans: ["var(--font-jakarta)", "system-ui", "sans-serif"],
         mono: ["var(--font-jetbrains)", "ui-monospace", "monospace"],
       },
       letterSpacing: {

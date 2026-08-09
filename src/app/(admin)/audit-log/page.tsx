@@ -14,9 +14,9 @@ type AuditLogItem = {
 };
 
 const AKSI_LABEL: Record<string, { label: string; cls: string }> = {
-  create: { label: "Buat", cls: "bg-vest/10 text-emerald-800" },
-  update: { label: "Ubah", cls: "bg-vest/10 text-blue-800" },
-  delete: { label: "Hapus", cls: "bg-danger/10 text-red-800" },
+  create: { label: "Buat", cls: "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" },
+  update: { label: "Ubah", cls: "bg-sky-400/10 text-sky-400 border border-sky-500/30" },
+  delete: { label: "Hapus", cls: "bg-danger/10 text-red-400 border border-red-500/30" },
 };
 
 function formatWaktu(iso: string): string {

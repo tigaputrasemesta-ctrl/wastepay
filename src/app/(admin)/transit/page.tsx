@@ -125,7 +125,7 @@ export default function TransitPage() {
                 </div>
                 <button
                   onClick={() => toggleAktif(t)}
-                  className={`text-[10px] font-mono px-2 py-1 rounded shrink-0 ${t.aktif ? "bg-vest/10 text-emerald-800" : "bg-asphalt-raised text-bone-faint"}`}
+                  className={`text-[10px] font-mono px-2 py-1 rounded shrink-0 ${t.aktif ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30 font-medium" : "bg-asphalt-raised text-bone-dim border border-asphalt-line"}`}
                 >
                   {t.aktif ? "AKTIF" : "NONAKTIF"}
                 </button>

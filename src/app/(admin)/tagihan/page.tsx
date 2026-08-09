@@ -395,7 +395,7 @@ export default function TagihanPage() {
                         <Link
                           href={`/invoice-tagihan?invoice=${encodeURIComponent(t.noInvoice)}`}
                           target="_blank"
-                          className="text-xs font-mono text-vest hover:text-blue-800 hover:underline"
+                          className="text-xs font-mono text-vest hover:text-sky-300 hover:underline"
                           title="Buka invoice"
                         >
                           {t.noInvoice}
@@ -418,9 +418,9 @@ export default function TagihanPage() {
                     <td className="px-4 py-3 text-bone-dim text-xs">{formatDate(t.jatuhTempo)}</td>
                     <td className="px-4 py-3 text-center">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                        t.status === "lunas" ? "bg-vest/10 text-emerald-800" :
-                        t.status === "tunggakan" ? "bg-danger/10 text-red-800" :
-                        "bg-amber/10 text-yellow-800"
+                        t.status === "lunas" ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" :
+                        t.status === "tunggakan" ? "bg-danger/10 text-red-400 border border-red-500/30" :
+                        "bg-amber-400/10 text-amber-400 border border-amber-500/30"
                       }`}>
                         {t.status === "belum_bayar" ? "Belum Bayar" : t.status === "lunas" ? "Lunas" : "Tunggakan"}
                       </span>
@@ -429,7 +429,7 @@ export default function TagihanPage() {
                       {t.status !== "lunas" ? (
                         <button
                           onClick={() => { setFormBayar({ metode: isPetugas ? "tunai" : "transfer", catatan: isPetugas ? "Bayar tunai via petugas tagih" : "" }); setShowBayar({ tagihanId: t.id, pelangganId: t.pelanggan.id, jumlah: hitungRincian(t.jumlah, t.denda).total }); }}
-                          className="text-xs bg-vest/10 text-vest px-3 py-1 rounded-full hover:bg-emerald-200 transition"
+                          className="text-xs bg-vest/10 text-vest border border-vest/30 px-3 py-1 rounded-full hover:bg-vest/20 transition"
                         >
                           Bayar
                         </button>
@@ -460,7 +460,7 @@ export default function TagihanPage() {
               </button>
             </div>
             <form onSubmit={handleAutoGenerate} className="p-6 space-y-4">
-              <div className="bg-vest/5 border border-vest/40 rounded-lg p-3 text-sm text-blue-800">
+              <div className="bg-sky-500/10 border border-sky-500/30 rounded-lg p-3 text-sm text-sky-300">
                 <p className="font-medium mb-1">ℹ️ Cara Kerja</p>
                 <p>Sistem akan membuat tagihan untuk semua pelanggan aktif yang belum memiliki tagihan di periode yang dipilih. Tarif dihitung berdasarkan: tarif kustom &gt; paket &gt; kategori tarif default.</p>
               </div>
@@ -477,7 +477,7 @@ export default function TagihanPage() {
               </div>
 
               {autoResult && (
-                <div className="p-3 rounded-lg text-sm bg-vest/5 border border-vest/40 text-emerald-800">
+                <div className="p-3 rounded-lg text-sm bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
                   <p className="font-medium">{autoResult.message}</p>
                   <p className="text-xs mt-1">Dibuat: {autoResult.created} | Sudah ada: {autoResult.skipped}</p>
                 </div>

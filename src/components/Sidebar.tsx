@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { ROLE_LABELS, getAllowedMenus } from "@/lib/rbac";
+import O2WLogo from "./O2WLogo";
 
 type User = {
   id: number;
@@ -296,28 +297,26 @@ export default function Sidebar() {
   return (
     <aside
       className={cn(
-        "bg-asphalt-deep text-bone flex flex-col transition-all duration-200 border-r border-asphalt-line relative",
+        "bg-[rgba(3,4,11,0.9)] backdrop-blur-md text-slate-300 flex flex-col transition-all duration-200 border-r border-[var(--neon-cyan)]/50 relative z-20",
         collapsed ? "w-16" : "w-64"
       )}
     >
-      {/* Hazard strip atas */}
-      <div className="hazard h-1.5 opacity-80" aria-hidden />
+      {/* Cyber strip atas */}
+      <div className="h-[2px] w-full bg-[var(--neon-cyan)] shadow-[0_0_10px_var(--neon-cyan)] opacity-80" aria-hidden />
 
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 h-16 border-b border-asphalt-line">
-        <div className="w-9 h-9 chamfer-sm bg-vest flex items-center justify-center flex-shrink-0">
-          <span className="font-display text-[11px] text-asphalt-deep leading-none tracking-tight">O2W</span>
-        </div>
-        {!collapsed && (
-          <div className="leading-none">
-            <span className="font-display text-xl text-bone tracking-wide">O2W Hero Zero Waste</span>
-            <p className="stencil text-bone-faint mt-0.5">U.P.S.</p>
+      <div className="flex items-center justify-between px-4 h-16 border-b border-[var(--neon-cyan)]/30">
+        {collapsed ? (
+          <div className="w-9 h-9 border border-[var(--neon-cyan)] bg-[rgba(0,243,255,0.05)] flex items-center justify-center shrink-0 shadow-[0_0_12px_rgba(0,243,255,0.3)]">
+            <span className="font-mono text-[11px] font-extrabold text-[var(--neon-cyan)] leading-none">O2W</span>
           </div>
+        ) : (
+          <O2WLogo size="sm" />
         )}
         <button
           onClick={() => setCollapsed(!collapsed)}
           aria-label={collapsed ? "Perluas menu" : "Ciutkan menu"}
-          className="ml-auto text-bone-faint hover:text-vest transition-colors"
+          className="text-slate-500 hover:text-[var(--neon-cyan)] transition-colors p-1"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={collapsed ? "M13 5l7 7-7 7M5 5l7 7-7 7" : "M11 19l-7-7 7-7m8 14l-7-7 7-7"} />
@@ -327,24 +326,24 @@ export default function Sidebar() {
 
       {/* User info */}
       {user && !collapsed && (
-        <div className="px-4 py-3 border-b border-asphalt-line bg-asphalt-panel/60">
-          <p className="text-sm font-medium truncate text-bone">{user.nama}</p>
-          <p className="stencil text-vest mt-0.5">
-            {ROLE_LABELS[user.role as keyof typeof ROLE_LABELS] || user.role}
+        <div className="px-4 py-3 border-b border-[var(--neon-cyan)]/30 bg-[rgba(0,243,255,0.02)]">
+          <p className="text-sm font-mono font-bold truncate text-white">{user.nama}</p>
+          <p className="text-[10px] uppercase font-mono tracking-widest text-[var(--neon-pink)] mt-0.5">
+            &gt; {ROLE_LABELS[user.role as keyof typeof ROLE_LABELS] || user.role}
           </p>
         </div>
       )}
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-3 px-2">
+      <nav className="flex-1 overflow-y-auto py-3 px-2 font-mono uppercase">
         {groupedMenus.map((group) => (
           <div key={group.key} className="mb-4">
             {!collapsed && (
-              <p className="stencil text-[9px] text-bone-faint px-3 mb-1 mt-0">
-                {group.label}
+              <p className="text-[10px] font-bold tracking-[0.2em] text-slate-600 px-3 mb-2 mt-0">
+                // {group.label}
               </p>
             )}
-            <div className="space-y-0.5">
+            <div className="space-y-1">
               {group.items.map((item, i) => {
                 const isActive =
                   pathname === item.href ||
@@ -355,22 +354,22 @@ export default function Sidebar() {
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
                     className={cn(
-                      "flex items-center gap-3 pl-3 pr-2 py-2 text-[13px] transition-all relative",
+                      "flex items-center gap-3 pl-3 pr-2 py-2 text-[11px] transition-all relative group",
                       collapsed && "justify-center pl-0",
                       isActive
-                        ? "bg-vest/10 text-vest border-l-2 border-vest"
-                        : "text-bone-dim hover:text-bone hover:bg-asphalt-panel border-l-2 border-transparent"
+                        ? "bg-[rgba(0,243,255,0.1)] text-[var(--neon-cyan)] border-l-2 border-[var(--neon-cyan)] shadow-[inset_0_0_10px_rgba(0,243,255,0.1)]"
+                        : "text-slate-500 hover:text-[var(--neon-pink)] hover:bg-[rgba(255,0,234,0.05)] border-l-2 border-transparent"
                     )}
                     title={collapsed ? item.label : undefined}
                   >
-                    <span className={cn("flex-shrink-0", isActive && "animate-ticker")}>
+                    <span className={cn("flex-shrink-0 transition-transform group-hover:scale-110", isActive && "glitch-text")}>
                       {item.icon}
                     </span>
                     {!collapsed && (
                       <span className="flex items-center justify-between flex-1">
-                        <span>{item.label}</span>
-                        <span className="stencil text-[9px] text-bone-faint">
-                          {String(i + 1).padStart(2, "0")}
+                        <span className="tracking-widest">{item.label}</span>
+                        <span className="text-[9px] text-slate-700 font-bold">
+                          [{String(i + 1).padStart(2, "0")}]
                         </span>
                       </span>
                     )}
@@ -383,23 +382,23 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer / Logout */}
-      <div className="border-t border-asphalt-line p-2">
+      <div className="border-t border-[var(--neon-cyan)]/30 p-2 font-mono uppercase">
         <button
           onClick={handleLogout}
           aria-label="Keluar dari sistem"
           className={cn(
-            "flex items-center gap-3 px-3 py-2.5 text-bone-dim hover:text-danger hover:bg-danger/10 transition w-full text-[13px]",
+            "flex items-center gap-3 px-3 py-2.5 text-slate-500 hover:text-red-500 hover:bg-red-500/10 transition-colors w-full text-[11px] tracking-widest",
             collapsed && "justify-center px-0"
           )}
         >
           <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
-          {!collapsed && <span>Keluar</span>}
+          {!collapsed && <span>KELUAR_SISTEM</span>}
         </button>
         {!collapsed && (
-          <p className="stencil text-[8px] text-bone-faint text-center pb-1 pt-2 border-t border-asphalt-line mt-1">
-            O2W v0.1 — Ops System
+          <p className="text-[9px] text-slate-600 text-center pb-1 pt-2 border-t border-slate-800 mt-1 tracking-widest">
+            DEPOK_UPS v0.1 // SYS_READY
           </p>
         )}
       </div>

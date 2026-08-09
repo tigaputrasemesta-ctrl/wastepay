@@ -95,10 +95,10 @@ export default function UsersPage() {
                     <td className="px-4 py-3 text-bone-dim">{u.email}</td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                        u.role === "superadmin" ? "bg-asphalt-raised text-purple-800" :
-                        u.role === "admin" ? "bg-vest/10 text-blue-800" :
-                        u.role === "kasir" ? "bg-vest/10 text-emerald-800" :
-                        "bg-amber/10 text-orange-800"
+                        u.role === "superadmin" ? "bg-purple-400/10 text-purple-300 border border-purple-500/30" :
+                        u.role === "admin" ? "bg-sky-400/10 text-sky-400 border border-sky-500/30" :
+                        u.role === "kasir" ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" :
+                        "bg-amber-400/10 text-amber-400 border border-amber-500/30"
                       }`}>
                         {ROLE_LABELS[u.role as keyof typeof ROLE_LABELS] || u.role}
                       </span>

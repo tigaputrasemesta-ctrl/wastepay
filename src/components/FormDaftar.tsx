@@ -3,14 +3,14 @@
 import { useEffect, useState } from "react";
 
 const KATEGORI: { value: string; label: string }[] = [
-  { value: "rumah_tangga", label: "Rumah Tangga" },
-  { value: "bisnis", label: "Bisnis / Toko" },
-  { value: "kost", label: "Kost / Kontrakan" },
-  { value: "sekolah", label: "Sekolah / Lembaga" },
-  { value: "rm_makan", label: "Rumah Makan" },
-  { value: "perkantoran", label: "Kantor" },
-  { value: "industri", label: "Industri" },
-  { value: "lainnya", label: "Lainnya" },
+  { value: "rumah_tangga", label: "RUMAH TANGGA / PRIBADI" },
+  { value: "bisnis", label: "BISNIS / TOKO / WARUNG" },
+  { value: "kost", label: "KOSTAN / KONTRAKAN" },
+  { value: "sekolah", label: "SEKOLAHAN / YAYASAN" },
+  { value: "rm_makan", label: "RUMAH MAKAN / WARTEG" },
+  { value: "perkantoran", label: "KANTOR" },
+  { value: "industri", label: "INDUSTRI / PABRIK" },
+  { value: "lainnya", label: "LAINNYA DAH" },
 ];
 
 type WilayahKec = { kecamatan: string; kelurahan: string[] };
@@ -30,7 +30,7 @@ export default function FormDaftar() {
   const [paketId, setPaketId] = useState("");
   const [penanggungjawab, setPenanggungjawab] = useState("");
   const [referal, setReferal] = useState("");
-  const [website, setWebsite] = useState(""); // honeypot — jangan diisi manusia
+  const [website, setWebsite] = useState("");
 
   const [opsi, setOpsi] = useState<{
     wilayah: WilayahKec[];
@@ -72,7 +72,7 @@ export default function FormDaftar() {
           paketId,
           penanggungjawab,
           referal,
-          website, // honeypot
+          website,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -81,34 +81,33 @@ export default function FormDaftar() {
         setStatus("ok");
       } else {
         setStatus("gagal");
-        setPesan(data.error ?? "Gagal mengirim. Coba lagi.");
+        setPesan(data.error ?? "GAGAL NGIRIM COY. COBA LAGI.");
       }
     } catch {
       setStatus("gagal");
-      setPesan("Koneksi bermasalah. Coba lagi.");
+      setPesan("KONEKSI BAPUK. COBA LAGI.");
     }
   }
 
   if (status === "ok" && hasil) {
     return (
-      <div className="panel p-5 sm:p-6 text-center">
-        <div className="w-14 h-14 chamfer-sm bg-vest/10 flex items-center justify-center mx-auto mb-4">
-          <svg className="w-7 h-7 text-vest" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+      <div className="cyber-box border-[var(--neon-lime)] text-center p-8 bg-[rgba(57,255,20,0.05)]">
+        <div className="w-16 h-16 bg-[var(--neon-lime)] flex items-center justify-center mx-auto mb-6 shadow-[0_0_20px_var(--neon-lime)]" style={{ clipPath: "polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%)" }}>
+          <svg className="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <p className="stencil text-vest mb-2">PENDAFTARAN DITERIMA</p>
-        <h3 className="font-display text-xl text-bone mb-2">{hasil.namaPelanggan}</h3>
-        <p className="text-sm text-bone-dim leading-relaxed">
-          Data Anda sudah kami terima dan sedang menunggu konfirmasi pengelola.
-          Petugas akan menghubungi Anda untuk survei & aktivasi layanan.
+        <p className="font-mono text-[var(--neon-lime)] font-bold uppercase tracking-widest mb-2 text-lg">&gt; DATA_MASUK_COY!</p>
+        <h3 className="font-display font-black text-2xl text-white mb-4 uppercase">{hasil.namaPelanggan}</h3>
+        <p className="text-xs font-mono text-slate-300 leading-relaxed max-w-md mx-auto uppercase">
+          Data lu udah masuk ke server. Tungguin admin kita ngecek. Ntar disurvey bentar, baru deh gas!
         </p>
         {hasil.kodePelanggan && (
-          <div className="mt-5 bg-asphalt-deep/40 chamfer-sm p-4 inline-block">
-            <p className="stencil text-bone-faint text-[10px] mb-1.5">KODE PELANGGAN SEMENTARA</p>
-            <p className="font-display text-2xl text-vest tracking-widest">{hasil.kodePelanggan}</p>
-            <p className="text-[11px] text-bone-faint mt-1 font-mono">
-              Simpan — dipakai saat pendaftaran disetujui
+          <div className="mt-8 border border-[var(--neon-cyan)] bg-[rgba(0,243,255,0.1)] p-6 inline-block">
+            <p className="font-mono text-slate-400 text-[10px] mb-2 uppercase">&gt; KODE_SEMENTARA_LU</p>
+            <p className="font-mono font-black text-3xl text-[var(--neon-cyan)] tracking-[0.2em]">{hasil.kodePelanggan}</p>
+            <p className="text-[10px] text-slate-400 mt-2 font-mono uppercase">
+              // JANGAN ILANG. DIPAKE BUAT LOGIN NTAR //
             </p>
           </div>
         )}
@@ -117,122 +116,130 @@ export default function FormDaftar() {
   }
 
   return (
-    <form onSubmit={submit} className="panel p-5 sm:p-6 space-y-4">
-      <div className="flex items-center gap-2">
-        <span className="stencil text-vest">FORM PENDAFTARAN</span>
-        <span className="font-mono text-[10px] text-bone-faint">PUB/02</span>
+    <form onSubmit={submit} className="cyber-box border-[var(--neon-cyan)] space-y-6">
+      <div className="flex items-center justify-between border-b border-[var(--neon-cyan)] pb-4">
+        <span className="font-mono font-bold text-[var(--neon-cyan)] uppercase tracking-widest text-lg">&gt; FORM_PENDAFTARAN</span>
+        <span className="font-mono text-[10px] text-[var(--neon-cyan)] bg-[rgba(0,243,255,0.1)] px-2 py-1 border border-[var(--neon-cyan)]">PUB/02_REG</span>
       </div>
-      <p className="text-sm text-bone-faint leading-relaxed">
-        Isi data di bawah — petugas kami akan menghubungi Anda untuk survei lokasi
-        dan aktivasi layanan.
+      
+      <p className="text-xs font-mono text-slate-400 leading-relaxed uppercase">
+        Isi data diri lu di mari. Santai aja coy, gratis kok pendaftarannya.
       </p>
 
       <div>
-        <label className="label" htmlFor="d-nama">
-          Nama Lengkap <span className="text-danger">*</span>
+        <label className="block text-[10px] font-mono font-bold text-[var(--neon-cyan)] uppercase tracking-widest mb-2" htmlFor="d-nama">
+          &gt; NAMA_LENGKAP_LU <span className="text-red-500">*</span>
         </label>
         <input
           id="d-nama"
           value={nama}
           onChange={(e) => setNama(e.target.value)}
-          placeholder="Nama Anda / pemilik usaha"
-          className="input"
+          placeholder="NAMA ASLI LU / NAMA TOKO"
+          className="w-full bg-[rgba(0,0,0,0.8)] border border-slate-700 focus:border-[var(--neon-cyan)] px-4 py-3 text-white text-sm font-mono transition-all outline-none uppercase shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]"
           required
           minLength={3}
         />
       </div>
 
       <div>
-        <label className="label" htmlFor="d-telp">
-          No. WhatsApp <span className="text-danger">*</span>
+        <label className="block text-[10px] font-mono font-bold text-[var(--neon-cyan)] uppercase tracking-widest mb-2" htmlFor="d-telp">
+          &gt; NOMER_WA_LU <span className="text-red-500">*</span>
         </label>
         <input
           id="d-telp"
           value={noTelepon}
           onChange={(e) => setNoTelepon(e.target.value)}
-          placeholder="08xxxxxxxxxx"
-          className="input"
+          placeholder="08XXXXXXXXXX"
+          className="w-full bg-[rgba(0,0,0,0.8)] border border-slate-700 focus:border-[var(--neon-cyan)] px-4 py-3 text-white text-sm font-mono transition-all outline-none uppercase shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]"
           required
           inputMode="tel"
         />
-        <p className="text-xs text-bone-faint mt-1">Konfirmasi pendaftaran dikirim ke nomor ini</p>
+        <p className="text-[10px] text-slate-500 mt-2 font-mono uppercase">&gt; BUAT DIKABARIN KALO UDAH AKTIF</p>
       </div>
 
       <div>
-        <label className="label" htmlFor="d-kategori">
-          Kategori Layanan
+        <label className="block text-[10px] font-mono font-bold text-[var(--neon-cyan)] uppercase tracking-widest mb-2" htmlFor="d-kategori">
+          &gt; KATEGORI_SAMPEL
         </label>
-        <select id="d-kategori" value={kategori} onChange={(e) => setKategori(e.target.value)} className="input">
-          {KATEGORI.map((k) => (
-            <option key={k.value} value={k.value}>
-              {k.label}
-            </option>
-          ))}
-        </select>
+        <div className="relative">
+          <select id="d-kategori" value={kategori} onChange={(e) => setKategori(e.target.value)} className="w-full bg-[rgba(0,0,0,0.8)] border border-slate-700 focus:border-[var(--neon-cyan)] px-4 py-3 text-white text-sm font-mono transition-all appearance-none outline-none uppercase">
+            {KATEGORI.map((k) => (
+              <option key={k.value} value={k.value} className="bg-black">
+                {k.label}
+              </option>
+            ))}
+          </select>
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--neon-cyan)] pointer-events-none font-mono">▼</div>
+        </div>
         {tarifKategori && (
-          <p className="text-xs text-bone-faint mt-1 font-mono">
-            Tarif dasar {tarifKategori.label.toLowerCase()}:{" "}
-            <span className="text-vest">Rp {tarifKategori.tarif.toLocaleString("id-ID")}/bulan</span>
-            {tarifKategori.deskripsi ? ` — ${tarifKategori.deskripsi}` : ""}
+          <p className="text-[10px] text-[var(--neon-yellow)] mt-2 font-mono uppercase bg-[rgba(252,238,10,0.05)] border border-[var(--neon-yellow)] p-2">
+            &gt; TARIF STANDAR: RP {tarifKategori.tarif.toLocaleString("id-ID")}/BULAN
+            {tarifKategori.deskripsi ? ` (${tarifKategori.deskripsi})` : ""}
           </p>
         )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="label" htmlFor="d-kecamatan">
-            Kecamatan <span className="text-danger">*</span>
+          <label className="block text-[10px] font-mono font-bold text-[var(--neon-cyan)] uppercase tracking-widest mb-2" htmlFor="d-kecamatan">
+            &gt; KECAMATAN <span className="text-red-500">*</span>
           </label>
-          <select
-            id="d-kecamatan"
-            value={kecamatan}
-            onChange={(e) => {
-              setKecamatan(e.target.value);
-              setKelurahan("");
-            }}
-            className="input"
-            required
-          >
-            <option value="">— Pilih —</option>
-            {(opsi?.wilayah ?? []).map((w) => (
-              <option key={w.kecamatan} value={w.kecamatan}>
-                {w.kecamatan}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              id="d-kecamatan"
+              value={kecamatan}
+              onChange={(e) => {
+                setKecamatan(e.target.value);
+                setKelurahan("");
+              }}
+              className="w-full bg-[rgba(0,0,0,0.8)] border border-slate-700 focus:border-[var(--neon-cyan)] px-4 py-3 text-white text-sm font-mono transition-all appearance-none outline-none uppercase"
+              required
+            >
+              <option value="" className="bg-black">— PILIH DULU —</option>
+              {(opsi?.wilayah ?? []).map((w) => (
+                <option key={w.kecamatan} value={w.kecamatan} className="bg-black">
+                  {w.kecamatan}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--neon-cyan)] pointer-events-none font-mono">▼</div>
+          </div>
         </div>
         <div>
-          <label className="label" htmlFor="d-kelurahan">
-            Kelurahan <span className="text-danger">*</span>
+          <label className="block text-[10px] font-mono font-bold text-[var(--neon-cyan)] uppercase tracking-widest mb-2" htmlFor="d-kelurahan">
+            &gt; KELURAHAN <span className="text-red-500">*</span>
           </label>
-          <select
-            id="d-kelurahan"
-            value={kelurahan}
-            onChange={(e) => setKelurahan(e.target.value)}
-            className="input"
-            required
-            disabled={!kecamatan}
-          >
-            <option value="">— Pilih —</option>
-            {kelurahanList.map((kel) => (
-              <option key={kel} value={kel}>
-                {kel}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              id="d-kelurahan"
+              value={kelurahan}
+              onChange={(e) => setKelurahan(e.target.value)}
+              className="w-full bg-[rgba(0,0,0,0.8)] border border-slate-700 focus:border-[var(--neon-cyan)] px-4 py-3 text-white text-sm font-mono transition-all appearance-none outline-none uppercase disabled:opacity-50"
+              required
+              disabled={!kecamatan}
+            >
+              <option value="" className="bg-black">— PILIH KECAMATAN DULU —</option>
+              {kelurahanList.map((kel) => (
+                <option key={kel} value={kel} className="bg-black">
+                  {kel}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--neon-cyan)] pointer-events-none font-mono">▼</div>
+          </div>
         </div>
       </div>
 
       <div>
-        <label className="label" htmlFor="d-alamat">
-          Alamat Lengkap <span className="text-danger">*</span>
+        <label className="block text-[10px] font-mono font-bold text-[var(--neon-cyan)] uppercase tracking-widest mb-2" htmlFor="d-alamat">
+          &gt; ALAMAT_LENGKAP <span className="text-red-500">*</span>
         </label>
         <textarea
           id="d-alamat"
           value={alamat}
           onChange={(e) => setAlamat(e.target.value)}
-          placeholder="Nama jalan, gang, nomor rumah"
-          className="input min-h-[72px] resize-y"
+          placeholder="NAMA JALAN, NOMER RUMAH COY"
+          className="w-full bg-[rgba(0,0,0,0.8)] border border-slate-700 focus:border-[var(--neon-cyan)] px-4 py-3 text-white text-sm font-mono transition-all outline-none uppercase shadow-[inset_0_0_10px_rgba(0,0,0,0.5)] min-h-[80px] resize-y"
           required
           minLength={10}
         />
@@ -240,90 +247,47 @@ export default function FormDaftar() {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="label" htmlFor="d-rt">
-            RT <span className="text-bone-faint normal-case">(opsional)</span>
+          <label className="block text-[10px] font-mono font-bold text-[var(--neon-cyan)] uppercase tracking-widest mb-2" htmlFor="d-rt">
+            &gt; RT
           </label>
           <input
             id="d-rt"
             value={rt}
             onChange={(e) => setRt(e.target.value)}
             placeholder="001"
-            className="input"
+            className="w-full bg-[rgba(0,0,0,0.8)] border border-slate-700 focus:border-[var(--neon-cyan)] px-4 py-3 text-white text-sm font-mono transition-all outline-none uppercase shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]"
             inputMode="numeric"
           />
         </div>
         <div>
-          <label className="label" htmlFor="d-rw">
-            RW <span className="text-bone-faint normal-case">(opsional)</span>
+          <label className="block text-[10px] font-mono font-bold text-[var(--neon-cyan)] uppercase tracking-widest mb-2" htmlFor="d-rw">
+            &gt; RW
           </label>
           <input
             id="d-rw"
             value={rw}
             onChange={(e) => setRw(e.target.value)}
             placeholder="003"
-            className="input"
+            className="w-full bg-[rgba(0,0,0,0.8)] border border-slate-700 focus:border-[var(--neon-cyan)] px-4 py-3 text-white text-sm font-mono transition-all outline-none uppercase shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]"
             inputMode="numeric"
           />
         </div>
       </div>
-      <p className="text-[11px] text-bone-faint -mt-2 font-mono">
-        RT/RW membantu petugas menemukan lokasi Anda lebih cepat
-      </p>
 
       <div>
-        <label className="label" htmlFor="d-patokan">
-          Patokan Lokasi <span className="text-bone-faint normal-case">(opsional)</span>
+        <label className="block text-[10px] font-mono font-bold text-[var(--neon-cyan)] uppercase tracking-widest mb-2" htmlFor="d-patokan">
+          &gt; PATOKAN_RUMAH_LU (OPSIONAL)
         </label>
         <input
           id="d-patokan"
           value={patokanLokasi}
           onChange={(e) => setPatokanLokasi(e.target.value)}
-          placeholder="Contoh: dekat masjid, samping minimarket"
-          className="input"
+          placeholder="DEPAN WARTEG MAKMUR"
+          className="w-full bg-[rgba(0,0,0,0.8)] border border-slate-700 focus:border-[var(--neon-cyan)] px-4 py-3 text-white text-sm font-mono transition-all outline-none uppercase shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]"
         />
       </div>
 
-      <div>
-        <label className="label" htmlFor="d-paket">
-          Paket Layanan <span className="text-bone-faint normal-case">(opsional)</span>
-        </label>
-        <select id="d-paket" value={paketId} onChange={(e) => setPaketId(e.target.value)} className="input">
-          <option value="">— Pilih paket (opsional) —</option>
-          {(opsi?.paket ?? []).map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.nama} — Rp {p.harga.toLocaleString("id-ID")}/bulan{p.deskripsi ? ` (${p.deskripsi})` : ""}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div>
-        <label className="label" htmlFor="d-pj">
-          Penanggung Jawab <span className="text-bone-faint normal-case">(opsional)</span>
-        </label>
-        <input
-          id="d-pj"
-          value={penanggungjawab}
-          onChange={(e) => setPenanggungjawab(e.target.value)}
-          placeholder="Kepala keluarga / pemilik usaha"
-          className="input"
-        />
-      </div>
-
-      <div>
-        <label className="label" htmlFor="d-referal">
-          Referal <span className="text-bone-faint normal-case">(opsional — siapa yang merekomendasikan)</span>
-        </label>
-        <input
-          id="d-referal"
-          value={referal}
-          onChange={(e) => setReferal(e.target.value)}
-          placeholder="Nama warga/petugas yang merekomendasikan"
-          className="input"
-        />
-      </div>
-
-      {/* Honeypot — disembunyikan, hanya bot yang mengisi */}
+      {/* Honeypot */}
       <div className="hidden" aria-hidden="true">
         <label htmlFor="d-website">Website</label>
         <input
@@ -338,10 +302,10 @@ export default function FormDaftar() {
 
       {pesan && (
         <div
-          className={`border px-3 py-2.5 text-sm font-mono text-xs ${
+          className={`border px-4 py-3 text-xs font-mono font-bold uppercase ${
             status === "ok"
-              ? "border-vest/40 bg-vest/10 text-vest"
-              : "border-danger/40 bg-danger/10 text-danger"
+              ? "border-[var(--neon-lime)] bg-[rgba(57,255,20,0.1)] text-[var(--neon-lime)] shadow-[0_0_10px_rgba(57,255,20,0.2)]"
+              : "border-[var(--neon-pink)] bg-[rgba(255,0,234,0.1)] text-[var(--neon-pink)] shadow-[0_0_10px_rgba(255,0,234,0.2)] glitch-text"
           }`}
           role="status"
         >
@@ -352,13 +316,10 @@ export default function FormDaftar() {
       <button
         type="submit"
         disabled={status === "kirim"}
-        className="btn btn-primary w-full justify-center"
+        className="cyber-btn w-full justify-center mt-4 text-sm font-bold"
       >
-        {status === "kirim" ? "MENGIRIM…" : "DAFTAR SEKARANG"}
+        {status === "kirim" ? "MENGIRIM_DATA..." : "[ DAFTAR SEKARANG_COY ]"}
       </button>
-      <p className="text-[11px] text-bone-faint text-center font-mono">
-        Gratis, tanpa biaya pendaftaran · ditindaklanjuti petugas wilayah
-      </p>
     </form>
   );
 }

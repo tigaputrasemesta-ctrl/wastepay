@@ -119,7 +119,7 @@ export default function PengaturanPage() {
           <h2 className="font-semibold text-bone">💳 Pembayaran Online (Duitku)</h2>
           {duitkuStatus && (
             <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-              duitkuStatus.enabled ? "bg-vest/10 text-emerald-800" : "bg-asphalt-raised text-bone-dim"
+              duitkuStatus.enabled ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" : "bg-asphalt-raised text-bone-dim"
             }`}>
               {duitkuStatus.enabled ? "✓ Aktif" : "Belum dikonfigurasi"}
             </span>
@@ -154,8 +154,8 @@ export default function PengaturanPage() {
               </div>
             </div>
 
-            <div className="bg-vest/5 rounded-lg p-3 border border-vest/40">
-              <p className="text-xs font-medium text-blue-800 mb-1">🔗 URL Callback (isi di Dashboard Duitku → Settings → Callback URL)</p>
+            <div className="bg-sky-500/10 rounded-lg p-3 border border-sky-500/30">
+              <p className="text-xs font-medium text-sky-300 mb-1">🔗 URL Callback (isi di Dashboard Duitku → Settings → Callback URL)</p>
               <code className="text-xs text-vest break-all bg-asphalt-deep/80 px-2 py-1 rounded block">{duitkuStatus.webhookUrl}</code>
             </div>
 

@@ -23,28 +23,31 @@ type HasilCek = {
 };
 
 const BULAN = [
-  "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-  "Juli", "Agustus", "September", "Oktober", "November", "Desember",
+  "JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI",
+  "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER",
 ];
 
 const METODE = [
-  { value: "transfer", label: "Transfer Bank" },
-  { value: "ewallet", label: "E-Wallet" },
-  { value: "qris", label: "QRIS" },
-  { value: "virtual_account", label: "Virtual Account" },
+  { value: "transfer", label: "TRANSFER_BANK" },
+  { value: "ewallet", label: "DOMPET_DIGITAL" },
+  { value: "qris", label: "SCAN_QRIS" },
+  { value: "virtual_account", label: "VIRTUAL_ACCOUNT" },
 ];
 
 function StatusBadge({ status }: { status: string }) {
-  const cls =
-    status === "lunas"
-      ? "bg-vest/10 text-emerald-800"
-      : status === "tunggakan"
-        ? "bg-danger/10 text-red-800"
-        : "bg-amber/10 text-yellow-800";
-  const label =
-    status === "lunas" ? "Lunas" : status === "tunggakan" ? "Tunggakan" : "Belum Bayar";
+  const isLunas = status === "lunas";
+  const isTunggakan = status === "tunggakan";
+  
+  const cls = isLunas
+    ? "text-[var(--neon-lime)] border-[var(--neon-lime)] bg-[rgba(57,255,20,0.1)] shadow-[0_0_10px_rgba(57,255,20,0.3)]"
+    : isTunggakan
+    ? "text-[var(--neon-pink)] border-[var(--neon-pink)] bg-[rgba(255,0,234,0.1)] shadow-[0_0_10px_rgba(255,0,234,0.3)] glitch-text"
+    : "text-[var(--neon-yellow)] border-[var(--neon-yellow)] bg-[rgba(252,238,10,0.1)] shadow-[0_0_10px_rgba(252,238,10,0.3)] blink";
+    
+  const label = isLunas ? "[ LUNAS_COY ]" : isTunggakan ? "[ NGUTANG_PARAH ]" : "[ BELOM_BAYAR ]";
+  
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${cls}`}>
+    <span className={`inline-block px-3 py-1 text-[10px] font-mono font-bold uppercase border ${cls}`}>
       {label}
     </span>
   );
@@ -67,7 +70,7 @@ export default function BayarPage() {
     const res = await fetch(`/api/publik/tagihan?kode=${encodeURIComponent(kodePelanggan)}`);
     const data = await res.json();
     if (!res.ok) {
-      setError(data.error || "Terjadi kesalahan");
+      setError(data.error || "GAGAL KONEK KE SERVER, COBA LAGI NGAB");
       setHasil(null);
     } else {
       setHasil(data);
@@ -83,7 +86,7 @@ export default function BayarPage() {
     try {
       await muatTagihan(kode.trim());
     } catch {
-      setError("Gagal menghubungi server, coba lagi");
+      setError("SERVER DOWN COY, COBA LAGI BENTARAN");
     } finally {
       setMencari(false);
     }
@@ -93,7 +96,7 @@ export default function BayarPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 2 * 1024 * 1024) {
-      setKirimError("Ukuran bukti maksimal 2MB");
+      setKirimError("FILE KEGEDEAN NGAB, MAKS 2MB AJA");
       return;
     }
     setKirimError("");
@@ -125,31 +128,34 @@ export default function BayarPage() {
         setHasil(null);
         setKode("");
       } else {
-        setKirimError(data.error || "Gagal mengirim");
+        setKirimError(data.error || "GAGAL KIRIM COY");
       }
     } catch {
-      setKirimError("Gagal mengirim, coba lagi");
+      setKirimError("GAGAL KIRIM, JARINGAN AMPAS");
     } finally {
       setMengirim(false);
     }
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-bone">Bayar Iuran Sampah</h1>
-        <p className="text-bone-dim mt-2">
-          Masukkan kode pelanggan untuk cek tagihan — bayar online instan atau kirim bukti transfer
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16 relative z-10">
+      <div className="text-center mb-16 space-y-4">
+        <h1 className="text-4xl sm:text-5xl font-display font-black text-white tracking-tighter uppercase">
+          <span className="text-[var(--neon-cyan)]">&gt;</span> TERMINAL <span className="text-[var(--neon-pink)] glitch-text">PEMBAYARAN</span>
+        </h1>
+        <p className="font-mono text-sm text-[var(--neon-cyan)] uppercase tracking-widest border border-[var(--neon-cyan)] bg-[rgba(0,243,255,0.05)] inline-block px-4 py-2">
+          // MASUKIN KODE PELANGGAN BUAT CEK TAGIHAN LU
         </p>
       </div>
 
       {sukses && (
-        <div className="bg-vest/5 border border-vest/40 text-emerald-800 rounded-xl p-5 mb-6">
-          <p className="font-semibold">✓ Berhasil</p>
-          <p className="text-sm mt-1">{sukses}</p>
+        <div className="cyber-box mb-8" style={{ borderColor: 'var(--neon-lime)' }}>
+          <div className="absolute top-0 left-0 w-1 h-full bg-[var(--neon-lime)] shadow-[0_0_15px_var(--neon-lime)]" />
+          <p className="font-bold text-xl text-[var(--neon-lime)] uppercase">&gt; TRANSAKSI_BERHASIL</p>
+          <p className="text-sm mt-2 font-mono text-slate-300 uppercase">{sukses}</p>
           {sukses.includes("verifikasi") && (
-            <p className="text-xs mt-2 text-vest">
-              Admin akan memverifikasi bukti Anda. Pantau status via menu ini kembali.
+            <p className="text-[10px] mt-4 font-mono text-slate-500 uppercase border-t border-slate-800 pt-2">
+              &gt; ADMIN LAGI CEK BUKTI LU. TUNGGUIN AJA BOT WA NGABARIN.
             </p>
           )}
         </div>
@@ -157,168 +163,188 @@ export default function BayarPage() {
 
       {/* Step 1: Cek kode */}
       {!hasil && (
-        <form onSubmit={cekTagihan} className="panel p-6 shadow-sm">
-          <label className="block text-sm font-medium text-bone-dim mb-2">
-            Kode Pelanggan
+        <form onSubmit={cekTagihan} className="cyber-box max-w-2xl mx-auto">
+          <label className="block text-xs font-mono font-bold text-[var(--neon-cyan)] mb-3 uppercase tracking-widest">
+            &gt; INPUT_KODE_WARGA :
           </label>
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-4">
             <input
               type="text"
               value={kode}
-              onChange={(e) => setKode(e.target.value)}
-              className="flex-1 px-4 py-2.5 border border-asphalt-line rounded-lg focus:outline-none focus:ring-2 focus:ring-vest text-center font-mono uppercase"
-              placeholder="contoh: PLG-0001"
+              onChange={(e) => setKode(e.target.value.toUpperCase())}
+              className="flex-1 bg-[rgba(0,0,0,0.5)] border border-slate-700 focus:border-[var(--neon-cyan)] px-5 py-4 text-white text-lg font-mono transition-colors uppercase tracking-widest outline-none shadow-[inset_0_0_15px_rgba(0,0,0,0.8)]"
+              placeholder="E.G: DPK-0001"
               required
             />
             <button
               type="submit"
               disabled={mencari}
-              className="chamfer-sm bg-vest hover:bg-vest-bright disabled:opacity-50 text-asphalt-deep px-6 py-2.5 rounded-lg text-sm font-medium transition"
+              className="cyber-btn w-full sm:w-auto text-sm"
             >
-              {mencari ? "Mencari..." : "Cek Tagihan"}
+              {mencari ? "SCANNING..." : "[ EXECUTE_SEARCH ]"}
             </button>
           </div>
-          {error && <p className="text-sm text-danger mt-3">{error}</p>}
+          {error && <p className="text-xs font-mono text-[var(--neon-pink)] mt-4 uppercase glitch-text">&gt; ERROR: {error}</p>}
         </form>
       )}
 
       {/* Step 2: Daftar tagihan */}
       {hasil && !pilih && (
-        <div className="space-y-4">
-          <div className="panel p-5 shadow-sm">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-xs text-bone-dim uppercase tracking-wide">Pelanggan</p>
-                <h2 className="font-display text-lg text-bone">{hasil.pelanggan.nama}</h2>
-                <p className="text-sm text-bone-dim">{hasil.pelanggan.alamat}</p>
-              </div>
-              <span className="font-mono text-xs bg-asphalt-raised px-2 py-1 rounded">{hasil.pelanggan.kodePelanggan}</span>
+        <div className="space-y-8 animate-fade-in">
+          
+          <div className="cyber-box bg-[rgba(0,243,255,0.02)] flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+              <p className="text-[10px] font-mono text-slate-500 uppercase tracking-[0.2em] mb-1">
+                &gt; IDENTITAS_TARGET
+              </p>
+              <h2 className="font-display text-3xl font-black text-white uppercase">{hasil.pelanggan.nama}</h2>
+              <p className="text-xs font-mono text-[var(--neon-cyan)] mt-2 uppercase">{hasil.pelanggan.alamat}</p>
+            </div>
+            <div className="border border-[var(--neon-cyan)] bg-black px-6 py-3 shadow-[0_0_15px_rgba(0,243,255,0.2)]">
+              <span className="text-[10px] font-mono text-slate-500 block mb-1 uppercase">&gt; ID_KODE</span>
+              <span className="font-mono text-xl text-white font-bold tracking-widest">{hasil.pelanggan.kodePelanggan}</span>
             </div>
           </div>
 
-          <h3 className="font-semibold text-bone">Tagihan Anda</h3>
+          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+            <h3 className="font-mono font-bold text-[var(--neon-yellow)] uppercase tracking-widest">&gt; LOG_TAGIHAN</h3>
+            <button
+              onClick={() => setHasil(null)}
+              className="text-[10px] font-mono text-slate-500 hover:text-[var(--neon-cyan)] transition-colors uppercase"
+            >
+              [ CARI_KODE_LAIN ]
+            </button>
+          </div>
+
           {hasil.tagihan.length === 0 ? (
-            <p className="text-sm text-bone-dim bg-panel border border-asphalt-line rounded-xl p-6 text-center">
-              Tidak ada tagihan
-            </p>
+            <div className="cyber-box text-center border-[var(--neon-lime)]">
+              <p className="text-[var(--neon-lime)] font-mono font-bold text-lg uppercase">&gt; CLEAR!</p>
+              <p className="text-xs font-mono text-slate-400 mt-2 uppercase">Kagak ada tunggakan. Lu aman coy!</p>
+            </div>
           ) : (
-            <div className="space-y-2">
+            <div className="grid gap-4">
               {hasil.tagihan.map((t) => (
-                <div key={t.id} className="panel p-4 flex items-center justify-between flex-wrap gap-3">
-                  <div>
-                    <p className="font-medium text-bone">
+                <div key={t.id} className="border border-slate-800 bg-[rgba(0,0,0,0.6)] p-6 hover:border-[var(--neon-cyan)] transition-colors group flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-slate-800 group-hover:bg-[var(--neon-cyan)] transition-colors" />
+                  
+                  <div className="pl-4">
+                    <p className="font-display font-black text-white text-2xl mb-1">
                       {BULAN[t.bulan - 1]} {t.tahun}
                     </p>
-                    <p className="text-xs text-bone-dim">
-                      Jatuh tempo {formatDate(t.jatuhTempo)}
+                    <p className="text-[10px] font-mono text-slate-500 uppercase">
+                      LIMIT: {formatDate(t.jatuhTempo)}
                     </p>
                     {t.denda ? (
-                      <p className="text-xs text-danger mt-0.5">
-                        + denda {formatRupiah(t.denda)}
+                      <p className="text-[10px] font-mono text-[var(--neon-pink)] mt-2 uppercase border border-[var(--neon-pink)] bg-[rgba(255,0,234,0.1)] inline-block px-2 py-0.5">
+                        &gt; KENA DENDA TELAT: {formatRupiah(t.denda)}
                       </p>
                     ) : null}
                   </div>
-                  <div className="text-right">
-                    <p className="font-bold text-bone">{formatRupiah(t.total ?? (t.jumlah + (t.denda || 0)))}</p>
-                    <div className="mt-1 flex items-center gap-2 justify-end">
+                  
+                  <div className="flex flex-col md:items-end gap-4 pl-4 md:pl-0 border-l border-slate-800 md:border-none">
+                    <div className="flex flex-col md:items-end gap-2">
                       <StatusBadge status={t.status} />
-                      {t.status !== "lunas" && (
-                        <div className="flex gap-2">
-                          {t.noInvoice && (
-                            <Link
-                              href={`/bayar-tagihan?invoice=${encodeURIComponent(t.noInvoice)}`}
-                              className="text-xs chamfer-sm chamfer-sm bg-vest text-asphalt-deep px-3 py-1.5 rounded-lg hover:bg-vest-bright transition inline-flex items-center gap-1"
-                              title="Bayar online instan via Payment Gateway (QRIS, transfer, e-wallet, dll)"
-                            >
-                              ⚡ Bayar Online
-                            </Link>
-                          )}
-                          <button
-                            onClick={() => setPilih(t.id)}
-                            className="text-xs chamfer-sm chamfer-sm bg-vest text-asphalt-deep px-3 py-1.5 rounded-lg hover:bg-vest-bright transition"
-                          >
-                            Bayar Manual
-                          </button>
-                        </div>
-                      )}
+                      <p className="font-mono font-bold text-white text-2xl">
+                        {formatRupiah(t.total ?? (t.jumlah + (t.denda || 0)))}
+                      </p>
                     </div>
+                    
+                    {t.status !== "lunas" && (
+                      <div className="flex gap-3 w-full md:w-auto pt-2">
+                        {t.noInvoice && (
+                          <Link
+                            href={`/bayar-tagihan?invoice=${encodeURIComponent(t.noInvoice)}`}
+                            className="flex-1 md:flex-none text-center bg-[var(--neon-lime)] hover:bg-white text-black font-mono font-bold text-[10px] px-6 py-2 uppercase transition-all shadow-[0_0_10px_rgba(57,255,20,0.3)] hover:shadow-[0_0_20px_rgba(255,255,255,0.8)]"
+                            style={{ clipPath: "polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))" }}
+                          >
+                            BAYAR INSTAN_
+                          </Link>
+                        )}
+                        <button
+                          onClick={() => setPilih(t.id)}
+                          className="flex-1 md:flex-none text-center border border-[var(--neon-cyan)] text-[var(--neon-cyan)] hover:bg-[var(--neon-cyan)] hover:text-black font-mono font-bold text-[10px] px-6 py-2 uppercase transition-all"
+                          style={{ clipPath: "polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))" }}
+                        >
+                          UPLOAD BUKTI_
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
             </div>
           )}
-
-          <button
-            onClick={() => setHasil(null)}
-            className="text-sm text-bone-dim hover:text-bone-dim underline"
-          >
-            ← Cek kode lain
-          </button>
         </div>
       )}
 
       {/* Step 3: Kirim bukti */}
       {hasil && pilih && (
-        <form onSubmit={kirimBukti} className="panel p-6 shadow-sm space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="font-semibold text-bone">Kirim Bukti Pembayaran</h2>
-            <button type="button" onClick={() => setPilih(null)} className="text-sm text-bone-dim hover:text-bone-dim">
-              ← Kembali
+        <form onSubmit={kirimBukti} className="cyber-box space-y-8 max-w-2xl mx-auto animate-fade-in">
+          
+          <div className="flex items-center justify-between border-b border-[var(--neon-cyan)] pb-4">
+            <h2 className="font-mono font-bold text-[var(--neon-cyan)] uppercase text-lg">&gt; UPLOAD_BUKTI_MANUAL</h2>
+            <button type="button" onClick={() => setPilih(null)} className="text-[10px] font-mono text-[var(--neon-pink)] hover:text-white transition-colors uppercase">
+              [ CANCEL_OP ]
             </button>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-bone-dim mb-1">Metode Pembayaran</label>
-            <select
-              value={form.metode}
-              onChange={(e) => setForm({ ...form, metode: e.target.value })}
-              className="w-full px-3 py-2 border border-asphalt-line rounded-lg text-sm"
-              required
-            >
-              {METODE.map((m) => (
-                <option key={m.value} value={m.value}>{m.label}</option>
-              ))}
-            </select>
+          <div className="space-y-3">
+            <label className="block text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">METODE TRANSAKSI</label>
+            <div className="relative">
+              <select
+                value={form.metode}
+                onChange={(e) => setForm({ ...form, metode: e.target.value })}
+                className="w-full bg-[rgba(0,0,0,0.8)] border border-[var(--neon-cyan)] px-4 py-3 text-white text-sm font-mono focus:outline-none focus:shadow-[0_0_15px_rgba(0,243,255,0.3)] transition-all appearance-none uppercase"
+                required
+              >
+                {METODE.map((m) => (
+                  <option key={m.value} value={m.value} className="bg-black">{m.label}</option>
+                ))}
+              </select>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--neon-cyan)] pointer-events-none font-mono">▼</div>
+            </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-bone-dim mb-1">
-              Bukti Transfer (foto, opsional tapi disarankan)
+          <div className="space-y-3">
+            <label className="block text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">
+              FILE GAMBAR BUKTI (FOTO/SS)
             </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFile}
-              className="w-full text-sm text-bone-dim file:mr-3 file:px-4 file:py-2 file:rounded-lg file:border-0 file:bg-vest/5 file:text-vest file:text-sm file:font-medium hover:file:bg-vest/10"
-            />
+            <div className="border-2 border-dashed border-[var(--neon-cyan)] bg-[rgba(0,243,255,0.02)] p-4 text-center hover:bg-[rgba(0,243,255,0.05)] transition-colors">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFile}
+                className="w-full text-xs font-mono text-[var(--neon-cyan)] file:mr-4 file:py-2 file:px-4 file:border-0 file:text-xs file:font-bold file:bg-[var(--neon-cyan)] file:text-black hover:file:bg-white cursor-pointer"
+              />
+            </div>
             {bukti && (
-              <Image src={bukti} alt="Bukti" width={320} height={160} unoptimized className="mt-3 max-h-40 rounded-lg border border-asphalt-line object-cover" />
+              <div className="mt-4 border border-[var(--neon-lime)] p-2 inline-block">
+                <Image src={bukti} alt="Bukti" width={320} height={160} unoptimized className="object-cover max-h-48" />
+                <p className="text-[10px] font-mono text-[var(--neon-lime)] text-center mt-2 uppercase">&gt; IMAGE_LOADED</p>
+              </div>
             )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-bone-dim mb-1">Catatan (opsional)</label>
+          <div className="space-y-3">
+            <label className="block text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">CATATAN TAMBAHAN COY (OPSIONAL)</label>
             <input
               type="text"
               value={form.catatan}
               onChange={(e) => setForm({ ...form, catatan: e.target.value })}
-              className="w-full px-3 py-2 border border-asphalt-line rounded-lg text-sm"
-              placeholder="contoh: transfer dari BCA"
+              className="w-full bg-[rgba(0,0,0,0.8)] border border-slate-700 focus:border-[var(--neon-yellow)] px-4 py-3 text-white text-sm font-mono transition-all outline-none shadow-[inset_0_0_10px_rgba(0,0,0,0.5)] uppercase"
+              placeholder="E.G: TRANSFER DARI BCA BAPAK GUE"
             />
           </div>
 
-          {kirimError && <p className="text-sm text-danger">{kirimError}</p>}
+          {kirimError && <p className="text-[10px] font-mono text-[var(--neon-pink)] uppercase glitch-text">&gt; ERROR: {kirimError}</p>}
 
           <button
             type="submit"
             disabled={mengirim}
-            className="w-full chamfer-sm bg-vest hover:bg-vest-bright disabled:opacity-50 text-asphalt-deep py-2.5 rounded-lg text-sm font-medium transition"
+            className="cyber-btn w-full text-sm mt-4"
           >
-            {mengirim ? "Mengirim..." : "Kirim Bukti Pembayaran"}
+            {mengirim ? "UPLOADING_DATA..." : "[ KIRIM_BUKTI_SEKARANG ]"}
           </button>
-          <p className="text-xs text-bone-faint text-center">
-            Bukti akan diverifikasi admin. Setelah terverifikasi, tagihan Anda otomatis lunas.
-          </p>
         </form>
       )}
     </div>

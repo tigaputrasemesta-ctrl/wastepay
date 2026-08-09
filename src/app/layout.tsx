@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
-import { Anton, Archivo, JetBrains_Mono } from "next/font/google";
+import { Outfit, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const anton = Anton({
-  variable: "--font-anton",
-  weight: "400",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
-const archivo = Archivo({
-  variable: "--font-archivo",
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const jetbrains = JetBrains_Mono({
@@ -19,8 +20,8 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "O2W Hero Zero Waste - Manajemen Iuran Sampah",
-  description: "Layanan pengelolaan sampah untuk warga & pelaku usaha",
+  title: "O₂W Hero Zero Waste - Manajemen Iuran Sampah",
+  description: "Layanan pengelolaan sampah untuk warga & pelaku usaha Kota Depok",
 };
 
 export default function RootLayout({
@@ -31,15 +32,11 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${anton.variable} ${archivo.variable} ${jetbrains.variable} h-full antialiased`}
+      className={`${outfit.variable} ${jakarta.variable} ${jetbrains.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col font-sans bg-[#090b0e] text-bone">
         {children}
-        {/* Grain overlay — tekstur industrial */}
-        <div
-          aria-hidden
-          className="noise-overlay"
-        />
+        <div aria-hidden className="noise-overlay" />
       </body>
     </html>
   );

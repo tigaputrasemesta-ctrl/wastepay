@@ -188,7 +188,7 @@ export default function RutePage() {
                   <tr key={r.id} className="border-b border-asphalt-line hover:bg-asphalt-raised">
                     <td className="px-4 py-3 font-medium text-bone">{r.nama}</td>
                     <td className="px-4 py-3">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-vest/10 text-blue-800">{r.wilayah.nama}</span>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-sky-400/10 text-sky-400 border border-sky-500/30">{r.wilayah.nama}</span>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1">
@@ -205,8 +205,8 @@ export default function RutePage() {
                         onClick={() => toggleAktif(r)}
                         className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium transition ${
                           r.aktif
-                            ? "bg-vest/10 text-emerald-800 hover:bg-emerald-200"
-                            : "bg-asphalt-raised text-bone hover:bg-asphalt-raised"
+                            ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30"
+                            : "bg-asphalt-raised text-bone-dim border border-asphalt-line"
                         }`}
                       >
                         {r.aktif ? "Aktif" : "Nonaktif"}
@@ -274,9 +274,9 @@ export default function RutePage() {
               <p>👥 {r._count.jadwal} pelanggan</p>
             </div>
             <div className="flex gap-2 mt-3">
-              <button onClick={() => bukaMap(r)} className="flex-1 text-center text-sm bg-vest/5 text-vest py-2 rounded-lg hover:bg-vest/10 transition">🗺️ Map</button>
-              <button onClick={() => openEdit(r)} className="flex-1 text-center text-sm bg-indigo-50 text-indigo-700 py-2 rounded-lg hover:bg-asphalt-raised transition">Edit</button>
-              <button onClick={() => setDeleteTarget(r)} className="flex-1 text-center text-sm bg-danger/5 text-red-700 py-2 rounded-lg hover:bg-danger/10 transition">Hapus</button>
+              <button onClick={() => bukaMap(r)} className="flex-1 text-center text-sm bg-vest/10 border border-vest/30 text-vest py-2 rounded-lg hover:bg-vest/20 transition">🗺️ Map</button>
+              <button onClick={() => openEdit(r)} className="flex-1 text-center text-sm bg-asphalt-raised border border-asphalt-line text-bone py-2 rounded-lg hover:border-vest hover:text-vest transition">Edit</button>
+              <button onClick={() => setDeleteTarget(r)} className="flex-1 text-center text-sm bg-danger/10 border border-danger/30 text-red-400 py-2 rounded-lg hover:bg-danger/20 transition">Hapus</button>
             </div>
           </div>
         ))}
@@ -317,7 +317,7 @@ export default function RutePage() {
                         key={h}
                         className={`flex items-center justify-center px-2 py-2 border rounded-lg text-xs cursor-pointer transition ${
                           checked
-                            ? "bg-vest/10 border-vest text-emerald-800"
+                            ? "bg-vest/15 border-vest text-vest font-semibold"
                             : "bg-panel border-asphalt-line text-bone-dim hover:bg-asphalt-raised"
                         }`}
                       >

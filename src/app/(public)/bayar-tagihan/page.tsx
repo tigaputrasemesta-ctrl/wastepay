@@ -172,7 +172,7 @@ function BayarTagihanContent() {
   if (error || !detail) {
     return (
       <div className="max-w-xl mx-auto px-4 py-12">
-        <div className="bg-danger/5 border border-danger/40 text-red-700 rounded-xl p-6 text-center">
+        <div className="bg-danger/10 border border-danger/30 text-red-400 rounded-xl p-6 text-center">
           <p className="font-semibold">Tagihan Tidak Ditemukan</p>
           <p className="text-sm mt-1">{error || "Pastikan link invoice benar."}</p>
           <Link href="/bayar" className="inline-block mt-4 text-sm text-vest hover:underline">
@@ -236,7 +236,7 @@ function BayarTagihanContent() {
       </div>
 
       {bayarError && (
-        <div className="bg-danger/5 border border-danger/40 text-red-700 rounded-xl p-4 mt-4 text-sm">
+        <div className="bg-danger/10 border border-danger/30 text-red-400 rounded-xl p-4 mt-4 text-sm">
           {bayarError}
         </div>
       )}
@@ -244,7 +244,7 @@ function BayarTagihanContent() {
       {lunas ? (
         /* Status lunas — pola skylite.id */
         <div className="bg-vest/5 border border-vest/40 rounded-2xl p-6 mt-4 text-center">
-          <h4 className="text-emerald-800 font-semibold">
+          <h4 className="text-emerald-400 font-semibold">
             Tagihan ini sudah dibayar dan dilunaskan pada:
             <br />
             <strong className="block mt-1">

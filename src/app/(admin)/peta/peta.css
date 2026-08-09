@@ -1,15 +1,15 @@
 /* Label nama kecamatan (tooltip permanen Leaflet) */
 .leaflet-tooltip.kec-label {
-  background: rgba(19, 21, 23, 0.88);
-  border: 1px solid rgba(245, 165, 36, 0.4);
-  border-radius: 2px;
-  color: #f5a524;
+  background: rgba(15, 17, 19, 0.94) !important;
+  border: 1px solid rgba(245, 165, 36, 0.6) !important;
+  border-radius: 4px;
+  color: #fbbf24 !important;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.12em;
-  padding: 3px 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  padding: 4px 9px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
   text-transform: uppercase;
 }
 .leaflet-tooltip.kec-label::before {
@@ -25,6 +25,7 @@
 .petugas-marker {
   position: relative;
   transform: translate(-50%, -50%);
+  text-align: center;
 }
 .petugas-head {
   display: flex;
@@ -33,22 +34,27 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: rgba(199, 240, 77, 0.16);
+  background: rgba(199, 240, 77, 0.2);
   border: 2px solid #c8f04d;
-  box-shadow: 0 0 0 4px rgba(200, 240, 77, 0.18), 0 0 18px rgba(200, 240, 77, 0.45);
+  box-shadow: 0 0 0 4px rgba(200, 240, 77, 0.22), 0 0 18px rgba(200, 240, 77, 0.5);
   font-size: 16px;
   animation: petugas-pulse 1.8s ease-out infinite;
+  margin: 0 auto;
 }
 .petugas-label {
-  display: block;
-  margin-top: 3px;
+  display: inline-block;
+  margin-top: 4px;
   text-align: center;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   color: #c8f04d;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  background: rgba(15, 17, 19, 0.94);
+  border: 1px solid rgba(200, 240, 77, 0.4);
+  padding: 2px 7px;
+  border-radius: 3px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
   white-space: nowrap;
 }
 @keyframes petugas-pulse {
@@ -61,6 +67,7 @@
 .kendaraan-marker {
   position: relative;
   transform: translate(-50%, -50%);
+  text-align: center;
 }
 .kendaraan-head {
   display: flex;
@@ -69,22 +76,27 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: rgba(19, 21, 23, 0.85);
+  background: rgba(19, 21, 23, 0.9);
   border: 2px solid var(--warna, #b7e13c);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--warna, #b7e13c) 20%, transparent), 0 0 16px color-mix(in srgb, var(--warna, #b7e13c) 55%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--warna, #b7e13c) 25%, transparent), 0 0 16px color-mix(in srgb, var(--warna, #b7e13c) 60%, transparent);
   font-size: 18px;
   animation: kendaraan-pulse 2.2s ease-out infinite;
+  margin: 0 auto;
 }
 .kendaraan-label {
-  display: block;
-  margin-top: 3px;
+  display: inline-block;
+  margin-top: 4px;
   text-align: center;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: var(--warna, #b7e13c);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  background: rgba(15, 17, 19, 0.94);
+  border: 1px solid color-mix(in srgb, var(--warna, #b7e13c) 50%, transparent);
+  padding: 2px 7px;
+  border-radius: 3px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
   white-space: nowrap;
 }
 @keyframes kendaraan-pulse {
@@ -97,6 +109,7 @@
 .transit-marker {
   position: relative;
   transform: translate(-50%, -100%);
+  text-align: center;
 }
 .transit-head {
   display: flex;
@@ -104,9 +117,9 @@
   justify-content: center;
   width: 34px;
   height: 34px;
-  background: rgba(245, 165, 36, 0.18);
+  background: rgba(245, 165, 36, 0.22);
   border: 2px solid #f5a524;
-  box-shadow: 0 0 0 4px rgba(245, 165, 36, 0.15);
+  box-shadow: 0 0 0 4px rgba(245, 165, 36, 0.2);
   font-size: 15px;
   color: #f5a524;
   transform: rotate(45deg);
@@ -118,14 +131,83 @@
   font-size: 13px;
 }
 .transit-label {
-  display: block;
+  display: inline-block;
   margin-top: 6px;
   text-align: center;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: #f5a524;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  color: #fbbf24;
+  background: rgba(15, 17, 19, 0.94);
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  padding: 2px 7px;
+  border-radius: 3px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
   white-space: nowrap;
+}
+
+/* ── Leaflet Popups (High Contrast Dark Mode) ── */
+.leaflet-popup-content-wrapper {
+  background: #17191d !important;
+  border: 1px solid #3b434d !important;
+  border-radius: 6px !important;
+  color: #f0eee6 !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.75) !important;
+  padding: 4px !important;
+}
+.leaflet-popup-tip {
+  background: #17191d !important;
+  border: 1px solid #3b434d !important;
+}
+.leaflet-popup-close-button {
+  color: #b5b7ae !important;
+  font-size: 16px !important;
+  padding: 4px 6px 0 0 !important;
+}
+.leaflet-popup-close-button:hover {
+  color: #b7e13c !important;
+}
+
+/* ── Leaflet Tooltips (High Contrast Dark Mode) ── */
+.leaflet-tooltip {
+  background: #17191d !important;
+  border: 1px solid #3b434d !important;
+  border-radius: 4px !important;
+  color: #f0eee6 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6) !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  padding: 4px 8px !important;
+}
+.leaflet-tooltip-top::before {
+  border-top-color: #3b434d !important;
+}
+.leaflet-tooltip-bottom::before {
+  border-bottom-color: #3b434d !important;
+}
+.leaflet-tooltip-left::before {
+  border-left-color: #3b434d !important;
+}
+.leaflet-tooltip-right::before {
+  border-right-color: #3b434d !important;
+}
+
+/* ── Leaflet Zoom Controls Dark Styling ── */
+.leaflet-control-zoom a {
+  background-color: #17191d !important;
+  color: #f0eee6 !important;
+  border-color: #3b434d !important;
+}
+.leaflet-control-zoom a:hover {
+  background-color: #282d34 !important;
+  color: #b7e13c !important;
+}
+.leaflet-container .leaflet-control-attribution {
+  background: rgba(19, 21, 23, 0.85) !important;
+  color: #a0a399 !important;
+}
+.leaflet-container .leaflet-control-attribution a {
+  color: #b7e13c !important;
 }

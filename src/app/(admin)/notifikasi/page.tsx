@@ -165,9 +165,9 @@ export default function NotifikasiPage() {
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-bone">{n.judul}</span>
                       <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                        n.tipe === "pengumuman" ? "bg-vest/10 text-vest" :
-                        n.tipe === "tagihan_jatuh_tempo" ? "bg-danger/10 text-red-700" :
-                        "bg-amber/10 text-yellow-700"
+                        n.tipe === "pengumuman" ? "bg-vest/10 text-vest border border-vest/30" :
+                        n.tipe === "tagihan_jatuh_tempo" ? "bg-danger/10 text-red-400 border border-red-500/30" :
+                        "bg-amber/10 text-amber-400 border border-amber-500/30"
                       }`}>
                         {TIPE_NOTIF.find((t) => t.value === n.tipe)?.label || n.tipe}
                       </span>
@@ -178,9 +178,9 @@ export default function NotifikasiPage() {
                     </p>
                   </div>
                   <span className={`text-xs px-2 py-0.5 rounded-full ${
-                    n.status === "terkirim" ? "bg-vest/10 text-vest" :
-                    n.status === "pending" ? "bg-amber/10 text-yellow-700" :
-                    "bg-danger/10 text-red-700"
+                    n.status === "terkirim" ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" :
+                    n.status === "pending" ? "bg-amber/10 text-amber-400 border border-amber-500/30" :
+                    "bg-danger/10 text-red-400 border border-red-500/30"
                   }`}>
                     {n.status}
                   </span>
@@ -263,7 +263,7 @@ export default function NotifikasiPage() {
 
               {result && (
                 <div className={`p-3 rounded-lg text-sm ${
-                  result.failures?.length ? "bg-yellow-50 text-yellow-800 border border-yellow-200" : "bg-vest/5 text-emerald-800 border border-vest/40"
+                  result.failures?.length ? "bg-amber-500/10 text-amber-300 border border-amber-500/30" : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
                 }`}>
                   <p className="font-medium">{result.message}</p>
                   {result.failures && result.failures.length > 0 && (

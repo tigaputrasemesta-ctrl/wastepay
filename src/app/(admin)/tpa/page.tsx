@@ -136,7 +136,7 @@ export default function TpaPage() {
                     <td className="px-4 py-3 text-bone-dim">{t.kota || "-"}</td>
                     <td className="px-4 py-3 text-right text-bone-dim">{t.jarak ? `${t.jarak} km` : "-"}</td>
                     <td className="px-4 py-3 text-center">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${t.aktif ? "bg-vest/10 text-emerald-800" : "bg-asphalt-raised text-bone"}`}>
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${t.aktif ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" : "bg-asphalt-raised text-bone-dim border border-asphalt-line"}`}>
                         {t.aktif ? "Aktif" : "Nonaktif"}
                       </span>
                     </td>
@@ -144,7 +144,7 @@ export default function TpaPage() {
                       <div className="flex items-center justify-center gap-1">
                         <button
                           onClick={() => openEdit(t)}
-                          className="p-1.5 text-bone-dim hover:bg-indigo-50 rounded-lg transition"
+                          className="p-1.5 text-bone-dim hover:bg-asphalt-raised hover:text-sky-300 rounded-lg transition"
                           title="Edit"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,7 +153,7 @@ export default function TpaPage() {
                         </button>
                         <button
                           onClick={() => setDeleteTarget(t)}
-                          className="p-1.5 text-danger hover:bg-danger/5 rounded-lg transition"
+                          className="p-1.5 text-danger hover:bg-danger/10 rounded-lg transition"
                           title="Hapus"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -176,7 +176,7 @@ export default function TpaPage() {
           <div key={t.id} className="panel p-4">
             <div className="flex items-center justify-between mb-2">
               <h3 className="font-semibold text-bone">{t.nama}</h3>
-              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${t.aktif ? "bg-vest/10 text-emerald-800" : "bg-asphalt-raised text-bone"}`}>
+              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${t.aktif ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" : "bg-asphalt-raised text-bone-dim border border-asphalt-line"}`}>
                 {t.aktif ? "Aktif" : "Nonaktif"}
               </span>
             </div>
@@ -186,8 +186,8 @@ export default function TpaPage() {
               {t.jarak && <p>📏 {t.jarak} km</p>}
             </div>
             <div className="flex gap-2 mt-3">
-              <button onClick={() => openEdit(t)} className="flex-1 text-center text-sm bg-indigo-50 text-indigo-700 py-2 rounded-lg hover:bg-asphalt-raised transition">Edit</button>
-              <button onClick={() => setDeleteTarget(t)} className="flex-1 text-center text-sm bg-danger/5 text-red-700 py-2 rounded-lg hover:bg-danger/10 transition">Hapus</button>
+              <button onClick={() => openEdit(t)} className="flex-1 text-center text-sm bg-asphalt-raised border border-asphalt-line text-bone hover:border-vest hover:text-vest py-2 rounded-lg transition">Edit</button>
+              <button onClick={() => setDeleteTarget(t)} className="flex-1 text-center text-sm bg-danger/10 border border-danger/30 text-red-400 py-2 rounded-lg hover:bg-danger/20 transition">Hapus</button>
             </div>
           </div>
         ))}

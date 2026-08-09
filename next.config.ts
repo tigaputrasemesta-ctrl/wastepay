@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
+  // Allow phone testing
+  allowedDevOrigins: ["192.168.100.19"],
   async headers() {
     return [
       {

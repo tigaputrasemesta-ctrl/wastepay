@@ -57,3 +57,5 @@ next-env.d.ts
 /landing-*.png
 /peta-*.png
 /splynx-dashboard.png
+
+.vercel

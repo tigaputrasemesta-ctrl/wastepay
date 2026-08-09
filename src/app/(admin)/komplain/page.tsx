@@ -82,16 +82,16 @@ export default function KomplainPage() {
                       <div className="text-xs text-bone-dim">{k.pelanggan.noTelepon}</div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber/10 text-orange-800">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber/10 text-amber-400 border border-amber-500/30">
                         {k.jenis === "tidak_diangkut" ? "Tidak Diangkut" : k.jenis === "sampah_menumpuk" ? "Sampah Menumpuk" : "Lainnya"}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-bone-dim max-w-xs truncate">{k.deskripsi}</td>
                     <td className="px-4 py-3 text-center">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                        k.status === "baru" ? "bg-danger/10 text-red-800" :
-                        k.status === "diproses" ? "bg-amber/10 text-yellow-800" :
-                        "bg-vest/10 text-emerald-800"
+                        k.status === "baru" ? "bg-danger/10 text-red-400 border border-red-500/30" :
+                        k.status === "diproses" ? "bg-amber/10 text-amber-400 border border-amber-500/30" :
+                        "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30"
                       }`}>
                         {k.status.charAt(0).toUpperCase() + k.status.slice(1)}
                       </span>

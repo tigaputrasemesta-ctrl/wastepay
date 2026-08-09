@@ -284,7 +284,7 @@ export default function PelangganPage() {
                             <a
                               href={`https://www.google.com/maps?q=${p.latitude},${p.longitude}`}
                               target="_blank"
-                              className="text-[10px] text-vest hover:text-blue-800"
+                              className="text-[10px] text-vest hover:text-sky-300"
                             >
                               {p.latitude.toFixed(5)}, {p.longitude.toFixed(5)}
                             </a>
@@ -294,18 +294,18 @@ export default function PelangganPage() {
                     </td>
                     <td className="px-4 py-3 text-bone-dim">{p.noTelepon}</td>
                     <td className="px-4 py-3">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-vest/10 text-blue-800">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-sky-400/10 text-sky-400 border border-sky-500/30">
                         {p.wilayah.nama}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-bone-dim max-w-xs truncate">{p.alamat}</td>
                     <td className="px-4 py-3">
                       {p.customTarif ? (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber/10 text-amber-800">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-400/10 text-amber-400 border border-amber-500/30">
                           Kustom
                         </span>
                       ) : p.paket ? (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-asphalt-raised text-purple-800">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-400/10 text-purple-300 border border-purple-500/30">
                           {p.paket.nama.split(" ").slice(0, 2).join(" ")}
                         </span>
                       ) : (
@@ -314,10 +314,10 @@ export default function PelangganPage() {
                     </td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                        p.status === "aktif" ? "bg-vest/10 text-emerald-800" :
-                        p.status === "calon" ? "bg-vest/10 text-blue-800" :
-                        p.status === "libur" ? "bg-amber/10 text-yellow-800" :
-                        "bg-asphalt-raised text-bone"
+                        p.status === "aktif" ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" :
+                        p.status === "calon" ? "bg-sky-400/10 text-sky-400 border border-sky-500/30" :
+                        p.status === "libur" ? "bg-amber-400/10 text-amber-400 border border-amber-500/30" :
+                        "bg-asphalt-raised text-bone-dim border border-asphalt-line"
                       }`}>
                         {p.status.charAt(0).toUpperCase() + p.status.slice(1)}
                       </span>
@@ -327,7 +327,7 @@ export default function PelangganPage() {
                       <div className="flex items-center justify-end gap-2">
                         <Link
                           href={`/pelanggan/${p.id}`}
-                          className="text-vest hover:text-blue-800 transition"
+                          className="text-vest hover:text-sky-300 transition"
                           title="Detail"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -337,7 +337,7 @@ export default function PelangganPage() {
                         </Link>
                         <button
                           onClick={() => openEdit(p)}
-                          className="text-bone-dim hover:text-indigo-800 transition"
+                          className="text-bone-dim hover:text-sky-300 transition"
                           title="Edit"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -346,7 +346,7 @@ export default function PelangganPage() {
                         </button>
                         <button
                           onClick={() => setDeleteTarget(p)}
-                          className="text-danger hover:text-red-800 transition"
+                          className="text-danger hover:text-red-400 transition"
                           title="Hapus"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

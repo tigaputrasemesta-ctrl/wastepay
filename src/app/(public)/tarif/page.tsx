@@ -4,8 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { formatRupiah } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Tarif Layanan | O2W Hero Zero Waste",
-  description: "Tarif pengangkutan sampah per kategori & paket layanan",
+  title: "Daftar Tarif | O2W Hero Zero Waste",
+  description: "Biaya langganan sampah",
 };
 
 export const dynamic = "force-dynamic";
@@ -25,98 +25,99 @@ export default async function TarifPage() {
       }),
     ]);
   } catch {
-    // DB offline — halaman tetap tampil tanpa daftar tarif
+    // DB offline
   }
 
   const tarifMin = kategoriTarif.length > 0 ? Math.min(...kategoriTarif.map((k) => k.tarif)) : 0;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-      <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
+      <div className="flex flex-wrap items-end justify-between gap-8 mb-16">
         <div>
-          <p className="stencil text-amber flex items-center gap-2">
-            <span className="w-8 h-1.5 bg-amber inline-block" /> Tarif Layanan
+          <p className="font-mono text-[var(--neon-pink)] uppercase tracking-widest text-xs border border-[var(--neon-pink)] bg-[rgba(255,0,234,0.1)] inline-block px-4 py-1 mb-4 shadow-[0_0_10px_rgba(255,0,234,0.2)]">
+            &gt; DAFTAR_TARIF_TRANSPARAN
           </p>
-          <h1 className="font-display text-4xl sm:text-6xl tracking-wide mt-3 leading-tight">
-            Biaya <span className="text-amber">tetap & transparan</span>.
+          <h1 className="font-display font-black text-4xl sm:text-6xl text-white uppercase tracking-tighter">
+            BIAYA <span className="text-[var(--neon-pink)] glitch-text shadow-red-500">SEGINI DOANG!</span>
           </h1>
-          <p className="text-bone-dim mt-4 max-w-xl leading-relaxed">
-            Tarif per bulan sesuai kategori layanan, sudah termasuk biaya
-            pengangkutan rutin. Tidak ada biaya pendaftaran.
+          <p className="text-slate-400 font-mono mt-6 max-w-xl leading-relaxed">
+            Nih daftar harga per bulannya coy. Udah termasuk diangkut rutin. Kagak ada biaya-biayaan lain apalagi biaya pendaftaran. Murni seharga cilok sebulan.
           </p>
         </div>
         {tarifMin > 0 && (
-          <div className="panel p-5 text-right">
-            <p className="stencil text-bone-faint text-[10px]">MULAI DARI</p>
-            <p className="font-display text-4xl text-vest mt-1">{formatRupiah(tarifMin)}</p>
-            <p className="text-xs text-bone-faint mt-1">per bulan</p>
+          <div className="cyber-box border-[var(--neon-lime)] p-6 bg-[rgba(57,255,20,0.05)] text-right">
+            <p className="font-mono text-slate-400 text-[10px] mb-1 uppercase">&gt; MULAI DARI</p>
+            <p className="font-display font-black text-4xl text-[var(--neon-lime)]">{formatRupiah(tarifMin)}</p>
+            <p className="text-[10px] text-[var(--neon-lime)] mt-2 font-mono uppercase bg-[rgba(57,255,20,0.1)] inline-block px-2 py-1">PER BULAN COY</p>
           </div>
         )}
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6 items-start">
-        <div className="lg:col-span-2">
-          <div className="panel overflow-hidden">
-            <div className="grid grid-cols-12 px-5 py-3 bg-asphalt-deep border-b border-asphalt-line stencil text-[10px] text-bone-faint">
-              <span className="col-span-6">KATEGORI</span>
-              <span className="col-span-4">LAYANAN</span>
-              <span className="col-span-2 text-right">TARIF/BULAN</span>
+      <div className="grid lg:grid-cols-3 gap-8 items-start">
+        <div className="lg:col-span-2 space-y-4">
+          <div className="cyber-box border-[var(--neon-cyan)] p-0 overflow-hidden">
+            <div className="grid grid-cols-12 px-6 py-4 bg-[rgba(0,243,255,0.1)] border-b border-[var(--neon-cyan)] font-mono text-[10px] font-bold text-[var(--neon-cyan)] uppercase tracking-widest">
+              <span className="col-span-6">&gt; KATEGORI_LU</span>
+              <span className="col-span-4">&gt; DETAIL</span>
+              <span className="col-span-2 text-right">&gt; TARIF</span>
             </div>
             {kategoriTarif.length === 0 ? (
-              <p className="px-5 py-8 text-sm text-bone-faint text-center font-mono">
-                Daftar tarif sedang diperbarui — hubungi petugas wilayah.
+              <p className="px-6 py-10 text-sm text-[var(--neon-pink)] text-center font-mono uppercase glitch-text">
+                &gt; SISTEM_DATABASE_ERROR: TARIF GAK KEBACA
               </p>
             ) : (
               kategoriTarif.map((k, i) => (
                 <div
                   key={k.kategori}
-                  className={`grid grid-cols-12 px-5 py-3.5 items-center border-b border-asphalt-line/60 last:border-0 ${
-                    i % 2 ? "bg-asphalt-deep/30" : ""
+                  className={`grid grid-cols-12 px-6 py-4 items-center border-b border-slate-800 last:border-0 ${
+                    i % 2 ? "bg-[rgba(255,255,255,0.02)]" : ""
                   }`}
                 >
-                  <span className="col-span-6 text-sm font-medium text-bone">{k.label}</span>
-                  <span className="col-span-4 text-xs text-bone-dim font-mono">{k.deskripsi ?? "—"}</span>
-                  <span className="col-span-2 text-right font-mono text-sm text-vest">{formatRupiah(k.tarif)}</span>
+                  <span className="col-span-6 text-sm font-bold text-white uppercase">{k.label}</span>
+                  <span className="col-span-4 text-[10px] text-slate-400 font-mono uppercase">{k.deskripsi ?? "—"}</span>
+                  <span className="col-span-2 text-right font-mono font-bold text-lg text-[var(--neon-yellow)]">{formatRupiah(k.tarif)}</span>
                 </div>
               ))
             )}
           </div>
-          <p className="text-xs text-bone-faint mt-3 font-mono">
-            * Tarif dapat disesuaikan untuk kebutuhan khusus — hubungi petugas wilayah Anda.
+          <p className="text-[10px] text-slate-500 font-mono uppercase">
+            * Kalo lu butuh request aneh-aneh (truk khusus/sampah sisa proyek), calling admin aja coy, nanti bisa dibicarain harganya.
           </p>
         </div>
 
-        <div className="space-y-4">
-          <div className="panel p-5">
-            <p className="stencil text-vest mb-4">PAKET LANGGANAN</p>
-            <div className="space-y-3">
+        <div className="space-y-6">
+          <div className="cyber-box border-[var(--neon-yellow)] bg-[rgba(252,238,10,0.02)] p-6">
+            <p className="font-mono font-bold text-[var(--neon-yellow)] uppercase mb-6 tracking-widest">&gt; PAKET_KHUSUS</p>
+            <div className="space-y-4">
               {paket.length === 0 ? (
-                <p className="text-sm text-bone-faint font-mono">Belum tersedia.</p>
+                <p className="text-[10px] text-[var(--neon-pink)] font-mono uppercase glitch-text">BELOM ADA PAKET TERSEDIA.</p>
               ) : (
                 paket.map((p) => (
                   <div
                     key={p.nama}
-                    className="chamfer-sm border border-asphalt-line bg-asphalt-deep/40 p-4 flex items-start justify-between gap-3"
+                    className="border border-[var(--neon-yellow)] bg-[rgba(252,238,10,0.05)] p-4 flex items-start justify-between gap-4 shadow-[0_0_10px_rgba(252,238,10,0.1)] hover:bg-[var(--neon-yellow)] hover:text-black transition-colors group"
                   >
                     <div>
-                      <p className="text-sm font-medium text-bone">{p.nama}</p>
-                      {p.deskripsi && <p className="text-xs text-bone-dim mt-0.5">{p.deskripsi}</p>}
+                      <p className="text-sm font-bold text-white group-hover:text-black uppercase">{p.nama}</p>
+                      {p.deskripsi && <p className="text-[10px] text-slate-400 group-hover:text-black/70 mt-1 font-mono uppercase">{p.deskripsi}</p>}
                     </div>
-                    <p className="font-display text-lg text-vest whitespace-nowrap">
-                      {formatRupiah(p.harga)}
-                      <span className="text-[10px] text-bone-faint">/bln</span>
-                    </p>
+                    <div className="text-right">
+                      <p className="font-mono font-bold text-lg text-[var(--neon-yellow)] group-hover:text-black whitespace-nowrap">
+                        {formatRupiah(p.harga)}
+                      </p>
+                      <span className="text-[9px] text-[var(--neon-yellow)] group-hover:text-black font-mono">/BULAN</span>
+                    </div>
                   </div>
                 ))
               )}
             </div>
           </div>
 
-          <Link href="/daftar" className="btn btn-primary chamfer-sm w-full justify-center py-3.5">
-            Daftar Sekarang
+          <Link href="/daftar" className="cyber-btn cyber-btn-yellow w-full text-center text-sm">
+            [ GAS_DAFTAR_SEKARANG ]
           </Link>
-          <Link href="/bayar" className="btn chamfer-sm w-full justify-center py-3">
-            Cek Tagihan Saya →
+          <Link href="/bayar" className="cyber-btn w-full text-center text-sm border-slate-700 text-slate-400 hover:border-[var(--neon-cyan)] hover:text-[var(--neon-cyan)]">
+            [ CEK_TAGIHAN_SAYA ]
           </Link>
         </div>
       </div>

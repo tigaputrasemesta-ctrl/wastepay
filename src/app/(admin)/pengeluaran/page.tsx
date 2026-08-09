@@ -153,7 +153,7 @@ export default function PengeluaranPage() {
                   <tr key={p.id} className="border-b border-asphalt-line hover:bg-asphalt-raised">
                     <td className="px-4 py-3 text-bone-dim text-xs">{formatDate(p.tanggal)}</td>
                     <td className="px-4 py-3">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-danger/10 text-red-800">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-danger/10 text-red-400 border border-red-500/30">
                         {KATEGORI_PENGELUARAN.find((k) => k.value === p.kategori)?.label || p.kategori}
                       </span>
                     </td>
@@ -162,10 +162,10 @@ export default function PengeluaranPage() {
                     <td className="px-4 py-3 text-bone-dim text-xs">{p.dicatatBy.nama}</td>
                     <td className="px-4 py-3 text-center">
                       <div className="flex items-center justify-center gap-1">
-                        <button onClick={() => openEdit(p)} className="p-1.5 text-bone-dim hover:bg-indigo-50 rounded-lg" title="Edit">
+                        <button onClick={() => openEdit(p)} className="p-1.5 text-bone-dim hover:bg-asphalt-raised hover:text-sky-300 rounded-lg transition" title="Edit">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                         </button>
-                        <button onClick={() => setDeleteTarget(p)} className="p-1.5 text-danger hover:bg-danger/5 rounded-lg" title="Hapus">
+                        <button onClick={() => setDeleteTarget(p)} className="p-1.5 text-danger hover:bg-danger/10 rounded-lg transition" title="Hapus">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                         </button>
                       </div>
@@ -190,14 +190,14 @@ export default function PengeluaranPage() {
               <span className="font-semibold text-danger">{formatRupiah(p.jumlah)}</span>
             </div>
             <div className="flex items-center gap-2 text-xs">
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-danger/10 text-red-800">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-danger/10 text-red-400 border border-red-500/30">
                 {KATEGORI_PENGELUARAN.find((k) => k.value === p.kategori)?.label || p.kategori}
               </span>
               <span className="text-bone-faint">oleh {p.dicatatBy.nama}</span>
             </div>
             <div className="flex gap-2 mt-3">
-              <button onClick={() => openEdit(p)} className="flex-1 text-center text-sm bg-indigo-50 text-indigo-700 py-2 rounded-lg hover:bg-asphalt-raised">Edit</button>
-              <button onClick={() => setDeleteTarget(p)} className="flex-1 text-center text-sm bg-danger/5 text-red-700 py-2 rounded-lg hover:bg-danger/10">Hapus</button>
+              <button onClick={() => openEdit(p)} className="flex-1 text-center text-sm bg-asphalt-raised border border-asphalt-line text-bone hover:border-vest hover:text-vest py-2 rounded-lg transition">Edit</button>
+              <button onClick={() => setDeleteTarget(p)} className="flex-1 text-center text-sm bg-danger/10 border border-danger/30 text-red-400 py-2 rounded-lg hover:bg-danger/20 transition">Hapus</button>
             </div>
           </div>
         ))}

@@ -167,7 +167,7 @@ export default function JadwalPage() {
                 jadwal.map((j) => (
                   <tr key={j.id} className="border-b border-asphalt-line hover:bg-asphalt-raised">
                     <td className="px-4 py-3">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-vest/10 text-blue-800">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-sky-400/10 text-sky-400 border border-sky-500/30">
                         {j.hari}
                       </span>
                     </td>
@@ -193,7 +193,7 @@ export default function JadwalPage() {
                             <a
                               href={`https://www.google.com/maps?q=${j.pelanggan.latitude},${j.pelanggan.longitude}`}
                               target="_blank"
-                              className="text-xs text-vest hover:text-blue-800 inline-flex items-center gap-0.5"
+                              className="text-xs text-vest hover:text-sky-300 inline-flex items-center gap-0.5"
                             >
                               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -212,7 +212,7 @@ export default function JadwalPage() {
                     <td className="px-4 py-3 text-center text-bone-dim text-xs">{j._count.pengangkutan}</td>
                     <td className="px-4 py-3 text-center">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                        j.aktif ? "bg-vest/10 text-emerald-800" : "bg-asphalt-raised text-bone"
+                        j.aktif ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" : "bg-asphalt-raised text-bone-dim"
                       }`}>
                         {j.aktif ? "Aktif" : "Nonaktif"}
                       </span>
@@ -221,7 +221,7 @@ export default function JadwalPage() {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => openEdit(j)}
-                          className="text-bone-dim hover:text-indigo-800 transition"
+                          className="text-bone-dim hover:text-sky-300 transition"
                           title="Edit"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -230,7 +230,7 @@ export default function JadwalPage() {
                         </button>
                         <button
                           onClick={() => setDeleteTarget(j)}
-                          className="text-danger hover:text-red-800 transition"
+                          className="text-danger hover:text-red-400 transition"
                           title="Hapus"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -302,7 +302,7 @@ export default function JadwalPage() {
                         key={h}
                         className={`flex items-center justify-center px-2 py-2 border rounded-lg text-xs cursor-pointer transition ${
                           checked
-                            ? "bg-vest/10 border-vest text-emerald-800"
+                            ? "bg-vest/15 border-vest text-vest font-semibold"
                             : "bg-panel border-asphalt-line text-bone-dim hover:bg-asphalt-raised"
                         }`}
                       >

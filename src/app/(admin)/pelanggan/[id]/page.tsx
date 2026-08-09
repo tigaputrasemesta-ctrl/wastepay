@@ -130,10 +130,10 @@ export default function DetailPelangganPage() {
           <p className="text-sm text-bone-dim">Detail pelanggan</p>
         </div>
         <span className={`ml-auto inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-          data.status === "aktif" ? "bg-vest/10 text-emerald-800" :
-          data.status === "calon" ? "bg-vest/10 text-blue-800" :
-          data.status === "libur" ? "bg-amber/10 text-yellow-800" :
-          "bg-asphalt-raised text-bone"
+          data.status === "aktif" ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" :
+          data.status === "calon" ? "bg-sky-400/10 text-sky-400 border border-sky-500/30" :
+          data.status === "libur" ? "bg-amber-400/10 text-amber-400 border border-amber-500/30" :
+          "bg-asphalt-raised text-bone-dim border border-asphalt-line"
         }`}>
           {data.status === "calon" ? "Calon" : data.status.charAt(0).toUpperCase() + data.status.slice(1)}
         </span>
@@ -247,7 +247,7 @@ export default function DetailPelangganPage() {
                   <a
                     href={`https://www.google.com/maps?q=${data.latitude},${data.longitude}`}
                     target="_blank"
-                    className="inline-flex items-center gap-1 text-xs text-vest hover:text-blue-800 font-medium"
+                    className="inline-flex items-center gap-1 text-xs text-vest hover:text-sky-300 font-medium"
                   >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -310,7 +310,7 @@ export default function DetailPelangganPage() {
                   <a
                     href={`https://www.google.com/maps?q=${data.latitude},${data.longitude}`}
                     target="_blank"
-                    className="text-xs text-vest hover:text-blue-800 inline-flex items-center gap-1 mt-1"
+                    className="text-xs text-vest hover:text-sky-300 inline-flex items-center gap-1 mt-1"
                   >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -424,9 +424,9 @@ export default function DetailPelangganPage() {
                         <td className="px-3 py-2 text-bone-dim text-xs">{formatDate(t.jatuhTempo)}</td>
                         <td className="px-3 py-2 text-center">
                           <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                            t.status === "lunas" ? "bg-vest/10 text-emerald-800" :
-                            t.status === "tunggakan" ? "bg-danger/10 text-red-800" :
-                            "bg-amber/10 text-yellow-800"
+                            t.status === "lunas" ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" :
+                            t.status === "tunggakan" ? "bg-danger/10 text-red-400 border border-red-500/30" :
+                            "bg-amber-400/10 text-amber-400 border border-amber-500/30"
                           }`}>
                             {t.status === "belum_bayar" ? "Belum Bayar" : t.status === "lunas" ? "Lunas" : "Tunggakan"}
                           </span>
@@ -465,9 +465,9 @@ export default function DetailPelangganPage() {
                         </td>
                         <td className="px-3 py-2 text-center">
                           <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                            p.status === "terverifikasi" ? "bg-vest/10 text-emerald-800" :
-                            p.status === "pending" ? "bg-amber/10 text-yellow-800" :
-                            "bg-danger/10 text-red-800"
+                            p.status === "terverifikasi" ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" :
+                            p.status === "pending" ? "bg-amber-400/10 text-amber-400 border border-amber-500/30" :
+                            "bg-danger/10 text-red-400 border border-red-500/30"
                           }`}>
                             {p.status === "terverifikasi" ? "Terverifikasi" : p.status === "pending" ? "Pending" : "Ditolak"}
                           </span>
@@ -503,9 +503,9 @@ export default function DetailPelangganPage() {
                         <td className="px-3 py-2 text-bone-dim">{p.petugas?.nama || "-"}</td>
                         <td className="px-3 py-2 text-center">
                           <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                            p.status === "diambil" ? "bg-vest/10 text-emerald-800" :
-                            p.status === "terjadwal" ? "bg-vest/10 text-blue-800" :
-                            "bg-danger/10 text-red-800"
+                            p.status === "diambil" ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" :
+                            p.status === "terjadwal" ? "bg-sky-400/10 text-sky-400 border border-sky-500/30" :
+                            "bg-danger/10 text-red-400 border border-red-500/30"
                           }`}>
                             {p.status === "diambil" ? "Diambil" : p.status === "terjadwal" ? "Terjadwal" : p.status === "kosong" ? "Kosong" : "Tidak Diangkut"}
                           </span>
@@ -531,9 +531,9 @@ export default function DetailPelangganPage() {
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-xs text-bone-faint">{formatDate(k.createdAt)}</span>
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                        k.status === "baru" ? "bg-danger/10 text-red-800" :
-                        k.status === "diproses" ? "bg-amber/10 text-yellow-800" :
-                        "bg-vest/10 text-emerald-800"
+                        k.status === "baru" ? "bg-danger/10 text-red-400 border border-red-500/30" :
+                        k.status === "diproses" ? "bg-amber-400/10 text-amber-400 border border-amber-500/30" :
+                        "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30"
                       }`}>
                         {k.status.charAt(0).toUpperCase() + k.status.slice(1)}
                       </span>

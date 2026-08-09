@@ -86,8 +86,8 @@ export default function RekonsiliasiPage() {
           {hasil && (
             <div className={`p-4 rounded-lg border ${
               hasil.selisih !== null && hasil.selisih !== 0
-                ? "bg-yellow-50 border-yellow-200 text-yellow-800"
-                : "bg-vest/5 border-vest/40 text-emerald-800"
+                ? "bg-amber-500/10 border border-amber-500/30 text-amber-300"
+                : "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400"
             }`}>
               <p className="font-medium">
                 {hasil.selisih !== null && hasil.selisih !== undefined && hasil.selisih !== 0

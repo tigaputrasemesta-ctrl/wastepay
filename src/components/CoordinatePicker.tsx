@@ -132,7 +132,7 @@ export default function CoordinatePicker({ latitude, longitude, onChange }: Prop
       </div>
 
       {locError && (
-        <div className="bg-yellow-50 text-yellow-700 text-xs px-3 py-2 rounded-lg border border-yellow-200">
+        <div className="bg-amber-500/10 text-amber-300 text-xs px-3 py-2 rounded-lg border border-amber-500/30">
           {locError}
         </div>
       )}

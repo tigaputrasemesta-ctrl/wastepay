@@ -24,10 +24,10 @@ type Pengangkutan = {
 };
 
 const STATUS_OPTIONS = [
-  { value: "terjadwal", label: "Terjadwal", color: "bg-vest/10 text-blue-800" },
-  { value: "diambil", label: "Diambil", color: "bg-vest/10 text-emerald-800" },
-  { value: "tidak_diangkut", label: "Tidak Diangkut", color: "bg-danger/10 text-red-800" },
-  { value: "kosong", label: "Kosong", color: "bg-amber/10 text-yellow-800" },
+  { value: "terjadwal", label: "Terjadwal", color: "bg-sky-400/10 text-sky-400 border border-sky-500/30" },
+  { value: "diambil", label: "Diambil", color: "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" },
+  { value: "tidak_diangkut", label: "Tidak Diangkut", color: "bg-danger/10 text-red-400 border border-red-500/30" },
+  { value: "kosong", label: "Kosong", color: "bg-amber-400/10 text-amber-400 border border-amber-500/30" },
 ];
 
 const JENIS_SAMPAH = [
@@ -281,7 +281,7 @@ export default function PengangkutanPage() {
                 {d.volume && <span>Volume: {d.volume} m³</span>}
                 {d.berat && <span>Berat: {d.berat} kg</span>}
                 {d.jenisSampah && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-green-100 text-green-700">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-400/10 text-emerald-400 border border-emerald-500/30">
                     {JENIS_SAMPAH.find((j) => j.value === d.jenisSampah)?.label}
                   </span>
                 )}
