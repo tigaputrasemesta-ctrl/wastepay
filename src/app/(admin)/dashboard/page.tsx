@@ -2,6 +2,9 @@ import { prisma } from "@/lib/prisma";
 import { formatRupiah } from "@/lib/utils";
 import Link from "next/link";
 
+// Dashboard menampilkan data live + butuh sesi admin → jangan di-prerender saat build.
+export const dynamic = "force-dynamic";
+
 const NAMA_BULAN = [
   "Jan", "Feb", "Mar", "Apr", "Mei", "Jun",
   "Jul", "Agu", "Sep", "Okt", "Nov", "Des",
