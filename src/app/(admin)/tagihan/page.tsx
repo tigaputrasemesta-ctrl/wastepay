@@ -5,9 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { formatRupiah, formatDate } from "@/lib/utils";
 import { useToast } from "@/components/Toast";
-import { duitkuChannelLabel } from "@/lib/duitku";
+import { duitkuChannelLabel } from "@/lib/duitku-channels";
 import { useUser } from "@/hooks/useUser";
-import { hitungRincian } from "@/lib/invoice";
+import { hitungRincian } from "@/lib/invoice-format";
 
 const METODE_LABEL: Record<string, string> = {
   tunai: "Tunai",

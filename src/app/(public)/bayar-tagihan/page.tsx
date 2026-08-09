@@ -9,8 +9,8 @@ import {
   formatTanggalWaktuIndo,
   BULAN_INDO,
   labelMetodePembayaran,
-} from "@/lib/invoice";
-import { DUITKU_METHODS, duitkuChannelLabel } from "@/lib/duitku";
+} from "@/lib/invoice-format";
+import { DUITKU_METHODS, duitkuChannelLabel } from "@/lib/duitku-channels";
 
 type MetodeBayar = { value: string; label: string; icon: string };
 

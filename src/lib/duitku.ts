@@ -38,6 +38,14 @@
  */
 import crypto from "crypto";
 
+// Data channel (label + daftar metode) dipisah ke modul murni agar aman
+// dipakai dari komponen client tanpa ikut menarik `crypto`/prisma ke browser.
+export { duitkuChannelLabel, DUITKU_METHODS } from "./duitku-channels";
+export type { DuitkuPaymentMethod } from "./duitku-channels";
+import type { DuitkuPaymentMethod as _DuitkuPaymentMethod } from "./duitku-channels";
+// Alias lokal agar bisa dipakai di tipe return fungsi modul ini.
+type DuitkuPaymentMethod = _DuitkuPaymentMethod;
+
 export function merchantCode(): string {
   return process.env.DUITKU_MERCHANT_CODE?.trim() || "";
 }
@@ -260,37 +268,6 @@ export function isFinalFailedStatusCode(
   return source === "callback" ? statusCode === "01" : statusCode === "02";
 }
 
-/** Label Indonesia untuk channel pembayaran Duitku. */
-export function duitkuChannelLabel(paymentMethod?: string | null): string {
-  const map: Record<string, string> = {
-    VC: "Virtual Account",
-    VA: "Virtual Account",
-    QR: "QRIS",
-    SP: "ShopeePay",
-    OVO: "OVO",
-    DANA: "DANA",
-    M1: "Mandiri Bill",
-    BT: "Bank Transfer",
-    CIMB: "Virtual Account CIMB",
-    BNI: "Virtual Account BNI",
-    BRI: "Virtual Account BRI",
-    PERMATA: "Virtual Account Permata",
-    MANDIRI: "Virtual Account Mandiri",
-    GOPAY: "GoPay",
-    LINK_AJA: "LinkAja",
-    SA: "Salam Super App",
-    CREDIT_CARD: "Kartu Kredit",
-  };
-  return map[paymentMethod || ""] || (paymentMethod ? paymentMethod : "Payment Gateway");
-}
-
-export type DuitkuPaymentMethod = {
-  paymentMethod: string;
-  paymentName: string;
-  paymentImage?: string;
-  totalFee?: string;
-};
-
 /**
  * Ambil daftar metode pembayaran yang AKTIF untuk merchant (dari Duitku).
  * Opsional per docs — dipakai untuk menampilkan channel yang benar-benar aktif,
@@ -332,25 +309,6 @@ export function formatDuitkuDatetime(d: Date): string {
   const p = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
 }
-
-/**
- * Daftar channel pembayaran default (fallback) — dipakai jika getPaymentMethods
- * belum aktif/gagal. id dipakai sebagai paymentMethod Duitku.
- */
-export const DUITKU_METHODS = [
-  { value: "VC", label: "Virtual Account", icon: "🏦" },
-  { value: "QR", label: "QRIS", icon: "📱" },
-  { value: "SP", label: "ShopeePay", icon: "🛍️" },
-  { value: "OVO", label: "OVO", icon: "💜" },
-  { value: "DANA", label: "DANA", icon: "🔵" },
-  { value: "M1", label: "Mandiri Bill", icon: "🏛️" },
-  { value: "CIMB", label: "VA CIMB Niaga", icon: "🏛️" },
-  { value: "BNI", label: "VA BNI", icon: "🏛️" },
-  { value: "BRI", label: "VA BRI", icon: "🏛️" },
-  { value: "PERMATA", label: "VA Permata", icon: "🏛️" },
-  { value: "GOPAY", label: "GoPay", icon: "🟢" },
-  { value: "LINK_AJA", label: "LinkAja", icon: "🟠" },
-];
 
 /** Potong JSON mentah (untuk disimpan di rawResponse, max 4KB). */
 export function truncateRaw(raw: unknown): string {

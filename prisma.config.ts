@@ -9,6 +9,8 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
+    // Prisma 7: koneksi runtime dipegang driver adapter (src/lib/prisma.ts).
+    // Config ini dipakai Prisma CLI (generate/migrate/db).
     url: process.env["DATABASE_URL"],
   },
 });
