@@ -45,9 +45,10 @@ export async function POST(request: Request) {
     });
 
     return response;
-  } catch {
+  } catch (error: any) {
+    console.error("Login API Error:", error);
     return NextResponse.json(
-      { error: "Terjadi kesalahan" },
+      { error: "Terjadi kesalahan: " + (error?.message || "Unknown error") },
       { status: 500 }
     );
   }
