@@ -6,13 +6,18 @@
 // Jalankan: node scripts/link-zonasi.mjs
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
-import { PrismaLibSql } from "@prisma/adapter-libsql";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
-const adapter = new PrismaLibSql({ url: process.env.DATABASE_URL || "file:./dev.db" });
-const prisma = new PrismaClient({ adapter });
+// Koneksi ke DATABASE_URL (Supabase Postgres di production, bisa juga dev.db lokal).
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+});
+const prisma = new PrismaClient({ adapter: new PrismaPg(pool) });
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const RT = JSON.parse(
