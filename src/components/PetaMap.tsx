@@ -92,7 +92,7 @@ const STATUS_LABEL: Record<string, string> = {
 const KOMPLAIN_TABS: { key: string; label: string }[] = [
   { key: "semua", label: "Semua" },
   { key: "baru", label: "Baru" },
-  { key: "diproses", label: "Diproses" },
+  { key: "proses", label: "Proses" },
   { key: "selesai", label: "Selesai" },
 ];
 

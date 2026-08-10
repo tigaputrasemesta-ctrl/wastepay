@@ -1,13 +1,22 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
 
 /** Titik transit (lapak) — tempat dump truck standby / pemindahan sampah. */
 export async function GET() {
-  const transit = await prisma.titikTransit.findMany({
-    orderBy: { nama: "asc" },
-  });
-  return NextResponse.json(transit);
+  try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: "Tidak terautentikasi" }, { status: 401 });
+    }
+    const transit = await prisma.titikTransit.findMany({
+      orderBy: { nama: "asc" },
+    });
+    return NextResponse.json(transit);
+  } catch {
+    return NextResponse.json({ error: "Gagal mengambil titik transit" }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {

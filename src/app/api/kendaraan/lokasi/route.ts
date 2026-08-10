@@ -84,7 +84,31 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: "Tidak terautentikasi" }, { status: 401 });
+    }
+
+    // Scope: petugas hanya melihat kendaraan yang pengemudinya SEWILAYAH
+    // (anti bocor lokasi armada lintas zona). Admin/kasir/superadmin lihat semua.
+    const wilayahPetugas =
+      session.role === "petugas"
+        ? (
+            await prisma.petugas.findUnique({
+              where: { userId: session.id },
+              select: { wilayahId: true },
+            })
+          )?.wilayahId ?? null
+        : null;
+    if (session.role === "petugas" && wilayahPetugas == null) {
+      return NextResponse.json([]);
+    }
+
     const semua = await prisma.lokasiKendaraan.findMany({
+      where:
+        wilayahPetugas != null
+          ? { kendaraan: { aktif: true, petugas: { wilayahId: wilayahPetugas } } }
+          : undefined,
       select: {
         id: true,
         latitude: true,
