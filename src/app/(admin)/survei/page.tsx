@@ -137,20 +137,20 @@ export default function SurveiPage() {
     <div className="p-4 md:p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-display text-2xl text-bone">Survei Pelanggan</h1>
-          <p className="text-sm text-bone-dim mt-1">
+          <h1 className="font-black uppercase tracking-tighter text-2xl text-black font-black">Survei Pelanggan</h1>
+          <p className="text-sm text-gray-600 font-bold mt-1">
             Calon pelanggan menunggu survei — isi foto rumah & geo tag, lalu aktifkan
           </p>
         </div>
-        <span className="stencil text-vest text-xs">{calon.length} CALON</span>
+        <span className="stencil text-green-600 text-xs">{calon.length} CALON</span>
       </div>
 
       {loading ? (
-        <div className="panel p-8 text-center text-bone-faint font-mono">MEMUAT…</div>
+        <div className="hm-card bg-white p-0 overflow-hidden p-8 text-center text-gray-400 font-bold font-mono">MEMUAT…</div>
       ) : calon.length === 0 ? (
-        <div className="panel p-10 text-center">
-          <p className="font-display text-2xl text-vest tracking-wide">TIDAK ADA CALON</p>
-          <p className="text-sm text-bone-dim mt-2">
+        <div className="hm-card bg-white p-0 overflow-hidden p-10 text-center">
+          <p className="font-black uppercase tracking-tighter text-2xl text-green-600 tracking-wide">TIDAK ADA CALON</p>
+          <p className="text-sm text-gray-600 font-bold mt-2">
             Semua pendaftar sudah disurvei. Calon baru muncul di sini setelah warga
             mengisi form pendaftaran online.
           </p>
@@ -158,40 +158,40 @@ export default function SurveiPage() {
       ) : (
         <div className="grid gap-3">
           {calon.map((c) => (
-            <div key={c.id} className="panel p-4 flex flex-wrap items-center justify-between gap-3">
+            <div key={c.id} className="hm-card bg-white p-0 overflow-hidden p-4 flex flex-wrap items-center justify-between gap-3">
               <div className="min-w-0">
-                <p className="font-medium text-bone">
+                <p className="font-medium text-black font-black">
                   {c.nama}
-                  <span className="ml-2 font-mono text-xs text-bone-faint">{c.kodePelanggan}</span>
+                  <span className="ml-2 font-mono text-xs text-gray-400 font-bold">{c.kodePelanggan}</span>
                 </p>
-                <p className="text-xs text-bone-dim mt-0.5">
+                <p className="text-xs text-gray-600 font-bold mt-0.5">
                   {c.noTelepon} · {c.wilayah?.nama || "belum ada wilayah"} · daftar{" "}
                   {formatDate(c.createdAt)}
                 </p>
-                <p className="text-xs text-bone-faint mt-0.5 truncate max-w-xl">{c.alamat}</p>
+                <p className="text-xs text-gray-400 font-bold mt-0.5 truncate max-w-xl">{c.alamat}</p>
               </div>
               <div className="flex items-center gap-2">
                 {c.latitude && c.longitude ? (
-                  <span className="text-[10px] font-mono text-vest bg-vest/5 px-2 py-1 rounded">
+                  <span className="text-[10px] font-mono text-green-600 bg-green-400/5 px-2 py-1 rounded-none">
                     ● GEO TAG
                   </span>
                 ) : (
-                  <span className="text-[10px] font-mono text-amber bg-amber/5 px-2 py-1 rounded">
+                  <span className="text-[10px] font-mono text-amber bg-amber/5 px-2 py-1 rounded-none">
                     ○ BELUM GEO TAG
                   </span>
                 )}
                 {c.fotoRumah ? (
-                  <span className="text-[10px] font-mono text-vest bg-vest/5 px-2 py-1 rounded">
+                  <span className="text-[10px] font-mono text-green-600 bg-green-400/5 px-2 py-1 rounded-none">
                     ● FOTO ADA
                   </span>
                 ) : (
-                  <span className="text-[10px] font-mono text-amber bg-amber/5 px-2 py-1 rounded">
+                  <span className="text-[10px] font-mono text-amber bg-amber/5 px-2 py-1 rounded-none">
                     ○ FOTO BELUM
                   </span>
                 )}
                 <button
                   onClick={() => bukaSurvei(c)}
-                  className="chamfer-sm bg-vest hover:bg-vest-bright text-asphalt-deep px-4 py-2 rounded-lg text-sm font-medium transition"
+                  className="shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 hover:bg-green-300 text-black px-4 py-2 rounded-none text-sm font-medium transition"
                 >
                   Survei & Aktifkan
                 </button>
@@ -203,14 +203,14 @@ export default function SurveiPage() {
 
       {/* ── Modal survei ── */}
       {survei && (
-        <div className="fixed inset-0 bg-asphalt-deep/70 flex items-center justify-center z-50 p-4">
-          <div className="panel w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-asphalt-line sticky top-0 bg-asphalt-deep z-10">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="hm-card bg-white p-0 overflow-hidden w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-2 border-black sticky top-0 bg-white z-10">
               <div>
-                <h2 className="font-semibold text-bone">Survei: {survei.nama}</h2>
-                <p className="font-mono text-[10px] text-bone-faint">{survei.kodePelanggan}</p>
+                <h2 className="font-semibold text-black font-black">Survei: {survei.nama}</h2>
+                <p className="font-mono text-[10px] text-gray-400 font-bold">{survei.kodePelanggan}</p>
               </div>
-              <button onClick={() => setSurvei(null)} className="text-bone-faint hover:text-bone-dim">
+              <button onClick={() => setSurvei(null)} className="text-gray-400 font-bold hover:text-gray-600 font-bold">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -220,93 +220,93 @@ export default function SurveiPage() {
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-bone-dim mb-1">No. WhatsApp</label>
-                  <p className="text-sm text-bone">{survei.noTelepon}</p>
+                  <label className="block text-sm font-medium text-gray-600 font-bold mb-1">No. WhatsApp</label>
+                  <p className="text-sm text-black font-black">{survei.noTelepon}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-bone-dim mb-1">Wilayah</label>
-                  <p className="text-sm text-bone">{survei.wilayah?.nama || "—"}</p>
+                  <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Wilayah</label>
+                  <p className="text-sm text-black font-black">{survei.wilayah?.nama || "—"}</p>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-bone-dim mb-1">Alamat Lengkap</label>
+                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Alamat Lengkap</label>
                 <input
                   type="text"
                   value={form.alamat}
                   onChange={(e) => setForm({ ...form, alamat: e.target.value })}
-                  className="w-full px-3 py-2 border border-asphalt-line rounded-lg focus:outline-none focus:ring-2 focus:ring-vest text-sm"
+                  className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-bone-dim mb-1">RT</label>
+                  <label className="block text-sm font-medium text-gray-600 font-bold mb-1">RT</label>
                   <input
                     type="text"
                     value={form.rt}
                     onChange={(e) => setForm({ ...form, rt: e.target.value })}
-                    className="w-full px-3 py-2 border border-asphalt-line rounded-lg focus:outline-none focus:ring-2 focus:ring-vest text-sm"
+                    className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm"
                     placeholder="001"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-bone-dim mb-1">RW</label>
+                  <label className="block text-sm font-medium text-gray-600 font-bold mb-1">RW</label>
                   <input
                     type="text"
                     value={form.rw}
                     onChange={(e) => setForm({ ...form, rw: e.target.value })}
-                    className="w-full px-3 py-2 border border-asphalt-line rounded-lg focus:outline-none focus:ring-2 focus:ring-vest text-sm"
+                    className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm"
                     placeholder="003"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-bone-dim mb-1">Patokan Lokasi</label>
+                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Patokan Lokasi</label>
                 <input
                   type="text"
                   value={form.patokanLokasi}
                   onChange={(e) => setForm({ ...form, patokanLokasi: e.target.value })}
-                  className="w-full px-3 py-2 border border-asphalt-line rounded-lg focus:outline-none focus:ring-2 focus:ring-vest text-sm"
+                  className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm"
                   placeholder="Depan masjid / dekat warung…"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-bone-dim mb-1">Penanggung Jawab</label>
+                  <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Penanggung Jawab</label>
                   <input
                     type="text"
                     value={form.penanggungjawab}
                     onChange={(e) => setForm({ ...form, penanggungjawab: e.target.value })}
-                    className="w-full px-3 py-2 border border-asphalt-line rounded-lg focus:outline-none focus:ring-2 focus:ring-vest text-sm"
+                    className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-bone-dim mb-1">Referal</label>
+                  <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Referal</label>
                   <input
                     type="text"
                     value={form.referal}
                     onChange={(e) => setForm({ ...form, referal: e.target.value })}
-                    className="w-full px-3 py-2 border border-asphalt-line rounded-lg focus:outline-none focus:ring-2 focus:ring-vest text-sm"
+                    className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-bone-dim mb-1">Catatan Survei</label>
+                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Catatan Survei</label>
                 <textarea
                   value={form.catatan}
                   onChange={(e) => setForm({ ...form, catatan: e.target.value })}
-                  className="w-full px-3 py-2 border border-asphalt-line rounded-lg focus:outline-none focus:ring-2 focus:ring-vest text-sm min-h-[64px]"
+                  className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm min-h-[64px]"
                   placeholder="Kondisi rumah, jadwal angkut yang cocok, dll"
                 />
               </div>
 
               {/* Foto rumah + geo tag */}
-              <div className="border-t border-asphalt-line pt-4">
-                <p className="stencil text-vest mb-3">FOTO RUMAH & GEO TAG</p>
+              <div className="border-t border-2 border-black pt-4">
+                <p className="stencil text-green-600 mb-3">FOTO RUMAH & GEO TAG</p>
                 <GeotagPhoto
                   foto={form.fotoRumah}
                   latitude={form.latitude}
@@ -324,14 +324,14 @@ export default function SurveiPage() {
                 <button
                   type="button"
                   onClick={() => setSurvei(null)}
-                  className="flex-1 px-4 py-2 border border-asphalt-line rounded-lg text-sm text-bone-dim hover:bg-asphalt-raised"
+                  className="flex-1 px-4 py-2 border-2 border-black rounded-none text-sm text-gray-600 font-bold hover:bg-gray-100 border-2 border-black"
                 >
                   Batal
                 </button>
                 <button
                   onClick={simpan}
                   disabled={saving}
-                  className="flex-1 px-4 py-2 chamfer-sm bg-vest text-asphalt-deep rounded-lg text-sm font-medium hover:bg-vest-bright disabled:opacity-60"
+                  className="flex-1 px-4 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black rounded-none text-sm font-medium hover:bg-green-300 disabled:opacity-60"
                 >
                   {saving ? "Menyimpan…" : "Simpan & Aktifkan Pelanggan"}
                 </button>

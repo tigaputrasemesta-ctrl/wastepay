@@ -92,6 +92,7 @@ export default async function PetaPage() {
   }));
 
   const totalBerkoordinat = data.filter((p) => p.latitude != null && p.longitude != null).length;
+  void totalBerkoordinat; // statistik (berguna saat debugging peta) — sengaja dipertahankan
 
   // ── Lokasi terakhir petugas aktif (data awal peta realtime) ──
   const lokasiRaw = await prisma.lokasiPetugas.findMany({

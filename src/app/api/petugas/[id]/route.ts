@@ -39,7 +39,7 @@ export async function PUT(
     if (email !== undefined) data.email = email;
     if (foto !== undefined) data.foto = foto;
     if (aktif !== undefined) data.aktif = aktif;
-    if (jabatan !== undefined) data.jabatan = jabatan || null;
+    if (jabatan !== undefined) data.jabatan = Array.isArray(jabatan) ? jabatan.join(",") : (jabatan || null);
     if (userId !== undefined) data.userId = userId ? parseInt(userId) : null;
     if (wilayahId !== undefined) data.wilayahId = parseInt(wilayahId);
 
@@ -51,7 +51,11 @@ export async function PUT(
 
     await logAudit("update", "Petugas", id, { id }, { nama: petugas.nama, aktif: petugas.aktif });
     return NextResponse.json(petugas);
-  } catch {
+  } catch (error) {
+    // Prisma error P2002 = unique constraint violation (akun login sudah ter-link)
+    if ((error as { code?: string }).code === "P2002") {
+      return NextResponse.json({ error: "Akun login (User) tersebut sudah terhubung dengan petugas lain!" }, { status: 400 });
+    }
     return NextResponse.json({ error: "Gagal mengupdate petugas" }, { status: 500 });
   }
 }

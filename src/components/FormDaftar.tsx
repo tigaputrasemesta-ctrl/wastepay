@@ -2,17 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-const KATEGORI: { value: string; label: string }[] = [
-  { value: "rumah_tangga", label: "RUMAH TANGGA / PRIBADI" },
-  { value: "bisnis", label: "BISNIS / TOKO / WARUNG" },
-  { value: "kost", label: "KOSTAN / KONTRAKAN" },
-  { value: "sekolah", label: "SEKOLAHAN / YAYASAN" },
-  { value: "rm_makan", label: "RUMAH MAKAN / WARTEG" },
-  { value: "perkantoran", label: "KANTOR" },
-  { value: "industri", label: "INDUSTRI / PABRIK" },
-  { value: "lainnya", label: "LAINNYA DAH" },
-];
-
 type WilayahKec = { kecamatan: string; kelurahan: string[] };
 type Paket = { id: number; nama: string; harga: number; deskripsi: string | null };
 type KategoriTarif = { kategori: string; label: string; tarif: number; deskripsi: string | null };
@@ -20,17 +9,23 @@ type KategoriTarif = { kategori: string; label: string; tarif: number; deskripsi
 export default function FormDaftar() {
   const [nama, setNama] = useState("");
   const [noTelepon, setNoTelepon] = useState("");
-  const [kategori, setKategori] = useState("rumah_tangga");
+  const [kategori, setKategori] = useState("");
   const [kecamatan, setKecamatan] = useState("");
   const [kelurahan, setKelurahan] = useState("");
   const [alamat, setAlamat] = useState("");
   const [rt, setRt] = useState("");
   const [rw, setRw] = useState("");
   const [patokanLokasi, setPatokanLokasi] = useState("");
+  const [jenisLayanan, setJenisLayanan] = useState<"kategori" | "paket">("kategori");
   const [paketId, setPaketId] = useState("");
-  const [penanggungjawab, setPenanggungjawab] = useState("");
-  const [referal, setReferal] = useState("");
+  // Nilai penanggungjawab & referal dipakai di payload, tetapi tidak pernah
+  // diubah setelah mount — setter sengaja tidak dibuat.
+  const [penanggungjawab] = useState("");
+  const [referal] = useState("");
   const [website, setWebsite] = useState("");
+  
+  const [gpsLoading, setGpsLoading] = useState(false);
+  const [gpsData, setGpsData] = useState<{lat: number; lng: number; acc: number} | null>(null);
 
   const [opsi, setOpsi] = useState<{
     wilayah: WilayahKec[];
@@ -44,12 +39,39 @@ export default function FormDaftar() {
   useEffect(() => {
     fetch("/api/publik/daftar-options")
       .then((r) => r.json())
-      .then((d) => setOpsi(d))
+      .then((d) => {
+        setOpsi(d);
+        if (d.kategoriTarif && d.kategoriTarif.length > 0) {
+          // Set default hanya jika belum terpilih — hindari dependensi `kategori`
+          // pada efek (refetch saat kategori berubah tidak diinginkan).
+          setKategori((prev) => prev || d.kategoriTarif[0].kategori);
+        }
+      })
       .catch(() => setOpsi({ wilayah: [], paket: [], kategoriTarif: [] }));
   }, []);
 
   const kelurahanList = opsi?.wilayah.find((w) => w.kecamatan === kecamatan)?.kelurahan ?? [];
   const tarifKategori = opsi?.kategoriTarif.find((k) => k.kategori === kategori);
+
+  function getGps() {
+    if (!navigator.geolocation) {
+      setPesan("BROWSER TIDAK MENDUKUNG GPS.");
+      return;
+    }
+    setGpsLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setGpsData({ lat: pos.coords.latitude, lng: pos.coords.longitude, acc: pos.coords.accuracy });
+        setGpsLoading(false);
+        setPesan("");
+      },
+      (err) => {
+        setGpsLoading(false);
+        setPesan("GAGAL MENDAPATKAN LOKASI: " + err.message);
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -73,6 +95,10 @@ export default function FormDaftar() {
           penanggungjawab,
           referal,
           website,
+          latitude: gpsData?.lat,
+          longitude: gpsData?.lng,
+          koordinatAkurasi: gpsData?.acc,
+          koordinatSumber: gpsData ? "gps_pendaftar" : undefined,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -81,33 +107,33 @@ export default function FormDaftar() {
         setStatus("ok");
       } else {
         setStatus("gagal");
-        setPesan(data.error ?? "GAGAL NGIRIM COY. COBA LAGI.");
+        setPesan(data.error ?? "GAGAL MENDAFTAR. SILAKAN COBA LAGI.");
       }
     } catch {
       setStatus("gagal");
-      setPesan("KONEKSI BAPUK. COBA LAGI.");
+      setPesan("KONEKSI BERMASALAH. COBA LAGI NANTI.");
     }
   }
 
   if (status === "ok" && hasil) {
     return (
-      <div className="cyber-box border-[var(--neon-lime)] text-center p-8 bg-[rgba(57,255,20,0.05)]">
-        <div className="w-16 h-16 bg-[var(--neon-lime)] flex items-center justify-center mx-auto mb-6 shadow-[0_0_20px_var(--neon-lime)]" style={{ clipPath: "polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%)" }}>
-          <svg className="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="hm-card text-center bg-green-50 border-green-600">
+        <div className="w-16 h-16 bg-green-600 border-2 border-black flex items-center justify-center mx-auto mb-6">
+          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <p className="font-mono text-[var(--neon-lime)] font-bold uppercase tracking-widest mb-2 text-lg">&gt; DATA_MASUK_COY!</p>
-        <h3 className="font-display font-black text-2xl text-white mb-4 uppercase">{hasil.namaPelanggan}</h3>
-        <p className="text-xs font-mono text-slate-300 leading-relaxed max-w-md mx-auto uppercase">
-          Data lu udah masuk ke server. Tungguin admin kita ngecek. Ntar disurvey bentar, baru deh gas!
+        <p className="font-bold uppercase tracking-widest mb-2 text-green-600">PENDAFTARAN BERHASIL</p>
+        <h3 className="font-black text-3xl mb-4 uppercase">{hasil.namaPelanggan}</h3>
+        <p className="text-sm font-bold uppercase mb-8">
+          Data telah masuk ke sistem kami. Mohon tunggu admin untuk verifikasi dan survei lokasi.
         </p>
         {hasil.kodePelanggan && (
-          <div className="mt-8 border border-[var(--neon-cyan)] bg-[rgba(0,243,255,0.1)] p-6 inline-block">
-            <p className="font-mono text-slate-400 text-[10px] mb-2 uppercase">&gt; KODE_SEMENTARA_LU</p>
-            <p className="font-mono font-black text-3xl text-[var(--neon-cyan)] tracking-[0.2em]">{hasil.kodePelanggan}</p>
-            <p className="text-[10px] text-slate-400 mt-2 font-mono uppercase">
-              // JANGAN ILANG. DIPAKE BUAT LOGIN NTAR //
+          <div className="border-4 border-black bg-white p-6 inline-block">
+            <p className="font-bold text-xs mb-2 uppercase">KODE PELANGGAN SEMENTARA</p>
+            <p className="font-black text-4xl tracking-widest">{hasil.kodePelanggan}</p>
+            <p className="text-xs font-bold text-red-600 mt-2 uppercase">
+              SIMPAN KODE INI UNTUK LOGIN.
             </p>
           </div>
         )}
@@ -116,73 +142,134 @@ export default function FormDaftar() {
   }
 
   return (
-    <form onSubmit={submit} className="cyber-box border-[var(--neon-cyan)] space-y-6">
-      <div className="flex items-center justify-between border-b border-[var(--neon-cyan)] pb-4">
-        <span className="font-mono font-bold text-[var(--neon-cyan)] uppercase tracking-widest text-lg">&gt; FORM_PENDAFTARAN</span>
-        <span className="font-mono text-[10px] text-[var(--neon-cyan)] bg-[rgba(0,243,255,0.1)] px-2 py-1 border border-[var(--neon-cyan)]">PUB/02_REG</span>
+    <form onSubmit={submit} className="hm-card space-y-6 bg-[#f4f4f0]">
+      <div className="flex items-center justify-between border-b-2 border-black pb-4">
+        <span className="font-black uppercase text-2xl">FORMULIR PENDAFTARAN</span>
+        <span className="font-bold text-xs uppercase bg-black text-white px-2 py-1">REG.26</span>
       </div>
-      
-      <p className="text-xs font-mono text-slate-400 leading-relaxed uppercase">
-        Isi data diri lu di mari. Santai aja coy, gratis kok pendaftarannya.
-      </p>
 
       <div>
-        <label className="block text-[10px] font-mono font-bold text-[var(--neon-cyan)] uppercase tracking-widest mb-2" htmlFor="d-nama">
-          &gt; NAMA_LENGKAP_LU <span className="text-red-500">*</span>
+        <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="d-nama">
+          NAMA LENGKAP / TOKO <span className="text-red-600">*</span>
         </label>
         <input
           id="d-nama"
           value={nama}
           onChange={(e) => setNama(e.target.value)}
-          placeholder="NAMA ASLI LU / NAMA TOKO"
-          className="w-full bg-[rgba(0,0,0,0.8)] border border-slate-700 focus:border-[var(--neon-cyan)] px-4 py-3 text-white text-sm font-mono transition-all outline-none uppercase shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]"
+          placeholder="CONTOH: BUDI SANTOSO"
+          className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 uppercase"
           required
           minLength={3}
         />
       </div>
 
       <div>
-        <label className="block text-[10px] font-mono font-bold text-[var(--neon-cyan)] uppercase tracking-widest mb-2" htmlFor="d-telp">
-          &gt; NOMER_WA_LU <span className="text-red-500">*</span>
+        <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="d-telp">
+          NOMOR WHATSAPP <span className="text-red-600">*</span>
         </label>
         <input
           id="d-telp"
           value={noTelepon}
           onChange={(e) => setNoTelepon(e.target.value)}
-          placeholder="08XXXXXXXXXX"
-          className="w-full bg-[rgba(0,0,0,0.8)] border border-slate-700 focus:border-[var(--neon-cyan)] px-4 py-3 text-white text-sm font-mono transition-all outline-none uppercase shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]"
+          placeholder="CONTOH: 08123456789"
+          className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 uppercase"
           required
           inputMode="tel"
         />
-        <p className="text-[10px] text-slate-500 mt-2 font-mono uppercase">&gt; BUAT DIKABARIN KALO UDAH AKTIF</p>
+        <p className="text-[10px] font-bold text-gray-500 mt-2 uppercase">KODE DAN TAGIHAN AKAN DIKIRIM KE NOMOR INI.</p>
       </div>
 
-      <div>
-        <label className="block text-[10px] font-mono font-bold text-[var(--neon-cyan)] uppercase tracking-widest mb-2" htmlFor="d-kategori">
-          &gt; KATEGORI_SAMPEL
+      <div className="space-y-4">
+        <label className="block text-xs font-bold uppercase tracking-widest mb-2">
+          PILIHAN LAYANAN <span className="text-red-600">*</span>
         </label>
-        <div className="relative">
-          <select id="d-kategori" value={kategori} onChange={(e) => setKategori(e.target.value)} className="w-full bg-[rgba(0,0,0,0.8)] border border-slate-700 focus:border-[var(--neon-cyan)] px-4 py-3 text-white text-sm font-mono transition-all appearance-none outline-none uppercase">
-            {KATEGORI.map((k) => (
-              <option key={k.value} value={k.value} className="bg-black">
-                {k.label}
-              </option>
-            ))}
-          </select>
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--neon-cyan)] pointer-events-none font-mono">▼</div>
+        
+        <div className="flex flex-col sm:flex-row gap-4 mb-4">
+          <label className={`flex-1 flex items-center gap-3 p-4 border-2 cursor-pointer transition-colors ${jenisLayanan === 'kategori' ? 'border-black bg-yellow-50' : 'border-gray-200 bg-white hover:border-gray-400'}`}>
+            <input 
+              type="radio" 
+              name="jenis_layanan" 
+              className="w-5 h-5 accent-black"
+              checked={jenisLayanan === 'kategori'}
+              onChange={() => {
+                setJenisLayanan('kategori');
+                setPaketId("");
+              }}
+            />
+            <div className="flex-1">
+              <span className="block font-black uppercase text-sm">TARIF STANDAR</span>
+              <span className="block text-[10px] font-bold text-gray-500 uppercase mt-1">Berdasarkan jenis bangunan</span>
+            </div>
+          </label>
+          
+          {(opsi?.paket ?? []).length > 0 && (
+            <label className={`flex-1 flex items-center gap-3 p-4 border-2 cursor-pointer transition-colors ${jenisLayanan === 'paket' ? 'border-black bg-green-50' : 'border-gray-200 bg-white hover:border-gray-400'}`}>
+              <input 
+                type="radio" 
+                name="jenis_layanan" 
+                className="w-5 h-5 accent-black"
+                checked={jenisLayanan === 'paket'}
+                onChange={() => setJenisLayanan('paket')}
+              />
+              <div className="flex-1">
+                <span className="block font-black uppercase text-sm">PAKET KHUSUS</span>
+                <span className="block text-[10px] font-bold text-gray-500 uppercase mt-1">Layanan premium tambahan</span>
+              </div>
+            </label>
+          )}
         </div>
-        {tarifKategori && (
-          <p className="text-[10px] text-[var(--neon-yellow)] mt-2 font-mono uppercase bg-[rgba(252,238,10,0.05)] border border-[var(--neon-yellow)] p-2">
-            &gt; TARIF STANDAR: RP {tarifKategori.tarif.toLocaleString("id-ID")}/BULAN
-            {tarifKategori.deskripsi ? ` (${tarifKategori.deskripsi})` : ""}
-          </p>
+
+        {jenisLayanan === 'kategori' ? (
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="d-kategori">
+              PILIH KATEGORI PELANGGAN
+            </label>
+            <div className="relative">
+              <select id="d-kategori" value={kategori} onChange={(e) => setKategori(e.target.value)} className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 appearance-none uppercase cursor-pointer">
+                {(opsi?.kategoriTarif ?? []).map((k) => (
+                  <option key={k.kategori} value={k.kategori}>
+                    {k.label}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none font-bold text-lg">▼</div>
+            </div>
+            {tarifKategori && (
+              <p className="text-[10px] font-bold mt-2 uppercase border-2 border-black p-2 bg-yellow-50 inline-block text-black">
+                TARIF: RP {tarifKategori.tarif.toLocaleString("id-ID")}/BULAN
+                {tarifKategori.deskripsi ? ` (${tarifKategori.deskripsi})` : ""}
+              </p>
+            )}
+          </div>
+        ) : (
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="d-paket">
+              PILIH PAKET KHUSUS
+            </label>
+            <div className="relative">
+              <select id="d-paket" value={paketId} onChange={(e) => setPaketId(e.target.value)} className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 appearance-none uppercase cursor-pointer">
+                <option value="" disabled>— PILIH PAKET —</option>
+                {(opsi?.paket ?? []).map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.nama} - RP {p.harga.toLocaleString("id-ID")}/BULAN
+                  </option>
+                ))}
+              </select>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none font-bold text-lg">▼</div>
+            </div>
+            {paketId && (opsi?.paket ?? []).find(p => p.id.toString() === paketId)?.deskripsi && (
+              <p className="text-[10px] font-bold mt-2 uppercase border-2 border-black p-2 bg-green-50 text-green-700 inline-block">
+                INFO PAKET: {(opsi?.paket ?? []).find(p => p.id.toString() === paketId)?.deskripsi}
+              </p>
+            )}
+          </div>
         )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-[10px] font-mono font-bold text-[var(--neon-cyan)] uppercase tracking-widest mb-2" htmlFor="d-kecamatan">
-            &gt; KECAMATAN <span className="text-red-500">*</span>
+          <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="d-kecamatan">
+            KECAMATAN <span className="text-red-600">*</span>
           </label>
           <div className="relative">
             <select
@@ -192,54 +279,54 @@ export default function FormDaftar() {
                 setKecamatan(e.target.value);
                 setKelurahan("");
               }}
-              className="w-full bg-[rgba(0,0,0,0.8)] border border-slate-700 focus:border-[var(--neon-cyan)] px-4 py-3 text-white text-sm font-mono transition-all appearance-none outline-none uppercase"
+              className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 appearance-none uppercase"
               required
             >
-              <option value="" className="bg-black">— PILIH DULU —</option>
+              <option value="">— PILIH KECAMATAN —</option>
               {(opsi?.wilayah ?? []).map((w) => (
-                <option key={w.kecamatan} value={w.kecamatan} className="bg-black">
+                <option key={w.kecamatan} value={w.kecamatan}>
                   {w.kecamatan}
                 </option>
               ))}
             </select>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--neon-cyan)] pointer-events-none font-mono">▼</div>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none font-bold text-lg">▼</div>
           </div>
         </div>
         <div>
-          <label className="block text-[10px] font-mono font-bold text-[var(--neon-cyan)] uppercase tracking-widest mb-2" htmlFor="d-kelurahan">
-            &gt; KELURAHAN <span className="text-red-500">*</span>
+          <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="d-kelurahan">
+            KELURAHAN <span className="text-red-600">*</span>
           </label>
           <div className="relative">
             <select
               id="d-kelurahan"
               value={kelurahan}
               onChange={(e) => setKelurahan(e.target.value)}
-              className="w-full bg-[rgba(0,0,0,0.8)] border border-slate-700 focus:border-[var(--neon-cyan)] px-4 py-3 text-white text-sm font-mono transition-all appearance-none outline-none uppercase disabled:opacity-50"
+              className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 appearance-none uppercase disabled:opacity-50"
               required
               disabled={!kecamatan}
             >
-              <option value="" className="bg-black">— PILIH KECAMATAN DULU —</option>
+              <option value="">— PILIH KELURAHAN —</option>
               {kelurahanList.map((kel) => (
-                <option key={kel} value={kel} className="bg-black">
+                <option key={kel} value={kel}>
                   {kel}
                 </option>
               ))}
             </select>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--neon-cyan)] pointer-events-none font-mono">▼</div>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none font-bold text-lg">▼</div>
           </div>
         </div>
       </div>
 
       <div>
-        <label className="block text-[10px] font-mono font-bold text-[var(--neon-cyan)] uppercase tracking-widest mb-2" htmlFor="d-alamat">
-          &gt; ALAMAT_LENGKAP <span className="text-red-500">*</span>
+        <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="d-alamat">
+          ALAMAT LENGKAP <span className="text-red-600">*</span>
         </label>
         <textarea
           id="d-alamat"
           value={alamat}
           onChange={(e) => setAlamat(e.target.value)}
-          placeholder="NAMA JALAN, NOMER RUMAH COY"
-          className="w-full bg-[rgba(0,0,0,0.8)] border border-slate-700 focus:border-[var(--neon-cyan)] px-4 py-3 text-white text-sm font-mono transition-all outline-none uppercase shadow-[inset_0_0_10px_rgba(0,0,0,0.5)] min-h-[80px] resize-y"
+          placeholder="CONTOH: JALAN MARGONDA RAYA NO. 123"
+          className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 uppercase min-h-[80px] resize-y"
           required
           minLength={10}
         />
@@ -247,44 +334,75 @@ export default function FormDaftar() {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-[10px] font-mono font-bold text-[var(--neon-cyan)] uppercase tracking-widest mb-2" htmlFor="d-rt">
-            &gt; RT
+          <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="d-rt">
+            RT (OPSIONAL)
           </label>
           <input
             id="d-rt"
             value={rt}
             onChange={(e) => setRt(e.target.value)}
             placeholder="001"
-            className="w-full bg-[rgba(0,0,0,0.8)] border border-slate-700 focus:border-[var(--neon-cyan)] px-4 py-3 text-white text-sm font-mono transition-all outline-none uppercase shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]"
+            className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 uppercase"
             inputMode="numeric"
           />
         </div>
         <div>
-          <label className="block text-[10px] font-mono font-bold text-[var(--neon-cyan)] uppercase tracking-widest mb-2" htmlFor="d-rw">
-            &gt; RW
+          <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="d-rw">
+            RW (OPSIONAL)
           </label>
           <input
             id="d-rw"
             value={rw}
             onChange={(e) => setRw(e.target.value)}
-            placeholder="003"
-            className="w-full bg-[rgba(0,0,0,0.8)] border border-slate-700 focus:border-[var(--neon-cyan)] px-4 py-3 text-white text-sm font-mono transition-all outline-none uppercase shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]"
+            placeholder="002"
+            className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 uppercase"
             inputMode="numeric"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-[10px] font-mono font-bold text-[var(--neon-cyan)] uppercase tracking-widest mb-2" htmlFor="d-patokan">
-          &gt; PATOKAN_RUMAH_LU (OPSIONAL)
+        <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="d-patokan">
+          PATOKAN LOKASI (OPSIONAL)
         </label>
         <input
           id="d-patokan"
           value={patokanLokasi}
           onChange={(e) => setPatokanLokasi(e.target.value)}
-          placeholder="DEPAN WARTEG MAKMUR"
-          className="w-full bg-[rgba(0,0,0,0.8)] border border-slate-700 focus:border-[var(--neon-cyan)] px-4 py-3 text-white text-sm font-mono transition-all outline-none uppercase shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]"
+          placeholder="CONTOH: DEPAN WARUNG MAKMUR"
+          className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 uppercase"
         />
+      </div>
+
+      <div>
+        <label className="block text-xs font-bold uppercase tracking-widest mb-2">
+          TITIK LOKASI (GPS)
+        </label>
+        {gpsData ? (
+          <div className="p-4 border-2 border-black bg-green-50 text-green-700 flex justify-between items-center">
+            <div>
+              <p className="font-black text-sm uppercase">LOKASI TERSIMPAN</p>
+              <p className="text-[10px] font-bold uppercase">Akurasi: {Math.round(gpsData.acc)} meter</p>
+            </div>
+            <button type="button" onClick={getGps} className="text-xs font-bold underline">PERBARUI</button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={getGps}
+            disabled={gpsLoading}
+            className={`w-full p-4 border-2 border-black font-black uppercase text-sm flex items-center justify-center gap-2 transition-colors ${
+              gpsLoading ? "bg-gray-100 text-gray-400" : "bg-white hover:bg-gray-50 hover:-translate-y-1 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)]"
+            }`}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            {gpsLoading ? "MENCARI LOKASI..." : "AMBIL TITIK LOKASI SAAT INI"}
+          </button>
+        )}
+        <p className="text-[10px] font-bold text-gray-500 mt-2 uppercase">MEMBANTU PETUGAS MENEMUKAN RUMAH ANDA DENGAN LEBIH CEPAT DAN AKURAT.</p>
       </div>
 
       {/* Honeypot */}
@@ -301,14 +419,7 @@ export default function FormDaftar() {
       </div>
 
       {pesan && (
-        <div
-          className={`border px-4 py-3 text-xs font-mono font-bold uppercase ${
-            status === "ok"
-              ? "border-[var(--neon-lime)] bg-[rgba(57,255,20,0.1)] text-[var(--neon-lime)] shadow-[0_0_10px_rgba(57,255,20,0.2)]"
-              : "border-[var(--neon-pink)] bg-[rgba(255,0,234,0.1)] text-[var(--neon-pink)] shadow-[0_0_10px_rgba(255,0,234,0.2)] glitch-text"
-          }`}
-          role="status"
-        >
+        <div className={`p-4 border-2 font-bold uppercase text-sm ${status === "ok" ? "bg-green-50 border-green-600 text-green-600" : "bg-red-50 border-red-600 text-red-600"}`}>
           {pesan}
         </div>
       )}
@@ -316,9 +427,9 @@ export default function FormDaftar() {
       <button
         type="submit"
         disabled={status === "kirim"}
-        className="cyber-btn w-full justify-center mt-4 text-sm font-bold"
+        className="hm-btn-red w-full"
       >
-        {status === "kirim" ? "MENGIRIM_DATA..." : "[ DAFTAR SEKARANG_COY ]"}
+        {status === "kirim" ? "MENGIRIM DATA..." : "DAFTAR SEKARANG"}
       </button>
     </form>
   );

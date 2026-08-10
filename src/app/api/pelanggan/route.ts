@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { logAudit } from "@/lib/audit";
+import { getSession } from "@/lib/auth";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -10,16 +11,34 @@ export async function GET(request: Request) {
   const status = searchParams.get("status");
 
   const where: Prisma.PelangganWhereInput = { deletedAt: null };
+
+  // Privacy scope: petugas lapangan hanya melihat pelanggan di wilayahnya
+  // sendiri (data pribadi pelanggan wilayah lain tidak boleh terbuka).
+  // Parameter ?wilayahId dari petugas diabaikan (tidak bisa lintas wilayah).
+  const session = await getSession();
+  if (session?.role === "petugas") {
+    const profil = await prisma.petugas.findUnique({
+      where: { userId: session.id },
+      select: { wilayahId: true },
+    });
+    if (!profil?.wilayahId) {
+      return NextResponse.json(
+        { error: "Akun belum ter-link ke wilayah petugas" },
+        { status: 403 }
+      );
+    }
+    where.wilayahId = profil.wilayahId;
+  } else if (wilayahId) {
+    where.wilayahId = parseInt(wilayahId);
+  }
+
   if (search) {
     where.OR = [
-      { nama: { contains: search } },
-      { alamat: { contains: search } },
-      { noTelepon: { contains: search } },
-      { kodePelanggan: { contains: search } },
+      { nama: { contains: search, mode: "insensitive" } },
+      { alamat: { contains: search, mode: "insensitive" } },
+      { noTelepon: { contains: search, mode: "insensitive" } },
+      { kodePelanggan: { contains: search, mode: "insensitive" } },
     ];
-  }
-  if (wilayahId) {
-    where.wilayahId = parseInt(wilayahId);
   }
   if (status) {
     where.status = status;

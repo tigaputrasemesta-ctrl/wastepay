@@ -24,7 +24,7 @@ export default function HeroQuickCheck() {
           </span>
         </div>
         <span className="text-[9px] font-mono text-[var(--neon-yellow)] bg-[rgba(252,238,10,0.1)] px-2 py-1 border border-[var(--neon-yellow)] tracking-widest uppercase shadow-[0_0_5px_rgba(252,238,10,0.3)]">
-          // KHUSUS WARGA DEPOK
+          {"// KHUSUS WARGA DEPOK"}
         </span>
       </div>
 

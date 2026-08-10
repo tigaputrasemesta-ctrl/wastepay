@@ -45,7 +45,7 @@ export async function POST(request: Request) {
         noTelepon,
         email,
         foto,
-        jabatan: jabatan || null,
+        jabatan: Array.isArray(jabatan) ? jabatan.join(",") : (jabatan || null),
         userId: userId ? parseInt(userId) : null,
         wilayahId: parseInt(wilayahId),
       },

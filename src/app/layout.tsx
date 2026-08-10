@@ -1,17 +1,15 @@
 import type { Metadata } from "next";
-import { Outfit, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-
-const outfit = Outfit({
-  variable: "--font-outfit",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
-});
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+});
+
+const outfit = Outfit({
+  variable: "--font-outfit",
+  subsets: ["latin"],
 });
 
 const jetbrains = JetBrains_Mono({
@@ -20,7 +18,7 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "O₂W Hero Zero Waste - Manajemen Iuran Sampah",
+  title: "Hero Zero Waste - O₂W",
   description: "Layanan pengelolaan sampah untuk warga & pelaku usaha Kota Depok",
 };
 
@@ -32,11 +30,10 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${outfit.variable} ${jakarta.variable} ${jetbrains.variable} h-full antialiased`}
+      className={`${outfit.variable} ${jakarta.variable} ${jetbrains.variable} h-full antialiased bg-white`}
     >
-      <body className="min-h-full flex flex-col font-sans bg-[#090b0e] text-bone">
+      <body className="min-h-full flex flex-col font-sans bg-white text-black selection:bg-red-500 selection:text-white">
         {children}
-        <div aria-hidden className="noise-overlay" />
       </body>
     </html>
   );

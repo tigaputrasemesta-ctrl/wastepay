@@ -6,15 +6,36 @@ import {
   hitungRincian,
   PPN_RATE,
 } from "@/lib/invoice";
+import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
 
 /**
  * GET /api/publik/tagihan-detail?invoice=INV/XXX/202606
  * Detail tagihan publik berdasarkan nomor invoice (tanpa auth).
  * Dipakai oleh halaman /bayar-tagihan dan /invoice-tagihan.
+ *
+ * Keamanan: nomor invoice mengandung kode pelanggan (enumerable), jadi
+ * endpoint ini diberi rate limit per IP + Cache-Control no-store agar
+ * tidak bisa di-scrape massal. (Data yang diekspos juga dibatasi —
+ * alamat & noTelepon tidak dikembalikan.)
  */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const invoice = searchParams.get("invoice")?.trim();
+
+  // Rate limit per IP DULU (sebelum validasi invoice) — request dengan invoice
+  // invalid pun ikut dihitung, sehingga enumerasi nomor invoice tetap terhambat.
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip") ||
+    "unknown";
+  const key = `tagihan-detail:${ip}`;
+  if (!(await allowAttempt(key, { max: 60, windowMs: 15 * 60 * 1000 }))) {
+    const retry = retryAfterSeconds(key);
+    return NextResponse.json(
+      { error: `Terlalu banyak permintaan. Coba lagi dalam ${Math.ceil(retry / 60)} menit.` },
+      { status: 429, headers: { "Retry-After": String(retry) } }
+    );
+  }
 
   if (!invoice) {
     return NextResponse.json({ error: "Nomor invoice wajib diisi" }, { status: 400 });
@@ -61,5 +82,8 @@ export async function GET(request: Request) {
           tanggal: pembayaranLunas.createdAt,
         }
       : null,
+  }, {
+    // Data pribadi tagihan tidak boleh di-cache oleh proxy/CDN mana pun
+    headers: { "Cache-Control": "no-store" },
   });
 }

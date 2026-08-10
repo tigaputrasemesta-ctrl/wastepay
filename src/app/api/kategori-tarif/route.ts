@@ -7,3 +7,27 @@ export async function GET() {
   });
   return NextResponse.json(kategoriTarif);
 }
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const { kategori, label, tarif, deskripsi } = body;
+
+    if (!kategori || !label || tarif === undefined) {
+      return NextResponse.json({ error: "Data tidak lengkap" }, { status: 400 });
+    }
+
+    const created = await prisma.kategoriTarif.create({
+      data: {
+        kategori,
+        label,
+        tarif: parseFloat(tarif),
+        deskripsi,
+      },
+    });
+
+    return NextResponse.json(created, { status: 201 });
+  } catch {
+    return NextResponse.json({ error: "Gagal menambah kategori" }, { status: 500 });
+  }
+}

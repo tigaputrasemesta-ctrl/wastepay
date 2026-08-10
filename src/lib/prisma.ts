@@ -4,10 +4,16 @@ import { Pool } from "pg";
 
 const connectionString = process.env.DATABASE_URL;
 
-const pool = new Pool({ 
+// SSL/TLS: verifikasi sertifikat AKTIF di production (cegah MITM ke database).
+// Jika provider DB memakai sertifikat yang tidak dipercaya (self-signed,
+// proxy khusus), nonaktifkan eksplisit via DATABASE_SSL_REJECT_UNAUTHORIZED=false.
+const pool = new Pool({
   connectionString,
   max: 10,
-  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : undefined
+  ssl:
+    process.env.NODE_ENV === "production"
+      ? { rejectUnauthorized: process.env.DATABASE_SSL_REJECT_UNAUTHORIZED !== "false" }
+      : undefined,
 });
 const adapter = new PrismaPg(pool);
 

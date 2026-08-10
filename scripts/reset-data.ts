@@ -53,7 +53,7 @@ async function main() {
   const petugas1 = await prisma.petugas.create({
     data: { nama: "Bang Udin", noTelepon: "081234567890", jabatan: "angkut,tagih", wilayahId: wilayahKalibaru.id, aktif: true },
   });
-  const petugas2 = await prisma.petugas.create({
+  await prisma.petugas.create({
     data: { nama: "Mang Jajang", noTelepon: "089876543210", jabatan: "angkut", wilayahId: wilayahKalibaru.id, aktif: true },
   });
   const petugas3 = await prisma.petugas.create({
@@ -69,10 +69,10 @@ async function main() {
 
   // 4. Buat Kendaraan (Mobil)
   console.log("Membuat kendaraan...");
-  const kendaraan1 = await prisma.kendaraan.create({
+  await prisma.kendaraan.create({
     data: { nama: "Mobil Pickup Cyber", platNomor: "B 1234 CYB", jenis: "pickup", kapasitas: 1500, aktif: true, petugasId: petugas1.id },
   });
-  const kendaraan2 = await prisma.kendaraan.create({
+  await prisma.kendaraan.create({
     data: { nama: "Dump Truck Neo", platNomor: "B 9999 NXZ", jenis: "dump_truck", kapasitas: 5000, aktif: true, petugasId: petugas3.id },
   });
 
@@ -84,7 +84,9 @@ async function main() {
     await prisma.tpa?.create?.({
       data: { nama: "TPA Galuga (Cabang)", alamat: "Pinggiran Depok", kota: "Depok", jarak: 15, aktif: true }
     });
-  } catch (e) {}
+  } catch {
+    // Script dev: gagal membuat titik transit/TPA tidak menghentikan seed
+  }
 
   // 6. Buat Konsumen (Pelanggan)
   console.log("Membuat konsumen (Total: 25)...");

@@ -109,12 +109,12 @@ export default function JadwalPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-display text-2xl text-bone">Jadwal Pengangkutan</h1>
-          <p className="text-sm text-bone-dim mt-1">Atur jadwal pengangkutan per pelanggan dan rute</p>
+          <h1 className="font-black uppercase tracking-tighter text-2xl text-black font-black">Jadwal Pengangkutan</h1>
+          <p className="text-sm text-gray-600 font-bold mt-1">Atur jadwal pengangkutan per pelanggan dan rute</p>
         </div>
         <button
           onClick={openCreate}
-          className="chamfer-sm bg-vest hover:bg-vest-bright text-asphalt-deep px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2"
+          className="shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 hover:bg-green-300 text-black px-4 py-2 rounded-none text-sm font-medium transition flex items-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -128,7 +128,7 @@ export default function JadwalPage() {
         <select
           value={filterHari}
           onChange={(e) => setFilterHari(e.target.value)}
-          className="px-3 py-2 border border-asphalt-line rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-vest"
+          className="px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
         >
           <option value="">Semua Hari</option>
           {HARI_LIST.map((h) => <option key={h} value={h}>{h}</option>)}
@@ -136,7 +136,7 @@ export default function JadwalPage() {
         <select
           value={filterRute}
           onChange={(e) => setFilterRute(e.target.value)}
-          className="px-3 py-2 border border-asphalt-line rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-vest"
+          className="px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
         >
           <option value="">Semua Rute</option>
           {ruteList.map((r) => <option key={r.id} value={r.id}>{r.nama}</option>)}
@@ -144,30 +144,30 @@ export default function JadwalPage() {
       </div>
 
       {/* Table */}
-      <div className="panel overflow-hidden">
+      <div className="hm-card bg-white p-0 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-asphalt-deep/40 border-b border-asphalt-line">
-                <th className="text-left px-4 py-3 font-medium text-bone-dim">Hari</th>
-                <th className="text-left px-4 py-3 font-medium text-bone-dim">Pelanggan</th>
-                <th className="text-left px-4 py-3 font-medium text-bone-dim">Rute</th>
-                <th className="text-left px-4 py-3 font-medium text-bone-dim">Jam</th>
-                <th className="text-center px-4 py-3 font-medium text-bone-dim">Pengangkutan</th>
-                <th className="text-center px-4 py-3 font-medium text-bone-dim">Status</th>
-                <th className="text-right px-4 py-3 font-medium text-bone-dim">Aksi</th>
+              <tr className="bg-black text-white font-black border-b border-2 border-black">
+                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Hari</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Pelanggan</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Rute</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Jam</th>
+                <th className="text-center px-4 py-3 font-medium text-gray-600 font-bold">Pengangkutan</th>
+                <th className="text-center px-4 py-3 font-medium text-gray-600 font-bold">Status</th>
+                <th className="text-right px-4 py-3 font-medium text-gray-600 font-bold">Aksi</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={7} className="px-4 py-8 text-center text-bone-faint">Memuat...</td></tr>
+                <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-400 font-bold">Memuat...</td></tr>
               ) : jadwal.length === 0 ? (
-                <tr><td colSpan={7} className="px-4 py-8 text-center text-bone-faint">Belum ada jadwal</td></tr>
+                <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-400 font-bold">Belum ada jadwal</td></tr>
               ) : (
                 jadwal.map((j) => (
-                  <tr key={j.id} className="border-b border-asphalt-line hover:bg-asphalt-raised">
+                  <tr key={j.id} className="border-b border-2 border-black hover:bg-gray-100 border-2 border-black">
                     <td className="px-4 py-3">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-sky-400/10 text-sky-400 border border-sky-500/30">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium bg-sky-400/10 text-sky-400 border border-sky-500/30">
                         {j.hari}
                       </span>
                     </td>
@@ -180,12 +180,12 @@ export default function JadwalPage() {
                             unoptimized
                             width={48}
                             height={48}
-                            className="w-12 h-12 rounded-lg object-cover border border-asphalt-line shrink-0"
+                            className="w-12 h-12 rounded-none object-cover border-2 border-black shrink-0"
                           />
                         )}
                         <div>
-                          <div className="font-medium text-bone">{j.pelanggan.nama}</div>
-                          <div className="text-xs text-bone-dim">{j.pelanggan.alamat}</div>
+                          <div className="font-medium text-black font-black">{j.pelanggan.nama}</div>
+                          <div className="text-xs text-gray-600 font-bold">{j.pelanggan.alamat}</div>
                           {j.pelanggan.patokanLokasi && (
                             <div className="text-xs text-amber">📍 {j.pelanggan.patokanLokasi}</div>
                           )}
@@ -193,7 +193,7 @@ export default function JadwalPage() {
                             <a
                               href={`https://www.google.com/maps?q=${j.pelanggan.latitude},${j.pelanggan.longitude}`}
                               target="_blank"
-                              className="text-xs text-vest hover:text-sky-300 inline-flex items-center gap-0.5"
+                              className="text-xs text-green-600 hover:text-sky-300 inline-flex items-center gap-0.5"
                             >
                               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -202,17 +202,17 @@ export default function JadwalPage() {
                               {j.pelanggan.latitude.toFixed(5)}, {j.pelanggan.longitude.toFixed(5)}
                             </a>
                           ) : (
-                            <span className="text-xs text-bone-faint">Tanpa koordinat</span>
+                            <span className="text-xs text-gray-400 font-bold">Tanpa koordinat</span>
                           )}
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-bone-dim">{j.rute.nama}</td>
-                    <td className="px-4 py-3 text-bone-dim text-xs">{j.jam || "-"}</td>
-                    <td className="px-4 py-3 text-center text-bone-dim text-xs">{j._count.pengangkutan}</td>
+                    <td className="px-4 py-3 text-gray-600 font-bold">{j.rute.nama}</td>
+                    <td className="px-4 py-3 text-gray-600 font-bold text-xs">{j.jam || "-"}</td>
+                    <td className="px-4 py-3 text-center text-gray-600 font-bold text-xs">{j._count.pengangkutan}</td>
                     <td className="px-4 py-3 text-center">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                        j.aktif ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" : "bg-asphalt-raised text-bone-dim"
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium ${
+                        j.aktif ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" : "bg-gray-100 border-2 border-black text-gray-600 font-bold"
                       }`}>
                         {j.aktif ? "Aktif" : "Nonaktif"}
                       </span>
@@ -221,7 +221,7 @@ export default function JadwalPage() {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => openEdit(j)}
-                          className="text-bone-dim hover:text-sky-300 transition"
+                          className="text-gray-600 font-bold hover:text-sky-300 transition"
                           title="Edit"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -230,7 +230,7 @@ export default function JadwalPage() {
                         </button>
                         <button
                           onClick={() => setDeleteTarget(j)}
-                          className="text-danger hover:text-red-400 transition"
+                          className="text-red-600 hover:text-red-400 transition"
                           title="Hapus"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -249,11 +249,11 @@ export default function JadwalPage() {
 
       {/* Modal Form */}
       {showForm && (
-        <div className="fixed inset-0 bg-asphalt-deep/70 flex items-center justify-center z-50 p-4">
-          <div className="panel w-full max-w-lg">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-asphalt-line">
-              <h2 className="font-semibold text-bone">{editing ? "Edit Jadwal" : "Tambah Jadwal"}</h2>
-              <button onClick={() => setShowForm(false)} className="text-bone-faint hover:text-bone-dim">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="hm-card bg-white p-0 overflow-hidden w-full max-w-lg">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-2 border-black">
+              <h2 className="font-semibold text-black font-black">{editing ? "Edit Jadwal" : "Tambah Jadwal"}</h2>
+              <button onClick={() => setShowForm(false)} className="text-gray-400 font-bold hover:text-gray-600 font-bold">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -261,11 +261,11 @@ export default function JadwalPage() {
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-bone-dim mb-1">Pelanggan *</label>
+                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Pelanggan *</label>
                 <select
                   value={form.pelangganId}
                   onChange={(e) => setForm({ ...form, pelangganId: e.target.value })}
-                  className="w-full px-3 py-2 border border-asphalt-line rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-vest"
+                  className="w-full px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
                   required
                 >
                   <option value="">Pilih Pelanggan</option>
@@ -277,11 +277,11 @@ export default function JadwalPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-bone-dim mb-1">Rute *</label>
+                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Rute *</label>
                 <select
                   value={form.ruteId}
                   onChange={(e) => setForm({ ...form, ruteId: e.target.value })}
-                  className="w-full px-3 py-2 border border-asphalt-line rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-vest"
+                  className="w-full px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
                   required
                 >
                   <option value="">Pilih Rute</option>
@@ -293,17 +293,17 @@ export default function JadwalPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-bone-dim mb-1">Hari *</label>
+                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Hari *</label>
                 <div className="grid grid-cols-4 gap-2">
                   {HARI_LIST.map((h) => {
                     const checked = form.hari === h;
                     return (
                       <label
                         key={h}
-                        className={`flex items-center justify-center px-2 py-2 border rounded-lg text-xs cursor-pointer transition ${
+                        className={`flex items-center justify-center px-2 py-2 border rounded-none text-xs cursor-pointer transition ${
                           checked
-                            ? "bg-vest/15 border-vest text-vest font-semibold"
-                            : "bg-panel border-asphalt-line text-bone-dim hover:bg-asphalt-raised"
+                            ? "bg-green-400/15 border-vest text-green-600 font-semibold"
+                            : "bg-hm-card bg-white p-0 overflow-hidden border-2 border-black text-gray-600 font-bold hover:bg-gray-100 border-2 border-black"
                         }`}
                       >
                         <input
@@ -320,12 +320,12 @@ export default function JadwalPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-bone-dim mb-1">Jam (opsional)</label>
+                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Jam (opsional)</label>
                 <input
                   type="time"
                   value={form.jam}
                   onChange={(e) => setForm({ ...form, jam: e.target.value })}
-                  className="w-full px-3 py-2 border border-asphalt-line rounded-lg text-sm"
+                  className="w-full px-3 py-2 border-2 border-black rounded-none text-sm"
                 />
               </div>
 
@@ -333,13 +333,13 @@ export default function JadwalPage() {
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="flex-1 px-4 py-2 border border-asphalt-line rounded-lg text-sm text-bone-dim hover:bg-asphalt-raised"
+                  className="flex-1 px-4 py-2 border-2 border-black rounded-none text-sm text-gray-600 font-bold hover:bg-gray-100 border-2 border-black"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 chamfer-sm chamfer-sm bg-vest text-asphalt-deep rounded-lg text-sm hover:bg-vest-bright"
+                  className="flex-1 px-4 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black rounded-none text-sm hover:bg-green-300"
                 >
                   {editing ? "Simpan" : "Tambah"}
                 </button>

@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     request.headers.get("x-real-ip") ||
     "unknown";
   const key = `pengaduan:${ip}`;
-  if (!allowAttempt(key)) {
+  if (!(await allowAttempt(key))) {
     const retry = retryAfterSeconds(key);
     return NextResponse.json(
       { error: `Terlalu banyak percobaan. Coba lagi dalam ${Math.ceil(retry / 60)} menit.` },

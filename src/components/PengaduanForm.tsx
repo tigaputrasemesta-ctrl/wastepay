@@ -3,9 +3,9 @@
 import { useState } from "react";
 
 const JENIS: { value: string; label: string }[] = [
-  { value: "tidak_diangkut", label: "KAGAK DIANGKUT SESUAI JADWAL" },
-  { value: "sampah_menumpuk", label: "SAMPAH NUMPUK BAU BANGET" },
-  { value: "lainnya", label: "MASALAH LAINNYA DAH" },
+  { value: "tidak_diangkut", label: "SAMPAH TIDAK DIANGKUT SESUAI JADWAL" },
+  { value: "sampah_menumpuk", label: "SAMPAH MENUMPUK TERLALU LAMA" },
+  { value: "lainnya", label: "KELUHAN LAINNYA" },
 ];
 
 export default function PengaduanForm() {
@@ -30,77 +30,77 @@ export default function PengaduanForm() {
       if (res.ok && data.ok) {
         setStatus("ok");
         setPesan(
-          `Siappp, ngab ${data.namaPelanggan}. Laporan lu (${data.kodePelanggan}) udah nyampe ke terminal kita, langsung disikat sama tim lapangan!`
+          `LAPORAN BERHASIL. TERIMA KASIH ${data.namaPelanggan}. LAPORAN (${data.kodePelanggan}) SEGERA DITINDAKLANJUTI.`
         );
         setDeskripsi("");
         setNoWa("");
       } else {
         setStatus("gagal");
-        setPesan(data.error ?? "Gagal ngirim coy. Coba lagi ntar.");
+        setPesan(data.error ?? "GAGAL MENGIRIM LAPORAN. COBA LAGI.");
       }
     } catch {
       setStatus("gagal");
-      setPesan("Koneksi lu bapuk coy. Coba lagi.");
+      setPesan("KONEKSI BERMASALAH. COBA LAGI NANTI.");
     }
   }
 
   return (
-    <form onSubmit={submit} className="cyber-box border-red-500 bg-[rgba(255,0,0,0.02)] space-y-6">
-      <div className="flex items-center justify-between border-b border-red-500/50 pb-4">
-        <span className="font-mono font-bold text-red-500 uppercase tracking-widest text-lg">&gt; FORM_PENGADUAN</span>
-        <span className="font-mono text-[10px] text-red-500/50 bg-red-500/10 px-2 py-1 border border-red-500/20">PUB/03_ERROR</span>
+    <form onSubmit={submit} className="hm-card space-y-6 bg-[#f4f4f0]">
+      <div className="flex items-center justify-between border-b-2 border-black pb-4">
+        <span className="font-black uppercase text-2xl">FORMULIR PENGADUAN</span>
+        <span className="font-bold text-xs uppercase bg-black text-white px-2 py-1">LAPOR.02</span>
       </div>
       
-      <p className="text-xs font-mono text-slate-400 leading-relaxed uppercase">
-        Tulis keluhan lu di mari. Data bakal masuk secara <span className="text-red-500 font-bold glitch-text">LIVE</span> ke sistem navigasi armada kita.
+      <p className="text-xs font-bold uppercase tracking-widest leading-relaxed">
+        TULIS KELUHAN ANDA DI BAWAH. DATA AKAN MASUK SECARA <span className="text-red-600">LIVE</span> KE SISTEM NAVIGASI ARMADA KAMI.
       </p>
 
       <div className="space-y-2">
-        <label className="block text-[10px] font-mono font-bold text-red-400 uppercase tracking-widest" htmlFor="kode-pelanggan">
-          &gt; KODE_ANGGOTA_LU <span className="text-red-500">*</span>
+        <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="kode-pelanggan">
+          KODE PELANGGAN <span className="text-red-600">*</span>
         </label>
         <input
           id="kode-pelanggan"
           value={kodePelanggan}
           onChange={(e) => setKodePelanggan(e.target.value)}
           placeholder="CONTOH: DPK-001"
-          className="w-full bg-[rgba(0,0,0,0.8)] border border-red-500/50 focus:border-red-500 px-4 py-3 text-white text-sm font-mono transition-all outline-none shadow-[inset_0_0_10px_rgba(255,0,0,0.1)] uppercase"
+          className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 uppercase"
           required
           autoComplete="off"
         />
       </div>
 
       <div className="space-y-2">
-        <label className="block text-[10px] font-mono font-bold text-red-400 uppercase tracking-widest" htmlFor="jenis">
-          &gt; JENIS_ERROR
+        <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="jenis">
+          KATEGORI MASALAH
         </label>
         <div className="relative">
           <select
             id="jenis"
             value={jenis}
             onChange={(e) => setJenis(e.target.value)}
-            className="w-full bg-[rgba(0,0,0,0.8)] border border-red-500/50 focus:border-red-500 px-4 py-3 text-white text-sm font-mono transition-all appearance-none outline-none uppercase"
+            className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 appearance-none uppercase"
           >
             {JENIS.map((j) => (
-              <option key={j.value} value={j.value} className="bg-black">
+              <option key={j.value} value={j.value}>
                 {j.label}
               </option>
             ))}
           </select>
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-red-500 pointer-events-none font-mono">▼</div>
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none font-bold text-lg">▼</div>
         </div>
       </div>
 
       <div className="space-y-2">
-        <label className="block text-[10px] font-mono font-bold text-red-400 uppercase tracking-widest" htmlFor="deskripsi">
-          &gt; CURHATAN_LU <span className="text-red-500">*</span>
+        <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="deskripsi">
+          DESKRIPSI KELUHAN <span className="text-red-600">*</span>
         </label>
         <textarea
           id="deskripsi"
           value={deskripsi}
           onChange={(e) => setDeskripsi(e.target.value)}
-          placeholder="TULIS DIMARI KELUHAN LU NGAB, MAKIN JELAS MAKIN BAGUS..."
-          className="w-full bg-[rgba(0,0,0,0.8)] border border-red-500/50 focus:border-red-500 px-4 py-3 text-white text-sm font-mono transition-all outline-none min-h-[120px] resize-y uppercase shadow-[inset_0_0_10px_rgba(255,0,0,0.1)]"
+          placeholder="CERITAKAN DETAIL KELUHAN ANDA DI SINI..."
+          className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 min-h-[120px] resize-y uppercase"
           required
           minLength={10}
           maxLength={1000}
@@ -108,28 +108,21 @@ export default function PengaduanForm() {
       </div>
 
       <div className="space-y-2">
-        <label className="block text-[10px] font-mono font-bold text-red-400 uppercase tracking-widest" htmlFor="no-wa">
-          &gt; NOMER_WA_LU (OPSIONAL)
+        <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="no-wa">
+          NOMOR WHATSAPP (OPSIONAL)
         </label>
         <input
           id="no-wa"
           value={noWa}
           onChange={(e) => setNoWa(e.target.value)}
-          placeholder="08XXXXXXXXXX"
-          className="w-full bg-[rgba(0,0,0,0.8)] border border-red-500/50 focus:border-red-500 px-4 py-3 text-white text-sm font-mono transition-all outline-none uppercase"
+          placeholder="CONTOH: 08123456789"
+          className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 uppercase"
           inputMode="tel"
         />
       </div>
 
       {pesan && (
-        <div
-          className={`border px-4 py-3 text-xs font-mono font-bold uppercase ${
-            status === "ok"
-              ? "border-[var(--neon-lime)] bg-[rgba(57,255,20,0.1)] text-[var(--neon-lime)] shadow-[0_0_10px_rgba(57,255,20,0.2)]"
-              : "border-[var(--neon-pink)] bg-[rgba(255,0,234,0.1)] text-[var(--neon-pink)] shadow-[0_0_10px_rgba(255,0,234,0.2)] glitch-text"
-          }`}
-          role="status"
-        >
+        <div className={`p-4 border-2 font-bold uppercase text-sm ${status === "ok" ? "bg-green-50 border-green-600 text-green-600" : "bg-red-50 border-red-600 text-red-600"}`}>
           {pesan}
         </div>
       )}
@@ -137,10 +130,9 @@ export default function PengaduanForm() {
       <button
         type="submit"
         disabled={status === "kirim"}
-        className="w-full bg-red-600 hover:bg-red-500 text-black font-mono text-sm font-bold px-8 py-4 uppercase transition-all shadow-[0_0_15px_rgba(255,0,0,0.5)] mt-4"
-        style={{ clipPath: "polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px))" }}
+        className="hm-btn-red w-full mt-4"
       >
-        {status === "kirim" ? "MENGIRIM_DATA..." : "[ KIRIM_KOMPLAIN_SEKARANG ]"}
+        {status === "kirim" ? "MENGIRIM LAPORAN..." : "KIRIM PENGADUAN"}
       </button>
     </form>
   );

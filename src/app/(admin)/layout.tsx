@@ -9,24 +9,24 @@ export default function AdminLayout({
 }) {
   return (
     <ToastProvider>
-      <div className="flex h-screen bg-black text-slate-300 relative z-10">
-        <div className="scanline" />
+      <div className="flex h-screen bg-[#f4f4f0] text-black">
         <Sidebar />
-        <div className="flex-1 flex flex-col min-w-0 relative z-10">
-          {/* Topbar ops */}
-          <header className="h-14 flex items-center justify-between px-5 border-b border-[var(--neon-cyan)] bg-[rgba(0,243,255,0.02)] backdrop-blur-md shadow-[0_0_15px_rgba(0,243,255,0.1)]">
-            <div className="flex items-center gap-3 font-mono text-xs uppercase font-bold tracking-widest">
-              <span className="text-slate-500 hidden sm:inline">
-                DEPOK_UPS
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* Topbar */}
+          <header className="h-14 flex items-center justify-between px-5 bg-white border-b-2 border-black">
+            <div className="flex items-center gap-3 font-bold text-xs uppercase tracking-widest">
+              <span className="hidden sm:inline bg-black text-white px-2 py-1">
+                O2W ADMIN
               </span>
-              <span className="hidden sm:inline w-px h-4 bg-[var(--neon-cyan)]/30" />
-              <span className="text-[var(--neon-cyan)] glitch-text">SISTEM_OPERASI</span>
+              <span className="hidden sm:inline">CONTROL PANEL</span>
             </div>
             <StatusBar />
           </header>
-          {/* Neon strip */}
-          <div className="h-[2px] w-full bg-[var(--neon-pink)] shadow-[0_0_10px_var(--neon-pink)] opacity-70" aria-hidden />
-          <main className="flex-1 overflow-y-auto">{children}</main>
+          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <div className="max-w-7xl mx-auto space-y-6">
+              {children}
+            </div>
+          </main>
         </div>
       </div>
     </ToastProvider>

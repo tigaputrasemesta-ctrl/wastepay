@@ -1,8 +1,11 @@
-import { describe, expect, it, beforeEach, afterEach } from "vitest";
+import { describe, expect, it, beforeEach, afterEach, vi } from "vitest";
+import type { Mock } from "vitest";
 import crypto from "crypto";
 import { hasRole, getAllowedMenus } from "../src/lib/rbac";
 import { cn, formatRupiah, toBoolean } from "../src/lib/utils";
-import { totalTagihan } from "../src/lib/tagihan";
+import { totalTagihan, updateTunggakan } from "../src/lib/tagihan";
+import { hitungRincian } from "../src/lib/invoice-format";
+import { prisma } from "../src/lib/prisma";
 import {
   verifyCallbackSignature,
   isSuccessStatusCode,
@@ -41,9 +44,12 @@ describe("rbac", () => {
     expect(menus).toContain("dashboard");
   });
 
-  it("getAllowedMenus: petugas mendapat menu lapangan + survei + tagihan", () => {
+  it("getAllowedMenus: petugas mendapat menu lapangan (tanpa dashboard)", () => {
     const menus = getAllowedMenus("petugas");
-    expect(menus).toEqual(["dashboard", "peta", "survei", "pengangkutan", "tagihan", "jadwal", "komplain"]);
+    expect(menus).toEqual(["peta", "survei", "pengangkutan", "tagihan", "jadwal", "komplain", "absensi", "klaim"]);
+    expect(menus).not.toContain("dashboard"); // dashboard = kasir+ (level 20)
+    expect(menus).not.toContain("users");
+    expect(menus).not.toContain("audit-log");
   });
 });
 
@@ -76,6 +82,66 @@ describe("tagihan", () => {
     expect(totalTagihan(50000, 1000)).toBe(51000);
     expect(totalTagihan(50000, null)).toBe(50000);
     expect(totalTagihan(50000, undefined)).toBe(50000);
+  });
+});
+
+vi.mock("../src/lib/prisma", () => ({
+  prisma: {
+    tagihan: {
+      findMany: vi.fn(),
+      update: vi.fn(),
+    },
+  },
+}));
+
+const prismaMock = prisma as unknown as {
+  tagihan: { findMany: Mock; update: Mock };
+};
+
+describe("invoice-format", () => {
+  it("hitungRincian: PPN 11% dari jumlah, denda terpisah", () => {
+    const r = hitungRincian(50000, 2000);
+    expect(r.ppn).toBe(Math.round((50000 * 11) / 100)); // 5500
+    expect(r.subTotalPpn).toBe(55500);
+    expect(r.total).toBe(57500); // subTotal + denda
+    expect(r.denda).toBe(2000);
+  });
+
+  it("hitungRincian: tanpa denda → total = jumlah + PPN", () => {
+    const r = hitungRincian(100000);
+    expect(r.ppn).toBe(11000);
+    expect(r.total).toBe(111000);
+    expect(r.denda).toBe(0);
+  });
+});
+
+describe("updateTunggakan", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("menghitung denda 2%/bulan & menandai status tunggakan", async () => {
+    const duaBulanLalu = new Date(Date.now() - 62 * 24 * 3600 * 1000);
+    prismaMock.tagihan.findMany.mockResolvedValue([
+      { id: 1, jumlah: 50000, jatuhTempo: duaBulanLalu },
+    ]);
+    prismaMock.tagihan.update.mockResolvedValue({});
+
+    const n = await updateTunggakan();
+    expect(n).toBe(1);
+    expect(prismaMock.tagihan.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 1 },
+        data: expect.objectContaining({ status: "tunggakan", denda: 2000 }), // 50000 * 2% * 2 bulan
+      })
+    );
+  });
+
+  it("throttle: panggilan kedua dalam 5 menit di-skip (tanpa query)", async () => {
+    prismaMock.tagihan.findMany.mockClear();
+    const n = await updateTunggakan();
+    expect(n).toBe(0);
+    expect(prismaMock.tagihan.findMany).not.toHaveBeenCalled();
   });
 });
 
@@ -225,33 +291,49 @@ describe("duitku", () => {
 
 describe("rate-limit", () => {
 
-  it("mengizinkan percobaan di bawah batas", () => {
+  it("mengizinkan percobaan di bawah batas", async () => {
     for (let i = 0; i < 6; i++) {
-      expect(allowAttempt("test-key-a")).toBe(true);
+      expect(await allowAttempt("test-key-a")).toBe(true);
     }
   });
 
-  it("menolak percobaan melebihi batas (6x / 15 menit)", () => {
+  it("menolak percobaan melebihi batas (6x / 15 menit)", async () => {
     const key = "test-key-b";
-    for (let i = 0; i < 6; i++) allowAttempt(key);
-    expect(allowAttempt(key)).toBe(false);
+    for (let i = 0; i < 6; i++) await allowAttempt(key);
+    expect(await allowAttempt(key)).toBe(false);
     expect(retryAfterSeconds(key)).toBeGreaterThan(0);
   });
 
-  it("key berbeda punya bucket sendiri (isolasi per email/IP)", () => {
+  it("key berbeda punya bucket sendiri (isolasi per email/IP)", async () => {
     const k1 = "user-a:1.2.3.4";
     const k2 = "user-a:5.6.7.8";
-    for (let i = 0; i < 6; i++) allowAttempt(k1);
-    expect(allowAttempt(k1)).toBe(false);
-    expect(allowAttempt(k2)).toBe(true); // IP lain tidak terblokir
+    for (let i = 0; i < 6; i++) await allowAttempt(k1);
+    expect(await allowAttempt(k1)).toBe(false);
+    expect(await allowAttempt(k2)).toBe(true); // IP lain tidak terblokir
   });
 
-  it("memberi retryAfterSeconds dalam jendela 15 menit", () => {
+  it("memberi retryAfterSeconds dalam jendela 15 menit", async () => {
     const key = "test-key-c";
-    for (let i = 0; i < 6; i++) allowAttempt(key);
-    expect(allowAttempt(key)).toBe(false);
+    for (let i = 0; i < 6; i++) await allowAttempt(key);
+    expect(await allowAttempt(key)).toBe(false);
     expect(retryAfterSeconds(key)).toBeGreaterThan(0);
     expect(retryAfterSeconds(key)).toBeLessThanOrEqual(900);
+  });
+
+  it("mendukung opts custom (max & windowMs) tanpa mengganggu default", async () => {
+    // max lebih kecil → blokir lebih cepat
+    const k1 = "test-key-d";
+    for (let i = 0; i < 3; i++) expect(await allowAttempt(k1, { max: 3 })).toBe(true);
+    expect(await allowAttempt(k1, { max: 3 })).toBe(false);
+    // bucket default tetap terpisah
+    const k2 = "test-key-e";
+    for (let i = 0; i < 6; i++) expect(await allowAttempt(k2)).toBe(true);
+    expect(await allowAttempt(k2)).toBe(false);
+    // window pendek → reset lebih cepat
+    const k3 = "test-key-f";
+    expect(await allowAttempt(k3, { max: 1, windowMs: 1000 })).toBe(true);
+    expect(await allowAttempt(k3, { max: 1, windowMs: 1000 })).toBe(false);
+    expect(retryAfterSeconds(k3)).toBeLessThanOrEqual(1);
   });
 });
 

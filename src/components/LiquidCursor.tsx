@@ -54,19 +54,19 @@ export default function LiquidCursor() {
           position: fixed;
           top: 0; left: 0;
           width: 20px; height: 20px;
-          border: 1px solid rgba(183, 225, 60, 0.75);
-          background: radial-gradient(circle at 32% 26%, rgba(255,255,255,0.9) 0, transparent 42%), rgba(183, 225, 60, 0.5);
+          border: 1px solid rgba(20, 184, 166, 0.75);
+          background: radial-gradient(circle at 32% 26%, rgba(255,255,255,0.9) 0, transparent 42%), rgba(20, 184, 166, 0.5);
           backdrop-filter: blur(3px) saturate(160%);
           border-radius: 50%;
           pointer-events: none;
           z-index: 999999;
           transform: translate(-50%, -50%);
           transition: width 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), height 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
-          box-shadow: 0 2px 12px rgba(183, 225, 60, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+          box-shadow: 0 2px 12px rgba(20, 184, 166, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.6);
         }
         .liquid-cursor-wrap.hover {
           width: 45px; height: 45px;
-          background: radial-gradient(circle at 32% 26%, rgba(255,255,255,0.9) 0, transparent 45%), rgba(183, 225, 60, 0.3);
+          background: radial-gradient(circle at 32% 26%, rgba(255,255,255,0.9) 0, transparent 45%), rgba(20, 184, 166, 0.3);
         }
         .liquid-cursor-wrap.pressed {
           width: 15px; height: 15px;

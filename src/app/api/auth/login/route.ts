@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { login } from "@/lib/auth";
 import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
+import { COOKIE_NAME } from "@/lib/secret";
 
 export async function POST(request: Request) {
   try {
@@ -18,7 +19,7 @@ export async function POST(request: Request) {
       request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
       "unknown";
     const key = `login:${String(email).toLowerCase().trim()}:${ip}`;
-    if (!allowAttempt(key)) {
+    if (!(await allowAttempt(key))) {
       return NextResponse.json(
         { error: `Terlalu banyak percobaan. Coba lagi dalam ${retryAfterSeconds(key)} detik.` },
         { status: 429 }
@@ -36,7 +37,7 @@ export async function POST(request: Request) {
       message: "Login berhasil",
     });
 
-    response.cookies.set("session", result.token, {
+    response.cookies.set(COOKIE_NAME, result.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
@@ -45,10 +46,10 @@ export async function POST(request: Request) {
     });
 
     return response;
-  } catch (error: any) {
+  } catch (error) {
     console.error("Login API Error:", error);
     return NextResponse.json(
-      { error: "Terjadi kesalahan: " + (error?.message || "Unknown error") },
+      { error: "Terjadi kesalahan internal. Coba lagi." },
       { status: 500 }
     );
   }

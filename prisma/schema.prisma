@@ -15,6 +15,9 @@ model User {
   noTelepon String?
   foto      String?
   aktif     Boolean  @default(true)
+  // Token version: increment saat ganti/reset password → semua sesi JWT lama
+  // (yang membawa v lama) otomatis ditolak (revoke).
+  tokenVersion Int    @default(1)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -26,6 +29,7 @@ model User {
   notifikasiDibuat     Notifikasi[]   @relation("NotifCreatedBy")
   rekonsiliasi         Rekonsiliasi[]
   petugasProfiles      Petugas[]
+  klaimDiperiksa       KlaimPetugas[] @relation("KlaimDiperiksa")
 }
 
 model Wilayah {
@@ -122,6 +126,8 @@ model Petugas {
   pengangkutan   Pengangkutan[]
   lokasi         LokasiPetugas[]
   kendaraan      Kendaraan[]  // kendaraan yang dikemudikan
+  absensi        Absensi[]
+  klaim          KlaimPetugas[]
 
   @@index([wilayahId])
   @@index([aktif])
@@ -425,4 +431,32 @@ model DuitkuTransaction {
   rawResponse    String?      // response terakhir (JSON, dipotong 4KB)
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
+}
+
+model Absensi {
+  id             Int       @id @default(autoincrement())
+  petugasId      Int
+  petugas        Petugas   @relation(fields: [petugasId], references: [id])
+  waktuMasuk     DateTime  @default(now())
+  lokasiMasuk    String?   // JSON (lat, lng, accuracy) atau string text
+  waktuSelesai   DateTime?
+  lokasiSelesai  String?
+  catatan        String?
+  status         String    @default("hadir") // hadir | izin | sakit | alpa
+}
+
+model KlaimPetugas {
+  id             Int       @id @default(autoincrement())
+  petugasId      Int
+  petugas        Petugas   @relation(fields: [petugasId], references: [id])
+  tanggal        DateTime  @default(now())
+  kategori       String    // bbm | perawatan | gaji_petugas | lainnya
+  nominal        Float
+  keterangan     String
+  fotoBukti      String?
+  status         String    @default("menunggu") // menunggu | disetujui | ditolak
+  catatanAdmin   String?
+  diperiksaById  Int?
+  diperiksaBy    User?     @relation("KlaimDiperiksa", fields: [diperiksaById], references: [id])
+  waktuDiperiksa DateTime?
 }

@@ -44,7 +44,11 @@ export async function POST(request: Request) {
 
     await prisma.user.update({
       where: { id: user.id },
-      data: { password: await hashPassword(passwordBaru) },
+      data: {
+        password: await hashPassword(passwordBaru),
+        // Revoke semua sesi lama: tokenVersion naik → JWT lama (v lama) ditolak.
+        tokenVersion: { increment: 1 },
+      },
     });
 
     return NextResponse.json({ message: "Password berhasil diganti" });

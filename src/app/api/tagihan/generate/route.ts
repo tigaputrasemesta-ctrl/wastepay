@@ -40,6 +40,20 @@ export async function POST(request: Request) {
       },
     });
 
+    // Batch lookup — hindari N+1: 1 query untuk tagihan existing + 1 untuk kategori tarif
+    // (sebelumnya 2-3 query PER pelanggan di dalam loop).
+    const existingTags = await prisma.tagihan.findMany({
+      where: {
+        bulan,
+        tahun,
+        pelangganId: { in: pelangganList.map((p) => p.id) },
+      },
+      select: { pelangganId: true },
+    });
+    const existingSet = new Set(existingTags.map((t) => t.pelangganId));
+    const kategoriTarifs = await prisma.kategoriTarif.findMany();
+    const kategoriTarifMap = new Map(kategoriTarifs.map((k) => [k.kategori, k.tarif]));
+
     let created = 0;
     let skipped = 0;
     const errors: string[] = [];
@@ -48,18 +62,8 @@ export async function POST(request: Request) {
 
     for (const pelanggan of pelangganList) {
       try {
-        // Skip if tagihan already exists for this period
-        const existing = await prisma.tagihan.findUnique({
-          where: {
-            pelangganId_bulan_tahun: {
-              pelangganId: pelanggan.id,
-              bulan,
-              tahun,
-            },
-          },
-        });
-
-        if (existing) {
+        // Skip if tagihan already exists for this period (batch check, no per-row query)
+        if (existingSet.has(pelanggan.id)) {
           skipped++;
           continue;
         }
@@ -70,10 +74,7 @@ export async function POST(request: Request) {
           tarif = pelanggan.paket.harga;
         }
         if (!tarif) {
-          const kategoriTarif = await prisma.kategoriTarif.findUnique({
-            where: { kategori: pelanggan.kategori },
-          });
-          tarif = kategoriTarif?.tarif ?? 0;
+          tarif = kategoriTarifMap.get(pelanggan.kategori) ?? 0;
         }
 
         // Calculate due date: 15th of the month

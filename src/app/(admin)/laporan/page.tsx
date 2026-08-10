@@ -169,8 +169,8 @@ export default async function LaporanPage({
       <div className="mb-6">
         <div className="flex items-start justify-between flex-wrap gap-4">
           <div>
-            <h1 className="font-display text-2xl text-bone">Laporan Keuangan & Operasional</h1>
-            <p className="text-sm text-bone-dim mt-1">
+            <h1 className="font-black uppercase tracking-tighter text-2xl text-black font-black">Laporan Keuangan & Operasional</h1>
+            <p className="text-sm text-gray-600 font-bold mt-1">
               Ringkasan {NAMA_BULAN[bulan - 1]} {tahun}
             </p>
           </div>
@@ -179,7 +179,7 @@ export default async function LaporanPage({
               <select
                 name="bulan"
                 defaultValue={bulan}
-                className="px-3 py-2 border border-asphalt-line rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-vest"
+                className="px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
               >
                 {NAMA_BULAN.map((b, i) => (
                   <option key={i + 1} value={i + 1}>{b}</option>
@@ -188,7 +188,7 @@ export default async function LaporanPage({
               <select
                 name="tahun"
                 defaultValue={tahun}
-                className="px-3 py-2 border border-asphalt-line rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-vest"
+                className="px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
               >
                 {[2024, 2025, 2026, 2027, 2028].map((t) => (
                   <option key={t} value={t}>{t}</option>
@@ -196,14 +196,14 @@ export default async function LaporanPage({
               </select>
               <button
                 type="submit"
-                className="px-4 py-2 chamfer-sm bg-vest hover:bg-vest-bright text-asphalt-deep rounded-lg text-sm font-medium transition"
+                className="px-4 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 hover:bg-green-300 text-black rounded-none text-sm font-medium transition"
               >
                 Tampilkan
               </button>
             </form>
             <a
               href={`/api/laporan/export?bulan=${bulan}&tahun=${tahun}`}
-              className="px-4 py-2 border border-vest text-vest hover:bg-vest/5 rounded-lg text-sm font-medium transition"
+              className="px-4 py-2 border border-vest text-green-600 hover:bg-green-400/5 rounded-none text-sm font-medium transition"
             >
               ⬇ Ekspor CSV
             </a>
@@ -213,23 +213,23 @@ export default async function LaporanPage({
 
       {/* Ringkasan Keuangan */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div className="panel p-5">
-          <p className="text-sm text-bone-dim mb-1">Pemasukan</p>
-          <p className="text-2xl font-bold text-vest">{formatRupiah(data.totalPemasukan)}</p>
+        <div className="hm-card bg-white p-0 overflow-hidden p-5">
+          <p className="text-sm text-gray-600 font-bold mb-1">Pemasukan</p>
+          <p className="text-2xl font-bold text-green-600">{formatRupiah(data.totalPemasukan)}</p>
         </div>
-        <div className="panel p-5">
-          <p className="text-sm text-bone-dim mb-1">Pengeluaran</p>
-          <p className="text-2xl font-bold text-danger">{formatRupiah(data.totalPengeluaran)}</p>
+        <div className="hm-card bg-white p-0 overflow-hidden p-5">
+          <p className="text-sm text-gray-600 font-bold mb-1">Pengeluaran</p>
+          <p className="text-2xl font-bold text-red-600">{formatRupiah(data.totalPengeluaran)}</p>
         </div>
-        <div className="panel p-5">
-          <p className="text-sm text-bone-dim mb-1">Saldo Bersih</p>
-          <p className={`text-2xl font-bold ${data.saldo >= 0 ? "text-vest" : "text-danger"}`}>
+        <div className="hm-card bg-white p-0 overflow-hidden p-5">
+          <p className="text-sm text-gray-600 font-bold mb-1">Saldo Bersih</p>
+          <p className={`text-2xl font-bold ${data.saldo >= 0 ? "text-green-600" : "text-red-600"}`}>
             {formatRupiah(data.saldo)}
           </p>
         </div>
-        <div className="panel p-5">
-          <p className="text-sm text-bone-dim mb-1">Efektivitas Tagihan</p>
-          <p className="text-2xl font-bold text-vest">
+        <div className="hm-card bg-white p-0 overflow-hidden p-5">
+          <p className="text-sm text-gray-600 font-bold mb-1">Efektivitas Tagihan</p>
+          <p className="text-2xl font-bold text-green-600">
             {data.totalTagihan > 0
               ? Math.round((data.tagihanTerkumpul / data.totalTagihan) * 100)
               : 0}%
@@ -239,53 +239,53 @@ export default async function LaporanPage({
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Tagihan */}
-        <div className="panel p-5">
-          <h2 className="font-semibold text-bone mb-4">Tagihan Bulan Ini</h2>
+        <div className="hm-card bg-white p-0 overflow-hidden p-5">
+          <h2 className="font-semibold text-black font-black mb-4">Tagihan Bulan Ini</h2>
           <div className="space-y-3">
             <div className="flex justify-between items-center text-sm">
-              <span className="text-bone-dim">Total Tagihan</span>
+              <span className="text-gray-600 font-bold">Total Tagihan</span>
               <span className="font-semibold">{formatRupiah(data.totalTagihan)}</span>
             </div>
             <div className="flex justify-between items-center text-sm">
-              <span className="text-bone-dim">Terkumpul</span>
-              <span className="font-semibold text-vest">{formatRupiah(data.tagihanTerkumpul)}</span>
+              <span className="text-gray-600 font-bold">Terkumpul</span>
+              <span className="font-semibold text-green-600">{formatRupiah(data.tagihanTerkumpul)}</span>
             </div>
             <div className="flex justify-between items-center text-sm">
-              <span className="text-bone-dim">Sisa Tagihan</span>
-              <span className="font-semibold text-danger">{formatRupiah(data.tagihanSisa)}</span>
+              <span className="text-gray-600 font-bold">Sisa Tagihan</span>
+              <span className="font-semibold text-red-600">{formatRupiah(data.tagihanSisa)}</span>
             </div>
             <div className="border-t pt-3 flex justify-between items-center text-sm">
-              <span className="text-bone-dim">Pelanggan Aktif</span>
+              <span className="text-gray-600 font-bold">Pelanggan Aktif</span>
               <span className="font-semibold">{data.totalPelanggan}</span>
             </div>
             <div className="flex justify-between items-center text-sm">
-              <span className="text-bone-dim">Belum Bayar</span>
+              <span className="text-gray-600 font-bold">Belum Bayar</span>
               <span className="font-semibold text-amber">{data.totalBelumBayar}</span>
             </div>
           </div>
         </div>
 
         {/* Pengeluaran */}
-        <div className="panel p-5">
-          <h2 className="font-semibold text-bone mb-4">Pengeluaran per Kategori</h2>
+        <div className="hm-card bg-white p-0 overflow-hidden p-5">
+          <h2 className="font-semibold text-black font-black mb-4">Pengeluaran per Kategori</h2>
           {data.pengeluaranByKategori.length === 0 ? (
-            <p className="text-sm text-bone-faint">Belum ada pengeluaran bulan ini</p>
+            <p className="text-sm text-gray-400 font-bold">Belum ada pengeluaran bulan ini</p>
           ) : (
             <div className="space-y-3">
               {data.pengeluaranByKategori.map((k) => (
                 <div key={k.kategori} className="flex justify-between items-center text-sm">
-                  <span className="text-bone-dim capitalize">
+                  <span className="text-gray-600 font-bold capitalize">
                     {k.kategori === "bbm" ? "BBM" :
                      k.kategori === "gaji_petugas" ? "Gaji Petugas" :
                      k.kategori === "perawatan" ? "Perawatan" :
                      k.kategori === "operasional" ? "Operasional" : "Lainnya"}
                   </span>
-                  <span className="font-semibold text-danger">{formatRupiah(k._sum.jumlah || 0)}</span>
+                  <span className="font-semibold text-red-600">{formatRupiah(k._sum.jumlah || 0)}</span>
                 </div>
               ))}
               <div className="border-t pt-3 flex justify-between items-center text-sm font-medium">
                 <span>Total</span>
-                <span className="text-danger">{formatRupiah(data.totalPengeluaran)}</span>
+                <span className="text-red-600">{formatRupiah(data.totalPengeluaran)}</span>
               </div>
             </div>
           )}
@@ -294,38 +294,38 @@ export default async function LaporanPage({
 
       {/* Data Lingkungan */}
       <div className="mb-8">
-        <h2 className="font-display text-xl text-bone mb-4">🌱 Data Lingkungan</h2>
+        <h2 className="font-black uppercase tracking-tighter text-xl text-black font-black mb-4">🌱 Data Lingkungan</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="panel p-5">
-            <p className="text-sm text-bone-dim mb-1">Total Volume Sampah</p>
-            <p className="font-display text-2xl text-bone">{data.totalVolume.toFixed(1)} m³</p>
+          <div className="hm-card bg-white p-0 overflow-hidden p-5">
+            <p className="text-sm text-gray-600 font-bold mb-1">Total Volume Sampah</p>
+            <p className="font-black uppercase tracking-tighter text-2xl text-black font-black">{data.totalVolume.toFixed(1)} m³</p>
           </div>
-          <div className="panel p-5">
-            <p className="text-sm text-bone-dim mb-1">Total Berat Sampah</p>
-            <p className="font-display text-2xl text-bone">{data.totalBerat.toFixed(1)} kg</p>
+          <div className="hm-card bg-white p-0 overflow-hidden p-5">
+            <p className="text-sm text-gray-600 font-bold mb-1">Total Berat Sampah</p>
+            <p className="font-black uppercase tracking-tighter text-2xl text-black font-black">{data.totalBerat.toFixed(1)} kg</p>
           </div>
-          <div className="panel p-5">
-            <p className="text-sm text-bone-dim mb-1">Total Pengangkutan</p>
-            <p className="font-display text-2xl text-bone">{data.totalPengangkutan}</p>
+          <div className="hm-card bg-white p-0 overflow-hidden p-5">
+            <p className="text-sm text-gray-600 font-bold mb-1">Total Pengangkutan</p>
+            <p className="font-black uppercase tracking-tighter text-2xl text-black font-black">{data.totalPengangkutan}</p>
           </div>
-          <div className="panel p-5">
-            <p className="text-sm text-bone-dim mb-1">Berhasil Diangkut</p>
-            <p className="text-2xl font-bold text-vest">{data.totalDiambil}</p>
+          <div className="hm-card bg-white p-0 overflow-hidden p-5">
+            <p className="text-sm text-gray-600 font-bold mb-1">Berhasil Diangkut</p>
+            <p className="text-2xl font-bold text-green-600">{data.totalDiambil}</p>
           </div>
         </div>
 
         {/* Sampah per Jenis */}
         {data.sampahByJenis.length > 0 && (
-          <div className="panel p-5 mb-4">
-            <h3 className="font-semibold text-bone mb-3">Sampah per Jenis</h3>
+          <div className="hm-card bg-white p-0 overflow-hidden p-5 mb-4">
+            <h3 className="font-semibold text-black font-black mb-3">Sampah per Jenis</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
               {data.sampahByJenis.map((j) => (
-                <div key={j.jenisSampah} className="bg-asphalt-deep/40 rounded-lg p-3">
-                  <p className="text-sm font-medium text-bone capitalize">{j.jenisSampah}</p>
-                  <p className="text-xs text-bone-dim mt-1">
+                <div key={j.jenisSampah} className="bg-black text-white font-black rounded-none p-3">
+                  <p className="text-sm font-medium text-black font-black capitalize">{j.jenisSampah}</p>
+                  <p className="text-xs text-gray-600 font-bold mt-1">
                     Volume: {j._sum.volume?.toFixed(1)} m³ | Berat: {j._sum.berat?.toFixed(1)} kg
                   </p>
-                  <p className="text-xs text-bone-faint">{j._count} kali angkut</p>
+                  <p className="text-xs text-gray-400 font-bold">{j._count} kali angkut</p>
                 </div>
               ))}
             </div>
@@ -334,22 +334,22 @@ export default async function LaporanPage({
 
         {/* Sampah per TPA */}
         {data.sampahByTpa.length > 0 && (
-          <div className="panel p-5">
-            <h3 className="font-semibold text-bone mb-3">Pembuangan per TPA</h3>
+          <div className="hm-card bg-white p-0 overflow-hidden p-5">
+            <h3 className="font-semibold text-black font-black mb-3">Pembuangan per TPA</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-asphalt-deep/40 border-b border-asphalt-line">
-                    <th className="text-left px-3 py-2 font-medium text-bone-dim">TPA</th>
-                    <th className="text-right px-3 py-2 font-medium text-bone-dim">Volume (m³)</th>
-                    <th className="text-right px-3 py-2 font-medium text-bone-dim">Berat (kg)</th>
-                    <th className="text-right px-3 py-2 font-medium text-bone-dim">Frekuensi</th>
+                  <tr className="bg-black text-white font-black border-b border-2 border-black">
+                    <th className="text-left px-3 py-2 font-medium text-gray-600 font-bold">TPA</th>
+                    <th className="text-right px-3 py-2 font-medium text-gray-600 font-bold">Volume (m³)</th>
+                    <th className="text-right px-3 py-2 font-medium text-gray-600 font-bold">Berat (kg)</th>
+                    <th className="text-right px-3 py-2 font-medium text-gray-600 font-bold">Frekuensi</th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.sampahByTpa.map((s) => (
-                    <tr key={s.tpaId} className="border-b border-asphalt-line">
-                      <td className="px-3 py-2 font-medium text-bone">{s.nama}</td>
+                    <tr key={s.tpaId} className="border-b border-2 border-black">
+                      <td className="px-3 py-2 font-medium text-black font-black">{s.nama}</td>
                       <td className="px-3 py-2 text-right">{s.volume.toFixed(1)}</td>
                       <td className="px-3 py-2 text-right">{s.berat.toFixed(1)}</td>
                       <td className="px-3 py-2 text-right">{s.count}</td>
@@ -363,28 +363,28 @@ export default async function LaporanPage({
       </div>
 
       {/* Tagihan Menunggak */}
-      <div className="panel p-5">
-        <h2 className="font-semibold text-bone mb-4">Tagihan Menunggak</h2>
+      <div className="hm-card bg-white p-0 overflow-hidden p-5">
+        <h2 className="font-semibold text-black font-black mb-4">Tagihan Menunggak</h2>
         {data.tagihanMenunggak.length === 0 ? (
-          <p className="text-sm text-bone-faint">Tidak ada tagihan menunggak</p>
+          <p className="text-sm text-gray-400 font-bold">Tidak ada tagihan menunggak</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-asphalt-deep/40 border-b border-asphalt-line">
-                  <th className="text-left px-3 py-2 font-medium text-bone-dim">Pelanggan</th>
-                  <th className="text-left px-3 py-2 font-medium text-bone-dim">No. Telepon</th>
-                  <th className="text-left px-3 py-2 font-medium text-bone-dim">Periode</th>
-                  <th className="text-right px-3 py-2 font-medium text-bone-dim">Jumlah</th>
+                <tr className="bg-black text-white font-black border-b border-2 border-black">
+                  <th className="text-left px-3 py-2 font-medium text-gray-600 font-bold">Pelanggan</th>
+                  <th className="text-left px-3 py-2 font-medium text-gray-600 font-bold">No. Telepon</th>
+                  <th className="text-left px-3 py-2 font-medium text-gray-600 font-bold">Periode</th>
+                  <th className="text-right px-3 py-2 font-medium text-gray-600 font-bold">Jumlah</th>
                 </tr>
               </thead>
               <tbody>
                 {data.tagihanMenunggak.map((t) => (
-                  <tr key={t.id} className="border-b border-asphalt-line">
-                    <td className="px-3 py-2 font-medium text-bone">{t.pelanggan.nama}</td>
-                    <td className="px-3 py-2 text-bone-dim">{t.pelanggan.noTelepon}</td>
-                    <td className="px-3 py-2 text-bone-dim">{["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"][t.bulan - 1]} {t.tahun}</td>
-                    <td className="px-3 py-2 text-right text-danger font-medium">{formatRupiah(t.jumlah)}</td>
+                  <tr key={t.id} className="border-b border-2 border-black">
+                    <td className="px-3 py-2 font-medium text-black font-black">{t.pelanggan.nama}</td>
+                    <td className="px-3 py-2 text-gray-600 font-bold">{t.pelanggan.noTelepon}</td>
+                    <td className="px-3 py-2 text-gray-600 font-bold">{["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"][t.bulan - 1]} {t.tahun}</td>
+                    <td className="px-3 py-2 text-right text-red-600 font-medium">{formatRupiah(t.jumlah)}</td>
                   </tr>
                 ))}
               </tbody>

@@ -22,8 +22,14 @@ export async function verifyPassword(
   return bcrypt.compare(password, hash);
 }
 
-export async function createSession(user: SessionUser): Promise<string> {
-  const token = await new SignJWT({ ...user })
+export async function createSession(user: SessionUser & { tokenVersion: number }): Promise<string> {
+  const token = await new SignJWT({
+    id: user.id,
+    email: user.email,
+    nama: user.nama,
+    role: user.role,
+    v: user.tokenVersion,
+  })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("7d")
@@ -39,7 +45,24 @@ export async function getSession(): Promise<SessionUser | null> {
     if (!token) return null;
 
     const { payload } = await jwtVerify(token, JWT_SECRET);
-    return payload as unknown as SessionUser;
+    const p = payload as unknown as {
+      id: number;
+      email: string;
+      nama: string;
+      role: string;
+      v?: number;
+    };
+
+    // Revoke check: sesi JWT hanya valid jika user masih aktif DAN tokenVersion
+    // cocok. Ganti/reset password menaikkan tokenVersion → semua sesi lama mati.
+    const user = await prisma.user.findUnique({
+      where: { id: p.id },
+      select: { tokenVersion: true, aktif: true },
+    });
+    if (!user || !user.aktif) return null;
+    if (p.v !== undefined && user.tokenVersion !== p.v) return null;
+
+    return { id: p.id, email: p.email, nama: p.nama, role: p.role };
   } catch {
     return null;
   }
@@ -62,6 +85,6 @@ export async function login(
     role: user.role,
   };
 
-  const token = await createSession(sessionUser);
+  const token = await createSession({ ...sessionUser, tokenVersion: user.tokenVersion });
   return { user: sessionUser, token };
 }

@@ -40,6 +40,7 @@ export function getAllowedMenus(role: string): string[] {
     "survei",
     "pelanggan",
     "peta",
+    "tarif",
     "tagihan",
     "petugas",
     "rute",
@@ -47,12 +48,15 @@ export function getAllowedMenus(role: string): string[] {
     "pengangkutan",
     "komplain",
     "kendaraan",
+    "transit",
     "sticker",
     "pengeluaran",
     "laporan",
     "pengumuman",
     "notifikasi",
     "rekonsiliasi",
+    "absensi",
+    "klaim",
     "tpa",
     "pengaturan",
   ];
@@ -61,7 +65,7 @@ export function getAllowedMenus(role: string): string[] {
   if (role === "admin") return allMenus;
   if (role === "kasir") return ["dashboard", "peta", "tagihan", "laporan", "notifikasi"];
   if (role === "petugas")
-    return ["dashboard", "peta", "survei", "pengangkutan", "tagihan", "jadwal", "komplain"];
+    return ["peta", "survei", "pengangkutan", "tagihan", "jadwal", "komplain", "absensi", "klaim"];
 
   return [];
 }

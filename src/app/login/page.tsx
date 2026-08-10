@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import O2WLogo from "@/components/O2WLogo";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -28,94 +27,105 @@ export default function LoginPage() {
       if (!res.ok) {
         setError(data.error);
       } else {
-        router.push("/dashboard");
+        if (data.user?.role === "petugas") {
+          router.push("/peta");
+        } else {
+          router.push("/dashboard");
+        }
         router.refresh();
       }
     } catch {
-      setError("Terjadi kesalahan, coba lagi");
+      setError("TERJADI KESALAHAN, COBA LAGI");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="min-h-screen relative flex flex-col items-center justify-center bg-black px-4 py-10 z-10">
-      {/* Global Scanline effect */}
-      <div className="scanline" />
-
-      <div className="w-full max-w-[400px] relative z-10">
-        {/* Header */}
-        <div className="text-center mb-10 flex flex-col items-center">
-          <div className="hover:scale-105 transition-transform mb-6">
-            <O2WLogo size="lg" />
+    <div className="min-h-screen bg-[#f4f4f0] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="text-center space-y-4">
+          <div className="inline-block px-4 py-1 border-2 border-black font-bold uppercase text-xs mb-2 bg-black text-white">
+            O2W / LOGIN ADMIN
           </div>
-          <h2 className="font-mono text-2xl font-bold text-[var(--neon-cyan)] tracking-widest uppercase glitch-text">
-            [ LOGIN_ADMIN_O2W ]
+          <h2 className="text-5xl font-black uppercase tracking-tighter">
+            MASUK <span className="text-red-600">SISTEM.</span>
           </h2>
-          <p className="text-xs text-slate-400 mt-3 font-mono border-b border-[var(--neon-cyan)] pb-2 inline-block">
-            // AUTHORIZED PERSONNEL ONLY
+          <p className="font-bold uppercase tracking-widest text-xs">
+            HANYA UNTUK STAF DAN PETUGAS.
           </p>
         </div>
+      </div>
 
-        {/* Cyber Box Panel */}
-        <div className="cyber-box p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-3">
-              <label className="text-[10px] font-mono text-[var(--neon-pink)] uppercase tracking-widest flex items-center gap-2" htmlFor="email">
-                <span className="w-1.5 h-1.5 bg-[var(--neon-pink)] animate-pulse" />
-                Alamat_Email
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="hm-card bg-white p-8">
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-xs font-bold uppercase tracking-widest mb-2"
+              >
+                ALAMAT EMAIL <span className="text-red-600">*</span>
               </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-[rgba(255,0,234,0.05)] border border-[var(--neon-pink)] px-4 py-3 text-white text-sm font-mono focus:outline-none focus:shadow-[0_0_15px_rgba(255,0,234,0.3)] transition-all placeholder-slate-600 rounded-none"
-                placeholder="admin@o2whero.com"
-                required
-                autoComplete="email"
-              />
+              <div className="mt-1">
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-[#f4f4f0] hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 uppercase"
+                  placeholder="admin@o2whero.com"
+                />
+              </div>
             </div>
 
-            <div className="space-y-3">
-              <label className="text-[10px] font-mono text-[var(--neon-yellow)] uppercase tracking-widest flex items-center gap-2" htmlFor="password">
-                <span className="w-1.5 h-1.5 bg-[var(--neon-yellow)] animate-pulse" />
-                Kata_Sandi
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-xs font-bold uppercase tracking-widest mb-2"
+              >
+                KATA SANDI <span className="text-red-600">*</span>
               </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-[rgba(252,238,10,0.05)] border border-[var(--neon-yellow)] px-4 py-3 text-white text-sm font-mono focus:outline-none focus:shadow-[0_0_15px_rgba(252,238,10,0.3)] transition-all placeholder-slate-600 rounded-none"
-                placeholder="••••••••"
-                required
-                autoComplete="current-password"
-              />
+              <div className="mt-1">
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-[#f4f4f0] hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 uppercase"
+                  placeholder="••••••••"
+                />
+              </div>
             </div>
 
             {error && (
-              <div className="border border-red-500 bg-[rgba(255,0,0,0.1)] text-red-500 text-xs font-mono px-4 py-3 text-center uppercase tracking-wider shadow-[0_0_10px_rgba(255,0,0,0.2)]">
-                [ERROR] {error}
+              <div className="p-4 border-2 font-bold uppercase text-sm bg-red-50 border-red-600 text-red-600 text-center">
+                {error}
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-[var(--neon-cyan)] hover:bg-white text-black font-mono font-bold text-sm py-4 uppercase tracking-[0.2em] transition-all disabled:opacity-50 shadow-[0_0_20px_rgba(0,243,255,0.4)] hover:shadow-[0_0_30px_rgba(255,255,255,0.6)]"
-              style={{ clipPath: "polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px))" }}
-            >
-              {loading ? "MEMVERIFIKASI_DATA..." : "MASUK_SISTEM"}
-            </button>
+            <div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="hm-btn-red w-full mt-4"
+              >
+                {loading ? "MEMVERIFIKASI DATA..." : "MASUK SISTEM"}
+              </button>
+            </div>
           </form>
         </div>
-
-        <div className="mt-12 text-center text-[9px] font-mono text-slate-500 uppercase tracking-widest">
-          <p>&gt; O₂W HERO_ASLI_DEPOK © {new Date().getFullYear()}</p>
-          <p className="mt-1 flex items-center justify-center gap-2">
-             <span className="w-1 h-1 bg-green-500 rounded-full animate-pulse shadow-[0_0_5px_#22c55e]" /> SERVER_AKTIF
-          </p>
+        <div className="mt-8 text-center text-xs font-bold uppercase tracking-widest text-black">
+          <p>O2W HERO DEPOK © {new Date().getFullYear()}</p>
+          <div className="mt-2 flex items-center justify-center gap-2">
+            <span className="w-2 h-2 bg-green-500 rounded-full border border-black animate-pulse" /> SISTEM ONLINE
+          </div>
         </div>
       </div>
     </div>

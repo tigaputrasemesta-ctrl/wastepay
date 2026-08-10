@@ -408,15 +408,7 @@ function InvalidateSize({ invalidateKey }: { invalidateKey: number }) {
 // Guard komponen agar hanya me-render layer Leaflet saat map container sudah siap di DOM.
 function MapReadyWrapper({ children }: { children: React.ReactNode }) {
   const map = useMap();
-  const [isReady, setIsReady] = useState(false);
-
-  useEffect(() => {
-    if (map && map.getContainer()) {
-      setIsReady(true);
-    }
-  }, [map]);
-
-  if (!isReady) return null;
+  if (!map) return null;
   return <>{children}</>;
 }
 

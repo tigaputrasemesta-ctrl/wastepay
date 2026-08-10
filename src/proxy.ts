@@ -3,18 +3,15 @@ import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 import { JWT_SECRET, COOKIE_NAME } from "@/lib/secret";
 import { extractOrigin, isSameOriginRequest } from "@/lib/csrf";
+import { ROLE_HIERARCHY, type Role } from "@/lib/rbac";
+import { prisma } from "@/lib/prisma";
 
-// Role hierarchy for access levels
-const ROLE_HIERARCHY: Record<string, number> = {
-  superadmin: 100,
-  admin: 50,
-  kasir: 20,
-  petugas: 10,
-};
+// Role hierarchy — single source of truth di src/lib/rbac.ts
+// (ROLE_HIERARCHY diimpor agar tidak ada dua definisi yang bisa divergen).
 
 // Page access by minimum role level
 const PAGE_ROLES: Record<string, number> = {
-  "/dashboard": 10, // semua role bisa
+  "/dashboard": 20, // kasir+
   "/registrasi": 50, // admin+
   "/survei": 10, // petugas survei (calon → aktif + foto/geo tag)
   "/kendaraan": 50, // admin: kendaraan & titik transit
@@ -27,6 +24,8 @@ const PAGE_ROLES: Record<string, number> = {
   "/jadwal": 10, // semua role
   "/pengangkutan": 10, // semua role
   "/komplain": 10, // semua role
+  "/absensi": 10, // petugas: absen masuk/selesai
+  "/klaim": 10, // petugas: klaim tunjangan
   "/pengeluaran": 50, // admin+
   "/laporan": 20, // kasir+
   "/pengumuman": 50, // admin+
@@ -48,11 +47,20 @@ const API_ROLE_MAP: Record<string, number> = {
   // Users (superadmin only — GET dibuka untuk admin agar bisa link akun petugas)
   "GET:/api/users": 50,
   "POST:/api/users": 100,
-  "PUT:/api/users/": 100,
-  "DELETE:/api/users/": 100,
+  "PUT:/api/users": 100,
+  "DELETE:/api/users": 100,
 
   // Audit log (superadmin only)
   "GET:/api/audit-log": 100,
+
+  // Absensi — petugas absen masuk/selesai, admin lihat semua
+  "GET:/api/absensi": 10,
+  "POST:/api/absensi": 10,
+
+  // Klaim petugas — petugas ajukan, admin/superadmin proses (PUT)
+  "GET:/api/klaim": 10,
+  "POST:/api/klaim": 10,
+  "PUT:/api/klaim": 50,
 
   // Auth seed (superadmin only)
   "POST:/api/auth/seed": 100,
@@ -191,14 +199,46 @@ const API_ROLE_MAP: Record<string, number> = {
 async function verifyToken(token: string) {
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET);
-    return payload as { id: number; email: string; nama: string; role: string };
+    return payload as {
+      id: number;
+      email: string;
+      nama: string;
+      role: string;
+      v?: number;
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Muat user dari DB untuk cek revoke (tokenVersion) & status aktif.
+ * Sesi JWT lama (sebelum ganti/reset password) atau user yang dinonaktifkan
+ * ditolak di sini — berlaku untuk SEMUA route (fail-closed).
+ */
+async function loadSessionUser(payload: { id: number; v?: number }) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: payload.id },
+      select: {
+        id: true,
+        email: true,
+        nama: true,
+        role: true,
+        tokenVersion: true,
+        aktif: true,
+      },
+    });
+    if (!user || !user.aktif) return null;
+    if (payload.v !== undefined && user.tokenVersion !== payload.v) return null;
+    return { id: user.id, email: user.email, nama: user.nama, role: user.role };
   } catch {
     return null;
   }
 }
 
 function getRoleLevel(role: string): number {
-  return ROLE_HIERARCHY[role] ?? 0;
+  return ROLE_HIERARCHY[role as Role] ?? 0;
 }
 
 export async function proxy(request: NextRequest) {
@@ -238,10 +278,16 @@ export async function proxy(request: NextRequest) {
   }
 
   const token = request.cookies.get(COOKIE_NAME)?.value;
-  const user = token ? await verifyToken(token) : null;
+  const payload = token ? await verifyToken(token) : null;
 
   // ---- API Routes ----
   if (pathname.startsWith("/api")) {
+    if (!payload) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Cek revoke/aktif di DB — token lama (ganti password) & user nonaktif ditolak
+    const user = await loadSessionUser(payload);
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -278,7 +324,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // ---- Page Routes ----
-  if (!user) {
+  if (!payload) {
     const isAdminPage = Object.keys(PAGE_ROLES).some(
       (prefix) => pathname === prefix || pathname.startsWith(prefix + "/")
     );
@@ -290,11 +336,21 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // User dengan cookie ada — cek revoke/aktif juga untuk halaman
+  // (sesi lama setelah ganti password diarahkan ke login).
+  const pageUser = await loadSessionUser(payload);
+  if (!pageUser) {
+    const url = new URL("/login", request.url);
+    url.searchParams.set("error", "sesi");
+    return NextResponse.redirect(url);
+  }
+
   // Check page-specific role requirements
   for (const [pagePrefix, minLevel] of Object.entries(PAGE_ROLES)) {
     if (pathname === pagePrefix || pathname.startsWith(pagePrefix + "/")) {
-      if (getRoleLevel(user.role) < minLevel) {
-        const url = new URL("/dashboard", request.url);
+      if (getRoleLevel(pageUser.role) < minLevel) {
+        const fallbackPath = pageUser.role === "petugas" ? "/peta" : "/dashboard";
+        const url = new URL(fallbackPath, request.url);
         url.searchParams.set("error", "akses");
         return NextResponse.redirect(url);
       }

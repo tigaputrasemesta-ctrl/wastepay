@@ -31,81 +31,82 @@ export default async function TarifPage() {
   const tarifMin = kategoriTarif.length > 0 ? Math.min(...kategoriTarif.map((k) => k.tarif)) : 0;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
-      <div className="flex flex-wrap items-end justify-between gap-8 mb-16">
+    <div className="py-12 space-y-12">
+      <div className="flex flex-wrap items-end justify-between gap-8 mb-8">
         <div>
-          <p className="font-mono text-[var(--neon-pink)] uppercase tracking-widest text-xs border border-[var(--neon-pink)] bg-[rgba(255,0,234,0.1)] inline-block px-4 py-1 mb-4 shadow-[0_0_10px_rgba(255,0,234,0.2)]">
-            &gt; DAFTAR_TARIF_TRANSPARAN
-          </p>
-          <h1 className="font-display font-black text-4xl sm:text-6xl text-white uppercase tracking-tighter">
-            BIAYA <span className="text-[var(--neon-pink)] glitch-text shadow-red-500">SEGINI DOANG!</span>
+          <div className="inline-block px-4 py-1 hm-border font-bold uppercase text-xs mb-2 bg-[#f4f4f0]">
+            O2W / TARIF LAYANAN
+          </div>
+          <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">
+            DAFTAR <span className="text-red-600">HARGA.</span>
           </h1>
-          <p className="text-slate-400 font-mono mt-6 max-w-xl leading-relaxed">
-            Nih daftar harga per bulannya coy. Udah termasuk diangkut rutin. Kagak ada biaya-biayaan lain apalagi biaya pendaftaran. Murni seharga cilok sebulan.
+          <p className="font-bold uppercase tracking-widest text-sm max-w-xl mt-4">
+            BIAYA LANGGANAN PER BULAN. SUDAH TERMASUK JADWAL ANGKUT RUTIN.
+            TIDAK ADA BIAYA PENDAFTARAN. TIDAK ADA BIAYA TERSEMBUNYI.
           </p>
         </div>
         {tarifMin > 0 && (
-          <div className="cyber-box border-[var(--neon-lime)] p-6 bg-[rgba(57,255,20,0.05)] text-right">
-            <p className="font-mono text-slate-400 text-[10px] mb-1 uppercase">&gt; MULAI DARI</p>
-            <p className="font-display font-black text-4xl text-[var(--neon-lime)]">{formatRupiah(tarifMin)}</p>
-            <p className="text-[10px] text-[var(--neon-lime)] mt-2 font-mono uppercase bg-[rgba(57,255,20,0.1)] inline-block px-2 py-1">PER BULAN COY</p>
+          <div className="hm-card bg-green-50 text-right p-6">
+            <p className="text-xs font-bold uppercase mb-1">HARGA MULAI DARI</p>
+            <p className="text-4xl font-black text-green-600">{formatRupiah(tarifMin)}</p>
+            <p className="text-[10px] font-bold text-black uppercase bg-green-200 mt-2 inline-block px-2 py-1">PER BULAN</p>
           </div>
         )}
       </div>
 
       <div className="grid lg:grid-cols-3 gap-8 items-start">
         <div className="lg:col-span-2 space-y-4">
-          <div className="cyber-box border-[var(--neon-cyan)] p-0 overflow-hidden">
-            <div className="grid grid-cols-12 px-6 py-4 bg-[rgba(0,243,255,0.1)] border-b border-[var(--neon-cyan)] font-mono text-[10px] font-bold text-[var(--neon-cyan)] uppercase tracking-widest">
-              <span className="col-span-6">&gt; KATEGORI_LU</span>
-              <span className="col-span-4">&gt; DETAIL</span>
-              <span className="col-span-2 text-right">&gt; TARIF</span>
+          <div className="hm-card p-0 bg-[#f4f4f0]">
+            <div className="grid grid-cols-12 px-6 py-4 bg-white border-b-2 border-black text-xs font-black uppercase tracking-widest">
+              <span className="col-span-6">KATEGORI PELANGGAN</span>
+              <span className="col-span-4">DESKRIPSI</span>
+              <span className="col-span-2 text-right">TARIF</span>
             </div>
             {kategoriTarif.length === 0 ? (
-              <p className="px-6 py-10 text-sm text-[var(--neon-pink)] text-center font-mono uppercase glitch-text">
-                &gt; SISTEM_DATABASE_ERROR: TARIF GAK KEBACA
+              <p className="px-6 py-10 text-sm text-red-600 text-center font-bold uppercase">
+                TIDAK ADA DATA TARIF
               </p>
             ) : (
               kategoriTarif.map((k, i) => (
                 <div
                   key={k.kategori}
-                  className={`grid grid-cols-12 px-6 py-4 items-center border-b border-slate-800 last:border-0 ${
-                    i % 2 ? "bg-[rgba(255,255,255,0.02)]" : ""
+                  className={`grid grid-cols-12 px-6 py-4 items-center border-b-2 border-black last:border-b-0 ${
+                    i % 2 ? "bg-gray-50" : "bg-white"
                   }`}
                 >
-                  <span className="col-span-6 text-sm font-bold text-white uppercase">{k.label}</span>
-                  <span className="col-span-4 text-[10px] text-slate-400 font-mono uppercase">{k.deskripsi ?? "—"}</span>
-                  <span className="col-span-2 text-right font-mono font-bold text-lg text-[var(--neon-yellow)]">{formatRupiah(k.tarif)}</span>
+                  <span className="col-span-6 text-sm font-black uppercase">{k.label}</span>
+                  <span className="col-span-4 text-xs font-bold uppercase">{k.deskripsi ?? "—"}</span>
+                  <span className="col-span-2 text-right font-black text-lg text-red-600">{formatRupiah(k.tarif)}</span>
                 </div>
               ))
             )}
           </div>
-          <p className="text-[10px] text-slate-500 font-mono uppercase">
-            * Kalo lu butuh request aneh-aneh (truk khusus/sampah sisa proyek), calling admin aja coy, nanti bisa dibicarain harganya.
+          <p className="text-xs font-bold uppercase p-4 bg-yellow-50 border-2 border-black">
+            * JIKA ANDA MEMBUTUHKAN PENGANGKUTAN KHUSUS (SAMPAH PROYEK / TRUK TAMBAHAN), SILAKAN HUBUNGI ADMIN UNTUK NEGOSIASI TARIF.
           </p>
         </div>
 
         <div className="space-y-6">
-          <div className="cyber-box border-[var(--neon-yellow)] bg-[rgba(252,238,10,0.02)] p-6">
-            <p className="font-mono font-bold text-[var(--neon-yellow)] uppercase mb-6 tracking-widest">&gt; PAKET_KHUSUS</p>
+          <div className="hm-card bg-yellow-50 p-6">
+            <p className="font-black text-black uppercase mb-6 tracking-widest text-lg border-b-2 border-black pb-2">PAKET KHUSUS</p>
             <div className="space-y-4">
               {paket.length === 0 ? (
-                <p className="text-[10px] text-[var(--neon-pink)] font-mono uppercase glitch-text">BELOM ADA PAKET TERSEDIA.</p>
+                <p className="text-xs font-bold uppercase text-red-600">BELUM ADA PAKET TERSEDIA.</p>
               ) : (
                 paket.map((p) => (
                   <div
                     key={p.nama}
-                    className="border border-[var(--neon-yellow)] bg-[rgba(252,238,10,0.05)] p-4 flex items-start justify-between gap-4 shadow-[0_0_10px_rgba(252,238,10,0.1)] hover:bg-[var(--neon-yellow)] hover:text-black transition-colors group"
+                    className="border-2 border-black bg-white p-4 hover:bg-black hover:text-white transition-colors group cursor-pointer"
                   >
-                    <div>
-                      <p className="text-sm font-bold text-white group-hover:text-black uppercase">{p.nama}</p>
-                      {p.deskripsi && <p className="text-[10px] text-slate-400 group-hover:text-black/70 mt-1 font-mono uppercase">{p.deskripsi}</p>}
+                    <div className="mb-2">
+                      <p className="text-sm font-black uppercase">{p.nama}</p>
+                      {p.deskripsi && <p className="text-xs font-bold uppercase mt-1">{p.deskripsi}</p>}
                     </div>
-                    <div className="text-right">
-                      <p className="font-mono font-bold text-lg text-[var(--neon-yellow)] group-hover:text-black whitespace-nowrap">
+                    <div className="text-right border-t-2 border-black group-hover:border-white pt-2 mt-2">
+                      <p className="font-black text-xl text-red-600 group-hover:text-red-400">
                         {formatRupiah(p.harga)}
                       </p>
-                      <span className="text-[9px] text-[var(--neon-yellow)] group-hover:text-black font-mono">/BULAN</span>
+                      <span className="text-[10px] font-bold uppercase">PER BULAN</span>
                     </div>
                   </div>
                 ))
@@ -113,11 +114,11 @@ export default async function TarifPage() {
             </div>
           </div>
 
-          <Link href="/daftar" className="cyber-btn cyber-btn-yellow w-full text-center text-sm">
-            [ GAS_DAFTAR_SEKARANG ]
+          <Link href="/daftar" className="hm-btn-green w-full block text-center">
+            DAFTAR SEKARANG
           </Link>
-          <Link href="/bayar" className="cyber-btn w-full text-center text-sm border-slate-700 text-slate-400 hover:border-[var(--neon-cyan)] hover:text-[var(--neon-cyan)]">
-            [ CEK_TAGIHAN_SAYA ]
+          <Link href="/bayar" className="hm-btn w-full block text-center bg-[#f4f4f0]">
+            CEK TAGIHAN SAYA
           </Link>
         </div>
       </div>

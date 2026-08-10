@@ -234,8 +234,8 @@ export default function TagihanPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-display text-2xl text-bone">{isPetugas ? "Tagihan Saya" : "Tagihan"}</h1>
-          <p className="text-sm text-bone-dim mt-1">
+          <h1 className="font-black uppercase tracking-tighter text-2xl text-black font-black">{isPetugas ? "Tagihan Saya" : "Tagihan"}</h1>
+          <p className="text-sm text-gray-600 font-bold mt-1">
             {isPetugas
               ? "Tunggakan & tagihan warga di wilayah Anda — terima bayar tunai langsung"
               : "Kelola tagihan iuran bulanan"}
@@ -245,7 +245,7 @@ export default function TagihanPage() {
         <>
         <button
           onClick={() => setShowGenerate(true)}
-          className="chamfer-sm bg-vest hover:bg-vest-bright text-asphalt-deep px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2"
+          className="shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 hover:bg-green-300 text-black px-4 py-2 rounded-none text-sm font-medium transition flex items-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -254,7 +254,7 @@ export default function TagihanPage() {
         </button>
         <button
           onClick={() => { setShowAutoGenerate(true); setAutoResult(null); }}
-          className="bg-blue-600 hover:chamfer-sm bg-vest-bright text-asphalt-deep px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2"
+          className="bg-blue-600 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-300 text-black px-4 py-2 rounded-none text-sm font-medium transition flex items-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -267,27 +267,27 @@ export default function TagihanPage() {
 
       {/* Pembayaran pending menunggu verifikasi */}
       {pending.length > 0 && (
-        <div className="bg-amber/5 border border-amber-200 rounded-xl p-4 mb-4">
+        <div className="bg-amber/5 border border-amber-200 rounded-none-xl p-4 mb-4">
           <h3 className="font-semibold text-amber-900 text-sm mb-3">
             ⏳ Pembayaran menunggu verifikasi ({pending.length})
           </h3>
           <div className="space-y-2">
             {pending.map((p) => (
-              <div key={p.id} className="flex items-center justify-between bg-panel rounded-lg border border-amber-200 px-4 py-2.5 flex-wrap gap-2">
+              <div key={p.id} className="flex items-center justify-between bg-hm-card bg-white p-0 overflow-hidden rounded-none border border-amber-200 px-4 py-2.5 flex-wrap gap-2">
                 <div>
-                  <div className="text-sm font-medium text-bone">
+                  <div className="text-sm font-medium text-black font-black">
                     {p.pelanggan.nama}{" "}
-                    <span className="text-xs text-bone-dim font-normal">({p.pelanggan.kodePelanggan})</span>
+                    <span className="text-xs text-gray-600 font-bold font-normal">({p.pelanggan.kodePelanggan})</span>
                   </div>
-                  <div className="text-xs text-bone-dim">
+                  <div className="text-xs text-gray-600 font-bold">
                     {formatRupiah(p.jumlah)} • {labelMetode(p.metode)} •{" "}
                     {bulanList.find((b) => b.value === p.tagihan.bulan.toString())?.label} {p.tagihan.tahun}
                   </div>
                   {p.buktiBayar && (
                     <div className="mt-1">
                       <details className="text-xs">
-                        <summary className="cursor-pointer text-vest hover:text-vest font-medium">Lihat bukti</summary>
-                        <Image src={p.buktiBayar} alt="Bukti pembayaran" width={240} height={180} unoptimized className="mt-2 max-h-40 rounded-lg border border-asphalt-line object-cover" />
+                        <summary className="cursor-pointer text-green-600 hover:text-green-600 font-medium">Lihat bukti</summary>
+                        <Image src={p.buktiBayar} alt="Bukti pembayaran" width={240} height={180} unoptimized className="mt-2 max-h-40 rounded-none border-2 border-black object-cover" />
                       </details>
                     </div>
                   )}
@@ -298,24 +298,24 @@ export default function TagihanPage() {
                       <button
                         onClick={() => cekStatusGateway(p.id, p.duitkuTransaction!.orderId!)}
                         disabled={cekLoading === p.id}
-                        className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
+                        className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-none hover:bg-indigo-700 transition disabled:opacity-50"
                       >
                         {cekLoading === p.id ? "Mengecek…" : "⟳ Cek Status Live"}
                       </button>
                     ) : (
-                      <span className="text-xs text-bone-faint italic">Transaksi gateway tanpa orderId</span>
+                      <span className="text-xs text-gray-400 font-bold italic">Transaksi gateway tanpa orderId</span>
                     )
                   ) : (
                     <>
                       <button
                         onClick={() => verifikasiPembayaran(p.id, "terverifikasi")}
-                        className="text-xs chamfer-sm chamfer-sm bg-vest text-asphalt-deep px-3 py-1.5 rounded-lg hover:bg-vest-bright transition"
+                        className="text-xs shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black px-3 py-1.5 rounded-none hover:bg-green-300 transition"
                       >
                         Verifikasi
                       </button>
                       <button
                         onClick={() => verifikasiPembayaran(p.id, "ditolak")}
-                        className="text-xs bg-danger/5 text-red-700 border border-danger/40 px-3 py-1.5 rounded-lg hover:bg-danger/10 transition"
+                        className="text-xs bg-danger/5 text-red-700 border border-danger/40 px-3 py-1.5 rounded-none hover:bg-danger/10 transition"
                       >
                         Tolak
                       </button>
@@ -333,7 +333,7 @@ export default function TagihanPage() {
         <select
           value={bulan}
           onChange={(e) => setBulan(e.target.value)}
-          className="px-3 py-2 border border-asphalt-line rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-vest"
+          className="px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
         >
           <option value="">Semua Bulan</option>
           {bulanList.map((b) => (
@@ -343,7 +343,7 @@ export default function TagihanPage() {
         <select
           value={tahun}
           onChange={(e) => setTahun(e.target.value)}
-          className="px-3 py-2 border border-asphalt-line rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-vest"
+          className="px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
         >
           {[2024, 2025, 2026, 2027, 2028].map((t) => (
             <option key={t} value={t}>{t}</option>
@@ -352,7 +352,7 @@ export default function TagihanPage() {
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="px-3 py-2 border border-asphalt-line rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-vest"
+          className="px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
         >
           <option value="">Semua Status</option>
           <option value="belum_bayar">Belum Bayar</option>
@@ -362,31 +362,31 @@ export default function TagihanPage() {
       </div>
 
       {/* Table */}
-      <div className="panel overflow-hidden">
+      <div className="hm-card bg-white p-0 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-asphalt-deep/40 border-b border-asphalt-line">
-                <th className="text-left px-4 py-3 font-medium text-bone-dim">Kode</th>
-                <th className="text-left px-4 py-3 font-medium text-bone-dim">No. Invoice</th>
-                <th className="text-left px-4 py-3 font-medium text-bone-dim">Pelanggan</th>
-                <th className="text-left px-4 py-3 font-medium text-bone-dim">Periode</th>
-                <th className="text-right px-4 py-3 font-medium text-bone-dim">Jumlah</th>
-                <th className="text-left px-4 py-3 font-medium text-bone-dim">Jatuh Tempo</th>
-                <th className="text-center px-4 py-3 font-medium text-bone-dim">Status</th>
-                <th className="text-center px-4 py-3 font-medium text-bone-dim">Pembayaran</th>
+              <tr className="bg-black text-white font-black border-b border-2 border-black">
+                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Kode</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">No. Invoice</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Pelanggan</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Periode</th>
+                <th className="text-right px-4 py-3 font-medium text-gray-600 font-bold">Jumlah</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Jatuh Tempo</th>
+                <th className="text-center px-4 py-3 font-medium text-gray-600 font-bold">Status</th>
+                <th className="text-center px-4 py-3 font-medium text-gray-600 font-bold">Pembayaran</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={8} className="px-4 py-8 text-center text-bone-faint">Memuat...</td></tr>
+                <tr><td colSpan={8} className="px-4 py-8 text-center text-gray-400 font-bold">Memuat...</td></tr>
               ) : tagihan.length === 0 ? (
-                <tr><td colSpan={8} className="px-4 py-8 text-center text-bone-faint">Belum ada tagihan</td></tr>
+                <tr><td colSpan={8} className="px-4 py-8 text-center text-gray-400 font-bold">Belum ada tagihan</td></tr>
               ) : (
                 tagihan.map((t) => (
-                  <tr key={t.id} className="border-b border-asphalt-line hover:bg-asphalt-raised">
+                  <tr key={t.id} className="border-b border-2 border-black hover:bg-gray-100 border-2 border-black">
                     <td className="px-4 py-3">
-                      <code className="text-xs font-mono font-bold text-bone bg-asphalt-raised px-1.5 py-0.5 rounded">
+                      <code className="text-xs font-mono font-bold text-black font-black bg-gray-100 border-2 border-black px-1.5 py-0.5 rounded-none">
                         {t.pelanggan.kodePelanggan}
                       </code>
                     </td>
@@ -395,29 +395,29 @@ export default function TagihanPage() {
                         <Link
                           href={`/invoice-tagihan?invoice=${encodeURIComponent(t.noInvoice)}`}
                           target="_blank"
-                          className="text-xs font-mono text-vest hover:text-sky-300 hover:underline"
+                          className="text-xs font-mono text-green-600 hover:text-sky-300 hover:underline"
                           title="Buka invoice"
                         >
                           {t.noInvoice}
                         </Link>
                       ) : (
-                        <span className="text-xs text-bone-faint">-</span>
+                        <span className="text-xs text-gray-400 font-bold">-</span>
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      <div className="font-medium text-bone">{t.pelanggan.nama}</div>
-                      <div className="text-xs text-bone-dim">{t.pelanggan.noTelepon}</div>
+                      <div className="font-medium text-black font-black">{t.pelanggan.nama}</div>
+                      <div className="text-xs text-gray-600 font-bold">{t.pelanggan.noTelepon}</div>
                     </td>
-                    <td className="px-4 py-3 text-bone-dim">
+                    <td className="px-4 py-3 text-gray-600 font-bold">
                       {bulanList.find((b) => b.value === t.bulan.toString())?.label} {t.tahun}
                     </td>
                     <td className="px-4 py-3 text-right font-medium">
                       {formatRupiah(t.jumlah + (t.denda || 0))}
-                      {t.denda ? <span className="block text-xs text-danger">+ denda {formatRupiah(t.denda)}</span> : null}
+                      {t.denda ? <span className="block text-xs text-red-600">+ denda {formatRupiah(t.denda)}</span> : null}
                     </td>
-                    <td className="px-4 py-3 text-bone-dim text-xs">{formatDate(t.jatuhTempo)}</td>
+                    <td className="px-4 py-3 text-gray-600 font-bold text-xs">{formatDate(t.jatuhTempo)}</td>
                     <td className="px-4 py-3 text-center">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium ${
                         t.status === "lunas" ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" :
                         t.status === "tunggakan" ? "bg-danger/10 text-red-400 border border-red-500/30" :
                         "bg-amber-400/10 text-amber-400 border border-amber-500/30"
@@ -429,12 +429,12 @@ export default function TagihanPage() {
                       {t.status !== "lunas" ? (
                         <button
                           onClick={() => { setFormBayar({ metode: isPetugas ? "tunai" : "transfer", catatan: isPetugas ? "Bayar tunai via petugas tagih" : "" }); setShowBayar({ tagihanId: t.id, pelangganId: t.pelanggan.id, jumlah: hitungRincian(t.jumlah, t.denda).total }); }}
-                          className="text-xs bg-vest/10 text-vest border border-vest/30 px-3 py-1 rounded-full hover:bg-vest/20 transition"
+                          className="text-xs bg-green-400/10 text-green-600 border border-vest/30 px-3 py-1 rounded-none-full hover:bg-green-400/20 transition"
                         >
                           Bayar
                         </button>
                       ) : (
-                        <span className="text-xs text-bone-faint">
+                        <span className="text-xs text-gray-400 font-bold">
                           {t.tanggalLunas ? formatDate(t.tanggalLunas) : "-"}
                         </span>
                       )}
@@ -449,43 +449,43 @@ export default function TagihanPage() {
 
       {/* Modal Auto Generate */}
       {showAutoGenerate && (
-        <div className="fixed inset-0 bg-asphalt-deep/70 flex items-center justify-center z-50 p-4">
-          <div className="panel w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-asphalt-line">
-              <h2 className="font-semibold text-bone">Auto-Generate Tagihan Bulanan</h2>
-              <button onClick={() => { setShowAutoGenerate(false); setAutoResult(null); }} className="text-bone-faint hover:text-bone-dim">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="hm-card bg-white p-0 overflow-hidden w-full max-w-md">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-2 border-black">
+              <h2 className="font-semibold text-black font-black">Auto-Generate Tagihan Bulanan</h2>
+              <button onClick={() => { setShowAutoGenerate(false); setAutoResult(null); }} className="text-gray-400 font-bold hover:text-gray-600 font-bold">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
             <form onSubmit={handleAutoGenerate} className="p-6 space-y-4">
-              <div className="bg-sky-500/10 border border-sky-500/30 rounded-lg p-3 text-sm text-sky-300">
+              <div className="bg-sky-500/10 border border-sky-500/30 rounded-none p-3 text-sm text-sky-300">
                 <p className="font-medium mb-1">ℹ️ Cara Kerja</p>
                 <p>Sistem akan membuat tagihan untuk semua pelanggan aktif yang belum memiliki tagihan di periode yang dipilih. Tarif dihitung berdasarkan: tarif kustom &gt; paket &gt; kategori tarif default.</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-bone-dim mb-1">Periode</label>
+                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Periode</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <select value={formAuto.bulan} onChange={(e) => setFormAuto({ ...formAuto, bulan: e.target.value })} className="px-3 py-2 border border-asphalt-line rounded-lg text-sm" required>
+                  <select value={formAuto.bulan} onChange={(e) => setFormAuto({ ...formAuto, bulan: e.target.value })} className="px-3 py-2 border-2 border-black rounded-none text-sm" required>
                     {bulanList.map((b) => <option key={b.value} value={b.value}>{b.label}</option>)}
                   </select>
-                  <select value={formAuto.tahun} onChange={(e) => setFormAuto({ ...formAuto, tahun: e.target.value })} className="px-3 py-2 border border-asphalt-line rounded-lg text-sm" required>
+                  <select value={formAuto.tahun} onChange={(e) => setFormAuto({ ...formAuto, tahun: e.target.value })} className="px-3 py-2 border-2 border-black rounded-none text-sm" required>
                     {[2024, 2025, 2026, 2027, 2028].map((t) => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
               </div>
 
               {autoResult && (
-                <div className="p-3 rounded-lg text-sm bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+                <div className="p-3 rounded-none text-sm bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
                   <p className="font-medium">{autoResult.message}</p>
                   <p className="text-xs mt-1">Dibuat: {autoResult.created} | Sudah ada: {autoResult.skipped}</p>
                 </div>
               )}
 
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => { setShowAutoGenerate(false); setAutoResult(null); }} className="flex-1 px-4 py-2 border border-asphalt-line rounded-lg text-sm text-bone-dim hover:bg-asphalt-raised">Batal</button>
-                <button type="submit" disabled={generating} className="flex-1 px-4 py-2 chamfer-sm chamfer-sm bg-vest text-asphalt-deep rounded-lg text-sm hover:bg-vest-bright disabled:opacity-50">
+                <button type="button" onClick={() => { setShowAutoGenerate(false); setAutoResult(null); }} className="flex-1 px-4 py-2 border-2 border-black rounded-none text-sm text-gray-600 font-bold hover:bg-gray-100 border-2 border-black">Batal</button>
+                <button type="submit" disabled={generating} className="flex-1 px-4 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black rounded-none text-sm hover:bg-green-300 disabled:opacity-50">
                   {generating ? "Memproses..." : "Generate Sekarang"}
                 </button>
               </div>
@@ -496,11 +496,11 @@ export default function TagihanPage() {
 
       {/* Modal Generate */}
       {showGenerate && (
-        <div className="fixed inset-0 bg-asphalt-deep/70 flex items-center justify-center z-50 p-4">
-          <div className="panel w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-asphalt-line">
-              <h2 className="font-semibold text-bone">Generate Tagihan</h2>
-              <button onClick={() => setShowGenerate(false)} className="text-bone-faint hover:text-bone-dim">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="hm-card bg-white p-0 overflow-hidden w-full max-w-md">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-2 border-black">
+              <h2 className="font-semibold text-black font-black">Generate Tagihan</h2>
+              <button onClick={() => setShowGenerate(false)} className="text-gray-400 font-bold hover:text-gray-600 font-bold">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -508,27 +508,27 @@ export default function TagihanPage() {
             </div>
             <form onSubmit={handleGenerate} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-bone-dim mb-1">Periode</label>
+                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Periode</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <select value={formGenerate.bulan} onChange={(e) => setFormGenerate({ ...formGenerate, bulan: e.target.value })} className="px-3 py-2 border border-asphalt-line rounded-lg text-sm" required>
+                  <select value={formGenerate.bulan} onChange={(e) => setFormGenerate({ ...formGenerate, bulan: e.target.value })} className="px-3 py-2 border-2 border-black rounded-none text-sm" required>
                     {bulanList.map((b) => <option key={b.value} value={b.value}>{b.label}</option>)}
                   </select>
-                  <select value={formGenerate.tahun} onChange={(e) => setFormGenerate({ ...formGenerate, tahun: e.target.value })} className="px-3 py-2 border border-asphalt-line rounded-lg text-sm" required>
+                  <select value={formGenerate.tahun} onChange={(e) => setFormGenerate({ ...formGenerate, tahun: e.target.value })} className="px-3 py-2 border-2 border-black rounded-none text-sm" required>
                     {[2024, 2025, 2026, 2027, 2028].map((t) => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-bone-dim mb-1">Jumlah Tagihan</label>
-                <input type="number" value={formGenerate.jumlah} onChange={(e) => setFormGenerate({ ...formGenerate, jumlah: e.target.value })} className="w-full px-3 py-2 border border-asphalt-line rounded-lg text-sm" placeholder="50000" required />
+                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Jumlah Tagihan</label>
+                <input type="number" value={formGenerate.jumlah} onChange={(e) => setFormGenerate({ ...formGenerate, jumlah: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none text-sm" placeholder="50000" required />
               </div>
               <div className="flex items-center gap-2">
-                <input type="checkbox" id="untukSemua" checked={formGenerate.untukSemua} onChange={(e) => setFormGenerate({ ...formGenerate, untukSemua: e.target.checked })} className="rounded border-asphalt-line" />
-                <label htmlFor="untukSemua" className="text-sm text-bone-dim">Generate untuk semua pelanggan aktif</label>
+                <input type="checkbox" id="untukSemua" checked={formGenerate.untukSemua} onChange={(e) => setFormGenerate({ ...formGenerate, untukSemua: e.target.checked })} className="rounded-none border-2 border-black" />
+                <label htmlFor="untukSemua" className="text-sm text-gray-600 font-bold">Generate untuk semua pelanggan aktif</label>
               </div>
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => setShowGenerate(false)} className="flex-1 px-4 py-2 border border-asphalt-line rounded-lg text-sm text-bone-dim hover:bg-asphalt-raised">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2 chamfer-sm chamfer-sm bg-vest text-asphalt-deep rounded-lg text-sm hover:bg-vest-bright">Generate</button>
+                <button type="button" onClick={() => setShowGenerate(false)} className="flex-1 px-4 py-2 border-2 border-black rounded-none text-sm text-gray-600 font-bold hover:bg-gray-100 border-2 border-black">Batal</button>
+                <button type="submit" className="flex-1 px-4 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black rounded-none text-sm hover:bg-green-300">Generate</button>
               </div>
             </form>
           </div>
@@ -537,11 +537,11 @@ export default function TagihanPage() {
 
       {/* Modal Bayar */}
       {showBayar && (
-        <div className="fixed inset-0 bg-asphalt-deep/70 flex items-center justify-center z-50 p-4">
-          <div className="panel w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-asphalt-line">
-              <h2 className="font-semibold text-bone">Catat Pembayaran</h2>
-              <button onClick={() => setShowBayar(null)} className="text-bone-faint hover:text-bone-dim">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="hm-card bg-white p-0 overflow-hidden w-full max-w-md">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-2 border-black">
+              <h2 className="font-semibold text-black font-black">Catat Pembayaran</h2>
+              <button onClick={() => setShowBayar(null)} className="text-gray-400 font-bold hover:text-gray-600 font-bold">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -549,12 +549,12 @@ export default function TagihanPage() {
             </div>
             <form onSubmit={handleBayar} className="p-6 space-y-4">
               <div>
-                <p className="text-sm text-bone-dim">Jumlah Tagihan</p>
-                <p className="font-display text-2xl text-bone">{formatRupiah(showBayar.jumlah)}</p>
+                <p className="text-sm text-gray-600 font-bold">Jumlah Tagihan</p>
+                <p className="font-black uppercase tracking-tighter text-2xl text-black font-black">{formatRupiah(showBayar.jumlah)}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-bone-dim mb-1">Metode Pembayaran</label>
-                <select value={formBayar.metode} onChange={(e) => setFormBayar({ ...formBayar, metode: e.target.value })} className="w-full px-3 py-2 border border-asphalt-line rounded-lg text-sm" required disabled={isPetugas}>
+                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Metode Pembayaran</label>
+                <select value={formBayar.metode} onChange={(e) => setFormBayar({ ...formBayar, metode: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none text-sm" required disabled={isPetugas}>
                   {isPetugas ? (
                     <option value="tunai">Tunai (diterima petugas)</option>
                   ) : (
@@ -568,23 +568,23 @@ export default function TagihanPage() {
                   )}
                 </select>
                 {isPetugas && (
-                  <p className="text-xs text-vest bg-vest/5 border border-vest/20 rounded-lg px-3 py-2 mt-2">
+                  <p className="text-xs text-green-600 bg-green-400/5 border border-vest/20 rounded-none px-3 py-2 mt-2">
                     Anda mencatat <b>pembayaran tunai</b> — tercatat atas nama Anda & langsung lunas.
                   </p>
                 )}
                 {formBayar.metode !== "tunai" && (
-                  <p className="text-xs text-amber bg-amber/5 border border-amber-200 rounded-lg px-3 py-2 mt-2">
-                    Pembayaran non-tunai dicatat sebagai <b>pending</b> dan perlu diverifikasi admin di panel di atas.
+                  <p className="text-xs text-amber bg-amber/5 border border-amber-200 rounded-none px-3 py-2 mt-2">
+                    Pembayaran non-tunai dicatat sebagai <b>pending</b> dan perlu diverifikasi admin di hm-card bg-white p-0 overflow-hidden di atas.
                   </p>
                 )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-bone-dim mb-1">Catatan (opsional)</label>
-                <input type="text" value={formBayar.catatan} onChange={(e) => setFormBayar({ ...formBayar, catatan: e.target.value })} className="w-full px-3 py-2 border border-asphalt-line rounded-lg text-sm" placeholder="Bayar tunai via petugas" />
+                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Catatan (opsional)</label>
+                <input type="text" value={formBayar.catatan} onChange={(e) => setFormBayar({ ...formBayar, catatan: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none text-sm" placeholder="Bayar tunai via petugas" />
               </div>
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => setShowBayar(null)} className="flex-1 px-4 py-2 border border-asphalt-line rounded-lg text-sm text-bone-dim hover:bg-asphalt-raised">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2 chamfer-sm chamfer-sm bg-vest text-asphalt-deep rounded-lg text-sm hover:bg-vest-bright">Konfirmasi Bayar</button>
+                <button type="button" onClick={() => setShowBayar(null)} className="flex-1 px-4 py-2 border-2 border-black rounded-none text-sm text-gray-600 font-bold hover:bg-gray-100 border-2 border-black">Batal</button>
+                <button type="submit" className="flex-1 px-4 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black rounded-none text-sm hover:bg-green-300">Konfirmasi Bayar</button>
               </div>
             </form>
           </div>

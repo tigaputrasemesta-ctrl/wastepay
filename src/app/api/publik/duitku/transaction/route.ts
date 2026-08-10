@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import { createPayment, isDuitkuEnabled, truncateRaw } from "@/lib/duitku";
 import { hitungRincian } from "@/lib/invoice";
+import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
 
 const BULAN = [
   "Januari", "Februari", "Maret", "April", "Mei", "Juni",
@@ -14,6 +15,9 @@ const BULAN = [
  * Buat transaksi pembayaran online (Duitku) untuk satu tagihan — pola skylite.id.
  * Body: { kode, tagihanId, paymentMethod }
  * Response: { paymentUrl, orderId, reference, pembayaranId }
+ *
+ * Keamanan: rate limit per IP (pembuatan transaksi jarang dilakukan user
+ * sah — limit ketat mencegah spam yang menghabiskan rate limit API Duitku).
  */
 export async function POST(request: Request) {
   try {
@@ -21,6 +25,20 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "Pembayaran online belum diaktifkan. Hubungi pengelola." },
         { status: 503 }
+      );
+    }
+
+    // Rate limit per IP — cegah spam pembuatan transaksi (DoS API Duitku)
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      request.headers.get("x-real-ip") ||
+      "unknown";
+    const key = `duitku-transaksi:${ip}`;
+    if (!(await allowAttempt(key, { max: 10, windowMs: 15 * 60 * 1000 }))) {
+      const retry = retryAfterSeconds(key);
+      return NextResponse.json(
+        { error: `Terlalu banyak permintaan. Coba lagi dalam ${Math.ceil(retry / 60)} menit.` },
+        { status: 429, headers: { "Retry-After": String(retry) } }
       );
     }
 
@@ -128,7 +146,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json(hasil);
   } catch (error) {
-    const msg = error instanceof Error ? error.message : "Gagal membuat transaksi";
-    return NextResponse.json({ error: msg }, { status: 500 });
+    // Detail error (pesan dari API Duitku / stack) hanya untuk log server —
+    // jangan diekspos ke client (bisa bocorkan detail konfigurasi internal).
+    console.error("Duitku transaction error:", error);
+    return NextResponse.json({ error: "Gagal membuat transaksi pembayaran. Coba lagi." }, { status: 500 });
   }
 }

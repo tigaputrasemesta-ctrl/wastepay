@@ -11,9 +11,27 @@
 // Anti-spam: delay antar pesan via WA_BLAST_DELAY_MS (default 1200ms).
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 import { PrismaLibSql } from "@prisma/adapter-libsql";
 
-const adapter = new PrismaLibSql({ url: process.env.DATABASE_URL || "file:./dev.db" });
+// Auto-detect driver: Postgres (produksi/Vercel/Supabase) vs SQLite (dev lokal).
+// Jangan hardcode satu adapter — app utama memakai PrismaPg, sedangkan dev.db lokal
+// memakai libsql. Skema URL menentukan adapter yang dipakai.
+const dbUrl = process.env.DATABASE_URL || "file:./dev.db";
+let adapter;
+if (dbUrl.startsWith("postgres")) {
+  const pool = new Pool({
+    connectionString: dbUrl,
+    ssl:
+      process.env.NODE_ENV === "production"
+        ? { rejectUnauthorized: process.env.DATABASE_SSL_REJECT_UNAUTHORIZED !== "false" }
+        : undefined,
+  });
+  adapter = new PrismaPg(pool);
+} else {
+  adapter = new PrismaLibSql({ url: dbUrl });
+}
 const prisma = new PrismaClient({ adapter });
 
 const WA_API_KEY = process.env.WA_API_KEY?.trim();

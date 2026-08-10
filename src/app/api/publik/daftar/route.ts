@@ -89,7 +89,7 @@ export async function POST(request: Request) {
     request.headers.get("x-real-ip") ||
     "unknown";
   const key = `daftar:${ip}`;
-  if (!allowAttempt(key)) {
+  if (!(await allowAttempt(key))) {
     const retry = retryAfterSeconds(key);
     return NextResponse.json(
       { error: `Terlalu banyak percobaan. Coba lagi dalam ${Math.ceil(retry / 60)} menit.` },
@@ -116,6 +116,10 @@ export async function POST(request: Request) {
     const patokanLokasi = String(body.patokanLokasi ?? "").trim();
     const penanggungjawab = String(body.penanggungjawab ?? "").trim();
     const referal = String(body.referal ?? "").trim();
+    const latitude = body.latitude ? parseFloat(body.latitude) : null;
+    const longitude = body.longitude ? parseFloat(body.longitude) : null;
+    const koordinatSumber = body.koordinatSumber ? String(body.koordinatSumber) : null;
+    const koordinatAkurasi = body.koordinatAkurasi ? parseFloat(body.koordinatAkurasi) : null;
 
     if (nama.length < 3) {
       return NextResponse.json({ error: "Nama minimal 3 karakter." }, { status: 400 });
@@ -165,6 +169,10 @@ export async function POST(request: Request) {
         patokanLokasi: patokanLokasi || null,
         penanggungjawab: penanggungjawab || null,
         referal: referal || null,
+        latitude,
+        longitude,
+        koordinatSumber,
+        koordinatAkurasi,
         status: "calon", // belum aktif — tagihan dibuat setelah disetujui
         wilayahId: wilayah?.id ?? null,
         paketId,

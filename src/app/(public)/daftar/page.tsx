@@ -12,23 +12,23 @@ export const metadata: Metadata = {
 const ALUR_DAFTAR = [
   {
     no: "01",
-    judul: "ISI FORM DIMARI",
-    desc: "Lengkapin data diri lu sama alamat. Gratis coy, kagak dipungut biaya pendaftaran.",
+    judul: "ISI FORMULIR",
+    desc: "Lengkapin data diri sama alamat. Pendaftaran 100% GRATIS.",
   },
   {
     no: "02",
     judul: "SURVEI LOKASI",
-    desc: "Petugas kita bakal hubungin lu buat survei rute, biar ngangkutnya gampang.",
+    desc: "Petugas kita bakal hubungin buat cek rute angkut sampah.",
   },
   {
     no: "03",
-    judul: "DAPET KODE",
-    desc: "Kalo udah ACC, lu dapet kode anggota buat login, cek tagihan, sama ngadu.",
+    judul: "DAPAT KODE",
+    desc: "Kalo ACC, dapet ID Pelanggan buat cek tagihan & lapor.",
   },
   {
     no: "04",
-    judul: "BERES DAH",
-    desc: "Sampah lu diangkut rutin. Tagihan dikirim otomatis tiap bulan lewat WA.",
+    judul: "BERES!",
+    desc: "Sampah diangkut rutin, tagihan dikirim lewat Bot WA.",
   },
 ];
 
@@ -47,21 +47,22 @@ export default async function DaftarPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
-      <div className="mb-16 text-center md:text-left">
-        <p className="font-mono text-[var(--neon-yellow)] uppercase tracking-widest text-xs border border-[var(--neon-yellow)] bg-[rgba(252,238,10,0.1)] inline-block px-4 py-1 mb-4 shadow-[0_0_10px_rgba(252,238,10,0.2)]">
-          &gt; REGISTRASI_NEW_USER
-        </p>
-        <h1 className="font-display font-black text-4xl sm:text-6xl text-white uppercase tracking-tighter">
-          GABUNG SAMA <span className="text-[var(--neon-cyan)] glitch-text">KITA COY!</span>
+    <div className="py-12 space-y-12">
+      <div className="text-center md:text-left">
+        <div className="inline-block px-4 py-1 hm-border font-bold uppercase text-xs mb-2 bg-[#f4f4f0]">
+          O2W / PENDAFTARAN BARU
+        </div>
+        <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">
+          GABUNG O2W <span className="text-green-600">SEKARANG.</span>
         </h1>
-        <p className="text-slate-400 font-mono mt-6 max-w-2xl leading-relaxed mx-auto md:mx-0">
+        <p className="font-bold uppercase tracking-widest text-sm max-w-2xl mt-4">
           {tarifMin > 0 ? (
             <>
-              Murmer mulai dari <span className="text-[var(--neon-yellow)] font-bold">{formatRupiah(tarifMin)}</span> sebulan. Kagak ada uang pendaftaran alias <span className="text-[var(--neon-lime)]">GRATIS TIS TIS</span>. Langsung aja isi form di mari.
+              BIAYA LANGGANAN MULAI DARI <span className="text-red-600">{formatRupiah(tarifMin)}</span> / BULAN. 
+              TIDAK ADA BIAYA PENDAFTARAN. LANGSUNG ISI FORMULIR DI BAWAH.
             </>
           ) : (
-            "Kagak ada uang pendaftaran alias GRATIS TIS TIS. Langsung aja isi form di mari."
+            "TIDAK ADA BIAYA PENDAFTARAN. LANGSUNG ISI FORMULIR DI BAWAH."
           )}
         </p>
       </div>
@@ -69,30 +70,37 @@ export default async function DaftarPage() {
       <div className="grid lg:grid-cols-5 gap-12 items-start">
         {/* Langkah */}
         <div className="lg:col-span-2 space-y-6">
-          {ALUR_DAFTAR.map((l, i) => (
-            <div key={l.no} className="cyber-box border-[var(--neon-cyan)] flex gap-6 p-6">
-              <span className="font-display text-4xl font-black text-[var(--neon-cyan)] mt-1 drop-shadow-[0_0_10px_rgba(0,243,255,0.5)]">
-                {l.no}
-              </span>
-              <div>
-                <h2 className="font-mono font-bold text-white uppercase text-lg">{l.judul}</h2>
-                <p className="text-xs font-mono text-slate-400 mt-2">{l.desc}</p>
-              </div>
+          <div className="hm-card bg-[#f4f4f0] p-0 divide-y-2 divide-black">
+            <div className="p-6 bg-white">
+              <h2 className="font-black text-2xl uppercase">ALUR DAFTAR</h2>
             </div>
-          ))}
-          <div className="cyber-box border-[var(--neon-pink)] p-6 bg-[rgba(255,0,234,0.05)]">
-            <p className="font-mono text-xs font-bold text-[var(--neon-pink)] uppercase mb-2">&gt; CATETAN_PENTING</p>
-            <ul className="space-y-2 text-xs font-mono text-slate-400">
-              <li>&gt; 100% GRATIS biaya pendaftaran</li>
-              <li>&gt; Layanan aktif kalau udah disetujui admin</li>
-              <li>&gt; Kode lu bakal dikirim via WA</li>
+            {ALUR_DAFTAR.map((l) => (
+              <div key={l.no} className="flex gap-6 p-6 items-start hover:bg-gray-50 transition-colors">
+                <span className="font-black text-4xl text-black">
+                  {l.no}
+                </span>
+                <div>
+                  <h3 className="font-black uppercase text-lg mb-1">{l.judul}</h3>
+                  <p className="text-xs font-bold uppercase">{l.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="hm-card bg-red-50">
+            <p className="text-xs font-black text-red-600 uppercase mb-2">CATATAN PENTING</p>
+            <ul className="space-y-2 text-xs font-bold uppercase list-disc pl-4">
+              <li>LAYANAN AKTIF SETELAH DISETUJUI ADMIN.</li>
+              <li>PASTIKAN NOMOR WHATSAPP AKTIF.</li>
+              <li>KODE PELANGGAN AKAN DIKIRIM VIA WA.</li>
             </ul>
           </div>
+          
           <Link
             href="/bayar"
-            className="cyber-btn w-full text-xs text-center border-slate-700 text-slate-400 hover:border-[var(--neon-cyan)] hover:text-[var(--neon-cyan)]"
+            className="hm-btn w-full block text-center bg-[#f4f4f0]"
           >
-            &lt; UDAH DAFTAR? CEK TAGIHAN
+            SUDAH DAFTAR? CEK TAGIHAN
           </Link>
         </div>
 

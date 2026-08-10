@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
   // Allow phone testing
   allowedDevOrigins: ["192.168.100.19"],
   async headers() {
+    const isProd = process.env.NODE_ENV === "production";
     return [
       {
         source: "/(.*)",
@@ -16,14 +17,20 @@ const nextConfig: NextConfig = {
           { key: "X-Frame-Options", value: "DENY" },
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+          // geolocation=(self): form daftar/absensi butuh GPS browser; hanya izinkan
+          // di konteks halaman sendiri (bukan iframe pihak ketiga).
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(self)",
+          },
           {
             key: "Content-Security-Policy",
             // Next.js butuh 'unsafe-inline' untuk style; skrip inline di-hash oleh Next.
-            // frame/object ditolak; base-uri dibatasi.
+            // 'unsafe-eval' hanya dibutuhkan dev mode (Turbopack HMR) — dihilangkan
+            // di production untuk menutup vektor eval.
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+              `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"}`,
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https://api.qrserver.com https://*.basemaps.cartocdn.com",
               "font-src 'self' data:",

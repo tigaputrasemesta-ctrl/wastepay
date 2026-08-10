@@ -10,62 +10,69 @@ export const metadata: Metadata = {
 const PANDUAN = [
   {
     no: "01",
-    judul: "SIAPIN KODE LU",
-    desc: "Masukin kode anggota lu, cek di kartu atau resi pembayaran cuy.",
+    judul: "SIAPKAN KODE",
+    desc: "Masukkan kode pelanggan Anda yang tertera di kartu atau resi pembayaran.",
   },
   {
     no: "02",
-    judul: "TULIS MASALAHNYA",
-    desc: "Kasih tau dah kenapa, makin jelas makin cepet disikat ama tim.",
+    judul: "TULIS MASALAH",
+    desc: "Jelaskan detail kendala Anda, semakin detail semakin cepat diselesaikan.",
   },
   {
     no: "03",
-    judul: "PANTAU TERUS",
-    desc: "Laporan lu bakal masuk ke sistem, pantengin aja sampe kelar.",
+    judul: "PANTAU PROSES",
+    desc: "Laporan akan langsung diteruskan ke armada lapangan yang bertugas.",
   },
 ];
 
 export default function PengaduanPage() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
-      <div className="mb-16 text-center md:text-left">
-        <p className="font-mono text-[var(--neon-pink)] uppercase tracking-widest text-xs border border-[var(--neon-pink)] bg-[rgba(255,0,234,0.1)] inline-block px-4 py-1 mb-4 shadow-[0_0_10px_rgba(255,0,234,0.2)]">
-          &gt; SISTEM_LAPOR_DARURAT
-        </p>
-        <h1 className="font-display font-black text-4xl sm:text-6xl text-white uppercase tracking-tighter">
-          SAMPAH KAGAK DIANGKUT? <br />
-          <span className="text-red-500 glitch-text shadow-red-500">NGADU DIMARI COY!</span>
+    <div className="py-12 space-y-12">
+      <div className="text-center md:text-left">
+        <div className="inline-block px-4 py-1 hm-border font-bold uppercase text-xs mb-2 bg-[#f4f4f0]">
+          O2W / SISTEM LAPOR CEPAT
+        </div>
+        <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">
+          SAMPAH TIDAK DIANGKUT? <br />
+          <span className="text-red-600">LAPOR SEKARANG.</span>
         </h1>
-        <p className="text-slate-400 font-mono mt-6 max-w-2xl leading-relaxed mx-auto md:mx-0">
-          Masukin kode lu, ceritain masalahnya, ntar laporan lu langsung nembus ke terminal armada yang lagi patroli. Kagak pake lama.
+        <p className="font-bold uppercase tracking-widest text-sm max-w-2xl mt-4">
+          MASUKKAN KODE PELANGGAN ANDA, CERITAKAN KENDALANYA. LAPORAN AKAN DITERUSKAN LANGSUNG KE ARMADA YANG SEDANG BEROPERASI.
         </p>
       </div>
 
       <div className="grid lg:grid-cols-5 gap-12 items-start">
         {/* Panduan */}
         <div className="lg:col-span-2 space-y-6">
-          {PANDUAN.map((p, i) => (
-            <div key={p.no} className="cyber-box border-[var(--neon-cyan)] flex gap-6 p-6">
-              <span className="font-display text-4xl font-black text-[var(--neon-cyan)] mt-1 drop-shadow-[0_0_10px_rgba(0,243,255,0.5)]">
-                {p.no}
-              </span>
-              <div>
-                <h2 className="font-mono font-bold text-white uppercase text-lg">{p.judul}</h2>
-                <p className="text-xs font-mono text-slate-400 mt-2">{p.desc}</p>
-              </div>
+          <div className="hm-card bg-[#f4f4f0] p-0 divide-y-2 divide-black">
+            <div className="p-6 bg-white">
+              <h2 className="font-black text-2xl uppercase">CARA MELAPOR</h2>
             </div>
-          ))}
-          <div className="cyber-box border-[var(--neon-yellow)] p-6 bg-[rgba(252,238,10,0.05)]">
-            <p className="font-mono text-xs font-bold text-[var(--neon-yellow)] uppercase mb-2">&gt; CEK_STATUS_OTOMATIS</p>
-            <p className="text-xs font-mono text-slate-400">
-              Kalo lu masukin nomer WA, nanti bot bakal ngirim transmisi pas masalah lu udah kelar diurusin.
+            {PANDUAN.map((p) => (
+              <div key={p.no} className="flex gap-6 p-6 items-start hover:bg-gray-50 transition-colors">
+                <span className="font-black text-4xl text-black">
+                  {p.no}
+                </span>
+                <div>
+                  <h3 className="font-black uppercase text-lg mb-1">{p.judul}</h3>
+                  <p className="text-xs font-bold uppercase">{p.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="hm-card bg-yellow-50">
+            <p className="text-xs font-black text-black uppercase mb-2">PEMBERITAHUAN OTOMATIS</p>
+            <p className="text-xs font-bold uppercase">
+              JIKA ANDA MEMASUKKAN NOMOR WHATSAPP, BOT KAMI AKAN MENGIRIMKAN NOTIFIKASI KETIKA LAPORAN TELAH DISELESAIKAN.
             </p>
           </div>
+          
           <Link
             href="/bayar"
-            className="cyber-btn w-full text-xs text-center border-slate-700 text-slate-400 hover:border-[var(--neon-cyan)] hover:text-[var(--neon-cyan)]"
+            className="hm-btn w-full block text-center bg-[#f4f4f0]"
           >
-            &lt; BALIK KE CEK TAGIHAN
+            KEMBALI KE CEK TAGIHAN
           </Link>
         </div>
 

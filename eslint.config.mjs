@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Artefak dev/debug di root (sudah di .gitignore)
+    "**/replace-peta.js",
+    "**/check.ts",
   ]),
 ]);
 

@@ -58,4 +58,15 @@ next-env.d.ts
 /peta-*.png
 /splynx-dashboard.png
 
+# dev/debug artifacts (root only)
+/check.ts
+/check_img.py
+/convert_to_bmp.py
+/inject_svg.py
+/vectorize.py
+/replace-peta.js
+/skylite-dm.html
+/potrace/
+/potrace.zip
+
 .vercel
