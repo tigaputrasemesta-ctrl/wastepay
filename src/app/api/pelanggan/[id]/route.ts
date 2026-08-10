@@ -25,6 +25,19 @@ export async function GET(
     return NextResponse.json({ error: "Pelanggan tidak ditemukan" }, { status: 404 });
   }
 
+  // Scope wilayah: petugas hanya boleh melihat pelanggan di wilayahnya sendiri.
+  const session = await getSession();
+  if (session && session.role === "petugas") {
+    const profil = await prisma.petugas.findUnique({
+      where: { userId: session.id },
+      select: { wilayahId: true },
+    });
+    // 404 (bukan 403) agar tidak membocorkan keberadaan pelanggan (anti-enumerasi).
+    if (!profil || profil.wilayahId !== pelanggan.wilayahId) {
+      return NextResponse.json({ error: "Pelanggan tidak ditemukan" }, { status: 404 });
+    }
+  }
+
   return NextResponse.json(pelanggan);
 }
 
@@ -38,20 +51,42 @@ export async function PUT(
     const { nama, noTelepon, kategori, alamat, rtRw, fotoRumah, patokanLokasi, latitude, longitude, koordinatSumber, koordinatAkurasi, penanggungjawab, referal, wilayahId, paketId, status, catatan } = body;
 
     // Petugas (role petugas) hanya boleh melalui jabatan survei,
-    // dan hanya mengubah field survei — bukan data keuangan/sebarang.
+    // hanya mengubah field survei — bukan data keuangan/sebarang,
+    // dan hanya untuk pelanggan di wilayahnya sendiri.
     const session = await getSession();
     if (session && session.role === "petugas") {
       const profil = await prisma.petugas.findUnique({
         where: { userId: session.id },
-        select: { jabatan: true },
+        select: { jabatan: true, wilayahId: true },
       });
-      if (!(profil?.jabatan || "").split(",").includes("survei")) {
+      if (!profil) {
+        return NextResponse.json(
+          { error: "Akun belum ter-link ke profil petugas" },
+          { status: 403 }
+        );
+      }
+      if (!(profil.jabatan || "").split(",").includes("survei")) {
         return NextResponse.json(
           { error: "Jabatan Anda tidak berwenang mengubah data pelanggan" },
           { status: 403 }
         );
       }
-      // Whitelist: petugas survei hanya boleh menyentuh field survei + aktivasi
+      // Petugas survei hanya boleh mengubah pelanggan di wilayahnya sendiri
+      const target = await prisma.pelanggan.findUnique({
+        where: { id },
+        select: { wilayahId: true },
+      });
+      if (!target) {
+        return NextResponse.json({ error: "Pelanggan tidak ditemukan" }, { status: 404 });
+      }
+      if (target.wilayahId !== profil.wilayahId) {
+        return NextResponse.json(
+          { error: "Pelanggan di luar wilayah Anda" },
+          { status: 403 }
+        );
+      }
+      // Whitelist: petugas survei hanya boleh menyentuh field survei + aktivasi.
+      // wilayahId TIDAK termasuk — pindah wilayah hanya wewenang admin.
       const fieldSurvei: Record<string, unknown> = {};
       if (fotoRumah !== undefined) fieldSurvei.fotoRumah = fotoRumah;
       if (patokanLokasi !== undefined) fieldSurvei.patokanLokasi = patokanLokasi;
@@ -65,7 +100,6 @@ export async function PUT(
       if (penanggungjawab !== undefined) fieldSurvei.penanggungjawab = penanggungjawab;
       if (referal !== undefined) fieldSurvei.referal = referal;
       if (catatan !== undefined) fieldSurvei.catatan = catatan;
-      if (wilayahId !== undefined) fieldSurvei.wilayahId = parseInt(wilayahId);
       if (status !== undefined && status === "aktif") fieldSurvei.status = "aktif";
 
       const hasil = await prisma.pelanggan.update({

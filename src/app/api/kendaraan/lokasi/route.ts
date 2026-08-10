@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { allowAttempt } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,11 @@ export async function POST(request: Request) {
     const session = await getSession();
     if (!session) {
       return NextResponse.json({ error: "Tidak terautentikasi" }, { status: 401 });
+    }
+
+    // Rate limit per petugas — cegah spam titik lokasi kendaraan
+    if (!(await allowAttempt(`lokasi-kendaraan:${session.id}`, { max: 60, windowMs: 5 * 60 * 1000 }))) {
+      return NextResponse.json({ error: "Terlalu banyak kirim lokasi" }, { status: 429 });
     }
 
     const profil = await prisma.petugas.findUnique({

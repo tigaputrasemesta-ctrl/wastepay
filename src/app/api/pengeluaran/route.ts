@@ -36,6 +36,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Kategori, jumlah, dan keterangan harus diisi" }, { status: 400 });
     }
 
+    const nominal = parseFloat(jumlah);
+    if (!Number.isFinite(nominal) || nominal <= 0) {
+      return NextResponse.json({ error: "Jumlah harus angka positif" }, { status: 400 });
+    }
+
     // Atribusi pencatat dari session, bukan body (anti spoofing)
     const user = await getSession();
     if (!user || !user.id) {
@@ -46,7 +51,7 @@ export async function POST(request: Request) {
       data: {
         tanggal: tanggal ? new Date(tanggal) : new Date(),
         kategori,
-        jumlah: parseFloat(jumlah),
+        jumlah: nominal,
         keterangan,
         bukti,
         dicatatById: user.id,

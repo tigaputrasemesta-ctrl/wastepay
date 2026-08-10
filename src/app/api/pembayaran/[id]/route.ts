@@ -46,9 +46,24 @@ export async function PUT(request: Request, { params }: Params) {
 
     const pembayaran = await prisma.pembayaran.findUnique({
       where: { id: parseInt(id) },
+      include: { pelanggan: { select: { wilayahId: true } } },
     });
     if (!pembayaran) {
       return NextResponse.json({ error: "Pembayaran tidak ditemukan" }, { status: 404 });
+    }
+
+    // Petugas tagih hanya boleh memverifikasi pembayaran pelanggan di wilayahnya sendiri
+    if (session && session.role === "petugas") {
+      const profil = await prisma.petugas.findUnique({
+        where: { userId: session.id },
+        select: { wilayahId: true },
+      });
+      if (!profil || profil.wilayahId !== pembayaran.pelanggan.wilayahId) {
+        return NextResponse.json(
+          { error: "Pelanggan di luar wilayah Anda" },
+          { status: 403 }
+        );
+      }
     }
     if (pembayaran.status !== "pending") {
       return NextResponse.json(
@@ -145,6 +160,15 @@ export async function DELETE(request: Request, { params }: Params) {
     });
     if (!pembayaran) {
       return NextResponse.json({ error: "Pembayaran tidak ditemukan" }, { status: 404 });
+    }
+
+    // Jangan izinkan hapus pembayaran gateway (Duitku) yang sudah terverifikasi:
+    // uang sudah settle di merchant — menghapusnya bikin selisih kas tanpa reversal.
+    if (pembayaran.metode.startsWith("duitku") && pembayaran.status === "terverifikasi") {
+      return NextResponse.json(
+        { error: "Pembayaran gateway yang sudah terverifikasi tidak bisa dihapus — hubungi admin untuk reversal" },
+        { status: 400 }
+      );
     }
 
     await prisma.$transaction(async (tx) => {

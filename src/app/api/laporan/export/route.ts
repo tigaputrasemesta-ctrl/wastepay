@@ -2,7 +2,12 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 function csvEscape(value: string | number | null | undefined): string {
-  const s = value == null ? "" : String(value);
+  let s = value == null ? "" : String(value);
+  // Anti CSV formula injection: nilai yang diawali karakter formula Excel
+  // (=, +, -, @) diberi prefix apostrophe agar tidak dieksekusi sebagai formula.
+  if (/^[=+\-@]/.test(s)) {
+    s = "'" + s;
+  }
   if (/[",\n;]/.test(s)) {
     return `"${s.replace(/"/g, '""')}"`;
   }

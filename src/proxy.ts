@@ -62,8 +62,8 @@ const API_ROLE_MAP: Record<string, number> = {
   "POST:/api/klaim": 10,
   "PUT:/api/klaim": 50,
 
-  // Auth seed (superadmin only)
-  "POST:/api/auth/seed": 100,
+  // Auth seed (superadmin only) — DI LUAR /api/auth agar tidak kena bypass proxy
+  "POST:/api/seed/admin": 100,
 
   // Duitku status (admin+)
   "GET:/api/duitku/status": 50,

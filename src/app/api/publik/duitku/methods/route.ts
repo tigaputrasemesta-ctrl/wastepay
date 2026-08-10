@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getPaymentMethods } from "@/lib/duitku";
+import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
 
 /**
  * GET /api/publik/duitku/methods?amount=50000
@@ -8,6 +9,15 @@ import { getPaymentMethods } from "@/lib/duitku";
  * tersedia. Jika gagal / belum dikonfigurasi → { enabled: false }, klien pakai fallback.
  */
 export async function GET(request: Request) {
+  // Rate limit per IP — endpoint ini memicu panggilan ke API Duitku (biaya/hammering).
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  if (!(await allowAttempt(`duitku-methods:${ip}`, { max: 30, windowMs: 15 * 60 * 1000 }))) {
+    return NextResponse.json(
+      { error: "Terlalu banyak percobaan. Coba lagi nanti." },
+      { status: 429, headers: { "Retry-After": String(retryAfterSeconds(`duitku-methods:${ip}`)) } }
+    );
+  }
+
   const { searchParams } = new URL(request.url);
   const amount = parseInt(searchParams.get("amount") || "0", 10);
   if (!amount || amount <= 0) {

@@ -53,6 +53,21 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+
+    // Petugas tagih hanya boleh mencatat pembayaran pelanggan di wilayahnya sendiri
+    if (session && session.role === "petugas") {
+      const profil = await prisma.petugas.findUnique({
+        where: { userId: session.id },
+        select: { wilayahId: true },
+      });
+      if (!profil || profil.wilayahId !== tagihan.pelanggan.wilayahId) {
+        return NextResponse.json(
+          { error: "Pelanggan di luar wilayah Anda" },
+          { status: 403 }
+        );
+      }
+    }
+
     if (tagihan.status === "lunas" || tagihan.status === "dibatalkan") {
       return NextResponse.json(
         { error: `Tagihan sudah ${tagihan.status === "lunas" ? "lunas" : "dibatalkan"}` },
@@ -131,6 +146,12 @@ export async function GET(request: Request) {
   const status = searchParams.get("status");
   // ?saya=1 → petugas tagih: pembayaran pelanggan di wilayahnya
   const saya = searchParams.get("saya") === "1";
+
+  // Validasi status enum
+  const STATUS_VALID = ["pending", "terverifikasi", "ditolak"];
+  if (status && !STATUS_VALID.includes(status)) {
+    return NextResponse.json({ error: "Status tidak valid" }, { status: 400 });
+  }
 
   const where: Prisma.PembayaranWhereInput = {};
   if (tagihanId) where.tagihanId = parseInt(tagihanId);

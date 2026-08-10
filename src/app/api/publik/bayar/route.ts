@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hitungRincian } from "@/lib/invoice";
+import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
 
 const METODE_VALID = ["transfer", "ewallet", "qris", "virtual_account"];
 
@@ -11,6 +12,15 @@ const METODE_VALID = ["transfer", "ewallet", "qris", "virtual_account"];
  */
 export async function POST(request: Request) {
   try {
+    // Rate limit per IP — cegah spam unggah bukti (banjir antrian verifikasi admin).
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    if (!(await allowAttempt(`publik-bayar:${ip}`, { max: 10, windowMs: 15 * 60 * 1000 }))) {
+      return NextResponse.json(
+        { error: "Terlalu banyak percobaan. Coba lagi nanti." },
+        { status: 429, headers: { "Retry-After": String(retryAfterSeconds(`publik-bayar:${ip}`)) } }
+      );
+    }
+
     const body = await request.json();
     const { kode, tagihanId, metode, buktiBayar, catatan } = body;
 
@@ -46,6 +56,10 @@ export async function POST(request: Request) {
     // Cegah spam: batasi ukuran bukti (data URL base64, max ~2MB)
     if (buktiBayar && typeof buktiBayar === "string" && buktiBayar.length > 2_800_000) {
       return NextResponse.json({ error: "Ukuran bukti terlalu besar (maks 2MB)" }, { status: 400 });
+    }
+    // Hanya terima data URL gambar (bukan HTML/script/arbitrary text)
+    if (buktiBayar && typeof buktiBayar === "string" && !buktiBayar.startsWith("data:image/")) {
+      return NextResponse.json({ error: "Bukti harus berupa gambar" }, { status: 400 });
     }
 
     // Total yang ditagih = jumlah + PPN 11% + denda — konsisten dengan invoice & Duitku

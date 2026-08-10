@@ -25,13 +25,41 @@ export async function GET(request: Request) {
   // ?saya=1 → petugas tagih: hanya tagihan pelanggan di wilayahnya
   const saya = searchParams.get("saya") === "1";
 
+  // Validasi status enum — nilai tak dikenal langsung 400 (bukan 500 dari Prisma)
+  const STATUS_VALID = ["belum_bayar", "lunas", "tunggakan", "dibatalkan"];
+  if (status && !STATUS_VALID.includes(status)) {
+    return NextResponse.json({ error: "Status tidak valid" }, { status: 400 });
+  }
+
   const where: Prisma.TagihanWhereInput = { deletedAt: null };
-  if (bulan) where.bulan = parseInt(bulan);
-  if (tahun) where.tahun = parseInt(tahun);
+  if (bulan) {
+    const b = parseInt(bulan);
+    if (!Number.isInteger(b) || b < 1 || b > 12) {
+      return NextResponse.json({ error: "Bulan tidak valid" }, { status: 400 });
+    }
+    where.bulan = b;
+  }
+  if (tahun) {
+    const t = parseInt(tahun);
+    if (!Number.isInteger(t) || t < 2000 || t > 2100) {
+      return NextResponse.json({ error: "Tahun tidak valid" }, { status: 400 });
+    }
+    where.tahun = t;
+  }
   if (status) where.status = status;
-  if (pelangganId) where.pelangganId = parseInt(pelangganId);
+  if (pelangganId) {
+    const pid = parseInt(pelangganId);
+    if (!Number.isInteger(pid)) {
+      return NextResponse.json({ error: "pelangganId tidak valid" }, { status: 400 });
+    }
+    where.pelangganId = pid;
+  }
   if (wilayahId) {
-    where.pelanggan = { wilayahId: parseInt(wilayahId) };
+    const wid = parseInt(wilayahId);
+    if (!Number.isInteger(wid)) {
+      return NextResponse.json({ error: "wilayahId tidak valid" }, { status: 400 });
+    }
+    where.pelanggan = { wilayahId: wid };
   }
   if (saya) {
     const session = await getSession();
@@ -87,6 +115,10 @@ export async function POST(request: Request) {
       const bln = parseInt(bulan);
       const thn = parseInt(tahun);
 
+      if (!Number.isInteger(pid) || !Number.isInteger(bln) || bln < 1 || bln > 12 || !Number.isInteger(thn)) {
+        return NextResponse.json({ error: "Parameter tidak valid" }, { status: 400 });
+      }
+
       const existing = await prisma.tagihan.findUnique({
         where: { pelangganId_bulan_tahun: { pelangganId: pid, bulan: bln, tahun: thn } },
       });
@@ -94,7 +126,12 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "Tagihan sudah ada untuk pelanggan ini" }, { status: 400 });
       }
 
-      const tarif = jumlah ? parseFloat(jumlah) : await getTarif(pid);
+      // jumlah: string kosong/null/undefined → hitung otomatis; angka (termasuk 0) → pakai manual
+      const jumlahDikirim = jumlah !== undefined && jumlah !== null && String(jumlah).trim() !== "";
+      const tarif = jumlahDikirim ? parseFloat(jumlah) : await getTarif(pid);
+      if (!Number.isFinite(tarif) || tarif <= 0) {
+        return NextResponse.json({ error: "Tarif tidak valid atau tidak ditemukan" }, { status: 400 });
+      }
 
       const tagihan = await prisma.tagihan.create({
         data: {
@@ -148,31 +185,35 @@ export async function POST(request: Request) {
         include: { paket: true },
       });
 
-      let created = 0;
-      let skipped = 0;
+      // Batch: 1 query semua tagihan periode tsb + 1 query semua kategori tarif
+      // (sebelumnya 2 query per pelanggan → N+1).
       const bln = parseInt(bulan);
       const thn = parseInt(tahun);
+      const [existingAll, kategoriTarifAll] = await Promise.all([
+        prisma.tagihan.findMany({
+          where: { bulan: bln, tahun: thn },
+          select: { pelangganId: true },
+        }),
+        prisma.kategoriTarif.findMany(),
+      ]);
+      const existingIds = new Set(existingAll.map((t) => t.pelangganId));
+      const kategoriTarifMap = new Map(kategoriTarifAll.map((k) => [k.kategori, k.tarif]));
+
+      let created = 0;
+      let skipped = 0;
       const tagihanBaru: { pelangganId: number; nama: string; noTelepon: string | null; noInvoice: string | null; bulan: number; tahun: number; jumlah: number; denda: number | null; jatuhTempo: Date }[] = [];
 
       for (const p of pelangganAktif) {
-        const existing = await prisma.tagihan.findUnique({
-          where: { pelangganId_bulan_tahun: { pelangganId: p.id, bulan: bln, tahun: thn } },
-        });
-        if (existing) {
+        if (existingIds.has(p.id)) {
           skipped++;
           continue;
         }
 
         // Hitung tarif: jumlah manual > customTarif > paket.harga > kategoriTarif
-        let tarif = jumlah ? parseFloat(jumlah) : 0;
+        let tarif = jumlah !== undefined && jumlah !== null && String(jumlah).trim() !== "" ? parseFloat(jumlah) : 0;
         if (!tarif && p.customTarif) tarif = p.customTarif;
         if (!tarif && p.paket?.harga) tarif = p.paket.harga;
-        if (!tarif) {
-          const kategoriTarif = await prisma.kategoriTarif.findUnique({
-            where: { kategori: p.kategori },
-          });
-          tarif = kategoriTarif?.tarif ?? 0;
-        }
+        if (!tarif) tarif = kategoriTarifMap.get(p.kategori) ?? 0;
 
         await prisma.tagihan.create({
           data: {

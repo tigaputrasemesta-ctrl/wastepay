@@ -67,13 +67,32 @@ export async function POST(request: Request) {
     if (session && session.role === "petugas") {
       const profil = await prisma.petugas.findUnique({
         where: { userId: session.id },
-        select: { id: true },
+        select: { id: true, wilayahId: true },
       });
-      if (profil) petugasIdAkhir = profil.id;
+      if (!profil) {
+        return NextResponse.json({ error: "Akun belum ter-link ke profil petugas" }, { status: 403 });
+      }
+      petugasIdAkhir = profil.id;
+
+      // Pelanggan harus di wilayah petugas ini
+      const pelangganTujuan = await prisma.pelanggan.findUnique({
+        where: { id: parseInt(pelangganId) },
+        select: { wilayahId: true },
+      });
+      if (!pelangganTujuan) {
+        return NextResponse.json({ error: "Pelanggan tidak ditemukan" }, { status: 404 });
+      }
+      if (pelangganTujuan.wilayahId !== profil.wilayahId) {
+        return NextResponse.json(
+          { error: "Pelanggan di luar wilayah Anda" },
+          { status: 403 }
+        );
+      }
+
       // Kendaraan yang dipakai harus milik petugas ini (pengemudi)
       if (kendaraanIdAkhir) {
         const k = await prisma.kendaraan.findFirst({
-          where: { id: kendaraanIdAkhir, deletedAt: null, petugasId: profil?.id },
+          where: { id: kendaraanIdAkhir, deletedAt: null, petugasId: profil.id },
           select: { id: true },
         });
         if (!k) {
