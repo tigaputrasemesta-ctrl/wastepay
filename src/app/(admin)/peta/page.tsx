@@ -15,9 +15,22 @@ export const dynamic = "force-dynamic";
 
 export default async function PetaPage() {
   const session = await getSession();
+
+  // ── Scope wilayah: petugas hanya melihat data wilayahnya sendiri (PII terlindungi) ──
+  let scopeWilayahId: number | null = null;
+  if (session && session.role === "petugas") {
+    const profil = await prisma.petugas.findUnique({
+      where: { userId: session.id },
+      select: { wilayahId: true },
+    });
+    scopeWilayahId = profil?.wilayahId ?? null;
+  }
+  // Petugas tanpa profil → tidak dapat data apa pun (bukan semua wilayah)
+  const scope = scopeWilayahId ? { wilayahId: scopeWilayahId } : { id: -1 };
+
   const [pelangganList, wilayahList, tagihanList, ruteList] = await Promise.all([
     prisma.pelanggan.findMany({
-      where: { deletedAt: null },
+      where: { deletedAt: null, ...scope },
       select: {
         id: true,
         nama: true,
@@ -39,11 +52,12 @@ export default async function PetaPage() {
       orderBy: { nama: "asc" },
     }),
     prisma.tagihan.findMany({
+      where: scopeWilayahId ? { pelanggan: { wilayahId: scopeWilayahId } } : { id: -1 },
       select: { pelangganId: true, status: true, bulan: true, tahun: true },
       orderBy: [{ tahun: "desc" }, { bulan: "desc" }],
     }),
     prisma.rute.findMany({
-      where: { aktif: true },
+      where: scopeWilayahId ? { aktif: true, wilayahId: scopeWilayahId } : { id: -1 },
       select: {
         id: true,
         nama: true,

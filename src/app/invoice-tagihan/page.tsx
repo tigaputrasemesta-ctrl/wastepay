@@ -16,6 +16,18 @@ import {
 import "./invoice.css";
 
 /**
+ * Masking nomor telepon untuk halaman publik (invoice bisa di-enumerate):
+ * 081234567890 → 0812••••7890. Konsisten dengan /api/publik/tagihan-detail
+ * yang juga tidak mengekspos noTelepon lengkap.
+ */
+function maskNoTelepon(no: string | null | undefined): string {
+  if (!no) return "";
+  const s = no.trim();
+  if (s.length <= 4) return "••••";
+  return `${s.slice(0, 4)}••••${s.slice(-4)}`;
+}
+
+/**
  * /invoice-tagihan?invoice=INV/XXX/202606
  * Invoice printable (PDF via window.print) — pola skylite.id.
  */
@@ -92,7 +104,7 @@ export default async function InvoiceTagihanPage({
                 <span>Yth. Bapak/Ibu&nbsp;</span>
                 <p>
                   {tagihan.pelanggan.nama}{" "}
-                  {tagihan.pelanggan.noTelepon ? `(${tagihan.pelanggan.noTelepon})` : ""}
+                  {tagihan.pelanggan.noTelepon ? `(${maskNoTelepon(tagihan.pelanggan.noTelepon)})` : ""}
                 </p>
               </div>
               <div className="party-row">

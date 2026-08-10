@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 
@@ -13,8 +14,24 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Status tidak valid" }, { status: 400 });
   }
 
+  // Scope wilayah: petugas hanya melihat komplain pelanggan di wilayahnya (PII terlindungi)
+  const session = await getSession();
+  let where: Prisma.KomplainWhereInput | undefined =
+    status && status !== "semua" ? { status } : undefined;
+  if (session && session.role === "petugas") {
+    const profil = await prisma.petugas.findUnique({
+      where: { userId: session.id },
+      select: { wilayahId: true },
+    });
+    if (!profil) {
+      return NextResponse.json({ error: "Akun belum ter-link ke profil petugas" }, { status: 403 });
+    }
+    const scopeWilayah = { pelanggan: { wilayahId: profil.wilayahId } };
+    where = where ? { ...where, ...scopeWilayah } : scopeWilayah;
+  }
+
   const komplain = await prisma.komplain.findMany({
-    where: status && status !== "semua" ? { status } : undefined,
+    where,
     include: {
       pelanggan: {
         select: {

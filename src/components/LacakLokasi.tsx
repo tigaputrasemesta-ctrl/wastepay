@@ -88,11 +88,13 @@ export default function LacakLokasi({
       setStatus("Perangkat tidak mendukung GPS");
       return;
     }
-    if (!kendaraanIdRef.current) {
-      setStatus("Pilih kendaraan yang Anda kendarai dulu");
-      return;
-    }
-    setStatus("Mencari sinyal GPS…");
+    // Kendaraan opsional: tanpa kendaraan ter-pilih, tetap lacak posisi petugas.
+    // (Petugas angkut yang belum punya kendaraan ter-asign tetap bisa terlihat di peta.)
+    setStatus(
+      kendaraan.length > 0 && !kendaraanIdRef.current
+        ? "Tanpa kendaraan — posisi petugas saja. Pilih kendaraan bila perlu."
+        : "Mencari sinyal GPS…"
+    );
     setDurasi(0);
 
     const simpan = (pos: GeolocationPosition) => {
@@ -122,7 +124,7 @@ export default function LacakLokasi({
     durasiRef.current = setInterval(() => setDurasi((d) => d + 1), 1000);
     aktifkanWakeLock();
     setLacak(true);
-  }, [kirimLokasi, aktifkanWakeLock]);
+  }, [kirimLokasi, aktifkanWakeLock, kendaraan.length]);
 
   const hentikan = useCallback(async () => {
     if (watchId.current != null) navigator.geolocation.clearWatch(watchId.current);

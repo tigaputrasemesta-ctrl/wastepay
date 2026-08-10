@@ -111,6 +111,12 @@ function formatWaktuRelatifPeta(iso: string): string {
   return `${Math.floor(detik / 3600)}jam`;
 }
 
+// Ambang "online": posisi dianggap realtime jika dikirim < 15 menit lalu.
+const ONLINE_MS = 15 * 60 * 1000;
+function isOnline(iso: string): boolean {
+  return Date.now() - new Date(iso).getTime() < ONLINE_MS;
+}
+
 export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], kendaraanAwal = [], transitAwal = [] }: Props) {
   const [filterWilayah, setFilterWilayah] = useState("semua");
   const [filterStatus, setFilterStatus] = useState("semua");
@@ -303,6 +309,11 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
   );
 
   const hitungBaru = komplainDenganPosisi.filter((k) => k.status === "baru").length;
+
+  // Hitung armada yang BENAR-BENAR online (kirim posisi < 15 mnt) — bukan semua yang pernah kirim
+  const petugasOnline = petugas.filter((p) => isOnline(p.updatedAt)).length;
+  const kendaraanOnline = kendaraan.filter((k) => isOnline(k.updatedAt)).length;
+  const totalOnline = petugasOnline + kendaraanOnline;
 
   const pilihPelanggan = useCallback((id: number) => {
     setSelectedId(id);
@@ -863,7 +874,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
               <span className="font-mono text-xs font-bold text-[#facc15] flex items-center justify-between drop-shadow-[0_0_5px_#facc15]">
                 <span className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-none-full bg-[#facc15] animate-blink shadow-[0_0_5px_#facc15]" />
-                  GPS ONLINE ({petugas.length + kendaraan.length})
+                  GPS ONLINE ({totalOnline})
                 </span>
               </span>
               {lastPetugas && (
@@ -882,19 +893,28 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                   <p className="font-mono text-[9px] text-[#facc15]/90 px-2 font-bold tracking-widest border-b border-[#facc15]/20 pb-1">👤 PETUGAS</p>
                   {petugas.map((p) => {
                     const jabat = (p.jabatan || "").split(",").filter(Boolean);
+                    const online = isOnline(p.updatedAt);
                     return (
                       <button
                         key={`dir-${p.petugasId}`}
                         onClick={() => setPusatPetugas([p.latitude, p.longitude])}
                         className="w-full flex items-center gap-2 text-left bg-[#facc15]/5 hover:bg-[#facc15]/20 border border-[#facc15]/30 rounded-none px-3 py-2 transition group"
                       >
-                        <span className="w-2.5 h-2.5 rounded-none-full bg-[#4ade80] animate-blink shrink-0 shadow-[0_0_5px_#4ade80]" />
+                        <span
+                          className={`w-2.5 h-2.5 rounded-none-full shrink-0 shadow-[0_0_5px_#4ade80] ${
+                            online ? "bg-[#4ade80] animate-blink" : "bg-gray-400"
+                          }`}
+                        />
                         <span className="text-xs text-black font-black font-bold truncate flex-1">{p.nama}</span>
                         <span className="text-[9px] font-mono text-black bg-[#facc15] px-1.5 py-0.5 rounded-none uppercase shrink-0 font-bold">
                           {jabat.map((j) => j.slice(0, 3)).join("·") || "PTG"}
                         </span>
-                        <span className="text-[9px] font-mono text-[#4ade80] shrink-0 font-bold">
-                          {formatWaktuRelatifPeta(p.updatedAt)} ▶
+                        <span
+                          className={`text-[9px] font-mono shrink-0 font-bold ${
+                            online ? "text-[#4ade80]" : "text-gray-500"
+                          }`}
+                        >
+                          {online ? "ONLINE" : `offline ${formatWaktuRelatifPeta(p.updatedAt)}`} ▶
                         </span>
                       </button>
                     );
@@ -906,22 +926,32 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
               {kendaraan.length > 0 && (
                 <div className="space-y-1.5">
                   <p className="font-mono text-[9px] text-[#facc15]/90 px-2 font-bold tracking-widest border-b border-[#facc15]/20 pb-1">🚛 KENDARAAN</p>
-                  {kendaraan.map((k) => (
-                    <button
-                      key={`dir-k-${k.kendaraanId}`}
-                      onClick={() => setPusatPetugas([k.latitude, k.longitude])}
-                      className="w-full flex items-center gap-2 text-left bg-[#facc15]/5 hover:bg-[#facc15]/20 border border-[#facc15]/30 rounded-none px-3 py-2 transition group"
-                    >
-                      <span className="text-sm shrink-0">{k.jenis === "dump_truck" ? "🚛" : "🛺"}</span>
-                      <span className="text-xs text-black font-black font-bold truncate flex-1">
-                        {k.nama}
-                        {k.platNomor ? <span className="font-mono text-[9px] text-[#facc15]/80 ml-1">[{k.platNomor}]</span> : null}
-                      </span>
-                      <span className="text-[9px] font-mono text-black bg-[#facc15] px-1.5 py-0.5 rounded-none uppercase shrink-0 font-bold">
-                        {k.jenis === "dump_truck" ? "DUMP" : k.jenis === "pickup" ? "PICKUP" : "GEROBAK"}
-                      </span>
-                    </button>
-                  ))}
+                  {kendaraan.map((k) => {
+                    const online = isOnline(k.updatedAt);
+                    return (
+                      <button
+                        key={`dir-k-${k.kendaraanId}`}
+                        onClick={() => setPusatPetugas([k.latitude, k.longitude])}
+                        className="w-full flex items-center gap-2 text-left bg-[#facc15]/5 hover:bg-[#facc15]/20 border border-[#facc15]/30 rounded-none px-3 py-2 transition group"
+                      >
+                        <span className="text-sm shrink-0">{k.jenis === "dump_truck" ? "🚛" : "🛺"}</span>
+                        <span className="text-xs text-black font-black font-bold truncate flex-1">
+                          {k.nama}
+                          {k.platNomor ? <span className="font-mono text-[9px] text-[#facc15]/80 ml-1">[{k.platNomor}]</span> : null}
+                        </span>
+                        <span className="text-[9px] font-mono text-black bg-[#facc15] px-1.5 py-0.5 rounded-none uppercase shrink-0 font-bold">
+                          {k.jenis === "dump_truck" ? "DUMP" : k.jenis === "pickup" ? "PICKUP" : "GEROBAK"}
+                        </span>
+                        <span
+                          className={`text-[9px] font-mono shrink-0 font-bold ${
+                            online ? "text-[#4ade80]" : "text-gray-500"
+                          }`}
+                        >
+                          {online ? "ONLINE" : `offline ${formatWaktuRelatifPeta(k.updatedAt)}`} ▶
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>

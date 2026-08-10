@@ -5,6 +5,7 @@ import { JWT_SECRET, COOKIE_NAME } from "@/lib/secret";
 import { extractOrigin, isSameOriginRequest } from "@/lib/csrf";
 import { ROLE_HIERARCHY, type Role } from "@/lib/rbac";
 import { prisma } from "@/lib/prisma";
+import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
 
 // Role hierarchy — single source of truth di src/lib/rbac.ts
 // (ROLE_HIERARCHY diimpor agar tidak ada dua definisi yang bisa divergen).
@@ -26,6 +27,8 @@ const PAGE_ROLES: Record<string, number> = {
   "/komplain": 10, // semua role
   "/absensi": 10, // petugas: absen masuk/selesai
   "/klaim": 10, // petugas: klaim tunjangan
+  "/manajemen-tarif": 50, // admin+: kelola tarif & paket
+  "/transit": 50, // admin+: kelola titik transit (petugas melihat via peta, bukan halaman ini)
   "/pengeluaran": 50, // admin+
   "/laporan": 20, // kasir+
   "/pengumuman": 50, // admin+
@@ -273,6 +276,25 @@ export async function proxy(request: NextRequest) {
       return NextResponse.json(
         { error: "Forbidden: asal permintaan tidak dikenali" },
         { status: 403 }
+      );
+    }
+  }
+
+  // ---- Halaman invoice publik: anti-enumerasi ----
+  // noInvoice berformat INV/{kodePelanggan}/{YYYYMM} (kode pelanggan sequential),
+  // jadi halaman ini bisa di-scrape massal. Rate limit per IP — halaman sah
+  // (via QR scan) tetap bisa dibuka, enumerator terhambat.
+  if (pathname === "/invoice-tagihan") {
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      request.headers.get("x-real-ip") ||
+      "unknown";
+    const key = `invoice-page:${ip}`;
+    if (!(await allowAttempt(key, { max: 60, windowMs: 15 * 60 * 1000 }))) {
+      const retry = retryAfterSeconds(key);
+      return new NextResponse(
+        `Terlalu banyak permintaan. Coba lagi dalam ${Math.ceil(retry / 60)} menit.`,
+        { status: 429, headers: { "Retry-After": String(retry) } }
       );
     }
   }
