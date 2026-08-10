@@ -35,6 +35,7 @@ model User {
 model Wilayah {
   id        Int         @id @default(autoincrement())
   nama      String      // nama wilayah, misal "RT 01", "Blok A"
+  kode      String?     @unique // kode zona singkat utk kode pelanggan, misal "KB" (Kalibaru) → kode pelanggan KB-001
   rt        String?
   rw        String?
   kelurahan String?

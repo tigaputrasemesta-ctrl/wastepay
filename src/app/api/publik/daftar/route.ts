@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
+import { generateKodePelanggan } from "@/lib/kode-pelanggan";
 import {
   adminPhone,
   kirimNotifikasi,
@@ -51,24 +53,6 @@ async function cariWilayah(opts: {
     orderBy: { id: "asc" },
     select: { id: true },
   });
-}
-
-/** Generate kode P-XXXXXX dengan retry bila kode bentrok (race condition). */
-async function generateKodePelanggan(): Promise<string> {
-  for (let percobaan = 0; percobaan < 3; percobaan++) {
-    const last = await prisma.pelanggan.findFirst({
-      orderBy: { id: "desc" },
-      select: { id: true },
-    });
-    const kode = `P-${String((last?.id ?? 0) + 1).padStart(6, "0")}`;
-    const bentrok = await prisma.pelanggan.findUnique({
-      where: { kodePelanggan: kode },
-      select: { id: true },
-    });
-    if (!bentrok) return kode;
-  }
-  // Fallback: kode berbasis timestamp bila semua bentrok
-  return `P-${Date.now().toString().slice(-6)}`;
 }
 
 /**
@@ -140,6 +124,14 @@ export async function POST(request: Request) {
     // Cocokkan wilayah: RT/RW (jika diisi) → fallback kelurahan+kecamatan
     const wilayah = await cariWilayah({ rt, rw, kelurahan, kecamatan });
 
+    // Wilayah wajib cocok — kode pelanggan berbasis zona ({kodeWilayah}-001)
+    if (!wilayah) {
+      return NextResponse.json(
+        { error: "Wilayah tidak ditemukan — pastikan kelurahan/kecamatan benar atau hubungi pengelola" },
+        { status: 400 }
+      );
+    }
+
     // Paket (opsional) — validasi keberadaan
     let paketNama: string | null = null;
     const paketIdRaw = body.paketId ? parseInt(body.paketId) : NaN;
@@ -155,36 +147,48 @@ export async function POST(request: Request) {
       }
     }
 
-    const kodePelanggan = await generateKodePelanggan();
+    let kodePelanggan = await generateKodePelanggan(wilayah.id);
     const rtRw = formatRtRw(rt, rw);
 
-    const pelanggan = await prisma.pelanggan.create({
-      data: {
-        nama,
-        noTelepon,
-        kategori,
-        alamat,
-        rtRw: rtRw || null,
-        kodePelanggan,
-        patokanLokasi: patokanLokasi || null,
-        penanggungjawab: penanggungjawab || null,
-        referal: referal || null,
-        latitude,
-        longitude,
-        koordinatSumber,
-        koordinatAkurasi,
-        status: "calon", // belum aktif — tagihan dibuat setelah disetujui
-        wilayahId: wilayah?.id ?? null,
-        paketId,
-        catatan: [
-          "Daftar mandiri via website",
-          `(${kecamatan} / ${kelurahan})`,
-          rtRw ? `RT/RW: ${rtRw}` : null,
-        ]
-          .filter(Boolean)
-          .join(" "),
-      },
-    });
+    // Retry bila kode bentrok (sangat jarang) — generate ulang lalu create lagi
+    let pelanggan;
+    for (let coba = 0; ; coba++) {
+      try {
+        pelanggan = await prisma.pelanggan.create({
+          data: {
+            nama,
+            noTelepon,
+            kategori,
+            alamat,
+            rtRw: rtRw || null,
+            kodePelanggan,
+            patokanLokasi: patokanLokasi || null,
+            penanggungjawab: penanggungjawab || null,
+            referal: referal || null,
+            latitude,
+            longitude,
+            koordinatSumber,
+            koordinatAkurasi,
+            status: "calon", // belum aktif — tagihan dibuat setelah disetujui
+            wilayahId: wilayah?.id ?? null,
+            paketId,
+            catatan: [
+              "Daftar mandiri via website",
+              `(${kecamatan} / ${kelurahan})`,
+              rtRw ? `RT/RW: ${rtRw}` : null,
+            ]
+              .filter(Boolean)
+              .join(" "),
+          },
+        });
+        break;
+      } catch (e) {
+        const bentrok =
+          e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002";
+        if (coba >= 2 || !bentrok) throw e;
+        kodePelanggan = await generateKodePelanggan(wilayah.id);
+      }
+    }
 
     await logAudit("create", "Pelanggan", pelanggan.id, undefined, {
       nama,

@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { logAudit } from "@/lib/audit";
 import { getSession } from "@/lib/auth";
+import { generateKodePelanggan } from "@/lib/kode-pelanggan";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -71,38 +72,45 @@ export async function POST(request: Request) {
       );
     }
 
-    // Generate kode pelanggan otomatis: P-XXXXXX
-    const lastPelanggan = await prisma.pelanggan.findFirst({
-      orderBy: { id: "desc" },
-      select: { id: true },
-    });
-    const nextId = (lastPelanggan?.id ?? 0) + 1;
-    const kodePelanggan = `P-${String(nextId).padStart(6, "0")}`;
+    // Generate kode pelanggan per zona: {KODE-WILAYAH}-{urutan}, misal KAL-001
+    let kodePelanggan = await generateKodePelanggan(parseInt(wilayahId));
 
-    const pelanggan = await prisma.pelanggan.create({
-      data: {
-        nama,
-        noTelepon,
-        kodePelanggan,
-        kategori: kategori || "rumah_tangga",
-        alamat,
-        rtRw,
-        fotoRumah,
-        patokanLokasi,
-        latitude: latitude ? parseFloat(latitude) : null,
-        longitude: longitude ? parseFloat(longitude) : null,
-        koordinatSumber: koordinatSumber || null,
-        koordinatAkurasi: koordinatAkurasi ? parseFloat(koordinatAkurasi) : null,
-        penanggungjawab,
-        referal,
-        customTarif: customTarif ? parseFloat(customTarif) : null,
-        wilayahId: parseInt(wilayahId),
-        paketId: paketId ? parseInt(paketId) : null,
-        status: status || "aktif",
-        catatan: catatan || null,
-      },
-      include: { wilayah: true, paket: true },
-    });
+    // Retry bila kode bentrok (dua request paralel) — generate ulang lalu create lagi
+    let pelanggan;
+    for (let coba = 0; ; coba++) {
+      try {
+        pelanggan = await prisma.pelanggan.create({
+          data: {
+            nama,
+            noTelepon,
+            kodePelanggan,
+            kategori: kategori || "rumah_tangga",
+            alamat,
+            rtRw,
+            fotoRumah,
+            patokanLokasi,
+            latitude: latitude ? parseFloat(latitude) : null,
+            longitude: longitude ? parseFloat(longitude) : null,
+            koordinatSumber: koordinatSumber || null,
+            koordinatAkurasi: koordinatAkurasi ? parseFloat(koordinatAkurasi) : null,
+            penanggungjawab,
+            referal,
+            customTarif: customTarif ? parseFloat(customTarif) : null,
+            wilayahId: parseInt(wilayahId),
+            paketId: paketId ? parseInt(paketId) : null,
+            status: status || "aktif",
+            catatan: catatan || null,
+          },
+          include: { wilayah: true, paket: true },
+        });
+        break;
+      } catch (e) {
+        const bentrok =
+          e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002";
+        if (coba >= 2 || !bentrok) throw e;
+        kodePelanggan = await generateKodePelanggan(parseInt(wilayahId));
+      }
+    }
 
     // Auto-generate tagihan bulan ini — hanya untuk pelanggan aktif
     // (calon/nonaktif/libur tidak ikut ditagih)

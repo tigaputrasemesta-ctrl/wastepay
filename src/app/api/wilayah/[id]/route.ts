@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { logAudit } from "@/lib/audit";
+import { normalisasiKodeWilayah } from "@/lib/kode-pelanggan";
 
 export async function GET(
   request: Request,
@@ -39,6 +41,13 @@ export async function PUT(
     if (kelurahan !== undefined) data.kelurahan = kelurahan;
     if (kecamatan !== undefined) data.kecamatan = kecamatan;
     if (kota !== undefined) data.kota = kota;
+    if (body.kode !== undefined) {
+      const kode = normalisasiKodeWilayah(body.kode);
+      if (!kode) {
+        return NextResponse.json({ error: "Kode zona tidak valid" }, { status: 400 });
+      }
+      data.kode = kode;
+    }
 
     const wilayah = await prisma.wilayah.update({
       where: { id },
@@ -47,7 +56,13 @@ export async function PUT(
 
     await logAudit("update", "Wilayah", id, { id }, { nama: wilayah.nama });
     return NextResponse.json(wilayah);
-  } catch {
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+      return NextResponse.json(
+        { error: "Kode zona sudah dipakai wilayah lain" },
+        { status: 400 }
+      );
+    }
     return NextResponse.json({ error: "Gagal mengupdate wilayah" }, { status: 500 });
   }
 }
