@@ -14,7 +14,13 @@ export async function PUT(
     const data: Record<string, unknown> = {};
     if (tanggal !== undefined) data.tanggal = new Date(tanggal);
     if (kategori !== undefined) data.kategori = kategori;
-    if (jumlah !== undefined) data.jumlah = parseFloat(jumlah);
+    if (jumlah !== undefined) {
+      const nominal = parseFloat(jumlah);
+      if (!Number.isFinite(nominal) || nominal <= 0) {
+        return NextResponse.json({ error: "Jumlah harus angka positif" }, { status: 400 });
+      }
+      data.jumlah = nominal;
+    }
     if (keterangan !== undefined) data.keterangan = keterangan;
     if (bukti !== undefined) data.bukti = bukti;
 

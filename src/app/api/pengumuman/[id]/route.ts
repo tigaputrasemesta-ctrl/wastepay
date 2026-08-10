@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { logAudit } from "@/lib/audit";
+import { toBoolean } from "@/lib/utils";
 
 export async function PUT(
   request: Request,
@@ -14,7 +15,7 @@ export async function PUT(
     const data: Record<string, unknown> = {};
     if (judul !== undefined) data.judul = judul;
     if (isi !== undefined) data.isi = isi;
-    if (penting !== undefined) data.penting = penting;
+    if (penting !== undefined) data.penting = toBoolean(penting);
     if (untukWilayahId !== undefined) {
       data.untukWilayahId = untukWilayahId ? parseInt(untukWilayahId) : null;
     }

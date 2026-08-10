@@ -32,13 +32,31 @@ export async function PUT(
     if (session && session.role === "petugas") {
       const profil = await prisma.petugas.findUnique({
         where: { userId: session.id },
-        select: { id: true },
+        select: { id: true, wilayahId: true },
       });
-      if (profil) data.petugasId = profil.id;
+      if (!profil) {
+        return NextResponse.json({ error: "Akun belum ter-link ke profil petugas" }, { status: 403 });
+      }
+      data.petugasId = profil.id;
+
+      // Petugas hanya boleh mengupdate pengangkutan miliknya & pelanggan di wilayahnya
+      const existing = await prisma.pengangkutan.findUnique({
+        where: { id },
+        select: { petugasId: true, pelanggan: { select: { wilayahId: true } } },
+      });
+      if (!existing) {
+        return NextResponse.json({ error: "Data pengangkutan tidak ditemukan" }, { status: 404 });
+      }
+      if (existing.petugasId !== profil.id && existing.pelanggan.wilayahId !== profil.wilayahId) {
+        return NextResponse.json(
+          { error: "Data pengangkutan di luar wilayah Anda" },
+          { status: 403 }
+        );
+      }
       // Kendaraan yang dipakai harus milik petugas ini (pengemudi)
       if (kendaraanId !== undefined && kendaraanId) {
         const k = await prisma.kendaraan.findFirst({
-          where: { id: parseInt(kendaraanId), deletedAt: null, petugasId: profil?.id },
+          where: { id: parseInt(kendaraanId), deletedAt: null, petugasId: profil.id },
           select: { id: true },
         });
         if (!k) {
@@ -56,14 +74,14 @@ export async function PUT(
       },
     });
 
-    // Audit log
+    // Audit log — atribusi dari session, bukan body (anti spoofing)
     await prisma.auditLog.create({
       data: {
         aksi: "update",
         entitas: "Pengangkutan",
         entitasId: id,
         dataBaru: JSON.stringify({ status, volume, berat, jenisSampah }),
-        userId: session?.id ?? (body.userId ? parseInt(body.userId) : null),
+        userId: session?.id ?? null,
       },
     });
 
