@@ -18,15 +18,22 @@ export default async function PetaPage() {
 
   // ── Scope wilayah: petugas hanya melihat data wilayahnya sendiri (PII terlindungi) ──
   let scopeWilayahId: number | null = null;
+  let petugasTanpaProfil = false;
   if (session && session.role === "petugas") {
     const profil = await prisma.petugas.findUnique({
       where: { userId: session.id },
       select: { wilayahId: true },
     });
     scopeWilayahId = profil?.wilayahId ?? null;
+    if (!scopeWilayahId) petugasTanpaProfil = true;
   }
-  // Petugas tanpa profil → tidak dapat data apa pun (bukan semua wilayah)
-  const scope = scopeWilayahId ? { wilayahId: scopeWilayahId } : { id: -1 };
+  // Admin/non-petugas → lihat semua; petugas berprofil → hanya wilayahnya;
+  // petugas tanpa profil → tidak dapat data apa pun (bukan semua wilayah)
+  const scope = scopeWilayahId
+    ? { wilayahId: scopeWilayahId }
+    : petugasTanpaProfil
+      ? { id: -1 }
+      : {};
 
   const [pelangganList, wilayahList, tagihanList, ruteList] = await Promise.all([
     prisma.pelanggan.findMany({
@@ -52,12 +59,20 @@ export default async function PetaPage() {
       orderBy: { nama: "asc" },
     }),
     prisma.tagihan.findMany({
-      where: scopeWilayahId ? { pelanggan: { wilayahId: scopeWilayahId } } : { id: -1 },
+      where: scopeWilayahId
+        ? { pelanggan: { wilayahId: scopeWilayahId } }
+        : petugasTanpaProfil
+          ? { id: -1 }
+          : {},
       select: { pelangganId: true, status: true, bulan: true, tahun: true },
       orderBy: [{ tahun: "desc" }, { bulan: "desc" }],
     }),
     prisma.rute.findMany({
-      where: scopeWilayahId ? { aktif: true, wilayahId: scopeWilayahId } : { id: -1 },
+      where: scopeWilayahId
+        ? { aktif: true, wilayahId: scopeWilayahId }
+        : petugasTanpaProfil
+          ? { id: -1 }
+          : { aktif: true },
       select: {
         id: true,
         nama: true,
