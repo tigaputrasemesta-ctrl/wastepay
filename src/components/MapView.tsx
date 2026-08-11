@@ -114,7 +114,7 @@ function formatWaktuRelatif(iso: string): string {
 
 function buatIcon(warna: string) {
   return L.divIcon({
-    className: "",
+    className: "animated-pin",
     html: `<div style="width:14px;height:14px;transform:rotate(45deg);border-radius:3px;background:${warna};border:2px solid #131517;box-shadow:0 0 8px ${warna}77"></div>`,
     iconSize: [14, 14],
     iconAnchor: [7, 7],
@@ -133,7 +133,7 @@ function buatIconRute(warna: string, label: string) {
 
 function buatIconKomplain(warna: string, aktif: boolean) {
   return L.divIcon({
-    className: "",
+    className: aktif ? "komplain-aktif" : "komplain-pin",
     html: `<div style="width:${aktif ? 22 : 16}px;height:${aktif ? 22 : 16}px;transform:rotate(45deg);border-radius:3px;background:${warna};border:2px solid #131517;box-shadow:0 0 14px ${warna}cc, 0 0 0 ${aktif ? "5px" : "3px"} rgba(255,255,255,0.12)"></div>`,
     iconSize: [aktif ? 22 : 16, aktif ? 22 : 16],
     iconAnchor: [aktif ? 11 : 8, aktif ? 11 : 8],

@@ -213,3 +213,67 @@
 .leaflet-container .leaflet-control-attribution a {
   color: #3b82f6 !important;
 }
+/* -- Cool Animations -- */
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7), 2px 2px 0px 0px rgba(0, 0, 0, 1); }
+  70% { box-shadow: 0 0 0 10px rgba(0, 0, 0, 0), 2px 2px 0px 0px rgba(0, 0, 0, 1); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0), 2px 2px 0px 0px rgba(0, 0, 0, 1); }
+}
+
+@keyframes bounce-pin {
+  0%, 100% { transform: translateY(0) rotate(45deg); }
+  50% { transform: translateY(-5px) rotate(45deg); }
+}
+
+@keyframes glow-red {
+  0%, 100% { box-shadow: 0 0 10px #ff5c5c, 0 0 0 3px rgba(255,255,255,0.12); }
+  50% { box-shadow: 0 0 20px #ff5c5c, 0 0 0 5px rgba(255,255,255,0.3); }
+}
+
+.petugas-head {
+  animation: pulse-ring 2s infinite;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.petugas-head:hover {
+  transform: scale(1.2);
+}
+
+.kendaraan-head {
+  animation: pulse-ring 2.5s infinite;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.kendaraan-head:hover {
+  transform: scale(1.2);
+}
+
+.transit-head {
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.transit-marker:hover .transit-head {
+  transform: scale(1.15) rotate(10deg);
+}
+
+.animated-pin div {
+  animation: bounce-pin 2s infinite;
+  transition: transform 0.2s ease-in-out;
+}
+.animated-pin:hover div {
+  transform: scale(1.2) rotate(45deg);
+}
+
+.komplain-pin div {
+  animation: glow-red 1.5s infinite;
+}
+.komplain-aktif div {
+  animation: glow-red 0.8s infinite, bounce-pin 1.5s infinite;
+}
+
+/* Cluster Hover */
+.marker-cluster div {
+  transition: all 0.3s ease;
+}
+.marker-cluster:hover div {
+  transform: scale(1.1) rotate(15deg);
+  background: #fde047;
+}
+
