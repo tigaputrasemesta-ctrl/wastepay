@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { updateTunggakan } from "@/lib/tagihan";
 import { isDuitkuEnabled } from "@/lib/duitku";
+import { prisma } from "@/lib/prisma";
 import {
   getTagihanByNoInvoice,
   hitungRincian,
@@ -10,6 +11,7 @@ import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
 
 /**
  * GET /api/publik/tagihan-detail?invoice=INV/XXX/202606
+ * (atau ?merchantOrderId=DW-...)
  * Detail tagihan publik berdasarkan nomor invoice (tanpa auth).
  * Dipakai oleh halaman /bayar-tagihan dan /invoice-tagihan.
  *
@@ -20,7 +22,8 @@ import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
  */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const invoice = searchParams.get("invoice")?.trim();
+  const invoiceParam = searchParams.get("invoice")?.trim();
+  const merchantOrderId = searchParams.get("merchantOrderId")?.trim();
 
   // Rate limit per IP DULU (sebelum validasi invoice) — request dengan invoice
   // invalid pun ikut dihitung, sehingga enumerasi nomor invoice tetap terhambat.
@@ -37,8 +40,25 @@ export async function GET(request: Request) {
     );
   }
 
+  let invoice = invoiceParam;
+
+  if (!invoice && merchantOrderId) {
+    // Jika kembali dari Duitku, kita dapat merchantOrderId, cari noInvoice-nya
+    const dt = await prisma.duitkuTransaction.findUnique({
+      where: { orderId: merchantOrderId },
+      include: {
+        pembayaran: {
+          include: { tagihan: true }
+        }
+      }
+    });
+    if (dt?.pembayaran?.tagihan?.noInvoice) {
+      invoice = dt.pembayaran.tagihan.noInvoice;
+    }
+  }
+
   if (!invoice) {
-    return NextResponse.json({ error: "Nomor invoice wajib diisi" }, { status: 400 });
+    return NextResponse.json({ error: "Nomor invoice atau ID order wajib diisi" }, { status: 400 });
   }
 
   await updateTunggakan();

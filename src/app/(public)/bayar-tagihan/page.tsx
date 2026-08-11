@@ -75,10 +75,11 @@ export default function BayarTagihanPage() {
 function BayarTagihanContent() {
   const searchParams = useSearchParams();
   const invoice = searchParams.get("invoice") || "";
+  const merchantOrderId = searchParams.get("merchantOrderId") || "";
 
   const [detail, setDetail] = useState<DetailTagihan | null>(null);
-  const [error, setError] = useState(invoice ? "" : "Nomor invoice tidak ditemukan di URL");
-  const [loading, setLoading] = useState(Boolean(invoice));
+  const [error, setError] = useState((invoice || merchantOrderId) ? "" : "Nomor invoice atau order tidak ditemukan di URL");
+  const [loading, setLoading] = useState(Boolean(invoice || merchantOrderId));
   const [pilihMetode, setPilihMetode] = useState("");
   const [bayarLoading, setBayarLoading] = useState(false);
   const [bayarError, setBayarError] = useState("");
@@ -86,29 +87,39 @@ function BayarTagihanContent() {
 
   const muatDetail = useCallback(async () => {
     try {
-      const res = await fetch(
-        `/api/publik/tagihan-detail?invoice=${encodeURIComponent(invoice)}`
-      );
+      let url = "/api/publik/tagihan-detail";
+      if (invoice) {
+        url += `?invoice=${encodeURIComponent(invoice)}`;
+      } else if (merchantOrderId) {
+        url += `?merchantOrderId=${encodeURIComponent(merchantOrderId)}`;
+      }
+
+      const res = await fetch(url);
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || "Tagihan tidak ditemukan");
       } else {
         setDetail(data);
+        
+        // Bersihkan parameter dari URL dan ganti dengan invoice (agar lebih rapi)
+        if (!invoice && data.noInvoice) {
+          window.history.replaceState(null, "", `/bayar-tagihan?invoice=${encodeURIComponent(data.noInvoice)}`);
+        }
       }
     } catch {
       setError("Gagal menghubungi server, coba lagi");
     } finally {
       setLoading(false);
     }
-  }, [invoice]);
+  }, [invoice, merchantOrderId]);
 
   useEffect(() => {
-    if (invoice) {
+    if (invoice || merchantOrderId) {
       (async () => {
         await muatDetail();
       })();
     }
-  }, [invoice, muatDetail]);
+  }, [invoice, merchantOrderId, muatDetail]);
 
   // Muat daftar channel yang benar-benar aktif dari Duitku (fallback: DUITKU_METHODS)
   useEffect(() => {
@@ -275,21 +286,37 @@ function BayarTagihanContent() {
             Pilih metode pembayaran, lalu Anda akan diarahkan ke halaman pembayaran aman.
           </p>
 
-          <div className="grid grid-cols-2 gap-2 mb-5">
-            {metodeList.map((m) => (
-              <div
-                key={m.value}
-                onClick={() => setPilihMetode(m.value)}
-                className={`payment-card flex items-center gap-2 border rounded-xl px-3 py-2.5 text-sm text-bone-dim cursor-pointer transition ${
-                  pilihMetode === m.value
-                    ? "border-vest bg-vest/5"
-                    : "border-asphalt-line hover:border-vest/40"
-                }`}
-              >
-                <span>{m.icon}</span>
-                <span>{m.label}</span>
-              </div>
-            ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+            {metodeList.map((m) => {
+              const isSelected = pilihMetode === m.value;
+              return (
+                <div
+                  key={m.value}
+                  onClick={() => setPilihMetode(m.value)}
+                  className={`payment-card relative flex items-center gap-3 border rounded-xl px-4 py-3 text-sm cursor-pointer transition duration-200 ${
+                    isSelected
+                      ? "border-vest bg-vest/10 text-vest shadow-[0_0_12px_rgba(var(--color-vest),0.15)] ring-1 ring-vest/50"
+                      : "border-asphalt-line bg-asphalt-dim/20 text-bone-dim hover:border-vest/50 hover:bg-asphalt-dim/50"
+                  }`}
+                >
+                  <div className="flex-shrink-0 text-lg opacity-90">{m.icon}</div>
+                  <span className={`font-medium flex-1 ${isSelected ? "text-bone" : ""}`}>{m.label}</span>
+                  
+                  {/* Indikator terpilih (Radio/Checkmark) */}
+                  <div
+                    className={`flex-shrink-0 w-4 h-4 rounded-full border flex items-center justify-center transition-all duration-200 ${
+                      isSelected ? "border-vest bg-vest" : "border-asphalt border-2"
+                    }`}
+                  >
+                    {isSelected && (
+                      <svg className="w-2.5 h-2.5 text-asphalt-deep" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           <button
