@@ -63,6 +63,7 @@ type Props = {
   setSelectedKomplainId: (id: number) => void;
   tampilkanCakupan: boolean;
   tampilkanBatas: boolean;
+  tampilkanBatasKelurahan: boolean;
   tampilkanRt: boolean;
   ruteTerpilih: RutePeta | null;
   invalidateKey: number;
@@ -435,6 +436,7 @@ export default function MapView({
   setSelectedKomplainId,
   tampilkanCakupan,
   tampilkanBatas,
+  tampilkanBatasKelurahan,
   tampilkanRt,
   ruteTerpilih,
   invalidateKey,
@@ -554,7 +556,7 @@ export default function MapView({
               </Marker>
             ))}
           
-          {zoom >= 14 &&
+          {tampilkanBatasKelurahan && zoom >= 14 &&
             kelurahanGeom.map((kel) => (
               <Marker
                 key={`kel-${kel.nama}`}
@@ -569,7 +571,7 @@ export default function MapView({
             ))}
 
           {/* Render polygon batas kelurahan saat zoom in */}
-          {zoom >= 14 &&
+          {tampilkanBatasKelurahan && zoom >= 14 &&
             kelurahanGeom.map((kel) => kel.polygon ? (
               <Polygon
                 key={`poly-${kel.nama}`}

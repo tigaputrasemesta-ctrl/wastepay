@@ -125,6 +125,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
   const [ruteId, setRuteId] = useState<string>("semua");
   const [tampilkanCakupan, setTampilkanCakupan] = useState(false);
   const [tampilkanBatas, setTampilkanBatas] = useState(true);
+  const [tampilkanBatasKelurahan, setTampilkanBatasKelurahan] = useState(true);
   const [tampilkanRt, setTampilkanRt] = useState(true);
   const [tampilkanArmada, setTampilkanArmada] = useState(true);
   const [tab, setTab] = useState<TabKey>("pelanggan");
@@ -341,6 +342,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
           setSelectedKomplainId={pilihKomplain}
           tampilkanCakupan={tampilkanCakupan}
           tampilkanBatas={tampilkanBatas}
+          tampilkanBatasKelurahan={tampilkanBatasKelurahan}
           tampilkanRt={tampilkanRt}
           ruteTerpilih={ruteTerpilih}
           invalidateKey={1}
@@ -416,6 +418,17 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                 }`}
               >
                 <span>{tampilkanBatas ? "✓" : "○"}</span> <span>Batas Kecamatan</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setTampilkanBatasKelurahan((b) => !b)}
+                className={`font-mono text-[10px] px-3 py-2 border rounded-none transition-colors text-left flex items-center gap-2 ${
+                  tampilkanBatasKelurahan
+                    ? "border-2 border-black text-black bg-green-400 font-bold shadow-[0_0_5px_#4ade80]"
+                    : "border-black text-gray-600 font-bold hover:text-[#000] hover:bg-white"
+                }`}
+              >
+                <span>{tampilkanBatasKelurahan ? "✓" : "○"}</span> <span>Batas Kelurahan</span>
               </button>
               <button
                 type="button"
