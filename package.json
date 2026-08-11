@@ -19,6 +19,8 @@
     "@prisma/client": "^7.9.0",
     "@turf/convex": "^7.4.0",
     "@turf/helpers": "^7.4.0",
+    "@turf/union": "^7.4.0",
+    "@turf/voronoi": "^7.4.0",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.2",
     "autoprefixer": "^10.5.4",

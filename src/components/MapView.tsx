@@ -2,15 +2,13 @@
 
 import "leaflet/dist/leaflet.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
-import "leaflet.markercluster/dist/MarkerCluster.Default.css";
-import "@/lib/leaflet-setup";
-import "leaflet.markercluster";
 import { useEffect, useMemo, useRef, useState } from "react";
 import L from "leaflet";
 import { MapContainer, TileLayer, Marker, Circle, CircleMarker, Polygon, Polyline, Tooltip, useMap, useMapEvents } from "react-leaflet";
 import { featureCollection, point } from "@turf/helpers";
-import convex from "@turf/convex";
-import { RT_RTRW_DEPOK } from "@/lib/zona-depok";
+import voronoi from "@turf/voronoi";
+import union from "@turf/union";
+import { RT_RTRW_DEPOK, DEPOK_BOUNDS } from "@/lib/zona-depok";
 import { KECAMATAN_DEPOK } from "@/lib/kecamatan-depok";
 import { deteksiZona, formatJarak, panjangRute, titikTengah, urutkanRute } from "@/lib/geo";
 import type { Titik } from "@/lib/geo";
@@ -457,37 +455,63 @@ export default function MapView({
   const ruteUrut = useMemo(() => urutkanRute(ruteTitik), [ruteTitik]);
   const jarakRute = useMemo(() => panjangRute(ruteUrut), [ruteUrut]);
 
-  // Hitung titik tengah (centroid) dan batas polygon (convex hull) untuk tiap kelurahan berdasarkan data RT
+  // Hitung titik tengah (centroid) dan batas polygon (voronoi union) untuk tiap kelurahan
   const kelurahanGeom = useMemo(() => {
-    const map = new Map<string, { latSum: number; lngSum: number; points: number[][]; warna: string }>();
-    for (const rt of RT_RTRW_DEPOK) {
-      const k = rt.kelurahan.toUpperCase();
-      const st = map.get(k) ?? { latSum: 0, lngSum: 0, points: [], warna: rt.warna };
-      st.latSum += rt.lat;
-      st.lngSum += rt.lng;
-      st.points.push([rt.lng, rt.lat]); // Turf uses [lng, lat]
-      map.set(k, st);
-    }
-    const result: { nama: string; center: [number, number]; polygon: [number, number][] | null; warna: string }[] = [];
+    const pts = RT_RTRW_DEPOK.map((rt) => point([rt.lng, rt.lat], { kelurahan: rt.kelurahan.toUpperCase(), warna: rt.warna }));
+    const fc = featureCollection(pts);
+    const bbox = [DEPOK_BOUNDS.minLng, DEPOK_BOUNDS.minLat, DEPOK_BOUNDS.maxLng, DEPOK_BOUNDS.maxLat];
     
-    for (const [nama, st] of map.entries()) {
-      let polygonCoords: [number, number][] | null = null;
-      if (st.points.length >= 3) {
+    let voronoiPolygons;
+    try {
+      voronoiPolygons = voronoi(fc, { bbox });
+    } catch (e) {
+      console.warn("Voronoi failed:", e);
+      return [];
+    }
+
+    const map = new Map<string, { latSum: number; lngSum: number; points: number[][]; warna: string; feature: any }>();
+
+    voronoiPolygons.features.forEach((poly: any, idx: number) => {
+      if (!poly) return;
+      const rtProps = pts[idx].properties;
+      if (!rtProps) return;
+      const k = rtProps.kelurahan;
+      
+      const st = map.get(k) ?? { latSum: 0, lngSum: 0, points: [], warna: rtProps.warna, feature: null };
+      st.latSum += RT_RTRW_DEPOK[idx].lat;
+      st.lngSum += RT_RTRW_DEPOK[idx].lng;
+      st.points.push([RT_RTRW_DEPOK[idx].lng, RT_RTRW_DEPOK[idx].lat]);
+
+      if (!st.feature) {
+        st.feature = poly;
+      } else {
         try {
-          const pts = featureCollection(st.points.map(p => point(p)));
-          const hull = convex(pts);
-          if (hull && hull.geometry && hull.geometry.coordinates && hull.geometry.coordinates[0]) {
-            // Leaflet uses [lat, lng], so flip it back
-            polygonCoords = hull.geometry.coordinates[0].map(coord => [coord[1], coord[0]]);
-          }
+          // @ts-ignore
+          st.feature = union(st.feature, poly);
         } catch (e) {
-          console.warn("Failed to generate convex hull for kelurahan:", nama);
+          // fallback if union fails
         }
       }
+      
+      map.set(k, st);
+    });
+
+    const result: { nama: string; center: [number, number]; polygons: [number, number][][]; warna: string }[] = [];
+    
+    for (const [nama, st] of map.entries()) {
+      let polyCoords: [number, number][][] = [];
+      if (st.feature && st.feature.geometry) {
+        if (st.feature.geometry.type === "Polygon") {
+          polyCoords = [st.feature.geometry.coordinates[0].map((coord: number[]) => [coord[1], coord[0]])];
+        } else if (st.feature.geometry.type === "MultiPolygon") {
+          polyCoords = st.feature.geometry.coordinates.map((poly: number[][][]) => poly[0].map((coord: number[]) => [coord[1], coord[0]]));
+        }
+      }
+
       result.push({ 
         nama, 
         center: [st.latSum / st.points.length, st.lngSum / st.points.length],
-        polygon: polygonCoords,
+        polygons: polyCoords,
         warna: st.warna
       });
     }
@@ -571,22 +595,22 @@ export default function MapView({
             ))}
 
           {/* Render polygon batas kelurahan saat zoom in */}
-          {tampilkanBatasKelurahan && zoom >= 14 &&
-            kelurahanGeom.map((kel) => kel.polygon ? (
+          {tampilkanBatasKelurahan && zoom >= 13 &&
+            kelurahanGeom.map((kel) => kel.polygons.map((poly, idx) => (
               <Polygon
-                key={`poly-${kel.nama}`}
-                positions={kel.polygon}
+                key={`poly-${kel.nama}-${idx}`}
+                positions={poly}
                 pathOptions={{
                   color: kel.warna,
-                  weight: 2,
+                  weight: 3,
                   opacity: 0.8,
                   fillColor: kel.warna,
-                  fillOpacity: 0.05,
-                  dashArray: "4 4"
+                  fillOpacity: 0.1,
+                  dashArray: "8 6"
                 }}
                 interactive={false}
               />
-            ) : null)}
+            )))}
         </>
       )}
 
