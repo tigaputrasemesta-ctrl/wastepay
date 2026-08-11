@@ -8,6 +8,8 @@ import "leaflet.markercluster";
 import { useEffect, useMemo, useRef, useState } from "react";
 import L from "leaflet";
 import { MapContainer, TileLayer, Marker, Circle, CircleMarker, Polygon, Polyline, Tooltip, useMap, useMapEvents } from "react-leaflet";
+import { featureCollection, point } from "@turf/helpers";
+import convex from "@turf/convex";
 import { RT_RTRW_DEPOK } from "@/lib/zona-depok";
 import { KECAMATAN_DEPOK } from "@/lib/kecamatan-depok";
 import { deteksiZona, formatJarak, panjangRute, titikTengah, urutkanRute } from "@/lib/geo";
@@ -453,20 +455,39 @@ export default function MapView({
   const ruteUrut = useMemo(() => urutkanRute(ruteTitik), [ruteTitik]);
   const jarakRute = useMemo(() => panjangRute(ruteUrut), [ruteUrut]);
 
-  // Hitung titik tengah (centroid) untuk tiap kelurahan berdasarkan data RT
-  const kelurahanPusat = useMemo(() => {
-    const map = new Map<string, { latSum: number; lngSum: number; count: number }>();
+  // Hitung titik tengah (centroid) dan batas polygon (convex hull) untuk tiap kelurahan berdasarkan data RT
+  const kelurahanGeom = useMemo(() => {
+    const map = new Map<string, { latSum: number; lngSum: number; points: number[][]; warna: string }>();
     for (const rt of RT_RTRW_DEPOK) {
       const k = rt.kelurahan.toUpperCase();
-      const st = map.get(k) ?? { latSum: 0, lngSum: 0, count: 0 };
+      const st = map.get(k) ?? { latSum: 0, lngSum: 0, points: [], warna: rt.warna };
       st.latSum += rt.lat;
       st.lngSum += rt.lng;
-      st.count += 1;
+      st.points.push([rt.lng, rt.lat]); // Turf uses [lng, lat]
       map.set(k, st);
     }
-    const result: { nama: string; center: [number, number] }[] = [];
+    const result: { nama: string; center: [number, number]; polygon: [number, number][] | null; warna: string }[] = [];
+    
     for (const [nama, st] of map.entries()) {
-      result.push({ nama, center: [st.latSum / st.count, st.lngSum / st.count] });
+      let polygonCoords: [number, number][] | null = null;
+      if (st.points.length >= 3) {
+        try {
+          const pts = featureCollection(st.points.map(p => point(p)));
+          const hull = convex(pts);
+          if (hull && hull.geometry && hull.geometry.coordinates && hull.geometry.coordinates[0]) {
+            // Leaflet uses [lat, lng], so flip it back
+            polygonCoords = hull.geometry.coordinates[0].map(coord => [coord[1], coord[0]]);
+          }
+        } catch (e) {
+          console.warn("Failed to generate convex hull for kelurahan:", nama);
+        }
+      }
+      result.push({ 
+        nama, 
+        center: [st.latSum / st.points.length, st.lngSum / st.points.length],
+        polygon: polygonCoords,
+        warna: st.warna
+      });
     }
     return result;
   }, []);
@@ -534,7 +555,7 @@ export default function MapView({
             ))}
           
           {zoom >= 14 &&
-            kelurahanPusat.map((kel) => (
+            kelurahanGeom.map((kel) => (
               <Marker
                 key={`kel-${kel.nama}`}
                 position={kel.center}
@@ -546,6 +567,24 @@ export default function MapView({
                 </Tooltip>
               </Marker>
             ))}
+
+          {/* Render polygon batas kelurahan saat zoom in */}
+          {zoom >= 14 &&
+            kelurahanGeom.map((kel) => kel.polygon ? (
+              <Polygon
+                key={`poly-${kel.nama}`}
+                positions={kel.polygon}
+                pathOptions={{
+                  color: kel.warna,
+                  weight: 2,
+                  opacity: 0.8,
+                  fillColor: kel.warna,
+                  fillOpacity: 0.05,
+                  dashArray: "4 4"
+                }}
+                interactive={false}
+              />
+            ) : null)}
         </>
       )}
 
