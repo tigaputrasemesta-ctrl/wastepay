@@ -149,6 +149,13 @@ export async function POST(request: Request) {
     // Detail error (pesan dari API Duitku / stack) hanya untuk log server —
     // jangan diekspos ke client (bisa bocorkan detail konfigurasi internal).
     console.error("Duitku transaction error:", error);
+    const msg = error instanceof Error ? error.message : "";
+    if (/payment channel not available|channel.*tidak tersedia/i.test(msg)) {
+      return NextResponse.json(
+        { error: "Metode pembayaran ini tidak tersedia di penyedia — pilih metode lain." },
+        { status: 400 }
+      );
+    }
     return NextResponse.json({ error: "Gagal membuat transaksi pembayaran. Coba lagi." }, { status: 500 });
   }
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getPaymentMethods } from "@/lib/duitku";
+import { channelAllowed } from "@/lib/duitku-channels";
 import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
 
 /**
@@ -24,11 +25,16 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "amount wajib diisi (nominal transaksi)" }, { status: 400 });
   }
 
-  const methods = await getPaymentMethods(amount);
-  if (!methods) {
+  const raw = await getPaymentMethods(amount);
+  if (!raw) {
     // Belum dikonfigurasi / Duitku tidak merespon — klien pakai daftar fallback.
     return NextResponse.json({ enabled: false, methods: [] });
   }
 
-  return NextResponse.json({ enabled: true, methods });
+  // Filter: hanya channel yang benar-benar aktif di merchant (inquiry terverifikasi).
+  // getPaymentMethod Duitku sering mengembalikan channel "enabled" yang saat
+  // inquiry ditolak (HTTP 404 "Payment channel not available").
+  const methods = raw.filter((m) => channelAllowed(m.paymentMethod));
+
+  return NextResponse.json({ enabled: methods.length > 0, methods });
 }

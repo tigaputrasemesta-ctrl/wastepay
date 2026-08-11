@@ -3,6 +3,28 @@
  * aman dipakai dari komponen client ("use client").
  */
 
+/**
+ * Channel yang benar-benar aktif untuk merchant ini (terverifikasi via
+ * inquiry langsung ke Duitku). Sandbox Duitku mengembalikan banyak channel
+ * "enabled" di getPaymentMethod padahal inquiry-nya ditolak (HTTP 404
+ * "Payment channel not available") — menampilkannya semua hanya bikin user
+ * gagal bayar di channel yang tidak tersedia.
+ *
+ * Default: VA (Virtual Account/MAYBANK), BT (Bank Transfer), VC (Kartu
+ * Kredit) — terverifikasi jalan di merchant DS33858 (sandbox).
+ * Override: env DUITKU_CHANNELS="VA,BT,VC,..." (comma, uppercase) saat
+ * channel baru diaktifkan di dashboard Duitku (sandbox/production).
+ */
+export function channelAllowed(paymentMethod?: string | null): boolean {
+  const m = (paymentMethod || "").toUpperCase();
+  if (!m) return false;
+  const env = process.env.DUITKU_CHANNELS?.trim();
+  const allowed = env
+    ? env.split(",").map((s) => s.trim().toUpperCase()).filter(Boolean)
+    : ["VA", "BT", "VC"];
+  return allowed.includes(m);
+}
+
 /** Label Indonesia untuk channel pembayaran Duitku. */
 export function duitkuChannelLabel(paymentMethod?: string | null): string {
   const map: Record<string, string> = {
@@ -38,17 +60,10 @@ export type DuitkuPaymentMethod = {
  * Daftar channel pembayaran default (fallback) — dipakai jika getPaymentMethods
  * belum aktif/gagal. id dipakai sebagai paymentMethod Duitku.
  */
+// Fallback saat getPaymentMethods gagal — hanya channel yang benar-benar
+// tersedia (lihat channelAllowed); jangan tampilkan channel yang pasti gagal.
 export const DUITKU_METHODS = [
-  { value: "VC", label: "Virtual Account", icon: "🏦" },
-  { value: "QR", label: "QRIS", icon: "📱" },
-  { value: "SP", label: "ShopeePay", icon: "🛍️" },
-  { value: "OVO", label: "OVO", icon: "💜" },
-  { value: "DANA", label: "DANA", icon: "🔵" },
-  { value: "M1", label: "Mandiri Bill", icon: "🏛️" },
-  { value: "CIMB", label: "VA CIMB Niaga", icon: "🏛️" },
-  { value: "BNI", label: "VA BNI", icon: "🏛️" },
-  { value: "BRI", label: "VA BRI", icon: "🏛️" },
-  { value: "PERMATA", label: "VA Permata", icon: "🏛️" },
-  { value: "GOPAY", label: "GoPay", icon: "🟢" },
-  { value: "LINK_AJA", label: "LinkAja", icon: "🟠" },
+  { value: "VA", label: "Virtual Account", icon: "🏦" },
+  { value: "BT", label: "Bank Transfer", icon: "🏦" },
+  { value: "VC", label: "Kartu Kredit", icon: "💳" },
 ];
