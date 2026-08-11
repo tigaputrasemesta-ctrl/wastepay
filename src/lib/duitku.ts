@@ -183,7 +183,11 @@ export async function createPayment(params: CreatePaymentParams): Promise<Duitku
   }
 
   if (!res.ok || data.statusCode !== "00") {
-    throw new Error(`Duitku: ${data.statusMessage || data.error || `HTTP ${res.status}`}`);
+    // Duitku memakai field "Message" (kapital) pada error non-200, mis.
+    // "Payment channel not available" — capture agar user dapat pesan jelas.
+    const pesan =
+      (data as { Message?: string }).Message || data.statusMessage || data.error || `HTTP ${res.status}`;
+    throw new Error(`Duitku: ${pesan}`);
   }
   if (!data.paymentUrl) {
     throw new Error("Duitku tidak mengembalikan paymentUrl");
