@@ -7,18 +7,7 @@ import "@/lib/leaflet-setup";
 import "leaflet.markercluster";
 import { useEffect, useMemo, useRef, useState } from "react";
 import L from "leaflet";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Circle,
-  CircleMarker,
-  Polygon,
-  Polyline,
-  Tooltip,
-  useMap,
-  useMapEvents,
-} from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Circle, CircleMarker, Polygon, Polyline, Tooltip, useMap, useMapEvents } from "react-leaflet";
 import { RT_RTRW_DEPOK } from "@/lib/zona-depok";
 import { KECAMATAN_DEPOK } from "@/lib/kecamatan-depok";
 import { deteksiZona, formatJarak, panjangRute, titikTengah, urutkanRute } from "@/lib/geo";
@@ -464,6 +453,24 @@ export default function MapView({
   const ruteUrut = useMemo(() => urutkanRute(ruteTitik), [ruteTitik]);
   const jarakRute = useMemo(() => panjangRute(ruteUrut), [ruteUrut]);
 
+  // Hitung titik tengah (centroid) untuk tiap kelurahan berdasarkan data RT
+  const kelurahanPusat = useMemo(() => {
+    const map = new Map<string, { latSum: number; lngSum: number; count: number }>();
+    for (const rt of RT_RTRW_DEPOK) {
+      const k = rt.kelurahan.toUpperCase();
+      const st = map.get(k) ?? { latSum: 0, lngSum: 0, count: 0 };
+      st.latSum += rt.lat;
+      st.lngSum += rt.lng;
+      st.count += 1;
+      map.set(k, st);
+    }
+    const result: { nama: string; center: [number, number] }[] = [];
+    for (const [nama, st] of map.entries()) {
+      result.push({ nama, center: [st.latSum / st.count, st.lngSum / st.count] });
+    }
+    return result;
+  }, []);
+
   const sel = pelanggan.find((p) => p.id === selectedId);
   const pusat =
     sel?.latitude != null ? ([sel.latitude, sel.longitude] as [number, number]) : null;
@@ -522,6 +529,20 @@ export default function MapView({
               >
                 <Tooltip permanent direction="center" className="kec-label" opacity={1}>
                   KEC. {k.nama}
+                </Tooltip>
+              </Marker>
+            ))}
+          
+          {zoom >= 14 &&
+            kelurahanPusat.map((kel) => (
+              <Marker
+                key={`kel-${kel.nama}`}
+                position={kel.center}
+                icon={L.divIcon({ className: "", html: "", iconSize: [1, 1] })}
+                interactive={false}
+              >
+                <Tooltip permanent direction="center" className="kel-label" opacity={1}>
+                  {kel.nama}
                 </Tooltip>
               </Marker>
             ))}

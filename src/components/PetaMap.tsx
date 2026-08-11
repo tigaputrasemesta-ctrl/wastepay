@@ -619,7 +619,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
 
                 {/* Section 1: Terpetakan di Peta (Always Open) */}
                 <div className="divide-y-2 divide-black bg-white flex-1">
-                  {daftarPetaUrut.map((p) => {
+                  {daftarPetaUrut.slice(0, 50).map((p) => {
                     const warna = WARNA_STATUS[p.status] ?? "#8b8f98";
                     const aktif = selectedId === p.id;
                     const zona = zonaPelanggan.get(p.id);
@@ -657,6 +657,12 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                     <div className="p-6 text-center text-xs text-gray-600 font-bold space-y-1">
                       <p className="font-bold text-[#000]">Tidak ada pelanggan berkoordinat</p>
                       <p className="text-[10px]">Silakan ubah kata pencarian atau filter.</p>
+                    </div>
+                  )}
+                  {daftarPetaUrut.length > 50 && (
+                    <div className="p-3 text-center text-[10px] text-gray-500 font-mono font-bold bg-gray-50 border-t-2 border-black">
+                      Menampilkan 50 dari {daftarPetaUrut.length} pelanggan.
+                      <br />Gunakan pencarian untuk menemukan spesifik pelanggan.
                     </div>
                   )}
                 </div>
