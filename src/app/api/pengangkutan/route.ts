@@ -39,7 +39,17 @@ export async function GET(request: Request) {
   const pengangkutan = await prisma.pengangkutan.findMany({
     where,
     include: {
-      pelanggan: { select: { id: true, nama: true, alamat: true, kodePelanggan: true } },
+      pelanggan: {
+        select: {
+          id: true,
+          nama: true,
+          alamat: true,
+          kodePelanggan: true,
+          latitude: true,
+          longitude: true,
+          patokanLokasi: true,
+        },
+      },
       petugas: { select: { id: true, nama: true } },
       jadwal: { select: { hari: true } },
       tpa: { select: { id: true, nama: true } },

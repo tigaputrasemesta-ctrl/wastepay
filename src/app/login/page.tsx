@@ -27,8 +27,15 @@ export default function LoginPage() {
       if (!res.ok) {
         setError(data.error);
       } else {
-        if (data.user?.role === "petugas") {
-          router.push("/peta");
+        // Honor ?next= tujuan awal (mis. dari APK → /m), dengan batas hanya
+        // path internal yang diawali "/" (anti open-redirect).
+        const params = new URLSearchParams(window.location.search);
+        const next = params.get("next");
+        const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? next : null;
+        if (safeNext) {
+          router.push(safeNext);
+        } else if (data.user?.role === "petugas") {
+          router.push("/m");
         } else {
           router.push("/dashboard");
         }

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">O2W Lapangan</string>
+    <string name="title_activity_main">O2W Lapangan</string>
+    <string name="package_name">id.o2whero.lapangan</string>
+    <string name="custom_url_scheme">id.o2whero.lapangan</string>
+</resources>

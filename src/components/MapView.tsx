@@ -459,7 +459,7 @@ export default function MapView({
   const kelurahanGeom = useMemo(() => {
     const pts = RT_RTRW_DEPOK.map((rt) => point([rt.lng, rt.lat], { kelurahan: rt.kelurahan.toUpperCase(), warna: rt.warna }));
     const fc = featureCollection(pts);
-    const bbox = [DEPOK_BOUNDS.minLng, DEPOK_BOUNDS.minLat, DEPOK_BOUNDS.maxLng, DEPOK_BOUNDS.maxLat];
+    const bbox: [number, number, number, number] = [DEPOK_BOUNDS.minLng, DEPOK_BOUNDS.minLat, DEPOK_BOUNDS.maxLng, DEPOK_BOUNDS.maxLat];
     
     let voronoiPolygons;
     try {
