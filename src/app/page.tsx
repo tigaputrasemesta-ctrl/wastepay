@@ -50,6 +50,7 @@ export default async function LandingPage() {
           <span className="text-3xl font-black tracking-tighter">O₂W HERO.</span>
         </div>
         <div className="flex gap-6 font-bold uppercase tracking-widest text-sm">
+          <Link href="/lacak" className="hover:text-green-600 transition-colors">Lacak Truk</Link>
           <Link href="/bayar" className="hover:text-red-600 transition-colors">Tagihan</Link>
           <Link href="/pengaduan" className="hover:text-red-600 transition-colors">Komplain</Link>
           <Link href="/daftar" className="text-green-600 hover:text-black transition-colors">Daftar</Link>
@@ -76,8 +77,8 @@ export default async function LandingPage() {
               <Link href="/daftar" className="hm-btn-red text-lg flex items-center justify-center gap-2">
                 GABUNG SEKARANG <Heart className="w-5 h-5 fill-white" />
               </Link>
-              <Link href="/pengaduan" className="hm-btn flex items-center justify-center gap-2">
-                CARA KERJA <ArrowRight className="w-5 h-5" />
+              <Link href="/lacak" className="hm-btn flex items-center justify-center gap-2">
+                LACAK TRUK <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
           </div>
@@ -212,6 +213,9 @@ export default async function LandingPage() {
               <p className="font-medium text-lg leading-snug">
                 Pantau pergerakan armada secara real-time. Tidak ada lagi drama nunggu truk sampah yang tak kunjung datang.
               </p>
+              <Link href="/lacak" className="inline-block mt-4 border-b-2 border-black font-bold uppercase text-sm hover:text-green-600 hover:border-green-600">
+                Lacak Sekarang
+              </Link>
             </div>
 
             {/* Feature 2 */}
@@ -254,6 +258,7 @@ export default async function LandingPage() {
         <div className="mt-20 pt-8 border-t-2 border-black flex flex-col md:flex-row justify-between items-center font-bold uppercase tracking-widest text-xs">
           <span>© 2026 HERO ZERO WASTE DEPOK</span>
           <div className="flex gap-4 mt-4 md:mt-0">
+            <Link href="/lacak" className="hover:text-green-600">Lacak Truk</Link>
             <Link href="/bayar" className="hover:text-red-600">Cek Tagihan</Link>
             <Link href="/pengaduan" className="hover:text-red-600">Pusat Bantuan</Link>
           </div>

@@ -39,6 +39,7 @@ export default function PublicLayout({
           <span className="text-3xl font-black tracking-tighter">O₂W HERO.</span>
         </div>
         <div className="flex flex-wrap justify-center gap-6 font-bold uppercase tracking-widest text-sm">
+          <Link href="/lacak" className="hover:text-green-600 transition-colors">Lacak</Link>
           <Link href="/bayar" className="hover:text-red-600 transition-colors">Tagihan</Link>
           <Link href="/tarif" className="hover:text-green-600 transition-colors">Tarif</Link>
           <Link href="/pengaduan" className="hover:text-red-600 transition-colors">Komplain</Link>
@@ -66,6 +67,7 @@ export default function PublicLayout({
           
           <div className="flex gap-12 font-bold uppercase tracking-widest text-sm">
             <div className="flex flex-col gap-3">
+              <Link href="/lacak" className="hover:text-green-600">Lacak Jemputan</Link>
               <Link href="/bayar" className="hover:text-red-600">Cek Tagihan</Link>
               <Link href="/tarif" className="hover:text-red-600">Daftar Tarif</Link>
               <Link href="/daftar" className="hover:text-green-600">Gabung O2W</Link>
