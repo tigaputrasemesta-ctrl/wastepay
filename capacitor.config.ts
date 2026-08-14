@@ -17,7 +17,7 @@ const config: CapacitorConfig = {
   appName: "O2W Lapangan",
   webDir: "public",
   server: {
-    url: process.env.CAPACITOR_URL || "https://wastepay-b31jkd2zm-o2-w.vercel.app",
+    url: process.env.CAPACITOR_URL || "https://wastepay-gold.vercel.app",
     cleartext: true,
     // Buka langsung ke dashboard mobile petugas (bukan landing page publik)
     appStartPath: "/m",
