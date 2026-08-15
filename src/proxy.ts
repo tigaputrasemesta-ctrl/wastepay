@@ -36,6 +36,7 @@ const PAGE_ROLES: Record<string, number> = {
   "/notifikasi": 20, // kasir+
   "/rekonsiliasi": 50, // admin+
   "/tpa": 50, // admin+
+  "/chat": 50, // admin+: chat petugas ↔ admin
   "/users": 100, // superadmin only
   "/audit-log": 100, // superadmin only
 };
@@ -126,6 +127,15 @@ const API_ROLE_MAP: Record<string, number> = {
   "POST:/api/pengangkutan": 10,
   "PUT:/api/pengangkutan/": 10,
   "DELETE:/api/pengangkutan/": 50,
+
+  // Lapor angkut cepat (input kode pelanggan) — petugas lapangan
+  "GET:/api/pengangkutan/lapor": 10,
+  "POST:/api/pengangkutan/lapor": 10,
+
+  // Chat petugas ↔ admin
+  "GET:/api/chat": 10,
+  "POST:/api/chat": 10,
+  "POST:/api/chat/read": 10,
 
   // Komplain
   "GET:/api/komplain": 10,
