@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { ToastProvider } from "@/components/Toast";
 import { useUser } from "@/hooks/useUser";
 import { cn } from "@/lib/utils";
+import MobileTracker from "@/components/mobile/MobileTracker";
 
 type Profil = {
   id: number;
@@ -41,14 +42,26 @@ const ICON_ABSEN = (
     <path strokeLinecap="square" strokeLinejoin="miter" d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
   </svg>
 );
+const ICON_LAPOR = (
+  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+    <path strokeLinecap="square" strokeLinejoin="miter" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+  </svg>
+);
+const ICON_CHAT = (
+  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+    <path strokeLinecap="square" strokeLinejoin="miter" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+  </svg>
+);
 
 function BottomNav({ pathname, jabatan }: { pathname: string; jabatan: string[] }) {
   const items = [
     { href: "/m", label: "Beranda", icon: ICON_HOME, show: true },
     { href: "/m/angkut", label: "Angkut", icon: ICON_ANGKUT, show: jabatan.includes("angkut") },
+    { href: "/m/lapor", label: "Lapor", icon: ICON_LAPOR, show: jabatan.includes("angkut") },
     { href: "/m/survei", label: "Survei", icon: ICON_SURVEI, show: jabatan.includes("survei") },
     { href: "/m/klaim", label: "Klaim", icon: ICON_KLAIM, show: true },
     { href: "/m/absen", label: "Absen", icon: ICON_ABSEN, show: true },
+    { href: "/m/chat", label: "Chat", icon: ICON_CHAT, show: true },
   ].filter((i) => i.show);
 
   return (
@@ -135,7 +148,10 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
           </button>
         </header>
 
-        <main className="flex-1 w-full max-w-lg mx-auto px-3 py-4 space-y-4">{children}</main>
+        <main className="flex-1 w-full max-w-lg mx-auto px-3 py-4 space-y-4">
+          <MobileTracker />
+          {children}
+        </main>
 
         <BottomNav pathname={pathname} jabatan={jabatan} />
       </div>

@@ -1,31 +1,37 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Capacitor } from "@capacitor/core";
+import { Geolocation } from "@capacitor/geolocation";
+
+const INTERVAL_KIRIM = 10000; // 10 detik
+const KEY_KENDARAAN = "o2w_kendaraan_id";
 
 type KendaraanOpt = {
   id: number;
   nama: string;
   platNomor: string | null;
   jenis: string;
+  petugas?: { id: number; nama: string } | null;
 };
 
-const INTERVAL_KIRIM = 10000; // 10 detik
-const INTERVAL_FALLBACK = 30000; // 30 detik
-
-export default function MobileTracker({ kendaraan = [] }: { kendaraan?: KendaraanOpt[] }) {
-  const [lacak, setLacak] = useState(false);
+/**
+ * GPS selalu aktif (auto-start saat aplikasi terbuka, di semua halaman /m).
+ * - Native (@capacitor/geolocation) bila APK sudah memuat plugin → lebih stabil
+ * - Fallback ke navigator.geolocation di web / APK lama
+ * Posisi dikirim tiap 10 detik ke /api/petugas/lokasi (+ /api/kendaraan/lokasi
+ * bila ada kendaraan terpilih) sehingga selalu terlihat di peta admin.
+ */
+export default function MobileTracker() {
+  const [kendaraan, setKendaraan] = useState<KendaraanOpt[]>([]);
   const [kendaraanId, setKendaraanId] = useState("");
-  const [status, setStatus] = useState("");
   const [titik, setTitik] = useState<{ lat: number; lng: number; akurasi: number } | null>(null);
-  const [durasi, setDurasi] = useState(0);
-  const kendaraanTerpilih = kendaraan.find((k) => k.id.toString() === kendaraanId);
+  const [status, setStatus] = useState("Menyiapkan GPS…");
 
-  const watchId = useRef<number | null>(null);
-  const kirimRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const fallbackRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const durasiRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const posRef = useRef<{ lat: number; lng: number; akurasi: number } | null>(null);
   const kendaraanIdRef = useRef("");
+  const kirimRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const watchRef = useRef<string | number | null>(null);
 
   const kirimLokasi = useCallback(async () => {
     const p = posRef.current;
@@ -49,132 +55,145 @@ export default function MobileTracker({ kendaraan = [] }: { kendaraan?: Kendaraa
     }
   }, []);
 
-  const mulai = useCallback(() => {
-    if (!("geolocation" in navigator)) {
-      setStatus("Perangkat tidak mendukung GPS");
-      return;
-    }
-    setStatus("Mencari sinyal GPS…");
-    setDurasi(0);
+  useEffect(() => {
+    // Muat kendaraan milik petugas ini + restore pilihan dari localStorage
+    (async () => {
+      try {
+        const [pRes, kRes] = await Promise.all([fetch("/api/petugas/me"), fetch("/api/kendaraan")]);
+        const profil = pRes.ok ? await pRes.json() : null;
+        const semua: KendaraanOpt[] = kRes.ok ? await kRes.json() : [];
+        const milikSaya = semua.filter((k) => k.petugas?.id === profil?.id);
+        setKendaraan(milikSaya);
+        const saved = typeof localStorage !== "undefined" ? localStorage.getItem(KEY_KENDARAAN) : null;
+        const pilih = milikSaya.find((k) => k.id.toString() === saved) ?? milikSaya[0];
+        if (pilih) {
+          setKendaraanId(pilih.id.toString());
+          kendaraanIdRef.current = pilih.id.toString();
+        }
+      } catch {
+        // gagal muat kendaraan → tetap lacak posisi petugas saja
+      }
+    })();
 
-    const simpan = (pos: GeolocationPosition) => {
-      const p = { lat: pos.coords.latitude, lng: pos.coords.longitude, akurasi: pos.coords.accuracy };
+    let stopped = false;
+
+    const simpan = (lat: number, lng: number, akurasi: number) => {
+      const p = { lat, lng, akurasi };
       posRef.current = p;
       setTitik(p);
-      setStatus(`Sinyal OK — ±${Math.round(p.akurasi)} m`);
-      kirimLokasi();
+      setStatus(`GPS aktif ±${Math.round(akurasi)} m`);
+      void kirimLokasi();
     };
 
-    watchId.current = navigator.geolocation.watchPosition(
-      simpan,
-      () => setStatus("GPS tidak bisa diakses — periksa izin lokasi"),
-      { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 }
-    );
+    const pakaiWeb = () => {
+      if (!("geolocation" in navigator)) {
+        setStatus("Perangkat tidak mendukung GPS");
+        return;
+      }
+      const id = navigator.geolocation.watchPosition(
+        (pos) => simpan(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy),
+        () => setStatus("GPS tidak bisa diakses — cek izin lokasi"),
+        { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 }
+      );
+      watchRef.current = id;
+    };
 
-    fallbackRef.current = setInterval(() => {
-      navigator.geolocation.getCurrentPosition(simpan, () => {}, {
-        enableHighAccuracy: true,
-        maximumAge: 10000,
-        timeout: 10000,
-      });
-    }, INTERVAL_FALLBACK);
+    const mulai = async () => {
+      const pakaiNative = Capacitor.isNativePlatform() && Capacitor.isPluginAvailable("Geolocation");
+      if (pakaiNative) {
+        try {
+          let perm = await Geolocation.checkPermissions();
+          if (perm.location !== "granted") {
+            perm = await Geolocation.requestPermissions();
+          }
+          if (perm.location !== "granted") {
+            setStatus("Izin lokasi ditolak — aktifkan di pengaturan");
+            return;
+          }
+          const id = await Geolocation.watchPosition(
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 5000, minimumUpdateInterval: 5000 },
+            (pos, err) => {
+              if (stopped) return;
+              if (err) {
+                setStatus("GPS belum tersedia…");
+                return;
+              }
+              if (pos) simpan(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy);
+            }
+          );
+          watchRef.current = id;
+        } catch {
+          // plugin gagal / layanan lokasi mati → fallback ke web geolocation
+          if (!stopped) pakaiWeb();
+        }
+      } else {
+        pakaiWeb();
+      }
+      kirimRef.current = setInterval(kirimLokasi, INTERVAL_KIRIM);
+    };
 
-    kirimRef.current = setInterval(kirimLokasi, INTERVAL_KIRIM);
-    durasiRef.current = setInterval(() => setDurasi((d) => d + 1), 1000);
-    setLacak(true);
+    void mulai();
+
+    return () => {
+      stopped = true;
+      if (watchRef.current != null) {
+        if (typeof watchRef.current === "string") {
+          Geolocation.clearWatch({ id: watchRef.current }).catch(() => {});
+        } else if ("geolocation" in navigator) {
+          navigator.geolocation.clearWatch(watchRef.current);
+        }
+      }
+      if (kirimRef.current) clearInterval(kirimRef.current);
+    };
   }, [kirimLokasi]);
 
-  const hentikan = useCallback(() => {
-    if (watchId.current != null) navigator.geolocation.clearWatch(watchId.current);
-    if (kirimRef.current) clearInterval(kirimRef.current);
-    if (fallbackRef.current) clearInterval(fallbackRef.current);
-    if (durasiRef.current) clearInterval(durasiRef.current);
-    watchId.current = null;
-    kirimRef.current = null;
-    fallbackRef.current = null;
-    durasiRef.current = null;
-    posRef.current = null;
-    setLacak(false);
-    setTitik(null);
-    setDurasi(0);
-    setStatus("Pelacakan dihentikan");
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (watchId.current != null) navigator.geolocation.clearWatch(watchId.current);
-      if (kirimRef.current) clearInterval(kirimRef.current);
-      if (fallbackRef.current) clearInterval(fallbackRef.current);
-      if (durasiRef.current) clearInterval(durasiRef.current);
-    };
-  }, []);
-
-  const fmtDurasi = () => {
-    const m = Math.floor(durasi / 60);
-    const s = durasi % 60;
-    return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-  };
+  const kendaraanTerpilih = kendaraan.find((k) => k.id.toString() === kendaraanId);
 
   return (
-    <div className="bg-white border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] p-4 space-y-3">
-      <div className="flex items-center justify-between gap-2">
-        <div>
-          <p className="text-sm font-black uppercase tracking-tight">Live Tracking GPS</p>
-          <p className="text-[11px] font-bold text-gray-500">
-            Posisi dikirim tiap 10 dtk → terlihat di peta admin
-          </p>
-        </div>
-        <span className={`px-2 py-1 text-[10px] font-black uppercase border-2 border-black ${lacak ? "bg-green-600 text-white" : "bg-gray-200 text-gray-600"}`}>
-          {lacak ? "● LIVE" : "○ OFF"}
-        </span>
-      </div>
-
-      {kendaraan.length > 0 && !lacak && (
-        <select
-          value={kendaraanId}
-          onChange={(e) => {
-            setKendaraanId(e.target.value);
-            kendaraanIdRef.current = e.target.value;
-          }}
-          className="w-full px-3 py-3 border-2 border-black bg-white text-sm font-bold outline-none"
-        >
-          <option value="">— Kendaraan (opsional) —</option>
-          {kendaraan.map((k) => (
-            <option key={k.id} value={k.id}>
-              {k.jenis === "dump_truck" ? "🚛" : k.jenis === "pickup" ? "🛺" : "🛞"} {k.nama}
-              {k.platNomor ? ` · ${k.platNomor}` : ""}
-            </option>
-          ))}
-        </select>
-      )}
-
-      {lacak && kendaraanTerpilih && (
-        <p className="text-[11px] font-mono font-bold text-amber-600">
-          🚛 {kendaraanTerpilih.nama}
-          {kendaraanTerpilih.platNomor ? ` · ${kendaraanTerpilih.platNomor}` : ""}
-        </p>
-      )}
-
-      <button
-        onClick={lacak ? hentikan : mulai}
-        className={`w-full py-4 border-2 border-black text-sm font-black uppercase tracking-widest shadow-[4px_4px_0_0_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition ${
-          lacak ? "bg-red-600 text-white" : "bg-green-600 text-white"
-        }`}
-      >
-        {lacak ? "■ Hentikan Lacak" : "▶ Mulai Lacak GPS"}
-      </button>
-
-      {lacak && (
-        <div className="font-mono text-[11px] font-bold text-gray-700 space-y-0.5">
-          <p className="text-green-700">● LIVE {fmtDurasi()}</p>
+    <div className="bg-black text-white border-2 border-black shadow-[3px_3px_0_0_rgba(0,0,0,0.25)]">
+      <div className="flex items-center justify-between gap-2 px-3 py-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${titik ? "bg-green-400 animate-pulse" : "bg-amber-400"}`} />
+          <span className="text-[10px] font-black uppercase tracking-widest shrink-0">GPS Live</span>
           {titik && (
-            <p>
-              {titik.lat.toFixed(5)}, {titik.lng.toFixed(5)} · ±{Math.round(titik.akurasi)}m
-            </p>
+            <span className="font-mono text-[9px] text-green-300 truncate">
+              {titik.lat.toFixed(5)}, {titik.lng.toFixed(5)}
+            </span>
           )}
-          <p className="text-gray-400">{status}</p>
         </div>
-      )}
+
+        <div className="flex items-center gap-2 shrink-0">
+          {kendaraan.length > 0 && (
+            <select
+              value={kendaraanId}
+              onChange={(e) => {
+                setKendaraanId(e.target.value);
+                kendaraanIdRef.current = e.target.value;
+                try {
+                  localStorage.setItem(KEY_KENDARAAN, e.target.value);
+                } catch {
+                  // ignore
+                }
+              }}
+              className="bg-white text-black text-[10px] font-bold px-1 py-1 max-w-[120px] outline-none"
+              title="Kendaraan"
+            >
+              <option value="">— Kendaraan —</option>
+              {kendaraan.map((k) => (
+                <option key={k.id} value={k.id}>
+                  {k.jenis === "dump_truck" ? "🚛" : k.jenis === "pickup" ? "🛺" : "🛞"} {k.nama}
+                </option>
+              ))}
+            </select>
+          )}
+          {kendaraanTerpilih && (
+            <span className="font-mono text-[9px] text-amber-300 hidden sm:inline">
+              {kendaraanTerpilih.nama}
+            </span>
+          )}
+          <span className="font-mono text-[9px] text-gray-300 truncate">{status}</span>
+        </div>
+      </div>
     </div>
   );
 }

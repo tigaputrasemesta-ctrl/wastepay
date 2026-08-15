@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
-import MobileTracker from "@/components/mobile/MobileTracker";
 import CameraGps from "@/components/mobile/CameraGps";
 import MapAngkut from "@/components/mobile/MapAngkut";
 
@@ -38,7 +37,6 @@ function mapsUrl(t: Tugas) {
 }
 
 export default function MobileAngkut() {
-  const [profil, setProfil] = useState<Profil | null>(null);
   const [kendaraanSaya, setKendaraanSaya] = useState<Kendaraan[]>([]);
   const [data, setData] = useState<Tugas[]>([]);
   const [loading, setLoading] = useState(true);
@@ -74,7 +72,6 @@ export default function MobileAngkut() {
       // ("Body has already been consumed") — akibatnya kendaraanSaya tidak pernah
       // terisi dan dropdown kendaraan selalu kosong. Baca json sekali saja.
       const profil = pRes.ok ? ((await pRes.json()) as Profil) : null;
-      if (profil) setProfil(profil);
       if (kRes.ok) {
         const semua: Kendaraan[] = await kRes.json();
         setKendaraanSaya(semua.filter((k) => k.petugas?.id === profil?.id));
@@ -164,8 +161,6 @@ export default function MobileAngkut() {
           className="border-2 border-black bg-white px-2 py-2 text-xs font-bold outline-none"
         />
       </div>
-
-      {profil && <MobileTracker kendaraan={kendaraanSaya} />}
 
       {data.filter((t) => t.pelanggan.latitude && t.pelanggan.longitude).length > 0 && (
         <MapAngkut

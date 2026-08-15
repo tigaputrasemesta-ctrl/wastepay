@@ -30,6 +30,7 @@ model User {
   rekonsiliasi         Rekonsiliasi[]
   petugasProfiles      Petugas[]
   klaimDiperiksa       KlaimPetugas[] @relation("KlaimDiperiksa")
+  chat                 ChatPesan[]     @relation("ChatUser")
 }
 
 model Wilayah {
@@ -129,6 +130,7 @@ model Petugas {
   kendaraan      Kendaraan[]  // kendaraan yang dikemudikan
   absensi        Absensi[]
   klaim          KlaimPetugas[]
+  chat           ChatPesan[]
 
   @@index([wilayahId])
   @@index([aktif])
@@ -460,4 +462,19 @@ model KlaimPetugas {
   diperiksaById  Int?
   diperiksaBy    User?     @relation("KlaimDiperiksa", fields: [diperiksaById], references: [id])
   waktuDiperiksa DateTime?
+}
+
+model ChatPesan {
+  id          Int      @id @default(autoincrement())
+  petugasId   Int
+  petugas     Petugas  @relation(fields: [petugasId], references: [id], onDelete: Cascade)
+  userId      Int?     // pengirim dari sisi admin/kasir/superadmin (User); null jika dari petugas
+  user        User?    @relation("ChatUser", fields: [userId], references: [id], onDelete: SetNull)
+  dariPetugas Boolean  // true = kiriman petugas, false = kiriman admin
+  isi         String
+  dibaca      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([petugasId, createdAt])
+  @@index([userId])
 }

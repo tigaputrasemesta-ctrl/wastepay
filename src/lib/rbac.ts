@@ -47,6 +47,7 @@ export function getAllowedMenus(role: string): string[] {
     "jadwal",
     "pengangkutan",
     "komplain",
+    "chat",
     "kendaraan",
     "transit",
     "sticker",
