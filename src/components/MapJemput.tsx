@@ -1,9 +1,9 @@
 "use client";
 
 import "leaflet/dist/leaflet.css";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import L from "leaflet";
-import { MapContainer, TileLayer, Marker, Polyline, Tooltip, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Polyline, Tooltip, ZoomControl, useMap } from "react-leaflet";
 
 export type TitikMap = { latitude: number; longitude: number };
 
@@ -48,18 +48,24 @@ function pinUser() {
   });
 }
 
-/** Sesuaikan viewport agar pickup + truk terlihat sekaligus. */
+/**
+ * Sesuaikan viewport agar pickup + truk terlihat sekaligus.
+ * Fit hanya saat jumlah titik bertambah (mis. truk baru mulai mengirim
+ * posisi), BUKAN saat koordinat bergerak — supaya pergerakan truk tiap
+ * polling tidak menarik-narik viewport pengguna.
+ */
 function FitPoints({ points }: { points: [number, number][] }) {
   const map = useMap();
-  const key = points.map((p) => p.join(",")).join("|");
+  const fittedCount = useRef(0);
   useEffect(() => {
+    if (points.length === 0 || points.length <= fittedCount.current) return;
     if (points.length >= 2) {
       map.fitBounds(points, { padding: [90, 90], maxZoom: 17 });
-    } else if (points.length === 1) {
+    } else {
       map.setView(points[0], 16);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, map]);
+    fittedCount.current = points.length;
+  }, [points, map]);
   return null;
 }
 
@@ -89,6 +95,7 @@ export default function MapJemput({ pickup, truk, userPos }: Props) {
       center={center}
       zoom={15}
       scrollWheelZoom
+      zoomControl={false}
       className="h-full w-full"
       style={{ background: "#e8f0e6" }}
     >
@@ -129,6 +136,8 @@ export default function MapJemput({ pickup, truk, userPos }: Props) {
 
       {userPos && <Marker position={[userPos.latitude, userPos.longitude]} icon={pinUser()} interactive={false} />}
 
+      {/* Zoom di kanan-bawah supaya tidak menimpa badge status (kiri-atas). */}
+      <ZoomControl position="bottomright" />
       <FitPoints points={points} />
       <FlyToUser pos={userPos} />
     </MapContainer>

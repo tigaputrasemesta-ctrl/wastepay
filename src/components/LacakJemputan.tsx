@@ -260,7 +260,7 @@ export default function LacakJemputan() {
             {/* Badge status di atas peta */}
             {meta && (
               <div
-                className={`absolute left-3 top-3 z-[1000] px-3 py-2 text-[11px] font-black uppercase tracking-wide border-2 border-black shadow-[3px_3px_0_0_rgba(0,0,0,1)] ${
+                className={`absolute left-3 top-3 z-[1000] max-w-[calc(100%-8.5rem)] px-3 py-2 text-[11px] font-black uppercase tracking-wide border-2 border-black shadow-[3px_3px_0_0_rgba(0,0,0,1)] ${
                   meta.tone === "selesai"
                     ? "bg-green-600 text-white"
                     : meta.tone === "proses"
