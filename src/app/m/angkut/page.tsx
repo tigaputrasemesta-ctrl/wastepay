@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import MobileTracker from "@/components/mobile/MobileTracker";
 import CameraGps from "@/components/mobile/CameraGps";
+import MapAngkut from "@/components/mobile/MapAngkut";
 
 type Profil = { id: number; nama: string; jabatan: string | null; wilayahId: number | null };
 type Kendaraan = { id: number; nama: string; platNomor: string | null; jenis: string; petugas?: { id: number; nama: string } | null };
@@ -69,11 +70,14 @@ export default function MobileAngkut() {
   useEffect(() => {
     (async () => {
       const [pRes, kRes] = await Promise.all([fetch("/api/petugas/me"), fetch("/api/kendaraan")]);
-      if (pRes.ok) setProfil(await pRes.json());
+      // BUG FIX: `pRes.clone()` setelah body `pRes.json()` dibaca akan throw
+      // ("Body has already been consumed") — akibatnya kendaraanSaya tidak pernah
+      // terisi dan dropdown kendaraan selalu kosong. Baca json sekali saja.
+      const profil = pRes.ok ? ((await pRes.json()) as Profil) : null;
+      if (profil) setProfil(profil);
       if (kRes.ok) {
         const semua: Kendaraan[] = await kRes.json();
-        const profilId = (await pRes.clone().json()).id;
-        setKendaraanSaya(semua.filter((k) => k.petugas?.id === profilId));
+        setKendaraanSaya(semua.filter((k) => k.petugas?.id === profil?.id));
       }
     })();
   }, []);
@@ -162,6 +166,22 @@ export default function MobileAngkut() {
       </div>
 
       {profil && <MobileTracker kendaraan={kendaraanSaya} />}
+
+      {data.filter((t) => t.pelanggan.latitude && t.pelanggan.longitude).length > 0 && (
+        <MapAngkut
+          tugas={data
+            .filter((t) => t.pelanggan.latitude && t.pelanggan.longitude)
+            .map((t) => ({
+              id: t.id,
+              nama: t.pelanggan.nama,
+              alamat: t.pelanggan.alamat,
+              kodePelanggan: t.pelanggan.kodePelanggan,
+              latitude: t.pelanggan.latitude!,
+              longitude: t.pelanggan.longitude!,
+              status: t.status,
+            }))}
+        />
+      )}
 
       {pesan && (
         <p className={`text-center text-sm font-black p-3 border-2 ${pesan.includes("✓") ? "border-green-600 text-green-700 bg-green-50" : "border-red-600 text-red-700 bg-red-50"}`}>

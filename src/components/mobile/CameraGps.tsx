@@ -2,9 +2,11 @@
 
 import { useRef, useState } from "react";
 import exifr from "exifr";
+import { Capacitor } from "@capacitor/core";
+import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 
 type Props = {
-  foto: string; // base64
+  foto: string; // base64 data-url
   latitude: string;
   longitude: string;
   koordinatSumber: string; // exif_foto | gps_perangkat | manual | ""
@@ -72,6 +74,11 @@ export default function CameraGps({
   const [gpsLoading, setGpsLoading] = useState(false);
   const [pesan, setPesan] = useState("");
 
+  // Gunakan plugin kamera native hanya jika APK sudah memuat plugin-nya.
+  // APK lama (belum ada @capacitor/camera) otomatis jatuh ke <input type=file>
+  // supaya fitur tidak pecah sebelum APK di-rebuild.
+  const pakaiKameraNative = Capacitor.isNativePlatform() && Capacitor.isPluginAvailable("Camera");
+
   async function handleFile(file: File | undefined) {
     if (!file) return;
     if (!file.type.startsWith("image/")) {
@@ -110,6 +117,54 @@ export default function CameraGps({
     }
   }
 
+  async function handleNativePhoto(source: CameraSource) {
+    setProcessing(true);
+    setPesan("");
+    try {
+      // Izin kamera wajib untuk CameraSource.Camera. Android: galeri via SAF
+      // tidak butuh izin, tapi minta tetap agar flow seragam & aman.
+      if (source === CameraSource.Camera) {
+        let perm = await Camera.checkPermissions();
+        if (perm.camera !== "granted") {
+          perm = await Camera.requestPermissions({ permissions: ["camera"] });
+        }
+        if (perm.camera !== "granted") {
+          setPesan("Izin kamera ditolak. Aktifkan di Pengaturan aplikasi.");
+          return;
+        }
+      }
+
+      const photo = await Camera.getPhoto({
+        resultType: CameraResultType.DataUrl,
+        source,
+        quality: 80,
+        width: MAX_DIMENSI,
+        correctOrientation: true,
+      });
+
+      const base64 = photo.dataUrl;
+      if (!base64) {
+        setPesan("Gagal mengambil foto.");
+        return;
+      }
+
+      onFotoChange(base64);
+
+      // Foto native tidak membawa EXIF GPS yang konsisten antar perangkat.
+      // Jika belum ada koordinat, otomatis isi dari GPS perangkat.
+      if (!latitude || !longitude) {
+        getCurrentLocation();
+      } else {
+        setPesan("Foto terambil. Koordinat pakai data yang sudah ada.");
+      }
+    } catch {
+      // User batal / camera app ditutup — jangan tampilkan error keras.
+      setPesan("Foto dibatalkan.");
+    } finally {
+      setProcessing(false);
+    }
+  }
+
   function getCurrentLocation() {
     setGpsLoading(true);
     setPesan("");
@@ -127,6 +182,7 @@ export default function CameraGps({
           position.coords.accuracy ? Math.round(position.coords.accuracy).toString() : ""
         );
         setGpsLoading(false);
+        setPesan("Foto terambil, koordinat diisi dari GPS perangkat.");
       },
       (error) => {
         switch (error.code) {
@@ -188,7 +244,7 @@ export default function CameraGps({
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              onClick={() => kameraRef.current?.click()}
+              onClick={() => (pakaiKameraNative ? handleNativePhoto(CameraSource.Camera) : kameraRef.current?.click())}
               disabled={processing}
               className="px-3 py-2.5 bg-green-600 text-white border-2 border-black text-xs font-black uppercase tracking-wider shadow-[3px_3px_0_0_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50"
             >
@@ -196,7 +252,7 @@ export default function CameraGps({
             </button>
             <button
               type="button"
-              onClick={() => galeriRef.current?.click()}
+              onClick={() => (pakaiKameraNative ? handleNativePhoto(CameraSource.Photos) : galeriRef.current?.click())}
               disabled={processing}
               className="px-3 py-2.5 bg-white text-black border-2 border-black text-xs font-black uppercase tracking-wider shadow-[3px_3px_0_0_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50"
             >
