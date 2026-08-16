@@ -123,7 +123,7 @@ export default async function PetaPage() {
   // ── Lokasi terakhir petugas aktif (data awal peta realtime) ──
   const lokasiRaw = await prisma.lokasiPetugas.findMany({
     where: scopeKelurahanId
-      ? { petugas: { wilayah: { kelurahanId: scopeKelurahanId }, aktif: true } }
+      ? { petugas: { kelurahanId: scopeKelurahanId, aktif: true } }
       : petugasTanpaProfil
         ? { id: -1 }
         : undefined,
@@ -157,7 +157,7 @@ export default async function PetaPage() {
   const [kendaraanRaw, transitList] = await Promise.all([
     prisma.lokasiKendaraan.findMany({
       where: scopeKelurahanId
-        ? { kendaraan: { aktif: true, petugas: { wilayah: { kelurahanId: scopeKelurahanId } } } }
+        ? { kendaraan: { aktif: true, petugas: { kelurahanId: scopeKelurahanId } } }
         : petugasTanpaProfil
           ? { id: -1 }
           : undefined,

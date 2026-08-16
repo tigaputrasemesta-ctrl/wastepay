@@ -23,6 +23,7 @@ export async function GET() {
         jabatan: true,
         wilayahId: true,
         kelurahanId: true,
+        kelurahan: { select: { nama: true, kecamatan: true } },
         aktif: true,
         lokasi: {
           orderBy: { createdAt: "desc" },
@@ -50,6 +51,7 @@ export async function GET() {
       jabatan: profil.jabatan,
       wilayahId: profil.wilayahId,
       kelurahanId: profil.kelurahanId,
+      kelurahan: profil.kelurahan?.nama ?? null,
       aktif: profil.aktif,
       lokasiTerakhir: profil.lokasi[0] ?? null,
     });

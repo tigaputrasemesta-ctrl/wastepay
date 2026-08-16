@@ -32,7 +32,7 @@ export async function PUT(
   try {
     const id = parseInt((await params).id);
     const body = await request.json();
-    const { nama, noTelepon, email, foto, aktif, wilayahId, kelurahanId, jabatan, userId } = body;
+    const { nama, noTelepon, email, foto, aktif, kelurahanId, jabatan, userId } = body;
 
     const data: Record<string, unknown> = {};
     if (nama !== undefined) data.nama = nama;
@@ -42,8 +42,11 @@ export async function PUT(
     if (aktif !== undefined) data.aktif = aktif;
     if (jabatan !== undefined) data.jabatan = Array.isArray(jabatan) ? jabatan.join(",") : (jabatan || null);
     if (userId !== undefined) data.userId = userId ? parseInt(userId) : null;
-    if (wilayahId !== undefined) data.wilayahId = parseInt(wilayahId);
-    if (kelurahanId !== undefined) data.kelurahanId = kelurahanId ? parseInt(kelurahanId) : null;
+    if (kelurahanId !== undefined) {
+      data.kelurahanId = kelurahanId ? parseInt(kelurahanId) : null;
+      // wilayahId sudah tidak dipakai — scope petugas murni via kelurahan
+      data.wilayahId = null;
+    }
 
     const petugas = await prisma.petugas.update({
       where: { id },

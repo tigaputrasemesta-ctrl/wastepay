@@ -167,8 +167,8 @@ model Petugas {
   email       String?
   jabatan     String? // angkut | tagih | survei (comma multi: "angkut,tagih")
   aktif       Boolean    @default(true)
-  wilayahId   Int
-  wilayah     Wilayah    @relation(fields: [wilayahId], references: [id])
+  wilayahId   Int?
+  wilayah     Wilayah?   @relation(fields: [wilayahId], references: [id])
   kelurahanId Int? // scope approval per kelurahan (fallback: kelurahan dari wilayahId)
   kelurahan   Kelurahan? @relation("PetugasKelurahan", fields: [kelurahanId], references: [id])
   userId      Int?       @unique // link ke akun login User

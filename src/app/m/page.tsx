@@ -9,6 +9,7 @@ type Profil = {
   nama: string;
   jabatan: string | null;
   wilayahId: number | null;
+  kelurahan: string | null;
   aktif: boolean;
 };
 
@@ -96,7 +97,7 @@ export default function MobileHome() {
         </h1>
         <p className="text-[11px] font-mono font-bold text-gray-300 mt-1">
           {jabatan.map((j) => j.toUpperCase()).join(" · ") || "PETUGAS"}
-          {profil?.wilayahId ? ` · Wilayah #${profil.wilayahId}` : ""}
+          {profil?.kelurahan ? ` · ${profil.kelurahan}` : ""}
         </p>
       </div>
 

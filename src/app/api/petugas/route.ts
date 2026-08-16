@@ -34,10 +34,10 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { nama, noTelepon, email, foto, wilayahId, kelurahanId, jabatan, userId } = body;
+    const { nama, noTelepon, email, foto, kelurahanId, jabatan, userId } = body;
 
-    if (!nama || !noTelepon || !wilayahId) {
-      return NextResponse.json({ error: "Nama, no telepon, dan wilayah harus diisi" }, { status: 400 });
+    if (!nama || !noTelepon || !kelurahanId) {
+      return NextResponse.json({ error: "Nama, no telepon, dan kelurahan harus diisi" }, { status: 400 });
     }
 
     const petugas = await prisma.petugas.create({
@@ -48,8 +48,7 @@ export async function POST(request: Request) {
         foto,
         jabatan: Array.isArray(jabatan) ? jabatan.join(",") : (jabatan || null),
         userId: userId ? parseInt(userId) : null,
-        wilayahId: parseInt(wilayahId),
-        kelurahanId: kelurahanId ? parseInt(kelurahanId) : null,
+        kelurahanId: parseInt(kelurahanId),
       },
       include: { wilayah: true, kelurahan: true },
     });
