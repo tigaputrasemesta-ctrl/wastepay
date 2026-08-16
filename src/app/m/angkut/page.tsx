@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import CameraGps from "@/components/mobile/CameraGps";
 import MapAngkut from "@/components/mobile/MapAngkut";
+import { todayLocalISO } from "@/lib/utils";
 
 type Profil = { id: number; nama: string; jabatan: string | null; wilayahId: number | null };
 type Kendaraan = { id: number; nama: string; platNomor: string | null; jenis: string; petugas?: { id: number; nama: string } | null };
@@ -40,7 +41,7 @@ export default function MobileAngkut() {
   const [kendaraanSaya, setKendaraanSaya] = useState<Kendaraan[]>([]);
   const [data, setData] = useState<Tugas[]>([]);
   const [loading, setLoading] = useState(true);
-  const [tanggal, setTanggal] = useState(new Date().toISOString().split("T")[0]);
+  const [tanggal, setTanggal] = useState(todayLocalISO());
   const [editingId, setEditingId] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [pesan, setPesan] = useState("");

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { todayLocalISO } from "@/lib/utils";
 
 type Profil = {
   id: number;
@@ -36,7 +37,7 @@ export default function MobileHome() {
 
   useEffect(() => {
     if (isAngkut) {
-      const today = new Date().toISOString().split("T")[0];
+      const today = todayLocalISO();
       fetch(`/api/pengangkutan?saya=1&tanggal=${today}`)
         .then((r) => (r.ok ? r.json() : []))
         .then((d) => setJumlahTugas(Array.isArray(d) ? d.length : 0))

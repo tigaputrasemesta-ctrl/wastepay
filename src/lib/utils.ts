@@ -38,6 +38,23 @@ export const HARI = [
   "Minggu",
 ];
 
+/**
+ * Tanggal lokal dalam format YYYY-MM-DD (BUKAN UTC).
+ * `new Date().toISOString().split("T")[0]` memakai zona UTC sehingga di
+ * Indonesia (UTC+7) antara 00:00–06:59 hasilnya kemarin, bukan hari ini.
+ */
+export function todayLocalISO(d: Date = new Date()): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+/** Nama hari Indonesia (Senin..Minggu) untuk sebuah tanggal. */
+export function namaHari(d: Date = new Date()): string {
+  return HARI[(d.getDay() + 6) % 7];
+}
+
 export const METODE_PEMBAYARAN = [
   { value: "transfer", label: "Transfer Bank" },
   { value: "ewallet", label: "E-Wallet" },

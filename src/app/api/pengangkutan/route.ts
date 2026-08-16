@@ -2,6 +2,72 @@ import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { namaHari } from "@/lib/utils";
+
+/**
+ * Materialisasi tugas "terjadwal" dari Jadwal harian milik rute petugas.
+ *
+ * Mobile petugas membaca daftar tugas dari tabel Pengangkutan, tetapi tidak
+ * ada proses yang membuatkan catatan Pengangkutan status "terjadwal" dari
+ * Jadwal. Akibatnya saat petugas login, daftar tugas selalu kosong walaupun
+ * dia punya rute & jadwal untuk hari itu. Fungsi ini dibuat idempotent:
+ * hanya membuat catatan yang belum ada (per pelanggan + tanggal).
+ */
+async function materializeTugasTerjadwal(petugasId: number, tanggal: Date): Promise<void> {
+  const hari = namaHari(tanggal);
+  const start = new Date(tanggal.getFullYear(), tanggal.getMonth(), tanggal.getDate());
+  const end = new Date(tanggal.getFullYear(), tanggal.getMonth(), tanggal.getDate() + 1);
+
+  const jadwal = await prisma.jadwal.findMany({
+    where: {
+      hari,
+      aktif: true,
+      rute: { aktif: true, petugasId },
+      pelanggan: { deletedAt: null, status: "aktif" },
+    },
+    select: { id: true, pelangganId: true },
+  });
+
+  if (jadwal.length === 0) return;
+
+  const pelangganIds = jadwal.map((j) => j.pelangganId);
+
+  const [liburRows, existingRows] = await Promise.all([
+    prisma.liburSementara.findMany({
+      where: {
+        pelangganId: { in: pelangganIds },
+        tanggalMulai: { lt: end },
+        tanggalSelesai: { gte: start },
+      },
+      select: { pelangganId: true },
+    }),
+    prisma.pengangkutan.findMany({
+      where: {
+        pelangganId: { in: pelangganIds },
+        tanggal: { gte: start, lt: end },
+        deletedAt: null,
+      },
+      select: { pelangganId: true },
+    }),
+  ]);
+
+  const skip = new Set<number>();
+  for (const r of liburRows) skip.add(r.pelangganId);
+  for (const r of existingRows) skip.add(r.pelangganId);
+
+  for (const j of jadwal) {
+    if (skip.has(j.pelangganId)) continue;
+    await prisma.pengangkutan.create({
+      data: {
+        tanggal: start,
+        status: "terjadwal",
+        pelangganId: j.pelangganId,
+        petugasId,
+        jadwalId: j.id,
+      },
+    });
+  }
+}
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -32,6 +98,13 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Akun belum ter-link ke profil petugas" }, { status: 403 });
     }
     where.petugasId = profil.id;
+
+    // Materialisasi tugas dari jadwal hari tsb agar petugas langsung melihat
+    // daftar pickup setelah login (tanpa menunggu admin membuat catatan manual).
+    const tanggalTugas = tanggal
+      ? new Date(tanggal)
+      : new Date();
+    await materializeTugasTerjadwal(profil.id, tanggalTugas);
   }
   if (status) where.status = status;
   if (pelangganId) where.pelangganId = parseInt(pelangganId);

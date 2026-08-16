@@ -17,6 +17,9 @@
 /.next/
 /out/
 
+# build apk output
+/dist/
+
 # production
 /build
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { formatDate } from "@/lib/utils";
+import { formatDate, todayLocalISO } from "@/lib/utils";
 import { useUser } from "@/hooks/useUser";
 import LacakLokasi from "@/components/LacakLokasi";
 
@@ -43,7 +43,7 @@ export default function PengangkutanPage() {
   const [kendaraanSaya, setKendaraanSaya] = useState<KendaraanSaya[]>([]);
   const [data, setData] = useState<Pengangkutan[]>([]);
   const [loading, setLoading] = useState(true);
-  const [tanggal, setTanggal] = useState(new Date().toISOString().split("T")[0]);
+  const [tanggal, setTanggal] = useState(todayLocalISO());
   const [statusFilter, setStatusFilter] = useState("");
   const [updating, setUpdating] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<{
