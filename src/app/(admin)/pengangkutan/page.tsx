@@ -20,6 +20,7 @@ type Pengangkutan = {
   pelanggan: { id: number; nama: string; alamat: string; kodePelanggan: string };
   petugas?: { id: number; nama: string } | null;
   jadwal?: { hari: string } | null;
+  zona?: { id: number; nama: string } | null;
   tpa?: { id: number; nama: string } | null;
   kendaraan?: { id: number; nama: string; platNomor: string | null; jenis: string } | null;
 };
@@ -232,6 +233,7 @@ export default function PengangkutanPage() {
                     <td className="px-4 py-3">
                       <div className="font-medium text-black font-black">{d.pelanggan.nama}</div>
                       <div className="text-xs text-gray-600 font-bold">{d.pelanggan.alamat}</div>
+                      {d.zona?.nama && <div className="text-xs text-purple-500 font-bold">🗺️ {d.zona.nama}</div>}
                     </td>
                     <td className="px-4 py-3 text-gray-600 font-bold text-xs">
                       {d.volume ? `${d.volume} m³` : "-"}
@@ -279,6 +281,7 @@ export default function PengangkutanPage() {
                   <span className="font-mono text-xs text-gray-400 font-bold">{d.pelanggan.kodePelanggan}</span>
                   <h3 className="font-semibold text-black font-black">{d.pelanggan.nama}</h3>
                   <p className="text-xs text-gray-600 font-bold">{d.pelanggan.alamat}</p>
+                  {d.zona?.nama && <p className="text-xs text-purple-500 font-bold">🗺️ {d.zona.nama}</p>}
                 </div>
                 <span className={`inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium ${getStatusInfo(d.status).color}`}>
                   {getStatusInfo(d.status).label}

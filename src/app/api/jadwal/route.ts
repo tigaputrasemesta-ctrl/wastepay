@@ -24,6 +24,7 @@ export async function GET(request: Request) {
           hari: true,
           jam: true,
           kelurahan: { select: { id: true, nama: true } },
+          zona: { select: { id: true, nama: true } },
         },
       },
       _count: { select: { pengangkutan: true } },

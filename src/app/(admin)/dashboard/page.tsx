@@ -97,7 +97,7 @@ async function getStats() {
         select: {
           nama: true,
           kodePelanggan: true,
-          wilayah: { select: { nama: true, kelurahan: true } },
+          kelurahan: { select: { nama: true } },
         },
       },
     },
@@ -116,9 +116,7 @@ async function getStats() {
       tunggakanMap.set(t.pelangganId, {
         nama: t.pelanggan.nama,
         kode: t.pelanggan.kodePelanggan,
-        wilayah: [t.pelanggan.wilayah?.nama, t.pelanggan.wilayah?.kelurahan]
-          .filter(Boolean)
-          .join(" · "),
+        wilayah: t.pelanggan.kelurahan?.nama ?? "—",
         total,
         jumlahTagihan: 1,
       });

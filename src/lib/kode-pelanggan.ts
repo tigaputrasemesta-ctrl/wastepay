@@ -39,12 +39,3 @@ export async function generateKodePelanggan(kelurahanId: number): Promise<string
 
   return `${kodeKelurahan}-${randomToken()}`;
 }
-
-/** Normalisasi kode zona (uppercase, tanpa spasi/karakter aneh) — contoh "kalibaru-a" → "KALIBARUA". */
-export function normalisasiKodeWilayah(kode: string | undefined | null): string {
-  return (kode || "")
-    .trim()
-    .toUpperCase()
-    .replace(/[^A-Z0-9]/g, "")
-    .slice(0, 8);
-}

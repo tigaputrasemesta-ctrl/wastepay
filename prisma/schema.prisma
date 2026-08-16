@@ -52,10 +52,11 @@ model Kelurahan {
 model Wilayah {
   id           Int        @id @default(autoincrement())
   nama         String // nama wilayah, misal "RT 01", "Blok A"
-  kode         String?    @unique // kode zona singkat utk kode pelanggan, misal "KB" (Kalibaru) → kode pelanggan KB-001
+  kode         String?    @unique // DEPRECATED: kode pelanggan kini dari Kelurahan.kode
   rt           String?
   rw           String?
-  // Denormalisasi (untuk tampilan & pencocokan publik) — sumber kebenaran di kelurahanRef
+  // DEPRECATED — sumber kebenaran kini di Kelurahan (kelurahanRef).
+  // Kolom denormalisasi di bawah dipertahankan untuk kompatibilitas & data lama.
   kelurahan    String?
   kecamatan    String?
   kota         String?
@@ -88,6 +89,8 @@ model Zona {
 
   wilayah Wilayah[]
   petugas ZonaPetugas[]
+  rute    Rute[]
+  pengangkutan Pengangkutan[]
 
   @@index([kelurahanId])
   @@index([deletedAt])
@@ -256,15 +259,17 @@ model Rute {
   nama      String // nama rute, misal "Rute A - RT 01"
   hari      String // Senin, Rabu, Jumat (comma-separated)
   jam       String? // jam estimasi
-  aktif     Boolean   @default(true)
-  wilayahId Int?
-  wilayah   Wilayah?  @relation(fields: [wilayahId], references: [id])
+  aktif       Boolean    @default(true)
+  wilayahId   Int?
+  wilayah     Wilayah?  @relation(fields: [wilayahId], references: [id])
   kelurahanId Int?
   kelurahan   Kelurahan? @relation(fields: [kelurahanId], references: [id])
-  petugasId Int?
-  petugas   Petugas? @relation(fields: [petugasId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  zonaId      Int?
+  zona        Zona?     @relation(fields: [zonaId], references: [id])
+  petugasId   Int?
+  petugas     Petugas? @relation(fields: [petugasId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   jadwal Jadwal[]
 }
@@ -355,6 +360,8 @@ model Pengangkutan {
   kendaraan   Kendaraan? @relation(fields: [kendaraanId], references: [id])
   jadwalId    Int?
   jadwal      Jadwal?    @relation(fields: [jadwalId], references: [id])
+  zonaId      Int? // zona angkut (snapshot dari rute/wilayah saat pickup)
+  zona        Zona?      @relation(fields: [zonaId], references: [id])
   tpaId       Int?
   tpa         Tpa?       @relation(fields: [tpaId], references: [id])
   createdAt   DateTime   @default(now())
@@ -364,6 +371,7 @@ model Pengangkutan {
   @@index([tanggal, status])
   @@index([pelangganId])
   @@index([petugasId])
+  @@index([zonaId])
 }
 
 model Komplain {

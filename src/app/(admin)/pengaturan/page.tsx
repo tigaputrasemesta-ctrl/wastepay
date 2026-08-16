@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { useToast } from "@/components/Toast";
 
-type Wilayah = { id: number; nama: string; rt?: string; rw?: string; kelurahan?: string; kecamatan?: string; kota?: string };
+type Wilayah = { id: number; nama: string; rt?: string; rw?: string; kelurahanRef?: { nama: string; kecamatan?: string | null } | null };
+type Kelurahan = { id: number; nama: string; kecamatan?: string | null };
 type Zona = { id: number; nama: string; kelurahanId: number };
 type DuitkuStatus = {
   enabled: boolean;
@@ -17,9 +18,10 @@ type DuitkuStatus = {
 
 export default function PengaturanPage() {
   const [wilayahList, setWilayahList] = useState<Wilayah[]>([]);
+  const [kelurahanList, setKelurahanList] = useState<Kelurahan[]>([]);
   const [zonaList, setZonaList] = useState<Zona[]>([]);
   const [showWilayahForm, setShowWilayahForm] = useState(false);
-  const [form, setForm] = useState({ nama: "", rt: "", rw: "", kelurahan: "", kecamatan: "", kota: "", zonaId: "" });
+  const [form, setForm] = useState({ nama: "", rt: "", rw: "", kelurahanId: "", zonaId: "" });
   const [duitkuStatus, setDuitkuStatus] = useState<DuitkuStatus | null>(null);
   const { showToast } = useToast();
   
@@ -73,8 +75,12 @@ export default function PengaturanPage() {
   useEffect(() => {
     (async () => { await fetchWilayah(); })();
     (async () => {
-      const res = await fetch("/api/zona");
-      setZonaList(await res.json());
+      const [zonaRes, kelurahanRes] = await Promise.all([
+        fetch("/api/zona"),
+        fetch("/api/kelurahan"),
+      ]);
+      setZonaList(await zonaRes.json());
+      setKelurahanList(await kelurahanRes.json());
     })();
 
     // Status konfigurasi Duitku
@@ -95,15 +101,13 @@ export default function PengaturanPage() {
         nama: form.nama,
         rt: form.rt,
         rw: form.rw,
-        kelurahan: form.kelurahan,
-        kecamatan: form.kecamatan,
-        kota: form.kota,
+        kelurahanId: form.kelurahanId || null,
         zonaId: form.zonaId || null,
       }),
     });
     if (res.ok) {
       setShowWilayahForm(false);
-      setForm({ nama: "", rt: "", rw: "", kelurahan: "", kecamatan: "", kota: "", zonaId: "" });
+      setForm({ nama: "", rt: "", rw: "", kelurahanId: "", zonaId: "" });
       fetchWilayah();
       showToast("Wilayah berhasil ditambahkan");
     } else {
@@ -211,7 +215,7 @@ export default function PengaturanPage() {
               <div key={w.id} className="relative bg-black text-white font-black rounded-none p-3 border-2 border-black group">
                 <p className="font-medium text-white font-black pr-8">{w.nama}</p>
                 <p className="text-xs text-gray-400 font-bold mt-1">
-                  {[w.rt && `RT ${w.rt}`, w.rw && `RW ${w.rw}`, w.kelurahan, w.kecamatan, w.kota].filter(Boolean).join(", ") || "-"}
+                  {[w.rt && `RT ${w.rt}`, w.rw && `RW ${w.rw}`, w.kelurahanRef?.nama].filter(Boolean).join(", ") || "-"}
                 </p>
                 <button
                   onClick={() => setDeleteTarget(w)}
@@ -323,18 +327,18 @@ export default function PengaturanPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Kelurahan</label>
-                <input type="text" value={form.kelurahan} onChange={(e) => setForm({ ...form, kelurahan: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none text-sm" />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Kecamatan</label>
-                  <input type="text" value={form.kecamatan} onChange={(e) => setForm({ ...form, kecamatan: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none text-sm" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Kota</label>
-                  <input type="text" value={form.kota} onChange={(e) => setForm({ ...form, kota: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none text-sm" />
-                </div>
+                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Kelurahan *</label>
+                <select
+                  value={form.kelurahanId}
+                  onChange={(e) => setForm({ ...form, kelurahanId: e.target.value })}
+                  className="w-full px-3 py-2 border-2 border-black rounded-none text-sm bg-white"
+                  required
+                >
+                  <option value="">Pilih Kelurahan</option>
+                  {kelurahanList.map((k) => (
+                    <option key={k.id} value={k.id}>{k.nama}{k.kecamatan ? ` · ${k.kecamatan}` : ""}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Zona Angkut</label>

@@ -12,9 +12,9 @@ export const dynamic = "force-dynamic";
  */
 export async function GET() {
   const [wilayahRows, paket, kategoriTarif] = await Promise.all([
-    prisma.wilayah.findMany({
-      select: { kecamatan: true, kelurahan: true, rt: true, rw: true },
-      orderBy: { kecamatan: "asc" },
+    prisma.kelurahan.findMany({
+      select: { nama: true, kecamatan: true },
+      orderBy: [{ kecamatan: "asc" }, { nama: "asc" }],
     }),
     prisma.paket.findMany({
       orderBy: { harga: "asc" },
@@ -28,9 +28,9 @@ export async function GET() {
 
   // Kelompokkan kelurahan per kecamatan (unik, urut alfabet)
   const map = new Map<string, Set<string>>();
-  for (const w of wilayahRows) {
-    const kec = w.kecamatan?.trim() || "Lainnya";
-    const kel = w.kelurahan?.trim() || "Lainnya";
+  for (const k of wilayahRows) {
+    const kec = k.kecamatan?.trim() || "Lainnya";
+    const kel = k.nama?.trim() || "Lainnya";
     if (!map.has(kec)) map.set(kec, new Set());
     map.get(kec)!.add(kel);
   }

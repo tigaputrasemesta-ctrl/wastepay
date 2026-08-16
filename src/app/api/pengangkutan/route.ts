@@ -26,7 +26,7 @@ async function materializeTugasTerjadwal(petugasId: number, tanggal: Date): Prom
       rute: { aktif: true, petugasId },
       pelanggan: { deletedAt: null, status: "aktif" },
     },
-    select: { id: true, pelangganId: true },
+    select: { id: true, pelangganId: true, rute: { select: { zonaId: true } } },
   });
 
   if (jadwal.length === 0) return;
@@ -65,6 +65,7 @@ async function materializeTugasTerjadwal(petugasId: number, tanggal: Date): Prom
         pelangganId: j.pelangganId,
         petugasId,
         jadwalId: j.id,
+        zonaId: j.rute.zonaId,
       },
     });
   }
@@ -126,6 +127,7 @@ export async function GET(request: Request) {
       },
       petugas: { select: { id: true, nama: true } },
       jadwal: { select: { hari: true } },
+      zona: { select: { id: true, nama: true } },
       tpa: { select: { id: true, nama: true } },
       kendaraan: { select: { id: true, nama: true, platNomor: true, jenis: true } },
     },
@@ -138,7 +140,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { tanggal, status, catatan, volume, berat, jenisSampah, pelangganId, petugasId, jadwalId, fotoBukti, tpaId, latitude, longitude, kendaraanId } = body;
+    const { tanggal, status, catatan, volume, berat, jenisSampah, pelangganId, petugasId, jadwalId, fotoBukti, tpaId, latitude, longitude, kendaraanId, zonaId } = body;
 
     if (!pelangganId) {
       return NextResponse.json({ error: "Pelanggan harus diisi" }, { status: 400 });
@@ -189,6 +191,16 @@ export async function POST(request: Request) {
       }
     }
 
+    // Zona angkut: eksplisit dari body, atau turunan dari rute jadwal terkait
+    let zonaIdAkhir = zonaId ? parseInt(zonaId) : null;
+    if (!zonaIdAkhir && jadwalId) {
+      const jd = await prisma.jadwal.findUnique({
+        where: { id: parseInt(jadwalId) },
+        select: { rute: { select: { zonaId: true } } },
+      });
+      zonaIdAkhir = jd?.rute?.zonaId ?? null;
+    }
+
     const pengangkutan = await prisma.pengangkutan.create({
       data: {
         tanggal: tanggal ? new Date(tanggal) : new Date(),
@@ -204,6 +216,7 @@ export async function POST(request: Request) {
         petugasId: petugasIdAkhir,
         kendaraanId: kendaraanIdAkhir,
         jadwalId: jadwalId ? parseInt(jadwalId) : null,
+        zonaId: zonaIdAkhir,
         tpaId: tpaId ? parseInt(tpaId) : null,
       },
       include: {

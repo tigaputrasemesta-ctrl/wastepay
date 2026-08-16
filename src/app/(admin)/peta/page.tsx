@@ -47,12 +47,12 @@ export default async function PetaPage() {
         latitude: true,
         longitude: true,
         patokanLokasi: true,
-        wilayah: { select: { id: true, nama: true, kelurahan: true, kecamatan: true } },
+        wilayah: { select: { id: true, nama: true } },
       },
       orderBy: { kodePelanggan: "asc" },
     }),
     prisma.wilayah.findMany({
-      select: { id: true, nama: true, kelurahan: true, kecamatan: true },
+      select: { id: true, nama: true, kelurahanRef: { select: { nama: true } } },
       orderBy: { nama: "asc" },
     }),
     prisma.tagihan.findMany({
@@ -203,12 +203,12 @@ export default async function PetaPage() {
   }));
 
   // ── Profil petugas yang sedang login (untuk tombol Mulai Lacak GPS) ──
-  let profilSaya: { id: number; nama: string; jabatan: string | null; wilayahId: number | null } | null = null;
+  let profilSaya: { id: number; nama: string; jabatan: string | null } | null = null;
   let kendaraanSaya: { id: number; nama: string; platNomor: string | null; jenis: string }[] = [];
   if (session && session.role === "petugas") {
     const profil = await prisma.petugas.findUnique({
       where: { userId: session.id },
-      select: { id: true, nama: true, jabatan: true, wilayahId: true },
+      select: { id: true, nama: true, jabatan: true },
     });
     profilSaya = profil ?? null;
     if (profil) {

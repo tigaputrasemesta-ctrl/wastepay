@@ -6,7 +6,6 @@ type Profil = {
   id: number;
   nama: string;
   jabatan: string | null;
-  wilayahId: number | null;
 };
 
 type KendaraanOpt = {

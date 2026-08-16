@@ -5,6 +5,7 @@ import { useToast } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
 type Kelurahan = { id: number; nama: string; kecamatan?: string | null };
+type Zona = { id: number; nama: string; kelurahanId: number };
 type Petugas = { id: number; nama: string; aktif?: boolean; jabatan?: string | null };
 type Rute = {
   id: number;
@@ -13,6 +14,7 @@ type Rute = {
   jam?: string;
   aktif: boolean;
   kelurahan?: Kelurahan | null;
+  zona?: { id: number; nama: string; kelurahanId: number } | null;
   petugas?: Petugas;
   _count: { jadwal: number };
 };
@@ -26,23 +28,26 @@ export default function RutePage() {
   const { showToast } = useToast();
   const [rute, setRute] = useState<Rute[]>([]);
   const [kelurahanList, setKelurahanList] = useState<Kelurahan[]>([]);
+  const [zonaList, setZonaList] = useState<Zona[]>([]);
   const [petugasList, setPetugasList] = useState<Petugas[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Rute | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Rute | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [form, setForm] = useState({ nama: "", hari: "Senin,Rabu,Jumat", jam: "", kelurahanId: "", petugasId: "" });
+  const [form, setForm] = useState({ nama: "", hari: "Senin,Rabu,Jumat", jam: "", kelurahanId: "", zonaId: "", petugasId: "" });
 
   const fetchData = useCallback(async () => {
     try {
-      const [ruteRes, kelurahanRes, petugasRes] = await Promise.all([
+      const [ruteRes, kelurahanRes, zonaRes, petugasRes] = await Promise.all([
         fetch("/api/rute"),
         fetch("/api/kelurahan"),
+        fetch("/api/zona"),
         fetch("/api/petugas"),
       ]);
       setRute(await ruteRes.json());
       setKelurahanList(await kelurahanRes.json());
+      setZonaList(await zonaRes.json());
       const petugasData = await petugasRes.json();
       setPetugasList(Array.isArray(petugasData) ? petugasData : []);
     } catch {
@@ -58,7 +63,7 @@ export default function RutePage() {
 
   function openCreate() {
     setEditing(null);
-    setForm({ nama: "", hari: "Senin,Rabu,Jumat", jam: "", kelurahanId: "", petugasId: "" });
+    setForm({ nama: "", hari: "Senin,Rabu,Jumat", jam: "", kelurahanId: "", zonaId: "", petugasId: "" });
     setShowForm(true);
   }
 
@@ -69,6 +74,7 @@ export default function RutePage() {
       hari: r.hari,
       jam: r.jam || "",
       kelurahanId: r.kelurahan?.id ? r.kelurahan.id.toString() : "",
+      zonaId: r.zona?.id ? r.zona.id.toString() : "",
       petugasId: r.petugas?.id?.toString() || "",
     });
     setShowForm(true);
@@ -76,10 +82,12 @@ export default function RutePage() {
 
   function pilihKelurahan(id: string) {
     const k = kelurahanList.find((x) => x.id.toString() === id);
-    // Auto-fill nama rute dari kelurahan bila nama masih kosong
+    // Auto-fill nama rute dari kelurahan bila nama masih kosong;
+    // reset zona (zona selalu di bawah kelurahan).
     setForm((f) => ({
       ...f,
       kelurahanId: id,
+      zonaId: "",
       nama: f.nama.trim() === "" ? `Angkut ${k?.nama ?? ""}`.trim() : f.nama,
     }));
   }
@@ -180,6 +188,7 @@ export default function RutePage() {
               <tr className="bg-black text-white font-black border-b border-2 border-black">
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Nama Rute</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Kelurahan</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Zona</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Hari</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Jam</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Petugas</th>
@@ -190,15 +199,18 @@ export default function RutePage() {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={8} className="px-4 py-8 text-center text-gray-400 font-bold">Memuat...</td></tr>
+                <tr><td colSpan={9} className="px-4 py-8 text-center text-gray-400 font-bold">Memuat...</td></tr>
               ) : rute.length === 0 ? (
-                <tr><td colSpan={8} className="px-4 py-8 text-center text-gray-400 font-bold">Belum ada rute</td></tr>
+                <tr><td colSpan={9} className="px-4 py-8 text-center text-gray-400 font-bold">Belum ada rute</td></tr>
               ) : (
                 rute.map((r) => (
                   <tr key={r.id} className="border-b border-2 border-black hover:bg-gray-100 border-2 border-black">
                     <td className="px-4 py-3 font-medium text-black font-black">{r.nama}</td>
                     <td className="px-4 py-3">
                       <span className="inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium bg-sky-400/10 text-sky-400 border border-sky-500/30">{r.kelurahan?.nama ?? "—"}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium bg-purple-400/10 text-purple-500 border border-purple-500/30">{r.zona?.nama ?? "—"}</span>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1">
@@ -278,6 +290,7 @@ export default function RutePage() {
             </div>
             <div className="text-xs text-gray-600 font-bold space-y-1">
               <p>📍 {r.kelurahan?.nama ?? "—"}</p>
+              {r.zona?.nama && <p>🗺️ Zona {r.zona.nama}</p>}
               <p>📅 {r.hari}</p>
               {r.jam && <p>⏰ {r.jam}</p>}
               <p>👤 {r.petugas?.nama || "Belum ada petugas"}</p>
@@ -314,6 +327,13 @@ export default function RutePage() {
                 <select value={form.kelurahanId} onChange={(e) => pilihKelurahan(e.target.value)} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" required>
                   <option value="">Pilih Kelurahan</option>
                   {kelurahanList.map((k) => <option key={k.id} value={k.id}>{k.nama}{k.kecamatan ? ` · ${k.kecamatan}` : ""}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Zona Angkut</label>
+                <select value={form.zonaId} onChange={(e) => setForm({ ...form, zonaId: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" disabled={!form.kelurahanId}>
+                  <option value="">Seluruh kelurahan</option>
+                  {zonaList.filter((z) => form.kelurahanId && z.kelurahanId === parseInt(form.kelurahanId)).map((z) => <option key={z.id} value={z.id}>{z.nama}</option>)}
                 </select>
               </div>
               <div>

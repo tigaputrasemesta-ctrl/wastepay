@@ -7,7 +7,7 @@ import CameraGps from "@/components/mobile/CameraGps";
 import MapAngkut from "@/components/mobile/MapAngkut";
 import { todayLocalISO } from "@/lib/utils";
 
-type Profil = { id: number; nama: string; jabatan: string | null; wilayahId: number | null };
+type Profil = { id: number; nama: string; jabatan: string | null; kelurahan: string | null };
 type Kendaraan = { id: number; nama: string; platNomor: string | null; jenis: string; petugas?: { id: number; nama: string } | null };
 type Tugas = {
   id: number;

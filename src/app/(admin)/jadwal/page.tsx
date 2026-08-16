@@ -6,7 +6,7 @@ import { useToast } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
 type Pelanggan = { id: number; nama: string; alamat: string; noTelepon: string; fotoRumah?: string; patokanLokasi?: string; latitude?: number | null; longitude?: number | null };
-type Rute = { id: number; nama: string; hari: string; jam?: string; kelurahan?: { nama: string } | null };
+type Rute = { id: number; nama: string; hari: string; jam?: string; kelurahan?: { nama: string } | null; zona?: { nama: string } | null };
 type Jadwal = {
   id: number;
   hari: string;
@@ -207,7 +207,12 @@ export default function JadwalPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-gray-600 font-bold">{j.rute.nama}</td>
+                    <td className="px-4 py-3 text-gray-600 font-bold">
+                      {j.rute.nama}
+                      {j.rute.zona?.nama && (
+                        <span className="ml-1 text-xs text-purple-500">· {j.rute.zona.nama}</span>
+                      )}
+                    </td>
                     <td className="px-4 py-3 text-gray-600 font-bold text-xs">{j.jam || "-"}</td>
                     <td className="px-4 py-3 text-center text-gray-600 font-bold text-xs">{j._count.pengangkutan}</td>
                     <td className="px-4 py-3 text-center">
@@ -287,7 +292,7 @@ export default function JadwalPage() {
                   <option value="">Pilih Rute</option>
                   {ruteList.map((r) => (
                     <option key={r.id} value={r.id}>
-                      {r.nama} ({r.kelurahan?.nama ?? "—"})
+                      {r.nama} ({r.kelurahan?.nama ?? "—"}{r.zona?.nama ? ` · ${r.zona.nama}` : ""})
                     </option>
                   ))}
                 </select>

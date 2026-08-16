@@ -13,6 +13,7 @@ export async function GET(
       where: { id },
       include: {
         kelurahan: { select: { id: true, nama: true, kecamatan: true } },
+        zona: { select: { id: true, nama: true, kelurahanId: true } },
         petugas: { select: { id: true, nama: true } },
         jadwal: {
           include: { pelanggan: { select: { id: true, nama: true, alamat: true } } },
@@ -35,7 +36,7 @@ export async function PUT(
   try {
     const id = parseInt((await params).id);
     const body = await request.json();
-    const { nama, hari, jam, aktif, kelurahanId, petugasId } = body;
+    const { nama, hari, jam, aktif, kelurahanId, petugasId, zonaId } = body;
 
     const data: Record<string, unknown> = {};
     if (nama !== undefined) data.nama = nama;
@@ -48,12 +49,25 @@ export async function PUT(
       data.wilayahId = null;
     }
     if (petugasId !== undefined) data.petugasId = petugasId ? parseInt(petugasId) : null;
+    if (zonaId !== undefined) {
+      const zonaIdAkhir = zonaId ? parseInt(zonaId) : null;
+      if (zonaIdAkhir) {
+        const target = await prisma.rute.findUnique({ where: { id }, select: { kelurahanId: true } });
+        const kel = data.kelurahanId ?? target?.kelurahanId;
+        const zona = await prisma.zona.findUnique({ where: { id: zonaIdAkhir }, select: { kelurahanId: true } });
+        if (!zona || !kel || zona.kelurahanId !== parseInt(String(kel))) {
+          return NextResponse.json({ error: "Zona tidak sesuai dengan kelurahan yang dipilih" }, { status: 400 });
+        }
+      }
+      data.zonaId = zonaIdAkhir;
+    }
 
     const rute = await prisma.rute.update({
       where: { id },
       data,
       include: {
         kelurahan: { select: { id: true, nama: true, kecamatan: true } },
+        zona: { select: { id: true, nama: true } },
         petugas: { select: { id: true, nama: true } },
       },
     });

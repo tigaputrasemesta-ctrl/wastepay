@@ -33,8 +33,6 @@ export type PelangganPeta = {
   wilayah: {
     id: number;
     nama: string;
-    kelurahan: string | null;
-    kecamatan: string | null;
   } | null;
 };
 
@@ -68,7 +66,7 @@ export type KomplainPeta = {
 
 type Props = {
   pelanggan: PelangganPeta[];
-  wilayah: { id: number; nama: string; kelurahan: string | null; kecamatan: string | null }[];
+  wilayah: { id: number; nama: string; kelurahanRef?: { nama: string } | null }[];
   rute: RutePeta[];
   petugasAwal?: PetugasPeta[];
   kendaraanAwal?: KendaraanPeta[];
@@ -530,7 +528,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                   <option value="semua">Semua Wilayah</option>
                   {wilayah.map((w) => (
                     <option key={w.id} value={w.id}>
-                      {w.nama} — {w.kelurahan}
+                      {w.nama} — {w.kelurahanRef?.nama ?? "—"}
                     </option>
                   ))}
                 </select>

@@ -17,7 +17,7 @@ type Calon = {
   penanggungjawab: string | null;
   referal: string | null;
   catatan: string | null;
-  wilayah: { id: number; nama: string } | null;
+  kelurahan: { id: number; nama: string } | null;
 };
 
 export default function MobileSurvei() {
@@ -146,7 +146,7 @@ export default function MobileSurvei() {
                     {c.nama}
                     <span className="ml-2 font-mono text-[10px] text-gray-400">{c.kodePelanggan}</span>
                   </p>
-                  <p className="text-[11px] font-bold text-gray-600 mt-0.5">{c.noTelepon} · {c.wilayah?.nama || "belum ada wilayah"}</p>
+                  <p className="text-[11px] font-bold text-gray-600 mt-0.5">{c.noTelepon} · {c.kelurahan?.nama || "belum ada kelurahan"}</p>
                   <p className="text-[11px] font-bold text-gray-400 mt-0.5 truncate">{c.alamat}</p>
                 </div>
                 <div className="flex flex-col gap-1 shrink-0 text-right">

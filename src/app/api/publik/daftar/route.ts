@@ -26,10 +26,10 @@ const KATEGORI_VALID = [
 ];
 
 /**
- * Cari wilayah paling presisi: prefer RT/RW + kelurahan + kecamatan,
- * fallback kelurahan + kecamatan.
+ * Cari lokasi paling presisi: anchor kelurahan (canonical) + opsional RT/RW.
+ * Sumber kebenaran kini entitas Kelurahan, bukan string denormalisasi Wilayah.
  */
-async function cariWilayah(opts: {
+async function cariLokasi(opts: {
   rt?: string;
   rw?: string;
   kelurahan: string;
@@ -37,22 +37,30 @@ async function cariWilayah(opts: {
 }) {
   const rt = opts.rt?.trim();
   const rw = opts.rw?.trim();
-  const base = { kelurahan: opts.kelurahan, kecamatan: opts.kecamatan };
 
+  // Nama kelurahan unik secara global (@unique) — cocokkan case-insensitive.
+  const kel = await prisma.kelurahan.findFirst({
+    where: { nama: { equals: opts.kelurahan, mode: "insensitive" } },
+    orderBy: { id: "asc" },
+    select: { id: true },
+  });
+  if (!kel) return null;
+
+  // Wilayah (RT/RW) opsional — hanya utk presisi anchor RT bila ada
+  let wilayahId: number | null = null;
   if (rt || rw) {
-    const presisi = await prisma.wilayah.findFirst({
-      where: rt && rw ? { ...base, rt, rw } : rt ? { ...base, rt } : { ...base, rw },
+    const w = await prisma.wilayah.findFirst({
+      where: {
+        kelurahanId: kel.id,
+        ...(rt && rw ? { rt, rw } : rt ? { rt } : { rw }),
+      },
       orderBy: { id: "asc" },
-      select: { id: true, kelurahanId: true },
+      select: { id: true },
     });
-    if (presisi) return presisi;
+    wilayahId = w?.id ?? null;
   }
 
-  return prisma.wilayah.findFirst({
-    where: base,
-    orderBy: { id: "asc" },
-    select: { id: true, kelurahanId: true },
-  });
+  return { kelurahanId: kel.id, wilayahId };
 }
 
 /**
@@ -121,28 +129,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Alamat terlalu singkat." }, { status: 400 });
     }
 
-    // Cocokkan wilayah: RT/RW (jika diisi) → fallback kelurahan+kecamatan
-    const wilayah = await cariWilayah({ rt, rw, kelurahan, kecamatan });
+    // Cocokkan lokasi: anchor kelurahan (canonical) + opsional RT/RW
+    const lokasi = await cariLokasi({ rt, rw, kelurahan, kecamatan });
 
-    // Wilayah wajib cocok — kode pelanggan berbasis kelurahan ({kodeKelurahan}-{token})
-    if (!wilayah) {
+    // Kelurahan wajib cocok — kode pelanggan berbasis kelurahan ({kodeKelurahan}-{token})
+    if (!lokasi) {
       return NextResponse.json(
-        { error: "Wilayah tidak ditemukan — pastikan kelurahan/kecamatan benar atau hubungi pengelola" },
+        { error: "Kelurahan tidak ditemukan — pastikan kelurahan/kecamatan benar atau hubungi pengelola" },
         { status: 400 }
       );
     }
 
-    // Anchor kelurahan langsung (untuk scope petugas & kode pelanggan).
-    // Fallback: lookup kelurahan by nama bila wilayah lama belum punya kelurahanId.
-    const kelurahanId =
-      wilayah.kelurahanId ??
-      (
-        await prisma.kelurahan.findFirst({
-          where: { nama: { equals: kelurahan, mode: "insensitive" } },
-          select: { id: true },
-        })
-      )?.id ??
-      null;
+    const kelurahanId = lokasi.kelurahanId;
+    const wilayahId = lokasi.wilayahId;
 
     // Paket (opsional) — validasi keberadaan
     let paketNama: string | null = null;
@@ -159,7 +158,7 @@ export async function POST(request: Request) {
       }
     }
 
-    let kodePelanggan = await generateKodePelanggan(kelurahanId!);
+    let kodePelanggan = await generateKodePelanggan(kelurahanId);
     const rtRw = formatRtRw(rt, rw);
 
     // Retry bila kode bentrok (sangat jarang) — generate ulang lalu create lagi
@@ -182,7 +181,7 @@ export async function POST(request: Request) {
             koordinatSumber,
             koordinatAkurasi,
             status: "calon", // belum aktif — tagihan dibuat setelah disetujui
-            wilayahId: wilayah?.id ?? null,
+            wilayahId,
             kelurahanId,
             paketId,
             catatan: [
@@ -199,7 +198,7 @@ export async function POST(request: Request) {
         const bentrok =
           e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002";
         if (coba >= 2 || !bentrok) throw e;
-        kodePelanggan = await generateKodePelanggan(kelurahanId!);
+        kodePelanggan = await generateKodePelanggan(kelurahanId);
       }
     }
 
@@ -210,7 +209,7 @@ export async function POST(request: Request) {
       sumber: "daftar_online",
       noTelepon: pelanggan.noTelepon,
       rtRw: rtRw || null,
-      wilayahId: wilayah?.id ?? null,
+      wilayahId,
       kelurahanId,
     });
 
