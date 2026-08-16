@@ -12,7 +12,7 @@ export async function GET(
     const rute = await prisma.rute.findUnique({
       where: { id },
       include: {
-        wilayah: true,
+        kelurahan: { select: { id: true, nama: true, kecamatan: true } },
         petugas: { select: { id: true, nama: true } },
         jadwal: {
           include: { pelanggan: { select: { id: true, nama: true, alamat: true } } },
@@ -35,21 +35,25 @@ export async function PUT(
   try {
     const id = parseInt((await params).id);
     const body = await request.json();
-    const { nama, hari, jam, aktif, wilayahId, petugasId } = body;
+    const { nama, hari, jam, aktif, kelurahanId, petugasId } = body;
 
     const data: Record<string, unknown> = {};
     if (nama !== undefined) data.nama = nama;
     if (hari !== undefined) data.hari = hari;
     if (jam !== undefined) data.jam = jam;
     if (aktif !== undefined) data.aktif = toBoolean(aktif);
-    if (wilayahId !== undefined) data.wilayahId = parseInt(wilayahId);
+    if (kelurahanId !== undefined) {
+      data.kelurahanId = kelurahanId ? parseInt(kelurahanId) : null;
+      // wilayahId sudah tidak dipakai — scope rute via kelurahan
+      data.wilayahId = null;
+    }
     if (petugasId !== undefined) data.petugasId = petugasId ? parseInt(petugasId) : null;
 
     const rute = await prisma.rute.update({
       where: { id },
       data,
       include: {
-        wilayah: true,
+        kelurahan: { select: { id: true, nama: true, kecamatan: true } },
         petugas: { select: { id: true, nama: true } },
       },
     });

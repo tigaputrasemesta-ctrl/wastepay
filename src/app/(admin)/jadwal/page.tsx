@@ -6,7 +6,7 @@ import { useToast } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
 type Pelanggan = { id: number; nama: string; alamat: string; noTelepon: string; fotoRumah?: string; patokanLokasi?: string; latitude?: number | null; longitude?: number | null };
-type Rute = { id: number; nama: string; hari: string; jam?: string; wilayah: { nama: string } };
+type Rute = { id: number; nama: string; hari: string; jam?: string; kelurahan?: { nama: string } | null };
 type Jadwal = {
   id: number;
   hari: string;
@@ -287,7 +287,7 @@ export default function JadwalPage() {
                   <option value="">Pilih Rute</option>
                   {ruteList.map((r) => (
                     <option key={r.id} value={r.id}>
-                      {r.nama} ({r.wilayah.nama})
+                      {r.nama} ({r.kelurahan?.nama ?? "—"})
                     </option>
                   ))}
                 </select>

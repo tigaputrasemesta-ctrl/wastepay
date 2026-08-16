@@ -6,11 +6,11 @@ import { toBoolean } from "@/lib/utils";
 export async function GET() {
   const rute = await prisma.rute.findMany({
     include: {
-      wilayah: true,
-      petugas: { select: { id: true, nama: true } },
+      kelurahan: { select: { id: true, nama: true, kecamatan: true } },
+      petugas: { select: { id: true, nama: true, jabatan: true } },
       _count: { select: { jadwal: true } },
     },
-    orderBy: [{ wilayah: { nama: "asc" } }, { nama: "asc" }],
+    orderBy: [{ kelurahan: { nama: "asc" } }, { nama: "asc" }],
   });
   return NextResponse.json(rute);
 }
@@ -18,10 +18,10 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { nama, hari, jam, wilayahId, petugasId, aktif } = body;
+    const { nama, hari, jam, kelurahanId, petugasId, aktif } = body;
 
-    if (!nama || !hari || !wilayahId) {
-      return NextResponse.json({ error: "Nama, hari, dan wilayah harus diisi" }, { status: 400 });
+    if (!nama || !hari || !kelurahanId) {
+      return NextResponse.json({ error: "Nama, hari, dan kelurahan harus diisi" }, { status: 400 });
     }
 
     const rute = await prisma.rute.create({
@@ -30,10 +30,10 @@ export async function POST(request: Request) {
         hari,
         jam,
         aktif: aktif == null ? true : toBoolean(aktif),
-        wilayahId: parseInt(wilayahId),
+        kelurahanId: parseInt(kelurahanId),
         petugasId: petugasId ? parseInt(petugasId) : null,
       },
-      include: { wilayah: true, petugas: { select: { id: true, nama: true } } },
+      include: { kelurahan: { select: { id: true, nama: true, kecamatan: true } }, petugas: { select: { id: true, nama: true } } },
     });
 
     await logAudit("create", "Rute", rute.id, undefined, { nama: rute.nama });

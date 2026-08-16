@@ -4,15 +4,15 @@ import { useState, useEffect, useCallback } from "react";
 import { useToast } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
-type Wilayah = { id: number; nama: string };
-type Petugas = { id: number; nama: string; aktif?: boolean };
+type Kelurahan = { id: number; nama: string; kecamatan?: string | null };
+type Petugas = { id: number; nama: string; aktif?: boolean; jabatan?: string | null };
 type Rute = {
   id: number;
   nama: string;
   hari: string;
   jam?: string;
   aktif: boolean;
-  wilayah: Wilayah;
+  kelurahan?: Kelurahan | null;
   petugas?: Petugas;
   _count: { jadwal: number };
 };
@@ -25,24 +25,24 @@ const HARI_LIST = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu
 export default function RutePage() {
   const { showToast } = useToast();
   const [rute, setRute] = useState<Rute[]>([]);
-  const [wilayahList, setWilayahList] = useState<Wilayah[]>([]);
+  const [kelurahanList, setKelurahanList] = useState<Kelurahan[]>([]);
   const [petugasList, setPetugasList] = useState<Petugas[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Rute | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Rute | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [form, setForm] = useState({ nama: "", hari: "Senin,Rabu,Jumat", jam: "", wilayahId: "", petugasId: "" });
+  const [form, setForm] = useState({ nama: "", hari: "Senin,Rabu,Jumat", jam: "", kelurahanId: "", petugasId: "" });
 
   const fetchData = useCallback(async () => {
     try {
-      const [ruteRes, wilayahRes, petugasRes] = await Promise.all([
+      const [ruteRes, kelurahanRes, petugasRes] = await Promise.all([
         fetch("/api/rute"),
-        fetch("/api/wilayah"),
+        fetch("/api/kelurahan"),
         fetch("/api/petugas"),
       ]);
       setRute(await ruteRes.json());
-      setWilayahList(await wilayahRes.json());
+      setKelurahanList(await kelurahanRes.json());
       const petugasData = await petugasRes.json();
       setPetugasList(Array.isArray(petugasData) ? petugasData : []);
     } catch {
@@ -58,7 +58,7 @@ export default function RutePage() {
 
   function openCreate() {
     setEditing(null);
-    setForm({ nama: "", hari: "Senin,Rabu,Jumat", jam: "", wilayahId: "", petugasId: "" });
+    setForm({ nama: "", hari: "Senin,Rabu,Jumat", jam: "", kelurahanId: "", petugasId: "" });
     setShowForm(true);
   }
 
@@ -68,10 +68,20 @@ export default function RutePage() {
       nama: r.nama,
       hari: r.hari,
       jam: r.jam || "",
-      wilayahId: r.wilayah.id.toString(),
+      kelurahanId: r.kelurahan?.id ? r.kelurahan.id.toString() : "",
       petugasId: r.petugas?.id?.toString() || "",
     });
     setShowForm(true);
+  }
+
+  function pilihKelurahan(id: string) {
+    const k = kelurahanList.find((x) => x.id.toString() === id);
+    // Auto-fill nama rute dari kelurahan bila nama masih kosong
+    setForm((f) => ({
+      ...f,
+      kelurahanId: id,
+      nama: f.nama.trim() === "" ? `Angkut ${k?.nama ?? ""}`.trim() : f.nama,
+    }));
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -169,7 +179,7 @@ export default function RutePage() {
             <thead>
               <tr className="bg-black text-white font-black border-b border-2 border-black">
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Nama Rute</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Wilayah</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Kelurahan</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Hari</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Jam</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Petugas</th>
@@ -188,7 +198,7 @@ export default function RutePage() {
                   <tr key={r.id} className="border-b border-2 border-black hover:bg-gray-100 border-2 border-black">
                     <td className="px-4 py-3 font-medium text-black font-black">{r.nama}</td>
                     <td className="px-4 py-3">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium bg-sky-400/10 text-sky-400 border border-sky-500/30">{r.wilayah.nama}</span>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium bg-sky-400/10 text-sky-400 border border-sky-500/30">{r.kelurahan?.nama ?? "—"}</span>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1">
@@ -267,7 +277,7 @@ export default function RutePage() {
               </button>
             </div>
             <div className="text-xs text-gray-600 font-bold space-y-1">
-              <p>📍 {r.wilayah.nama}</p>
+              <p>📍 {r.kelurahan?.nama ?? "—"}</p>
               <p>📅 {r.hari}</p>
               {r.jam && <p>⏰ {r.jam}</p>}
               <p>👤 {r.petugas?.nama || "Belum ada petugas"}</p>
@@ -300,10 +310,10 @@ export default function RutePage() {
                 <input type="text" value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" placeholder="Rute A - RT 01" required />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Wilayah *</label>
-                <select value={form.wilayahId} onChange={(e) => setForm({ ...form, wilayahId: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" required>
-                  <option value="">Pilih Wilayah</option>
-                  {wilayahList.map((w) => <option key={w.id} value={w.id}>{w.nama}</option>)}
+                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Kelurahan *</label>
+                <select value={form.kelurahanId} onChange={(e) => pilihKelurahan(e.target.value)} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" required>
+                  <option value="">Pilih Kelurahan</option>
+                  {kelurahanList.map((k) => <option key={k.id} value={k.id}>{k.nama}{k.kecamatan ? ` · ${k.kecamatan}` : ""}</option>)}
                 </select>
               </div>
               <div>
@@ -343,8 +353,8 @@ export default function RutePage() {
               <div>
                 <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Petugas</label>
                 <select value={form.petugasId} onChange={(e) => setForm({ ...form, petugasId: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm">
-                  <option value="">Pilih Petugas</option>
-                  {petugasList.filter((p) => p.aktif !== false).map((p) => (
+                  <option value="">Pilih Petugas (angkut)</option>
+                  {petugasList.filter((p) => p.aktif !== false && (p.jabatan || "").split(",").includes("angkut")).map((p) => (
                     <option key={p.id} value={p.id}>{p.nama}</option>
                   ))}
                 </select>

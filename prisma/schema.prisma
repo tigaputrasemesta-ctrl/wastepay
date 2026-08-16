@@ -44,6 +44,7 @@ model Kelurahan {
   wilayah Wilayah[] @relation("WilayahKelurahan")
   petugas Petugas[] @relation("PetugasKelurahan")
   zona    Zona[]
+  rute    Rute[]
 }
 
 model Wilayah {
@@ -251,9 +252,11 @@ model Rute {
   nama      String // nama rute, misal "Rute A - RT 01"
   hari      String // Senin, Rabu, Jumat (comma-separated)
   jam       String? // jam estimasi
-  aktif     Boolean  @default(true)
-  wilayahId Int
-  wilayah   Wilayah  @relation(fields: [wilayahId], references: [id])
+  aktif     Boolean   @default(true)
+  wilayahId Int?
+  wilayah   Wilayah?  @relation(fields: [wilayahId], references: [id])
+  kelurahanId Int?
+  kelurahan   Kelurahan? @relation(fields: [kelurahanId], references: [id])
   petugasId Int?
   petugas   Petugas? @relation(fields: [petugasId], references: [id])
   createdAt DateTime @default(now())
