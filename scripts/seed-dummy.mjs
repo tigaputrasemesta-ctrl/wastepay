@@ -81,7 +81,13 @@ async function cleanup() {
   await prisma.klaimPetugas.deleteMany({ where: { keterangan: { startsWith: "[TEST]" } } });
   await prisma.chatPesan.deleteMany({ where: { isi: { startsWith: "[TEST]" } } });
   await prisma.absensi.deleteMany({ where: { petugas: { nama: { startsWith: "[TEST]" } } } });
-  log("  ok — data uji lama bersih");
+
+  // ---- Akun demo & profil petugas demo -----------------------------------
+  // Hapus lokasi petugas demo, profil petugas, lalu user demo (FK order aman).
+  await prisma.lokasiPetugas.deleteMany({ where: { petugas: { nama: { startsWith: "[TEST]" } } } });
+  await prisma.petugas.deleteMany({ where: { nama: { startsWith: "[TEST]" } } });
+  await prisma.user.deleteMany({ where: { email: { endsWith: "@wastepay.local" } } });
+  log("  ok — data uji & akun demo bersih");
 }
 
 async function seed() {
