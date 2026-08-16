@@ -8,7 +8,7 @@ import { useToast } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import GeotagPhoto from "@/components/GeotagPhoto";
 
-type Wilayah = { id: number; nama: string; rt?: string; rw?: string };
+type Kelurahan = { id: number; nama: string; kecamatan?: string | null };
 type Paket = { id: number; nama: string; harga: number };
 
 const KATEGORI_LIST = [
@@ -46,7 +46,7 @@ type Pelanggan = {
   koordinatAkurasi?: number | null;
   customTarif?: number | null;
   status: string;
-  wilayah: Wilayah;
+  kelurahan?: Kelurahan | null;
   paket?: Paket | null;
   createdAt: string;
 };
@@ -54,11 +54,11 @@ type Pelanggan = {
 export default function PelangganPage() {
   const { showToast } = useToast();
   const [pelanggan, setPelanggan] = useState<Pelanggan[]>([]);
-  const [wilayahList, setWilayahList] = useState<Wilayah[]>([]);
+  const [kelurahanList, setKelurahanList] = useState<Kelurahan[]>([]);
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [showFilter, setShowFilter] = useState(false);
-  const [filterWilayah, setFilterWilayah] = useState("");
+  const [filterKelurahan, setFilterKelurahan] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [filterKategori, setFilterKategori] = useState("");
   const [loading, setLoading] = useState(true);
@@ -77,7 +77,7 @@ export default function PelangganPage() {
     patokanLokasi: "",
     penanggungjawab: "",
     referal: "",
-    wilayahId: "",
+    kelurahanId: "",
     fotoRumah: "",
     latitude: "",
     longitude: "",
@@ -90,26 +90,26 @@ export default function PelangganPage() {
     try {
       const params = new URLSearchParams();
       if (search) params.set("search", search);
-      if (filterWilayah) params.set("wilayahId", filterWilayah);
+      if (filterKelurahan) params.set("kelurahanId", filterKelurahan);
       if (filterStatus) params.set("status", filterStatus);
       if (filterKategori) params.set("kategori", filterKategori);
       const qs = params.toString();
 
-      const [pelangganRes, wilayahRes] = await Promise.all([
+      const [pelangganRes, kelurahanRes] = await Promise.all([
         fetch(`/api/pelanggan${qs ? `?${qs}` : ""}`),
-        fetch("/api/wilayah"),
+        fetch("/api/kelurahan"),
       ]);
       const pelangganData = await pelangganRes.json();
-      const wilayahData = await wilayahRes.json();
+      const kelurahanData = await kelurahanRes.json();
       setPelanggan(pelangganData);
-      setWilayahList(wilayahData);
+      setKelurahanList(kelurahanData);
     } catch (error) {
       showToast("Gagal memuat data", "error");
       console.error(error);
     } finally {
       setLoading(false);
     }
-  }, [search, filterWilayah, filterStatus, filterKategori, showToast]);
+  }, [search, filterKelurahan, filterStatus, filterKategori, showToast]);
 
   // Debounced search
   useEffect(() => {
@@ -135,7 +135,7 @@ export default function PelangganPage() {
       patokanLokasi: "",
       penanggungjawab: "",
       referal: "",
-      wilayahId: "",
+      kelurahanId: "",
       fotoRumah: "",
       latitude: "",
       longitude: "",
@@ -157,7 +157,7 @@ export default function PelangganPage() {
       patokanLokasi: p.patokanLokasi || "",
       penanggungjawab: p.penanggungjawab || "",
       referal: p.referal || "",
-      wilayahId: p.wilayah.id.toString(),
+      kelurahanId: p.kelurahan?.id ? p.kelurahan.id.toString() : "",
       fotoRumah: p.fotoRumah || "",
       latitude: p.latitude ? p.latitude.toString() : "",
       longitude: p.longitude ? p.longitude.toString() : "",
@@ -204,7 +204,7 @@ export default function PelangganPage() {
   }
 
   function resetFilters() {
-    setFilterWilayah("");
+    setFilterKelurahan("");
     setFilterStatus("");
     setFilterKategori("");
     setPage(1);
@@ -277,7 +277,7 @@ export default function PelangganPage() {
           <button
             onClick={() => setShowFilter((v) => !v)}
             className={`flex items-center gap-2 px-4 py-3 border-2 border-black font-black uppercase tracking-widest text-xs shadow-[4px_4px_0_0_rgba(0,0,0,1)] transition-all ${
-              showFilter || [filterWilayah, filterStatus, filterKategori].filter(Boolean).length > 0
+              showFilter || [filterKelurahan, filterStatus, filterKategori].filter(Boolean).length > 0
                 ? "bg-black text-white"
                 : "bg-white text-black hover:bg-yellow-100"
             }`}
@@ -286,9 +286,9 @@ export default function PelangganPage() {
               <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2.5} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
             </svg>
             Filter
-            {[filterWilayah, filterStatus, filterKategori].filter(Boolean).length > 0 && (
+            {[filterKelurahan, filterStatus, filterKategori].filter(Boolean).length > 0 && (
               <span className="bg-yellow-300 text-black px-1.5 py-0.5 border border-black text-[10px] font-black">
-                {[filterWilayah, filterStatus, filterKategori].filter(Boolean).length}
+                {[filterKelurahan, filterStatus, filterKategori].filter(Boolean).length}
               </span>
             )}
           </button>
@@ -299,15 +299,15 @@ export default function PelangganPage() {
           <div className="mt-4 p-4 bg-yellow-50 border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label className="block text-xs font-black uppercase tracking-widest mb-2">Wilayah</label>
+                <label className="block text-xs font-black uppercase tracking-widest mb-2">Kelurahan</label>
                 <select
-                  value={filterWilayah}
-                  onChange={(e) => { setFilterWilayah(e.target.value); setPage(1); }}
+                  value={filterKelurahan}
+                  onChange={(e) => { setFilterKelurahan(e.target.value); setPage(1); }}
                   className="w-full px-3 py-2 border-2 border-black focus:outline-none focus:ring-0 focus:bg-yellow-100 text-sm font-bold uppercase appearance-none rounded-none bg-white"
                 >
-                  <option value="">Semua Wilayah</option>
-                  {wilayahList.map((w) => (
-                    <option key={w.id} value={w.id}>{w.nama}</option>
+                  <option value="">Semua Kelurahan</option>
+                  {kelurahanList.map((k) => (
+                    <option key={k.id} value={k.id}>{k.nama}</option>
                   ))}
                 </select>
               </div>
@@ -344,7 +344,7 @@ export default function PelangganPage() {
               </span>
               <button
                 onClick={resetFilters}
-                disabled={[filterWilayah, filterStatus, filterKategori].filter(Boolean).length === 0}
+                disabled={[filterKelurahan, filterStatus, filterKategori].filter(Boolean).length === 0}
                 className="px-4 py-2 bg-white border-2 border-black font-black uppercase tracking-widest text-xs hover:bg-red-400 hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Reset Filter
@@ -420,7 +420,7 @@ export default function PelangganPage() {
                   <td className="px-4 py-3 border-r-2 border-black text-black max-w-[250px]">
                     <div className="text-xs font-bold truncate" title={p.alamat}>{p.alamat}</div>
                     <div className="inline-flex items-center mt-1 px-1.5 py-0.5 bg-gray-200 border border-black text-[9px] font-black uppercase">
-                      {p.wilayah.nama}
+                      {p.kelurahan?.nama ?? "—"}
                     </div>
                   </td>
                   <td className="px-4 py-3 border-r-2 border-black">
@@ -569,17 +569,17 @@ export default function PelangganPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-black uppercase tracking-widest mb-2">Wilayah *</label>
+                  <label className="block text-xs font-black uppercase tracking-widest mb-2">Kelurahan *</label>
                   <select
-                    value={form.wilayahId}
-                    onChange={(e) => setForm({ ...form, wilayahId: e.target.value })}
+                    value={form.kelurahanId}
+                    onChange={(e) => setForm({ ...form, kelurahanId: e.target.value })}
                     className="w-full px-3 py-2 border-2 border-black focus:outline-none focus:ring-0 focus:bg-yellow-100 text-sm font-bold shadow-[4px_4px_0_0_rgba(0,0,0,1)] appearance-none rounded-none"
                     required
                   >
-                    <option value="">PILIH WILAYAH</option>
-                    {wilayahList.map((w) => (
-                      <option key={w.id} value={w.id}>
-                        {w.nama}
+                    <option value="">PILIH KELURAHAN</option>
+                    {kelurahanList.map((k) => (
+                      <option key={k.id} value={k.id}>
+                        {k.nama}
                       </option>
                     ))}
                   </select>

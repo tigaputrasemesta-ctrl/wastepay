@@ -10,6 +10,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const search = searchParams.get("search") || "";
   const wilayahId = searchParams.get("wilayahId");
+  const kelurahanIdParam = searchParams.get("kelurahanId");
   const status = searchParams.get("status");
   const kategori = searchParams.get("kategori");
 
@@ -27,7 +28,9 @@ export async function GET(request: Request) {
         { status: 403 }
       );
     }
-    where.wilayah = { kelurahanId };
+    where.kelurahanId = kelurahanId;
+  } else if (kelurahanIdParam) {
+    where.kelurahanId = parseInt(kelurahanIdParam);
   } else if (wilayahId) {
     where.wilayahId = parseInt(wilayahId);
   }
@@ -51,6 +54,7 @@ export async function GET(request: Request) {
     where,
     include: {
       wilayah: true,
+      kelurahan: true,
       paket: true,
       _count: {
         select: { tagihan: true, pembayaran: true },
@@ -65,17 +69,17 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { nama, noTelepon, kategori, alamat, rtRw, fotoRumah, patokanLokasi, latitude, longitude, koordinatSumber, koordinatAkurasi, penanggungjawab, referal, customTarif, wilayahId, paketId, status, catatan } = body;
+    const { nama, noTelepon, kategori, alamat, rtRw, fotoRumah, patokanLokasi, latitude, longitude, koordinatSumber, koordinatAkurasi, penanggungjawab, referal, customTarif, kelurahanId, paketId, status, catatan } = body;
 
-    if (!nama || !noTelepon || !alamat || !wilayahId) {
+    if (!nama || !noTelepon || !alamat || !kelurahanId) {
       return NextResponse.json(
-        { error: "Nama, no telepon, alamat, dan wilayah harus diisi" },
+        { error: "Nama, no telepon, alamat, dan kelurahan harus diisi" },
         { status: 400 }
       );
     }
 
-    // Generate kode pelanggan per zona: {KODE-WILAYAH}-{urutan}, misal KAL-001
-    let kodePelanggan = await generateKodePelanggan(parseInt(wilayahId));
+    // Generate kode pelanggan per kelurahan: {KODE-KELURAHAN}-{TOKEN}, misal KAL-8F3K2P
+    let kodePelanggan = await generateKodePelanggan(parseInt(kelurahanId));
 
     // Retry bila kode bentrok (dua request paralel) — generate ulang lalu create lagi
     let pelanggan;
@@ -98,19 +102,19 @@ export async function POST(request: Request) {
             penanggungjawab,
             referal,
             customTarif: customTarif ? parseFloat(customTarif) : null,
-            wilayahId: parseInt(wilayahId),
+            kelurahanId: parseInt(kelurahanId),
             paketId: paketId ? parseInt(paketId) : null,
             status: status || "aktif",
             catatan: catatan || null,
           },
-          include: { wilayah: true, paket: true },
+          include: { kelurahan: true, paket: true },
         });
         break;
       } catch (e) {
         const bentrok =
           e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002";
         if (coba >= 2 || !bentrok) throw e;
-        kodePelanggan = await generateKodePelanggan(parseInt(wilayahId));
+        kodePelanggan = await generateKodePelanggan(parseInt(kelurahanId));
       }
     }
 
@@ -162,7 +166,7 @@ export async function POST(request: Request) {
     await logAudit("create", "Pelanggan", pelanggan.id, undefined, {
       nama: pelanggan.nama,
       kodePelanggan: pelanggan.kodePelanggan,
-      wilayahId: pelanggan.wilayahId,
+      kelurahanId: pelanggan.kelurahanId,
     });
 
     return NextResponse.json(pelanggan, { status: 201 });

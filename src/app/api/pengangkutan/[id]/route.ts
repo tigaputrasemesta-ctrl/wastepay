@@ -42,7 +42,7 @@ export async function PUT(
 
       const existing = await prisma.pengangkutan.findUnique({
         where: { id },
-        select: { petugasId: true, pelanggan: { select: { wilayah: { select: { kelurahanId: true } } } } },
+        select: { petugasId: true, pelanggan: { select: { kelurahanId: true } } },
       });
       if (!existing) {
         return NextResponse.json({ error: "Data pengangkutan tidak ditemukan" }, { status: 404 });
@@ -52,7 +52,7 @@ export async function PUT(
       // (nonaktif sementara — PETUGAS_SCOPE_ALL = semua kelurahan)
       if (!PETUGAS_SCOPE_ALL) {
         const kelurahanId = await getPetugasKelurahan(session.id);
-        if (existing.petugasId !== profil.id && existing.pelanggan.wilayah?.kelurahanId !== kelurahanId) {
+        if (existing.petugasId !== profil.id && existing.pelanggan.kelurahanId !== kelurahanId) {
           return NextResponse.json(
             { error: "Data pengangkutan di luar wilayah Anda" },
             { status: 403 }

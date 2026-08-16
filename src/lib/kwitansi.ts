@@ -23,7 +23,8 @@ export async function getPembayaranById(id: number) {
           kodePelanggan: true,
           alamat: true,
           kategori: true,
-          wilayah: { select: { kelurahanId: true } },
+          kelurahanId: true,
+          kelurahan: { select: { nama: true } },
         },
       },
       tagihan: {

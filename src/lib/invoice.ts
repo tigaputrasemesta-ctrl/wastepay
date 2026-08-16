@@ -74,7 +74,8 @@ export async function getTagihanMassal(bulan: number, tahun: number) {
           kategori: true,
           patokanLokasi: true,
           rtRw: true,
-          wilayah: { select: { nama: true, kelurahanId: true } },
+          kelurahanId: true,
+          kelurahan: { select: { nama: true } },
         },
       },
       pembayaran: {
@@ -85,7 +86,7 @@ export async function getTagihanMassal(bulan: number, tahun: number) {
       },
     },
     orderBy: [
-      { pelanggan: { wilayah: { nama: "asc" } } },
+      { pelanggan: { kelurahan: { nama: "asc" } } },
       { pelanggan: { kodePelanggan: "asc" } },
     ],
   });

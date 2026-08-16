@@ -42,7 +42,7 @@ export async function POST(request: Request) {
 
     const tagihan = await prisma.tagihan.findUnique({
       where: { id: parseInt(tagihanId) },
-      include: { pelanggan: { include: { wilayah: { select: { kelurahanId: true } } } } },
+      include: { pelanggan: { select: { kelurahanId: true } } },
     });
 
     if (!tagihan) {
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
     // (nonaktif sementara — PETUGAS_SCOPE_ALL = semua kelurahan).
     if (session && session.role === "petugas" && !PETUGAS_SCOPE_ALL) {
       const kelurahanId = await getPetugasKelurahan(session.id);
-      if (!kelurahanId || tagihan.pelanggan.wilayah?.kelurahanId !== kelurahanId) {
+      if (!kelurahanId || tagihan.pelanggan.kelurahanId !== kelurahanId) {
         return NextResponse.json(
           { error: "Pelanggan di luar wilayah Anda" },
           { status: 403 }
@@ -164,7 +164,7 @@ export async function GET(request: Request) {
       if (!kelurahanId) {
         return NextResponse.json({ error: "Akun belum ter-link ke kelurahan petugas" }, { status: 403 });
       }
-      where.pelanggan = { wilayah: { kelurahanId } };
+      where.pelanggan = { kelurahanId };
     }
   }
 

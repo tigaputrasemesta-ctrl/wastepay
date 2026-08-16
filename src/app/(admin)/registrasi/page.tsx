@@ -7,7 +7,7 @@ import { formatRupiah } from "@/lib/utils";
 import CoordinatePicker from "@/components/CoordinatePicker";
 import GeotagPhoto from "@/components/GeotagPhoto";
 
-type Wilayah = { id: number; nama: string; rt?: string | null; rw?: string | null; kelurahan?: string | null; kecamatan?: string | null };
+type Kelurahan = { id: number; nama: string; kecamatan?: string | null; kota?: string | null };
 type Paket = { id: number; nama: string; harga: number; deskripsi?: string };
 type KategoriTarif = { id: number; kategori: string; label: string; tarif: number; deskripsi?: string };
 
@@ -57,7 +57,7 @@ export default function DaftarPelangganPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [successData, setSuccessData] = useState<{ nama: string; kode: string } | null>(null);
-  const [wilayahList, setWilayahList] = useState<Wilayah[]>([]);
+  const [kelurahanList, setKelurahanList] = useState<Kelurahan[]>([]);
   const [paketList, setPaketList] = useState<Paket[]>([]);
   const [kategoriTarifList, setKategoriTarifList] = useState<KategoriTarif[]>([]);
   const [useCustomTarif, setUseCustomTarif] = useState(false);
@@ -69,7 +69,7 @@ export default function DaftarPelangganPage() {
     kategori: "rumah_tangga",
     penanggungjawab: "",
     // Wilayah & Alamat
-    wilayahId: "",
+    kelurahanId: "",
     alamat: "",
     rt: "",
     rw: "",
@@ -88,7 +88,7 @@ export default function DaftarPelangganPage() {
   });
 
   // ── Data turunan ──
-  const wilayahTerpilih = wilayahList.find((w) => w.id.toString() === form.wilayahId);
+  const kelurahanTerpilih = kelurahanList.find((k) => k.id.toString() === form.kelurahanId);
   const kategoriTarifTerpilih = kategoriTarifList.find((k) => k.kategori === form.kategori);
   const tarifDefaultKategori = kategoriTarifTerpilih?.tarif ?? 0;
   const paketTerpilih = paketList.find((p) => p.id.toString() === form.paketId);
@@ -101,12 +101,12 @@ export default function DaftarPelangganPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [wilayahRes, paketRes, tarifRes] = await Promise.all([
-          fetch("/api/wilayah"),
+        const [kelurahanRes, paketRes, tarifRes] = await Promise.all([
+          fetch("/api/kelurahan"),
           fetch("/api/paket"),
           fetch("/api/kategori-tarif"),
         ]);
-        setWilayahList(await wilayahRes.json());
+        setKelurahanList(await kelurahanRes.json());
         setPaketList(await paketRes.json());
         setKategoriTarifList(await tarifRes.json());
       } catch {
@@ -115,16 +115,6 @@ export default function DaftarPelangganPage() {
     }
     fetchData();
   }, []);
-
-  function pilihWilayah(wilayahId: string) {
-    const w = wilayahList.find((x) => x.id.toString() === wilayahId);
-    setForm((f) => ({
-      ...f,
-      wilayahId,
-      rt: w?.rt || f.rt,
-      rw: w?.rw || f.rw,
-    }));
-  }
 
   function nextStep() {
     setError("");
@@ -135,7 +125,7 @@ export default function DaftarPelangganPage() {
     }
     if (step === 2) {
       if (!form.alamat.trim()) return setError("Alamat wajib diisi");
-      if (!form.wilayahId) return setError("Pilih wilayah / RT / RW");
+      if (!form.kelurahanId) return setError("Pilih kelurahan");
     }
     if (step === 4) {
       const punyaTarif = paketTerpilih || (useCustomTarif && parseFloat(form.customTarif) > 0) || tarifDefaultKategori > 0;
@@ -169,7 +159,7 @@ export default function DaftarPelangganPage() {
         koordinatSumber: form.koordinatSumber,
         koordinatAkurasi: form.koordinatAkurasi,
         fotoRumah: form.fotoRumah,
-        wilayahId: form.wilayahId,
+        kelurahanId: form.kelurahanId,
         paketId: form.paketId,
         customTarif: useCustomTarif ? form.customTarif : "",
         status: form.status,
@@ -200,7 +190,7 @@ export default function DaftarPelangganPage() {
   function resetForm() {
     setForm({
       nama: "", noTelepon: "", kategori: "rumah_tangga", penanggungjawab: "",
-      wilayahId: "", alamat: "", rt: "", rw: "",
+      kelurahanId: "", alamat: "", rt: "", rw: "",
       patokanLokasi: "", latitude: "", longitude: "", koordinatSumber: "", koordinatAkurasi: "", fotoRumah: "",
       paketId: "", customTarif: "", status: "aktif", catatan: "",
     });
@@ -395,28 +385,24 @@ export default function DaftarPelangganPage() {
         {step === 2 && (
           <div className="space-y-6">
             <JudulSection
-              kode="02 / WILAYAH"
-              judul="Wilayah & Alamat"
-              desc="Wilayah menentukan rute pengangkutan dan pelaporan per RT/RW"
+              kode="02 / KELURAHAN"
+              judul="Kelurahan & Alamat"
+              desc="Kelurahan menentukan area layanan & kode pelanggan"
             />
             <div>
-              <label className="label">Wilayah / RT / RW <span className="text-red-600">*</span></label>
-              <select value={form.wilayahId} onChange={(e) => pilihWilayah(e.target.value)} className="input">
-                <option value="">— Pilih Wilayah —</option>
-                {wilayahList.map((w) => (
-                  <option key={w.id} value={w.id}>
-                    {w.nama}
-                    {w.rt ? ` — RT ${w.rt}` : ""}
-                    {w.rw ? `/RW ${w.rw}` : ""}
-                    {w.kelurahan ? ` · ${w.kelurahan}` : ""}
+              <label className="label">Kelurahan <span className="text-red-600">*</span></label>
+              <select value={form.kelurahanId} onChange={(e) => setForm({ ...form, kelurahanId: e.target.value })} className="input">
+                <option value="">— Pilih Kelurahan —</option>
+                {kelurahanList.map((k) => (
+                  <option key={k.id} value={k.id}>
+                    {k.nama}{k.kecamatan ? ` · ${k.kecamatan}` : ""}
                   </option>
                 ))}
               </select>
-              {wilayahTerpilih && (
+              {kelurahanTerpilih && (
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <span className="badge badge-vest">{wilayahTerpilih.kecamatan || "Kec. —"}</span>
-                  <span className="badge badge-steel">{wilayahTerpilih.kelurahan || "Kel. —"}</span>
-                  <span className="badge">{wilayahTerpilih.nama}</span>
+                  <span className="badge badge-vest">{kelurahanTerpilih.kecamatan || "Kec. —"}</span>
+                  <span className="badge badge-steel">{kelurahanTerpilih.nama || "Kel. —"}</span>
                 </div>
               )}
             </div>
@@ -453,7 +439,7 @@ export default function DaftarPelangganPage() {
               </div>
             </div>
             <p className="text-xs text-gray-400 font-bold">
-              RT/RW terisi otomatis dari wilayah terpilih — sesuaikan bila perlu.
+              Isi RT/RW sesuai data warga (opsional).
             </p>
           </div>
         )}
@@ -708,9 +694,9 @@ export default function DaftarPelangganPage() {
                   <p className="font-medium text-black font-black">{form.alamat}</p>
                   {form.rt && form.rw && <p className="text-sm text-gray-600 font-bold">RT {form.rt} / RW {form.rw}</p>}
                   <p className="text-sm text-gray-600 font-bold">
-                    {wilayahTerpilih?.nama || "-"}
-                    {wilayahTerpilih?.kelurahan && ` · ${wilayahTerpilih.kelurahan}`}
-                    {wilayahTerpilih?.kecamatan && ` · ${wilayahTerpilih.kecamatan}`}
+                    {kelurahanTerpilih?.nama || "-"}
+                    {kelurahanTerpilih?.kecamatan && ` · ${kelurahanTerpilih.kecamatan}`}
+                    {kelurahanTerpilih?.kota && ` · ${kelurahanTerpilih.kota}`}
                   </p>
                 </div>
               </div>

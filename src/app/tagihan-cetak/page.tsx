@@ -53,7 +53,7 @@ export default async function TagihanCetakPage({
     const kelurahanId = await getPetugasKelurahan(session.id);
     if (kelurahanId) {
       tagihan = tagihan.filter(
-        (t) => t.pelanggan.wilayah?.kelurahanId === kelurahanId
+        (t) => t.pelanggan.kelurahanId === kelurahanId
       );
     }
   }
@@ -118,7 +118,7 @@ export default async function TagihanCetakPage({
                     <h2>{t.pelanggan.nama}</h2>
                     <p>{alamatLengkap}</p>
                     <p>
-                      {t.pelanggan.wilayah?.nama ? `Wilayah ${t.pelanggan.wilayah.nama} · ` : ""}
+                      {t.pelanggan.kelurahan?.nama ? `Kelurahan ${t.pelanggan.kelurahan.nama} · ` : ""}
                       ID {t.pelanggan.kodePelanggan} · {LABEL_KATEGORI[t.pelanggan.kategori] || t.pelanggan.kategori}
                     </p>
                   </div>

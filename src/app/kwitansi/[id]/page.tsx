@@ -42,7 +42,7 @@ export default async function KwitansiPage({
   // Scope kelurahan untuk petugas (anti-enumerasi: 404, bukan 403)
   if (session.role === "petugas" && !PETUGAS_SCOPE_ALL) {
     const kelurahanId = await getPetugasKelurahan(session.id);
-    if (!kelurahanId || p.pelanggan.wilayah?.kelurahanId !== kelurahanId) {
+    if (!kelurahanId || p.pelanggan.kelurahanId !== kelurahanId) {
       notFound();
     }
   }

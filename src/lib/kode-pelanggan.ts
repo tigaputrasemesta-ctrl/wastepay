@@ -1,15 +1,15 @@
 import { prisma } from "@/lib/prisma";
 
 /**
- * Generate kode pelanggan per zona (wilayah) — format acak ala "kode internet":
+ * Generate kode pelanggan per kelurahan — format acak ala "kode internet":
  *
- *   {KODE-WILAYAH}-{TOKEN ACak}   contoh "KAL-8F3K2P"
+ *   {KODE-KELURAHAN}-{TOKEN ACak}   contoh "KAL-8F3K2P"
  *
- *   - Prefix zona (KAL) diambil dari Wilayah.kode → petugas langsung tahu zonanya.
+ *   - Prefix (KAL) diambil dari Kelurahan.kode → petugas langsung tahu areanya.
  *   - Token acak 6 karakter (charset tanpa huruf ambigu I/O/0/1) → kode tidak bisa
  *     ditebak/dienumerasi, sehingga noInvoice (INV/{kode}/{bulan}) ikut aman.
- *   - Kode bersifat permanen: saat pelanggan pindah wilayah, kode TIDAK berubah
- *     (barcode & invoice historis tetap valid) — zona aktif dilacak via wilayahId.
+ *   - Kode bersifat permanen: saat pelanggan pindah kelurahan, kode TIDAK berubah
+ *     (barcode & invoice historis tetap valid).
  *
  * Caller (route create) diharapkan menangani Prisma P2002 (bentrok sangat jarang,
  * peluang ±1/1 miliar per token) dengan retry + generate ulang.
@@ -27,17 +27,17 @@ export function randomToken(panjang: number = PANJANG_TOKEN): string {
   return s;
 }
 
-export async function generateKodePelanggan(wilayahId: number): Promise<string> {
-  const wilayah = await prisma.wilayah.findUnique({
-    where: { id: wilayahId },
+export async function generateKodePelanggan(kelurahanId: number): Promise<string> {
+  const kelurahan = await prisma.kelurahan.findUnique({
+    where: { id: kelurahanId },
     select: { kode: true },
   });
-  const kodeWilayah = (wilayah?.kode || "").trim().toUpperCase();
-  if (!kodeWilayah) {
-    throw new Error(`Wilayah ${wilayahId} belum punya kode zona (Wilayah.kode kosong)`);
+  const kodeKelurahan = (kelurahan?.kode || "").trim().toUpperCase();
+  if (!kodeKelurahan) {
+    throw new Error(`Kelurahan ${kelurahanId} belum punya kode (Kelurahan.kode kosong)`);
   }
 
-  return `${kodeWilayah}-${randomToken()}`;
+  return `${kodeKelurahan}-${randomToken()}`;
 }
 
 /** Normalisasi kode zona (uppercase, tanpa spasi/karakter aneh) — contoh "kalibaru-a" → "KALIBARUA". */

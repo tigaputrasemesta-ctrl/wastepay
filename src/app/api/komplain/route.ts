@@ -24,8 +24,8 @@ export async function GET(request: Request) {
     if (!kelurahanId) {
       return NextResponse.json({ error: "Akun belum ter-link ke kelurahan petugas" }, { status: 403 });
     }
-    const scopeWilayah = { pelanggan: { wilayah: { kelurahanId } } };
-    where = where ? { ...where, ...scopeWilayah } : scopeWilayah;
+    const scopeKelurahan = { pelanggan: { kelurahanId } };
+    where = where ? { ...where, ...scopeKelurahan } : scopeKelurahan;
   }
 
   const komplain = await prisma.komplain.findMany({
@@ -76,9 +76,9 @@ export async function POST(request: Request) {
       const kelurahanId = await getPetugasKelurahan(session.id);
       const target = await prisma.pelanggan.findUnique({
         where: { id: parseInt(pelangganId) },
-        select: { wilayah: { select: { kelurahanId: true } } },
+        select: { kelurahanId: true },
       });
-      if (!kelurahanId || !target || target.wilayah?.kelurahanId !== kelurahanId) {
+      if (!kelurahanId || !target || target.kelurahanId !== kelurahanId) {
         return NextResponse.json(
           { error: "Pelanggan di luar wilayah Anda" },
           { status: 403 }

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { formatRupiah, formatDate } from "@/lib/utils";
 
-type Wilayah = { id: number; nama: string; rt?: string; rw?: string };
+type Kelurahan = { id: number; nama: string; kecamatan?: string | null };
 type Paket = { id: number; nama: string; harga: number; deskripsi?: string };
 type PelangganDetail = {
   id: number;
@@ -27,7 +27,7 @@ type PelangganDetail = {
   customTarif?: number | null;
   status: string;
   catatan?: string;
-  wilayah: Wilayah;
+  kelurahan?: Kelurahan | null;
   paket?: Paket | null;
   createdAt: string;
   jadwal: {
@@ -293,8 +293,8 @@ export default function DetailPelangganPage() {
                 </div>
               )}
               <div>
-                <p className="text-gray-600 font-bold">Wilayah</p>
-                <p className="font-medium text-black font-black">{data.wilayah.nama}</p>
+                <p className="text-gray-600 font-bold">Kelurahan</p>
+                <p className="font-medium text-black font-black">{data.kelurahan?.nama ?? "—"}</p>
               </div>
               {data.patokanLokasi && (
                 <div>

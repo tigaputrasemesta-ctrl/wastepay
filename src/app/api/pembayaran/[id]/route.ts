@@ -47,7 +47,7 @@ export async function PUT(request: Request, { params }: Params) {
 
     const pembayaran = await prisma.pembayaran.findUnique({
       where: { id: parseInt(id) },
-      include: { pelanggan: { select: { wilayah: { select: { kelurahanId: true } } } } },
+      include: { pelanggan: { select: { kelurahanId: true } } },
     });
     if (!pembayaran) {
       return NextResponse.json({ error: "Pembayaran tidak ditemukan" }, { status: 404 });
@@ -57,7 +57,7 @@ export async function PUT(request: Request, { params }: Params) {
     // (nonaktif sementara — PETUGAS_SCOPE_ALL = semua kelurahan).
     if (session && session.role === "petugas" && !PETUGAS_SCOPE_ALL) {
       const kelurahanId = await getPetugasKelurahan(session.id);
-      if (!kelurahanId || pembayaran.pelanggan.wilayah?.kelurahanId !== kelurahanId) {
+      if (!kelurahanId || pembayaran.pelanggan.kelurahanId !== kelurahanId) {
         return NextResponse.json(
           { error: "Pelanggan di luar wilayah Anda" },
           { status: 403 }

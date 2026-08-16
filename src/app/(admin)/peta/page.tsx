@@ -27,7 +27,7 @@ export default async function PetaPage() {
   // Admin/non-petugas → lihat semua; petugas berprofil → hanya kelurahannya;
   // petugas tanpa profil → tidak dapat data apa pun (bukan semua wilayah)
   const scope = scopeKelurahanId
-    ? { wilayah: { kelurahanId: scopeKelurahanId } }
+    ? { kelurahanId: scopeKelurahanId }
     : petugasTanpaProfil
       ? { id: -1 }
       : {};
@@ -57,7 +57,7 @@ export default async function PetaPage() {
     }),
     prisma.tagihan.findMany({
       where: scopeKelurahanId
-        ? { pelanggan: { wilayah: { kelurahanId: scopeKelurahanId } } }
+        ? { pelanggan: { kelurahanId: scopeKelurahanId } }
         : petugasTanpaProfil
           ? { id: -1 }
           : {},
@@ -66,7 +66,7 @@ export default async function PetaPage() {
     }),
     prisma.rute.findMany({
       where: scopeKelurahanId
-        ? { aktif: true, wilayah: { kelurahanId: scopeKelurahanId } }
+        ? { aktif: true, kelurahanId: scopeKelurahanId }
         : petugasTanpaProfil
           ? { id: -1 }
           : { aktif: true },
@@ -76,7 +76,7 @@ export default async function PetaPage() {
         hari: true,
         jam: true,
         petugas: { select: { nama: true } },
-        wilayah: { select: { nama: true } },
+        kelurahan: { select: { nama: true } },
         jadwal: {
           select: {
             pelanggan: {
@@ -105,7 +105,7 @@ export default async function PetaPage() {
     hari: r.hari,
     jam: r.jam,
     petugas: r.petugas?.nama ?? null,
-    wilayahNama: r.wilayah?.nama ?? null,
+    wilayahNama: r.kelurahan?.nama ?? null,
     anggota: r.jadwal
       .map((j) => j.pelanggan)
       .filter((pl) => pl.latitude != null && pl.longitude != null)

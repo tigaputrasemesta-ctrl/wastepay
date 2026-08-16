@@ -36,15 +36,17 @@ model User {
 model Kelurahan {
   id        Int      @id @default(autoincrement())
   nama      String   @unique // nama kelurahan (normalisasi, case-insensitive saat lookup)
+  kode      String?  @unique // kode singkat utk kode pelanggan, misal "KAL" (Kalibaru)
   kecamatan String?
   kota      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  wilayah Wilayah[] @relation("WilayahKelurahan")
-  petugas Petugas[] @relation("PetugasKelurahan")
-  zona    Zona[]
-  rute    Rute[]
+  wilayah   Wilayah[] @relation("WilayahKelurahan")
+  petugas   Petugas[] @relation("PetugasKelurahan")
+  zona      Zona[]
+  rute      Rute[]
+  pelanggan Pelanggan[]
 }
 
 model Wilayah {
@@ -143,9 +145,11 @@ model Pelanggan {
   customTarif      Float? // tarif kustom (override paket)
   status           String    @default("aktif") // aktif | calon | nonaktif | libur
   catatan          String?
-  wilayahId        Int? // nullable: calon pelanggan (daftar mandiri) belum punya wilayah
+  wilayahId        Int? // legacy: nullable — calon/daftar mandiri belum tentu punya RT
+  kelurahanId      Int? // canonical: satu kelurahan membawahi banyak pelanggan (scope petugas & kode)
   paketId          Int?
   wilayah          Wilayah?  @relation(fields: [wilayahId], references: [id])
+  kelurahan        Kelurahan? @relation(fields: [kelurahanId], references: [id])
   paket            Paket?    @relation(fields: [paketId], references: [id])
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt

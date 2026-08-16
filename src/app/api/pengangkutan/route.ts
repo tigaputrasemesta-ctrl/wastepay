@@ -164,12 +164,12 @@ export async function POST(request: Request) {
         const kelurahanId = await getPetugasKelurahan(session.id);
         const pelangganTujuan = await prisma.pelanggan.findUnique({
           where: { id: parseInt(pelangganId) },
-          select: { wilayah: { select: { kelurahanId: true } } },
+          select: { kelurahanId: true },
         });
         if (!pelangganTujuan) {
           return NextResponse.json({ error: "Pelanggan tidak ditemukan" }, { status: 404 });
         }
-        if (!kelurahanId || pelangganTujuan.wilayah?.kelurahanId !== kelurahanId) {
+        if (!kelurahanId || pelangganTujuan.kelurahanId !== kelurahanId) {
           return NextResponse.json(
             { error: "Pelanggan di luar wilayah Anda" },
             { status: 403 }

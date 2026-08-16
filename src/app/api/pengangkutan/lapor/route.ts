@@ -46,7 +46,7 @@ export async function GET(request: Request) {
       where: {
         kodePelanggan: { equals: kode, mode: "insensitive" },
         deletedAt: null,
-        ...(kelurahanId ? { wilayah: { kelurahanId } } : {}),
+        ...(kelurahanId ? { kelurahanId } : {}),
       },
       select: {
         id: true,
@@ -107,7 +107,7 @@ export async function POST(request: Request) {
       where: {
         kodePelanggan: { equals: kode, mode: "insensitive" },
         deletedAt: null,
-        ...(kelurahanId ? { wilayah: { kelurahanId } } : {}),
+        ...(kelurahanId ? { kelurahanId } : {}),
       },
       select: { id: true, nama: true, kodePelanggan: true },
     });

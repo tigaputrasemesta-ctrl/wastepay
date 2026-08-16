@@ -70,7 +70,7 @@ export async function GET(request: Request) {
       if (!kelurahanId) {
         return NextResponse.json({ error: "Akun belum ter-link ke kelurahan petugas" }, { status: 403 });
       }
-      where.pelanggan = { wilayah: { kelurahanId } };
+      where.pelanggan = { kelurahanId };
     }
   }
 
