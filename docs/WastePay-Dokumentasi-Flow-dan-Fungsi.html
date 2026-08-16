@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WastePay — Dokumentasi Alur & Fungsi Sistem</title>
+<style>
+  :root {
+    --red: #e11d2e;
+    --red-dark: #b31220;
+    --black: #111111;
+    --yellow: #ffd400;
+    --gray: #555555;
+    --light: #f4f4f0;
+    --border: #d0d0d0;
+  }
+  * { box-sizing: border-box; }
+  @page {
+    size: A4;
+    margin: 16mm 14mm 16mm 14mm;
+  }
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: #1a1a1a;
+    font-size: 10.5px;
+    line-height: 1.5;
+  }
+  h1, h2, h3, h4 { color: var(--black); line-height: 1.2; }
+  h1 { font-size: 30px; margin: 0 0 4px 0; letter-spacing: -0.5px; }
+  h2 {
+    font-size: 19px;
+    margin: 0 0 10px 0;
+    padding: 6px 10px;
+    background: var(--black);
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    page-break-after: avoid;
+  }
+  h3 {
+    font-size: 14px;
+    margin: 18px 0 6px 0;
+    border-left: 4px solid var(--red);
+    padding-left: 8px;
+    page-break-after: avoid;
+  }
+  h4 { font-size: 12px; margin: 12px 0 4px 0; color: var(--red-dark); page-break-after: avoid; }
+  p { margin: 4px 0 8px 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 6px 0 14px 0;
+    font-size: 9.5px;
+    page-break-inside: auto;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 5px 7px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: var(--black);
+    color: #fff;
+    text-transform: uppercase;
+    font-size: 8.5px;
+    letter-spacing: 0.4px;
+  }
+  tr { page-break-inside: avoid; }
+  tr:nth-child(even) td { background: #fafafa; }
+  code {
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 9px;
+    background: #f1f1f1;
+    padding: 0 3px;
+    border: 1px solid #e2e2e2;
+    border-radius: 2px;
+    word-break: break-all;
+  }
+  .cover {
+    height: 250mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    border: 4px solid var(--black);
+    padding: 30mm 25mm;
+    position: relative;
+  }
+  .cover .brand { font-size: 13px; font-weight: 800; letter-spacing: 3px; color: var(--red); text-transform: uppercase; }
+  .cover h1 { font-size: 44px; margin: 14px 0 6px 0; }
+  .cover .subtitle { font-size: 16px; color: var(--gray); font-weight: 600; }
+  .cover .meta { margin-top: 40px; font-size: 11px; line-height: 1.9; }
+  .cover .meta b { display: inline-block; width: 120px; }
+  .tag {
+    display: inline-block;
+    background: var(--red);
+    color: #fff;
+    font-size: 8.5px;
+    font-weight: 700;
+    padding: 2px 7px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .pagebreak { page-break-before: always; }
+  .flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 4px;
+    margin: 8px 0 14px 0;
+  }
+  .flow .step {
+    flex: 1 1 120px;
+    border: 1.5px solid var(--black);
+    padding: 7px 8px;
+    font-size: 9px;
+    font-weight: 600;
+    text-align: center;
+    background: #fff;
+  }
+  .flow .step .no {
+    display: block;
+    font-size: 8px;
+    color: #fff;
+    background: var(--red);
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    text-align: center;
+    margin: 0 auto 4px auto;
+  }
+  .flow .arrow {
+    align-self: center;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--red);
+    padding: 0 1px;
+  }
+  .callout {
+    border: 1.5px solid var(--yellow);
+    background: #fffbe6;
+    padding: 8px 12px;
+    margin: 10px 0;
+    font-size: 9.5px;
+  }
+  .callout.warn { border-color: var(--red); background: #fdecec; }
+  .callout.info { border-color: #3b82f6; background: #eef4ff; }
+  .toc { columns: 2; column-gap: 30px; font-size: 10px; }
+  .toc .item { margin-bottom: 5px; }
+  .toc .num { font-weight: 800; color: var(--red); }
+  ul, ol { margin: 4px 0 8px 0; padding-left: 18px; }
+  li { margin-bottom: 2px; }
+  .small { font-size: 8.5px; color: var(--gray); }
+  .badge {
+    display: inline-block; font-size: 8px; font-weight: 700; padding: 1px 6px;
+    border: 1px solid var(--black); margin-left: 4px; text-transform: uppercase;
+  }
+  .badge.role { background: var(--yellow); }
+  .badge.api { background: #e0f2fe; }
+  .badge.ui { background: #dcfce7; }
+</style>
+</head>
+<body>
+
+<!-- ============ COVER ============ -->
+<div class="cover">
+  <div class="brand">O₂W Hero Zero Waste · WastePay</div>
+  <h1>Dokumentasi Alur &amp;<br>Fungsi Sistem</h1>
+  <div class="subtitle">Sistem Pengelolaan Iuran &amp; Pengangkutan Sampah — Depok</div>
+  <div class="meta">
+    <p><b>Dokumen</b> Panduan Teknis &amp; Operasional</p>
+    <p><b>Cakupan</b> Alur bisnis, modul, tools, API, dan keamanan</p>
+    <p><b>Platform</b> Web Admin · Mobile Petugas · Portal Warga</p>
+    <p><b>Status</b> Production</p>
+    <p><b>Versi</b> 1.0</p>
+  </div>
+</div>
+
+<!-- ============ DAFTAR ISI ============ -->
+<div class="pagebreak"></div>
+<h2>Daftar Isi</h2>
+<div class="toc">
+  <div class="item"><span class="num">1.</span> Ringkasan Sistem</div>
+  <div class="item"><span class="num">2.</span> Arsitektur &amp; Teknologi</div>
+  <div class="item"><span class="num">3.</span> Aktor &amp; Hak Akses (RBAC)</div>
+  <div class="item"><span class="num">4.</span> Struktur Wilayah &amp; Zonasi</div>
+  <div class="item"><span class="num">5.</span> Alur Bisnis Utama</div>
+  <div class="item" style="padding-left:12px;">5.1 Pendaftaran &amp; Survei Pelanggan</div>
+  <div class="item" style="padding-left:12px;">5.2 Tarif, Paket &amp; Kode Pelanggan</div>
+  <div class="item" style="padding-left:12px;">5.3 Generate Tagihan Bulanan</div>
+  <div class="item" style="padding-left:12px;">5.4 Pembayaran &amp; Verifikasi</div>
+  <div class="item" style="padding-left:12px;">5.5 Tunggakan &amp; Denda</div>
+  <div class="item" style="padding-left:12px;">5.6 Pengangkutan Sampah (Rute–Jadwal–Lapor)</div>
+  <div class="item" style="padding-left:12px;">5.7 Komplain &amp; Pengaduan</div>
+  <div class="item" style="padding-left:12px;">5.8 Keuangan: Pengeluaran, Klaim, Rekonsiliasi, Laporan</div>
+  <div class="item" style="padding-left:12px;">5.9 Komunikasi: Pengumuman, Notifikasi WA, Chat</div>
+  <div class="item"><span class="num">6.</span> Modul &amp; Fungsi Tools (Admin)</div>
+  <div class="item"><span class="num">7.</span> Modul &amp; Fungsi Tools (Mobile Petugas)</div>
+  <div class="item"><span class="num">8.</span> Modul &amp; Fungsi Tools (Portal Warga)</div>
+  <div class="item"><span class="num">9.</span> Katalog API (Backend)</div>
+  <div class="item"><span class="num">10.</span> Keamanan &amp; Proteksi Data</div>
+  <div class="item"><span class="num">11.</span> Integrasi Eksternal</div>
+  <div class="item"><span class="num">12.</span> Glosarium &amp; Status Enum</div>
+</div>
+
+<!-- ============ 1. RINGKASAN ============ -->
+<div class="pagebreak"></div>
+<h2>1. Ringkasan Sistem</h2>
+<p>
+  <b>WastePay</b> (brand: <b>O₂W Hero Zero Waste</b>) adalah platform terpadu untuk pengelolaan
+  iuran kebersihan dan operasional pengangkutan sampah skala kelurahan/kota. Sistem menggabungkan
+  tiga portal dalam satu aplikasi:
+</p>
+<table>
+  <tr><th>Portal</th><th>Pengguna</th><th>Fungsi Utama</th></tr>
+  <tr><td><b>Web Admin</b></td><td>Superadmin, Admin, Kasir</td><td>Manajemen pelanggan, wilayah, zona, tarif, tagihan, pembayaran, pengangkutan, petugas, keuangan, laporan, pengaturan.</td></tr>
+  <tr><td><b>Mobile Petugas</b></td><td>Petugas Lapangan (angkut / tagih / survei)</td><td>Survei calon pelanggan, lapor pengangkutan via kode, absensi, klaim dana, chat, GPS lokasi.</td></tr>
+  <tr><td><b>Portal Warga</b></td><td>Pelanggan / warga</td><td>Pendaftaran mandiri, cek &amp; bayar tagihan, lacak status, pengaduan, lihat tarif.</td></tr>
+</table>
+<p>
+  Sistem ini mencatat siklus hidup penuh pelanggan: dari pendaftaran → survei → aktivasi → penagihan bulanan
+  → pembayaran (tunai/transfer/gateway) → pengangkutan terjadwal → pelaporan &amp; rekonsiliasi keuangan.
+  Seluruh perubahan data dicatat pada <b>Audit Log</b> untuk keperluan akuntabilitas.
+</p>
+
+<!-- ============ 2. ARSITEKTUR ============ -->
+<h2>2. Arsitektur &amp; Teknologi</h2>
+<table>
+  <tr><th>Lapisan</th><th>Teknologi</th><th>Keterangan</th></tr>
+  <tr><td>Frontend</td><td>Next.js (App Router) + React + Tailwind CSS</td><td>Server &amp; Client Components, PWA untuk mobile.</td></tr>
+  <tr><td>Backend</td><td>Next.js API Routes (Route Handlers)</td><td>Semua logika server dalam satu codebase (<code>src/app/api/**</code>).</td></tr>
+  <tr><td>Database</td><td>PostgreSQL (Supabase) via Prisma ORM v7</td><td>Driver adapter, migrasi &amp; seed via script Node (<code>scripts/</code>).</td></tr>
+  <tr><td>Mobile</td><td>PWA / Capacitor-ready</td><td>Antarmuka <code>/m/**</code> responsif untuk petugas lapangan.</td></tr>
+  <tr><td>Payment Gateway</td><td>Duitku</td><td>VA, QRIS, e-wallet (OVO/DANA), kartu — signature HMAC-SHA256.</td></tr>
+  <tr><td>Notifikasi</td><td>WhatsApp API (Fonnte-style)</td><td>Blast tagihan &amp; pengumuman, fallback link wa.me manual.</td></tr>
+  <tr><td>Geolokasi</td><td>Leaflet + GeoJSON</td><td>Peta wilayah, marker pelanggan, petugas, kendaraan (GPS).</td></tr>
+  <tr><td>Deploy</td><td>Vercel</td><td>Auto-deploy dari branch <code>master</code>.</td></tr>
+</table>
+
+<!-- ============ 3. AKTOR & RBAC ============ -->
+<h2>3. Aktor &amp; Hak Akses (RBAC)</h2>
+<p>Hirarki peran diatur di <code>src/lib/rbac.ts</code> (nilai level). Semakin tinggi level, semakin luas aksesnya.</p>
+<table>
+  <tr><th>Peran</th><th>Level</th><th>Deskripsi &amp; Kewenangan</th></tr>
+  <tr><td><b>Superadmin</b></td><td>100</td><td>Akses penuh termasuk manajemen pengguna &amp; audit log.</td></tr>
+  <tr><td><b>Admin</b></td><td>50</td><td>Operasional penuh: pelanggan, tagihan, pembayaran, pengangkutan, petugas, zona, laporan. Tidak bisa kelola pengguna/audit.</td></tr>
+  <tr><td><b>Kasir</b></td><td>20</td><td>Terbatas: dashboard, peta, tagihan, laporan, notifikasi.</td></tr>
+  <tr><td><b>Petugas Lapangan</b></td><td>10</td><td>Mobile: peta, survei, pengangkutan, tagihan (tagih), jadwal, komplain, absensi, klaim. Jabatan: <b>angkut</b>, <b>tagih</b>, <b>survei</b>.</td></tr>
+  <tr><td><b>Warga / Pelanggan</b></td><td>—</td><td>Portal publik: daftar, bayar, lacak, pengaduan.</td></tr>
+</table>
+<div class="callout info">
+  <b>Scope approval (terbaru):</b> untuk sementara (1 perusahaan) semua petugas dapat mengakses &amp; menyetujui
+  <b>semua kelurahan</b> — dikendalikan flag <code>PETUGAS_SCOPE_ALL = true</code> di <code>src/lib/scope.ts</code>.
+  Pembatasan <b>jabatan</b> (survei/tagih/angkut) tetap berlaku. Bila ingin membatasi per kelurahan, ubah flag menjadi <code>false</code>.
+</div>
+
+<!-- ============ 4. STRUKTUR WILAYAH ============ -->
+<h2>4. Struktur Wilayah &amp; Zonasi</h2>
+<p>Hierarki geografis dari besar ke kecil:</p>
+<div class="flow">
+  <div class="step"><span class="no">1</span>Kota<br><span class="small">Depok</span></div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="no">2</span>Kecamatan<br><span class="small">mis. Beji, Pancoran Mas</span></div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="no">3</span>Kelurahan<br><span class="small">entitas canonical</span></div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="no">4</span>Zona Angkut<br><span class="small">area pickup custom</span></div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="no">5</span>Wilayah (RT/RW)<br><span class="small">unit terkecil</span></div>
+</div>
+<table>
+  <tr><th>Entitas</th><th>Field Penting</th><th>Fungsi</th></tr>
+  <tr><td><code>Kelurahan</code></td><td><code>nama</code> (unik), <code>kecamatan</code>, <code>kota</code></td><td>Sumber kebenaran kelurahan; satu kelurahan membawahi banyak RT.</td></tr>
+  <tr><td><code>Zona</code></td><td><code>nama</code>, <code>keterangan</code>, <code>warna</code>, <code>kelurahanId</code></td><td>Pembagian area pengambilan custom di dalam kelurahan (mis. "Zona A - RT 01–05").</td></tr>
+  <tr><td><code>ZonaPetugas</code></td><td><code>zonaId</code>, <code>petugasId</code></td><td>Penugasan petugas angkut per zona (banyak-ke-banyak).</td></tr>
+  <tr><td><code>Wilayah</code></td><td><code>nama</code>, <code>kode</code> (unik), <code>rt</code>, <code>rw</code>, <code>kelurahanId</code>, <code>zonaId</code></td><td>Unit RT/RW; <code>kode</code> (2–3 huruf) jadi dasar kode pelanggan.</td></tr>
+</table>
+<div class="callout">
+  <b>Kode Pelanggan</b> dibentuk dari kode wilayah + nomor urut, contoh <code>KB-001</code> (Kalibaru).
+  Kode ini dipakai untuk barcode/stiker dan pencarian cepat saat lapor pengangkutan.
+</div>
+
+<!-- ============ 5. ALUR BISNIS ============ -->
+<div class="pagebreak"></div>
+<h2>5. Alur Bisnis Utama</h2>
+
+<h3>5.1 Pendaftaran &amp; Survei Pelanggan</h3>
+<div class="flow">
+  <div class="step"><span class="no">1</span>Warga daftar mandiri<br><span class="small">/daftar (kecamatan → kelurahan)</span></div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="no">2</span>Cocokkan wilayah<br><span class="small">RT/RW → fallback kelurahan</span></div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="no">3</span>Status = <b>calon</b></div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="no">4</span>Petugas <b>survei</b><br><span class="small">verifikasi lapangan + foto + GPS</span></div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="no">5</span>Status = <b>aktif</b><br><span class="small">+ kode pelanggan + stiker</span></div>
+</div>
+<p>Ada dua jalur pendaftaran: (a) <b>mandiri</b> oleh warga via portal publik, dan (b) <b>manual</b> oleh admin via menu "Daftar Baru". Data pelanggan menyimpan kategori, alamat, koordinat (dari foto EXIF/GPS perangkat/manual), penanggung jawab, dan referal.</p>
+
+<h3>5.2 Tarif, Paket &amp; Kode Pelanggan</h3>
+<ul>
+  <li><b>Kategori Tarif</b>: rumah tangga, bisnis, kost, sekolah, rumah makan, perkantoran, industri, lainnya — masing-masing punya tarif default.</li>
+  <li><b>Paket</b>: nama paket + harga (mis. "2x seminggu"), bisa dioverride dengan <b>custom tarif</b> per pelanggan.</li>
+  <li><b>Kode Pelanggan</b> di-generate otomatis dari kode wilayah, dipakai sebagai identitas barcode &amp; pencarian lapor.</li>
+</ul>
+
+<h3>5.3 Generate Tagihan Bulanan</h3>
+<div class="flow">
+  <div class="step"><span class="no">1</span>Admin pilih bulan/tahun</div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="no">2</span>Ambil semua pelanggan <b>aktif</b></div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="no">3</span>Hitung nominal<br><span class="small">tarif/paket/custom</span></div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="no">4</span>Buat no. invoice<br><span class="small">INV/{kode}/{YYYYMM}</span></div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="no">5</span>Kirim WA invoice<br><span class="small">blast + delay anti-spam</span></div>
+</div>
+<p>Tagihan bersifat idempotent (satu pelanggan satu tagihan per bulan/tahun). Rincian pembayaran = jumlah + <b>PPN 11%</b> + <b>denda</b> (jika ada).</p>
+
+<h3>5.4 Pembayaran &amp; Verifikasi</h3>
+<table>
+  <tr><th>Metode</th><th>Alur</th><th>Verifikasi</th></tr>
+  <tr><td><b>Tunai</b></td><td>Petugas tagih / kasir catat → langsung <b>lunas</b>.</td><td>Otomatis (dicatat oleh yang menerima).</td></tr>
+  <tr><td><b>Transfer / e-wallet / QRIS / VA</b></td><td>Pelanggan unggah bukti → status <b>pending</b>.</td><td>Admin verifikasi manual (terima/tolak).</td></tr>
+  <tr><td><b>Duitku (gateway)</b></td><td>Pilih metode → redirect ke halaman Duitku → bayar.</td><td>Otomatis via callback (signature) + cek status.</td></tr>
+</table>
+<p>Setiap pembayaran tercatat atribusinya (<code>verifiedById</code>) untuk rekonsiliasi kas harian.</p>
+
+<h3>5.5 Tunggakan &amp; Denda</h3>
+<p>
+  Tagihan yang lewat jatuh tempo otomatis ditandai <b>tunggakan</b> dan dihitung denda
+  <b>2% per bulan keterlambatan</b>. Proses utama berjalan via cron <code>scripts/reminder-wa.mjs</code>;
+  pemanggilan dari GET hanyalah fallback dengan throttle 5 menit untuk mencegah write berlebihan.
+</p>
+
+<h3>5.6 Pengangkutan Sampah (Rute → Jadwal → Lapor)</h3>
+<div class="flow">
+  <div class="step"><span class="no">1</span>Admin buat <b>Rute</b><br><span class="small">per wilayah + petugas + hari</span></div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="no">2</span>Susun <b>Jadwal</b><br><span class="small">pelanggan ↔ rute ↔ hari</span></div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="no">3</span><b>Materialisasi</b> tugas hari ini<br><span class="small">status "terjadwal"</span></div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="no">4</span>Petugas <b>lapor via kode</b><br><span class="small">diambil / tidak_diangkut / kosong</span></div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="no">5</span>Catat volume/berat + foto + GPS</div>
+</div>
+<p>Tugas "terjadwal" dibuat otomatis dari jadwal harian milik rute petugas (idempotent, memperhitungkan hari libur sementara). Petugas dapat melapor cepat hanya dengan memindai/mengetik <b>kode pelanggan</b>.</p>
+
+<h3>5.7 Komplain &amp; Pengaduan</h3>
+<div class="flow">
+  <div class="step"><span class="no">1</span>Warga kirim pengaduan<br><span class="small">jenis + foto + deskripsi</span></div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="no">2</span>Status = <b>baru</b></div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="no">3</span>Admin/Petugas proses<br><span class="small">status diproses</span></div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="no">4</span>Tanggapan + <b>selesai</b></div>
+</div>
+
+<h3>5.8 Keuangan: Pengeluaran, Klaim, Rekonsiliasi, Laporan</h3>
+<ul>
+  <li><b>Pengeluaran</b>: catat BBM, gaji petugas, perawatan, operasional (dengan bukti).</li>
+  <li><b>Klaim Dana Petugas</b>: petugas ajukan klaim (BBM/perawatan/dll) → admin setujui/tolak.</li>
+  <li><b>Rekonsiliasi</b>: bandingkan total pemasukan, pengeluaran, tunai sistem vs tunai fisik → hitung selisih.</li>
+  <li><b>Laporan</b>: ringkasan pemasukan/pengeluaran/tunggakan, ekspor data.</li>
+</ul>
+
+<h3>5.9 Komunikasi: Pengumuman, Notifikasi WA, Chat</h3>
+<ul>
+  <li><b>Pengumuman</b>: broadcast (semua atau per wilayah) → tampil di landing &amp; kirim WA.</li>
+  <li><b>Notifikasi</b>: antrean WA otomatis (tagihan jatuh tempo, jadwal, komplain, pengumuman) dengan status terkirim/gagal.</li>
+  <li><b>Chat Petugas</b>: percakapan dua arah admin ↔ petugas lapangan.</li>
+</ul>
+
+<!-- ============ 6. MODUL ADMIN ============ -->
+<div class="pagebreak"></div>
+<h2>6. Modul &amp; Fungsi Tools — Web Admin</h2>
+<table>
+  <tr><th>Modul</th><th>Fungsi</th><th>Menu Terkait</th></tr>
+  <tr><td><b>Dashboard</b></td><td>Ringkasan KPI: pelanggan, tagihan, pembayaran, tunggakan, pengangkutan.</td><td>/dashboard</td></tr>
+  <tr><td><b>Daftar Baru</b></td><td>Input pelanggan baru (kategori, wilayah, tarif) dengan pencocokan wilayah otomatis.</td><td>/registrasi</td></tr>
+  <tr><td><b>Survei</b></td><td>Daftar calon pelanggan menunggu verifikasi → aktivasi jadi aktif.</td><td>/survei</td></tr>
+  <tr><td><b>Pelanggan</b></td><td>CRUD pelanggan, detail, tarif custom, status (aktif/calon/nonaktif/libur).</td><td>/pelanggan</td></tr>
+  <tr><td><b>Stiker Pelanggan</b></td><td>Cetak stiker/barcode kode pelanggan untuk ditempel di rumah.</td><td>/sticker</td></tr>
+  <tr><td><b>Peta Wilayah</b></td><td>Visualisasi marker pelanggan, petugas, kendaraan (GPS) di peta Leaflet.</td><td>/peta</td></tr>
+  <tr><td><b>Zona Angkut</b></td><td>Kelola zona custom per kelurahan + assign petugas angkut per zona.</td><td>/zona</td></tr>
+  <tr><td><b>Rute &amp; Jadwal</b></td><td>Kelola rute (wilayah+petugas+hari) dan jadwal per pelanggan.</td><td>/rute, /jadwal</td></tr>
+  <tr><td><b>Pengangkutan</b></td><td>Daftar tugas pickup, status, volume/berat, foto, GPS.</td><td>/pengangkutan</td></tr>
+  <tr><td><b>Kendaraan</b></td><td>CRUD armada (dump truck/pickup/gerobak), pengemudi, kapasitas.</td><td>/kendaraan</td></tr>
+  <tr><td><b>Titik Transit</b></td><td>Lokasi standby kendaraan (lat/lng, jam operasional).</td><td>/transit</td></tr>
+  <tr><td><b>TPA</b></td><td>Daftar Tempat Pembuangan Akhir (nama, alamat, jarak).</td><td>/tpa</td></tr>
+  <tr><td><b>Tagihan</b></td><td>Generate bulanan, lihat/filter status, kirim WA, hapus.</td><td>/tagihan</td></tr>
+  <tr><td><b>Manajemen Tarif</b></td><td>Kategori tarif + paket (harga default &amp; deskripsi).</td><td>/manajemen-tarif</td></tr>
+  <tr><td><b>Pembayaran</b></td><td>Verifikasi pembayaran pending, catat tunai, riwayat.</td><td>(dalam /tagihan)</td></tr>
+  <tr><td><b>Pengeluaran</b></td><td>Catat &amp; kelola biaya operasional.</td><td>/pengeluaran</td></tr>
+  <tr><td><b>Laporan</b></td><td>Ringkasan keuangan &amp; ekspor data.</td><td>/laporan</td></tr>
+  <tr><td><b>Rekonsiliasi</b></td><td>Pencocokan kas sistem vs fisik, hitung selisih.</td><td>/rekonsiliasi</td></tr>
+  <tr><td><b>Komplain</b></td><td>Kelola pengaduan warga: proses &amp; tanggapi.</td><td>/komplain</td></tr>
+  <tr><td><b>Chat Petugas</b></td><td>Percakapan admin ↔ petugas.</td><td>/chat</td></tr>
+  <tr><td><b>Pengumuman</b></td><td>Broadcast pengumuman (semua / per wilayah).</td><td>/pengumuman</td></tr>
+  <tr><td><b>Notifikasi</b></td><td>Antrean &amp; status kirim WhatsApp.</td><td>/notifikasi</td></tr>
+  <tr><td><b>Petugas</b></td><td>CRUD petugas, jabatan, wilayah/kelurahan, link ke akun login.</td><td>/petugas</td></tr>
+  <tr><td><b>Absensi</b></td><td>Rekap kehadiran petugas (masuk/selesai + lokasi).</td><td>/absensi</td></tr>
+  <tr><td><b>Klaim Dana</b></td><td>Review &amp; setujui/tolak klaim petugas.</td><td>/klaim</td></tr>
+  <tr><td><b>Pengguna</b></td><td>Manajemen akun login (superadmin): role, aktif, reset.</td><td>/users</td></tr>
+  <tr><td><b>Audit Log</b></td><td>Riwayat aksi create/update/delete dengan data sebelum/sesudah.</td><td>/audit-log</td></tr>
+  <tr><td><b>Pengaturan</b></td><td>Wilayah/RT, konfigurasi Duitku, ganti password.</td><td>/pengaturan</td></tr>
+</table>
+
+<!-- ============ 7. MODUL MOBILE ============ -->
+<h2>7. Modul &amp; Fungsi Tools — Mobile Petugas</h2>
+<table>
+  <tr><th>Halaman</th><th>Fungsi</th><th>Jabatan</th></tr>
+  <tr><td><b>/m</b> (Dashboard)</td><td>Profil petugas, tugas hari ini, akses cepat ke semua fitur.</td><td>semua</td></tr>
+  <tr><td><b>/m/survei</b></td><td>Verifikasi calon pelanggan: update status, foto, koordinat, aktivasi.</td><td>survei</td></tr>
+  <tr><td><b>/m/angkut</b></td><td>Daftar tugas pengangkutan harian milik petugas.</td><td>angkut</td></tr>
+  <tr><td><b>/m/lapor</b></td><td>Lapor cepat via kode pelanggan: status, volume/berat, foto, GPS.</td><td>angkut</td></tr>
+  <tr><td><b>/m/absen</b></td><td>Absensi masuk/selesai dengan lokasi GPS.</td><td>semua</td></tr>
+  <tr><td><b>/m/klaim</b></td><td>Ajukan klaim dana (BBM/perawatan/dll) + foto bukti.</td><td>semua</td></tr>
+  <tr><td><b>/m/chat</b></td><td>Chat dengan admin.</td><td>semua</td></tr>
+</table>
+<p class="small">Mobile memanfaatkan GPS perangkat untuk kirim lokasi terakhir petugas &amp; kendaraan, ditampilkan di Peta Wilayah admin.</p>
+
+<!-- ============ 8. PORTAL WARGA ============ -->
+<h2>8. Modul &amp; Fungsi Tools — Portal Warga</h2>
+<table>
+  <tr><th>Halaman</th><th>Fungsi</th></tr>
+  <tr><td><b>/</b> (Landing)</td><td>Profil brand, pengumuman, tautan daftar/bayar/tarif.</td></tr>
+  <tr><td><b>/daftar</b></td><td>Pendaftaran mandiri (pilih kecamatan → kelurahan, alamat, kategori).</td></tr>
+  <tr><td><b>/bayar</b></td><td>Entri pembayaran via kode/no. invoice.</td></tr>
+  <tr><td><b>/bayar-tagihan</b></td><td>Detail tagihan + pilih metode bayar (transfer/QRIS/e-wallet/Duitku).</td></tr>
+  <tr><td><b>/lacak</b></td><td>Lacak status pengangkutan/tagihan.</td></tr>
+  <tr><td><b>/pengaduan</b></td><td>Kirim komplain/pengaduan (jenis + foto + deskripsi).</td></tr>
+  <tr><td><b>/tarif</b></td><td>Lihat daftar tarif layanan.</td></tr>
+  <tr><td><b>/invoice-tagihan</b></td><td>Invoice publik (print-ready) dengan masking nomor telepon.</td></tr>
+  <tr><td><b>/login</b></td><td>Login untuk admin/kasir/petugas.</td></tr>
+</table>
+
+<!-- ============ 9. KATALOG API ============ -->
+<div class="pagebreak"></div>
+<h2>9. Katalog API (Backend)</h2>
+<p>Seluruh API menggunakan Route Handlers Next.js di bawah <code>src/app/api/**</code>. Berikut katalog per grup:</p>
+
+<h3>9.1 Autentikasi</h3>
+<table>
+  <tr><th>Endpoint</th><th>Metode</th><th>Fungsi</th></tr>
+  <tr><td><code>/api/auth/login</code></td><td>POST</td><td>Login (email+password), terbitkan sesi JWT.</td></tr>
+  <tr><td><code>/api/auth/logout</code></td><td>POST</td><td>Logout / hapus sesi.</td></tr>
+  <tr><td><code>/api/auth/me</code></td><td>GET</td><td>Info user login saat ini.</td></tr>
+  <tr><td><code>/api/auth/ganti-password</code></td><td>POST</td><td>Ganti password (validasi password lama).</td></tr>
+</table>
+
+<h3>9.2 Data Master &amp; Wilayah</h3>
+<table>
+  <tr><th>Endpoint</th><th>Metode</th><th>Fungsi</th></tr>
+  <tr><td><code>/api/wilayah</code></td><td>GET/POST</td><td>Daftar &amp; tambah wilayah (RT/RW) + sinkron kelurahan/zona.</td></tr>
+  <tr><td><code>/api/wilayah/[id]</code></td><td>GET/PUT/DELETE</td><td>Detail, update, hapus wilayah.</td></tr>
+  <tr><td><code>/api/kelurahan</code></td><td>GET</td><td>Daftar kelurahan (+ jumlah wilayah/petugas).</td></tr>
+  <tr><td><code>/api/zona</code></td><td>GET/POST</td><td>Daftar &amp; buat zona angkut (+ assign petugas).</td></tr>
+  <tr><td><code>/api/zona/[id]</code></td><td>GET/PUT/DELETE</td><td>Detail, update, hapus (soft) zona.</td></tr>
+  <tr><td><code>/api/kategori-tarif</code></td><td>GET/POST</td><td>Kelola kategori tarif.</td></tr>
+  <tr><td><code>/api/paket</code></td><td>GET/POST</td><td>Kelola paket layanan.</td></tr>
+  <tr><td><code>/api/tpa</code></td><td>GET/POST</td><td>Kelola TPA.</td></tr>
+  <tr><td><code>/api/transit</code></td><td>GET/POST</td><td>Kelola titik transit.</td></tr>
+</table>
+
+<h3>9.3 Pelanggan &amp; Survei</h3>
+<table>
+  <tr><th>Endpoint</th><th>Metode</th><th>Fungsi</th></tr>
+  <tr><td><code>/api/pelanggan</code></td><td>GET/POST</td><td>Daftar (scope-aware) &amp; tambah pelanggan + generate kode.</td></tr>
+  <tr><td><code>/api/pelanggan/[id]</code></td><td>GET/PUT/DELETE</td><td>Detail, update (termasuk aktivasi survei), hapus.</td></tr>
+  <tr><td><code>/api/publik/daftar</code></td><td>POST</td><td>Pendaftaran mandiri warga + pencocokan wilayah.</td></tr>
+  <tr><td><code>/api/publik/daftar-options</code></td><td>GET</td><td>Daftar kecamatan → kelurahan untuk dropdown publik.</td></tr>
+</table>
+
+<h3>9.4 Tagihan &amp; Pembayaran</h3>
+<table>
+  <tr><th>Endpoint</th><th>Metode</th><th>Fungsi</th></tr>
+  <tr><td><code>/api/tagihan</code></td><td>GET/POST</td><td>Daftar tagihan (filter) &amp; buat manual.</td></tr>
+  <tr><td><code>/api/tagihan/generate</code></td><td>POST</td><td>Generate tagihan bulanan massal (admin).</td></tr>
+  <tr><td><code>/api/tagihan/tunggakan</code></td><td>POST</td><td>Paksa hitung ulang tunggakan &amp; denda.</td></tr>
+  <tr><td><code>/api/tagihan/[id]</code></td><td>GET/PUT/DELETE</td><td>Detail, update, hapus tagihan.</td></tr>
+  <tr><td><code>/api/pembayaran</code></td><td>GET/POST</td><td>Daftar &amp; catat pembayaran (tunai langsung lunas).</td></tr>
+  <tr><td><code>/api/pembayaran/[id]</code></td><td>PUT</td><td>Verifikasi/tolak pembayaran (admin).</td></tr>
+  <tr><td><code>/api/publik/tagihan</code></td><td>GET</td><td>Cek tagihan publik.</td></tr>
+  <tr><td><code>/api/publik/tagihan-detail</code></td><td>GET</td><td>Detail tagihan publik (nomor telepon di-mask).</td></tr>
+  <tr><td><code>/api/publik/bayar</code></td><td>POST</td><td>Unggah bukti pembayaran non-tunai.</td></tr>
+</table>
+
+<h3>9.5 Payment Gateway (Duitku)</h3>
+<table>
+  <tr><th>Endpoint</th><th>Metode</th><th>Fungsi</th></tr>
+  <tr><td><code>/api/publik/duitku/methods</code></td><td>GET</td><td>Daftar metode bayar tersedia.</td></tr>
+  <tr><td><code>/api/publik/duitku/transaction</code></td><td>POST</td><td>Buat transaksi → dapatkan <code>paymentUrl</code>.</td></tr>
+  <tr><td><code>/api/publik/duitku/notification</code></td><td>POST</td><td>Callback Duitku (verifikasi signature → lunas).</td></tr>
+  <tr><td><code>/api/publik/duitku/status</code></td><td>GET</td><td>Cek status transaksi (fallback live-check).</td></tr>
+  <tr><td><code>/api/duitku/status</code></td><td>GET</td><td>Status konfigurasi Duitku (admin).</td></tr>
+</table>
+
+<h3>9.6 Operasional Pengangkutan</h3>
+<table>
+  <tr><th>Endpoint</th><th>Metode</th><th>Fungsi</th></tr>
+  <tr><td><code>/api/rute</code></td><td>GET/POST</td><td>Kelola rute pengangkutan.</td></tr>
+  <tr><td><code>/api/jadwal</code></td><td>GET/POST</td><td>Kelola jadwal pelanggan ↔ rute.</td></tr>
+  <tr><td><code>/api/pengangkutan</code></td><td>GET/POST</td><td>Daftar &amp; catat pengangkutan + materialisasi tugas.</td></tr>
+  <tr><td><code>/api/pengangkutan/lapor</code></td><td>GET/POST</td><td>Lapor cepat via kode pelanggan (petugas).</td></tr>
+  <tr><td><code>/api/pengangkutan/[id]</code></td><td>PUT/DELETE</td><td>Update status/volume/berat, hapus.</td></tr>
+  <tr><td><code>/api/kendaraan</code></td><td>GET/POST</td><td>Kelola armada kendaraan.</td></tr>
+  <tr><td><code>/api/kendaraan/lokasi</code></td><td>GET/POST</td><td>Lokasi GPS kendaraan (scope-aware).</td></tr>
+</table>
+
+<h3>9.7 Petugas, HR &amp; Komunikasi</h3>
+<table>
+  <tr><th>Endpoint</th><th>Metode</th><th>Fungsi</th></tr>
+  <tr><td><code>/api/petugas</code></td><td>GET/POST</td><td>Kelola petugas + link akun login.</td></tr>
+  <tr><td><code>/api/petugas/me</code></td><td>GET</td><td>Profil petugas login (jabatan, wilayah, kelurahan, lokasi).</td></tr>
+  <tr><td><code>/api/petugas/lokasi</code></td><td>GET/POST</td><td>Lokasi GPS petugas.</td></tr>
+  <tr><td><code>/api/absensi</code></td><td>GET/POST</td><td>Absensi masuk/selesai.</td></tr>
+  <tr><td><code>/api/klaim</code></td><td>GET/POST</td><td>Klaim dana petugas + review admin.</td></tr>
+  <tr><td><code>/api/komplain</code></td><td>GET/POST</td><td>Kelola komplain.</td></tr>
+  <tr><td><code>/api/chat</code></td><td>GET/POST</td><td>Pesan chat admin ↔ petugas.</td></tr>
+  <tr><td><code>/api/pengumuman</code></td><td>GET/POST</td><td>Kelola pengumuman.</td></tr>
+  <tr><td><code>/api/notifikasi</code></td><td>GET</td><td>Antrean &amp; status notifikasi WA.</td></tr>
+</table>
+
+<h3>9.8 Keuangan &amp; Sistem</h3>
+<table>
+  <tr><th>Endpoint</th><th>Metode</th><th>Fungsi</th></tr>
+  <tr><td><code>/api/pengeluaran</code></td><td>GET/POST</td><td>Kelola pengeluaran.</td></tr>
+  <tr><td><code>/api/rekonsiliasi</code></td><td>GET/POST</td><td>Rekonsiliasi kas.</td></tr>
+  <tr><td><code>/api/laporan/export</code></td><td>GET</td><td>Ekspor data laporan.</td></tr>
+  <tr><td><code>/api/users</code></td><td>GET/POST</td><td>Manajemen akun pengguna (superadmin).</td></tr>
+  <tr><td><code>/api/audit-log</code></td><td>GET</td><td>Riwayat audit log.</td></tr>
+  <tr><td><code>/api/seed/admin</code></td><td>POST</td><td>Seed akun admin awal.</td></tr>
+</table>
+
+<!-- ============ 10. KEAMANAN ============ -->
+<div class="pagebreak"></div>
+<h2>10. Keamanan &amp; Proteksi Data</h2>
+<table>
+  <tr><th>Aspek</th><th>Implementasi</th></tr>
+  <tr><td><b>Autentikasi</b></td><td>Sesi JWT; <code>tokenVersion</code> dinaikkan saat ganti/reset password → semua sesi lama otomatis dicabut (revoke).</td></tr>
+  <tr><td><b>Otorisasi (RBAC)</b></td><td>Cek peran via <code>hasRole()</code> + menu dinamis <code>getAllowedMenus()</code>; guard server di tiap route.</td></tr>
+  <tr><td><b>Scope data petugas</b></td><td>Pembatasan geografis via <code>src/lib/scope.ts</code> (saat ini dibuka untuk semua kelurahan, siap dibatasi per kelurahan/zona).</td></tr>
+  <tr><td><b>Anti-enumerasi</b></td><td>Endpoint detail mengembalikan 404 (bukan 403) bila resource di luar scope; nomor telepon di-mask di halaman publik.</td></tr>
+  <tr><td><b>Rate limiting</b></td><td><code>src/lib/rate-limit.ts</code> membatasi percobaan pada endpoint sensitif.</td></tr>
+  <tr><td><b>CSRF</b></td><td>Proteksi CSRF via <code>src/lib/csrf.ts</code> untuk mutasi state.</td></tr>
+  <tr><td><b>Integritas pembayaran</b></td><td>Callback Duitku diverifikasi HMAC-SHA256; status tidak pernah di-update dari redirect (anti-manipulasi).</td></tr>
+  <tr><td><b>Soft delete</b></td><td>Pelanggan, tagihan, petugas, kendaraan, zona dihapus lunak (<code>deletedAt</code>) agar data tetap bisa diaudit.</td></tr>
+  <tr><td><b>Audit trail</b></td><td>Setiap create/update/delete dicatat di <code>AuditLog</code> dengan data sebelum/sesudah dan atribusi user.</td></tr>
+  <tr><td><b>Atribusi anti-spoofing</b></td><td>ID petugas/pembuat diambil dari sesi server, bukan dari body request.</td></tr>
+</table>
+
+<!-- ============ 11. INTEGRASI ============ -->
+<h2>11. Integrasi Eksternal</h2>
+<table>
+  <tr><th>Integrasi</th><th>Fungsi</th><th>Konfigurasi (env)</th></tr>
+  <tr><td><b>Duitku Payment Gateway</b></td><td>VA, QRIS, e-wallet, kartu; callback + cek status.</td><td><code>DUITKU_MERCHANT_CODE</code>, <code>DUITKU_API_KEY</code>, <code>DUITKU_IS_PRODUCTION</code></td></tr>
+  <tr><td><b>WhatsApp API</b></td><td>Kirim invoice &amp; pengumuman, blast dengan delay anti-spam.</td><td><code>WA_API_KEY</code>, <code>WA_API_URL</code>, <code>WA_BLAST_DELAY_MS</code></td></tr>
+  <tr><td><b>GPS / Geolokasi</b></td><td>Koordinat pelanggan (EXIF foto/GPS/manual), tracking petugas &amp; kendaraan.</td><td>—</td></tr>
+  <tr><td><b>Supabase (PostgreSQL)</b></td><td>Database production via driver adapter Prisma.</td><td><code>DATABASE_URL</code></td></tr>
+  <tr><td><b>Vercel</b></td><td>Hosting &amp; auto-deploy.</td><td>—</td></tr>
+</table>
+
+<!-- ============ 12. GLOSARIUM ============ -->
+<h2>12. Glosarium &amp; Status Enum</h2>
+<table>
+  <tr><th>Entitas</th><th>Field</th><th>Nilai yang berlaku</th></tr>
+  <tr><td rowspan="4"><b>Pelanggan</b></td><td>status</td><td><code>aktif</code>, <code>calon</code>, <code>nonaktif</code>, <code>libur</code></td></tr>
+  <tr><td>kategori</td><td><code>rumah_tangga</code>, <code>bisnis</code>, <code>kost</code>, <code>sekolah</code>, <code>rm_makan</code>, <code>perkantoran</code>, <code>industri</code>, <code>lainnya</code></td></tr>
+  <tr><td>koordinatSumber</td><td><code>exif_foto</code>, <code>gps_perangkat</code>, <code>manual</code></td></tr>
+  <tr><td colspan="2" class="small">Kode pelanggan: <code>{kodeWilayah}-{nomor}</code>, mis. <code>KB-001</code>.</td></tr>
+  <tr><td rowspan="2"><b>Petugas</b></td><td>jabatan</td><td><code>angkut</code>, <code>tagih</code>, <code>survei</code> (koma untuk multi)</td></tr>
+  <tr><td>aktif</td><td><code>true</code> / <code>false</code> (soft delete via <code>deletedAt</code>)</td></tr>
+  <tr><td rowspan="2"><b>Tagihan</b></td><td>status</td><td><code>belum_bayar</code>, <code>lunas</code>, <code>tunggakan</code>, <code>dibatalkan</code></td></tr>
+  <tr><td colspan="2" class="small">Rincian = jumlah + PPN 11% + denda 2%/bulan keterlambatan. No. invoice: <code>INV/{kode}/{YYYYMM}</code>.</td></tr>
+  <tr><td rowspan="2"><b>Pembayaran</b></td><td>metode</td><td><code>transfer</code>, <code>ewallet</code>, <code>qris</code>, <code>virtual_account</code>, <code>tunai</code>, <code>duitku</code></td></tr>
+  <tr><td>status</td><td><code>terverifikasi</code>, <code>pending</code>, <code>ditolak</code></td></tr>
+  <tr><td rowspan="2"><b>Pengangkutan</b></td><td>status</td><td><code>terjadwal</code>, <code>diambil</code>, <code>tidak_diangkut</code>, <code>kosong</code></td></tr>
+  <tr><td>jenisSampah</td><td><code>organik</code>, <code>anorganik</code>, <code>b3</code>, <code>campuran</code></td></tr>
+  <tr><td rowspan="2"><b>Komplain</b></td><td>jenis</td><td><code>tidak_diangkut</code>, <code>sampah_menumpuk</code>, <code>lainnya</code></td></tr>
+  <tr><td>status</td><td><code>baru</code>, <code>diproses</code>, <code>selesai</code></td></tr>
+  <tr><td rowspan="2"><b>Kendaraan</b></td><td>jenis</td><td><code>dump_truck</code>, <code>pickup</code>, <code>gerobak</code></td></tr>
+  <tr><td>aktif</td><td><code>true</code> / <code>false</code></td></tr>
+  <tr><td><b>Notifikasi</b></td><td>status</td><td><code>pending</code>, <code>terkirim</code>, <code>gagal</code></td></tr>
+  <tr><td><b>Absensi</b></td><td>status</td><td><code>hadir</code>, <code>izin</code>, <code>sakit</code>, <code>alpa</code></td></tr>
+  <tr><td><b>Klaim</b></td><td>status</td><td><code>menunggu</code>, <code>disetujui</code>, <code>ditolak</code></td></tr>
+</table>
+
+<p style="margin-top:20px" class="small">
+  Dokumen ini dihasilkan otomatis dari analisis kode sumber WastePay (v1.0). Untuk detail teknis terkini,
+  rujuk ke <code>src/app/api/**</code>, <code>src/lib/**</code>, dan <code>prisma/schema.prisma</code>.
+</p>
+
+</body>
+</html>

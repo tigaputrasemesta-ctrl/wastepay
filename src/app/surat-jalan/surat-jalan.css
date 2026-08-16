@@ -1,0 +1,315 @@
+/* ═══════════════════════════════════════════════════════════
+   SURAT JALAN / MANIFEST PENGANGKUTAN — WastePay
+   Lembar kerja lapangan, A4 landscape print-friendly.
+   ═══════════════════════════════════════════════════════════ */
+
+@page {
+  size: A4 landscape;
+  margin: 12mm;
+}
+
+.sj-page-bg {
+  background-color: #131517;
+  min-height: 100vh;
+  padding: 1.25rem 1rem;
+}
+
+.sj-wrapper {
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+/* ── Toolbar (layar saja) ── */
+.sj-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 4px 14px;
+  color: #a3a49c;
+}
+
+.sj-toolbar-title {
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  font-family: "Consolas", "Courier New", monospace;
+}
+
+.sj-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.sj-toolbar-link {
+  font-size: 12px;
+  color: #b7e13c;
+  text-decoration: underline;
+  font-family: "Consolas", "Courier New", monospace;
+}
+
+/* Tombol cetak (dari TombolCetak) */
+.print-btn {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  font-family: "Consolas", "Courier New", monospace;
+  cursor: pointer;
+  border-radius: 0;
+  background: #b7e13c;
+  color: #13150a;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 10px 18px;
+}
+
+.print-btn:hover {
+  background: #c9ef4e;
+}
+
+/* ── Lembar surat jalan ── */
+.sj-sheet {
+  width: 100%;
+  background: #fcfcfa;
+  color: #1a1a1a;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+  padding: 0 0 10px;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+/* Kepala */
+.sj-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px 14px;
+  background: #17191d;
+  color: #e9e6dd;
+  border-bottom: 4px solid #b7e13c;
+}
+
+.sj-head-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sj-logo-box {
+  width: 40px;
+  height: 40px;
+  background: #b7e13c;
+  color: #17191d;
+  font-weight: 800;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Consolas", "Courier New", monospace;
+}
+
+.sj-head-left h1 {
+  margin: 0;
+  font-size: 15px;
+  letter-spacing: 0.03em;
+  color: #f2efe6;
+}
+
+.sj-head-left p {
+  margin: 2px 0 0;
+  font-size: 9px;
+  color: #8a8d84;
+}
+
+.sj-head-right {
+  text-align: right;
+}
+
+.sj-head-right h2 {
+  margin: 0;
+  font-size: 19px;
+  letter-spacing: 0.16em;
+  color: #b7e13c;
+}
+
+.sj-head-right p {
+  margin: 2px 0 0;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8a8d84;
+}
+
+/* Info kepala */
+.sj-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 28px;
+  padding: 12px 24px 6px;
+  border-bottom: 2px dashed #17191d;
+}
+
+.sj-info-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 11px;
+  margin: 2px 0;
+}
+
+.sj-info-row span {
+  color: #6b6e66;
+  min-width: 96px;
+}
+
+.sj-info-row p {
+  margin: 0;
+  font-weight: 700;
+}
+
+/* Tabel */
+.sj-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 10.5px;
+}
+
+.sj-table th,
+.sj-table td {
+  border: 1px solid #17191d;
+  padding: 6px 8px;
+  vertical-align: top;
+  text-align: left;
+}
+
+.sj-table thead th {
+  background: #17191d;
+  color: #b7e13c;
+  text-transform: uppercase;
+  font-size: 8.5px;
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+
+.sj-table tbody tr:nth-child(even) td {
+  background: #f4f4f0;
+}
+
+.col-no { width: 34px; text-align: center; }
+.col-kode { width: 78px; font-family: "Consolas", "Courier New", monospace; font-weight: 700; }
+.col-nama { width: 150px; font-weight: 700; }
+.col-alamat { min-width: 170px; }
+.col-petugas { width: 100px; font-weight: 700; }
+.col-status { min-width: 150px; }
+.col-vol { width: 54px; text-align: center; }
+.col-berat { width: 62px; text-align: center; }
+.col-ket { min-width: 90px; }
+
+.sj-patokan {
+  color: #6b6e66;
+  font-weight: 400;
+  font-size: 9.5px;
+}
+
+.sj-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 8px;
+  white-space: nowrap;
+}
+
+.sj-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 13px;
+  height: 13px;
+  border: 1.5px solid #17191d;
+  font-size: 9px;
+  line-height: 1;
+  color: #17191d;
+}
+
+.sj-box-checked {
+  background: #b7e13c;
+}
+
+/* Tanda tangan */
+.sj-sign {
+  display: flex;
+  justify-content: flex-end;
+  gap: 60px;
+  margin: 24px 24px 4px;
+  padding-top: 8px;
+}
+
+.sj-sign-box {
+  min-width: 180px;
+  text-align: center;
+}
+
+.sj-sign-box p {
+  margin: 0;
+  font-size: 11px;
+  color: #3a3d43;
+}
+
+.sj-sign-space {
+  height: 52px;
+}
+
+.sj-sign-name {
+  font-weight: 700;
+  border-top: 1px solid #17191d;
+  padding-top: 4px;
+}
+
+/* Footer */
+.sj-foot {
+  margin: 14px 24px 0;
+  padding-top: 10px;
+  border-top: 1px solid #e3e3de;
+  text-align: center;
+  font-size: 9px;
+  color: #6b6e66;
+}
+
+.sj-foot p {
+  margin: 0;
+}
+
+/* Empty state */
+.sj-empty {
+  padding: 40px 24px;
+  text-align: center;
+  font-size: 13px;
+  color: #6b6e66;
+}
+
+/* ═══ PRINT ═══ */
+@media print {
+  .sj-page-bg {
+    background: white !important;
+    padding: 0;
+    min-height: auto;
+  }
+
+  .sj-toolbar {
+    display: none !important;
+  }
+
+  .sj-sheet {
+    box-shadow: none;
+  }
+
+  .sj-table {
+    font-size: 9.5px;
+  }
+
+  .sj-table th,
+  .sj-table td {
+    padding: 5px 6px;
+  }
+}

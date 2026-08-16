@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { formatRupiah, formatDate } from "@/lib/utils";
 
@@ -453,6 +454,7 @@ export default function DetailPelangganPage() {
                       <th className="text-right px-3 py-2 font-medium text-gray-600 font-bold">Jumlah</th>
                       <th className="text-left px-3 py-2 font-medium text-gray-600 font-bold">Metode</th>
                       <th className="text-center px-3 py-2 font-medium text-gray-600 font-bold">Status</th>
+                      <th className="text-center px-3 py-2 font-medium text-gray-600 font-bold">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -471,6 +473,19 @@ export default function DetailPelangganPage() {
                           }`}>
                             {p.status === "terverifikasi" ? "Terverifikasi" : p.status === "pending" ? "Pending" : "Ditolak"}
                           </span>
+                        </td>
+                        <td className="px-3 py-2 text-center">
+                          {p.status === "terverifikasi" ? (
+                            <Link
+                              href={`/kwitansi/${p.id}`}
+                              target="_blank"
+                              className="text-xs text-green-600 underline hover:text-green-700"
+                            >
+                              Kwitansi
+                            </Link>
+                          ) : (
+                            <span className="text-xs text-gray-300">-</span>
+                          )}
                         </td>
                       </tr>
                     ))}

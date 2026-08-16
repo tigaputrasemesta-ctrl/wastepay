@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { formatRupiah, formatDate, KATEGORI_PENGELUARAN } from "@/lib/utils";
 import { useUser } from "@/hooks/useUser";
 import { useToast } from "@/components/Toast";
@@ -162,6 +163,14 @@ export default function PengeluaranPage() {
                     <td className="px-4 py-3 text-gray-600 font-bold text-xs">{p.dicatatBy.nama}</td>
                     <td className="px-4 py-3 text-center">
                       <div className="flex items-center justify-center gap-1">
+                        <Link
+                          href={`/pengeluaran-cetak/${p.id}`}
+                          target="_blank"
+                          className="p-1.5 text-green-600 hover:bg-green-50 border-2 border-black rounded-none transition"
+                          title="Cetak Slip"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H8v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                        </Link>
                         <button onClick={() => openEdit(p)} className="p-1.5 text-gray-600 font-bold hover:bg-gray-100 border-2 border-black hover:text-sky-300 rounded-none transition" title="Edit">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                         </button>
@@ -196,6 +205,7 @@ export default function PengeluaranPage() {
               <span className="text-gray-400 font-bold">oleh {p.dicatatBy.nama}</span>
             </div>
             <div className="flex gap-2 mt-3">
+              <Link href={`/pengeluaran-cetak/${p.id}`} target="_blank" className="flex-1 text-center text-sm bg-white border-2 border-black text-black font-black hover:text-green-600 py-2 rounded-none transition">Cetak Slip</Link>
               <button onClick={() => openEdit(p)} className="flex-1 text-center text-sm bg-gray-100 border-2 border-black border-2 border-black text-black font-black hover:border-vest hover:text-green-600 py-2 rounded-none transition">Edit</button>
               <button onClick={() => setDeleteTarget(p)} className="flex-1 text-center text-sm bg-danger/10 border border-danger/30 text-red-400 py-2 rounded-none hover:bg-danger/20 transition">Hapus</button>
             </div>

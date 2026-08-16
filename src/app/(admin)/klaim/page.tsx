@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 
@@ -191,12 +192,13 @@ export default function KlaimPage() {
                   <th className="p-3 border-2 border-black">Nominal</th>
                   <th className="p-3 border-2 border-black">Status</th>
                   {isAdmin && <th className="p-3 border-2 border-black">Aksi (Kontrol)</th>}
+                  <th className="p-3 border-2 border-black">Slip</th>
                 </tr>
               </thead>
               <tbody>
                 {data.length === 0 ? (
                   <tr>
-                    <td colSpan={isAdmin ? 7 : 5} className="p-4 border-2 border-black text-center font-bold uppercase text-gray-500">
+                    <td colSpan={isAdmin ? 8 : 6} className="p-4 border-2 border-black text-center font-bold uppercase text-gray-500">
                       Belum ada data klaim
                     </td>
                   </tr>
@@ -253,6 +255,15 @@ export default function KlaimPage() {
                           )}
                         </td>
                       )}
+                      <td className="p-3 border-2 border-black text-center">
+                        <Link
+                          href={`/klaim-cetak/${row.id}`}
+                          target="_blank"
+                          className="text-green-600 underline font-bold text-xs hover:text-green-700"
+                        >
+                          CETAK
+                        </Link>
+                      </td>
                     </tr>
                   ))
                 )}

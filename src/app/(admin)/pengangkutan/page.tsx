@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { formatDate, todayLocalISO } from "@/lib/utils";
 import { useUser } from "@/hooks/useUser";
 import LacakLokasi from "@/components/LacakLokasi";
@@ -190,6 +191,13 @@ export default function PengangkutanPage() {
             <option key={s.value} value={s.value}>{s.label}</option>
           ))}
         </select>
+        <Link
+          href={`/surat-jalan?tanggal=${tanggal}`}
+          target="_blank"
+          className="inline-flex items-center gap-2 px-3 py-2 bg-black text-white text-sm font-bold hover:bg-gray-800 transition"
+        >
+          🖨 Surat Jalan
+        </Link>
       </div>
 
       {/* Desktop Table View */}

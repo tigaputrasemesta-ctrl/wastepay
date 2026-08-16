@@ -11,6 +11,7 @@ export async function GET(request: Request) {
   const search = searchParams.get("search") || "";
   const wilayahId = searchParams.get("wilayahId");
   const status = searchParams.get("status");
+  const kategori = searchParams.get("kategori");
 
   const where: Prisma.PelangganWhereInput = { deletedAt: null };
 
@@ -41,6 +42,9 @@ export async function GET(request: Request) {
   }
   if (status) {
     where.status = status;
+  }
+  if (kategori) {
+    where.kategori = kategori;
   }
 
   const pelanggan = await prisma.pelanggan.findMany({

@@ -36,7 +36,7 @@ type Tagihan = {
   jatuhTempo: string;
   tanggalLunas?: string;
   pelanggan: { id: number; nama: string; alamat: string; noTelepon: string; kodePelanggan?: string; kategori?: string; customTarif?: number };
-  pembayaran: { id: number; jumlah: number; metode: string; createdAt: string }[];
+  pembayaran: { id: number; jumlah: number; metode: string; status: string; createdAt: string }[];
 };
 
 type PembayaranPending = {
@@ -241,6 +241,7 @@ export default function TagihanPage() {
               : "Kelola tagihan iuran bulanan"}
           </p>
         </div>
+        <div className="flex items-center gap-2">
         {!isPetugas && (
         <>
         <button
@@ -263,6 +264,14 @@ export default function TagihanPage() {
         </button>
         </>
         )}
+        <Link
+          href={`/tagihan-cetak?bulan=${bulan || new Date().getMonth() + 1}&tahun=${tahun || new Date().getFullYear()}`}
+          target="_blank"
+          className="bg-black text-white hover:bg-gray-800 px-4 py-2 rounded-none text-sm font-medium flex items-center gap-2"
+        >
+          🖨 Cetak Massal
+        </Link>
+        </div>
       </div>
 
       {/* Pembayaran pending menunggu verifikasi */}
@@ -434,9 +443,23 @@ export default function TagihanPage() {
                           Bayar
                         </button>
                       ) : (
-                        <span className="text-xs text-gray-400 font-bold">
-                          {t.tanggalLunas ? formatDate(t.tanggalLunas) : "-"}
-                        </span>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className="text-xs text-gray-400 font-bold">
+                            {t.tanggalLunas ? formatDate(t.tanggalLunas) : "-"}
+                          </span>
+                          {t.pembayaran
+                            .filter((pb) => pb.status === "terverifikasi")
+                            .map((pb) => (
+                              <Link
+                                key={pb.id}
+                                href={`/kwitansi/${pb.id}`}
+                                target="_blank"
+                                className="text-xs text-green-600 underline hover:text-green-700"
+                              >
+                                Kwitansi
+                              </Link>
+                            ))}
+                        </div>
                       )}
                     </td>
                   </tr>

@@ -1,156 +1,5 @@
-import { prisma } from "@/lib/prisma";
+import { getLaporan } from "@/lib/laporan";
 import { formatRupiah } from "@/lib/utils";
-
-async function getLaporan(bulanIni: number, tahunIni: number) {
-  const awalBulan = new Date(tahunIni, bulanIni - 1, 1);
-  const akhirBulan = new Date(tahunIni, bulanIni, 1);
-
-  // Pendapatan bulan ini
-  const pemasukanBulanIni = await prisma.pembayaran.aggregate({
-    where: {
-      status: "terverifikasi",
-      createdAt: { gte: awalBulan, lt: akhirBulan },
-    },
-    _sum: { jumlah: true },
-  });
-
-  // Pengeluaran bulan ini
-  const pengeluaranBulanIni = await prisma.pengeluaran.aggregate({
-    where: {
-      tanggal: { gte: awalBulan, lt: akhirBulan },
-    },
-    _sum: { jumlah: true },
-  });
-
-  // Total tagihan bulan ini
-  const totalTagihanBulanIni = await prisma.tagihan.aggregate({
-    where: { bulan: bulanIni, tahun: tahunIni },
-    _sum: { jumlah: true },
-  });
-
-  // Tagihan lunas bulan ini
-  const tagihanLunas = await prisma.tagihan.aggregate({
-    where: { bulan: bulanIni, tahun: tahunIni, status: "lunas" },
-    _sum: { jumlah: true },
-  });
-
-  // Data per kategori pengeluaran
-  const pengeluaranByKategori = await prisma.pengeluaran.groupBy({
-    by: ["kategori"],
-    where: {
-      tanggal: { gte: awalBulan, lt: akhirBulan },
-    },
-    _sum: { jumlah: true },
-  });
-
-  // Volume sampah bulan ini
-  const volumeAgg = await prisma.pengangkutan.aggregate({
-    where: {
-      tanggal: { gte: awalBulan, lt: akhirBulan },
-      status: "diambil",
-    },
-    _sum: { volume: true, berat: true },
-  });
-
-  // Sampah per jenis
-  const sampahByJenis = await prisma.pengangkutan.groupBy({
-    by: ["jenisSampah"],
-    where: {
-      tanggal: { gte: awalBulan, lt: akhirBulan },
-      status: "diambil",
-      jenisSampah: { not: null },
-    },
-    _sum: { volume: true, berat: true },
-    _count: true,
-  });
-
-  // Sampah per TPA
-  const sampahByTpa = await prisma.pengangkutan.groupBy({
-    by: ["tpaId"],
-    where: {
-      tanggal: { gte: awalBulan, lt: akhirBulan },
-      status: "diambil",
-      tpaId: { not: null },
-    },
-    _sum: { volume: true, berat: true },
-    _count: true,
-  });
-
-  // Get TPA names
-  const tpaIds = sampahByTpa.map((s) => s.tpaId).filter(Boolean) as number[];
-  const tpaList = tpaIds.length > 0
-    ? await prisma.tpa.findMany({
-        where: { id: { in: tpaIds } },
-        select: { id: true, nama: true },
-      })
-    : [];
-
-  // Data pelanggan menunggak
-  const tagihanMenunggak = await prisma.tagihan.findMany({
-    where: {
-      status: "belum_bayar",
-      OR: [
-        { tahun: { lt: tahunIni } },
-        { tahun: tahunIni, bulan: { lt: bulanIni } },
-      ],
-    },
-    include: {
-      pelanggan: { select: { id: true, nama: true, noTelepon: true, alamat: true } },
-    },
-    orderBy: [{ tahun: "asc" }, { bulan: "asc" }],
-    take: 50,
-  });
-
-  const totalPelanggan = await prisma.pelanggan.count({ where: { status: "aktif" } });
-  const totalBelumBayar = await prisma.tagihan.count({
-    where: { bulan: bulanIni, tahun: tahunIni, status: "belum_bayar" },
-  });
-
-  // Total pengangkutan
-  const totalPengangkutan = await prisma.pengangkutan.count({
-    where: {
-      tanggal: { gte: awalBulan, lt: akhirBulan },
-    },
-  });
-
-  const totalDiambil = await prisma.pengangkutan.count({
-    where: {
-      tanggal: { gte: awalBulan, lt: akhirBulan },
-      status: "diambil",
-    },
-  });
-
-  const totalPemasukan = pemasukanBulanIni._sum.jumlah || 0;
-  const totalPengeluaran = pengeluaranBulanIni._sum.jumlah || 0;
-
-  return {
-    bulanIni,
-    tahunIni,
-    totalPemasukan,
-    totalPengeluaran,
-    saldo: totalPemasukan - totalPengeluaran,
-    totalTagihan: totalTagihanBulanIni._sum.jumlah || 0,
-    tagihanTerkumpul: tagihanLunas._sum.jumlah || 0,
-    tagihanSisa: (totalTagihanBulanIni._sum.jumlah || 0) - (tagihanLunas._sum.jumlah || 0),
-    pengeluaranByKategori,
-    tagihanMenunggak,
-    totalPelanggan,
-    totalBelumBayar,
-    // Environmental data
-    totalVolume: volumeAgg._sum.volume || 0,
-    totalBerat: volumeAgg._sum.berat || 0,
-    sampahByJenis,
-    sampahByTpa: sampahByTpa.map((s) => ({
-      tpaId: s.tpaId,
-      nama: tpaList.find((t) => t.id === s.tpaId)?.nama || `TPA #${s.tpaId}`,
-      volume: s._sum.volume || 0,
-      berat: s._sum.berat || 0,
-      count: s._count,
-    })),
-    totalPengangkutan,
-    totalDiambil,
-  };
-}
 
 export default async function LaporanPage({
   searchParams,
@@ -201,6 +50,13 @@ export default async function LaporanPage({
                 Tampilkan
               </button>
             </form>
+            <a
+              href={`/laporan-cetak?bulan=${bulan}&tahun=${tahun}`}
+              target="_blank"
+              className="px-4 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-black text-white hover:bg-gray-800 rounded-none text-sm font-medium transition"
+            >
+              🖨 Cetak PDF
+            </a>
             <a
               href={`/api/laporan/export?bulan=${bulan}&tahun=${tahun}`}
               className="px-4 py-2 border border-vest text-green-600 hover:bg-green-400/5 rounded-none text-sm font-medium transition"

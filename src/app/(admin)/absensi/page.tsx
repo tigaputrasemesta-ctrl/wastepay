@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 
@@ -95,6 +96,13 @@ export default function AbsensiPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between border-b-4 border-black pb-4">
         <h1 className="text-4xl font-black uppercase tracking-tighter">ABSENSI PETUGAS</h1>
+        <Link
+          href={`/absensi-cetak?bulan=${new Date().getMonth() + 1}&tahun=${new Date().getFullYear()}`}
+          target="_blank"
+          className="shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-black text-white hover:bg-gray-800 px-4 py-2 rounded-none text-sm font-bold uppercase"
+        >
+          🖨 Rekap Absensi
+        </Link>
       </div>
 
       {error && (

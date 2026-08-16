@@ -10,6 +10,24 @@ import GeotagPhoto from "@/components/GeotagPhoto";
 
 type Wilayah = { id: number; nama: string; rt?: string; rw?: string };
 type Paket = { id: number; nama: string; harga: number };
+
+const KATEGORI_LIST = [
+  { value: "rumah_tangga", label: "🏠 Rumah Tangga" },
+  { value: "bisnis", label: "🏪 Bisnis/Toko" },
+  { value: "kost", label: "🏘️ Kost" },
+  { value: "sekolah", label: "🏫 Sekolah" },
+  { value: "rm_makan", label: "🍽️ RM Makan" },
+  { value: "perkantoran", label: "🏢 Kantor" },
+  { value: "industri", label: "🏭 Industri" },
+  { value: "lainnya", label: "📋 Lainnya" },
+];
+
+const STATUS_LIST = [
+  { value: "aktif", label: "AKTIF" },
+  { value: "calon", label: "CALON" },
+  { value: "nonaktif", label: "NONAKTIF" },
+  { value: "libur", label: "LIBUR" },
+];
 type Pelanggan = {
   id: number;
   kodePelanggan?: string;
@@ -39,6 +57,10 @@ export default function PelangganPage() {
   const [wilayahList, setWilayahList] = useState<Wilayah[]>([]);
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
+  const [showFilter, setShowFilter] = useState(false);
+  const [filterWilayah, setFilterWilayah] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [filterKategori, setFilterKategori] = useState("");
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Pelanggan | null>(null);
@@ -66,8 +88,15 @@ export default function PelangganPage() {
 
   const fetchData = useCallback(async () => {
     try {
+      const params = new URLSearchParams();
+      if (search) params.set("search", search);
+      if (filterWilayah) params.set("wilayahId", filterWilayah);
+      if (filterStatus) params.set("status", filterStatus);
+      if (filterKategori) params.set("kategori", filterKategori);
+      const qs = params.toString();
+
       const [pelangganRes, wilayahRes] = await Promise.all([
-        fetch(`/api/pelanggan${search ? `?search=${search}` : ""}`),
+        fetch(`/api/pelanggan${qs ? `?${qs}` : ""}`),
         fetch("/api/wilayah"),
       ]);
       const pelangganData = await pelangganRes.json();
@@ -80,7 +109,7 @@ export default function PelangganPage() {
     } finally {
       setLoading(false);
     }
-  }, [search, showToast]);
+  }, [search, filterWilayah, filterStatus, filterKategori, showToast]);
 
   // Debounced search
   useEffect(() => {
@@ -174,6 +203,13 @@ export default function PelangganPage() {
     }
   }
 
+  function resetFilters() {
+    setFilterWilayah("");
+    setFilterStatus("");
+    setFilterKategori("");
+    setPage(1);
+  }
+
   if (loading) {
     return (
       <div className="p-6">
@@ -213,30 +249,109 @@ export default function PelangganPage() {
         </button>
       </div>
 
-      {/* Search with icon */}
+      {/* Search + Filter mode */}
       <div className="mb-6">
-        <div className="relative max-w-md">
-          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Cari nama, alamat, atau no telepon..."
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border-2 border-black bg-white focus:outline-none focus:ring-0 focus:bg-yellow-100 text-sm font-bold uppercase shadow-[4px_4px_0_0_rgba(0,0,0,1)] transition-all"
-          />
-          {searchInput && (
-            <button
-              onClick={() => { setSearchInput(""); setSearch(""); }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-black hover:text-red-500 transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          )}
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="relative flex-1 min-w-[240px] max-w-md">
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Cari nama, alamat, atau no telepon..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="w-full pl-10 pr-10 py-3 border-2 border-black bg-white focus:outline-none focus:ring-0 focus:bg-yellow-100 text-sm font-bold uppercase shadow-[4px_4px_0_0_rgba(0,0,0,1)] transition-all"
+            />
+            {searchInput && (
+              <button
+                onClick={() => { setSearchInput(""); setSearch(""); }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-black hover:text-red-500 transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+          <button
+            onClick={() => setShowFilter((v) => !v)}
+            className={`flex items-center gap-2 px-4 py-3 border-2 border-black font-black uppercase tracking-widest text-xs shadow-[4px_4px_0_0_rgba(0,0,0,1)] transition-all ${
+              showFilter || [filterWilayah, filterStatus, filterKategori].filter(Boolean).length > 0
+                ? "bg-black text-white"
+                : "bg-white text-black hover:bg-yellow-100"
+            }`}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2.5} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+            </svg>
+            Filter
+            {[filterWilayah, filterStatus, filterKategori].filter(Boolean).length > 0 && (
+              <span className="bg-yellow-300 text-black px-1.5 py-0.5 border border-black text-[10px] font-black">
+                {[filterWilayah, filterStatus, filterKategori].filter(Boolean).length}
+              </span>
+            )}
+          </button>
         </div>
+
+        {/* Filter panel */}
+        {showFilter && (
+          <div className="mt-4 p-4 bg-yellow-50 border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-xs font-black uppercase tracking-widest mb-2">Wilayah</label>
+                <select
+                  value={filterWilayah}
+                  onChange={(e) => { setFilterWilayah(e.target.value); setPage(1); }}
+                  className="w-full px-3 py-2 border-2 border-black focus:outline-none focus:ring-0 focus:bg-yellow-100 text-sm font-bold uppercase appearance-none rounded-none bg-white"
+                >
+                  <option value="">Semua Wilayah</option>
+                  {wilayahList.map((w) => (
+                    <option key={w.id} value={w.id}>{w.nama}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-black uppercase tracking-widest mb-2">Status</label>
+                <select
+                  value={filterStatus}
+                  onChange={(e) => { setFilterStatus(e.target.value); setPage(1); }}
+                  className="w-full px-3 py-2 border-2 border-black focus:outline-none focus:ring-0 focus:bg-yellow-100 text-sm font-bold uppercase appearance-none rounded-none bg-white"
+                >
+                  <option value="">Semua Status</option>
+                  {STATUS_LIST.map((s) => (
+                    <option key={s.value} value={s.value}>{s.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-black uppercase tracking-widest mb-2">Kategori</label>
+                <select
+                  value={filterKategori}
+                  onChange={(e) => { setFilterKategori(e.target.value); setPage(1); }}
+                  className="w-full px-3 py-2 border-2 border-black focus:outline-none focus:ring-0 focus:bg-yellow-100 text-sm font-bold uppercase appearance-none rounded-none bg-white"
+                >
+                  <option value="">Semua Kategori</option>
+                  {KATEGORI_LIST.map((k) => (
+                    <option key={k.value} value={k.value}>{k.label}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="flex justify-between items-center mt-4">
+              <span className="text-xs font-black uppercase text-gray-600">
+                {pelanggan.length} pelanggan tampil
+              </span>
+              <button
+                onClick={resetFilters}
+                disabled={[filterWilayah, filterStatus, filterKategori].filter(Boolean).length === 0}
+                className="px-4 py-2 bg-white border-2 border-black font-black uppercase tracking-widest text-xs hover:bg-red-400 hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Reset Filter
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Table */}

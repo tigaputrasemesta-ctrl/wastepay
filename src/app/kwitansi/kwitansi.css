@@ -1,0 +1,409 @@
+/* ═══════════════════════════════════════════════════════════
+   KWITANSI PEMBAYARAN — WastePay
+   Lembar bukti bayar resmi, A4 print-friendly (window.print).
+   ═══════════════════════════════════════════════════════════ */
+
+.kwitansi-page-bg {
+  background-color: #131517;
+  min-height: 100vh;
+  padding: 1.5rem 1rem;
+}
+
+.kwitansi-wrapper {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+/* ── Toolbar (layar saja, disembunyikan saat print) ── */
+.kwitansi-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 4px 16px;
+  color: #a3a49c;
+}
+
+.kwitansi-toolbar-title {
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  font-family: "Consolas", "Courier New", monospace;
+}
+
+.kwitansi-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.toolbar-link {
+  font-size: 12px;
+  color: #b7e13c;
+  text-decoration: underline;
+  font-family: "Consolas", "Courier New", monospace;
+}
+
+/* Tombol cetak generik (dipakai TombolCetak) */
+.print-btn {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  font-family: "Consolas", "Courier New", monospace;
+  cursor: pointer;
+  border-radius: 0;
+  background: #b7e13c;
+  color: #13150a;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 10px 18px;
+}
+
+.print-btn:hover {
+  background: #c9ef4e;
+}
+
+/* ── Lembar kwitansi ── */
+.kwitansi-sheet {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  background: #fcfcfa;
+  color: #1a1a1a;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+/* Kepala */
+.kwitansi-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 26px 18px 28px;
+  background: #17191d;
+  color: #e9e6dd;
+  border-bottom: 4px solid #b7e13c;
+}
+
+.kwitansi-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.kwitansi-logo-box {
+  width: 44px;
+  height: 44px;
+  background: #b7e13c;
+  color: #17191d;
+  font-weight: 800;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Consolas", "Courier New", monospace;
+}
+
+.kwitansi-logo-text {
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.03em;
+  color: #f2efe6;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.kwitansi-logo-text em {
+  font-style: normal;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 7.5px;
+  letter-spacing: 0.22em;
+  color: #8a8d84;
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
+.kwitansi-number {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.kwitansi-number span {
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.2em;
+  color: #8a8d84;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.kwitansi-number strong {
+  color: #b7e13c;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  background: rgba(183, 225, 60, 0.1);
+  border: 1px solid rgba(183, 225, 60, 0.35);
+  padding: 4px 10px;
+}
+
+/* Judul dokumen */
+.kwitansi-doc-title {
+  text-align: center;
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: 0.28em;
+  padding: 18px 20px 6px;
+  text-transform: uppercase;
+}
+
+.kwitansi-doc-title::after {
+  content: "";
+  display: block;
+  width: 120px;
+  height: 3px;
+  background: #17191d;
+  margin: 10px auto 0;
+}
+
+/* Info pihak */
+.kwitansi-info {
+  padding: 10px 28px 4px;
+}
+
+.kwitansi-info-row {
+  display: flex;
+  align-items: flex-start;
+  margin: 7px 0;
+}
+
+.kwitansi-info-row > span {
+  width: 170px;
+  min-width: 170px;
+  color: #6b6e66;
+  font-size: 11.5px;
+  line-height: 18px;
+}
+
+.kwitansi-info-row > p {
+  margin: 0;
+  color: #1a1a1a;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 18px;
+}
+
+.kwitansi-code {
+  font-family: "Consolas", "Courier New", monospace;
+  font-weight: 700;
+}
+
+.kwitansi-amount {
+  font-size: 16px !important;
+  font-weight: 800 !important;
+}
+
+.kwitansi-invoice {
+  color: #6b6e66;
+  font-weight: 400;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 11px;
+}
+
+/* Rincian */
+.kwitansi-items {
+  margin: 14px 28px 0;
+  border: 1.5px solid #17191d;
+}
+
+.kwitansi-items-head {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #17191d;
+  color: #b7e13c;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.kwitansi-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid #e3e3de;
+  font-size: 12.5px;
+}
+
+.kwitansi-item > div:last-child {
+  font-family: "Consolas", "Courier New", monospace;
+  font-weight: 600;
+}
+
+.kwitansi-item-denda > div {
+  color: #b31220;
+}
+
+.kwitansi-total {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: rgba(183, 225, 60, 0.12);
+  font-weight: 800;
+}
+
+.kwitansi-total > div:last-child {
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 16px;
+}
+
+/* Detail pembayaran */
+.kwitansi-detail {
+  margin: 16px 28px 0;
+  border-top: 2px dashed #17191d;
+  padding-top: 8px;
+}
+
+.kwitansi-detail-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 5px 0;
+  font-size: 12px;
+}
+
+.kwitansi-detail-row > span {
+  color: #6b6e66;
+}
+
+.kwitansi-detail-row > p {
+  margin: 0;
+  font-weight: 700;
+}
+
+.kwitansi-lunas {
+  color: #1a7a34;
+  letter-spacing: 0.06em;
+}
+
+/* Tanda tangan */
+.kwitansi-sign {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  margin: 26px 28px 6px;
+  padding-top: 10px;
+}
+
+.kwitansi-sign-box {
+  flex: 1;
+  text-align: center;
+}
+
+.kwitansi-sign-box p {
+  margin: 0;
+  font-size: 12px;
+  color: #3a3d43;
+}
+
+.kwitansi-sign-space {
+  height: 60px;
+}
+
+.kwitansi-sign-name {
+  font-weight: 700;
+  border-top: 1px solid #17191d;
+  padding-top: 4px;
+}
+
+/* Footer */
+.kwitansi-foot {
+  margin: 16px 28px 0;
+  padding: 14px 0 18px;
+  border-top: 1px solid #e3e3de;
+  text-align: center;
+  font-size: 10px;
+  color: #6b6e66;
+}
+
+.kwitansi-foot p {
+  margin: 2px 0;
+}
+
+.kwitansi-foot-gen {
+  font-family: "Consolas", "Courier New", monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 8.5px !important;
+}
+
+/* ── Halaman notice (non-terverifikasi) ── */
+.kwitansi-notice {
+  background: #fcfcfa;
+  border: 4px solid #17191d;
+  max-width: 560px;
+  margin: 60px auto;
+  padding: 40px 36px;
+  text-align: center;
+}
+
+.kwitansi-notice .notice-badge {
+  display: inline-block;
+  background: #17191d;
+  color: #b7e13c;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  padding: 6px 12px;
+  margin-bottom: 18px;
+}
+
+.kwitansi-notice h1 {
+  font-size: 22px;
+  margin: 0 0 10px;
+}
+
+.kwitansi-notice p {
+  color: #3a3d43;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.kwitansi-notice .notice-meta {
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 11px;
+  color: #6b6e66;
+}
+
+.kwitansi-notice .notice-link {
+  display: inline-block;
+  margin-top: 16px;
+  color: #1a7a34;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* ═══ PRINT ═══ */
+@media print {
+  .kwitansi-page-bg {
+    background: white !important;
+    padding: 0;
+    min-height: auto;
+  }
+
+  .kwitansi-toolbar {
+    display: none !important;
+  }
+
+  .kwitansi-sheet {
+    box-shadow: none;
+    max-width: 100%;
+  }
+
+  .kwitansi-sign-space {
+    height: 50px;
+  }
+}

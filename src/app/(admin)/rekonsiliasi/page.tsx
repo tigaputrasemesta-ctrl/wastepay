@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { formatRupiah, formatDate } from "@/lib/utils";
 
 type Rekonsiliasi = {
@@ -133,13 +134,14 @@ export default function RekonsiliasiPage() {
                 <th className="text-right px-4 py-3 font-medium text-gray-600 font-bold">Tunai Fisik</th>
                 <th className="text-right px-4 py-3 font-medium text-gray-600 font-bold">Selisih</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Oleh</th>
+                <th className="text-center px-4 py-3 font-medium text-gray-600 font-bold">BA</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-400 font-bold">Memuat...</td></tr>
+                <tr><td colSpan={8} className="px-4 py-8 text-center text-gray-400 font-bold">Memuat...</td></tr>
               ) : data.length === 0 ? (
-                <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-400 font-bold">Belum ada rekonsiliasi</td></tr>
+                <tr><td colSpan={8} className="px-4 py-8 text-center text-gray-400 font-bold">Belum ada rekonsiliasi</td></tr>
               ) : (
                 data.map((r) => (
                   <tr key={r.id} className="border-b border-2 border-black hover:bg-gray-100 border-2 border-black">
@@ -152,6 +154,15 @@ export default function RekonsiliasiPage() {
                       {r.selisih !== null ? formatRupiah(r.selisih) : "-"}
                     </td>
                     <td className="px-4 py-3 text-gray-600 font-bold text-xs">{r.user?.nama || "-"}</td>
+                    <td className="px-4 py-3 text-center">
+                      <Link
+                        href={`/rekonsiliasi-cetak/${r.id}`}
+                        target="_blank"
+                        className="text-xs text-green-600 underline hover:text-green-700"
+                      >
+                        Cetak BA
+                      </Link>
+                    </td>
                   </tr>
                 ))
               )}

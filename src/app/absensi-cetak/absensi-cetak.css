@@ -1,0 +1,231 @@
+/* ═══════════════════════════════════════════════════════════
+   REKAP ABSENSI PETUGAS — WastePay
+   Lembar A4 portrait print-friendly.
+   ═══════════════════════════════════════════════════════════ */
+
+@page {
+  size: A4 portrait;
+  margin: 14mm;
+}
+
+.ab-page-bg {
+  background-color: #131517;
+  min-height: 100vh;
+  padding: 1.25rem 1rem;
+}
+
+.ab-wrapper {
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+/* ── Toolbar (layar saja) ── */
+.ab-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 4px 14px;
+  color: #a3a49c;
+}
+
+.ab-toolbar-title {
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  font-family: "Consolas", "Courier New", monospace;
+}
+
+.ab-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ab-toolbar-link {
+  font-size: 12px;
+  color: #b7e13c;
+  text-decoration: underline;
+  font-family: "Consolas", "Courier New", monospace;
+}
+
+.print-btn {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  font-family: "Consolas", "Courier New", monospace;
+  cursor: pointer;
+  border-radius: 0;
+  background: #b7e13c;
+  color: #13150a;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 10px 18px;
+}
+
+.print-btn:hover {
+  background: #c9ef4e;
+}
+
+/* ── Lembar rekap ── */
+.ab-sheet {
+  width: 100%;
+  background: #fcfcfa;
+  color: #1a1a1a;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+  padding: 0 0 12px;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.ab-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px 14px;
+  background: #17191d;
+  color: #e9e6dd;
+  border-bottom: 4px solid #b7e13c;
+}
+
+.ab-head h1 {
+  margin: 0;
+  font-size: 16px;
+  color: #f2efe6;
+}
+
+.ab-head p {
+  margin: 2px 0 0;
+  font-size: 9px;
+  color: #8a8d84;
+}
+
+.ab-head-title {
+  text-align: right;
+}
+
+.ab-head-title h2 {
+  margin: 0;
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  color: #b7e13c;
+}
+
+.ab-head-title p {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Section */
+.ab-section {
+  padding: 14px 24px 4px;
+  break-inside: avoid;
+}
+
+.ab-section h3 {
+  margin: 0 0 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 2px solid #17191d;
+  padding-bottom: 4px;
+}
+
+.ab-empty {
+  color: #6b6e66;
+  font-size: 11px;
+  font-style: italic;
+}
+
+/* Tabel */
+.ab-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 4px;
+  font-size: 10.5px;
+}
+
+.ab-table th,
+.ab-table td {
+  border: 1px solid #17191d;
+  padding: 5px 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.ab-table thead th {
+  background: #17191d;
+  color: #b7e13c;
+  text-transform: uppercase;
+  font-size: 8px;
+  letter-spacing: 0.08em;
+}
+
+.ab-table tbody tr:nth-child(even) td {
+  background: #f4f4f0;
+}
+
+.ab-total-row td {
+  font-weight: 800;
+  background: #f4f4f0 !important;
+}
+
+.ta-c { text-align: center; }
+.ta-r { text-align: right; }
+
+/* Tanda tangan */
+.ab-sign {
+  display: flex;
+  justify-content: flex-end;
+  gap: 60px;
+  margin: 24px 24px 4px;
+  padding-top: 6px;
+}
+
+.ab-sign-box {
+  min-width: 180px;
+  text-align: center;
+}
+
+.ab-sign-box p {
+  margin: 0;
+  font-size: 11px;
+  color: #3a3d43;
+}
+
+.ab-sign-space {
+  height: 52px;
+}
+
+.ab-sign-name {
+  font-weight: 700;
+  border-top: 1px solid #17191d;
+  padding-top: 4px;
+}
+
+/* Footer */
+.ab-foot {
+  margin: 14px 24px 0;
+  padding-top: 10px;
+  border-top: 1px solid #e3e3de;
+  text-align: center;
+  font-size: 9px;
+  color: #6b6e66;
+}
+
+/* ═══ PRINT ═══ */
+@media print {
+  .ab-page-bg {
+    background: white !important;
+    padding: 0;
+    min-height: auto;
+  }
+
+  .ab-toolbar {
+    display: none !important;
+  }
+
+  .ab-sheet {
+    box-shadow: none;
+  }
+}
