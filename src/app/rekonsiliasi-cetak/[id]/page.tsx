@@ -6,7 +6,7 @@ import { getRekonsiliasiById, formatNoBeritaAcara } from "@/lib/rekonsiliasi";
 import TombolCetak from "@/components/TombolCetak";
 import { formatRupiah, formatDate } from "@/lib/utils";
 import { formatTanggalWaktuIndo, companyInfo } from "@/lib/invoice-format";
-import "./rekonsiliasi-cetak.css";
+import "../rekonsiliasi-cetak.css";
 
 /**
  * /rekonsiliasi-cetak/[id] — Berita acara rekonsiliasi kas (printable).

@@ -6,7 +6,7 @@ import { labelKategoriPengeluaran } from "@/lib/laporan";
 import TombolCetak from "@/components/TombolCetak";
 import { formatRupiah, formatDate } from "@/lib/utils";
 import { formatTanggalWaktuIndo, companyInfo } from "@/lib/invoice-format";
-import "../klaim-cetak/slip.css";
+import "../../klaim-cetak/slip.css";
 
 /**
  * /pengeluaran-cetak/[id] — Slip pengeluaran operasional (printable via window.print).

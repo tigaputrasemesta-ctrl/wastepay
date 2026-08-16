@@ -6,7 +6,7 @@ import { labelKategoriPengeluaran } from "@/lib/laporan";
 import TombolCetak from "@/components/TombolCetak";
 import { formatRupiah, formatDate } from "@/lib/utils";
 import { formatTanggalWaktuIndo, companyInfo } from "@/lib/invoice-format";
-import "./slip.css";
+import "../slip.css";
 
 const STATUS_LABEL: Record<string, string> = {
   menunggu: "Menunggu Persetujuan",

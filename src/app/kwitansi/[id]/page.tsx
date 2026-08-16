@@ -12,7 +12,7 @@ import {
   labelMetodePembayaran,
   companyInfo,
 } from "@/lib/invoice-format";
-import "./kwitansi.css";
+import "../kwitansi.css";
 
 const STATUS_LABEL: Record<string, string> = {
   terverifikasi: "Lunas / Terverifikasi",
