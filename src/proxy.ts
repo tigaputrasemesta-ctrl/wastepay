@@ -197,6 +197,16 @@ const API_ROLE_MAP: Record<string, number> = {
   "PUT:/api/wilayah/": 50,
   "DELETE:/api/wilayah/": 50,
 
+  // Kelurahan — dropdown scope petugas & referensi wilayah/zona
+  "GET:/api/kelurahan": 10,
+
+  // Zona angkut — pembagian area pengambilan sampah per kelurahan
+  "GET:/api/zona": 10,
+  "GET:/api/zona/": 10,
+  "POST:/api/zona": 50,
+  "PUT:/api/zona/": 50,
+  "DELETE:/api/zona/": 50,
+
   // Kategori tarif & paket
   "GET:/api/kategori-tarif": 10,
   "POST:/api/kategori-tarif": 50,
