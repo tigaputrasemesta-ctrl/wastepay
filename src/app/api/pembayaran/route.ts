@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { logAudit } from "@/lib/audit";
 import { hitungRincian } from "@/lib/invoice";
 import { getSession } from "@/lib/auth";
+import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 
 export async function POST(request: Request) {
   try {
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
     if (session && session.role === "petugas") {
       const profil = await prisma.petugas.findUnique({
         where: { userId: session.id },
-        select: { jabatan: true, wilayahId: true },
+        select: { jabatan: true },
       });
       const jabatan = (profil?.jabatan || "").split(",");
       if (!jabatan.includes("tagih")) {
@@ -41,7 +42,7 @@ export async function POST(request: Request) {
 
     const tagihan = await prisma.tagihan.findUnique({
       where: { id: parseInt(tagihanId) },
-      include: { pelanggan: true },
+      include: { pelanggan: { include: { wilayah: { select: { kelurahanId: true } } } } },
     });
 
     if (!tagihan) {
@@ -54,13 +55,11 @@ export async function POST(request: Request) {
       );
     }
 
-    // Petugas tagih hanya boleh mencatat pembayaran pelanggan di wilayahnya sendiri
-    if (session && session.role === "petugas") {
-      const profil = await prisma.petugas.findUnique({
-        where: { userId: session.id },
-        select: { wilayahId: true },
-      });
-      if (!profil || profil.wilayahId !== tagihan.pelanggan.wilayahId) {
+    // Petugas tagih hanya boleh mencatat pembayaran pelanggan di kelurahannya sendiri
+    // (nonaktif sementara — PETUGAS_SCOPE_ALL = semua kelurahan).
+    if (session && session.role === "petugas" && !PETUGAS_SCOPE_ALL) {
+      const kelurahanId = await getPetugasKelurahan(session.id);
+      if (!kelurahanId || tagihan.pelanggan.wilayah?.kelurahanId !== kelurahanId) {
         return NextResponse.json(
           { error: "Pelanggan di luar wilayah Anda" },
           { status: 403 }
@@ -160,14 +159,13 @@ export async function GET(request: Request) {
   if (saya) {
     const session = await getSession();
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    const profil = await prisma.petugas.findUnique({
-      where: { userId: session.id },
-      select: { wilayahId: true },
-    });
-    if (!profil) {
-      return NextResponse.json({ error: "Akun belum ter-link ke profil petugas" }, { status: 403 });
+    if (!PETUGAS_SCOPE_ALL) {
+      const kelurahanId = await getPetugasKelurahan(session.id);
+      if (!kelurahanId) {
+        return NextResponse.json({ error: "Akun belum ter-link ke kelurahan petugas" }, { status: 403 });
+      }
+      where.pelanggan = { wilayah: { kelurahanId } };
     }
-    where.pelanggan = { wilayahId: profil.wilayahId };
   }
 
   const pembayaran = await prisma.pembayaran.findMany({

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
+import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 
 export const dynamic = "force-dynamic";
 
@@ -28,11 +29,13 @@ export async function GET(request: Request) {
     }
     const profil = await prisma.petugas.findUnique({
       where: { userId: session.id },
-      select: { id: true, wilayahId: true },
+      select: { id: true },
     });
     if (!profil) {
       return NextResponse.json({ error: "Akun belum ter-link ke profil petugas" }, { status: 403 });
     }
+    // Scope kelurahan nonaktif sementara (PETUGAS_SCOPE_ALL) — petugas cari semua kode.
+    const kelurahanId = PETUGAS_SCOPE_ALL ? null : await getPetugasKelurahan(session.id);
 
     const kode = new URL(request.url).searchParams.get("kode")?.trim().toUpperCase();
     if (!kode) {
@@ -43,7 +46,7 @@ export async function GET(request: Request) {
       where: {
         kodePelanggan: { equals: kode, mode: "insensitive" },
         deletedAt: null,
-        wilayahId: profil.wilayahId,
+        ...(kelurahanId ? { wilayah: { kelurahanId } } : {}),
       },
       select: {
         id: true,
@@ -56,7 +59,7 @@ export async function GET(request: Request) {
     });
     if (!pelanggan) {
       return NextResponse.json(
-        { error: `Kode "${kode}" tidak ditemukan di wilayah Anda` },
+        { error: `Kode "${kode}" tidak ditemukan` },
         { status: 404 }
       );
     }
@@ -82,11 +85,13 @@ export async function POST(request: Request) {
     }
     const profil = await prisma.petugas.findUnique({
       where: { userId: session.id },
-      select: { id: true, wilayahId: true },
+      select: { id: true },
     });
     if (!profil) {
       return NextResponse.json({ error: "Akun belum ter-link ke profil petugas" }, { status: 403 });
     }
+    // Scope kelurahan nonaktif sementara (PETUGAS_SCOPE_ALL) — petugas lapor semua kode.
+    const kelurahanId = PETUGAS_SCOPE_ALL ? null : await getPetugasKelurahan(session.id);
 
     const body = await request.json();
     const kode = String(body.kodePelanggan ?? "").trim().toUpperCase();
@@ -102,13 +107,13 @@ export async function POST(request: Request) {
       where: {
         kodePelanggan: { equals: kode, mode: "insensitive" },
         deletedAt: null,
-        wilayahId: profil.wilayahId,
+        ...(kelurahanId ? { wilayah: { kelurahanId } } : {}),
       },
       select: { id: true, nama: true, kodePelanggan: true },
     });
     if (!pelanggan) {
       return NextResponse.json(
-        { error: `Kode "${kode}" tidak ditemukan di wilayah Anda` },
+        { error: `Kode "${kode}" tidak ditemukan` },
         { status: 404 }
       );
     }

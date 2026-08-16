@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -18,15 +19,12 @@ export async function GET(request: Request) {
   const session = await getSession();
   let where: Prisma.KomplainWhereInput | undefined =
     status && status !== "semua" ? { status } : undefined;
-  if (session && session.role === "petugas") {
-    const profil = await prisma.petugas.findUnique({
-      where: { userId: session.id },
-      select: { wilayahId: true },
-    });
-    if (!profil) {
-      return NextResponse.json({ error: "Akun belum ter-link ke profil petugas" }, { status: 403 });
+  if (session && session.role === "petugas" && !PETUGAS_SCOPE_ALL) {
+    const kelurahanId = await getPetugasKelurahan(session.id);
+    if (!kelurahanId) {
+      return NextResponse.json({ error: "Akun belum ter-link ke kelurahan petugas" }, { status: 403 });
     }
-    const scopeWilayah = { pelanggan: { wilayahId: profil.wilayahId } };
+    const scopeWilayah = { pelanggan: { wilayah: { kelurahanId } } };
     where = where ? { ...where, ...scopeWilayah } : scopeWilayah;
   }
 
@@ -72,17 +70,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Ukuran foto terlalu besar (maks 2MB)" }, { status: 400 });
     }
 
-    // Petugas hanya boleh membuat komplain untuk pelanggan di wilayahnya
-    if (session.role === "petugas") {
-      const profil = await prisma.petugas.findUnique({
-        where: { userId: session.id },
-        select: { wilayahId: true },
-      });
+    // Petugas hanya boleh membuat komplain untuk pelanggan di kelurahannya
+    // (nonaktif sementara — PETUGAS_SCOPE_ALL = semua kelurahan).
+    if (session.role === "petugas" && !PETUGAS_SCOPE_ALL) {
+      const kelurahanId = await getPetugasKelurahan(session.id);
       const target = await prisma.pelanggan.findUnique({
         where: { id: parseInt(pelangganId) },
-        select: { wilayahId: true },
+        select: { wilayah: { select: { kelurahanId: true } } },
       });
-      if (!profil || !target || profil.wilayahId !== target.wilayahId) {
+      if (!kelurahanId || !target || target.wilayah?.kelurahanId !== kelurahanId) {
         return NextResponse.json(
           { error: "Pelanggan di luar wilayah Anda" },
           { status: 403 }

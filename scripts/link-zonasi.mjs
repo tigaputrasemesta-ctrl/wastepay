@@ -44,6 +44,16 @@ function rtTerdekat(lat, lng) {
   return best;
 }
 
+async function upsertKelurahanId(nama, kecamatan, kota) {
+  if (!nama) return null;
+  const ada = await prisma.kelurahan.findFirst({
+    where: { nama: { equals: nama, mode: "insensitive" } },
+  });
+  if (ada) return ada.id;
+  const created = await prisma.kelurahan.create({ data: { nama, kecamatan, kota } });
+  return created.id;
+}
+
 async function main() {
   // 1) Wilayah per RT RTRW
   let dibuat = 0;
@@ -56,7 +66,13 @@ async function main() {
       if (ada.rt !== rt.id || ada.kelurahan !== rt.kelurahan || ada.kecamatan !== rt.kecamatan) {
         await prisma.wilayah.update({
           where: { id: ada.id },
-          data: { rt: rt.id, kelurahan: rt.kelurahan, kecamatan: rt.kecamatan, kota: "Kota Depok" },
+          data: {
+            rt: rt.id,
+            kelurahan: rt.kelurahan,
+            kecamatan: rt.kecamatan,
+            kota: "Kota Depok",
+            kelurahanId: await upsertKelurahanId(rt.kelurahan, rt.kecamatan, "Kota Depok"),
+          },
         });
         update++;
       }
@@ -70,6 +86,7 @@ async function main() {
         kelurahan: rt.kelurahan,
         kecamatan: rt.kecamatan,
         kota: "Kota Depok",
+        kelurahanId: await upsertKelurahanId(rt.kelurahan, rt.kecamatan, "Kota Depok"),
       },
     });
     dibuat++;
@@ -89,7 +106,12 @@ async function main() {
       const { rt } = rtTerdekat(pelanggan.latitude, pelanggan.longitude);
       await prisma.wilayah.update({
         where: { id: w.id },
-        data: { kelurahan: rt.kelurahan, kecamatan: rt.kecamatan, kota: "Kota Depok" },
+        data: {
+          kelurahan: rt.kelurahan,
+          kecamatan: rt.kecamatan,
+          kota: "Kota Depok",
+          kelurahanId: await upsertKelurahanId(rt.kelurahan, rt.kecamatan, "Kota Depok"),
+        },
       });
       diisi++;
       console.log(`  Wilayah "${w.nama}" -> KEL ${rt.kelurahan}, KEC ${rt.kecamatan}`);

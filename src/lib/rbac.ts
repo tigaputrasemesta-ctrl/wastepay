@@ -40,6 +40,7 @@ export function getAllowedMenus(role: string): string[] {
     "survei",
     "pelanggan",
     "peta",
+    "zona",
     "tarif",
     "tagihan",
     "petugas",

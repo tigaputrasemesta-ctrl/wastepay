@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { logAudit } from "@/lib/audit";
 import { getSession } from "@/lib/auth";
 import { generateKodePelanggan } from "@/lib/kode-pelanggan";
+import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -13,22 +14,19 @@ export async function GET(request: Request) {
 
   const where: Prisma.PelangganWhereInput = { deletedAt: null };
 
-  // Privacy scope: petugas lapangan hanya melihat pelanggan di wilayahnya
-  // sendiri (data pribadi pelanggan wilayah lain tidak boleh terbuka).
-  // Parameter ?wilayahId dari petugas diabaikan (tidak bisa lintas wilayah).
+  // Privacy scope: petugas lapangan hanya melihat pelanggan di KELURAHAN-nya
+  // sendiri (data pribadi pelanggan kelurahan lain tidak boleh terbuka).
+  // Parameter ?wilayahId dari petugas diabaikan (tidak bisa lintas kelurahan).
   const session = await getSession();
-  if (session?.role === "petugas") {
-    const profil = await prisma.petugas.findUnique({
-      where: { userId: session.id },
-      select: { wilayahId: true },
-    });
-    if (!profil?.wilayahId) {
+  if (session?.role === "petugas" && !PETUGAS_SCOPE_ALL) {
+    const kelurahanId = await getPetugasKelurahan(session.id);
+    if (!kelurahanId) {
       return NextResponse.json(
-        { error: "Akun belum ter-link ke wilayah petugas" },
+        { error: "Akun belum ter-link ke kelurahan petugas" },
         { status: 403 }
       );
     }
-    where.wilayahId = profil.wilayahId;
+    where.wilayah = { kelurahanId };
   } else if (wilayahId) {
     where.wilayahId = parseInt(wilayahId);
   }

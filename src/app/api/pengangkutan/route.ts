@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 import { namaHari } from "@/lib/utils";
 
 /**
@@ -150,26 +151,30 @@ export async function POST(request: Request) {
     if (session && session.role === "petugas") {
       const profil = await prisma.petugas.findUnique({
         where: { userId: session.id },
-        select: { id: true, wilayahId: true },
+        select: { id: true },
       });
       if (!profil) {
         return NextResponse.json({ error: "Akun belum ter-link ke profil petugas" }, { status: 403 });
       }
       petugasIdAkhir = profil.id;
 
-      // Pelanggan harus di wilayah petugas ini
-      const pelangganTujuan = await prisma.pelanggan.findUnique({
-        where: { id: parseInt(pelangganId) },
-        select: { wilayahId: true },
-      });
-      if (!pelangganTujuan) {
-        return NextResponse.json({ error: "Pelanggan tidak ditemukan" }, { status: 404 });
-      }
-      if (pelangganTujuan.wilayahId !== profil.wilayahId) {
-        return NextResponse.json(
-          { error: "Pelanggan di luar wilayah Anda" },
-          { status: 403 }
-        );
+      // Pelanggan harus di KELURAHAN petugas ini
+      // (nonaktif sementara — PETUGAS_SCOPE_ALL = semua kelurahan).
+      if (!PETUGAS_SCOPE_ALL) {
+        const kelurahanId = await getPetugasKelurahan(session.id);
+        const pelangganTujuan = await prisma.pelanggan.findUnique({
+          where: { id: parseInt(pelangganId) },
+          select: { wilayah: { select: { kelurahanId: true } } },
+        });
+        if (!pelangganTujuan) {
+          return NextResponse.json({ error: "Pelanggan tidak ditemukan" }, { status: 404 });
+        }
+        if (!kelurahanId || pelangganTujuan.wilayah?.kelurahanId !== kelurahanId) {
+          return NextResponse.json(
+            { error: "Pelanggan di luar wilayah Anda" },
+            { status: 403 }
+          );
+        }
       }
 
       // Kendaraan yang dipakai harus milik petugas ini (pengemudi)

@@ -11,6 +11,7 @@ export async function GET(request: Request) {
     where: { deletedAt: null },
     include: {
       wilayah: true,
+      kelurahan: true,
       user: { select: { id: true, nama: true, email: true, role: true } },
       _count: { select: { rute: true, pengangkutan: true } },
     },
@@ -33,7 +34,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { nama, noTelepon, email, foto, wilayahId, jabatan, userId } = body;
+    const { nama, noTelepon, email, foto, wilayahId, kelurahanId, jabatan, userId } = body;
 
     if (!nama || !noTelepon || !wilayahId) {
       return NextResponse.json({ error: "Nama, no telepon, dan wilayah harus diisi" }, { status: 400 });
@@ -48,8 +49,9 @@ export async function POST(request: Request) {
         jabatan: Array.isArray(jabatan) ? jabatan.join(",") : (jabatan || null),
         userId: userId ? parseInt(userId) : null,
         wilayahId: parseInt(wilayahId),
+        kelurahanId: kelurahanId ? parseInt(kelurahanId) : null,
       },
-      include: { wilayah: true },
+      include: { wilayah: true, kelurahan: true },
     });
 
     await logAudit("create", "Petugas", petugas.id, undefined, { nama: petugas.nama, jabatan: petugas.jabatan });

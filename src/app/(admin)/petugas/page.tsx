@@ -5,6 +5,7 @@ import { useToast } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
 type Wilayah = { id: number; nama: string };
+type Kelurahan = { id: number; nama: string; kecamatan?: string | null };
 type Petugas = {
   id: number;
   nama: string;
@@ -14,6 +15,7 @@ type Petugas = {
   jabatan?: string | null;
   aktif: boolean;
   wilayah: Wilayah;
+  kelurahan?: Kelurahan | null;
   user?: { id: number; nama: string; email: string } | null;
   _count: { rute: number; pengangkutan: number };
   createdAt: string;
@@ -43,6 +45,7 @@ export default function PetugasPage() {
   const { showToast } = useToast();
   const [petugas, setPetugas] = useState<Petugas[]>([]);
   const [wilayahList, setWilayahList] = useState<Wilayah[]>([]);
+  const [kelurahanList, setKelurahanList] = useState<Kelurahan[]>([]);
   const [akunTersedia, setAkunTersedia] = useState<{ id: number; nama: string; email: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -54,20 +57,23 @@ export default function PetugasPage() {
     noTelepon: "",
     email: "",
     wilayahId: "",
+    kelurahanId: "",
     jabatan: [] as string[],
     userId: "",
   });
 
   const fetchData = useCallback(async () => {
     try {
-      const [petugasRes, wilayahRes] = await Promise.all([
+      const [petugasRes, wilayahRes, kelurahanRes] = await Promise.all([
         fetch("/api/petugas?includeUser=1"),
         fetch("/api/wilayah"),
+        fetch("/api/kelurahan"),
       ]);
       const data = await petugasRes.json();
       setPetugas(Array.isArray(data) ? data : data.petugas ?? []);
       setAkunTersedia(Array.isArray(data) ? [] : data.akunTersedia ?? []);
       setWilayahList(await wilayahRes.json());
+      setKelurahanList(await kelurahanRes.json());
     } catch {
       showToast("Gagal memuat data", "error");
     } finally {
@@ -81,7 +87,7 @@ export default function PetugasPage() {
 
   function openCreate() {
     setEditing(null);
-    setForm({ nama: "", noTelepon: "", email: "", wilayahId: "", jabatan: [], userId: "" });
+    setForm({ nama: "", noTelepon: "", email: "", wilayahId: "", kelurahanId: "", jabatan: [], userId: "" });
     setShowForm(true);
   }
 
@@ -92,6 +98,7 @@ export default function PetugasPage() {
       noTelepon: p.noTelepon,
       email: p.email || "",
       wilayahId: p.wilayah.id.toString(),
+      kelurahanId: p.kelurahan?.id ? p.kelurahan.id.toString() : "",
       jabatan: (p.jabatan || "").split(",").filter(Boolean),
       userId: p.user?.id ? p.user.id.toString() : "",
     });
@@ -211,6 +218,11 @@ export default function PetugasPage() {
                       <span className="inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium bg-green-400/10 text-blue-800">
                         {p.wilayah.nama}
                       </span>
+                      {p.kelurahan && (
+                        <p className="text-[10px] text-gray-500 font-mono mt-0.5">
+                          ✓ {p.kelurahan.nama}
+                        </p>
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       {badgeJabatan(p.jabatan) ?? <span className="text-xs text-gray-400 font-bold">—</span>}
@@ -326,6 +338,16 @@ export default function PetugasPage() {
                   <option value="">Pilih Wilayah</option>
                   {wilayahList.map((w) => <option key={w.id} value={w.id}>{w.nama}</option>)}
                 </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Kelurahan (Scope Approval)</label>
+                <select value={form.kelurahanId} onChange={(e) => setForm({ ...form, kelurahanId: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm">
+                  <option value="">— Otomatis (dari Wilayah) —</option>
+                  {kelurahanList.map((k) => <option key={k.id} value={k.id}>{k.nama}{k.kecamatan ? ` · ${k.kecamatan}` : ""}</option>)}
+                </select>
+                <p className="text-[11px] text-gray-400 font-bold mt-1">
+                  Batas persetujuan (approve/verifikasi) petugas — seluruh RT dalam kelurahan ini. Kosongkan untuk ikut wilayah (RT) saja.
+                </p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600 font-bold mb-2">Jabatan <span className="text-xs text-gray-400 font-bold font-normal">(bisa lebih dari satu)</span></label>

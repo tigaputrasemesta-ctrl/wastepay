@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { logAudit } from "@/lib/audit";
 import { getSession } from "@/lib/auth";
+import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 import {
   buildTagihanWa,
   isWaEnabled,
@@ -46,19 +47,17 @@ export async function PUT(request: Request, { params }: Params) {
 
     const pembayaran = await prisma.pembayaran.findUnique({
       where: { id: parseInt(id) },
-      include: { pelanggan: { select: { wilayahId: true } } },
+      include: { pelanggan: { select: { wilayah: { select: { kelurahanId: true } } } } },
     });
     if (!pembayaran) {
       return NextResponse.json({ error: "Pembayaran tidak ditemukan" }, { status: 404 });
     }
 
-    // Petugas tagih hanya boleh memverifikasi pembayaran pelanggan di wilayahnya sendiri
-    if (session && session.role === "petugas") {
-      const profil = await prisma.petugas.findUnique({
-        where: { userId: session.id },
-        select: { wilayahId: true },
-      });
-      if (!profil || profil.wilayahId !== pembayaran.pelanggan.wilayahId) {
+    // Petugas tagih hanya boleh memverifikasi pembayaran pelanggan di kelurahannya sendiri
+    // (nonaktif sementara — PETUGAS_SCOPE_ALL = semua kelurahan).
+    if (session && session.role === "petugas" && !PETUGAS_SCOPE_ALL) {
+      const kelurahanId = await getPetugasKelurahan(session.id);
+      if (!kelurahanId || pembayaran.pelanggan.wilayah?.kelurahanId !== kelurahanId) {
         return NextResponse.json(
           { error: "Pelanggan di luar wilayah Anda" },
           { status: 403 }

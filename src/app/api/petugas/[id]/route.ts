@@ -12,6 +12,7 @@ export async function GET(
       where: { id },
       include: {
         wilayah: true,
+        kelurahan: true,
         rute: { include: { wilayah: true } },
       },
     });
@@ -31,7 +32,7 @@ export async function PUT(
   try {
     const id = parseInt((await params).id);
     const body = await request.json();
-    const { nama, noTelepon, email, foto, aktif, wilayahId, jabatan, userId } = body;
+    const { nama, noTelepon, email, foto, aktif, wilayahId, kelurahanId, jabatan, userId } = body;
 
     const data: Record<string, unknown> = {};
     if (nama !== undefined) data.nama = nama;
@@ -42,11 +43,12 @@ export async function PUT(
     if (jabatan !== undefined) data.jabatan = Array.isArray(jabatan) ? jabatan.join(",") : (jabatan || null);
     if (userId !== undefined) data.userId = userId ? parseInt(userId) : null;
     if (wilayahId !== undefined) data.wilayahId = parseInt(wilayahId);
+    if (kelurahanId !== undefined) data.kelurahanId = kelurahanId ? parseInt(kelurahanId) : null;
 
     const petugas = await prisma.petugas.update({
       where: { id },
       data,
-      include: { wilayah: true },
+      include: { wilayah: true, kelurahan: true },
     });
 
     await logAudit("update", "Petugas", id, { id }, { nama: petugas.nama, aktif: petugas.aktif });

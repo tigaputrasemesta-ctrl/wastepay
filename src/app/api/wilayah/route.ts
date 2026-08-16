@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { logAudit } from "@/lib/audit";
 import { normalisasiKodeWilayah } from "@/lib/kode-pelanggan";
+import { upsertKelurahan } from "@/lib/scope";
 
 export async function GET() {
   const wilayah = await prisma.wilayah.findMany({
@@ -30,7 +31,17 @@ export async function POST(request: Request) {
     }
 
     const wilayah = await prisma.wilayah.create({
-      data: { nama, kode, rt, rw, kelurahan, kecamatan, kota },
+      data: {
+        nama,
+        kode,
+        rt,
+        rw,
+        kelurahan,
+        kecamatan,
+        kota,
+        kelurahanId: await upsertKelurahan(kelurahan, kecamatan, kota),
+        zonaId: body.zonaId ? parseInt(body.zonaId) : null,
+      },
     });
 
     await logAudit("create", "Wilayah", wilayah.id, undefined, { nama: wilayah.nama, kode });

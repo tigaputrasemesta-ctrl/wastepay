@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 import { updateTunggakan } from "@/lib/tagihan";
 import { generateNoInvoice } from "@/lib/invoice";
 import {
@@ -22,7 +23,7 @@ export async function GET(request: Request) {
   const status = searchParams.get("status");
   const pelangganId = searchParams.get("pelangganId");
   const wilayahId = searchParams.get("wilayahId");
-  // ?saya=1 → petugas tagih: hanya tagihan pelanggan di wilayahnya
+  // ?saya=1 → petugas tagih: hanya tagihan pelanggan di KELURAHAN-nya
   const saya = searchParams.get("saya") === "1";
 
   // Validasi status enum — nilai tak dikenal langsung 400 (bukan 500 dari Prisma)
@@ -64,14 +65,13 @@ export async function GET(request: Request) {
   if (saya) {
     const session = await getSession();
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    const profil = await prisma.petugas.findUnique({
-      where: { userId: session.id },
-      select: { wilayahId: true },
-    });
-    if (!profil) {
-      return NextResponse.json({ error: "Akun belum ter-link ke profil petugas" }, { status: 403 });
+    if (!PETUGAS_SCOPE_ALL) {
+      const kelurahanId = await getPetugasKelurahan(session.id);
+      if (!kelurahanId) {
+        return NextResponse.json({ error: "Akun belum ter-link ke kelurahan petugas" }, { status: 403 });
+      }
+      where.pelanggan = { wilayah: { kelurahanId } };
     }
-    where.pelanggan = { wilayahId: profil.wilayahId };
   }
 
   const tagihan = await prisma.tagihan.findMany({

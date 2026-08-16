@@ -5,6 +5,7 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 import { useToast } from "@/components/Toast";
 
 type Wilayah = { id: number; nama: string; rt?: string; rw?: string; kelurahan?: string; kecamatan?: string; kota?: string };
+type Zona = { id: number; nama: string; kelurahanId: number };
 type DuitkuStatus = {
   enabled: boolean;
   merchantCodeSet: boolean;
@@ -16,8 +17,9 @@ type DuitkuStatus = {
 
 export default function PengaturanPage() {
   const [wilayahList, setWilayahList] = useState<Wilayah[]>([]);
+  const [zonaList, setZonaList] = useState<Zona[]>([]);
   const [showWilayahForm, setShowWilayahForm] = useState(false);
-  const [form, setForm] = useState({ nama: "", rt: "", rw: "", kelurahan: "", kecamatan: "", kota: "" });
+  const [form, setForm] = useState({ nama: "", rt: "", rw: "", kelurahan: "", kecamatan: "", kota: "", zonaId: "" });
   const [duitkuStatus, setDuitkuStatus] = useState<DuitkuStatus | null>(null);
   const { showToast } = useToast();
   
@@ -70,6 +72,10 @@ export default function PengaturanPage() {
 
   useEffect(() => {
     (async () => { await fetchWilayah(); })();
+    (async () => {
+      const res = await fetch("/api/zona");
+      setZonaList(await res.json());
+    })();
 
     // Status konfigurasi Duitku
     (async () => {
@@ -85,11 +91,19 @@ export default function PengaturanPage() {
     const res = await fetch("/api/wilayah", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify({
+        nama: form.nama,
+        rt: form.rt,
+        rw: form.rw,
+        kelurahan: form.kelurahan,
+        kecamatan: form.kecamatan,
+        kota: form.kota,
+        zonaId: form.zonaId || null,
+      }),
     });
     if (res.ok) {
       setShowWilayahForm(false);
-      setForm({ nama: "", rt: "", rw: "", kelurahan: "", kecamatan: "", kota: "" });
+      setForm({ nama: "", rt: "", rw: "", kelurahan: "", kecamatan: "", kota: "", zonaId: "" });
       fetchWilayah();
       showToast("Wilayah berhasil ditambahkan");
     } else {
@@ -321,6 +335,19 @@ export default function PengaturanPage() {
                   <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Kota</label>
                   <input type="text" value={form.kota} onChange={(e) => setForm({ ...form, kota: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none text-sm" />
                 </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Zona Angkut</label>
+                <select
+                  value={form.zonaId}
+                  onChange={(e) => setForm({ ...form, zonaId: e.target.value })}
+                  className="w-full px-3 py-2 border-2 border-black rounded-none text-sm bg-white"
+                >
+                  <option value="">Tanpa zona</option>
+                  {zonaList.map((z) => (
+                    <option key={z.id} value={z.id}>{z.nama}</option>
+                  ))}
+                </select>
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => setShowWilayahForm(false)} className="flex-1 px-4 py-2 border-2 border-black rounded-none text-sm text-gray-600 font-bold hover:bg-gray-100 border-2 border-black">Batal</button>

@@ -7,55 +7,106 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  nama      String
-  role      String   @default("admin") // superadmin | admin | kasir | petugas
-  noTelepon String?
-  foto      String?
-  aktif     Boolean  @default(true)
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  password     String
+  nama         String
+  role         String   @default("admin") // superadmin | admin | kasir | petugas
+  noTelepon    String?
+  foto         String?
+  aktif        Boolean  @default(true)
   // Token version: increment saat ganti/reset password → semua sesi JWT lama
   // (yang membawa v lama) otomatis ditolak (revoke).
-  tokenVersion Int    @default(1)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  tokenVersion Int      @default(1)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  pembayaranVerifikasi Pembayaran[]  @relation("VerifiedBy")
-  komplainResolved     Komplain[]    @relation("ResolvedBy")
+  pembayaranVerifikasi Pembayaran[]   @relation("VerifiedBy")
+  komplainResolved     Komplain[]     @relation("ResolvedBy")
   pengumuman           Pengumuman[]
   pengeluaran          Pengeluaran[]
-  auditLogs            AuditLog[]    @relation("AuditUser")
+  auditLogs            AuditLog[]     @relation("AuditUser")
   notifikasiDibuat     Notifikasi[]   @relation("NotifCreatedBy")
   rekonsiliasi         Rekonsiliasi[]
   petugasProfiles      Petugas[]
   klaimDiperiksa       KlaimPetugas[] @relation("KlaimDiperiksa")
-  chat                 ChatPesan[]     @relation("ChatUser")
+  chat                 ChatPesan[]    @relation("ChatUser")
+}
+
+model Kelurahan {
+  id        Int      @id @default(autoincrement())
+  nama      String   @unique // nama kelurahan (normalisasi, case-insensitive saat lookup)
+  kecamatan String?
+  kota      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  wilayah Wilayah[] @relation("WilayahKelurahan")
+  petugas Petugas[] @relation("PetugasKelurahan")
+  zona    Zona[]
 }
 
 model Wilayah {
-  id        Int         @id @default(autoincrement())
-  nama      String      // nama wilayah, misal "RT 01", "Blok A"
-  kode      String?     @unique // kode zona singkat utk kode pelanggan, misal "KB" (Kalibaru) → kode pelanggan KB-001
-  rt        String?
-  rw        String?
-  kelurahan String?
-  kecamatan String?
-  kota      String?
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id           Int        @id @default(autoincrement())
+  nama         String // nama wilayah, misal "RT 01", "Blok A"
+  kode         String?    @unique // kode zona singkat utk kode pelanggan, misal "KB" (Kalibaru) → kode pelanggan KB-001
+  rt           String?
+  rw           String?
+  // Denormalisasi (untuk tampilan & pencocokan publik) — sumber kebenaran di kelurahanRef
+  kelurahan    String?
+  kecamatan    String?
+  kota         String?
+  kelurahanId  Int? // canonical: satu kelurahan membawahi banyak RT/wilayah
+  kelurahanRef Kelurahan? @relation("WilayahKelurahan", fields: [kelurahanId], references: [id])
+  zonaId       Int? // zona area pengambilan sampah di dalam kelurahan (custom)
+  zona         Zona?      @relation(fields: [zonaId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
-  pelanggan Pelanggan[]
-  petugas   Petugas[]
-  rute      Rute[]
+  pelanggan         Pelanggan[]
+  petugas           Petugas[]
+  rute              Rute[]
   pengumumanWilayah Pengumuman[] @relation("UntukWilayah")
+
+  @@index([kelurahanId])
+  @@index([zonaId])
+}
+
+model Zona {
+  id          Int       @id @default(autoincrement())
+  nama        String // nama zona custom, misal "Zona A - RT 01-05", "Zona Kalibaru Utara"
+  keterangan  String?
+  warna       String? // hex utk marker peta (#ff0000)
+  kelurahanId Int
+  kelurahan   Kelurahan @relation(fields: [kelurahanId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime? // soft delete
+
+  wilayah Wilayah[]
+  petugas ZonaPetugas[]
+
+  @@index([kelurahanId])
+  @@index([deletedAt])
+}
+
+model ZonaPetugas {
+  id        Int      @id @default(autoincrement())
+  zonaId    Int
+  petugasId Int
+  createdAt DateTime @default(now())
+  zona      Zona     @relation(fields: [zonaId], references: [id], onDelete: Cascade)
+  petugas   Petugas  @relation(fields: [petugasId], references: [id], onDelete: Cascade)
+
+  @@unique([zonaId, petugasId])
+  @@index([petugasId])
 }
 
 model KategoriTarif {
   id        Int      @id @default(autoincrement())
   kategori  String   @unique // rumah_tangga | bisnis | kost | sekolah | rm_makan | perkantoran | industri | lainnya
-  label     String   // label display
-  tarif     Float    // tarif default per bulan
+  label     String // label display
+  tarif     Float // tarif default per bulan
   deskripsi String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -63,9 +114,9 @@ model KategoriTarif {
 
 model Paket {
   id        Int      @id @default(autoincrement())
-  nama      String   // misal "Paket A", "Paket B"
-  harga     Float    // nominal tagihan default per bulan
-  deskripsi String?  // misal "2x seminggu", "setiap hari"
+  nama      String // misal "Paket A", "Paket B"
+  harga     Float // nominal tagihan default per bulan
+  deskripsi String? // misal "2x seminggu", "setiap hari"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -73,66 +124,70 @@ model Paket {
 }
 
 model Pelanggan {
-  id              Int          @id @default(autoincrement())
-  nama            String
-  noTelepon       String
-  kategori        String       @default("rumah_tangga") // rumah_tangga | bisnis | kost | sekolah | rm_makan | perkantoran | industri | lainnya
-  alamat          String
-  rtRw            String?      // RT/RW
-  kodePelanggan   String       @unique // kode unik untuk barcode
-  fotoRumah       String?      // URL/path foto
-  patokanLokasi   String?      // landmark/patokan
-  latitude        Float?       // koordinat untuk rute
-  longitude       Float?       // koordinat untuk rute
-  koordinatSumber String?      // exif_foto | gps_perangkat | manual
-  koordinatAkurasi Float?      // akurasi koordinat (meter)
-  penanggungjawab String?      // nama penanggung jawab
-  referal         String?      // siapa yang merefer
-  customTarif     Float?       // tarif kustom (override paket)
-  status          String       @default("aktif") // aktif | calon | nonaktif | libur
-  catatan         String?
-  wilayahId       Int?         // nullable: calon pelanggan (daftar mandiri) belum punya wilayah
-  paketId         Int?
-  wilayah         Wilayah?     @relation(fields: [wilayahId], references: [id])
-  paket           Paket?       @relation(fields: [paketId], references: [id])
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-  deletedAt       DateTime?    // soft delete
+  id               Int       @id @default(autoincrement())
+  nama             String
+  noTelepon        String
+  kategori         String    @default("rumah_tangga") // rumah_tangga | bisnis | kost | sekolah | rm_makan | perkantoran | industri | lainnya
+  alamat           String
+  rtRw             String? // RT/RW
+  kodePelanggan    String    @unique // kode unik untuk barcode
+  fotoRumah        String? // URL/path foto
+  patokanLokasi    String? // landmark/patokan
+  latitude         Float? // koordinat untuk rute
+  longitude        Float? // koordinat untuk rute
+  koordinatSumber  String? // exif_foto | gps_perangkat | manual
+  koordinatAkurasi Float? // akurasi koordinat (meter)
+  penanggungjawab  String? // nama penanggung jawab
+  referal          String? // siapa yang merefer
+  customTarif      Float? // tarif kustom (override paket)
+  status           String    @default("aktif") // aktif | calon | nonaktif | libur
+  catatan          String?
+  wilayahId        Int? // nullable: calon pelanggan (daftar mandiri) belum punya wilayah
+  paketId          Int?
+  wilayah          Wilayah?  @relation(fields: [wilayahId], references: [id])
+  paket            Paket?    @relation(fields: [paketId], references: [id])
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  deletedAt        DateTime? // soft delete
 
-  jadwal          Jadwal[]
-  tagihan         Tagihan[]
-  pembayaran      Pembayaran[]
-  pengangkutan    Pengangkutan[]
-  komplain        Komplain[]
-  liburSementara  LiburSementara[]
-  notifikasi      Notifikasi[]
+  jadwal         Jadwal[]
+  tagihan        Tagihan[]
+  pembayaran     Pembayaran[]
+  pengangkutan   Pengangkutan[]
+  komplain       Komplain[]
+  liburSementara LiburSementara[]
+  notifikasi     Notifikasi[]
 }
 
 model Petugas {
-  id             Int         @id @default(autoincrement())
-  nama           String
-  noTelepon      String
-  foto           String?
-  email          String?
-  jabatan        String?     // angkut | tagih | survei (comma multi: "angkut,tagih")
-  aktif          Boolean     @default(true)
-  wilayahId      Int
-  wilayah        Wilayah     @relation(fields: [wilayahId], references: [id])
-  userId         Int?        @unique // link ke akun login User
-  user           User?       @relation(fields: [userId], references: [id])
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  deletedAt      DateTime?   // soft delete
+  id          Int        @id @default(autoincrement())
+  nama        String
+  noTelepon   String
+  foto        String?
+  email       String?
+  jabatan     String? // angkut | tagih | survei (comma multi: "angkut,tagih")
+  aktif       Boolean    @default(true)
+  wilayahId   Int
+  wilayah     Wilayah    @relation(fields: [wilayahId], references: [id])
+  kelurahanId Int? // scope approval per kelurahan (fallback: kelurahan dari wilayahId)
+  kelurahan   Kelurahan? @relation("PetugasKelurahan", fields: [kelurahanId], references: [id])
+  userId      Int?       @unique // link ke akun login User
+  user        User?      @relation(fields: [userId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  deletedAt   DateTime? // soft delete
 
-  rute           Rute[]
-  pengangkutan   Pengangkutan[]
-  lokasi         LokasiPetugas[]
-  kendaraan      Kendaraan[]  // kendaraan yang dikemudikan
-  absensi        Absensi[]
-  klaim          KlaimPetugas[]
-  chat           ChatPesan[]
+  rute         Rute[]
+  pengangkutan Pengangkutan[]
+  lokasi       LokasiPetugas[]
+  kendaraan    Kendaraan[] // kendaraan yang dikemudikan
+  absensi      Absensi[]
+  klaim        KlaimPetugas[]
+  chat         ChatPesan[]
+  zona         ZonaPetugas[] // zona angkut yang ditugaskan (angkut)
 
   @@index([wilayahId])
+  @@index([kelurahanId])
   @@index([aktif])
 }
 
@@ -142,84 +197,84 @@ model LokasiPetugas {
   petugas   Petugas  @relation(fields: [petugasId], references: [id])
   latitude  Float
   longitude Float
-  akurasi   Float?   // akurasi GPS (meter)
-  sumber    String?  // gps_perangkat | manual
+  akurasi   Float? // akurasi GPS (meter)
+  sumber    String? // gps_perangkat | manual
   createdAt DateTime @default(now())
 
   @@index([petugasId, createdAt])
 }
 
 model Kendaraan {
-  id          Int      @id @default(autoincrement())
-  nama        String   // "Dump Truck 01", "Pickup 02"
-  platNomor   String?  // plat kendaraan
-  jenis       String   @default("dump_truck") // dump_truck | pickup | gerobak
-  kapasitas   Float?   // kapasitas muat (kg)
-  aktif       Boolean  @default(true)
-  petugasId   Int?     // pengemudi utama
-  petugas     Petugas? @relation(fields: [petugasId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  deletedAt   DateTime? // soft delete
+  id        Int       @id @default(autoincrement())
+  nama      String // "Dump Truck 01", "Pickup 02"
+  platNomor String? // plat kendaraan
+  jenis     String    @default("dump_truck") // dump_truck | pickup | gerobak
+  kapasitas Float? // kapasitas muat (kg)
+  aktif     Boolean   @default(true)
+  petugasId Int? // pengemudi utama
+  petugas   Petugas?  @relation(fields: [petugasId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // soft delete
 
   pengangkutan Pengangkutan[]
   lokasi       LokasiKendaraan[]
 }
 
 model LokasiKendaraan {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   kendaraanId Int
   kendaraan   Kendaraan @relation(fields: [kendaraanId], references: [id])
   latitude    Float
   longitude   Float
-  akurasi     Float?   // akurasi GPS (meter)
-  sumber      String?  // gps_perangkat | manual
-  createdAt   DateTime @default(now())
+  akurasi     Float? // akurasi GPS (meter)
+  sumber      String? // gps_perangkat | manual
+  createdAt   DateTime  @default(now())
 
   @@index([kendaraanId, createdAt])
 }
 
 model TitikTransit {
   id        Int      @id @default(autoincrement())
-  nama      String   // "Lapak Beji Utara" — tempat dump truck standby
+  nama      String // "Lapak Beji Utara" — tempat dump truck standby
   alamat    String?
   latitude  Float
   longitude Float
   aktif     Boolean  @default(true)
-  catatan   String?  // jam operasional, kontak, dll
+  catatan   String? // jam operasional, kontak, dll
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Rute {
-  id             Int         @id @default(autoincrement())
-  nama           String      // nama rute, misal "Rute A - RT 01"
-  hari           String      // Senin, Rabu, Jumat (comma-separated)
-  jam           String?      // jam estimasi
-  aktif          Boolean     @default(true)
-  wilayahId      Int
-  wilayah        Wilayah     @relation(fields: [wilayahId], references: [id])
-  petugasId      Int?
-      petugas        Petugas?    @relation(fields: [petugasId], references: [id])
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  id        Int      @id @default(autoincrement())
+  nama      String // nama rute, misal "Rute A - RT 01"
+  hari      String // Senin, Rabu, Jumat (comma-separated)
+  jam       String? // jam estimasi
+  aktif     Boolean  @default(true)
+  wilayahId Int
+  wilayah   Wilayah  @relation(fields: [wilayahId], references: [id])
+  petugasId Int?
+  petugas   Petugas? @relation(fields: [petugasId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  jadwal         Jadwal[]
+  jadwal Jadwal[]
 }
 
 model Jadwal {
-  id             Int         @id @default(autoincrement())
-  hari           String      // Senin, Selasa, Rabu, Kamis, Jumat, Sabtu, Minggu
-  jam            String?     // jam estimasi
-  aktif          Boolean     @default(true)
-  pelangganId    Int
-  pelanggan      Pelanggan   @relation(fields: [pelangganId], references: [id])
-  ruteId         Int
-  rute           Rute        @relation(fields: [ruteId], references: [id])
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  id          Int       @id @default(autoincrement())
+  hari        String // Senin, Selasa, Rabu, Kamis, Jumat, Sabtu, Minggu
+  jam         String? // jam estimasi
+  aktif       Boolean   @default(true)
+  pelangganId Int
+  pelanggan   Pelanggan @relation(fields: [pelangganId], references: [id])
+  ruteId      Int
+  rute        Rute      @relation(fields: [ruteId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  pengangkutan   Pengangkutan[]
+  pengangkutan Pengangkutan[]
 
   @@unique([pelangganId, ruteId, hari])
   @@index([pelangganId])
@@ -227,23 +282,23 @@ model Jadwal {
 }
 
 model Tagihan {
-  id             Int         @id @default(autoincrement())
-  noInvoice      String?     @unique // format: INV/{kodePelanggan}/{YYYYMM}
-  bulan          Int         // 1-12
-  tahun          Int
-  jumlah         Float       // nominal tagihan
-  denda          Float?      // denda keterlambatan
-  status         String      @default("belum_bayar") // belum_bayar | lunas | tunggakan | dibatalkan
-  jatuhTempo     DateTime
-  tanggalLunas   DateTime?
-  keterangan     String?
-  pelangganId    Int
-  pelanggan      Pelanggan   @relation(fields: [pelangganId], references: [id])
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  deletedAt      DateTime?   // soft delete
+  id           Int       @id @default(autoincrement())
+  noInvoice    String?   @unique // format: INV/{kodePelanggan}/{YYYYMM}
+  bulan        Int // 1-12
+  tahun        Int
+  jumlah       Float // nominal tagihan
+  denda        Float? // denda keterlambatan
+  status       String    @default("belum_bayar") // belum_bayar | lunas | tunggakan | dibatalkan
+  jatuhTempo   DateTime
+  tanggalLunas DateTime?
+  keterangan   String?
+  pelangganId  Int
+  pelanggan    Pelanggan @relation(fields: [pelangganId], references: [id])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime? // soft delete
 
-  pembayaran     Pembayaran[]
+  pembayaran Pembayaran[]
 
   @@unique([pelangganId, bulan, tahun])
   @@index([bulan, tahun, status])
@@ -251,21 +306,21 @@ model Tagihan {
 }
 
 model Pembayaran {
-  id             Int         @id @default(autoincrement())
-  tanggal        DateTime    @default(now())
-  jumlah         Float
-  metode         String      // transfer | ewallet | qris | virtual_account | tunai | duitku
-  buktiBayar     String?     // URL foto bukti
-  status         String      @default("terverifikasi") // terverifikasi | pending | ditolak
-  catatan        String?
-  tagihanId      Int
-  tagihan        Tagihan     @relation(fields: [tagihanId], references: [id])
-  pelangganId    Int
-  pelanggan      Pelanggan   @relation(fields: [pelangganId], references: [id])
-  verifiedById   Int?        // admin yang verifikasi (jika bayar tunai)
-  verifiedBy     User?       @relation("VerifiedBy", fields: [verifiedById], references: [id])
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  id           Int       @id @default(autoincrement())
+  tanggal      DateTime  @default(now())
+  jumlah       Float
+  metode       String // transfer | ewallet | qris | virtual_account | tunai | duitku
+  buktiBayar   String? // URL foto bukti
+  status       String    @default("terverifikasi") // terverifikasi | pending | ditolak
+  catatan      String?
+  tagihanId    Int
+  tagihan      Tagihan   @relation(fields: [tagihanId], references: [id])
+  pelangganId  Int
+  pelanggan    Pelanggan @relation(fields: [pelangganId], references: [id])
+  verifiedById Int? // admin yang verifikasi (jika bayar tunai)
+  verifiedBy   User?     @relation("VerifiedBy", fields: [verifiedById], references: [id])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   duitkuTransaction DuitkuTransaction?
 
@@ -275,29 +330,29 @@ model Pembayaran {
 }
 
 model Pengangkutan {
-  id             Int         @id @default(autoincrement())
-  tanggal        DateTime    @default(now())
-  status         String      @default("terjadwal") // terjadwal | diambil | tidak_diangkut | kosong
-  volume         Float?      // volume sampah (m³)
-  berat          Float?      // berat sampah (kg)
-  jenisSampah    String?     // organik | anorganik | b3 | campuran
-  catatan        String?     // kendala: rumah kosong, sampah tidak ada, akses tertutup
-  fotoBukti      String?     // foto setelah diambil
-  latitude       Float?      // koordinat saat pickup
-  longitude      Float?      // koordinat saat pickup
-  pelangganId    Int
-  pelanggan      Pelanggan   @relation(fields: [pelangganId], references: [id])
-  petugasId      Int?
-  petugas        Petugas?    @relation(fields: [petugasId], references: [id])
-  kendaraanId    Int?        // mobil pickup/angkut yang mengambil
-  kendaraan      Kendaraan?  @relation(fields: [kendaraanId], references: [id])
-  jadwalId       Int?
-  jadwal         Jadwal?     @relation(fields: [jadwalId], references: [id])
-  tpaId          Int?
-  tpa            Tpa?        @relation(fields: [tpaId], references: [id])
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  deletedAt      DateTime?   // soft delete
+  id          Int        @id @default(autoincrement())
+  tanggal     DateTime   @default(now())
+  status      String     @default("terjadwal") // terjadwal | diambil | tidak_diangkut | kosong
+  volume      Float? // volume sampah (m³)
+  berat       Float? // berat sampah (kg)
+  jenisSampah String? // organik | anorganik | b3 | campuran
+  catatan     String? // kendala: rumah kosong, sampah tidak ada, akses tertutup
+  fotoBukti   String? // foto setelah diambil
+  latitude    Float? // koordinat saat pickup
+  longitude   Float? // koordinat saat pickup
+  pelangganId Int
+  pelanggan   Pelanggan  @relation(fields: [pelangganId], references: [id])
+  petugasId   Int?
+  petugas     Petugas?   @relation(fields: [petugasId], references: [id])
+  kendaraanId Int? // mobil pickup/angkut yang mengambil
+  kendaraan   Kendaraan? @relation(fields: [kendaraanId], references: [id])
+  jadwalId    Int?
+  jadwal      Jadwal?    @relation(fields: [jadwalId], references: [id])
+  tpaId       Int?
+  tpa         Tpa?       @relation(fields: [tpaId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  deletedAt   DateTime? // soft delete
 
   @@index([tanggal, status])
   @@index([pelangganId])
@@ -305,147 +360,147 @@ model Pengangkutan {
 }
 
 model Komplain {
-  id             Int         @id @default(autoincrement())
-  jenis          String      @default("tidak_diangkut") // tidak_diangkut | sampah_menumpuk | lainnya
-  deskripsi      String
-  foto           String?
-  status         String      @default("baru") // baru | diproses | selesai
-  tanggapan      String?
-  pelangganId    Int
-  pelanggan      Pelanggan   @relation(fields: [pelangganId], references: [id])
-  resolvedById   Int?
-  resolvedBy     User?       @relation("ResolvedBy", fields: [resolvedById], references: [id])
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  id           Int       @id @default(autoincrement())
+  jenis        String    @default("tidak_diangkut") // tidak_diangkut | sampah_menumpuk | lainnya
+  deskripsi    String
+  foto         String?
+  status       String    @default("baru") // baru | diproses | selesai
+  tanggapan    String?
+  pelangganId  Int
+  pelanggan    Pelanggan @relation(fields: [pelangganId], references: [id])
+  resolvedById Int?
+  resolvedBy   User?     @relation("ResolvedBy", fields: [resolvedById], references: [id])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   @@index([status])
   @@index([pelangganId])
 }
 
 model LiburSementara {
-  id             Int         @id @default(autoincrement())
+  id             Int       @id @default(autoincrement())
   tanggalMulai   DateTime
   tanggalSelesai DateTime
-  alasan         String      // mudik, renovasi, dll
+  alasan         String // mudik, renovasi, dll
   pelangganId    Int
-  pelanggan      Pelanggan   @relation(fields: [pelangganId], references: [id])
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  pelanggan      Pelanggan @relation(fields: [pelangganId], references: [id])
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }
 
 model Pengumuman {
-  id             Int         @id @default(autoincrement())
+  id             Int      @id @default(autoincrement())
   judul          String
   isi            String
-  penting        Boolean     @default(false)
-  untukWilayahId Int?        // null = semua wilayah
-  untukWilayah   Wilayah?    @relation("UntukWilayah", fields: [untukWilayahId], references: [id])
+  penting        Boolean  @default(false)
+  untukWilayahId Int? // null = semua wilayah
+  untukWilayah   Wilayah? @relation("UntukWilayah", fields: [untukWilayahId], references: [id])
   createdById    Int
-  createdBy      User        @relation(fields: [createdById], references: [id])
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  createdBy      User     @relation(fields: [createdById], references: [id])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model Pengeluaran {
-  id             Int         @id @default(autoincrement())
-  tanggal        DateTime    @default(now())
-  kategori       String      // bbm | gaji_petugas | perawatan | operasional | lainnya
-  jumlah         Float
-  keterangan     String
-  bukti          String?
-  dicatatById    Int
-  dicatatBy      User        @relation(fields: [dicatatById], references: [id])
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  id          Int      @id @default(autoincrement())
+  tanggal     DateTime @default(now())
+  kategori    String // bbm | gaji_petugas | perawatan | operasional | lainnya
+  jumlah      Float
+  keterangan  String
+  bukti       String?
+  dicatatById Int
+  dicatatBy   User     @relation(fields: [dicatatById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Tpa {
-  id        Int             @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   nama      String
   alamat    String?
   kota      String?
-  jarak     Float?          // jarak dari kota (km)
-  aktif     Boolean         @default(true)
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
+  jarak     Float? // jarak dari kota (km)
+  aktif     Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   pengangkutan Pengangkutan[]
 }
 
 model AuditLog {
   id        Int      @id @default(autoincrement())
-  aksi      String   // create | update | delete
-  entitas   String   // nama model: Pelanggan, Tagihan, dll
-  entitasId Int      // id record
-  dataLama  String?  // JSON data sebelum perubahan
-  dataBaru  String?  // JSON data setelah perubahan
+  aksi      String // create | update | delete
+  entitas   String // nama model: Pelanggan, Tagihan, dll
+  entitasId Int // id record
+  dataLama  String? // JSON data sebelum perubahan
+  dataBaru  String? // JSON data setelah perubahan
   userId    Int?
   user      User?    @relation("AuditUser", fields: [userId], references: [id])
   createdAt DateTime @default(now())
 }
 
 model Notifikasi {
-  id          Int      @id @default(autoincrement())
-  tipe        String   // tagihan_jatuh_tempo | jadwal_pengangkutan | komplain_diproses | pengumuman
+  id          Int        @id @default(autoincrement())
+  tipe        String // tagihan_jatuh_tempo | jadwal_pengangkutan | komplain_diproses | pengumuman
   judul       String
   pesan       String
-  penerima    String   // no telepon
-  status      String   @default("pending") // pending | terkirim | gagal
+  penerima    String // no telepon
+  status      String     @default("pending") // pending | terkirim | gagal
   pelangganId Int?
   pelanggan   Pelanggan? @relation(fields: [pelangganId], references: [id])
   dikirimPada DateTime?
   error       String?
   createdById Int?
-  createdBy   User?    @relation("NotifCreatedBy", fields: [createdById], references: [id])
-  createdAt   DateTime @default(now())
+  createdBy   User?      @relation("NotifCreatedBy", fields: [createdById], references: [id])
+  createdAt   DateTime   @default(now())
 }
 
 model Rekonsiliasi {
-  id              Int      @id @default(autoincrement())
-  tanggal         DateTime @default(now())
-  totalPemasukan  Float    @default(0)
-  totalPengeluaran Float   @default(0)
-  totalTunaiSistem Float   @default(0)
+  id               Int      @id @default(autoincrement())
+  tanggal          DateTime @default(now())
+  totalPemasukan   Float    @default(0)
+  totalPengeluaran Float    @default(0)
+  totalTunaiSistem Float    @default(0)
   totalTunaiFisik  Float?
-  selisih         Float?
-  catatan         String?
-  userId          Int?
-  user            User?    @relation(fields: [userId], references: [id])
-  createdAt       DateTime @default(now())
+  selisih          Float?
+  catatan          String?
+  userId           Int?
+  user             User?    @relation(fields: [userId], references: [id])
+  createdAt        DateTime @default(now())
 }
 
 model Pengaturan {
-  id     Int    @id @default(autoincrement())
-  key    String @unique
-  value  String
+  id    Int    @id @default(autoincrement())
+  key   String @unique
+  value String
 }
 
 model DuitkuTransaction {
-  id             Int          @id @default(autoincrement())
-  orderId        String       @unique // order_id Duitku (DW-{pembayaranId}-{ts})
-  pembayaranId   Int          @unique
-  pembayaran     Pembayaran   @relation(fields: [pembayaranId], references: [id])
-  paymentUrl     String?      // URL pembayaran Duitku (redirect pelanggan ke sini)
-  reference      String?      // reference dari Duitku
-  paymentMethod  String?      // VC | QR | SP | OVO | DANA | M1 | dll
-  statusCode     String?      // 00 = sukses | 01 = proses | 02 = gagal/expired
-  statusMessage  String?
-  amount         Float?
-  rawResponse    String?      // response terakhir (JSON, dipotong 4KB)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id            Int        @id @default(autoincrement())
+  orderId       String     @unique // order_id Duitku (DW-{pembayaranId}-{ts})
+  pembayaranId  Int        @unique
+  pembayaran    Pembayaran @relation(fields: [pembayaranId], references: [id])
+  paymentUrl    String? // URL pembayaran Duitku (redirect pelanggan ke sini)
+  reference     String? // reference dari Duitku
+  paymentMethod String? // VC | QR | SP | OVO | DANA | M1 | dll
+  statusCode    String? // 00 = sukses | 01 = proses | 02 = gagal/expired
+  statusMessage String?
+  amount        Float?
+  rawResponse   String? // response terakhir (JSON, dipotong 4KB)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 }
 
 model Absensi {
-  id             Int       @id @default(autoincrement())
-  petugasId      Int
-  petugas        Petugas   @relation(fields: [petugasId], references: [id])
-  waktuMasuk     DateTime  @default(now())
-  lokasiMasuk    String?   // JSON (lat, lng, accuracy) atau string text
-  waktuSelesai   DateTime?
-  lokasiSelesai  String?
-  catatan        String?
-  status         String    @default("hadir") // hadir | izin | sakit | alpa
+  id            Int       @id @default(autoincrement())
+  petugasId     Int
+  petugas       Petugas   @relation(fields: [petugasId], references: [id])
+  waktuMasuk    DateTime  @default(now())
+  lokasiMasuk   String? // JSON (lat, lng, accuracy) atau string text
+  waktuSelesai  DateTime?
+  lokasiSelesai String?
+  catatan       String?
+  status        String    @default("hadir") // hadir | izin | sakit | alpa
 }
 
 model KlaimPetugas {
@@ -453,7 +508,7 @@ model KlaimPetugas {
   petugasId      Int
   petugas        Petugas   @relation(fields: [petugasId], references: [id])
   tanggal        DateTime  @default(now())
-  kategori       String    // bbm | perawatan | gaji_petugas | lainnya
+  kategori       String // bbm | perawatan | gaji_petugas | lainnya
   nominal        Float
   keterangan     String
   fotoBukti      String?
@@ -468,9 +523,9 @@ model ChatPesan {
   id          Int      @id @default(autoincrement())
   petugasId   Int
   petugas     Petugas  @relation(fields: [petugasId], references: [id], onDelete: Cascade)
-  userId      Int?     // pengirim dari sisi admin/kasir/superadmin (User); null jika dari petugas
+  userId      Int? // pengirim dari sisi admin/kasir/superadmin (User); null jika dari petugas
   user        User?    @relation("ChatUser", fields: [userId], references: [id], onDelete: SetNull)
-  dariPetugas Boolean  // true = kiriman petugas, false = kiriman admin
+  dariPetugas Boolean // true = kiriman petugas, false = kiriman admin
   isi         String
   dibaca      Boolean  @default(false)
   createdAt   DateTime @default(now())

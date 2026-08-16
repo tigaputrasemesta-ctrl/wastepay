@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 
 export async function PUT(
   request: Request,
@@ -32,26 +33,31 @@ export async function PUT(
     if (session && session.role === "petugas") {
       const profil = await prisma.petugas.findUnique({
         where: { userId: session.id },
-        select: { id: true, wilayahId: true },
+        select: { id: true },
       });
       if (!profil) {
         return NextResponse.json({ error: "Akun belum ter-link ke profil petugas" }, { status: 403 });
       }
       data.petugasId = profil.id;
 
-      // Petugas hanya boleh mengupdate pengangkutan miliknya & pelanggan di wilayahnya
       const existing = await prisma.pengangkutan.findUnique({
         where: { id },
-        select: { petugasId: true, pelanggan: { select: { wilayahId: true } } },
+        select: { petugasId: true, pelanggan: { select: { wilayah: { select: { kelurahanId: true } } } } },
       });
       if (!existing) {
         return NextResponse.json({ error: "Data pengangkutan tidak ditemukan" }, { status: 404 });
       }
-      if (existing.petugasId !== profil.id && existing.pelanggan.wilayahId !== profil.wilayahId) {
-        return NextResponse.json(
-          { error: "Data pengangkutan di luar wilayah Anda" },
-          { status: 403 }
-        );
+
+      // Scope: petugas hanya boleh update tugas miliknya / pelanggan di kelurahannya.
+      // (nonaktif sementara — PETUGAS_SCOPE_ALL = semua kelurahan)
+      if (!PETUGAS_SCOPE_ALL) {
+        const kelurahanId = await getPetugasKelurahan(session.id);
+        if (existing.petugasId !== profil.id && existing.pelanggan.wilayah?.kelurahanId !== kelurahanId) {
+          return NextResponse.json(
+            { error: "Data pengangkutan di luar wilayah Anda" },
+            { status: 403 }
+          );
+        }
       }
       // Kendaraan yang dipakai harus milik petugas ini (pengemudi)
       if (kendaraanId !== undefined && kendaraanId) {

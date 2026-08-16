@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 /**
  * Profil petugas dari akun yang sedang login.
- * GET /api/petugas/me → { id, nama, jabatan, wilayahId, lokasiTerakhir? }
+ * GET /api/petugas/me → { id, nama, jabatan, wilayahId, kelurahanId, lokasiTerakhir? }
  */
 export async function GET() {
   try {
@@ -22,6 +22,7 @@ export async function GET() {
         nama: true,
         jabatan: true,
         wilayahId: true,
+        kelurahanId: true,
         aktif: true,
         lokasi: {
           orderBy: { createdAt: "desc" },
@@ -48,6 +49,7 @@ export async function GET() {
       nama: profil.nama,
       jabatan: profil.jabatan,
       wilayahId: profil.wilayahId,
+      kelurahanId: profil.kelurahanId,
       aktif: profil.aktif,
       lokasiTerakhir: profil.lokasi[0] ?? null,
     });

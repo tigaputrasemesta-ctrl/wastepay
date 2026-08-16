@@ -4,6 +4,7 @@ import LacakLokasi from "@/components/LacakLokasi";
 import type { RutePeta } from "@/components/PetaMap";
 import type { KendaraanPeta, PetugasPeta, TransitPeta } from "@/components/MapView";
 import { getSession } from "@/lib/auth";
+import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 import "./peta.css";
 
 export const metadata = {
@@ -16,21 +17,17 @@ export const dynamic = "force-dynamic";
 export default async function PetaPage() {
   const session = await getSession();
 
-  // ── Scope wilayah: petugas hanya melihat data wilayahnya sendiri (PII terlindungi) ──
-  let scopeWilayahId: number | null = null;
+  // ── Scope kelurahan: petugas hanya melihat data kelurahannya sendiri (PII terlindungi) ──
+  let scopeKelurahanId: number | null = null;
   let petugasTanpaProfil = false;
-  if (session && session.role === "petugas") {
-    const profil = await prisma.petugas.findUnique({
-      where: { userId: session.id },
-      select: { wilayahId: true },
-    });
-    scopeWilayahId = profil?.wilayahId ?? null;
-    if (!scopeWilayahId) petugasTanpaProfil = true;
+  if (session && session.role === "petugas" && !PETUGAS_SCOPE_ALL) {
+    scopeKelurahanId = await getPetugasKelurahan(session.id);
+    if (!scopeKelurahanId) petugasTanpaProfil = true;
   }
-  // Admin/non-petugas → lihat semua; petugas berprofil → hanya wilayahnya;
+  // Admin/non-petugas → lihat semua; petugas berprofil → hanya kelurahannya;
   // petugas tanpa profil → tidak dapat data apa pun (bukan semua wilayah)
-  const scope = scopeWilayahId
-    ? { wilayahId: scopeWilayahId }
+  const scope = scopeKelurahanId
+    ? { wilayah: { kelurahanId: scopeKelurahanId } }
     : petugasTanpaProfil
       ? { id: -1 }
       : {};
@@ -59,8 +56,8 @@ export default async function PetaPage() {
       orderBy: { nama: "asc" },
     }),
     prisma.tagihan.findMany({
-      where: scopeWilayahId
-        ? { pelanggan: { wilayahId: scopeWilayahId } }
+      where: scopeKelurahanId
+        ? { pelanggan: { wilayah: { kelurahanId: scopeKelurahanId } } }
         : petugasTanpaProfil
           ? { id: -1 }
           : {},
@@ -68,8 +65,8 @@ export default async function PetaPage() {
       orderBy: [{ tahun: "desc" }, { bulan: "desc" }],
     }),
     prisma.rute.findMany({
-      where: scopeWilayahId
-        ? { aktif: true, wilayahId: scopeWilayahId }
+      where: scopeKelurahanId
+        ? { aktif: true, wilayah: { kelurahanId: scopeKelurahanId } }
         : petugasTanpaProfil
           ? { id: -1 }
           : { aktif: true },
@@ -125,8 +122,8 @@ export default async function PetaPage() {
 
   // ── Lokasi terakhir petugas aktif (data awal peta realtime) ──
   const lokasiRaw = await prisma.lokasiPetugas.findMany({
-    where: scopeWilayahId
-      ? { petugas: { wilayahId: scopeWilayahId, aktif: true } }
+    where: scopeKelurahanId
+      ? { petugas: { wilayah: { kelurahanId: scopeKelurahanId }, aktif: true } }
       : petugasTanpaProfil
         ? { id: -1 }
         : undefined,
@@ -159,8 +156,8 @@ export default async function PetaPage() {
   // ── Kendaraan: lokasi terakhir + titik transit (data awal peta) ──
   const [kendaraanRaw, transitList] = await Promise.all([
     prisma.lokasiKendaraan.findMany({
-      where: scopeWilayahId
-        ? { kendaraan: { aktif: true, petugas: { wilayahId: scopeWilayahId } } }
+      where: scopeKelurahanId
+        ? { kendaraan: { aktif: true, petugas: { wilayah: { kelurahanId: scopeKelurahanId } } } }
         : petugasTanpaProfil
           ? { id: -1 }
           : undefined,

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { allowAttempt } from "@/lib/rate-limit";
+import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 
 export const dynamic = "force-dynamic";
 
@@ -74,26 +75,21 @@ export async function GET() {
       return NextResponse.json({ error: "Tidak terautentikasi" }, { status: 401 });
     }
 
-    // Scope: petugas hanya melihat lokasi petugas SEWILAYAH (anti bocor PII GPS lintas zona).
+    // Scope: petugas hanya melihat lokasi petugas SEKELURAHAN (anti bocor PII GPS lintas zona).
     // Admin/kasir/superadmin melihat semua.
-    const wilayahPetugas =
-      session.role === "petugas"
-        ? (
-            await prisma.petugas.findUnique({
-              where: { userId: session.id },
-              select: { wilayahId: true },
-            })
-          )?.wilayahId ?? null
+    const kelurahanPetugas =
+      session.role === "petugas" && !PETUGAS_SCOPE_ALL
+        ? await getPetugasKelurahan(session.id)
         : null;
-    if (session.role === "petugas" && wilayahPetugas == null) {
+    if (session.role === "petugas" && !PETUGAS_SCOPE_ALL && kelurahanPetugas == null) {
       return NextResponse.json([]);
     }
 
     // Lokasi terakhir per petugas (aktif) — untuk marker peta
     const semua = await prisma.lokasiPetugas.findMany({
       where:
-        wilayahPetugas != null
-          ? { petugas: { wilayahId: wilayahPetugas, aktif: true } }
+        kelurahanPetugas != null
+          ? { petugas: { wilayah: { kelurahanId: kelurahanPetugas }, aktif: true } }
           : undefined,
       select: {
         id: true,

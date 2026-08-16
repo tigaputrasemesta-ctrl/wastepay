@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { allowAttempt } from "@/lib/rate-limit";
+import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 
 export const dynamic = "force-dynamic";
 
@@ -89,25 +90,20 @@ export async function GET() {
       return NextResponse.json({ error: "Tidak terautentikasi" }, { status: 401 });
     }
 
-    // Scope: petugas hanya melihat kendaraan yang pengemudinya SEWILAYAH
+    // Scope: petugas hanya melihat kendaraan yang pengemudinya SEKELURAHAN
     // (anti bocor lokasi armada lintas zona). Admin/kasir/superadmin lihat semua.
-    const wilayahPetugas =
-      session.role === "petugas"
-        ? (
-            await prisma.petugas.findUnique({
-              where: { userId: session.id },
-              select: { wilayahId: true },
-            })
-          )?.wilayahId ?? null
+    const kelurahanPetugas =
+      session.role === "petugas" && !PETUGAS_SCOPE_ALL
+        ? await getPetugasKelurahan(session.id)
         : null;
-    if (session.role === "petugas" && wilayahPetugas == null) {
+    if (session.role === "petugas" && !PETUGAS_SCOPE_ALL && kelurahanPetugas == null) {
       return NextResponse.json([]);
     }
 
     const semua = await prisma.lokasiKendaraan.findMany({
       where:
-        wilayahPetugas != null
-          ? { kendaraan: { aktif: true, petugas: { wilayahId: wilayahPetugas } } }
+        kelurahanPetugas != null
+          ? { kendaraan: { aktif: true, petugas: { wilayah: { kelurahanId: kelurahanPetugas } } } }
           : undefined,
       select: {
         id: true,
