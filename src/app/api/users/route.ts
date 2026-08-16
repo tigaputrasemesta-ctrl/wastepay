@@ -83,22 +83,43 @@ export async function PUT(request: Request) {
 
   try {
     const body = await request.json();
-    const { id, aktif, password } = body;
+    const { id, aktif, password, nama, email, role, noTelepon } = body;
 
     if (!id) return NextResponse.json({ error: "ID User diperlukan" }, { status: 400 });
 
-    const updateData: { aktif?: boolean; password?: string; tokenVersion?: { increment: number } } = {};
+    const updateData: { aktif?: boolean; password?: string; tokenVersion?: { increment: number }; nama?: string; email?: string; role?: string; noTelepon?: string | null } = {};
     if (aktif !== undefined) updateData.aktif = Boolean(aktif);
     if (password) {
       updateData.password = await hashPassword(password);
       // Reset password → revoke semua sesi lama user tersebut.
       updateData.tokenVersion = { increment: 1 };
     }
+    if (nama !== undefined) {
+      if (!nama.trim()) return NextResponse.json({ error: "Nama tidak boleh kosong" }, { status: 400 });
+      updateData.nama = nama.trim();
+    }
+    if (email !== undefined) {
+      const normalized = email.trim().toLowerCase();
+      if (!normalized) return NextResponse.json({ error: "Email tidak boleh kosong" }, { status: 400 });
+      const existing = await prisma.user.findUnique({ where: { email: normalized } });
+      if (existing && existing.id !== id) {
+        return NextResponse.json({ error: "Email sudah digunakan" }, { status: 400 });
+      }
+      updateData.email = normalized;
+    }
+    if (role !== undefined) {
+      const validRoles: Role[] = ["superadmin", "admin", "kasir", "petugas"];
+      if (!validRoles.includes(role)) {
+        return NextResponse.json({ error: "Role tidak valid" }, { status: 400 });
+      }
+      updateData.role = role;
+    }
+    if (noTelepon !== undefined) updateData.noTelepon = noTelepon.trim() || null;
 
     const updated = await prisma.user.update({
       where: { id },
       data: updateData,
-      select: { id: true, email: true, nama: true, aktif: true }
+      select: { id: true, email: true, nama: true, role: true, noTelepon: true, aktif: true }
     });
 
     await prisma.auditLog.create({

@@ -15,6 +15,13 @@ type User = {
   createdAt: string;
 };
 
+const ROLE_OPTIONS = [
+  { value: "admin", label: "Admin" },
+  { value: "kasir", label: "Kasir" },
+  { value: "petugas", label: "Petugas Lapangan" },
+  { value: "superadmin", label: "Super Admin" },
+];
+
 export default function UsersPage() {
   const { showToast } = useToast();
   const [users, setUsers] = useState<User[]>([]);
@@ -25,6 +32,10 @@ export default function UsersPage() {
   
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [newPassword, setNewPassword] = useState("");
+
+  const [editUser, setEditUser] = useState<User | null>(null);
+  const [editForm, setEditForm] = useState({ nama: "", email: "", role: "admin", noTelepon: "" });
+  const [editError, setEditError] = useState("");
 
   const fetchData = useCallback(async () => {
     const res = await fetch("/api/users");
@@ -77,6 +88,34 @@ export default function UsersPage() {
     } else {
       const data = await res.json();
       showToast(data.error || "Gagal mengubah password", "error");
+    }
+  }
+
+  function openEdit(u: User) {
+    setEditUser(u);
+    setEditError("");
+    setEditForm({ nama: u.nama, email: u.email, role: u.role, noTelepon: u.noTelepon || "" });
+  }
+
+  async function handleEdit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!editUser) return;
+    setEditError("");
+
+    const res = await fetch("/api/users", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: editUser.id, ...editForm }),
+    });
+
+    if (res.ok) {
+      setEditUser(null);
+      showToast("Pengguna berhasil diperbarui");
+      fetchData();
+    } else {
+      const data = await res.json();
+      setEditError(data.error || "Gagal memperbarui pengguna");
+      showToast(data.error || "Gagal memperbarui pengguna", "error");
     }
   }
 
@@ -171,6 +210,9 @@ export default function UsersPage() {
                     </td>
                     <td className="px-4 py-3 text-gray-600 font-bold text-xs">{formatDate(u.createdAt)}</td>
                     <td className="px-4 py-3 text-center space-x-2">
+                      <button onClick={() => openEdit(u)} className="text-xs font-bold px-2 py-1 bg-indigo-100 text-indigo-700 border border-black hover:bg-indigo-200">
+                        Edit
+                      </button>
                       <button onClick={() => setEditingUser(u)} className="text-xs font-bold px-2 py-1 bg-yellow-100 border border-black hover:bg-yellow-200">
                         Password
                       </button>
@@ -251,6 +293,47 @@ export default function UsersPage() {
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => setEditingUser(null)} className="flex-1 px-4 py-2 border-2 border-black rounded-none text-sm text-gray-600 font-bold hover:bg-gray-100 border-2 border-black">Batal</button>
                 <button type="submit" className="flex-1 px-4 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-yellow-400 text-black rounded-none text-sm hover:bg-yellow-300 font-bold">Ubah Password</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {editUser && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="hm-card bg-white p-0 overflow-hidden w-full max-w-md">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-2 border-black">
+              <h2 className="font-semibold text-black font-black">Edit Pengguna</h2>
+              <button onClick={() => setEditUser(null)} className="text-gray-400 font-bold hover:text-gray-600 font-bold">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            <form onSubmit={handleEdit} className="p-6 space-y-4">
+              {editError && (
+                <div className="p-3 bg-danger/5 text-red-700 rounded-none text-sm border border-danger/40">{editError}</div>
+              )}
+              <p className="text-xs font-bold text-gray-500 mb-2">Mengedit: {editUser.nama} ({editUser.email})</p>
+              <div>
+                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Nama *</label>
+                <input type="text" value={editForm.nama} onChange={(e) => setEditForm({ ...editForm, nama: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none text-sm" required />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Email *</label>
+                <input type="email" value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none text-sm" required />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Role *</label>
+                <select value={editForm.role} onChange={(e) => setEditForm({ ...editForm, role: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none text-sm">
+                  {ROLE_OPTIONS.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">No. Telepon</label>
+                <input type="text" value={editForm.noTelepon} onChange={(e) => setEditForm({ ...editForm, noTelepon: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none text-sm" />
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button type="button" onClick={() => setEditUser(null)} className="flex-1 px-4 py-2 border-2 border-black rounded-none text-sm text-gray-600 font-bold hover:bg-gray-100 border-2 border-black">Batal</button>
+                <button type="submit" className="flex-1 px-4 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black rounded-none text-sm hover:bg-green-300">Simpan</button>
               </div>
             </form>
           </div>
