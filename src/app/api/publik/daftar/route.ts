@@ -112,6 +112,15 @@ export async function POST(request: Request) {
     const longitude = body.longitude ? parseFloat(body.longitude) : null;
     const koordinatSumber = body.koordinatSumber ? String(body.koordinatSumber) : null;
     const koordinatAkurasi = body.koordinatAkurasi ? parseFloat(body.koordinatAkurasi) : null;
+    const fotoRumah = typeof body.fotoRumah === "string" ? body.fotoRumah.trim() : "";
+
+    // Foto harus data URL gambar dan dibatasi ukurannya (base64 hasil kompres).
+    if (fotoRumah && (!fotoRumah.startsWith("data:image/") || fotoRumah.length > 2_000_000)) {
+      return NextResponse.json(
+        { error: "Foto rumah tidak valid atau terlalu besar." },
+        { status: 400 }
+      );
+    }
 
     if (nama.length < 3) {
       return NextResponse.json({ error: "Nama minimal 3 karakter." }, { status: 400 });
@@ -173,6 +182,7 @@ export async function POST(request: Request) {
             alamat,
             rtRw: rtRw || null,
             kodePelanggan,
+            fotoRumah: fotoRumah || null,
             patokanLokasi: patokanLokasi || null,
             penanggungjawab: penanggungjawab || null,
             referal: referal || null,

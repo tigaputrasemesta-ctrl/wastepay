@@ -3,8 +3,18 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useParams, useRouter } from "next/navigation";
 import { formatRupiah, formatDate } from "@/lib/utils";
+
+const PetaLokasi = dynamic(() => import("@/components/PetaLokasi"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-52 w-full border-2 border-black bg-[#e8f0e6] flex items-center justify-center">
+      <p className="text-xs font-black uppercase animate-pulse">MEMUAT PETA…</p>
+    </div>
+  ),
+});
 
 type Kelurahan = { id: number; nama: string; kecamatan?: string | null };
 type Paket = { id: number; nama: string; harga: number; deskripsi?: string };
@@ -255,6 +265,13 @@ export default function DetailPelangganPage() {
                     </svg>
                     Buka Google Maps
                   </a>
+                  <div className="h-52 border-2 border-black overflow-hidden">
+                    <PetaLokasi
+                      latitude={data.latitude}
+                      longitude={data.longitude}
+                      className="h-52 w-full"
+                    />
+                  </div>
                 </div>
               )}
             </div>
