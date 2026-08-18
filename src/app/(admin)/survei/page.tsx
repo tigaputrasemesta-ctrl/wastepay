@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { useToast } from "@/components/Toast";
 import GeotagPhoto from "@/components/GeotagPhoto";
 import { formatDate } from "@/lib/utils";
@@ -189,6 +190,12 @@ export default function SurveiPage() {
                     ○ FOTO BELUM
                   </span>
                 )}
+                <Link
+                  href={`/survei/${c.id}`}
+                  className="px-4 py-2 border-2 border-black rounded-none text-sm font-bold hover:bg-gray-100 transition-all"
+                >
+                  Detail
+                </Link>
                 <button
                   onClick={() => bukaSurvei(c)}
                   className="shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 hover:bg-green-300 text-black px-4 py-2 rounded-none text-sm font-medium transition"

@@ -79,6 +79,9 @@ const API_ROLE_MAP: Record<string, number> = {
   "PUT:/api/pelanggan/": 10,
   "DELETE:/api/pelanggan/": 50,
 
+  // Survei petugas — detail pendaftar (read-only, tanpa data keuangan)
+  "GET:/api/survei/": 10,
+
   // Petugas
   "GET:/api/petugas": 10,
   "GET:/api/petugas/": 10,
