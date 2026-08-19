@@ -2,18 +2,20 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 
-const connectionString = process.env.DATABASE_URL;
+const rawConnectionString = process.env.DATABASE_URL;
 
-// SSL/TLS: verifikasi sertifikat AKTIF di production (cegah MITM ke database).
-// Jika provider DB memakai sertifikat yang tidak dipercaya (self-signed,
-// proxy khusus), nonaktifkan eksplisit via DATABASE_SSL_REJECT_UNAUTHORIZED=false.
+// Bersihkan parameter sslmode dari connectionString agar tidak menimpa konfigurasi SSL Pool
+const connectionString = rawConnectionString?.replace(/[?&]sslmode=[^&]+/g, "").replace(/\?$/, "");
+
+const isProd = process.env.NODE_ENV === "production";
+const rejectUnauthorized = process.env.DATABASE_SSL_REJECT_UNAUTHORIZED !== "false";
+
 const pool = new Pool({
   connectionString,
   max: 10,
-  ssl:
-    process.env.NODE_ENV === "production"
-      ? { rejectUnauthorized: process.env.DATABASE_SSL_REJECT_UNAUTHORIZED !== "false" }
-      : undefined,
+  ssl: isProd || process.env.DATABASE_SSL === "true"
+    ? { rejectUnauthorized }
+    : undefined,
 });
 const adapter = new PrismaPg(pool);
 
@@ -24,3 +26,4 @@ export const prisma =
   new PrismaClient({ adapter });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+
