@@ -23,19 +23,21 @@ async function getStats() {
     komplainBaru,
     totalPetugas,
   ] = await Promise.all([
-    prisma.pelanggan.count(),
-    prisma.pelanggan.count({ where: { status: "aktif" } }),
+    prisma.pelanggan.count({ where: { deletedAt: null } }),
+    prisma.pelanggan.count({ where: { status: "aktif", deletedAt: null } }),
     prisma.tagihan.count({
       where: {
         bulan: bulanIni + 1,
         tahun: tahunIni,
-        status: "belum_bayar",
+        status: { in: ["belum_bayar", "tunggakan"] },
+        deletedAt: null,
       },
     }),
     prisma.tagihan.aggregate({
       where: {
         bulan: bulanIni + 1,
         tahun: tahunIni,
+        deletedAt: null,
       },
       _sum: { jumlah: true },
     }),
@@ -49,7 +51,7 @@ async function getStats() {
       _sum: { jumlah: true },
     }),
     prisma.komplain.count({ where: { status: "baru" } }),
-    prisma.petugas.count({ where: { aktif: true } }),
+    prisma.petugas.count({ where: { aktif: true, deletedAt: null } }),
   ]);
 
   const startTren = new Date(tahunIni, bulanIni - 5, 1);

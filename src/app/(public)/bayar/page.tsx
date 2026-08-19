@@ -249,20 +249,22 @@ export default function BayarPage() {
                     </div>
                     
                     {t.status !== "lunas" && (
-                      <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                      <div className="flex flex-col sm:flex-row gap-3 pt-2 w-full sm:w-auto">
                         {t.noInvoice && (
                           <Link
                             href={`/bayar-tagihan?invoice=${encodeURIComponent(t.noInvoice)}`}
-                            className="hm-btn-green px-4 py-2 text-sm"
+                            className="hm-btn-green px-5 py-2.5 text-xs font-black flex items-center justify-center gap-1.5 shadow-[3px_3px_0_0_rgba(0,0,0,1)] hover:shadow-[5px_5px_0_0_rgba(0,0,0,1)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[1px_1px_0_0_rgba(0,0,0,1)] transition-all"
                           >
-                            BAYAR INSTAN
+                            <span>⚡</span>
+                            <span>BAYAR INSTAN</span>
                           </Link>
                         )}
                         <button
                           onClick={() => setPilih(t.id)}
-                          className="hm-btn px-4 py-2 text-sm"
+                          className="hm-btn px-5 py-2.5 text-xs font-black flex items-center justify-center gap-1.5 shadow-[3px_3px_0_0_rgba(0,0,0,1)] hover:shadow-[5px_5px_0_0_rgba(0,0,0,1)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[1px_1px_0_0_rgba(0,0,0,1)] transition-all"
                         >
-                          UPLOAD BUKTI
+                          <span>📤</span>
+                          <span>UPLOAD BUKTI</span>
                         </button>
                       </div>
                     )}
@@ -279,9 +281,18 @@ export default function BayarPage() {
         <form onSubmit={kirimBukti} className="hm-card space-y-8 max-w-2xl mx-auto bg-[#f4f4f0] animate-in fade-in slide-in-from-bottom-4">
           
           <div className="flex items-center justify-between border-b-2 border-black pb-4">
-            <h2 className="font-black uppercase text-2xl">UPLOAD BUKTI</h2>
-            <button type="button" onClick={() => setPilih(null)} className="text-sm font-bold text-red-600 hover:text-black uppercase">
-              BATAL
+            <h2 className="font-black uppercase text-xl sm:text-2xl">UPLOAD BUKTI PEMBAYARAN</h2>
+            <button
+              type="button"
+              onClick={() => {
+                setPilih(null);
+                setBukti("");
+                setKirimError("");
+                setForm({ metode: "transfer", catatan: "" });
+              }}
+              className="hm-btn px-3.5 py-1.5 text-xs font-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] hover:-translate-y-0.5"
+            >
+              ✕ BATAL
             </button>
           </div>
 
@@ -338,9 +349,19 @@ export default function BayarPage() {
           <button
             type="submit"
             disabled={mengirim}
-            className="hm-btn-red w-full"
+            className="hm-btn-red w-full py-4 text-base font-black flex items-center justify-center gap-2 shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[2px_2px_0_0_rgba(0,0,0,1)] disabled:opacity-50 transition-all"
           >
-            {mengirim ? "MENGIRIM..." : "KIRIM BUKTI"}
+            {mengirim ? (
+              <>
+                <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin" />
+                <span>MENGIRIM BUKTI...</span>
+              </>
+            ) : (
+              <>
+                <span>KIRIM BUKTI SEKARANG</span>
+                <span>→</span>
+              </>
+            )}
           </button>
         </form>
       )}

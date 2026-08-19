@@ -11,9 +11,11 @@ export async function GET(request: Request) {
 
   const where: Prisma.PengeluaranWhereInput = {};
   if (bulan && tahun) {
-    const startDate = new Date(parseInt(tahun!), parseInt(bulan!) - 1, 1);
-    const endDate = new Date(parseInt(tahun!), parseInt(bulan!), 0);
-    where.tanggal = { gte: startDate, lte: endDate };
+    const b = parseInt(bulan);
+    const t = parseInt(tahun);
+    const startDate = new Date(t, b - 1, 1);
+    const nextMonthStart = new Date(t, b, 1);
+    where.tanggal = { gte: startDate, lt: nextMonthStart };
   }
 
   const pengeluaran = await prisma.pengeluaran.findMany({

@@ -21,11 +21,11 @@ export async function updateTunggakan(opts?: { force?: boolean }): Promise<numbe
 
   const overdue = await prisma.tagihan.findMany({
     where: {
-      status: "belum_bayar",
+      status: { in: ["belum_bayar", "tunggakan"] },
       jatuhTempo: { lt: new Date() },
       deletedAt: null,
     },
-    select: { id: true, jumlah: true, jatuhTempo: true },
+    select: { id: true, jumlah: true, denda: true, status: true, jatuhTempo: true },
   });
 
   const MS_PER_BULAN = 30 * 24 * 3600 * 1000;
@@ -43,10 +43,13 @@ export async function updateTunggakan(opts?: { force?: boolean }): Promise<numbe
         );
         const denda = Math.round(t.jumlah * 0.02 * bulanTerlambat);
 
-        await prisma.tagihan.update({
-          where: { id: t.id },
-          data: { status: "tunggakan", denda },
-        });
+        // Hanya update jika status berubah atau nominal denda bertambah seiring bertambahnya bulan
+        if (t.status !== "tunggakan" || t.denda !== denda) {
+          await prisma.tagihan.update({
+            where: { id: t.id },
+            data: { status: "tunggakan", denda },
+          });
+        }
       })
     );
   }

@@ -76,14 +76,19 @@ export async function POST(request: Request) {
       );
     }
 
-    // Reuse transaksi pending yang masih aktif untuk tagihan yang sama
+    // Reuse transaksi pending yang masih aktif HANYA jika metode pembayarannya sama & dibuat dalam 30 menit
+    const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
     const existing = await prisma.pembayaran.findFirst({
       where: {
         tagihanId: tagihan.id,
         metode: "duitku",
         status: "pending",
+        createdAt: { gte: thirtyMinutesAgo },
         duitkuTransaction: {
-          is: { OR: [{ statusCode: null }, { statusCode: "01" }] },
+          is: {
+            paymentMethod: String(paymentMethod).trim().toUpperCase(),
+            OR: [{ statusCode: null }, { statusCode: "01" }],
+          },
         },
       },
       include: { duitkuTransaction: true },
@@ -103,7 +108,20 @@ export async function POST(request: Request) {
     // (lihat hitungRincian di src/lib/invoice.ts)
     const total = hitungRincian(tagihan.jumlah, tagihan.denda).total;
 
-    // Buat pembayaran pending + transaksi Duitku (satu transaksi DB)
+    // OrderId acak (tidak dapat ditebak/enumerasi) — hindari IDOR via endpoint status publik
+    const orderId = `DW-${crypto.randomBytes(8).toString("hex").toUpperCase()}`;
+    
+    // Panggil API Duitku di luar transaksi DB agar tidak menahan connection pool/timeout
+    const dt = await createPayment({
+      orderId,
+      amount: total,
+      paymentMethod: String(paymentMethod).trim().toUpperCase(),
+      productDetails: `Iuran sampah ${BULAN[tagihan.bulan - 1]} ${tagihan.tahun} — ${pelanggan.nama}`,
+      customerVaName: pelanggan.nama,
+      phoneNumber: pelanggan.noTelepon || undefined,
+    });
+
+    // Simpan pembayaran pending & detail transaksi Duitku secara atomik
     const hasil = await prisma.$transaction(async (tx) => {
       const p = await tx.pembayaran.create({
         data: {
@@ -114,17 +132,6 @@ export async function POST(request: Request) {
           status: "pending",
           catatan: `Payment Gateway Via Duitku (${paymentMethod})`,
         },
-      });
-
-      // OrderId acak (tidak dapat ditebak/enumerasi) — hindari IDOR via endpoint status publik
-      const orderId = `DW-${crypto.randomBytes(8).toString("hex").toUpperCase()}`;
-      const dt = await createPayment({
-        orderId,
-        amount: total,
-        paymentMethod: String(paymentMethod).trim().toUpperCase(),
-        productDetails: `Iuran sampah ${BULAN[tagihan.bulan - 1]} ${tagihan.tahun} — ${pelanggan.nama}`,
-        customerVaName: pelanggan.nama,
-        phoneNumber: pelanggan.noTelepon || undefined,
       });
 
       await tx.duitkuTransaction.create({

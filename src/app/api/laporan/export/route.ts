@@ -61,7 +61,7 @@ export async function GET(request: Request) {
     }),
     prisma.tagihan.findMany({
       where: {
-        status: "belum_bayar",
+        status: { in: ["belum_bayar", "tunggakan"] },
         deletedAt: null,
         OR: [{ tahun: { lt: tahun } }, { tahun, bulan: { lt: bulan } }],
       },

@@ -438,9 +438,10 @@ export default function TagihanPage() {
                       {t.status !== "lunas" ? (
                         <button
                           onClick={() => { setFormBayar({ metode: isPetugas ? "tunai" : "transfer", catatan: isPetugas ? "Bayar tunai via petugas tagih" : "" }); setShowBayar({ tagihanId: t.id, pelangganId: t.pelanggan.id, jumlah: hitungRincian(t.jumlah, t.denda).total }); }}
-                          className="text-xs bg-green-400/10 text-green-600 border border-vest/30 px-3 py-1 rounded-none-full hover:bg-green-400/20 transition"
+                          className="text-xs font-black bg-green-500 hover:bg-green-400 text-black border-2 border-black px-3.5 py-1.5 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[1px_1px_0_0_rgba(0,0,0,1)] transition-all uppercase inline-flex items-center gap-1"
                         >
-                          Bayar
+                          <span>💳</span>
+                          <span>Bayar</span>
                         </button>
                       ) : (
                         <div className="flex flex-col items-center gap-1">
@@ -606,8 +607,8 @@ export default function TagihanPage() {
                 <input type="text" value={formBayar.catatan} onChange={(e) => setFormBayar({ ...formBayar, catatan: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none text-sm" placeholder="Bayar tunai via petugas" />
               </div>
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => setShowBayar(null)} className="flex-1 px-4 py-2 border-2 border-black rounded-none text-sm text-gray-600 font-bold hover:bg-gray-100 border-2 border-black">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black rounded-none text-sm hover:bg-green-300">Konfirmasi Bayar</button>
+                <button type="button" onClick={() => setShowBayar(null)} className="flex-1 px-4 py-2.5 border-2 border-black text-sm text-gray-700 font-black hover:bg-gray-100 uppercase transition-all">Batal</button>
+                <button type="submit" className="flex-1 px-4 py-2.5 bg-green-500 hover:bg-green-400 text-black border-2 border-black font-black text-sm uppercase shadow-[3px_3px_0_0_rgba(0,0,0,1)] hover:shadow-[5px_5px_0_0_rgba(0,0,0,1)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[1px_1px_0_0_rgba(0,0,0,1)] transition-all">Konfirmasi Bayar</button>
               </div>
             </form>
           </div>

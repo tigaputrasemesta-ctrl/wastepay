@@ -123,7 +123,7 @@ describe("updateTunggakan", () => {
   it("menghitung denda 2%/bulan & menandai status tunggakan", async () => {
     const duaBulanLalu = new Date(Date.now() - 62 * 24 * 3600 * 1000);
     prismaMock.tagihan.findMany.mockResolvedValue([
-      { id: 1, jumlah: 50000, jatuhTempo: duaBulanLalu },
+      { id: 1, jumlah: 50000, denda: null, status: "belum_bayar", jatuhTempo: duaBulanLalu },
     ]);
     prismaMock.tagihan.update.mockResolvedValue({});
 
@@ -133,6 +133,23 @@ describe("updateTunggakan", () => {
       expect.objectContaining({
         where: { id: 1 },
         data: expect.objectContaining({ status: "tunggakan", denda: 2000 }), // 50000 * 2% * 2 bulan
+      })
+    );
+  });
+
+  it("memperbarui denda untuk tagihan yang sudah berstatus tunggakan jika bertambah bulan", async () => {
+    const tigaBulanLalu = new Date(Date.now() - 93 * 24 * 3600 * 1000);
+    prismaMock.tagihan.findMany.mockResolvedValue([
+      { id: 2, jumlah: 100000, denda: 2000, status: "tunggakan", jatuhTempo: tigaBulanLalu },
+    ]);
+    prismaMock.tagihan.update.mockResolvedValue({});
+
+    const n = await updateTunggakan({ force: true });
+    expect(n).toBe(1);
+    expect(prismaMock.tagihan.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 2 },
+        data: expect.objectContaining({ status: "tunggakan", denda: 6000 }), // 100000 * 2% * 3 bulan = 6000
       })
     );
   });

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { logAudit } from "@/lib/audit";
 import { getSession } from "@/lib/auth";
 import { generateKodePelanggan } from "@/lib/kode-pelanggan";
+import { generateNoInvoice } from "@/lib/invoice";
 import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 
 export async function GET(request: Request) {
@@ -155,6 +156,7 @@ export async function POST(request: Request) {
               status: "belum_bayar",
               jatuhTempo: new Date(tahun, bulan - 1, 15),
               keterangan: "Tagihan perdana",
+              noInvoice: generateNoInvoice(pelanggan.kodePelanggan, bulan, tahun),
             },
           });
         }

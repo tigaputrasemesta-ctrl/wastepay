@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     // Total payments today
     const pemasukanAgg = await prisma.pembayaran.aggregate({
       where: {
-        createdAt: { gte: todayStart, lt: todayEnd },
+        tanggal: { gte: todayStart, lt: todayEnd },
         status: "terverifikasi",
       },
       _sum: { jumlah: true },
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     // Total expenses today
     const pengeluaranAgg = await prisma.pengeluaran.aggregate({
       where: {
-        createdAt: { gte: todayStart, lt: todayEnd },
+        tanggal: { gte: todayStart, lt: todayEnd },
       },
       _sum: { jumlah: true },
     });
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
     // Total tunai from sistem (only tunai payments)
     const tunaiAgg = await prisma.pembayaran.aggregate({
       where: {
-        createdAt: { gte: todayStart, lt: todayEnd },
+        tanggal: { gte: todayStart, lt: todayEnd },
         metode: "tunai",
         status: "terverifikasi",
       },
