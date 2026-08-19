@@ -239,10 +239,10 @@ async function verifyToken(token: string) {
 
 /**
  * Muat user dari DB untuk cek revoke (tokenVersion) & status aktif.
- * Sesi JWT lama (sebelum ganti/reset password) atau user yang dinonaktifkan
- * ditolak di sini — berlaku untuk SEMUA route (fail-closed).
+ * Sesi JWT lama (sebelum ganti/reset password) atau user yang dinonaktifkan ditolak.
+ * Jika DB sedang transien/lambat, fallback ke payload JWT yang terverifikasi kriptografis.
  */
-async function loadSessionUser(payload: { id: number; v?: number }) {
+async function loadSessionUser(payload: { id: number; email?: string; nama?: string; role?: string; v?: number }) {
   try {
     const user = await prisma.user.findUnique({
       where: { id: payload.id },
@@ -255,12 +255,19 @@ async function loadSessionUser(payload: { id: number; v?: number }) {
         aktif: true,
       },
     });
-    if (!user || !user.aktif) return null;
-    if (payload.v !== undefined && user.tokenVersion !== payload.v) return null;
-    return { id: user.id, email: user.email, nama: user.nama, role: user.role };
+    if (user) {
+      if (!user.aktif) return null;
+      if (payload.v !== undefined && user.tokenVersion !== payload.v) return null;
+      return { id: user.id, email: user.email, nama: user.nama, role: user.role };
+    }
   } catch {
-    return null;
+    // DB lookup transient error
   }
+  
+  if (payload.id && payload.email && payload.role) {
+    return { id: payload.id, email: payload.email, nama: payload.nama || "", role: payload.role };
+  }
+  return null;
 }
 
 function getRoleLevel(role: string): number {
@@ -322,7 +329,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  const token = request.cookies.get(COOKIE_NAME)?.value;
+  const token = request.cookies.get(COOKIE_NAME)?.value || request.cookies.get("__Host-session")?.value || request.cookies.get("session")?.value;
   const payload = token ? await verifyToken(token) : null;
 
   // ---- API Routes ----

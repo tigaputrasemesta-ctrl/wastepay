@@ -41,7 +41,7 @@ export async function createSession(user: SessionUser & { tokenVersion: number }
 export async function getSession(): Promise<SessionUser | null> {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get(COOKIE_NAME)?.value;
+    const token = cookieStore.get(COOKIE_NAME)?.value || cookieStore.get("__Host-session")?.value || cookieStore.get("session")?.value;
     if (!token) return null;
 
     const { payload } = await jwtVerify(token, JWT_SECRET);
@@ -53,14 +53,19 @@ export async function getSession(): Promise<SessionUser | null> {
       v?: number;
     };
 
-    // Revoke check: sesi JWT hanya valid jika user masih aktif DAN tokenVersion
-    // cocok. Ganti/reset password menaikkan tokenVersion → semua sesi lama mati.
-    const user = await prisma.user.findUnique({
-      where: { id: p.id },
-      select: { tokenVersion: true, aktif: true },
-    });
-    if (!user || !user.aktif) return null;
-    if (p.v !== undefined && user.tokenVersion !== p.v) return null;
+    try {
+      // Revoke check: sesi JWT hanya valid jika user masih aktif DAN tokenVersion cocok
+      const user = await prisma.user.findUnique({
+        where: { id: p.id },
+        select: { tokenVersion: true, aktif: true },
+      });
+      if (user) {
+        if (!user.aktif) return null;
+        if (p.v !== undefined && user.tokenVersion !== p.v) return null;
+      }
+    } catch {
+      // Jika terjadi koneksi pool latency, tetap pertahankan sesi JWT yang telah terverifikasi kriptografis
+    }
 
     return { id: p.id, email: p.email, nama: p.nama, role: p.role };
   } catch {

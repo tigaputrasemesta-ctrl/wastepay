@@ -29,11 +29,6 @@ export const JWT_SECRET_STRING = SECRET_STRING;
 export const JWT_SECRET = new TextEncoder().encode(SECRET_STRING);
 
 /**
- * Nama cookie sesi.
- * Production: prefix `__Host-` (hardening — cookie dipaksa Secure + path=/ +
- * tanpa Domain, tidak bisa di-set/dibaca dari subdomain lain).
- * Development (http localhost): tanpa prefix (browser menolak cookie non-Secure
- * dengan prefix __Host-).
+ * Nama cookie sesi standar (konsisten di dev & production, mencegah browser drop cookie __Host).
  */
-export const COOKIE_NAME =
-  process.env.NODE_ENV === "production" ? "__Host-session" : "session";
+export const COOKIE_NAME = "session";
