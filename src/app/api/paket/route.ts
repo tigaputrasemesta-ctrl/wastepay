@@ -11,19 +11,25 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { nama, harga, deskripsi } = body;
+    const { kode, nama, harga, deskripsi } = body;
 
-    if (!nama || !harga) {
+    if (!nama) {
       return NextResponse.json(
-        { error: "Nama dan harga paket harus diisi" },
+        { error: "Nama paket harus diisi" },
         { status: 400 }
       );
     }
 
+    const hargaParsed =
+      harga !== undefined && harga !== null && String(harga).trim() !== ""
+        ? parseFloat(harga)
+        : null;
+
     const paket = await prisma.paket.create({
       data: {
+        kode: kode && String(kode).trim() !== "" ? String(kode).trim() : null,
         nama,
-        harga: parseFloat(harga),
+        harga: hargaParsed,
         deskripsi,
       },
     });

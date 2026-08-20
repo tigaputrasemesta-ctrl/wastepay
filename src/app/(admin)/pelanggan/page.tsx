@@ -9,17 +9,27 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 import GeotagPhoto from "@/components/GeotagPhoto";
 
 type Kelurahan = { id: number; nama: string; kecamatan?: string | null };
-type Paket = { id: number; nama: string; harga: number };
+type Paket = { id: number; nama: string; harga: number | null };
 
 const KATEGORI_LIST = [
   { value: "rumah_tangga", label: "🏠 Rumah Tangga" },
-  { value: "bisnis", label: "🏪 Bisnis/Toko" },
-  { value: "kost", label: "🏘️ Kost" },
-  { value: "sekolah", label: "🏫 Sekolah" },
-  { value: "rm_makan", label: "🍽️ RM Makan" },
-  { value: "perkantoran", label: "🏢 Kantor" },
-  { value: "industri", label: "🏭 Industri" },
-  { value: "lainnya", label: "📋 Lainnya" },
+  { value: "kost", label: "🏘️ Kost / Kontrakan" },
+  { value: "bisnis_kelas_1", label: "🏪 Bisnis / Toko Kelas 1" },
+  { value: "bisnis_kelas_2", label: "🏪 Bisnis / Toko Kelas 2" },
+  { value: "bisnis_kelas_3", label: "🏬 Bisnis / Toko Kelas 3" },
+  { value: "restoran", label: "🍽️ Rumah Makan / Restoran" },
+  { value: "warung", label: "🍜 Warung Kecil" },
+  { value: "perkantoran_kecil", label: "🏢 Perkantoran Kecil" },
+  { value: "perkantoran_sedang", label: "🏢 Perkantoran Sedang" },
+  { value: "perkantoran_besar", label: "🏙️ Perkantoran Besar" },
+  { value: "sekolah", label: "🏫 Sekolah / Pendidikan" },
+  { value: "klinik", label: "🏥 Klinik / Puskesmas" },
+  { value: "rumah_sakit", label: "🏥 Rumah Sakit" },
+  { value: "hotel", label: "🏨 Hotel / Penginapan" },
+  { value: "pasar_kios", label: "🛒 Pasar / Kios" },
+  { value: "tempat_ibadah", label: "⛪ Tempat Ibadah" },
+  { value: "industri", label: "🏭 Industri / Pabrik" },
+  { value: "fasum", label: "🏞️ Fasilitas Umum (RT/RW)" },
 ];
 
 const STATUS_LIST = [
@@ -559,13 +569,23 @@ export default function PelangganPage() {
                     className="w-full px-3 py-2 border-2 border-black focus:outline-none focus:ring-0 focus:bg-yellow-100 text-sm font-bold shadow-[4px_4px_0_0_rgba(0,0,0,1)] appearance-none rounded-none"
                   >
                     <option value="rumah_tangga">🏠 Rumah Tangga</option>
-                    <option value="bisnis">🏪 Bisnis/Toko</option>
-                    <option value="kost">🏘️ Kost</option>
-                    <option value="sekolah">🏫 Sekolah</option>
-                    <option value="rm_makan">🍽️ RM Makan</option>
-                    <option value="perkantoran">🏢 Kantor</option>
-                    <option value="industri">🏭 Industri</option>
-                    <option value="lainnya">📋 Lainnya</option>
+                    <option value="kost">🏘️ Kost / Kontrakan</option>
+                    <option value="bisnis_kelas_1">🏪 Bisnis / Toko Kelas 1</option>
+                    <option value="bisnis_kelas_2">🏪 Bisnis / Toko Kelas 2</option>
+                    <option value="bisnis_kelas_3">🏬 Bisnis / Toko Kelas 3</option>
+                    <option value="restoran">🍽️ Rumah Makan / Restoran</option>
+                    <option value="warung">🍜 Warung Kecil</option>
+                    <option value="perkantoran_kecil">🏢 Perkantoran Kecil</option>
+                    <option value="perkantoran_sedang">🏢 Perkantoran Sedang</option>
+                    <option value="perkantoran_besar">🏙️ Perkantoran Besar</option>
+                    <option value="sekolah">🏫 Sekolah / Pendidikan</option>
+                    <option value="klinik">🏥 Klinik / Puskesmas</option>
+                    <option value="rumah_sakit">🏥 Rumah Sakit</option>
+                    <option value="hotel">🏨 Hotel / Penginapan</option>
+                    <option value="pasar_kios">🛒 Pasar / Kios</option>
+                    <option value="tempat_ibadah">⛪ Tempat Ibadah</option>
+                    <option value="industri">🏭 Industri / Pabrik</option>
+                    <option value="fasum">🏞️ Fasilitas Umum (RT/RW)</option>
                   </select>
                 </div>
                 <div>

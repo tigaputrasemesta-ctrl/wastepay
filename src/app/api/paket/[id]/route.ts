@@ -8,11 +8,15 @@ export async function PUT(
   try {
     const id = parseInt((await params).id);
     const body = await request.json();
-    const { nama, harga, deskripsi } = body;
+    const { kode, nama, harga, deskripsi } = body;
 
     const data: Record<string, unknown> = {};
+    if (kode !== undefined) data.kode = String(kode).trim() !== "" ? String(kode).trim() : null;
     if (nama !== undefined) data.nama = nama;
-    if (harga !== undefined) data.harga = parseFloat(harga);
+    if (harga !== undefined) {
+      data.harga =
+        harga !== null && String(harga).trim() !== "" ? parseFloat(harga) : null;
+    }
     if (deskripsi !== undefined) data.deskripsi = deskripsi;
 
     const paket = await prisma.paket.update({

@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 export default async function TarifPage() {
   let kategoriTarif: { kategori: string; label: string; tarif: number; deskripsi: string | null }[] = [];
-  let paket: { nama: string; harga: number; deskripsi: string | null }[] = [];
+  let paket: { nama: string; harga: number | null; deskripsi: string | null }[] = [];
   try {
     [kategoriTarif, paket] = await Promise.all([
       prisma.kategoriTarif.findMany({
@@ -20,7 +20,7 @@ export default async function TarifPage() {
         select: { kategori: true, label: true, tarif: true, deskripsi: true },
       }),
       prisma.paket.findMany({
-        orderBy: { harga: "asc" },
+        orderBy: { harga: { sort: "asc", nulls: "last" } },
         select: { nama: true, harga: true, deskripsi: true },
       }),
     ]);
@@ -104,9 +104,9 @@ export default async function TarifPage() {
                     </div>
                     <div className="text-right border-t-2 border-black group-hover:border-white pt-2 mt-2">
                       <p className="font-black text-xl text-red-600 group-hover:text-red-400">
-                        {formatRupiah(p.harga)}
+                        {p.harga != null ? formatRupiah(p.harga) : "VARIABEL"}
                       </p>
-                      <span className="text-[10px] font-bold uppercase">PER BULAN</span>
+                      <span className="text-[10px] font-bold uppercase">{p.harga != null ? "PER BULAN" : "SESUAI KEBUTUHAN"}</span>
                     </div>
                   </div>
                 ))

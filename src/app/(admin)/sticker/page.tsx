@@ -18,13 +18,23 @@ type Pelanggan = {
 
 const KATEGORI_LABEL: Record<string, string> = {
   rumah_tangga: "RT",
-  bisnis: "BISNIS",
   kost: "KOST",
+  bisnis_kelas_1: "BISNIS 1",
+  bisnis_kelas_2: "BISNIS 2",
+  bisnis_kelas_3: "BISNIS 3",
+  restoran: "RM",
+  warung: "WARUNG",
+  perkantoran_kecil: "KANTOR S",
+  perkantoran_sedang: "KANTOR M",
+  perkantoran_besar: "KANTOR L",
   sekolah: "SEKOLAH",
-  rm_makan: "RM",
-  perkantoran: "KANTOR",
+  klinik: "KLINIK",
+  rumah_sakit: "RS",
+  hotel: "HOTEL",
+  pasar_kios: "PASAR",
+  tempat_ibadah: "IBADAH",
   industri: "INDUSTRI",
-  lainnya: "LAIN",
+  fasum: "FASUM",
 };
 
 function Sticker({ p, idx }: { p: Pelanggan; idx: number }) {

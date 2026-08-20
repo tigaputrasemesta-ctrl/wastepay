@@ -17,7 +17,7 @@ const PetaLokasi = dynamic(() => import("@/components/PetaLokasi"), {
 });
 
 type Kelurahan = { id: number; nama: string; kecamatan?: string | null };
-type Paket = { id: number; nama: string; harga: number; deskripsi?: string };
+type Paket = { id: number; nama: string; harga: number | null; deskripsi?: string };
 type PelangganDetail = {
   id: number;
   kodePelanggan?: string;
@@ -289,13 +289,23 @@ export default function DetailPelangganPage() {
                 <p className="font-medium text-black font-black">
                   {{
                     rumah_tangga: "🏠 Rumah Tangga",
-                    bisnis: "🏪 Bisnis / Toko",
                     kost: "🏘️ Kost / Kontrakan",
-                    sekolah: "🏫 Sekolah",
-                    rm_makan: "🍽️ Rumah Makan",
-                    perkantoran: "🏢 Perkantoran",
-                    industri: "🏭 Industri",
-                    lainnya: "📋 Lainnya",
+                    bisnis_kelas_1: "🏪 Bisnis / Toko Kelas 1",
+                    bisnis_kelas_2: "🏪 Bisnis / Toko Kelas 2",
+                    bisnis_kelas_3: "🏬 Bisnis / Toko Kelas 3",
+                    restoran: "🍽️ Rumah Makan / Restoran",
+                    warung: "🍜 Warung Kecil",
+                    perkantoran_kecil: "🏢 Perkantoran Kecil",
+                    perkantoran_sedang: "🏢 Perkantoran Sedang",
+                    perkantoran_besar: "🏙️ Perkantoran Besar",
+                    sekolah: "🏫 Sekolah / Pendidikan",
+                    klinik: "🏥 Klinik / Puskesmas",
+                    rumah_sakit: "🏥 Rumah Sakit",
+                    hotel: "🏨 Hotel / Penginapan",
+                    pasar_kios: "🛒 Pasar / Kios",
+                    tempat_ibadah: "⛪ Tempat Ibadah",
+                    industri: "🏭 Industri / Pabrik",
+                    fasum: "🏞️ Fasilitas Umum (RT/RW)",
                   }[data.kategori] || data.kategori}
                 </p>
               </div>
@@ -353,7 +363,7 @@ export default function DetailPelangganPage() {
                 <div>
                   <p className="text-gray-600 font-bold">Paket Langganan</p>
                   <p className="font-medium text-black font-black">{data.paket.nama}</p>
-                  <p className="text-xs text-green-600 font-medium">{formatRupiah(data.paket.harga)}/bln</p>
+                  <p className="text-xs text-green-600 font-medium">{data.paket.harga != null ? `${formatRupiah(data.paket.harga)}/bln` : "Tarif variabel"}</p>
                 </div>
               )}
               {data.customTarif && (

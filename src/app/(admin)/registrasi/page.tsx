@@ -8,7 +8,7 @@ import CoordinatePicker from "@/components/CoordinatePicker";
 import GeotagPhoto from "@/components/GeotagPhoto";
 
 type Kelurahan = { id: number; nama: string; kecamatan?: string | null; kota?: string | null };
-type Paket = { id: number; nama: string; harga: number; deskripsi?: string };
+type Paket = { id: number; nama: string; harga: number | null; deskripsi?: string };
 type KategoriTarif = { id: number; kategori: string; label: string; tarif: number; deskripsi?: string };
 
 const STEPS = [
@@ -21,13 +21,23 @@ const STEPS = [
 
 const KATEGORI_OPTIONS = [
   { value: "rumah_tangga", label: "Rumah Tangga", icon: "🏠" },
-  { value: "bisnis", label: "Bisnis/Toko", icon: "🏪" },
-  { value: "kost", label: "Kost", icon: "🏘️" },
-  { value: "sekolah", label: "Sekolah", icon: "🏫" },
-  { value: "rm_makan", label: "Rumah Makan", icon: "🍽️" },
-  { value: "perkantoran", label: "Kantor", icon: "🏢" },
-  { value: "industri", label: "Industri", icon: "🏭" },
-  { value: "lainnya", label: "Lainnya", icon: "📋" },
+  { value: "kost", label: "Kost / Kontrakan", icon: "🏘️" },
+  { value: "bisnis_kelas_1", label: "Bisnis / Toko Kelas 1", icon: "🏪" },
+  { value: "bisnis_kelas_2", label: "Bisnis / Toko Kelas 2", icon: "🏪" },
+  { value: "bisnis_kelas_3", label: "Bisnis / Toko Kelas 3", icon: "🏬" },
+  { value: "restoran", label: "Rumah Makan / Restoran", icon: "🍽️" },
+  { value: "warung", label: "Warung Kecil", icon: "🍜" },
+  { value: "perkantoran_kecil", label: "Perkantoran Kecil", icon: "🏢" },
+  { value: "perkantoran_sedang", label: "Perkantoran Sedang", icon: "🏢" },
+  { value: "perkantoran_besar", label: "Perkantoran Besar", icon: "🏙️" },
+  { value: "sekolah", label: "Sekolah / Pendidikan", icon: "🏫" },
+  { value: "klinik", label: "Klinik / Puskesmas", icon: "🏥" },
+  { value: "rumah_sakit", label: "Rumah Sakit", icon: "🏥" },
+  { value: "hotel", label: "Hotel / Penginapan", icon: "🏨" },
+  { value: "pasar_kios", label: "Pasar / Kios", icon: "🛒" },
+  { value: "tempat_ibadah", label: "Tempat Ibadah", icon: "⛪" },
+  { value: "industri", label: "Industri / Pabrik", icon: "🏭" },
+  { value: "fasum", label: "Fasilitas Umum (RT/RW)", icon: "🏞️" },
 ];
 
 const STATUS_OPTIONS = [
@@ -547,8 +557,8 @@ export default function DaftarPelangganPage() {
                             {p.deskripsi && <p className="text-xs text-gray-600 font-bold mt-1">{p.deskripsi}</p>}
                           </div>
                           <div className="text-right whitespace-nowrap">
-                            <p className="font-black uppercase tracking-tighter text-lg text-green-600">{formatRupiah(p.harga)}</p>
-                            <p className="text-[10px] text-gray-400 font-bold">/bulan</p>
+                            <p className="font-black uppercase tracking-tighter text-lg text-green-600">{p.harga != null ? formatRupiah(p.harga) : "Variabel"}</p>
+                            <p className="text-[10px] text-gray-400 font-bold">{p.harga != null ? "/bulan" : "sesuai kebutuhan"}</p>
                           </div>
                         </div>
                         {dipilih && (

@@ -122,8 +122,9 @@ model KategoriTarif {
 
 model Paket {
   id        Int      @id @default(autoincrement())
+  kode      String?  @unique // kode identitas paket, misal "paket_mbg"
   nama      String // misal "Paket A", "Paket B"
-  harga     Float // nominal tagihan default per bulan
+  harga     Float? // nominal tagihan default per bulan (null = tarif variabel)
   deskripsi String? // misal "2x seminggu", "setiap hari"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

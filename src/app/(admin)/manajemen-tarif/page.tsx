@@ -14,8 +14,9 @@ type KategoriTarif = {
 
 type Paket = {
   id: number;
+  kode: string | null;
   nama: string;
-  harga: number;
+  harga: number | null;
   deskripsi: string | null;
 };
 
@@ -36,7 +37,7 @@ export default function TarifPage() {
 
   // Form States
   const [katForm, setKatForm] = useState({ kategori: "", label: "", tarif: "", deskripsi: "" });
-  const [paketForm, setPaketForm] = useState({ nama: "", harga: "", deskripsi: "" });
+  const [paketForm, setPaketForm] = useState({ kode: "", nama: "", harga: "", deskripsi: "" });
 
   // Delete States
   const [deleteKat, setDeleteKat] = useState<KategoriTarif | null>(null);
@@ -120,9 +121,9 @@ export default function TarifPage() {
   function openPaket(p: Paket | null = null) {
     setPaketEditing(p);
     if (p) {
-      setPaketForm({ nama: p.nama, harga: p.harga.toString(), deskripsi: p.deskripsi || "" });
+      setPaketForm({ kode: p.kode || "", nama: p.nama, harga: p.harga != null ? p.harga.toString() : "", deskripsi: p.deskripsi || "" });
     } else {
-      setPaketForm({ nama: "", harga: "", deskripsi: "" });
+      setPaketForm({ kode: "", nama: "", harga: "", deskripsi: "" });
     }
     setShowPaketForm(true);
   }
@@ -136,8 +137,9 @@ export default function TarifPage() {
       method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        kode: paketForm.kode,
         nama: paketForm.nama,
-        harga: parseInt(paketForm.harga),
+        harga: paketForm.harga.trim() !== "" ? parseInt(paketForm.harga) : null,
         deskripsi: paketForm.deskripsi
       }),
     });
@@ -243,6 +245,7 @@ export default function TarifPage() {
               <thead>
                 <tr className="bg-gray-100 text-black font-black uppercase text-[10px] border-b-2 border-black">
                   <th className="px-4 py-3 border-r-2 border-black">Nama Paket</th>
+                  <th className="px-4 py-3 border-r-2 border-black">Kode ID</th>
                   <th className="px-4 py-3 border-r-2 border-black">Deskripsi</th>
                   <th className="px-4 py-3 border-r-2 border-black">Tarif (Rp)</th>
                   <th className="px-4 py-3 text-center">Aksi</th>
@@ -251,14 +254,15 @@ export default function TarifPage() {
               <tbody className="text-black">
                 {pakets.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-4 py-8 text-center font-black uppercase text-gray-400">Belum ada paket</td>
+                    <td colSpan={5} className="px-4 py-8 text-center font-black uppercase text-gray-400">Belum ada paket</td>
                   </tr>
                 ) : (
                   pakets.map(p => (
                     <tr key={p.id} className="border-b-2 border-black hover:bg-yellow-50">
                       <td className="px-4 py-3 border-r-2 border-black font-black uppercase text-xs">{p.nama}</td>
+                      <td className="px-4 py-3 border-r-2 border-black font-bold text-xs"><span className="bg-gray-200 px-1 border border-black">{p.kode || "—"}</span></td>
                       <td className="px-4 py-3 border-r-2 border-black font-bold text-xs truncate max-w-[150px]" title={p.deskripsi || ""}>{p.deskripsi || "-"}</td>
-                      <td className="px-4 py-3 border-r-2 border-black font-black text-green-600">{p.harga.toLocaleString("id-ID")}</td>
+                      <td className="px-4 py-3 border-r-2 border-black font-black text-green-600">{p.harga != null ? p.harga.toLocaleString("id-ID") : "Variabel"}</td>
                       <td className="px-4 py-3 text-center">
                         <div className="flex justify-center gap-2">
                           <button onClick={() => openPaket(p)} className="px-2 py-1 bg-yellow-300 border-2 border-black text-[10px] font-black uppercase shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:bg-yellow-400">Edit</button>
@@ -315,12 +319,16 @@ export default function TarifPage() {
             </div>
             <form onSubmit={savePaket} className="p-5 space-y-4">
               <div>
+                <label className="block text-xs font-black uppercase mb-1">Kode ID (opsional)</label>
+                <input type="text" value={paketForm.kode} onChange={e => setPaketForm({...paketForm, kode: e.target.value})} className="w-full border-2 border-black px-3 py-2 text-sm font-bold shadow-[4px_4px_0_0_rgba(0,0,0,1)] focus:bg-yellow-100 outline-none" placeholder="contoh: paket_event" />
+              </div>
+              <div>
                 <label className="block text-xs font-black uppercase mb-1">Nama Paket</label>
                 <input type="text" value={paketForm.nama} onChange={e => setPaketForm({...paketForm, nama: e.target.value})} className="w-full border-2 border-black px-3 py-2 text-sm font-bold shadow-[4px_4px_0_0_rgba(0,0,0,1)] focus:bg-yellow-100 outline-none" required />
               </div>
               <div>
-                <label className="block text-xs font-black uppercase mb-1">Harga Bulanan (Rp)</label>
-                <input type="number" value={paketForm.harga} onChange={e => setPaketForm({...paketForm, harga: e.target.value})} className="w-full border-2 border-black px-3 py-2 text-sm font-bold shadow-[4px_4px_0_0_rgba(0,0,0,1)] focus:bg-yellow-100 outline-none" required />
+                <label className="block text-xs font-black uppercase mb-1">Harga Bulanan (Rp) — kosongkan jika variabel</label>
+                <input type="number" value={paketForm.harga} onChange={e => setPaketForm({...paketForm, harga: e.target.value})} className="w-full border-2 border-black px-3 py-2 text-sm font-bold shadow-[4px_4px_0_0_rgba(0,0,0,1)] focus:bg-yellow-100 outline-none" />
               </div>
               <div>
                 <label className="block text-xs font-black uppercase mb-1">Deskripsi</label>

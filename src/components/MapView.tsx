@@ -75,13 +75,23 @@ type Props = {
 
 const KATEGORI_LABEL: Record<string, string> = {
   rumah_tangga: "Rumah Tangga",
-  bisnis: "Bisnis / Toko",
-  kost: "Kost",
-  sekolah: "Sekolah",
-  rm_makan: "Rumah Makan",
-  perkantoran: "Perkantoran",
-  industri: "Industri",
-  lainnya: "Lainnya",
+  kost: "Kost / Kontrakan",
+  bisnis_kelas_1: "Bisnis / Toko Kelas 1",
+  bisnis_kelas_2: "Bisnis / Toko Kelas 2",
+  bisnis_kelas_3: "Bisnis / Toko Kelas 3",
+  restoran: "Rumah Makan / Restoran",
+  warung: "Warung Kecil",
+  perkantoran_kecil: "Perkantoran Kecil",
+  perkantoran_sedang: "Perkantoran Sedang",
+  perkantoran_besar: "Perkantoran Besar",
+  sekolah: "Sekolah / Pendidikan",
+  klinik: "Klinik / Puskesmas",
+  rumah_sakit: "Rumah Sakit",
+  hotel: "Hotel / Penginapan",
+  pasar_kios: "Pasar / Kios",
+  tempat_ibadah: "Tempat Ibadah",
+  industri: "Industri / Pabrik",
+  fasum: "Fasilitas Umum (RT/RW)",
 };
 
 const TAGIHAN_LABEL: Record<string, string> = {

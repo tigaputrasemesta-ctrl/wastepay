@@ -16,13 +16,23 @@ export const dynamic = "force-dynamic";
 
 const KATEGORI_VALID = [
   "rumah_tangga",
-  "bisnis",
   "kost",
+  "bisnis_kelas_1",
+  "bisnis_kelas_2",
+  "bisnis_kelas_3",
+  "restoran",
+  "warung",
+  "perkantoran_kecil",
+  "perkantoran_sedang",
+  "perkantoran_besar",
   "sekolah",
-  "rm_makan",
-  "perkantoran",
+  "klinik",
+  "rumah_sakit",
+  "hotel",
+  "pasar_kios",
+  "tempat_ibadah",
   "industri",
-  "lainnya",
+  "fasum",
 ];
 
 /**
