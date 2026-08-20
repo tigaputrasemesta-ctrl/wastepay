@@ -23,6 +23,10 @@ const KATEGORI_LABEL: Record<string, string> = {
   level_4: "LVL 4",
   level_5: "LVL 5",
   level_6: "LVL 6",
+  level_7: "LVL 7",
+  level_8: "LVL 8",
+  level_9: "LVL 9",
+  level_10: "LVL 10",
 };
 
 function Sticker({ p, idx }: { p: Pelanggan; idx: number }) {

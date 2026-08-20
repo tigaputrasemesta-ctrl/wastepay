@@ -112,7 +112,7 @@ model ZonaPetugas {
 
 model KategoriTarif {
   id        Int      @id @default(autoincrement())
-  kategori  String   @unique // level_1 | level_2 | level_3 | level_4 | level_5 | level_6
+  kategori  String   @unique // level_1 | level_2 | level_3 | level_4 | level_5 | level_6 | level_7 | level_8 | level_9 | level_10
   label     String // label display
   tarif     Float // tarif default per bulan
   deskripsi String?
@@ -136,7 +136,7 @@ model Pelanggan {
   id               Int       @id @default(autoincrement())
   nama             String
   noTelepon        String
-  kategori         String    @default("level_1") // level_1 | level_2 | level_3 | level_4 | level_5 | level_6
+  kategori         String    @default("level_1") // level_1 | level_2 | level_3 | level_4 | level_5 | level_6 | level_7 | level_8 | level_9 | level_10
   alamat           String
   rtRw             String? // RT/RW
   kodePelanggan    String    @unique // kode unik untuk barcode

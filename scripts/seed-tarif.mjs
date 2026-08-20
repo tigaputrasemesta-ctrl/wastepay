@@ -3,12 +3,16 @@ import pg from "pg";
 
 // ── Data master tarif (sumber kebenaran) ─────────────────────────────────────
 const KATEGORI = [
-  { kategori: "level_1", label: "Level 1", tarif: 50000,  deskripsi: "Volume sangat kecil (rumah tangga kecil, kost, usaha mikro)." },
-  { kategori: "level_2", label: "Level 2", tarif: 100000, deskripsi: "Volume kecil–sedang (rumah tangga besar, warung, kantor kecil)." },
-  { kategori: "level_3", label: "Level 3", tarif: 150000, deskripsi: "Volume sedang (usaha menengah, kantor sedang, restoran kecil)." },
-  { kategori: "level_4", label: "Level 4", tarif: 200000, deskripsi: "Volume sedang–besar (kantor besar, restoran, klinik)." },
-  { kategori: "level_5", label: "Level 5", tarif: 250000, deskripsi: "Volume besar (hotel kecil, sekolah, minimarket)." },
-  { kategori: "level_6", label: "Level 6", tarif: 300000, deskripsi: "Volume sangat besar (fasilitas ramai, usaha besar)." },
+  { kategori: "level_1",  label: "Level 1",  tarif: 50000,  deskripsi: "Volume sangat kecil (rumah tangga kecil, kost, usaha mikro)." },
+  { kategori: "level_2",  label: "Level 2",  tarif: 100000, deskripsi: "Volume kecil–sedang (rumah tangga besar, warung, kantor kecil)." },
+  { kategori: "level_3",  label: "Level 3",  tarif: 150000, deskripsi: "Volume sedang (usaha menengah, kantor sedang, restoran kecil)." },
+  { kategori: "level_4",  label: "Level 4",  tarif: 200000, deskripsi: "Volume sedang–besar (kantor besar, restoran, klinik)." },
+  { kategori: "level_5",  label: "Level 5",  tarif: 250000, deskripsi: "Volume besar (hotel kecil, sekolah, minimarket)." },
+  { kategori: "level_6",  label: "Level 6",  tarif: 300000, deskripsi: "Volume sangat besar (fasilitas ramai, usaha besar)." },
+  { kategori: "level_7",  label: "Level 7",  tarif: 350000, deskripsi: "Volume ekstra besar (usaha skala besar, gedung multi-unit)." },
+  { kategori: "level_8",  label: "Level 8",  tarif: 400000, deskripsi: "Volume sangat ekstra (kawasan komersial besar, kampus)." },
+  { kategori: "level_9",  label: "Level 9",  tarif: 450000, deskripsi: "Volume maksimal (kawasan industri, rumah sakit besar)." },
+  { kategori: "level_10", label: "Level 10", tarif: 500000, deskripsi: "Volume korporat (kawasan skala maksimum, multi-fasilitas)." },
 ];
 
 const PAKET = [

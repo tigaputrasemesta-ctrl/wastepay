@@ -18,6 +18,10 @@ const KATEGORI_LIST = [
   { value: "level_4", label: "🏢 Level 4 — Volume Sedang–Besar" },
   { value: "level_5", label: "🏨 Level 5 — Volume Besar" },
   { value: "level_6", label: "🏭 Level 6 — Volume Sangat Besar" },
+  { value: "level_7", label: "🏗️ Level 7 — Volume Ekstra Besar" },
+  { value: "level_8", label: "🏬 Level 8 — Volume Komersial Besar" },
+  { value: "level_9", label: "🏥 Level 9 — Volume Maksimal" },
+  { value: "level_10", label: "🏙️ Level 10 — Volume Korporat" },
 ];
 
 const STATUS_LIST = [
@@ -70,6 +74,7 @@ export default function PelangganPage() {
     nama: "",
     noTelepon: "",
     kategori: "level_1",
+    customTarif: "",
     alamat: "",
     rtRw: "",
     patokanLokasi: "",
@@ -128,6 +133,7 @@ export default function PelangganPage() {
       nama: "",
       noTelepon: "",
       kategori: "level_1",
+      customTarif: "",
       alamat: "",
       rtRw: "",
       patokanLokasi: "",
@@ -150,6 +156,7 @@ export default function PelangganPage() {
       nama: p.nama,
       noTelepon: p.noTelepon,
       kategori: p.kategori || "level_1",
+      customTarif: p.customTarif ? p.customTarif.toString() : "",
       alamat: p.alamat,
       rtRw: p.rtRw || "",
       patokanLokasi: p.patokanLokasi || "",
@@ -562,7 +569,21 @@ export default function PelangganPage() {
                     <option value="level_4">🏢 Level 4 — Volume Sedang–Besar</option>
                     <option value="level_5">🏨 Level 5 — Volume Besar</option>
                     <option value="level_6">🏭 Level 6 — Volume Sangat Besar</option>
+                    <option value="level_7">🏗️ Level 7 — Volume Ekstra Besar</option>
+                    <option value="level_8">🏬 Level 8 — Volume Komersial Besar</option>
+                    <option value="level_9">🏥 Level 9 — Volume Maksimal</option>
+                    <option value="level_10">🏙️ Level 10 — Volume Korporat</option>
                   </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-black uppercase tracking-widest mb-2">Tarif Kustom (Rp/bulan, opsional)</label>
+                  <input
+                    type="number"
+                    value={form.customTarif}
+                    onChange={(e) => setForm({ ...form, customTarif: e.target.value })}
+                    className="w-full px-3 py-2 border-2 border-black focus:outline-none focus:ring-0 focus:bg-yellow-100 text-sm font-bold shadow-[4px_4px_0_0_rgba(0,0,0,1)]"
+                    placeholder="Kosongkan = pakai tarif Level"
+                  />
                 </div>
                 <div>
                   <label className="block text-xs font-black uppercase tracking-widest mb-2">Kelurahan *</label>

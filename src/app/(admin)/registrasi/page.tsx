@@ -26,6 +26,10 @@ const KATEGORI_OPTIONS = [
   { value: "level_4", label: "Level 4 — Volume Sedang–Besar", icon: "🏢" },
   { value: "level_5", label: "Level 5 — Volume Besar", icon: "🏨" },
   { value: "level_6", label: "Level 6 — Volume Sangat Besar", icon: "🏭" },
+  { value: "level_7", label: "Level 7 — Volume Ekstra Besar", icon: "🏗️" },
+  { value: "level_8", label: "Level 8 — Volume Komersial Besar", icon: "🏬" },
+  { value: "level_9", label: "Level 9 — Volume Maksimal", icon: "🏥" },
+  { value: "level_10", label: "Level 10 — Volume Korporat", icon: "🏙️" },
 ];
 
 const STATUS_OPTIONS = [

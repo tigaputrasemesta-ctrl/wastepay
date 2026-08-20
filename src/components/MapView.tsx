@@ -80,6 +80,10 @@ const KATEGORI_LABEL: Record<string, string> = {
   level_4: "Level 4 — Volume Sedang–Besar",
   level_5: "Level 5 — Volume Besar",
   level_6: "Level 6 — Volume Sangat Besar",
+  level_7: "Level 7 — Volume Ekstra Besar",
+  level_8: "Level 8 — Volume Komersial Besar",
+  level_9: "Level 9 — Volume Maksimal",
+  level_10: "Level 10 — Volume Korporat",
 };
 
 const TAGIHAN_LABEL: Record<string, string> = {
