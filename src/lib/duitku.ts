@@ -69,18 +69,35 @@ export function duitkuBaseUrl(): string {
     : "https://sandbox.duitku.com";
 }
 
+/** Menentukan Base URL aplikasi yang valid untuk webhook & return gateway. */
+export function getAppBaseUrl(): string {
+  // 1. Prioritaskan domain production utama Vercel (cth: wastepay.vercel.app)
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL.replace(/\/$/, "")}`;
+  }
+  // 2. Cek NEXT_PUBLIC_APP_URL atau APP_URL jika disetel eksplisit
+  const envUrl = process.env.NEXT_PUBLIC_APP_URL?.trim() || process.env.APP_URL?.trim() || "";
+  if (envUrl) {
+    return envUrl.replace(/\/$/, "");
+  }
+  // 3. Cek VERCEL_URL bawaan
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL.replace(/\/$/, "")}`;
+  }
+  // Fallback domain default production
+  return "https://wastepay.vercel.app";
+}
+
 /** URL callback (webhook) — WAJIB publik HTTPS saat production. */
 export function duitkuCallbackUrl(): string {
-  const base = process.env.NEXT_PUBLIC_APP_URL?.trim() || process.env.APP_URL?.trim() || "";
-  if (base) return `${base.replace(/\/$/, "")}/api/publik/duitku/notification`;
-  return `/api/publik/duitku/notification`; // relatif; dipakai saat localhost test manual
+  const base = getAppBaseUrl();
+  return `${base}/api/publik/duitku/notification`;
 }
 
 /** URL return (redirect setelah pembayaran selesai di Duitku). */
 export function duitkuReturnUrl(): string {
-  const base = process.env.NEXT_PUBLIC_APP_URL?.trim() || process.env.APP_URL?.trim() || "";
-  if (base) return `${base.replace(/\/$/, "")}/bayar-tagihan`;
-  return "/bayar-tagihan";
+  const base = getAppBaseUrl();
+  return `${base}/bayar-tagihan`;
 }
 
 /** HMAC-SHA256 hex lowercase — standar signature Duitku V2 (MD5 obsolete). */

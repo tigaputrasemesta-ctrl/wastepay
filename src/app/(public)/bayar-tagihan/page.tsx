@@ -11,6 +11,7 @@ import {
   labelMetodePembayaran,
 } from "@/lib/invoice-format";
 import { DUITKU_METHODS, duitkuChannelLabel } from "@/lib/duitku-channels";
+import AnimatedDumpTruck from "@/components/AnimatedDumpTruck";
 
 type MetodeBayar = { value: string; label: string; icon: string };
 
@@ -111,9 +112,11 @@ function BayarTagihanContent() {
       } else {
         setDetail(data);
         
-        // Bersihkan parameter dari URL dan ganti dengan invoice (agar lebih rapi)
-        if (!invoice && data.noInvoice) {
-          window.history.replaceState(null, "", `/bayar-tagihan?invoice=${encodeURIComponent(data.noInvoice)}`);
+        // Bersihkan parameter teknis dari URL dan ganti dengan invoice rapi
+        if (data.noInvoice) {
+          if (merchantOrderId || resultCode || statusParam || invoice !== data.noInvoice) {
+            window.history.replaceState(null, "", `/bayar-tagihan?invoice=${encodeURIComponent(data.noInvoice)}`);
+          }
         }
       }
     } catch {
@@ -121,7 +124,7 @@ function BayarTagihanContent() {
     } finally {
       setLoading(false);
     }
-  }, [invoice, merchantOrderId]);
+  }, [invoice, merchantOrderId, resultCode, statusParam]);
 
   useEffect(() => {
     if (invoice || merchantOrderId) {
@@ -184,9 +187,11 @@ function BayarTagihanContent() {
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3">
-        <div className="w-10 h-10 border-4 border-black border-t-transparent rounded-full animate-spin" />
-        <p className="font-bold text-sm tracking-widest uppercase text-gray-600">Memuat data tagihan...</p>
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
+        <AnimatedDumpTruck size="lg" theme="green" />
+        <p className="font-black text-sm tracking-widest uppercase text-gray-800 animate-pulse">
+          Memuat data tagihan...
+        </p>
       </div>
     );
   }
@@ -240,13 +245,15 @@ function BayarTagihanContent() {
 
       {/* Banner Cancel / Pembayaran Belum Selesai */}
       {statusBatal && (
-        <div className="hm-card bg-amber-100 border-2 border-black p-5 mb-6 flex items-start justify-between gap-4 shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
-          <div className="flex items-start gap-3">
-            <span className="text-2xl flex-shrink-0">⚠️</span>
+        <div className="hm-card bg-amber-50 border-2 border-black p-5 mb-6 flex items-start justify-between gap-4 shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 bg-amber-300 border-2 border-black rounded-full flex items-center justify-center shrink-0 font-black text-lg">
+              ℹ️
+            </div>
             <div>
-              <h4 className="font-black text-sm uppercase text-black">Pembayaran Dibatalkan / Belum Selesai</h4>
-              <p className="text-xs font-bold text-gray-700 mt-1">
-                Transaksi sebelumnya tidak diselesaikan. Tagihan Anda masih aktif. Silakan pilih kembali metode pembayaran di bawah untuk melakukan pembayaran baru.
+              <h4 className="font-black text-base uppercase text-black">Transaksi Belum Selesai</h4>
+              <p className="text-xs font-bold text-gray-700 mt-1 leading-relaxed">
+                Pembayaran Anda sebelumnya belum diselesaikan atau waktu transaksi telah berakhir. Tagihan Anda masih aktif dan saldo Anda aman. Silakan pilih kembali metode pembayaran di bawah untuk melanjutkan.
               </p>
             </div>
           </div>
@@ -263,13 +270,15 @@ function BayarTagihanContent() {
 
       {/* Banner Notifikasi Berhasil */}
       {statusSukses && !lunas && (
-        <div className="hm-card bg-green-100 border-2 border-black p-5 mb-6 flex items-start justify-between gap-4 shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
-          <div className="flex items-start gap-3">
-            <span className="text-2xl flex-shrink-0">⏳</span>
+        <div className="hm-card bg-green-50 border-2 border-black p-5 mb-6 flex items-start justify-between gap-4 shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 bg-green-400 border-2 border-black rounded-full flex items-center justify-center shrink-0 font-black text-lg">
+              ⏳
+            </div>
             <div>
-              <h4 className="font-black text-sm uppercase text-black">Pembayaran Sedang Diverifikasi</h4>
-              <p className="text-xs font-bold text-gray-700 mt-1">
-                Pembayaran Anda telah diterima oleh gateway dan sedang disinkronkan ke sistem. Status tagihan akan otomatis berubah menjadi Lunas.
+              <h4 className="font-black text-base uppercase text-black">Pembayaran Sedang Diverifikasi</h4>
+              <p className="text-xs font-bold text-gray-700 mt-1 leading-relaxed">
+                Pembayaran Anda telah diterima oleh gateway dan sedang disinkronkan ke sistem. Status tagihan akan otomatis diperbarui menjadi Lunas.
               </p>
             </div>
           </div>
@@ -347,27 +356,36 @@ function BayarTagihanContent() {
 
       {lunas ? (
         /* Tampilan Status Lunas */
-        <div className="hm-card bg-green-50 border-2 border-black p-8 text-center space-y-4">
-          <div className="w-16 h-16 bg-green-400 border-2 border-black rounded-full flex items-center justify-center mx-auto shadow-[3px_3px_0_0_rgba(0,0,0,1)] text-3xl font-black">
-            ✓
+        <div className="hm-card bg-green-50 border-2 border-black p-8 text-center space-y-5">
+          <div className="flex justify-center">
+            <AnimatedDumpTruck size="xl" theme="green" />
           </div>
           <div>
-            <h2 className="text-2xl font-black uppercase text-black">Tagihan Telah Dilunasi</h2>
+            <span className="inline-block bg-green-500 text-black border-2 border-black font-black uppercase text-xs px-3 py-1 mb-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+              ✓ PEMBAYARAN SUKSES
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-black uppercase text-black">Tagihan Telah Dilunasi</h2>
             <p className="text-xs font-bold text-gray-600 uppercase mt-1">
               Diterima pada: {detail.tanggalLunas ? formatTanggalWaktuIndo(detail.tanggalLunas) : formatTanggalWaktuIndo(new Date().toISOString())}
             </p>
           </div>
           {detail.pembayaranLunas && (
-            <p className="text-sm font-bold bg-white border-2 border-black py-2 px-4 inline-block">
+            <p className="text-sm font-bold bg-white border-2 border-black py-2 px-4 inline-block shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
               Metode: {labelMetodePembayaran(detail.pembayaranLunas.metode)}
             </p>
           )}
-          <div className="pt-2">
+          <div className="pt-2 flex flex-wrap justify-center gap-3">
             <Link
               href={invoiceUrl}
-              className="hm-btn-green py-3 px-8 text-sm font-black inline-block shadow-[4px_4px_0_0_rgba(0,0,0,1)]"
+              className="hm-btn-green py-3 px-6 text-sm font-black inline-block shadow-[4px_4px_0_0_rgba(0,0,0,1)]"
             >
               LIHAT KWITANSI / BUKTI PEMBAYARAN
+            </Link>
+            <Link
+              href="/lacak"
+              className="hm-btn py-3 px-6 text-sm font-black inline-block shadow-[4px_4px_0_0_rgba(0,0,0,1)]"
+            >
+              LACAK JADWAL TRUK
             </Link>
           </div>
         </div>
