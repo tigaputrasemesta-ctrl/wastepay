@@ -14,58 +14,6 @@ async function getStats() {
   const bulanIni = now.getMonth(); 
   const tahunIni = now.getFullYear();
 
-  const [
-    totalPelanggan,
-    pelangganAktif,
-    tagihanBulanIni,
-    totalTagihanBulanIni,
-    totalPembayaranBulanIni,
-    komplainBaru,
-    totalPetugas,
-  ] = await Promise.all([
-    prisma.pelanggan.count({ where: { deletedAt: null } }),
-    prisma.pelanggan.count({ where: { status: "aktif", deletedAt: null } }),
-    prisma.tagihan.count({
-      where: {
-        bulan: bulanIni + 1,
-        tahun: tahunIni,
-        status: { in: ["belum_bayar", "tunggakan"] },
-        deletedAt: null,
-      },
-    }),
-    prisma.tagihan.aggregate({
-      where: {
-        bulan: bulanIni + 1,
-        tahun: tahunIni,
-        deletedAt: null,
-      },
-      _sum: { jumlah: true },
-    }),
-    prisma.pembayaran.aggregate({
-      where: {
-        createdAt: {
-          gte: new Date(tahunIni, bulanIni, 1),
-        },
-        status: "terverifikasi",
-      },
-      _sum: { jumlah: true },
-    }),
-    prisma.komplain.count({ where: { status: "baru" } }),
-    prisma.petugas.count({ where: { aktif: true, deletedAt: null } }),
-  ]);
-
-  const startTren = new Date(tahunIni, bulanIni - 5, 1);
-  const [pembayaranTren, pengeluaranTren] = await Promise.all([
-    prisma.pembayaran.findMany({
-      where: { status: "terverifikasi", tanggal: { gte: startTren } },
-      select: { tanggal: true, jumlah: true },
-    }),
-    prisma.pengeluaran.findMany({
-      where: { tanggal: { gte: startTren } },
-      select: { tanggal: true, jumlah: true },
-    }),
-  ]);
-
   const bulanLabels: { bulan: number; tahun: number; label: string }[] = [];
   for (let i = 5; i >= 0; i--) {
     const d = new Date(tahunIni, bulanIni - i, 1);
@@ -75,73 +23,139 @@ async function getStats() {
       label: `${NAMA_BULAN[d.getMonth()]} '${String(d.getFullYear()).slice(2)}`,
     });
   }
-  const sumPerBulan = (rows: { tanggal: Date; jumlah: number }[]) =>
-    bulanLabels.map((m) =>
-      Math.round(
-        rows
-          .filter(
-            (r) => r.tanggal.getMonth() + 1 === m.bulan && r.tanggal.getFullYear() === m.tahun
-          )
-          .reduce((s, r) => s + r.jumlah, 0)
-      )
-    );
-  const pemasukanTren = sumPerBulan(pembayaranTren);
-  const pengeluaranTrenArr = sumPerBulan(pengeluaranTren);
-  const maxTren = Math.max(1, ...pemasukanTren, ...pengeluaranTrenArr);
 
-  const tunggakanRows = await prisma.tagihan.findMany({
-    where: { deletedAt: null, status: { in: ["belum_bayar", "tunggakan"] } },
-    select: {
-      pelangganId: true,
-      jumlah: true,
-      denda: true,
-      pelanggan: {
-        select: {
-          nama: true,
-          kodePelanggan: true,
-          kelurahan: { select: { nama: true } },
+  const fallback = {
+    totalPelanggan: 0,
+    pelangganAktif: 0,
+    tagihanBulanIni: 0,
+    totalTagihanBulanIni: 0,
+    totalPembayaranBulanIni: 0,
+    komplainBaru: 0,
+    totalPetugas: 0,
+    bulanLabels,
+    pemasukanTren: [0, 0, 0, 0, 0, 0],
+    pengeluaranTren: [0, 0, 0, 0, 0, 0],
+    maxTren: 1,
+    topTunggakan: [] as { nama: string; kode: string; wilayah: string; total: number; jumlahTagihan: number }[],
+  };
+
+  try {
+    const [totalPelanggan, pelangganAktif, tagihanBulanIni, totalTagihanBulanIni, totalPembayaranBulanIni, komplainBaru, totalPetugas] = await Promise.all([
+      prisma.pelanggan.count({ where: { deletedAt: null } }),
+      prisma.pelanggan.count({ where: { status: "aktif", deletedAt: null } }),
+      prisma.tagihan.count({
+        where: {
+          bulan: bulanIni + 1,
+          tahun: tahunIni,
+          status: { in: ["belum_bayar", "tunggakan"] },
+          deletedAt: null,
+        },
+      }),
+      prisma.tagihan.aggregate({
+        where: {
+          bulan: bulanIni + 1,
+          tahun: tahunIni,
+          deletedAt: null,
+        },
+        _sum: { jumlah: true },
+      }),
+      prisma.pembayaran.aggregate({
+        where: {
+          createdAt: {
+            gte: new Date(tahunIni, bulanIni, 1),
+          },
+          status: "terverifikasi",
+        },
+        _sum: { jumlah: true },
+      }),
+      prisma.komplain.count({ where: { status: "baru" } }),
+      prisma.petugas.count({ where: { aktif: true, deletedAt: null } }),
+    ]);
+
+    const startTren = new Date(tahunIni, bulanIni - 5, 1);
+    const [pembayaranTren, pengeluaranTren] = await Promise.all([
+      prisma.pembayaran.findMany({
+        where: { status: "terverifikasi", tanggal: { gte: startTren } },
+        select: { tanggal: true, jumlah: true },
+      }),
+      prisma.pengeluaran.findMany({
+        where: { tanggal: { gte: startTren } },
+        select: { tanggal: true, jumlah: true },
+      }),
+    ]);
+
+    const sumPerBulan = (rows: { tanggal: Date; jumlah: number }[]) =>
+      bulanLabels.map((m) =>
+        Math.round(
+          rows
+            .filter(
+              (r) => r.tanggal.getMonth() + 1 === m.bulan && r.tanggal.getFullYear() === m.tahun
+            )
+            .reduce((s, r) => s + r.jumlah, 0)
+        )
+      );
+    const pemasukanTren = sumPerBulan(pembayaranTren);
+    const pengeluaranTrenArr = sumPerBulan(pengeluaranTren);
+    const maxTren = Math.max(1, ...pemasukanTren, ...pengeluaranTrenArr);
+
+    const tunggakanRows = await prisma.tagihan.findMany({
+      where: { deletedAt: null, status: { in: ["belum_bayar", "tunggakan"] } },
+      select: {
+        pelangganId: true,
+        jumlah: true,
+        denda: true,
+        pelanggan: {
+          select: {
+            nama: true,
+            kodePelanggan: true,
+            kelurahan: { select: { nama: true } },
+          },
         },
       },
-    },
-  });
-  const tunggakanMap = new Map<
-    number,
-    { nama: string; kode: string; wilayah: string; total: number; jumlahTagihan: number }
-  >();
-  for (const t of tunggakanRows) {
-    const ada = tunggakanMap.get(t.pelangganId);
-    const total = t.jumlah + (t.denda ?? 0);
-    if (ada) {
-      ada.total += total;
-      ada.jumlahTagihan += 1;
-    } else {
-      tunggakanMap.set(t.pelangganId, {
-        nama: t.pelanggan.nama,
-        kode: t.pelanggan.kodePelanggan,
-        wilayah: t.pelanggan.kelurahan?.nama ?? "—",
-        total,
-        jumlahTagihan: 1,
-      });
+      take: 20,
+    });
+    const tunggakanMap = new Map<
+      number,
+      { nama: string; kode: string; wilayah: string; total: number; jumlahTagihan: number }
+    >();
+    for (const t of tunggakanRows) {
+      const ada = tunggakanMap.get(t.pelangganId);
+      const total = t.jumlah + (t.denda ?? 0);
+      if (ada) {
+        ada.total += total;
+        ada.jumlahTagihan += 1;
+      } else {
+        tunggakanMap.set(t.pelangganId, {
+          nama: t.pelanggan.nama,
+          kode: t.pelanggan.kodePelanggan,
+          wilayah: t.pelanggan.kelurahan?.nama ?? "—",
+          total,
+          jumlahTagihan: 1,
+        });
+      }
     }
-  }
-  const topTunggakan = [...tunggakanMap.values()]
-    .sort((a, b) => b.total - a.total)
-    .slice(0, 5);
+    const topTunggakan = [...tunggakanMap.values()]
+      .sort((a, b) => b.total - a.total)
+      .slice(0, 5);
 
-  return {
-    totalPelanggan,
-    pelangganAktif,
-    tagihanBulanIni,
-    totalTagihanBulanIni: totalTagihanBulanIni._sum.jumlah || 0,
-    totalPembayaranBulanIni: totalPembayaranBulanIni._sum.jumlah || 0,
-    komplainBaru,
-    totalPetugas,
-    bulanLabels,
-    pemasukanTren,
-    pengeluaranTren: pengeluaranTrenArr,
-    maxTren,
-    topTunggakan,
-  };
+    return {
+      totalPelanggan,
+      pelangganAktif,
+      tagihanBulanIni,
+      totalTagihanBulanIni: totalTagihanBulanIni._sum.jumlah || 0,
+      totalPembayaranBulanIni: totalPembayaranBulanIni._sum.jumlah || 0,
+      komplainBaru,
+      totalPetugas,
+      bulanLabels,
+      pemasukanTren,
+      pengeluaranTren: pengeluaranTrenArr,
+      maxTren,
+      topTunggakan,
+    };
+  } catch (err) {
+    console.error("getStats dashboard error:", err);
+    return fallback;
+  }
 }
 
 export default async function DashboardPage() {
