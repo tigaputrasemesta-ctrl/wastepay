@@ -184,6 +184,7 @@ model Petugas {
   kelurahan   Kelurahan? @relation("PetugasKelurahan", fields: [kelurahanId], references: [id])
   userId      Int?       @unique // link ke akun login User
   user        User?      @relation(fields: [userId], references: [id])
+  trackingToken String? @unique // token untuk background GPS tracking (native)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   deletedAt   DateTime? // soft delete

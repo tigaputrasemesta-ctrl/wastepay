@@ -24,6 +24,9 @@ const config: CapacitorConfig = {
   },
   android: {
     allowMixedContent: true,
+    // Wajib untuk background geolocation: mencegah update lokasi berhenti
+    // setelah ~5 menit di background (lihat plugin background-geolocation).
+    useLegacyBridge: true,
   },
 };
 

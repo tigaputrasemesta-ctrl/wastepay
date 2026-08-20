@@ -4,4 +4,8 @@
     <string name="title_activity_main">O2W Lapangan</string>
     <string name="package_name">id.o2whero.lapangan</string>
     <string name="custom_url_scheme">id.o2whero.lapangan</string>
+    <!-- Konfigurasi notifikasi background geolocation -->
+    <string name="capacitor_background_geolocation_notification_channel_name">GPS Armada O2W</string>
+    <string name="capacitor_background_geolocation_notification_icon">drawable/ic_tracking</string>
+    <string name="capacitor_background_geolocation_notification_color">#16a34a</string>
 </resources>

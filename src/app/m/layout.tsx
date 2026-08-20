@@ -7,6 +7,8 @@ import { ToastProvider } from "@/components/Toast";
 import { useUser } from "@/hooks/useUser";
 import { cn } from "@/lib/utils";
 import MobileTracker from "@/components/mobile/MobileTracker";
+import BackgroundTracker from "@/components/mobile/BackgroundTracker";
+import VersionCheck from "@/components/mobile/VersionCheck";
 
 type Profil = {
   id: number;
@@ -149,11 +151,13 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
 
         <main className="flex-1 w-full max-w-lg mx-auto px-3 py-4 space-y-4">
           <MobileTracker />
+          <BackgroundTracker />
           {children}
         </main>
 
         <BottomNav pathname={pathname} jabatan={jabatan} />
       </div>
+      <VersionCheck />
     </ToastProvider>
   );
 }
