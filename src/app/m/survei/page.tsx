@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import CameraGps from "@/components/mobile/CameraGps";
 
-export const dynamic = "force-dynamic";
 
 type Calon = {
   id: number;

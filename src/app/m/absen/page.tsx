@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 
-export const dynamic = "force-dynamic";
 
 type StatusAbsen = {
   id: number;

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { todayLocalISO } from "@/lib/utils";
 
-export const dynamic = "force-dynamic";
 
 type Profil = {
   id: number;

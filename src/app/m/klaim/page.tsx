@@ -5,7 +5,6 @@ import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import CameraGps from "@/components/mobile/CameraGps";
 
-export const dynamic = "force-dynamic";
 
 type Klaim = {
   id: number;
