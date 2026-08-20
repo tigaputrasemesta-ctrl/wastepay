@@ -3,6 +3,8 @@
 import "leaflet/dist/leaflet.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
+// Gaya marker/popup/tooltip brutalist — dipakai juga oleh /peta/tv (layar besar)
+import "../app/(admin)/peta/peta.css";
 import "@/lib/leaflet-setup";
 import "leaflet.markercluster";
 import { useEffect, useMemo, useRef, useState } from "react";

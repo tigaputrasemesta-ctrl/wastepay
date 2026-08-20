@@ -278,7 +278,9 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Halaman publik
-  if (pathname === "/login" || pathname === "/bayar") {
+  // /peta/tv dilindungi token TV (env TV_VIEW_TOKEN) di dalam page-nya sendiri,
+  // bukan lewat sesi login — biarkan lolos proxy agar browser kiosk bisa akses.
+  if (pathname === "/login" || pathname === "/bayar" || pathname === "/peta/tv") {
     return NextResponse.next();
   }
 
