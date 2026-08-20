@@ -88,6 +88,108 @@ const TAGIHAN_LABEL: Record<string, string> = {
   tunggakan: "Tunggakan",
 };
 
+type KelurahanGeomItem = {
+  nama: string;
+  center: [number, number];
+  polygons: [number, number][][];
+  warna: string;
+};
+
+function computeKelurahanGeom(): KelurahanGeomItem[] {
+  const pts = RT_RTRW_DEPOK.map((rt) =>
+    point([rt.lng, rt.lat], { kelurahan: rt.kelurahan.toUpperCase(), warna: rt.warna })
+  );
+  const fc = featureCollection(pts);
+  const bbox: [number, number, number, number] = [
+    DEPOK_BOUNDS.minLng,
+    DEPOK_BOUNDS.minLat,
+    DEPOK_BOUNDS.maxLng,
+    DEPOK_BOUNDS.maxLat,
+  ];
+
+  let voronoiPolygons;
+  try {
+    voronoiPolygons = voronoi(fc, { bbox });
+  } catch (err) {
+    console.warn("Voronoi failed:", err);
+    return [];
+  }
+
+  if (!voronoiPolygons || !voronoiPolygons.features) return [];
+
+  const map = new Map<
+    string,
+    {
+      latSum: number;
+      lngSum: number;
+      points: number[][];
+      warna: string;
+      feature: (typeof voronoiPolygons.features)[0] | null;
+    }
+  >();
+
+  voronoiPolygons.features.forEach((poly, idx) => {
+    if (!poly) return;
+    const rtProps = pts[idx].properties;
+    if (!rtProps) return;
+    const k = rtProps.kelurahan;
+
+    const st = map.get(k) ?? {
+      latSum: 0,
+      lngSum: 0,
+      points: [],
+      warna: rtProps.warna,
+      feature: null,
+    };
+    st.latSum += RT_RTRW_DEPOK[idx].lat;
+    st.lngSum += RT_RTRW_DEPOK[idx].lng;
+    st.points.push([RT_RTRW_DEPOK[idx].lng, RT_RTRW_DEPOK[idx].lat]);
+
+    if (!st.feature) {
+      st.feature = poly;
+    } else {
+      try {
+        // @ts-expect-error turf union overload compatibility
+        st.feature = union(st.feature, poly);
+      } catch {
+        // fallback if union fails
+      }
+    }
+
+    map.set(k, st);
+  });
+
+  const result: KelurahanGeomItem[] = [];
+
+  for (const [nama, st] of map.entries()) {
+    let polyCoords: [number, number][][] = [];
+    const geom = st.feature?.geometry as { type?: string; coordinates?: number[][][] | number[][][][] } | undefined;
+    if (geom && geom.coordinates) {
+      if (geom.type === "Polygon") {
+        const coords = geom.coordinates as number[][][];
+        if (coords[0]) {
+          polyCoords = [coords[0].map((coord: number[]) => [coord[1], coord[0]])];
+        }
+      } else if (geom.type === "MultiPolygon") {
+        const coords = geom.coordinates as number[][][][];
+        polyCoords = coords.map((poly: number[][][]) =>
+          poly[0].map((coord: number[]) => [coord[1], coord[0]])
+        );
+      }
+    }
+
+    result.push({
+      nama,
+      center: [st.latSum / st.points.length, st.lngSum / st.points.length],
+      polygons: polyCoords,
+      warna: st.warna,
+    });
+  }
+  return result;
+}
+
+const KELURAHAN_GEOM: KelurahanGeomItem[] = computeKelurahanGeom();
+
 function esc(s: string): string {
   return s
     .replace(/&/g, "&amp;")
@@ -458,68 +560,8 @@ export default function MapView({
   const ruteUrut = useMemo(() => urutkanRute(ruteTitik), [ruteTitik]);
   const jarakRute = useMemo(() => panjangRute(ruteUrut), [ruteUrut]);
 
-  // Hitung titik tengah (centroid) dan batas polygon (voronoi union) untuk tiap kelurahan
-  const kelurahanGeom = useMemo(() => {
-    const pts = RT_RTRW_DEPOK.map((rt) => point([rt.lng, rt.lat], { kelurahan: rt.kelurahan.toUpperCase(), warna: rt.warna }));
-    const fc = featureCollection(pts);
-    const bbox: [number, number, number, number] = [DEPOK_BOUNDS.minLng, DEPOK_BOUNDS.minLat, DEPOK_BOUNDS.maxLng, DEPOK_BOUNDS.maxLat];
-    
-    let voronoiPolygons;
-    try {
-      voronoiPolygons = voronoi(fc, { bbox });
-    } catch (e) {
-      console.warn("Voronoi failed:", e);
-      return [];
-    }
-
-    const map = new Map<string, { latSum: number; lngSum: number; points: number[][]; warna: string; feature: any }>();
-
-    voronoiPolygons.features.forEach((poly: any, idx: number) => {
-      if (!poly) return;
-      const rtProps = pts[idx].properties;
-      if (!rtProps) return;
-      const k = rtProps.kelurahan;
-      
-      const st = map.get(k) ?? { latSum: 0, lngSum: 0, points: [], warna: rtProps.warna, feature: null };
-      st.latSum += RT_RTRW_DEPOK[idx].lat;
-      st.lngSum += RT_RTRW_DEPOK[idx].lng;
-      st.points.push([RT_RTRW_DEPOK[idx].lng, RT_RTRW_DEPOK[idx].lat]);
-
-      if (!st.feature) {
-        st.feature = poly;
-      } else {
-        try {
-          // @ts-ignore
-          st.feature = union(st.feature, poly);
-        } catch (e) {
-          // fallback if union fails
-        }
-      }
-      
-      map.set(k, st);
-    });
-
-    const result: { nama: string; center: [number, number]; polygons: [number, number][][]; warna: string }[] = [];
-    
-    for (const [nama, st] of map.entries()) {
-      let polyCoords: [number, number][][] = [];
-      if (st.feature && st.feature.geometry) {
-        if (st.feature.geometry.type === "Polygon") {
-          polyCoords = [st.feature.geometry.coordinates[0].map((coord: number[]) => [coord[1], coord[0]])];
-        } else if (st.feature.geometry.type === "MultiPolygon") {
-          polyCoords = st.feature.geometry.coordinates.map((poly: number[][][]) => poly[0].map((coord: number[]) => [coord[1], coord[0]]));
-        }
-      }
-
-      result.push({ 
-        nama, 
-        center: [st.latSum / st.points.length, st.lngSum / st.points.length],
-        polygons: polyCoords,
-        warna: st.warna
-      });
-    }
-    return result;
-  }, []);
+  // Titik tengah (centroid) dan batas polygon kelurahan (static geometry)
+  const kelurahanGeom = KELURAHAN_GEOM;
 
   const sel = pelanggan.find((p) => p.id === selectedId);
   const pusat =

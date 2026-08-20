@@ -275,15 +275,13 @@ async function seed() {
 
   // ---- 8. Absensi ---------------------------------------------------------
   step("Absensi uji");
-  for (const [i, jab] of [["angkut", "angkut,tagih,survei"]]) {
-    await prisma.absensi.create({
-      data: {
-        petugasId: profilPetugas.id, waktuMasuk: new Date(hariIni.getTime() + 2 * 3600e3),
-        lokasiMasuk: JSON.stringify({ lat: -6.4005, lng: 106.8242, accuracy: 12 }),
-        status: "hadir",
-      },
-    });
-  }
+  await prisma.absensi.create({
+    data: {
+      petugasId: profilPetugas.id, waktuMasuk: new Date(hariIni.getTime() + 2 * 3600e3),
+      lokasiMasuk: JSON.stringify({ lat: -6.4005, lng: 106.8242, accuracy: 12 }),
+      status: "hadir",
+    },
+  });
   log("  absensi: 1 (hadir)");
 
   // ---- 9. Klaim -----------------------------------------------------------
