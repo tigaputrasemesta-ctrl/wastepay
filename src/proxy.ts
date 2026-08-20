@@ -282,7 +282,7 @@ export async function proxy(request: NextRequest) {
   // bukan lewat sesi login — biarkan lolos proxy agar browser kiosk bisa akses.
   console.log("[PROXY DEBUG] pathname:", pathname);
   const lowerPath = pathname.toLowerCase();
-  if (lowerPath === "/login" || lowerPath === "/login/" || lowerPath === "/bayar" || lowerPath === "/bayar/" || lowerPath.startsWith("/peta/tv")) {
+  if (lowerPath === "/login" || lowerPath === "/login/" || lowerPath === "/bayar" || lowerPath === "/bayar/" || lowerPath.startsWith("/peta/tv") || lowerPath.startsWith("/live")) {
     return NextResponse.next();
   }
 
