@@ -1,0 +1,102 @@
+name: Build & Release APK
+
+# Membuild APK release (signed, kunci stabil) lalu:
+# 1. Commit APK ke public/apk/ → otomatis ter-deploy ke Vercel (link unduh publik).
+# 2. Upload ke GitHub Releases (arsip).
+#
+# Trigger:
+#   - push tag "v*"  (mis. v1.2.0) → rilis versi tersebut
+#   - workflow_dispatch (manual) → update rilis "apk-latest"
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apk-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      - name: Extract version
+        id: ver
+        run: |
+          VERSION_NAME=$(grep -oP 'versionName "\K[^"]+' android/app/build.gradle | head -1)
+          VERSION_CODE=$(grep -oP 'versionCode \K[0-9]+' android/app/build.gradle | head -1)
+          echo "versionName=$VERSION_NAME" >> "$GITHUB_OUTPUT"
+          echo "versionCode=$VERSION_CODE" >> "$GITHUB_OUTPUT"
+          echo "versionName=$VERSION_NAME"
+
+      - name: Build release APK
+        run: cd android && ./gradlew assembleRelease --no-daemon
+
+      - name: Copy APK to public
+        run: |
+          mkdir -p public/apk
+          cp android/app/build/outputs/apk/release/app-release.apk public/apk/O2W-Lapangan.apk
+          ls -la public/apk/
+
+      - name: Commit APK to repo (served via Vercel)
+        run: |
+          git config user.email "ci@o2whero.local"
+          git config user.name "O2W CI"
+          git fetch origin master
+          git checkout -B master origin/master
+          git add public/apk/O2W-Lapangan.apk
+          if git diff --cached --quiet; then
+            echo "APK unchanged, skip commit"
+          else
+            git commit -m "chore(apk): update APK v${{ steps.ver.outputs.versionName }}"
+            git push origin master
+          fi
+
+      - name: Ensure apk-latest tag (dispatch)
+        if: github.ref_type != 'tag'
+        run: |
+          git tag -f apk-latest
+          git push -f origin apk-latest
+
+      - name: Publish GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ github.ref_type == 'tag' && github.ref_name || 'apk-latest' }}
+          name: "O2W Lapangan v${{ steps.ver.outputs.versionName }}"
+          body: "APK build otomatis (versionCode ${{ steps.ver.outputs.versionCode }}).\n\nLink unduh publik: https://o2w.vercel.app/apk/O2W-Lapangan.apk"
+          allowUpdates: true
+          replacesArtifacts: true
+          artifactErrorsFailBuild: true
+          artifacts: public/apk/O2W-Lapangan.apk
+          artifactContentType: application/vnd.android.package-archive
+          token: ${{ secrets.GITHUB_TOKEN }}

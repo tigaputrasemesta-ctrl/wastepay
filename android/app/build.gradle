@@ -16,10 +16,22 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    // Kunci penandatanganan APK (stabil antar-build agar update bisa menimpa
+    // versi lama tanpa uninstall). Keystore: android/app/keystore/o2w-release.p12
+    // PERHATIAN: file ini berisi private key — jangan di-share ke publik.
+    signingConfigs {
+        release {
+            storeFile file("keystore/o2w-release.p12")
+            storePassword "o2whero2026"
+            keyAlias "o2wlapangan"
+            keyPassword "o2whero2026"
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 }

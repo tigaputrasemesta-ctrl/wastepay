@@ -22,5 +22,10 @@ export const MOBILE_VERSION = {
 };
 
 export function getApkUrl(): string {
-  return process.env.MOBILE_APK_URL || "";
+  // Default: APK di-serve publik oleh Vercel dari folder public/apk/ (hasil CI).
+  // Bisa di-override lewat env MOBILE_APK_URL bila APK di-hosting di tempat lain.
+  return (
+    process.env.MOBILE_APK_URL ||
+    "https://o2w.vercel.app/apk/O2W-Lapangan.apk"
+  );
 }
