@@ -14,6 +14,7 @@ type Rute = {
   jam?: string;
   aktif: boolean;
   kelurahan?: Kelurahan | null;
+  kelurahans?: Kelurahan[];
   zona?: { id: number; nama: string; kelurahanId: number } | null;
   zonas?: { id: number; nama: string; kelurahanId: number }[];
   petugas?: Petugas;
@@ -36,7 +37,7 @@ export default function RutePage() {
   const [editing, setEditing] = useState<Rute | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Rute | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [form, setForm] = useState({ nama: "", hari: "Senin,Rabu,Jumat", jam: "", kelurahanId: "", zonaId: "", zonaIds: [] as string[], petugasId: "" });
+  const [form, setForm] = useState({ nama: "", hari: "Senin,Rabu,Jumat", jam: "", kelurahanId: "", kelurahanIds: [] as string[], zonaId: "", zonaIds: [] as string[], petugasId: "" });
 
   const fetchData = useCallback(async () => {
     try {
@@ -64,7 +65,7 @@ export default function RutePage() {
 
   function openCreate() {
     setEditing(null);
-    setForm({ nama: "", hari: "Senin,Rabu,Jumat", jam: "", kelurahanId: "", zonaId: "", zonaIds: [], petugasId: "" });
+    setForm({ nama: "", hari: "Senin,Rabu,Jumat", jam: "", kelurahanId: "", kelurahanIds: [], zonaId: "", zonaIds: [], petugasId: "" });
     setShowForm(true);
   }
 
@@ -79,11 +80,19 @@ export default function RutePage() {
       currentZonaIds = [r.zona.id.toString()];
     }
 
+    let currentKelurahanIds: string[] = [];
+    if (r.kelurahans && r.kelurahans.length > 0) {
+      currentKelurahanIds = r.kelurahans.map(k => k.id.toString());
+    } else if (r.kelurahan) {
+      currentKelurahanIds = [r.kelurahan.id.toString()];
+    }
+
     setForm({
       nama: r.nama,
       hari: r.hari,
       jam: r.jam || "",
       kelurahanId: r.kelurahan?.id ? r.kelurahan.id.toString() : "",
+      kelurahanIds: currentKelurahanIds,
       zonaId: r.zona?.id ? r.zona.id.toString() : "",
       zonaIds: currentZonaIds,
       petugasId: r.petugas?.id?.toString() || "",
@@ -91,16 +100,31 @@ export default function RutePage() {
     setShowForm(true);
   }
 
-  function pilihKelurahan(id: string) {
-    const k = kelurahanList.find((x) => x.id.toString() === id);
-    // Auto-fill nama rute dari kelurahan bila nama masih kosong;
-    // reset zona (zona selalu di bawah kelurahan).
+  function toggleKelurahan(id: string) {
+    const isChecked = form.kelurahanIds.includes(id) || form.kelurahanId === id;
+    let newKelurahanIds = isChecked 
+      ? form.kelurahanIds.filter(x => x !== id) 
+      : [...form.kelurahanIds, id];
+    
+    // Fallback if empty but kelurahanId was set
+    if (isChecked && form.kelurahanId === id) {
+       newKelurahanIds = form.kelurahanIds.filter(x => x !== id);
+    }
+
+    // Auto-fill nama rute jika masih kosong
+    let nama = form.nama;
+    if (form.nama.trim() === "" && newKelurahanIds.length > 0) {
+      const k = kelurahanList.find((x) => x.id.toString() === newKelurahanIds[0]);
+      nama = `Angkut ${k?.nama ?? ""}`.trim();
+    }
+
     setForm((f) => ({
       ...f,
-      kelurahanId: id,
+      kelurahanId: "",
+      kelurahanIds: newKelurahanIds,
       zonaId: "",
-      zonaIds: [],
-      nama: f.nama.trim() === "" ? `Angkut ${k?.nama ?? ""}`.trim() : f.nama,
+      zonaIds: [], // Reset zona if kelurahan changes
+      nama,
     }));
   }
 
@@ -216,10 +240,14 @@ export default function RutePage() {
                 <tr><td colSpan={9} className="px-4 py-8 text-center text-gray-400 font-bold">Belum ada rute</td></tr>
               ) : (
                 rute.map((r) => (
-                  <tr key={r.id} className="border-b border-2 border-black hover:bg-gray-100 border-2 border-black">
+                  <tr key={r.id} className="border-b border-2 border-black hover:bg-gray-100">
                     <td className="px-4 py-3 font-medium text-black font-black">{r.nama}</td>
                     <td className="px-4 py-3">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium bg-sky-400/10 text-sky-400 border border-sky-500/30">{r.kelurahan?.nama ?? "—"}</span>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium bg-sky-400/10 text-sky-400 border border-sky-500/30">
+                        {r.kelurahans && r.kelurahans.length > 0 
+                          ? r.kelurahans.map(k => k.nama).join(", ")
+                          : r.kelurahan?.nama ?? "—"}
+                      </span>
                     </td>
                     <td className="px-4 py-3">
                       <span className="inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium bg-purple-400/10 text-purple-500 border border-purple-500/30">
@@ -305,7 +333,11 @@ export default function RutePage() {
               </button>
             </div>
             <div className="text-xs text-gray-600 font-bold space-y-1">
-              <p>📍 {r.kelurahan?.nama ?? "—"}</p>
+              {(r.kelurahans && r.kelurahans.length > 0) ? (
+                <p>📍 {r.kelurahans.map(k => k.nama).join(", ")}</p>
+              ) : (
+                <p>📍 {r.kelurahan?.nama ?? "—"}</p>
+              )}
               {(r.zonas && r.zonas.length > 0) ? (
                 <p>🗺️ Zona {r.zonas.map(z => z.nama).join(", ")}</p>
               ) : r.zona?.nama ? (
@@ -344,18 +376,38 @@ export default function RutePage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Kelurahan *</label>
-                <select value={form.kelurahanId} onChange={(e) => pilihKelurahan(e.target.value)} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" required>
-                  <option value="">Pilih Kelurahan</option>
-                  {kelurahanList.map((k) => <option key={k.id} value={k.id}>{k.nama}{k.kecamatan ? ` · ${k.kecamatan}` : ""}</option>)}
-                </select>
+                <div className="grid grid-cols-2 gap-2">
+                  {kelurahanList.map((k) => {
+                    const idStr = k.id.toString();
+                    const checked = form.kelurahanIds.includes(idStr) || form.kelurahanId === idStr;
+                    return (
+                      <label
+                        key={k.id}
+                        className={`flex items-center justify-center px-2 py-2 border rounded-none text-xs cursor-pointer transition ${
+                          checked
+                            ? "bg-green-400/15 border-vest text-green-600 font-semibold"
+                            : "bg-hm-card bg-white p-0 overflow-hidden border-2 border-black text-gray-600 font-bold hover:bg-gray-100"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          className="hidden"
+                          checked={checked}
+                          onChange={() => toggleKelurahan(idStr)}
+                        />
+                        {k.nama} {k.kecamatan ? ` · ${k.kecamatan}` : ""}
+                      </label>
+                    );
+                  })}
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Zona Angkut</label>
-                {(!form.kelurahanId || zonaList.filter((z) => z.kelurahanId === parseInt(form.kelurahanId)).length === 0) ? (
+                {(form.kelurahanIds.length === 0 && !form.kelurahanId) || zonaList.filter((z) => form.kelurahanIds.includes(z.kelurahanId.toString()) || z.kelurahanId.toString() === form.kelurahanId).length === 0 ? (
                   <div className="text-xs text-gray-400 italic py-2">Pilih kelurahan terlebih dahulu atau kelurahan belum memiliki zona.</div>
                 ) : (
                   <div className="grid grid-cols-2 gap-2">
-                    {zonaList.filter((z) => z.kelurahanId === parseInt(form.kelurahanId)).map((z) => {
+                    {zonaList.filter((z) => form.kelurahanIds.includes(z.kelurahanId.toString()) || z.kelurahanId.toString() === form.kelurahanId).map((z) => {
                       const idStr = z.id.toString();
                       const checked = form.zonaIds.includes(idStr) || form.zonaId === idStr;
                       return (

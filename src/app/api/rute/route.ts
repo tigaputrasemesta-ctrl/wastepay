@@ -7,12 +7,13 @@ export async function GET() {
   const rute = await prisma.rute.findMany({
     include: {
       kelurahan: { select: { id: true, nama: true, kecamatan: true } },
+      kelurahans: { select: { id: true, nama: true, kecamatan: true } },
       zona: { select: { id: true, nama: true, kelurahanId: true } },
       zonas: { select: { id: true, nama: true, kelurahanId: true } },
       petugas: { select: { id: true, nama: true, jabatan: true } },
       _count: { select: { jadwal: true } },
     },
-    orderBy: [{ kelurahan: { nama: "asc" } }, { nama: "asc" }],
+    orderBy: [{ nama: "asc" }], // Changed orderBy since kelurahan is no longer 1:1
   });
   return NextResponse.json(rute);
 }
@@ -20,9 +21,18 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { nama, hari, jam, kelurahanId, petugasId, zonaId, zonaIds, aktif } = body;
+    const { nama, hari, jam, kelurahanId, kelurahanIds, petugasId, zonaId, zonaIds, aktif } = body;
 
-    if (!nama || !hari || !kelurahanId) {
+    // Support single kelurahanId or multiple kelurahanIds
+    const parsedKelurahanIds: number[] = [];
+    if (kelurahanIds && Array.isArray(kelurahanIds)) {
+      parsedKelurahanIds.push(...kelurahanIds.map((k: string) => parseInt(k)).filter(n => !isNaN(n)));
+    } else if (kelurahanId) {
+      parsedKelurahanIds.push(parseInt(kelurahanId));
+    }
+    const kelurahanIdAkhir = parsedKelurahanIds.length > 0 ? parsedKelurahanIds[0] : null;
+
+    if (!nama || !hari || parsedKelurahanIds.length === 0) {
       return NextResponse.json({ error: "Nama, hari, dan kelurahan harus diisi" }, { status: 400 });
     }
 
@@ -40,7 +50,7 @@ export async function POST(request: Request) {
         where: { id: { in: parsedZonaIds } },
         select: { id: true, kelurahanId: true },
       });
-      if (zonas.some((z) => z.kelurahanId !== parseInt(kelurahanId))) {
+      if (zonas.some((z) => !parsedKelurahanIds.includes(z.kelurahanId))) {
         return NextResponse.json({ error: "Zona tidak sesuai dengan kelurahan yang dipilih" }, { status: 400 });
       }
     }
@@ -51,13 +61,15 @@ export async function POST(request: Request) {
         hari,
         jam,
         aktif: aktif == null ? true : toBoolean(aktif),
-        kelurahanId: parseInt(kelurahanId),
+        kelurahanId: kelurahanIdAkhir,
+        kelurahans: parsedKelurahanIds.length > 0 ? { connect: parsedKelurahanIds.map((id) => ({ id })) } : undefined,
         zonaId: zonaIdAkhir,
         zonas: parsedZonaIds.length > 0 ? { connect: parsedZonaIds.map((id) => ({ id })) } : undefined,
         petugasId: petugasId ? parseInt(petugasId) : null,
       },
       include: {
         kelurahan: { select: { id: true, nama: true, kecamatan: true } },
+        kelurahans: { select: { id: true, nama: true, kecamatan: true } },
         zona: { select: { id: true, nama: true } },
         petugas: { select: { id: true, nama: true } },
       },

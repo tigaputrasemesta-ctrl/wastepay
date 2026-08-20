@@ -42,11 +42,12 @@ model Kelurahan {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  wilayah   Wilayah[] @relation("WilayahKelurahan")
-  petugas   Petugas[] @relation("PetugasKelurahan")
-  zona      Zona[]
-  rute      Rute[]
-  pelanggan Pelanggan[]
+  wilayah        Wilayah[] @relation("WilayahKelurahan")
+  petugas        Petugas[] @relation("PetugasKelurahan")
+  zona           Zona[]
+  rute           Rute[]
+  ruteKelurahans Rute[]    @relation("RuteKelurahans")
+  pelanggan      Pelanggan[]
 }
 
 model Wilayah {
@@ -265,6 +266,7 @@ model Rute {
   wilayah     Wilayah?  @relation(fields: [wilayahId], references: [id])
   kelurahanId Int?
   kelurahan   Kelurahan? @relation(fields: [kelurahanId], references: [id])
+  kelurahans  Kelurahan[] @relation("RuteKelurahans")
   zonaId      Int?
   zona        Zona?     @relation(fields: [zonaId], references: [id])
   zonas       Zona[]    @relation("RuteZonas")

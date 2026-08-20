@@ -37,7 +37,7 @@ export async function PUT(
   try {
     const id = parseInt((await params).id);
     const body = await request.json();
-    const { nama, hari, jam, aktif, kelurahanId, petugasId, zonaId, zonaIds } = body;
+    const { nama, hari, jam, aktif, kelurahanId, kelurahanIds, petugasId, zonaId, zonaIds } = body;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const data: any = {};
@@ -45,11 +45,21 @@ export async function PUT(
     if (hari !== undefined) data.hari = hari;
     if (jam !== undefined) data.jam = jam;
     if (aktif !== undefined) data.aktif = toBoolean(aktif);
-    if (kelurahanId !== undefined) {
-      data.kelurahanId = kelurahanId ? parseInt(kelurahanId) : null;
-      // wilayahId sudah tidak dipakai — scope rute via kelurahan
-      data.wilayahId = null;
+    
+    // Determine the final list of kelurahan IDs
+    let currentKelurahanIds: number[] = [];
+    if (kelurahanIds !== undefined || kelurahanId !== undefined) {
+      if (kelurahanIds && Array.isArray(kelurahanIds)) {
+        currentKelurahanIds = kelurahanIds.map((k: string) => parseInt(k)).filter(n => !isNaN(n));
+      } else if (kelurahanId) {
+        currentKelurahanIds = [parseInt(kelurahanId)];
+      }
+      
+      data.kelurahanId = currentKelurahanIds.length > 0 ? currentKelurahanIds[0] : null;
+      data.kelurahans = { set: currentKelurahanIds.map(id => ({ id })) };
+      data.wilayahId = null; // wilayahId is deprecated for route scopes
     }
+    
     if (petugasId !== undefined) data.petugasId = petugasId ? parseInt(petugasId) : null;
     
     if (zonaIds !== undefined || zonaId !== undefined) {
@@ -61,11 +71,18 @@ export async function PUT(
       }
       
       if (parsedZonaIds.length > 0) {
-        const target = await prisma.rute.findUnique({ where: { id }, select: { kelurahanId: true } });
-        const kel = data.kelurahanId ?? target?.kelurahanId;
+        // If kelurahan is not being updated in this request, fetch existing kelurahans
+        if (currentKelurahanIds.length === 0) {
+           const target = await prisma.rute.findUnique({ where: { id }, select: { kelurahans: { select: { id: true } } } });
+           if (target?.kelurahans) {
+             currentKelurahanIds = target.kelurahans.map(k => k.id);
+           }
+        }
+        
         const zonas = await prisma.zona.findMany({ where: { id: { in: parsedZonaIds } }, select: { kelurahanId: true } });
-        if (zonas.some((z) => z.kelurahanId !== parseInt(String(kel)))) {
-          return NextResponse.json({ error: "Zona tidak sesuai dengan kelurahan yang dipilih" }, { status: 400 });
+        // Make sure every zona belongs to at least one of the selected kelurahans
+        if (zonas.some((z) => !currentKelurahanIds.includes(z.kelurahanId))) {
+          return NextResponse.json({ error: "Beberapa zona tidak sesuai dengan kelurahan yang dipilih" }, { status: 400 });
         }
       }
       
