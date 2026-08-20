@@ -73,8 +73,9 @@ jobs:
 
       - name: Commit APK to repo (served via Vercel)
         run: |
-          git config user.email "ci@o2whero.local"
-          git config user.name "O2W CI"
+          # Pakai email GitHub terverifikasi agar deploy Vercel tidak di-BLOCK
+          git config user.email "cv.tigaputrasemesta@gmail.com"
+          git config user.name "tigaputrasemesta-ctrl"
           git fetch origin master
           git checkout -B master origin/master
           git add public/apk/O2W-Lapangan.apk
