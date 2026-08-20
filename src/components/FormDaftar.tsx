@@ -274,7 +274,7 @@ export default function FormDaftar() {
               <select id="d-kategori" value={kategori} onChange={(e) => setKategori(e.target.value)} className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 appearance-none uppercase cursor-pointer">
                 {(opsi?.kategoriTarif ?? []).map((k) => (
                   <option key={k.kategori} value={k.kategori}>
-                    {k.label}
+                    {k.label} — RP {k.tarif.toLocaleString("id-ID")}/BULAN
                   </option>
                 ))}
               </select>
