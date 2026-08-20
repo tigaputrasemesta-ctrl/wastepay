@@ -280,7 +280,8 @@ export async function proxy(request: NextRequest) {
   // Halaman publik
   // /peta/tv dilindungi token TV (env TV_VIEW_TOKEN) di dalam page-nya sendiri,
   // bukan lewat sesi login — biarkan lolos proxy agar browser kiosk bisa akses.
-  if (pathname === "/login" || pathname === "/bayar" || pathname.toLowerCase() === "/peta/tv") {
+  const lowerPath = pathname.toLowerCase();
+  if (lowerPath === "/login" || lowerPath === "/login/" || lowerPath === "/bayar" || lowerPath === "/bayar/" || lowerPath.startsWith("/peta/tv")) {
     return NextResponse.next();
   }
 
