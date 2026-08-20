@@ -85,10 +85,46 @@ export async function DELETE(
 ) {
   try {
     const id = parseInt((await params).id);
-    await prisma.rute.delete({ where: { id } });
-    await logAudit("delete", "Rute", id, { id }, undefined);
+    if (isNaN(id)) {
+      return NextResponse.json({ error: "ID rute tidak valid" }, { status: 400 });
+    }
+
+    const rute = await prisma.rute.findUnique({
+      where: { id },
+      select: { id: true, nama: true },
+    });
+    if (!rute) {
+      return NextResponse.json({ error: "Rute tidak ditemukan" }, { status: 404 });
+    }
+
+    // Cascade delete aman: unlink pengangkutan dari jadwal rute ini, hapus jadwal, lalu hapus rute
+    await prisma.$transaction(async (tx) => {
+      const jadwals = await tx.jadwal.findMany({
+        where: { ruteId: id },
+        select: { id: true },
+      });
+
+      if (jadwals.length > 0) {
+        const jadwalIds = jadwals.map((j) => j.id);
+        await tx.pengangkutan.updateMany({
+          where: { jadwalId: { in: jadwalIds } },
+          data: { jadwalId: null },
+        });
+        await tx.jadwal.deleteMany({
+          where: { ruteId: id },
+        });
+      }
+
+      await tx.rute.delete({
+        where: { id },
+      });
+    });
+
+    await logAudit("delete", "Rute", id, { id, nama: rute.nama }, undefined);
     return NextResponse.json({ message: "Rute berhasil dihapus" });
-  } catch {
-    return NextResponse.json({ error: "Gagal menghapus rute" }, { status: 500 });
+  } catch (err: unknown) {
+    console.error("DELETE /api/rute/[id] error:", err);
+    const message = (err as Error)?.message || "Gagal menghapus rute";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

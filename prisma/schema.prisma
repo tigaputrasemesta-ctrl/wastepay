@@ -282,7 +282,7 @@ model Jadwal {
   pelangganId Int
   pelanggan   Pelanggan @relation(fields: [pelangganId], references: [id])
   ruteId      Int
-  rute        Rute      @relation(fields: [ruteId], references: [id])
+  rute        Rute      @relation(fields: [ruteId], references: [id], onDelete: Cascade)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -359,7 +359,7 @@ model Pengangkutan {
   kendaraanId Int? // mobil pickup/angkut yang mengambil
   kendaraan   Kendaraan? @relation(fields: [kendaraanId], references: [id])
   jadwalId    Int?
-  jadwal      Jadwal?    @relation(fields: [jadwalId], references: [id])
+  jadwal      Jadwal?    @relation(fields: [jadwalId], references: [id], onDelete: SetNull)
   zonaId      Int? // zona angkut (snapshot dari rute/wilayah saat pickup)
   zona        Zona?      @relation(fields: [zonaId], references: [id])
   tpaId       Int?

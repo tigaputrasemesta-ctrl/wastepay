@@ -40,10 +40,23 @@ export async function DELETE(
 ) {
   try {
     const id = parseInt((await params).id);
-    await prisma.jadwal.delete({ where: { id } });
+    if (isNaN(id)) {
+      return NextResponse.json({ error: "ID jadwal tidak valid" }, { status: 400 });
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.pengangkutan.updateMany({
+        where: { jadwalId: id },
+        data: { jadwalId: null },
+      });
+      await tx.jadwal.delete({ where: { id } });
+    });
+
     await logAudit("delete", "Jadwal", id, { id }, undefined);
     return NextResponse.json({ message: "Jadwal berhasil dihapus" });
-  } catch {
-    return NextResponse.json({ error: "Gagal menghapus jadwal" }, { status: 500 });
+  } catch (err: unknown) {
+    console.error("DELETE /api/jadwal/[id] error:", err);
+    const message = (err as Error)?.message || "Gagal menghapus jadwal";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
