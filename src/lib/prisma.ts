@@ -10,11 +10,11 @@ const connectionString = rawConnectionString?.replace(/[?&]sslmode=[^&]+/g, "").
 const isProd = process.env.NODE_ENV === "production";
 
 // Konfigurasi pool pg untuk Serverless (Vercel):
-// max: 2 per Lambda instance untuk mencegah terlampauinya limit koneksi Supabase.
+// max: 1 per Lambda instance untuk mencegah terlampauinya limit koneksi Supabase saat burst traffic
 // idleTimeoutMillis: 1000 agar koneksi segera dibebaskan kembali ke pooler.
 const pool = new Pool({
   connectionString,
-  max: isProd ? 2 : 5,
+  max: 1, // Batasi 1 per Lambda instance
   idleTimeoutMillis: 1000,
   connectionTimeoutMillis: 8000,
   ssl: isProd || process.env.DATABASE_SSL === "true" || rawConnectionString?.includes("supabase.com")
