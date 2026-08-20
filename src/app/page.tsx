@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Heart, Truck, MapPin, Smartphone, ArrowRight, Megaphone } from "lucide-react";
+import { Truck, MapPin, Smartphone, ArrowRight, Megaphone } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import AnimatedDumpTruck from "@/components/AnimatedDumpTruck";
 
 export const dynamic = "force-dynamic";
 
@@ -29,24 +30,24 @@ export default async function LandingPage() {
       <div className="hm-marquee text-lg font-bold uppercase tracking-[0.2em] sticky top-0 z-50">
         <div className="hm-marquee-content">
           <span>O₂W HERO ZERO WASTE</span>
-          <span>❤️</span>
+          <AnimatedDumpTruck size="xs" theme="green" />
           <span>DEPOK BERSIH 2026</span>
-          <span>❤️</span>
+          <AnimatedDumpTruck size="xs" theme="yellow" />
           <span>SISTEM PENGELOLAAN SAMPAH</span>
-          <span>❤️</span>
+          <AnimatedDumpTruck size="xs" theme="red" />
           <span>O₂W HERO ZERO WASTE</span>
-          <span>❤️</span>
+          <AnimatedDumpTruck size="xs" theme="green" />
           <span>DEPOK BERSIH 2026</span>
-          <span>❤️</span>
+          <AnimatedDumpTruck size="xs" theme="yellow" />
           <span>SISTEM PENGELOLAAN SAMPAH</span>
-          <span>❤️</span>
+          <AnimatedDumpTruck size="xs" theme="red" />
         </div>
       </div>
 
       {/* Navbar */}
       <nav className="border-b-2 border-black px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4 bg-white z-40 relative">
-        <div className="flex items-center gap-2">
-          <Heart className="w-8 h-8 fill-red-600 text-red-600" />
+        <div className="flex items-center gap-3">
+          <AnimatedDumpTruck size="md" theme="green" />
           <span className="text-3xl font-black tracking-tighter">O₂W HERO.</span>
         </div>
         <div className="flex gap-6 font-bold uppercase tracking-widest text-sm">
@@ -75,7 +76,7 @@ export default async function LandingPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link href="/daftar" className="hm-btn-red text-lg flex items-center justify-center gap-2">
-                GABUNG SEKARANG <Heart className="w-5 h-5 fill-white" />
+                GABUNG SEKARANG <AnimatedDumpTruck size="xs" theme="white" />
               </Link>
               <Link href="/lacak" className="hm-btn flex items-center justify-center gap-2">
                 LACAK TRUK <ArrowRight className="w-5 h-5" />
@@ -198,7 +199,7 @@ export default async function LandingPage() {
       <section className="border-y-2 border-black bg-[#f4f4f0] py-20 px-6 mt-12">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center gap-4 mb-12">
-            <Heart className="w-10 h-10 fill-black" />
+            <AnimatedDumpTruck size="lg" theme="black" />
             <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">Fitur Utama</h2>
           </div>
 
