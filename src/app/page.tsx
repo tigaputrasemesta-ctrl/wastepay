@@ -54,7 +54,6 @@ export default async function LandingPage() {
           <Link href="/lacak" className="hover:text-green-600 transition-colors">Lacak Truk</Link>
           <Link href="/bayar" className="hover:text-red-600 transition-colors">Tagihan</Link>
           <Link href="/pengaduan" className="hover:text-red-600 transition-colors">Komplain</Link>
-          <Link href="/unduh" className="hover:text-green-600 transition-colors">Unduh App</Link>
           <Link href="/daftar" className="text-green-600 hover:text-black transition-colors">Daftar</Link>
         </div>
       </nav>
@@ -263,7 +262,6 @@ export default async function LandingPage() {
             <Link href="/lacak" className="hover:text-green-600">Lacak Truk</Link>
             <Link href="/bayar" className="hover:text-red-600">Cek Tagihan</Link>
             <Link href="/pengaduan" className="hover:text-red-600">Pusat Bantuan</Link>
-            <Link href="/unduh" className="hover:text-green-600">Unduh App</Link>
           </div>
         </div>
       </footer>

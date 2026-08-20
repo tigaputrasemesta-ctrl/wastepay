@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -127,6 +128,14 @@ export default function LoginPage() {
               </button>
             </div>
           </form>
+        </div>
+        <div className="mt-6 text-center">
+          <Link
+            href="/unduh"
+            className="inline-block hm-border bg-white px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-colors"
+          >
+            📱 Unduh App Android (O₂W Lapangan)
+          </Link>
         </div>
         <div className="mt-8 text-center text-xs font-bold uppercase tracking-widest text-black">
           <p>O2W HERO DEPOK © {new Date().getFullYear()}</p>

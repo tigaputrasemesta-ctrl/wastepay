@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { Download, Smartphone, ShieldAlert, CheckCircle2 } from "lucide-react";
+import { Download, Smartphone } from "lucide-react";
 import { MOBILE_VERSION, getApkUrl } from "@/lib/mobile-version";
 
 export const dynamic = "force-dynamic";
 
 export default function UnduhPage() {
   const apkUrl = getApkUrl();
-  const { versionName, versionCode, changelog } = MOBILE_VERSION;
+  const { versionName, versionCode } = MOBILE_VERSION;
 
   return (
     <div className="min-h-screen bg-[#f4f4f0] text-black font-sans selection:bg-red-500 selection:text-white pb-20">
@@ -32,14 +32,9 @@ export default function UnduhPage() {
           <br />
           <span className="text-green-600">O₂W Lapangan</span>
         </h1>
-        <p className="text-lg md:text-xl font-medium mb-10 max-w-xl">
-          Aplikasi Android untuk petugas & armada: absensi, survei, pelaporan,
-          dan <strong>GPS tracking</strong> — posisi tetap terkirim walau aplikasi
-          di-background atau layar HP terkunci.
-        </p>
 
         {/* Download card */}
-        <div className="hm-card bg-white mb-8">
+        <div className="hm-card bg-white">
           <div className="flex items-center gap-3 mb-6">
             <Smartphone className="w-8 h-8" />
             <div>
@@ -51,15 +46,6 @@ export default function UnduhPage() {
               </div>
             </div>
           </div>
-
-          <ul className="mb-8 space-y-2">
-            {changelog.map((c, i) => (
-              <li key={i} className="flex items-start gap-2 font-medium">
-                <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
-                <span>{c}</span>
-              </li>
-            ))}
-          </ul>
 
           {apkUrl ? (
             <a
@@ -74,27 +60,6 @@ export default function UnduhPage() {
               Link unduh belum dikonfigurasi.
             </div>
           )}
-        </div>
-
-        {/* Notes */}
-        <div className="hm-card bg-yellow-300">
-          <div className="flex items-center gap-2 mb-3 font-black uppercase">
-            <ShieldAlert className="w-6 h-6" /> Penting sebelum install
-          </div>
-          <ul className="space-y-2 text-sm font-medium">
-            <li>
-              • Jika dari versi lama (v1.1), <b>uninstall dulu</b> aplikasi lama
-              lalu install versi ini.
-            </li>
-            <li>
-              • Beri izin lokasi <b>"Izinkan sepanjang waktu"</b> agar GPS tetap
-              jalan di background.
-            </li>
-            <li>
-              • Android 8–12 menampilkan notifikasi kecil "GPS aktif" (kebijakan
-              OS, tidak bisa dihilangkan).
-            </li>
-          </ul>
         </div>
       </main>
     </div>
