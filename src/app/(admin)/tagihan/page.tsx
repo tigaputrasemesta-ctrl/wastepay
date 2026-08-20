@@ -51,6 +51,16 @@ type PembayaranPending = {
   duitkuTransaction?: { orderId: string; statusCode?: string | null; paymentUrl?: string | null } | null;
 };
 
+type PreviewItem = {
+  pelangganId: number;
+  nama: string;
+  kodePelanggan: string;
+  kategori: string;
+  noTelepon: string | null;
+  paket: string | null;
+  jumlah: number;
+};
+
 function isGateway(metode: string) {
   return metode.startsWith("duitku");
 }
@@ -69,6 +79,8 @@ export default function TagihanPage() {
   const [showAutoGenerate, setShowAutoGenerate] = useState(false);
   const [autoResult, setAutoResult] = useState<{ message: string; created: number; skipped: number } | null>(null);
   const [generating, setGenerating] = useState(false);
+  const [preview, setPreview] = useState<PreviewItem[] | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
   const [showBayar, setShowBayar] = useState<{ tagihanId: number; pelangganId: number; jumlah: number } | null>(null);
   const [formBayar, setFormBayar] = useState({ metode: "transfer", catatan: "" });
 
@@ -133,23 +145,67 @@ export default function TagihanPage() {
     }
   }
 
+  async function handleAutoPreview() {
+    setPreviewLoading(true);
+    setAutoResult(null);
+    setPreview(null);
+    try {
+      const res = await fetch("/api/tagihan/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bulan: parseInt(formAuto.bulan),
+          tahun: parseInt(formAuto.tahun),
+          preview: true,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setPreview(data.preview || []);
+        if ((data.preview || []).length === 0) {
+          setAutoResult({ message: "Tidak ada pelanggan aktif yang perlu ditagih di periode ini.", created: 0, skipped: 0 });
+        }
+      } else {
+        showToast(data.error || "Gagal memuat preview", "error");
+      }
+    } finally {
+      setPreviewLoading(false);
+    }
+  }
+
+  function updatePreviewJumlah(pelangganId: number, jumlah: number) {
+    setPreview((prev) =>
+      prev ? prev.map((p) => (p.pelangganId === pelangganId ? { ...p, jumlah } : p)) : prev
+    );
+  }
+
   async function handleAutoGenerate(e: React.FormEvent) {
     e.preventDefault();
     setGenerating(true);
     setAutoResult(null);
+    const body = preview
+      ? {
+          bulan: parseInt(formAuto.bulan),
+          tahun: parseInt(formAuto.tahun),
+          items: preview.map((p) => ({ pelangganId: p.pelangganId, jumlah: p.jumlah })),
+        }
+      : {
+          bulan: parseInt(formAuto.bulan),
+          tahun: parseInt(formAuto.tahun),
+        };
     const res = await fetch("/api/tagihan/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        bulan: parseInt(formAuto.bulan),
-        tahun: parseInt(formAuto.tahun),
-      }),
+      body: JSON.stringify(body),
     });
     const data = await res.json();
     setAutoResult(data);
     setGenerating(false);
     if (res.ok) {
+      setPreview(null);
       fetchTagihan();
+    } else {
+      showToast(data.error || "Gagal generate", "error");
     }
   }
 
@@ -474,43 +530,79 @@ export default function TagihanPage() {
       {/* Modal Auto Generate */}
       {showAutoGenerate && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="hm-card bg-white p-0 overflow-hidden w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-2 border-black">
-              <h2 className="font-semibold text-black font-black">Auto-Generate Tagihan Bulanan</h2>
-              <button onClick={() => { setShowAutoGenerate(false); setAutoResult(null); }} className="text-gray-400 font-bold hover:text-gray-600 font-bold">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+          <div className="bg-white w-full max-w-2xl border-4 border-black shadow-[8px_8px_0_0_rgba(0,0,0,1)]">
+            <div className="flex items-center justify-between px-6 py-4 border-b-4 border-black bg-sky-300">
+              <h2 className="font-black uppercase tracking-widest">Auto-Generate Tagihan</h2>
+              <button onClick={() => { setShowAutoGenerate(false); setAutoResult(null); setPreview(null); }} className="font-black text-xl hover:text-white">&times;</button>
             </div>
             <form onSubmit={handleAutoGenerate} className="p-6 space-y-4">
-              <div className="bg-sky-500/10 border border-sky-500/30 rounded-none p-3 text-sm text-sky-300">
-                <p className="font-medium mb-1">ℹ️ Cara Kerja</p>
-                <p>Sistem akan membuat tagihan untuk semua pelanggan aktif yang belum memiliki tagihan di periode yang dipilih. Tarif dihitung berdasarkan: tarif kustom &gt; paket &gt; kategori tarif default.</p>
+              <div className="bg-sky-100 border-2 border-black p-3 text-sm">
+                <p className="font-black uppercase text-xs mb-1">ℹ️ Cara Kerja</p>
+                <p>Nominal dihitung otomatis (tarif kustom → paket → Level). Klik <b>Muat Preview</b> untuk melihat & mengubah nominal per pelanggan sebelum generate.</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Periode</label>
+                <label className="block text-xs font-black uppercase mb-1">Periode</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <select value={formAuto.bulan} onChange={(e) => setFormAuto({ ...formAuto, bulan: e.target.value })} className="px-3 py-2 border-2 border-black rounded-none text-sm" required>
+                  <select value={formAuto.bulan} onChange={(e) => { setFormAuto({ ...formAuto, bulan: e.target.value }); setPreview(null); setAutoResult(null); }} className="px-3 py-2 border-2 border-black text-sm font-bold uppercase" required>
                     {bulanList.map((b) => <option key={b.value} value={b.value}>{b.label}</option>)}
                   </select>
-                  <select value={formAuto.tahun} onChange={(e) => setFormAuto({ ...formAuto, tahun: e.target.value })} className="px-3 py-2 border-2 border-black rounded-none text-sm" required>
+                  <select value={formAuto.tahun} onChange={(e) => { setFormAuto({ ...formAuto, tahun: e.target.value }); setPreview(null); setAutoResult(null); }} className="px-3 py-2 border-2 border-black text-sm font-bold uppercase" required>
                     {[2024, 2025, 2026, 2027, 2028].map((t) => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
               </div>
 
+              {preview === null && (
+                <button type="button" onClick={handleAutoPreview} disabled={previewLoading} className="w-full bg-yellow-300 border-2 border-black py-3 font-black uppercase shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:bg-yellow-200 disabled:opacity-50">
+                  {previewLoading ? "Memuat..." : "Muat Preview"}
+                </button>
+              )}
+
+              {preview && preview.length > 0 && (
+                <div className="border-2 border-black">
+                  <div className="max-h-64 overflow-y-auto">
+                    <table className="w-full text-sm">
+                      <thead className="sticky top-0 bg-gray-100">
+                        <tr className="text-[10px] font-black uppercase border-b-2 border-black">
+                          <th className="px-3 py-2 text-left border-r-2 border-black">Pelanggan</th>
+                          <th className="px-3 py-2 text-left border-r-2 border-black">Level</th>
+                          <th className="px-3 py-2 text-right">Nominal (Rp)</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-black">
+                        {preview.map((p) => (
+                          <tr key={p.pelangganId} className="border-b border-gray-300">
+                            <td className="px-3 py-2 border-r-2 border-black">
+                              <p className="font-black text-xs uppercase">{p.nama}</p>
+                              <p className="text-[10px] text-gray-500">{p.kodePelanggan}{p.paket ? ` · ${p.paket}` : ""}</p>
+                            </td>
+                            <td className="px-3 py-2 border-r-2 border-black text-xs font-bold uppercase">{p.kategori.replace(/_/g, " ")}</td>
+                            <td className="px-3 py-2 text-right">
+                              <input type="number" min={0} value={p.jumlah} onChange={(e) => updatePreviewJumlah(p.pelangganId, Number(e.target.value))} className="w-28 px-2 py-1 border-2 border-black text-right text-sm font-black focus:bg-yellow-100 outline-none" />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="flex items-center justify-between px-3 py-2 border-t-2 border-black bg-gray-100 text-xs font-black uppercase">
+                    <span>{preview.length} tagihan</span>
+                    <span>Total: {formatRupiah(preview.reduce((s, p) => s + (p.jumlah || 0), 0))}</span>
+                  </div>
+                </div>
+              )}
+
               {autoResult && (
-                <div className="p-3 rounded-none text-sm bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
-                  <p className="font-medium">{autoResult.message}</p>
+                <div className="p-3 text-sm bg-emerald-100 border-2 border-black">
+                  <p className="font-black">{autoResult.message}</p>
                   <p className="text-xs mt-1">Dibuat: {autoResult.created} | Sudah ada: {autoResult.skipped}</p>
                 </div>
               )}
 
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => { setShowAutoGenerate(false); setAutoResult(null); }} className="flex-1 px-4 py-2 border-2 border-black rounded-none text-sm text-gray-600 font-bold hover:bg-gray-100 border-2 border-black">Batal</button>
-                <button type="submit" disabled={generating} className="flex-1 px-4 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black rounded-none text-sm hover:bg-green-300 disabled:opacity-50">
-                  {generating ? "Memproses..." : "Generate Sekarang"}
+                <button type="button" onClick={() => { setShowAutoGenerate(false); setAutoResult(null); setPreview(null); }} className="flex-1 px-4 py-2 border-2 border-black text-sm text-gray-600 font-black uppercase hover:bg-gray-100">Batal</button>
+                <button type="submit" disabled={generating || (preview !== null && preview.length === 0)} className="flex-1 px-4 py-2 bg-green-400 text-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all text-sm font-black uppercase hover:bg-green-300 disabled:opacity-50">
+                  {generating ? "Memproses..." : preview ? `Generate (${preview.length})` : "Generate Semua"}
                 </button>
               </div>
             </form>

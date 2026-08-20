@@ -288,24 +288,12 @@ export default function DetailPelangganPage() {
                 <p className="text-gray-600 font-bold">Kategori</p>
                 <p className="font-medium text-black font-black">
                   {{
-                    rumah_tangga: "🏠 Rumah Tangga",
-                    kost: "🏘️ Kost / Kontrakan",
-                    bisnis_kelas_1: "🏪 Bisnis / Toko Kelas 1",
-                    bisnis_kelas_2: "🏪 Bisnis / Toko Kelas 2",
-                    bisnis_kelas_3: "🏬 Bisnis / Toko Kelas 3",
-                    restoran: "🍽️ Rumah Makan / Restoran",
-                    warung: "🍜 Warung Kecil",
-                    perkantoran_kecil: "🏢 Perkantoran Kecil",
-                    perkantoran_sedang: "🏢 Perkantoran Sedang",
-                    perkantoran_besar: "🏙️ Perkantoran Besar",
-                    sekolah: "🏫 Sekolah / Pendidikan",
-                    klinik: "🏥 Klinik / Puskesmas",
-                    rumah_sakit: "🏥 Rumah Sakit",
-                    hotel: "🏨 Hotel / Penginapan",
-                    pasar_kios: "🛒 Pasar / Kios",
-                    tempat_ibadah: "⛪ Tempat Ibadah",
-                    industri: "🏭 Industri / Pabrik",
-                    fasum: "🏞️ Fasilitas Umum (RT/RW)",
+                    level_1: "🏠 Level 1 — Volume Sangat Kecil",
+                    level_2: "🏘️ Level 2 — Volume Kecil–Sedang",
+                    level_3: "🏪 Level 3 — Volume Sedang",
+                    level_4: "🏢 Level 4 — Volume Sedang–Besar",
+                    level_5: "🏨 Level 5 — Volume Besar",
+                    level_6: "🏭 Level 6 — Volume Sangat Besar",
                   }[data.kategori] || data.kategori}
                 </p>
               </div>

@@ -15,24 +15,12 @@ import { formatRtRw, normalisasiTelepon, teleponValid } from "@/lib/daftar";
 export const dynamic = "force-dynamic";
 
 const KATEGORI_VALID = [
-  "rumah_tangga",
-  "kost",
-  "bisnis_kelas_1",
-  "bisnis_kelas_2",
-  "bisnis_kelas_3",
-  "restoran",
-  "warung",
-  "perkantoran_kecil",
-  "perkantoran_sedang",
-  "perkantoran_besar",
-  "sekolah",
-  "klinik",
-  "rumah_sakit",
-  "hotel",
-  "pasar_kios",
-  "tempat_ibadah",
-  "industri",
-  "fasum",
+  "level_1",
+  "level_2",
+  "level_3",
+  "level_4",
+  "level_5",
+  "level_6",
 ];
 
 /**
@@ -109,7 +97,7 @@ export async function POST(request: Request) {
 
     const nama = String(body.nama ?? "").trim();
     const noTelepon = normalisasiTelepon(String(body.noTelepon ?? ""));
-    const kategori = KATEGORI_VALID.includes(body.kategori) ? body.kategori : "rumah_tangga";
+    const kategori = KATEGORI_VALID.includes(body.kategori) ? body.kategori : "level_1";
     const kecamatan = String(body.kecamatan ?? "").trim();
     const kelurahan = String(body.kelurahan ?? "").trim();
     const alamat = String(body.alamat ?? "").trim();

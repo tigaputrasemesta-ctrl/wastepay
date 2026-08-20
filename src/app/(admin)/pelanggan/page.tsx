@@ -12,24 +12,12 @@ type Kelurahan = { id: number; nama: string; kecamatan?: string | null };
 type Paket = { id: number; nama: string; harga: number | null };
 
 const KATEGORI_LIST = [
-  { value: "rumah_tangga", label: "🏠 Rumah Tangga" },
-  { value: "kost", label: "🏘️ Kost / Kontrakan" },
-  { value: "bisnis_kelas_1", label: "🏪 Bisnis / Toko Kelas 1" },
-  { value: "bisnis_kelas_2", label: "🏪 Bisnis / Toko Kelas 2" },
-  { value: "bisnis_kelas_3", label: "🏬 Bisnis / Toko Kelas 3" },
-  { value: "restoran", label: "🍽️ Rumah Makan / Restoran" },
-  { value: "warung", label: "🍜 Warung Kecil" },
-  { value: "perkantoran_kecil", label: "🏢 Perkantoran Kecil" },
-  { value: "perkantoran_sedang", label: "🏢 Perkantoran Sedang" },
-  { value: "perkantoran_besar", label: "🏙️ Perkantoran Besar" },
-  { value: "sekolah", label: "🏫 Sekolah / Pendidikan" },
-  { value: "klinik", label: "🏥 Klinik / Puskesmas" },
-  { value: "rumah_sakit", label: "🏥 Rumah Sakit" },
-  { value: "hotel", label: "🏨 Hotel / Penginapan" },
-  { value: "pasar_kios", label: "🛒 Pasar / Kios" },
-  { value: "tempat_ibadah", label: "⛪ Tempat Ibadah" },
-  { value: "industri", label: "🏭 Industri / Pabrik" },
-  { value: "fasum", label: "🏞️ Fasilitas Umum (RT/RW)" },
+  { value: "level_1", label: "🏠 Level 1 — Volume Sangat Kecil" },
+  { value: "level_2", label: "🏘️ Level 2 — Volume Kecil–Sedang" },
+  { value: "level_3", label: "🏪 Level 3 — Volume Sedang" },
+  { value: "level_4", label: "🏢 Level 4 — Volume Sedang–Besar" },
+  { value: "level_5", label: "🏨 Level 5 — Volume Besar" },
+  { value: "level_6", label: "🏭 Level 6 — Volume Sangat Besar" },
 ];
 
 const STATUS_LIST = [
@@ -81,7 +69,7 @@ export default function PelangganPage() {
   const [form, setForm] = useState({
     nama: "",
     noTelepon: "",
-    kategori: "rumah_tangga",
+    kategori: "level_1",
     alamat: "",
     rtRw: "",
     patokanLokasi: "",
@@ -139,7 +127,7 @@ export default function PelangganPage() {
     setForm({
       nama: "",
       noTelepon: "",
-      kategori: "rumah_tangga",
+      kategori: "level_1",
       alamat: "",
       rtRw: "",
       patokanLokasi: "",
@@ -161,7 +149,7 @@ export default function PelangganPage() {
     setForm({
       nama: p.nama,
       noTelepon: p.noTelepon,
-      kategori: p.kategori || "rumah_tangga",
+      kategori: p.kategori || "level_1",
       alamat: p.alamat,
       rtRw: p.rtRw || "",
       patokanLokasi: p.patokanLokasi || "",
@@ -568,24 +556,12 @@ export default function PelangganPage() {
                     onChange={(e) => setForm({ ...form, kategori: e.target.value })}
                     className="w-full px-3 py-2 border-2 border-black focus:outline-none focus:ring-0 focus:bg-yellow-100 text-sm font-bold shadow-[4px_4px_0_0_rgba(0,0,0,1)] appearance-none rounded-none"
                   >
-                    <option value="rumah_tangga">🏠 Rumah Tangga</option>
-                    <option value="kost">🏘️ Kost / Kontrakan</option>
-                    <option value="bisnis_kelas_1">🏪 Bisnis / Toko Kelas 1</option>
-                    <option value="bisnis_kelas_2">🏪 Bisnis / Toko Kelas 2</option>
-                    <option value="bisnis_kelas_3">🏬 Bisnis / Toko Kelas 3</option>
-                    <option value="restoran">🍽️ Rumah Makan / Restoran</option>
-                    <option value="warung">🍜 Warung Kecil</option>
-                    <option value="perkantoran_kecil">🏢 Perkantoran Kecil</option>
-                    <option value="perkantoran_sedang">🏢 Perkantoran Sedang</option>
-                    <option value="perkantoran_besar">🏙️ Perkantoran Besar</option>
-                    <option value="sekolah">🏫 Sekolah / Pendidikan</option>
-                    <option value="klinik">🏥 Klinik / Puskesmas</option>
-                    <option value="rumah_sakit">🏥 Rumah Sakit</option>
-                    <option value="hotel">🏨 Hotel / Penginapan</option>
-                    <option value="pasar_kios">🛒 Pasar / Kios</option>
-                    <option value="tempat_ibadah">⛪ Tempat Ibadah</option>
-                    <option value="industri">🏭 Industri / Pabrik</option>
-                    <option value="fasum">🏞️ Fasilitas Umum (RT/RW)</option>
+                    <option value="level_1">🏠 Level 1 — Volume Sangat Kecil</option>
+                    <option value="level_2">🏘️ Level 2 — Volume Kecil–Sedang</option>
+                    <option value="level_3">🏪 Level 3 — Volume Sedang</option>
+                    <option value="level_4">🏢 Level 4 — Volume Sedang–Besar</option>
+                    <option value="level_5">🏨 Level 5 — Volume Besar</option>
+                    <option value="level_6">🏭 Level 6 — Volume Sangat Besar</option>
                   </select>
                 </div>
                 <div>

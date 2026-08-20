@@ -11,11 +11,22 @@ import {
   type TargetWa,
 } from "@/lib/wa";
 
+type Candidate = {
+  pelangganId: number;
+  nama: string;
+  kodePelanggan: string;
+  kategori: string;
+  noTelepon: string | null;
+  paket: string | null;
+  jumlah: number;
+};
+
 /**
  * POST /api/tagihan/generate
- * Auto-generate tagihan for all active customers for a given month
- * Body: { bulan?: number, tahun?: number }
- * Default: current month
+ * Body:
+ *   { bulan?, tahun? }                        → auto-generate untuk semua pelanggan aktif (tarif otomatis)
+ *   { bulan?, tahun?, preview: true }         → kembalikan daftar kandidat + nominal hasil hitung (tanpa menyimpan)
+ *   { bulan?, tahun?, items: [{pelangganId, jumlah}] } → generate dengan nominal kustom per pelanggan
  */
 export async function POST(request: Request) {
   const user = await getSession();
@@ -26,97 +37,139 @@ export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => ({}));
     const now = new Date();
-    const bulan = body.bulan || now.getMonth() + 1;
-    const tahun = body.tahun || now.getFullYear();
+    const bulan = Number(body.bulan) || now.getMonth() + 1;
+    const tahun = Number(body.tahun) || now.getFullYear();
+    const isPreview = body.preview === true;
+    const itemsRaw: unknown = body.items;
 
     // Get all active customers
     const pelangganList = await prisma.pelanggan.findMany({
-      where: {
-        status: "aktif",
-        deletedAt: null,
-      },
-      include: {
-        paket: true,
-      },
+      where: { status: "aktif", deletedAt: null },
+      include: { paket: true },
     });
 
-    // Batch lookup — hindari N+1: 1 query untuk tagihan existing + 1 untuk kategori tarif
-    // (sebelumnya 2-3 query PER pelanggan di dalam loop).
-    const existingTags = await prisma.tagihan.findMany({
-      where: {
+    // Batch lookup — hindari N+1
+    const existingSet = new Set(
+      (
+        await prisma.tagihan.findMany({
+          where: {
+            bulan,
+            tahun,
+            pelangganId: { in: pelangganList.map((p) => p.id) },
+          },
+          select: { pelangganId: true },
+        })
+      ).map((t) => t.pelangganId)
+    );
+    const kategoriTarifMap = new Map(
+      (await prisma.kategoriTarif.findMany()).map((k) => [k.kategori, k.tarif])
+    );
+
+    // Build candidate list + calculated amount (customTarif > paket.harga > kategoriTarif)
+    const candidates: Candidate[] = [];
+    for (const pelanggan of pelangganList) {
+      if (existingSet.has(pelanggan.id)) continue;
+      let tarif = pelanggan.customTarif;
+      if (!tarif && pelanggan.paket) tarif = pelanggan.paket.harga;
+      if (!tarif) tarif = kategoriTarifMap.get(pelanggan.kategori) ?? 0;
+      candidates.push({
+        pelangganId: pelanggan.id,
+        nama: pelanggan.nama,
+        kodePelanggan: pelanggan.kodePelanggan,
+        kategori: pelanggan.kategori,
+        noTelepon: pelanggan.noTelepon,
+        paket: pelanggan.paket?.nama || null,
+        jumlah: tarif ?? 0,
+      });
+    }
+
+    if (isPreview) {
+      return NextResponse.json({
         bulan,
         tahun,
-        pelangganId: { in: pelangganList.map((p) => p.id) },
-      },
-      select: { pelangganId: true },
-    });
-    const existingSet = new Set(existingTags.map((t) => t.pelangganId));
-    const kategoriTarifs = await prisma.kategoriTarif.findMany();
-    const kategoriTarifMap = new Map(kategoriTarifs.map((k) => [k.kategori, k.tarif]));
+        total: candidates.length,
+        preview: candidates,
+      });
+    }
+
+    // Optional: custom amount per pelanggan (override hasil hitung otomatis)
+    const overrideMap: Map<number, number> | null = Array.isArray(itemsRaw)
+      ? new Map(
+          (itemsRaw as { pelangganId: number; jumlah: number }[])
+            .filter((it) => it && it.pelangganId != null)
+            .map((it) => [Number(it.pelangganId), Number(it.jumlah) || 0])
+        )
+      : null;
 
     let created = 0;
-    let skipped = 0;
+    let skipped = pelangganList.length - candidates.length;
     const errors: string[] = [];
-    /** Tagihan baru yang dibuat — untuk auto-kirim WA invoice. */
-    const tagihanBaru: { pelangganId: number; nama: string; noTelepon: string | null; noInvoice: string | null; bulan: number; tahun: number; jumlah: number; denda: number | null; jatuhTempo: Date; kodePelanggan: string; paket?: string }[] = [];
+    const tagihanBaru: {
+      pelangganId: number;
+      nama: string;
+      noTelepon: string | null;
+      noInvoice: string | null;
+      bulan: number;
+      tahun: number;
+      jumlah: number;
+      denda: number | null;
+      jatuhTempo: Date;
+      kodePelanggan: string;
+      paket?: string;
+    }[] = [];
 
-    for (const pelanggan of pelangganList) {
+    for (const c of candidates) {
+      // Jika daftar items dikirim, hanya buat pelanggan yang ada di daftar (nominal custom)
+      if (overrideMap && !overrideMap.has(c.pelangganId)) continue;
+      const jumlah = overrideMap ? (overrideMap.get(c.pelangganId) ?? 0) : c.jumlah;
+
       try {
-        // Skip if tagihan already exists for this period (batch check, no per-row query)
-        if (existingSet.has(pelanggan.id)) {
-          skipped++;
-          continue;
-        }
-
-        // Calculate tariff: customTarif > paket.harga > kategoriTarif
-        let tarif = pelanggan.customTarif;
-        if (!tarif && pelanggan.paket) {
-          tarif = pelanggan.paket.harga;
-        }
-        if (!tarif) {
-          tarif = kategoriTarifMap.get(pelanggan.kategori) ?? 0;
-        }
-
-        // Calculate due date: 15th of the month
         const jatuhTempo = new Date(tahun, bulan - 1, 15);
+        const noInvoice = generateNoInvoice(c.kodePelanggan, bulan, tahun);
 
         await prisma.tagihan.create({
           data: {
-            pelangganId: pelanggan.id,
+            pelangganId: c.pelangganId,
             bulan,
             tahun,
-            jumlah: tarif,
+            jumlah,
             status: "belum_bayar",
             jatuhTempo,
             keterangan: `Tagihan bulan ${bulan}/${tahun}`,
-            noInvoice: generateNoInvoice(pelanggan.kodePelanggan, bulan, tahun),
+            noInvoice,
           },
         });
 
         tagihanBaru.push({
-          pelangganId: pelanggan.id,
-          nama: pelanggan.nama,
-          noTelepon: pelanggan.noTelepon,
-          noInvoice: generateNoInvoice(pelanggan.kodePelanggan, bulan, tahun),
+          pelangganId: c.pelangganId,
+          nama: c.nama,
+          noTelepon: c.noTelepon,
+          noInvoice,
           bulan,
           tahun,
-          jumlah: tarif,
+          jumlah,
           denda: null,
           jatuhTempo,
-          kodePelanggan: pelanggan.kodePelanggan,
-          paket: pelanggan.paket?.nama || undefined,
+          kodePelanggan: c.kodePelanggan,
+          paket: c.paket || undefined,
         });
 
         created++;
       } catch (e) {
-        errors.push(`Pelanggan #${pelanggan.id} (${pelanggan.nama}): ${e instanceof Error ? e.message : "Error"}`);
+        errors.push(
+          `Pelanggan #${c.pelangganId} (${c.nama}): ${e instanceof Error ? e.message : "Error"}`
+        );
       }
     }
 
     // Auto-kirim WA invoice ke pelanggan yang tagihannya baru dibuat (skylite pattern).
-    // Nonaktifkan via env WA_AUTO_SEND="false".
     const waAutoSend = process.env.WA_AUTO_SEND !== "false" && isWaEnabled();
-    let waHasil: { terkirim: number; pending: number; gagal: number; failures: string[] } | null = null;
+    let waHasil: {
+      terkirim: number;
+      pending: number;
+      gagal: number;
+      failures: string[];
+    } | null = null;
     if (waAutoSend && tagihanBaru.length > 0) {
       const targets: TargetWa[] = tagihanBaru.map((t) => ({
         pelangganId: t.pelangganId,
@@ -140,7 +193,14 @@ export async function POST(request: Request) {
         aksi: "create",
         entitas: "Tagihan",
         entitasId: 0,
-        dataBaru: JSON.stringify({ bulan, tahun, created, skipped, errors: errors.length }),
+        dataBaru: JSON.stringify({
+          bulan,
+          tahun,
+          created,
+          skipped,
+          customAmount: !!overrideMap,
+          errors: errors.length,
+        }),
         userId: user.id,
       },
     });

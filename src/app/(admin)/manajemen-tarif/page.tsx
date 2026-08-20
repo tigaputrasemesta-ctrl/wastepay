@@ -289,7 +289,7 @@ export default function TarifPage() {
             <form onSubmit={saveKat} className="p-5 space-y-4">
               <div>
                 <label className="block text-xs font-black uppercase mb-1">Kode ID (Tanpa spasi)</label>
-                <input type="text" value={katForm.kategori} onChange={e => setKatForm({...katForm, kategori: e.target.value})} className="w-full border-2 border-black px-3 py-2 text-sm font-bold shadow-[4px_4px_0_0_rgba(0,0,0,1)] focus:bg-yellow-100 outline-none" required placeholder="contoh: rumah_tangga" disabled={!!katEditing} />
+                <input type="text" value={katForm.kategori} onChange={e => setKatForm({...katForm, kategori: e.target.value})} className="w-full border-2 border-black px-3 py-2 text-sm font-bold shadow-[4px_4px_0_0_rgba(0,0,0,1)] focus:bg-yellow-100 outline-none" required placeholder="contoh: level_1" disabled={!!katEditing} />
               </div>
               <div>
                 <label className="block text-xs font-black uppercase mb-1">Label Tampilan</label>

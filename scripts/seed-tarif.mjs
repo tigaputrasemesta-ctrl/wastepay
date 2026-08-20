@@ -3,24 +3,12 @@ import pg from "pg";
 
 // ── Data master tarif (sumber kebenaran) ─────────────────────────────────────
 const KATEGORI = [
-  { kategori: "rumah_tangga",     label: "Rumah Tangga",              tarif: 50000,  deskripsi: "Rumah hunian keluarga biasa, sampah domestik harian standar (organik & anorganik rumah tangga)." },
-  { kategori: "kost",             label: "Kost / Kontrakan",          tarif: 40000,  deskripsi: "Rumah kost/kontrakan dengan beberapa kamar sewa; volume sampah dihitung per bangunan, bukan per penghuni." },
-  { kategori: "bisnis_kelas_1",   label: "Bisnis / Toko Kelas 1",     tarif: 50000,  deskripsi: "Usaha skala kecil: toko kelontong, minimarket, kios, warung retail dengan volume sampah harian rendah–sedang." },
-  { kategori: "bisnis_kelas_2",   label: "Bisnis / Toko Kelas 2",     tarif: 100000, deskripsi: "Usaha skala menengah: toko grosir, ruko multi-unit, showroom dengan volume sampah lebih tinggi dari Kelas 1." },
-  { kategori: "bisnis_kelas_3",   label: "Bisnis / Toko Kelas 3",     tarif: 200000, deskripsi: "Usaha skala besar: supermarket, department store, atau bisnis dengan produksi sampah harian tinggi dan butuh pengangkutan lebih sering." },
-  { kategori: "perkantoran_kecil", label: "Perkantoran Kecil",        tarif: 100000, deskripsi: "Kantor dengan jumlah karyawan terbatas (±1–10 orang), umumnya sampah kertas/administrasi, volume rendah." },
-  { kategori: "perkantoran_sedang", label: "Perkantoran Sedang",      tarif: 200000, deskripsi: "Kantor menengah (±11–30 karyawan), volume sampah kertas & non-organik lebih besar." },
-  { kategori: "perkantoran_besar", label: "Perkantoran Besar",        tarif: 350000, deskripsi: "Gedung perkantoran/kantor pusat dengan banyak karyawan, produksi sampah tinggi dan rutin." },
-  { kategori: "restoran",         label: "Rumah Makan / Restoran",    tarif: 75000,  deskripsi: "Usaha kuliner dengan sampah organik/sisa makanan tinggi, butuh pengangkutan lebih sering karena risiko bau." },
-  { kategori: "warung",           label: "Warung Kecil",              tarif: 30000,  deskripsi: "Warung makan/jajanan skala mikro, volume sampah rendah, biasanya operasional rumahan." },
-  { kategori: "sekolah",          label: "Sekolah / Lembaga Pendidikan", tarif: 75000, deskripsi: "Sekolah, kampus, atau tempat kursus; sampah kertas, plastik kemasan jajanan, dan sampah umum area publik." },
-  { kategori: "klinik",           label: "Klinik / Puskesmas",        tarif: 100000, deskripsi: "Fasilitas kesehatan skala kecil-menengah; perlu penanganan khusus jika ada sampah medis (dipisah dari sampah umum)." },
-  { kategori: "rumah_sakit",      label: "Rumah Sakit",               tarif: 500000, deskripsi: "Fasilitas kesehatan besar dengan volume tinggi dan potensi limbah medis yang butuh penanganan khusus/berizin." },
-  { kategori: "hotel",            label: "Hotel / Penginapan",        tarif: 250000, deskripsi: "Akomodasi dengan banyak kamar/tamu, volume sampah tinggi dan kontinu setiap hari." },
-  { kategori: "pasar_kios",       label: "Pasar / Kios",              tarif: 25000,  deskripsi: "Kios di area pasar tradisional/modern, tarif per unit kios, volume sampah bervariasi tergantung jenis dagangan." },
-  { kategori: "tempat_ibadah",    label: "Tempat Ibadah",             tarif: 20000,  deskripsi: "Masjid, gereja, vihara, dll; umumnya tarif rendah/subsidi karena sifat non-komersial." },
-  { kategori: "industri",         label: "Industri / Pabrik",         tarif: 750000, deskripsi: "Fasilitas produksi dengan volume sampah besar dan berpotensi mengandung limbah non-domestik (perlu cek regulasi limbah B3 terpisah)." },
-  { kategori: "fasum",            label: "Fasilitas Umum (RT/RW)",    tarif: 15000,  deskripsi: "Pos ronda, balai warga, taman RT/RW; tarif nominal karena penggunaan bersama dan volume kecil." },
+  { kategori: "level_1", label: "Level 1", tarif: 50000,  deskripsi: "Volume sangat kecil (rumah tangga kecil, kost, usaha mikro)." },
+  { kategori: "level_2", label: "Level 2", tarif: 100000, deskripsi: "Volume kecil–sedang (rumah tangga besar, warung, kantor kecil)." },
+  { kategori: "level_3", label: "Level 3", tarif: 150000, deskripsi: "Volume sedang (usaha menengah, kantor sedang, restoran kecil)." },
+  { kategori: "level_4", label: "Level 4", tarif: 200000, deskripsi: "Volume sedang–besar (kantor besar, restoran, klinik)." },
+  { kategori: "level_5", label: "Level 5", tarif: 250000, deskripsi: "Volume besar (hotel kecil, sekolah, minimarket)." },
+  { kategori: "level_6", label: "Level 6", tarif: 300000, deskripsi: "Volume sangat besar (fasilitas ramai, usaha besar)." },
 ];
 
 const PAKET = [
@@ -49,6 +37,14 @@ async function main() {
         [k.kategori, k.label, k.tarif, k.deskripsi]
       );
     }
+
+    // 1b) Migrasi pelanggan dari skema kategori lama ke Level
+    const migPelanggan = await c.query(
+      `UPDATE "Pelanggan" SET kategori = 'level_1', "updatedAt" = now()
+       WHERE kategori IN ('rumah_tangga','kost','bisnis','bisnis_kelas_1','bisnis_kelas_2','bisnis_kelas_3','restoran','warung','perkantoran','perkantoran_kecil','perkantoran_sedang','perkantoran_besar','sekolah','klinik','rumah_sakit','hotel','pasar_kios','tempat_ibadah','industri','fasum','lainnya')`
+    );
+    if (migPelanggan.rowCount > 0) console.log(`Pelanggan dimigrasi ke level_1: ${migPelanggan.rowCount} baris`);
+
     const kodeList = KATEGORI.map((k) => k.kategori);
     const delKat = await c.query(
       `DELETE FROM "KategoriTarif" WHERE kategori != ALL($1::text[])`,

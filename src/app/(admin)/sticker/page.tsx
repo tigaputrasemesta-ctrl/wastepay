@@ -17,24 +17,12 @@ type Pelanggan = {
 };
 
 const KATEGORI_LABEL: Record<string, string> = {
-  rumah_tangga: "RT",
-  kost: "KOST",
-  bisnis_kelas_1: "BISNIS 1",
-  bisnis_kelas_2: "BISNIS 2",
-  bisnis_kelas_3: "BISNIS 3",
-  restoran: "RM",
-  warung: "WARUNG",
-  perkantoran_kecil: "KANTOR S",
-  perkantoran_sedang: "KANTOR M",
-  perkantoran_besar: "KANTOR L",
-  sekolah: "SEKOLAH",
-  klinik: "KLINIK",
-  rumah_sakit: "RS",
-  hotel: "HOTEL",
-  pasar_kios: "PASAR",
-  tempat_ibadah: "IBADAH",
-  industri: "INDUSTRI",
-  fasum: "FASUM",
+  level_1: "LVL 1",
+  level_2: "LVL 2",
+  level_3: "LVL 3",
+  level_4: "LVL 4",
+  level_5: "LVL 5",
+  level_6: "LVL 6",
 };
 
 function Sticker({ p, idx }: { p: Pelanggan; idx: number }) {

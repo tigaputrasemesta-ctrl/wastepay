@@ -91,7 +91,7 @@ export async function POST(request: Request) {
             nama,
             noTelepon,
             kodePelanggan,
-            kategori: kategori || "rumah_tangga",
+            kategori: kategori || "level_1",
             alamat,
             rtRw,
             fotoRumah,

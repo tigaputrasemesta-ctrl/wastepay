@@ -20,24 +20,12 @@ const STEPS = [
 ];
 
 const KATEGORI_OPTIONS = [
-  { value: "rumah_tangga", label: "Rumah Tangga", icon: "🏠" },
-  { value: "kost", label: "Kost / Kontrakan", icon: "🏘️" },
-  { value: "bisnis_kelas_1", label: "Bisnis / Toko Kelas 1", icon: "🏪" },
-  { value: "bisnis_kelas_2", label: "Bisnis / Toko Kelas 2", icon: "🏪" },
-  { value: "bisnis_kelas_3", label: "Bisnis / Toko Kelas 3", icon: "🏬" },
-  { value: "restoran", label: "Rumah Makan / Restoran", icon: "🍽️" },
-  { value: "warung", label: "Warung Kecil", icon: "🍜" },
-  { value: "perkantoran_kecil", label: "Perkantoran Kecil", icon: "🏢" },
-  { value: "perkantoran_sedang", label: "Perkantoran Sedang", icon: "🏢" },
-  { value: "perkantoran_besar", label: "Perkantoran Besar", icon: "🏙️" },
-  { value: "sekolah", label: "Sekolah / Pendidikan", icon: "🏫" },
-  { value: "klinik", label: "Klinik / Puskesmas", icon: "🏥" },
-  { value: "rumah_sakit", label: "Rumah Sakit", icon: "🏥" },
-  { value: "hotel", label: "Hotel / Penginapan", icon: "🏨" },
-  { value: "pasar_kios", label: "Pasar / Kios", icon: "🛒" },
-  { value: "tempat_ibadah", label: "Tempat Ibadah", icon: "⛪" },
-  { value: "industri", label: "Industri / Pabrik", icon: "🏭" },
-  { value: "fasum", label: "Fasilitas Umum (RT/RW)", icon: "🏞️" },
+  { value: "level_1", label: "Level 1 — Volume Sangat Kecil", icon: "🏠" },
+  { value: "level_2", label: "Level 2 — Volume Kecil–Sedang", icon: "🏘️" },
+  { value: "level_3", label: "Level 3 — Volume Sedang", icon: "🏪" },
+  { value: "level_4", label: "Level 4 — Volume Sedang–Besar", icon: "🏢" },
+  { value: "level_5", label: "Level 5 — Volume Besar", icon: "🏨" },
+  { value: "level_6", label: "Level 6 — Volume Sangat Besar", icon: "🏭" },
 ];
 
 const STATUS_OPTIONS = [
@@ -76,7 +64,7 @@ export default function DaftarPelangganPage() {
     // Data Diri
     nama: "",
     noTelepon: "",
-    kategori: "rumah_tangga",
+    kategori: "level_1",
     penanggungjawab: "",
     // Wilayah & Alamat
     kelurahanId: "",
@@ -199,7 +187,7 @@ export default function DaftarPelangganPage() {
 
   function resetForm() {
     setForm({
-      nama: "", noTelepon: "", kategori: "rumah_tangga", penanggungjawab: "",
+      nama: "", noTelepon: "", kategori: "level_1", penanggungjawab: "",
       kelurahanId: "", alamat: "", rt: "", rw: "",
       patokanLokasi: "", latitude: "", longitude: "", koordinatSumber: "", koordinatAkurasi: "", fotoRumah: "",
       paketId: "", customTarif: "", status: "aktif", catatan: "",
