@@ -3,6 +3,8 @@
 import { useState } from "react";
 import CameraGps from "@/components/mobile/CameraGps";
 
+export const dynamic = "force-dynamic";
+
 type Pelanggan = {
   id: number;
   nama: string;
