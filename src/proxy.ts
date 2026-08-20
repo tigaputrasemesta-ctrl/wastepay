@@ -286,8 +286,14 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Auth API & publik API — dicek di handler masing-masing
-  if (pathname.startsWith("/api/auth") || pathname.startsWith("/api/publik")) {
+  // Auth API, publik API, dan API mobile (background GPS) — dicek di handler masing-masing.
+  // /api/mobile/tracking memakai token header (x-tracking-token), bukan cookie sesi,
+  // karena dipanggil dari service native Android yang tidak membawa cookie + Origin header.
+  if (
+    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/publik") ||
+    pathname.startsWith("/api/mobile")
+  ) {
     return NextResponse.next();
   }
 
