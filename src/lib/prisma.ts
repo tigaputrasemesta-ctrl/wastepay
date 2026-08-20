@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 
-const rawConnectionString = process.env.DATABASE_URL;
+const rawConnectionString = process.env.DATABASE_URL?.trim();
 
 // Bersihkan parameter sslmode dari connectionString agar tidak menimpa konfigurasi SSL Pool
 const connectionString = rawConnectionString?.replace(/[?&]sslmode=[^&]+/g, "").replace(/\?$/, "");
