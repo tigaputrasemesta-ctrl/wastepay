@@ -60,7 +60,9 @@ jobs:
           echo "versionName=$VERSION_NAME"
 
       - name: Build release APK
-        run: cd android && ./gradlew assembleRelease --no-daemon
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon
 
       - name: Copy APK to public
         run: |
