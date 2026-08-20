@@ -13,8 +13,10 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 // Koneksi ke DATABASE_URL (Supabase Postgres di production, bisa juga dev.db lokal).
+const rawConn = process.env.DATABASE_URL;
+const connectionString = rawConn?.replace(/[?&]sslmode=[^&]+/g, "").replace(/\?$/, "");
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString,
   ssl: { rejectUnauthorized: false },
 });
 const prisma = new PrismaClient({ adapter: new PrismaPg(pool) });
