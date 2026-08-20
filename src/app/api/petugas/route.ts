@@ -55,7 +55,16 @@ export async function POST(request: Request) {
 
     await logAudit("create", "Petugas", petugas.id, undefined, { nama: petugas.nama, jabatan: petugas.jabatan });
     return NextResponse.json(petugas, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "Gagal menambah petugas" }, { status: 500 });
+  } catch (err: unknown) {
+    console.error("POST /api/petugas error:", err);
+    const code = (err as { code?: string })?.code;
+    if (code === "P2002") {
+      return NextResponse.json({ error: "Akun login (User) sudah terhubung ke petugas lain." }, { status: 400 });
+    }
+    if (code === "P2003") {
+      return NextResponse.json({ error: "Data Kelurahan atau User yang dipilih tidak ditemukan di database. Pastikan data kelurahan sudah tersinkron." }, { status: 400 });
+    }
+    const message = (err as Error)?.message || "Gagal menambah petugas";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

@@ -27,7 +27,13 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json(created, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "Gagal menambah kategori" }, { status: 500 });
+  } catch (err: unknown) {
+    console.error("POST /api/kategori-tarif error:", err);
+    const code = (err as { code?: string })?.code;
+    if (code === "P2002") {
+      return NextResponse.json({ error: "Kode Kategori tersebut sudah terdaftar di database." }, { status: 400 });
+    }
+    const message = (err as Error)?.message || "Gagal menambah kategori";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

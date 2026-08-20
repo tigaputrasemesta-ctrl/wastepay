@@ -29,7 +29,9 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json(paket, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "Gagal menambah paket" }, { status: 500 });
+  } catch (err: unknown) {
+    console.error("POST /api/paket error:", err);
+    const message = (err as Error)?.message || "Gagal menambah paket";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
