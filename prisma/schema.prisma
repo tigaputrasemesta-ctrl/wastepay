@@ -90,6 +90,7 @@ model Zona {
   wilayah Wilayah[]
   petugas ZonaPetugas[]
   rute    Rute[]
+  ruteZonas Rute[] @relation("RuteZonas")
   pengangkutan Pengangkutan[]
 
   @@index([kelurahanId])
@@ -266,6 +267,7 @@ model Rute {
   kelurahan   Kelurahan? @relation(fields: [kelurahanId], references: [id])
   zonaId      Int?
   zona        Zona?     @relation(fields: [zonaId], references: [id])
+  zonas       Zona[]    @relation("RuteZonas")
   petugasId   Int?
   petugas     Petugas? @relation(fields: [petugasId], references: [id])
   createdAt   DateTime  @default(now())

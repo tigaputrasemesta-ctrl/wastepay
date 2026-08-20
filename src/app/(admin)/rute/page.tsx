@@ -15,6 +15,7 @@ type Rute = {
   aktif: boolean;
   kelurahan?: Kelurahan | null;
   zona?: { id: number; nama: string; kelurahanId: number } | null;
+  zonas?: { id: number; nama: string; kelurahanId: number }[];
   petugas?: Petugas;
   _count: { jadwal: number };
 };
@@ -35,7 +36,7 @@ export default function RutePage() {
   const [editing, setEditing] = useState<Rute | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Rute | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [form, setForm] = useState({ nama: "", hari: "Senin,Rabu,Jumat", jam: "", kelurahanId: "", zonaId: "", petugasId: "" });
+  const [form, setForm] = useState({ nama: "", hari: "Senin,Rabu,Jumat", jam: "", kelurahanId: "", zonaId: "", zonaIds: [] as string[], petugasId: "" });
 
   const fetchData = useCallback(async () => {
     try {
@@ -63,18 +64,28 @@ export default function RutePage() {
 
   function openCreate() {
     setEditing(null);
-    setForm({ nama: "", hari: "Senin,Rabu,Jumat", jam: "", kelurahanId: "", zonaId: "", petugasId: "" });
+    setForm({ nama: "", hari: "Senin,Rabu,Jumat", jam: "", kelurahanId: "", zonaId: "", zonaIds: [], petugasId: "" });
     setShowForm(true);
   }
 
   function openEdit(r: Rute) {
     setEditing(r);
+    
+    // Fallback: If it has `zonas`, use them; otherwise use the single `zona` if it exists.
+    let currentZonaIds: string[] = [];
+    if (r.zonas && r.zonas.length > 0) {
+      currentZonaIds = r.zonas.map(z => z.id.toString());
+    } else if (r.zona) {
+      currentZonaIds = [r.zona.id.toString()];
+    }
+
     setForm({
       nama: r.nama,
       hari: r.hari,
       jam: r.jam || "",
       kelurahanId: r.kelurahan?.id ? r.kelurahan.id.toString() : "",
       zonaId: r.zona?.id ? r.zona.id.toString() : "",
+      zonaIds: currentZonaIds,
       petugasId: r.petugas?.id?.toString() || "",
     });
     setShowForm(true);
@@ -88,6 +99,7 @@ export default function RutePage() {
       ...f,
       kelurahanId: id,
       zonaId: "",
+      zonaIds: [],
       nama: f.nama.trim() === "" ? `Angkut ${k?.nama ?? ""}`.trim() : f.nama,
     }));
   }
@@ -210,7 +222,11 @@ export default function RutePage() {
                       <span className="inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium bg-sky-400/10 text-sky-400 border border-sky-500/30">{r.kelurahan?.nama ?? "—"}</span>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium bg-purple-400/10 text-purple-500 border border-purple-500/30">{r.zona?.nama ?? "—"}</span>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium bg-purple-400/10 text-purple-500 border border-purple-500/30">
+                        {r.zonas && r.zonas.length > 0 
+                          ? r.zonas.map(z => z.nama).join(", ")
+                          : r.zona?.nama ?? "—"}
+                      </span>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1">
@@ -290,7 +306,11 @@ export default function RutePage() {
             </div>
             <div className="text-xs text-gray-600 font-bold space-y-1">
               <p>📍 {r.kelurahan?.nama ?? "—"}</p>
-              {r.zona?.nama && <p>🗺️ Zona {r.zona.nama}</p>}
+              {(r.zonas && r.zonas.length > 0) ? (
+                <p>🗺️ Zona {r.zonas.map(z => z.nama).join(", ")}</p>
+              ) : r.zona?.nama ? (
+                <p>🗺️ Zona {r.zona.nama}</p>
+              ) : null}
               <p>📅 {r.hari}</p>
               {r.jam && <p>⏰ {r.jam}</p>}
               <p>👤 {r.petugas?.nama || "Belum ada petugas"}</p>
@@ -331,10 +351,39 @@ export default function RutePage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Zona Angkut</label>
-                <select value={form.zonaId} onChange={(e) => setForm({ ...form, zonaId: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" disabled={!form.kelurahanId}>
-                  <option value="">Seluruh kelurahan</option>
-                  {zonaList.filter((z) => form.kelurahanId && z.kelurahanId === parseInt(form.kelurahanId)).map((z) => <option key={z.id} value={z.id}>{z.nama}</option>)}
-                </select>
+                {(!form.kelurahanId || zonaList.filter((z) => z.kelurahanId === parseInt(form.kelurahanId)).length === 0) ? (
+                  <div className="text-xs text-gray-400 italic py-2">Pilih kelurahan terlebih dahulu atau kelurahan belum memiliki zona.</div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-2">
+                    {zonaList.filter((z) => z.kelurahanId === parseInt(form.kelurahanId)).map((z) => {
+                      const idStr = z.id.toString();
+                      const checked = form.zonaIds.includes(idStr) || form.zonaId === idStr;
+                      return (
+                        <label
+                          key={z.id}
+                          className={`flex items-center justify-center px-2 py-2 border rounded-none text-xs cursor-pointer transition ${
+                            checked
+                              ? "bg-green-400/15 border-vest text-green-600 font-semibold"
+                              : "bg-hm-card bg-white p-0 overflow-hidden border-2 border-black text-gray-600 font-bold hover:bg-gray-100"
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            className="hidden"
+                            checked={checked}
+                            onChange={() => {
+                              const newZonaIds = checked 
+                                ? form.zonaIds.filter((id) => id !== idStr) 
+                                : [...form.zonaIds, idStr];
+                              setForm({ ...form, zonaIds: newZonaIds, zonaId: "" });
+                            }}
+                          />
+                          {z.nama}
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Hari *</label>

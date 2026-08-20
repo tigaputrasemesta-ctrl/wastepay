@@ -14,6 +14,7 @@ export async function GET(
       include: {
         kelurahan: { select: { id: true, nama: true, kecamatan: true } },
         zona: { select: { id: true, nama: true, kelurahanId: true } },
+        zonas: { select: { id: true, nama: true, kelurahanId: true } },
         petugas: { select: { id: true, nama: true } },
         jadwal: {
           include: { pelanggan: { select: { id: true, nama: true, alamat: true } } },
@@ -36,9 +37,10 @@ export async function PUT(
   try {
     const id = parseInt((await params).id);
     const body = await request.json();
-    const { nama, hari, jam, aktif, kelurahanId, petugasId, zonaId } = body;
+    const { nama, hari, jam, aktif, kelurahanId, petugasId, zonaId, zonaIds } = body;
 
-    const data: Record<string, unknown> = {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data: any = {};
     if (nama !== undefined) data.nama = nama;
     if (hari !== undefined) data.hari = hari;
     if (jam !== undefined) data.jam = jam;
@@ -49,17 +51,26 @@ export async function PUT(
       data.wilayahId = null;
     }
     if (petugasId !== undefined) data.petugasId = petugasId ? parseInt(petugasId) : null;
-    if (zonaId !== undefined) {
-      const zonaIdAkhir = zonaId ? parseInt(zonaId) : null;
-      if (zonaIdAkhir) {
+    
+    if (zonaIds !== undefined || zonaId !== undefined) {
+      const parsedZonaIds: number[] = [];
+      if (zonaIds && Array.isArray(zonaIds)) {
+        parsedZonaIds.push(...zonaIds.map((z: string) => parseInt(z)).filter(n => !isNaN(n)));
+      } else if (zonaId) {
+        parsedZonaIds.push(parseInt(zonaId));
+      }
+      
+      if (parsedZonaIds.length > 0) {
         const target = await prisma.rute.findUnique({ where: { id }, select: { kelurahanId: true } });
         const kel = data.kelurahanId ?? target?.kelurahanId;
-        const zona = await prisma.zona.findUnique({ where: { id: zonaIdAkhir }, select: { kelurahanId: true } });
-        if (!zona || !kel || zona.kelurahanId !== parseInt(String(kel))) {
+        const zonas = await prisma.zona.findMany({ where: { id: { in: parsedZonaIds } }, select: { kelurahanId: true } });
+        if (zonas.some((z) => z.kelurahanId !== parseInt(String(kel)))) {
           return NextResponse.json({ error: "Zona tidak sesuai dengan kelurahan yang dipilih" }, { status: 400 });
         }
       }
-      data.zonaId = zonaIdAkhir;
+      
+      data.zonaId = parsedZonaIds.length > 0 ? parsedZonaIds[0] : null;
+      data.zonas = { set: parsedZonaIds.map(id => ({ id })) };
     }
 
     const rute = await prisma.rute.update({
