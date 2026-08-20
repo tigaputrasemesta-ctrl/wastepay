@@ -25,6 +25,7 @@ export async function GET(request: Request) {
           jam: true,
           kelurahan: { select: { id: true, nama: true } },
           zona: { select: { id: true, nama: true } },
+          zonas: { select: { id: true, nama: true } },
         },
       },
       _count: { select: { pengangkutan: true } },

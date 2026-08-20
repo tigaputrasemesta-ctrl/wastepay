@@ -45,6 +45,7 @@ export default function PetugasPage() {
   const { showToast } = useToast();
   const [petugas, setPetugas] = useState<Petugas[]>([]);
   const [kelurahanList, setKelurahanList] = useState<Kelurahan[]>([]);
+  const [zonaList, setZonaList] = useState<{ id: number; nama: string; kelurahanId: number }[]>([]);
   const [akunTersedia, setAkunTersedia] = useState<{ id: number; nama: string; email: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -56,20 +57,23 @@ export default function PetugasPage() {
     noTelepon: "",
     email: "",
     kelurahanId: "",
+    zonaIds: [] as string[],
     jabatan: [] as string[],
     userId: "",
   });
 
   const fetchData = useCallback(async () => {
     try {
-      const [petugasRes, kelurahanRes] = await Promise.all([
+      const [petugasRes, kelurahanRes, zonaRes] = await Promise.all([
         fetch("/api/petugas?includeUser=1"),
         fetch("/api/kelurahan"),
+        fetch("/api/zona"),
       ]);
       const data = await petugasRes.json();
       setPetugas(Array.isArray(data) ? data : data.petugas ?? []);
       setAkunTersedia(Array.isArray(data) ? [] : data.akunTersedia ?? []);
       setKelurahanList(await kelurahanRes.json());
+      setZonaList(await zonaRes.json());
     } catch {
       showToast("Gagal memuat data", "error");
     } finally {
@@ -83,17 +87,18 @@ export default function PetugasPage() {
 
   function openCreate() {
     setEditing(null);
-    setForm({ nama: "", noTelepon: "", email: "", kelurahanId: "", jabatan: [], userId: "" });
+    setForm({ nama: "", noTelepon: "", email: "", kelurahanId: "", zonaIds: [], jabatan: [], userId: "" });
     setShowForm(true);
   }
 
-  function openEdit(p: Petugas) {
+  function openEdit(p: Petugas & { zona?: { zonaId: number }[] }) {
     setEditing(p);
     setForm({
       nama: p.nama,
       noTelepon: p.noTelepon,
       email: p.email || "",
       kelurahanId: p.kelurahan?.id ? p.kelurahan.id.toString() : "",
+      zonaIds: p.zona?.map(z => z.zonaId.toString()) || [],
       jabatan: (p.jabatan || "").split(",").filter(Boolean),
       userId: p.user?.id ? p.user.id.toString() : "",
     });
@@ -329,7 +334,7 @@ export default function PetugasPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Kelurahan *</label>
-                <select value={form.kelurahanId} onChange={(e) => setForm({ ...form, kelurahanId: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" required>
+                <select value={form.kelurahanId} onChange={(e) => setForm({ ...form, kelurahanId: e.target.value, zonaIds: [] })} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" required>
                   <option value="">Pilih Kelurahan</option>
                   {kelurahanList.map((k) => <option key={k.id} value={k.id}>{k.nama}{k.kecamatan ? ` · ${k.kecamatan}` : ""}</option>)}
                 </select>
@@ -337,6 +342,43 @@ export default function PetugasPage() {
                   Area tugas &amp; batas persetujuan petugas — seluruh wilayah/RT di kelurahan ini.
                 </p>
               </div>
+              {form.kelurahanId && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Zona Angkut <span className="text-xs text-gray-400 font-bold font-normal">(opsional)</span></label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {zonaList.filter((z) => z.kelurahanId.toString() === form.kelurahanId).map((z) => {
+                      const idStr = z.id.toString();
+                      const checked = form.zonaIds.includes(idStr);
+                      return (
+                        <label
+                          key={z.id}
+                          className={`flex items-center justify-center px-2 py-2 border rounded-none text-xs cursor-pointer transition ${
+                            checked
+                              ? "bg-green-400/15 border-vest text-green-600 font-semibold"
+                              : "bg-hm-card bg-white p-0 overflow-hidden border-2 border-black text-gray-600 font-bold hover:bg-gray-100"
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            className="hidden"
+                            checked={checked}
+                            onChange={() => {
+                              const newZonaIds = checked 
+                                ? form.zonaIds.filter((id) => id !== idStr) 
+                                : [...form.zonaIds, idStr];
+                              setForm({ ...form, zonaIds: newZonaIds });
+                            }}
+                          />
+                          {z.nama}
+                        </label>
+                      );
+                    })}
+                  </div>
+                  {zonaList.filter((z) => z.kelurahanId.toString() === form.kelurahanId).length === 0 && (
+                    <p className="text-xs text-gray-400 italic">Kelurahan ini belum memiliki zona angkut.</p>
+                  )}
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-medium text-gray-600 font-bold mb-2">Jabatan <span className="text-xs text-gray-400 font-bold font-normal">(bisa lebih dari satu)</span></label>
                 <div className="space-y-2">

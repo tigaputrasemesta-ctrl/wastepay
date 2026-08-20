@@ -12,6 +12,7 @@ export async function GET(request: Request) {
     include: {
       wilayah: true,
       kelurahan: true,
+      zona: { select: { zonaId: true } },
       user: { select: { id: true, nama: true, email: true, role: true } },
       _count: { select: { rute: true, pengangkutan: true } },
     },
@@ -34,7 +35,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { nama, noTelepon, email, foto, kelurahanId, jabatan, userId } = body;
+    const { nama, noTelepon, email, foto, kelurahanId, jabatan, userId, zonaIds } = body;
 
     if (!nama || !noTelepon || !kelurahanId) {
       return NextResponse.json({ error: "Nama, no telepon, dan kelurahan harus diisi" }, { status: 400 });
@@ -52,6 +53,19 @@ export async function POST(request: Request) {
       },
       include: { wilayah: true, kelurahan: true },
     });
+
+    if (zonaIds && Array.isArray(zonaIds)) {
+      const validZonaIds = zonaIds.map(id => parseInt(id)).filter(id => !isNaN(id));
+      if (validZonaIds.length > 0) {
+        await prisma.zonaPetugas.createMany({
+          data: validZonaIds.map(zonaId => ({
+            zonaId,
+            petugasId: petugas.id
+          })),
+          skipDuplicates: true
+        });
+      }
+    }
 
     await logAudit("create", "Petugas", petugas.id, undefined, { nama: petugas.nama, jabatan: petugas.jabatan });
     return NextResponse.json(petugas, { status: 201 });

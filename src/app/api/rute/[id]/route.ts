@@ -96,11 +96,29 @@ export async function PUT(
       include: {
         kelurahan: { select: { id: true, nama: true, kecamatan: true } },
         zona: { select: { id: true, nama: true } },
+        zonas: { select: { id: true, nama: true } },
         petugas: { select: { id: true, nama: true } },
       },
     });
 
     await logAudit("update", "Rute", id, { id }, { nama: rute.nama, aktif: rute.aktif });
+
+    // Sync ZonaPetugas
+    const finalPetugasId = petugasId !== undefined ? (petugasId ? parseInt(petugasId) : null) : rute.petugasId;
+    const finalZonaIds = (zonaIds !== undefined || zonaId !== undefined) ? 
+                         rute.zonas.map(z => z.id) : 
+                         rute.zonas.map(z => z.id);
+    
+    if (finalPetugasId && finalZonaIds.length > 0) {
+      await prisma.zonaPetugas.createMany({
+        data: finalZonaIds.map((zId) => ({
+          zonaId: zId,
+          petugasId: finalPetugasId,
+        })),
+        skipDuplicates: true,
+      });
+    }
+
     return NextResponse.json(rute);
   } catch {
     return NextResponse.json({ error: "Gagal mengupdate rute" }, { status: 500 });

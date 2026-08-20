@@ -76,6 +76,18 @@ export async function POST(request: Request) {
     });
 
     await logAudit("create", "Rute", rute.id, undefined, { nama: rute.nama });
+
+    // Sync ZonaPetugas
+    if (petugasId && parsedZonaIds.length > 0) {
+      await prisma.zonaPetugas.createMany({
+        data: parsedZonaIds.map((zId) => ({
+          zonaId: zId,
+          petugasId: parseInt(petugasId),
+        })),
+        skipDuplicates: true,
+      });
+    }
+
     return NextResponse.json(rute, { status: 201 });
   } catch {
     return NextResponse.json({ error: "Gagal menambah rute" }, { status: 500 });

@@ -26,7 +26,12 @@ async function materializeTugasTerjadwal(petugasId: number, tanggal: Date): Prom
       rute: { aktif: true, petugasId },
       pelanggan: { deletedAt: null, status: "aktif" },
     },
-    select: { id: true, pelangganId: true, rute: { select: { zonaId: true } } },
+    select: { 
+      id: true, 
+      pelangganId: true, 
+      pelanggan: { select: { wilayah: { select: { zonaId: true } } } },
+      rute: { select: { zonaId: true, zonas: { select: { id: true } } } } 
+    },
   });
 
   if (jadwal.length === 0) return;
@@ -58,6 +63,15 @@ async function materializeTugasTerjadwal(petugasId: number, tanggal: Date): Prom
 
   for (const j of jadwal) {
     if (skip.has(j.pelangganId)) continue;
+    
+    // Tentukan zona angkut: 
+    // 1. Zona dari wilayah pelanggan (paling akurat)
+    // 2. Jika tidak ada, cek apakah rute punya zonas (multiple). Jika ya, fallback ke rute.zonaId (first).
+    let targetZonaId = j.pelanggan.wilayah?.zonaId || null;
+    if (!targetZonaId) {
+       targetZonaId = j.rute.zonaId;
+    }
+
     await prisma.pengangkutan.create({
       data: {
         tanggal: start,
@@ -65,7 +79,7 @@ async function materializeTugasTerjadwal(petugasId: number, tanggal: Date): Prom
         pelangganId: j.pelangganId,
         petugasId,
         jadwalId: j.id,
-        zonaId: j.rute.zonaId,
+        zonaId: targetZonaId,
       },
     });
   }
@@ -191,14 +205,17 @@ export async function POST(request: Request) {
       }
     }
 
-    // Zona angkut: eksplisit dari body, atau turunan dari rute jadwal terkait
+    // Zona angkut: eksplisit dari body, atau turunan dari pelanggan/rute jadwal terkait
     let zonaIdAkhir = zonaId ? parseInt(zonaId) : null;
     if (!zonaIdAkhir && jadwalId) {
       const jd = await prisma.jadwal.findUnique({
         where: { id: parseInt(jadwalId) },
-        select: { rute: { select: { zonaId: true } } },
+        select: { 
+          pelanggan: { select: { wilayah: { select: { zonaId: true } } } },
+          rute: { select: { zonaId: true } } 
+        },
       });
-      zonaIdAkhir = jd?.rute?.zonaId ?? null;
+      zonaIdAkhir = jd?.pelanggan?.wilayah?.zonaId ?? jd?.rute?.zonaId ?? null;
     }
 
     const pengangkutan = await prisma.pengangkutan.create({

@@ -13,7 +13,7 @@ export async function GET(
       include: {
         wilayah: true,
         kelurahan: true,
-        rute: { include: { wilayah: true } },
+        rute: { include: { wilayah: true, zona: true, zonas: true } },
       },
     });
     if (!petugas) {
@@ -32,7 +32,7 @@ export async function PUT(
   try {
     const id = parseInt((await params).id);
     const body = await request.json();
-    const { nama, noTelepon, email, foto, aktif, kelurahanId, jabatan, userId } = body;
+    const { nama, noTelepon, email, foto, aktif, kelurahanId, jabatan, userId, zonaIds } = body;
 
     const data: Record<string, unknown> = {};
     if (nama !== undefined) data.nama = nama;
@@ -53,6 +53,20 @@ export async function PUT(
       data,
       include: { wilayah: true, kelurahan: true },
     });
+    
+    if (zonaIds && Array.isArray(zonaIds)) {
+      const validZonaIds = zonaIds.map((id: string) => parseInt(id)).filter((id: number) => !isNaN(id));
+      await prisma.zonaPetugas.deleteMany({ where: { petugasId: id } });
+      if (validZonaIds.length > 0) {
+        await prisma.zonaPetugas.createMany({
+          data: validZonaIds.map((zonaId: number) => ({
+            zonaId,
+            petugasId: id
+          })),
+          skipDuplicates: true
+        });
+      }
+    }
 
     await logAudit("update", "Petugas", id, { id }, { nama: petugas.nama, aktif: petugas.aktif });
     return NextResponse.json(petugas);
