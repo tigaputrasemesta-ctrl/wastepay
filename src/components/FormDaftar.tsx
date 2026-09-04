@@ -179,7 +179,7 @@ export default function FormDaftar() {
             <p className="font-bold text-xs mb-2 uppercase">KODE PELANGGAN (NO. WHATSAPP)</p>
             <p className="font-black text-4xl tracking-widest">{hasil.kodePelanggan}</p>
             <p className="text-xs font-bold text-red-600 mt-2 uppercase">
-              SIMPAN NOMOR INI UNTUK LOGIN DAN CEK TAGIHAN.
+              GUNAKAN NOMOR WHATSAPP INI SEBAGAI KODE PELANGGAN UNTUK PENGECEKAN TAGIHAN, MELACAK STATUS, SERTA KOMPLAIN.
             </p>
           </div>
         )}
@@ -222,7 +222,9 @@ export default function FormDaftar() {
           required
           inputMode="tel"
         />
-        <p className="text-[10px] font-bold text-gray-500 mt-2 uppercase">KODE DAN TAGIHAN AKAN DIKIRIM KE NOMOR INI.</p>
+        <p className="text-[10px] font-bold text-red-600 mt-2 uppercase">
+          NOMOR WHATSAPP INI SEKALIGUS MENJADI KODE PELANGGAN ANDA. GUNAKAN NOMOR INI UNTUK PENGECEKAN TAGIHAN, MELACAK JEMPUTAN, SERTA PENGAJUAN KOMPLAIN.
+        </p>
       </div>
 
       <div className="space-y-4">
