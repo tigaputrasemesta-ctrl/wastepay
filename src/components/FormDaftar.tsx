@@ -176,10 +176,10 @@ export default function FormDaftar() {
         </p>
         {hasil.kodePelanggan && (
           <div className="border-4 border-black bg-white p-6 inline-block">
-            <p className="font-bold text-xs mb-2 uppercase">KODE PELANGGAN SEMENTARA</p>
+            <p className="font-bold text-xs mb-2 uppercase">KODE PELANGGAN (NO. WHATSAPP)</p>
             <p className="font-black text-4xl tracking-widest">{hasil.kodePelanggan}</p>
             <p className="text-xs font-bold text-red-600 mt-2 uppercase">
-              SIMPAN KODE INI UNTUK LOGIN.
+              SIMPAN NOMOR INI UNTUK LOGIN DAN CEK TAGIHAN.
             </p>
           </div>
         )}
