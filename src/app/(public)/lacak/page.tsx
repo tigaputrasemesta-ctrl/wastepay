@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 const PANDUAN = [
   {
     no: "01",
-    judul: "MASUKKAN KODE",
-    desc: "Gunakan kode pelanggan di kartu / resi pembayaran Anda.",
+    judul: "MASUKKAN NOMOR WHATSAPP",
+    desc: "Gunakan nomor WhatsApp yang didaftarkan sebagai kode pelanggan.",
   },
   {
     no: "02",

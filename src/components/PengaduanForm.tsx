@@ -57,13 +57,13 @@ export default function PengaduanForm() {
 
       <div className="space-y-2">
         <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="kode-pelanggan">
-          KODE PELANGGAN <span className="text-red-600">*</span>
+          KODE PELANGGAN (NO. WHATSAPP) <span className="text-red-600">*</span>
         </label>
         <input
           id="kode-pelanggan"
           value={kodePelanggan}
           onChange={(e) => setKodePelanggan(e.target.value)}
-          placeholder="CONTOH: DPK-001"
+          placeholder="CONTOH: 081234567890"
           className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 uppercase"
           required
           autoComplete="off"

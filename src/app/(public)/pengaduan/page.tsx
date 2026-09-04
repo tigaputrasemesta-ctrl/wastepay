@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 const PANDUAN = [
   {
     no: "01",
-    judul: "SIAPKAN KODE",
-    desc: "Masukkan kode pelanggan Anda yang tertera di kartu atau resi pembayaran.",
+    judul: "SIAPKAN NOMOR WHATSAPP",
+    desc: "Masukkan nomor WhatsApp yang didaftarkan sebagai kode pelanggan.",
   },
   {
     no: "02",
@@ -37,7 +37,7 @@ export default function PengaduanPage() {
           <span className="text-red-600">LAPOR SEKARANG.</span>
         </h1>
         <p className="font-bold uppercase tracking-widest text-sm max-w-2xl mt-4">
-          MASUKKAN KODE PELANGGAN ANDA, CERITAKAN KENDALANYA. LAPORAN AKAN DITERUSKAN LANGSUNG KE ARMADA YANG SEDANG BEROPERASI.
+          MASUKKAN NOMOR WHATSAPP ANDA (SEBAGAI KODE PELANGGAN), CERITAKAN KENDALANYA. LAPORAN AKAN DITERUSKAN LANGSUNG KE ARMADA YANG SEDANG BEROPERASI.
         </p>
       </div>
 

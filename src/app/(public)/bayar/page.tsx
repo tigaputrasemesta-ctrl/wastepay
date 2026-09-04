@@ -147,7 +147,7 @@ export default function BayarPage() {
           CEK <span className="text-red-600">TAGIHAN.</span>
         </h1>
         <p className="font-bold uppercase tracking-widest text-sm max-w-lg mx-auto">
-          MASUKKAN KODE PELANGGAN UNTUK MELIHAT TAGIHAN ATAU TUNGGAKAN.
+          MASUKKAN NOMOR WHATSAPP ANDA (SEBAGAI KODE PELANGGAN) UNTUK MELIHAT TAGIHAN ATAU TUNGGAKAN.
         </p>
       </div>
 
@@ -167,7 +167,7 @@ export default function BayarPage() {
       {!hasil && (
         <form onSubmit={cekTagihan} className="hm-card max-w-2xl mx-auto bg-[#f4f4f0]">
           <label className="block text-sm font-bold mb-3 uppercase tracking-widest">
-            KODE PELANGGAN
+            KODE PELANGGAN (NO. WHATSAPP)
           </label>
           <div className="flex flex-col sm:flex-row gap-4">
             <input
@@ -175,7 +175,7 @@ export default function BayarPage() {
               value={kode}
               onChange={(e) => setKode(e.target.value.toUpperCase())}
               className="flex-1 bg-white hm-border px-5 py-4 text-black text-lg font-bold outline-none focus:ring-4 focus:ring-red-500/20 uppercase"
-              placeholder="CONTOH: DPK-0001"
+              placeholder="CONTOH: 081234567890"
               required
             />
             <button
