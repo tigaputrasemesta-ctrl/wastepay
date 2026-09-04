@@ -260,15 +260,25 @@ export default async function LandingPage() {
         <div className="mt-20 pt-12 border-t-2 border-black flex flex-col md:flex-row justify-between gap-12 text-left">
           
           {/* Kontak Support */}
-          <div className="font-bold uppercase tracking-widest text-xs space-y-5">
-            <p className="font-black text-sm">BUTUH BANTUAN? HUBUNGI KAMI:</p>
-            <div>
-              <p className="text-gray-500 mb-1">WHATSAPP</p>
-              <a href="https://wa.me/6281400782617" target="_blank" rel="noreferrer" className="text-sm font-black hover:text-green-600 transition-colors">0814-0078-2617</a>
-            </div>
-            <div>
-              <p className="text-gray-500 mb-1">EMAIL</p>
-              <a href="mailto:cv.herozerowaste@gmail.com" className="text-sm font-black hover:text-blue-600 transition-colors">cv.herozerowaste@gmail.com</a>
+          <div className="flex flex-col gap-5">
+            <p className="font-black text-lg uppercase tracking-tight">BUTUH BANTUAN? HUBUNGI KAMI:</p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <a 
+                href="https://wa.me/6281400782617" 
+                target="_blank" 
+                rel="noreferrer" 
+                className="bg-green-400 hover:bg-green-300 border-2 border-black p-4 flex flex-col gap-1 transition-transform hover:-translate-y-1 shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)]"
+              >
+                <span className="text-[10px] font-black uppercase tracking-widest text-black">💬 WHATSAPP</span>
+                <span className="text-lg font-black text-black">0814-0078-2617</span>
+              </a>
+              <a 
+                href="mailto:cv.herozerowaste@gmail.com" 
+                className="bg-white hover:bg-gray-100 border-2 border-black p-4 flex flex-col gap-1 transition-transform hover:-translate-y-1 shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)]"
+              >
+                <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">✉️ EMAIL</span>
+                <span className="text-lg font-black text-black">cv.herozerowaste@gmail.com</span>
+              </a>
             </div>
           </div>
 
