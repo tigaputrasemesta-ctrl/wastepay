@@ -256,7 +256,22 @@ export default async function LandingPage() {
         <Link href="/daftar" className="hm-btn-green text-xl py-4 px-12 inline-block shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
           GABUNG O₂W SEKARANG
         </Link>
-        <div className="mt-20 pt-8 border-t-2 border-black flex flex-col md:flex-row justify-between items-center font-bold uppercase tracking-widest text-xs">
+        
+        <div className="mt-12 mb-8 text-sm font-bold uppercase tracking-widest border-2 border-black inline-block p-6 bg-yellow-50 mx-auto text-left">
+          <p className="mb-4 text-black text-center text-lg font-black">BUTUH BANTUAN? HUBUNGI KAMI:</p>
+          <div className="flex flex-col gap-3">
+            <p className="text-green-700 flex items-center gap-2">
+              <span className="bg-black text-white px-2 py-1 text-xs">WHATSAPP</span>
+              <a href="https://wa.me/6281400782617" target="_blank" rel="noreferrer" className="underline hover:text-black">0814-0078-2617</a>
+            </p>
+            <p className="text-blue-700 flex items-center gap-2">
+              <span className="bg-black text-white px-2 py-1 text-xs">EMAIL</span>
+              <a href="mailto:cv.herozerowaste@gmail.com" className="underline hover:text-black">cv.herozerowaste@gmail.com</a>
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-8 pt-8 border-t-2 border-black flex flex-col md:flex-row justify-between items-center font-bold uppercase tracking-widest text-xs">
           <span>© 2026 HERO ZERO WASTE DEPOK</span>
           <div className="flex gap-4 mt-4 md:mt-0">
             <Link href="/lacak" className="hover:text-green-600">Lacak Truk</Link>
