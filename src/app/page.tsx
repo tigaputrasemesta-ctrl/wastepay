@@ -257,21 +257,29 @@ export default async function LandingPage() {
           GABUNG O₂W SEKARANG
         </Link>
         
-        <div className="mt-12 mb-8 text-sm font-bold uppercase tracking-widest border-2 border-black inline-block p-6 bg-yellow-50 mx-auto text-left">
-          <p className="mb-4 text-black text-center text-lg font-black">BUTUH BANTUAN? HUBUNGI KAMI:</p>
-          <div className="flex flex-col gap-3">
-            <p className="text-green-700 flex items-center gap-2">
-              <span className="bg-black text-white px-2 py-1 text-xs">WHATSAPP</span>
-              <a href="https://wa.me/6281400782617" target="_blank" rel="noreferrer" className="underline hover:text-black">0814-0078-2617</a>
-            </p>
-            <p className="text-blue-700 flex items-center gap-2">
-              <span className="bg-black text-white px-2 py-1 text-xs">EMAIL</span>
-              <a href="mailto:cv.herozerowaste@gmail.com" className="underline hover:text-black">cv.herozerowaste@gmail.com</a>
-            </p>
+        <div className="mt-20 flex flex-col md:flex-row gap-6 justify-center max-w-3xl mx-auto">
+          <div className="hm-card bg-yellow-400 flex-1 text-left flex flex-col justify-center">
+            <h3 className="font-black text-3xl md:text-4xl uppercase mb-2 leading-none">Butuh<br/>Bantuan?</h3>
+            <p className="font-bold text-sm uppercase mt-4">Hubungi tim support kami jika ada kendala.</p>
+          </div>
+          
+          <div className="hm-card bg-white flex-1 text-left space-y-6 flex flex-col justify-center">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1">WhatsApp Admin</p>
+              <a href="https://wa.me/6281400782617" target="_blank" rel="noreferrer" className="text-2xl md:text-3xl font-black hover:text-green-600 transition-colors">
+                0814-0078-2617
+              </a>
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1">Alamat Email</p>
+              <a href="mailto:cv.herozerowaste@gmail.com" className="text-lg md:text-xl font-bold hover:text-blue-600 transition-colors break-all">
+                cv.herozerowaste@gmail.com
+              </a>
+            </div>
           </div>
         </div>
 
-        <div className="mt-8 pt-8 border-t-2 border-black flex flex-col md:flex-row justify-between items-center font-bold uppercase tracking-widest text-xs">
+        <div className="mt-16 pt-8 border-t-2 border-black flex flex-col md:flex-row justify-between items-center font-bold uppercase tracking-widest text-xs">
           <span>© 2026 HERO ZERO WASTE DEPOK</span>
           <div className="flex gap-4 mt-4 md:mt-0">
             <Link href="/lacak" className="hover:text-green-600">Lacak Truk</Link>
