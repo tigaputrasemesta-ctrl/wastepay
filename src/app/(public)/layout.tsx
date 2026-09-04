@@ -53,35 +53,46 @@ export default function PublicLayout({
       </main>
 
       {/* HM Footer */}
-      <footer className="mt-20 border-t-2 border-black bg-[#f4f4f0] py-12 px-6">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-          <div>
+      <footer className="mt-20 border-t-4 border-black bg-white py-12 px-6">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
+          {/* Brand Info */}
+          <div className="flex-1">
             <div className="flex items-center gap-3 mb-4">
-              <AnimatedDumpTruck size="sm" theme="black" />
-              <span className="text-2xl font-black tracking-tighter uppercase">O₂W HERO.</span>
+              <div className="bg-black text-white p-2 border-2 border-black">
+                <AnimatedDumpTruck size="sm" theme="white" />
+              </div>
+              <span className="text-3xl font-black tracking-tighter uppercase">O₂W HERO.</span>
             </div>
-            <p className="font-medium max-w-sm leading-snug">
+            <p className="font-bold text-sm max-w-sm leading-snug uppercase border-l-4 border-black pl-4 py-1">
               SISTEM PENGELOLAAN SAMPAH OTOMATIS KOTA DEPOK. JADWAL PASTI, BAYAR GAMPANG, LINGKUNGAN BERSIH.
             </p>
           </div>
           
-          <div className="flex gap-12 font-bold uppercase tracking-widest text-sm">
+          {/* Brutalist Links Grid */}
+          <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
             <div className="flex flex-col gap-3">
-              <Link href="/lacak" className="hover:text-green-600">Lacak Jemputan</Link>
-              <Link href="/bayar" className="hover:text-red-600">Cek Tagihan</Link>
-              <Link href="/tarif" className="hover:text-red-600">Daftar Tarif</Link>
-              <Link href="/daftar" className="hover:text-green-600">Gabung O2W</Link>
+              <Link href="/lacak" className="bg-green-400 border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-widest hover:bg-black hover:text-white transition-colors shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]">Lacak Jemputan</Link>
+              <Link href="/bayar" className="bg-yellow-300 border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-widest hover:bg-black hover:text-white transition-colors shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]">Cek Tagihan</Link>
+              <Link href="/tarif" className="bg-white border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-widest hover:bg-black hover:text-white transition-colors shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]">Daftar Tarif</Link>
             </div>
             <div className="flex flex-col gap-3">
-              <Link href="/pengaduan" className="hover:text-red-600">Lapor Sampah</Link>
-              <span>Bot WA: +62 814-0078-2617</span>
+              <Link href="/daftar" className="bg-white border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-widest hover:bg-black hover:text-white transition-colors shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]">Gabung O2W</Link>
+              <Link href="/pengaduan" className="bg-red-400 border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-widest hover:bg-black hover:text-white transition-colors shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]">Lapor Sampah</Link>
+              <a href="https://wa.me/6281400782617" target="_blank" rel="noreferrer" className="bg-blue-300 border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-widest hover:bg-black hover:text-white transition-colors shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]">
+                💬 BOT WA
+              </a>
             </div>
           </div>
         </div>
         
-        <div className="max-w-6xl mx-auto mt-12 pt-6 border-t-2 border-black flex justify-between font-bold uppercase text-xs tracking-widest">
-          <span>© 2026 HERO ZERO WASTE DEPOK</span>
-          <span>EST. 2024</span>
+        {/* Footer Bottom */}
+        <div className="max-w-6xl mx-auto mt-16 pt-8 border-t-4 border-black flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="bg-black text-white px-6 py-3 border-2 border-black shadow-[4px_4px_0_0_#ef4444]">
+            <span className="text-xs font-black uppercase tracking-widest">© 2026 HERO ZERO WASTE DEPOK</span>
+          </div>
+          <div className="bg-white px-4 py-2 border-2 border-black border-dashed font-black uppercase text-xs tracking-widest">
+            EST. 2024
+          </div>
         </div>
       </footer>
     </div>
