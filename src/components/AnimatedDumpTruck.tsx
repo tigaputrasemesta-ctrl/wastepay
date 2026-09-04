@@ -102,7 +102,7 @@ export default function AnimatedDumpTruck({
             }
             @keyframes dumpAction {
               0%, 15% { transform: rotate(0deg); }
-              35%, 55% { transform: rotate(-24deg); }
+              35%, 55% { transform: rotate(-35deg); }
               75%, 100% { transform: rotate(0deg); }
             }
             @keyframes wheelSpin {
@@ -115,16 +115,16 @@ export default function AnimatedDumpTruck({
               100% { transform: translate(-10px, -14px) scale(1.6); opacity: 0; }
             }
             @keyframes trashTumble {
-              0%, 25% { opacity: 0; transform: translate(0, 0) scale(0.6); }
-              38% { opacity: 1; transform: translate(10px, 8px) scale(1); }
-              55% { opacity: 0; transform: translate(16px, 20px) scale(0.8); }
+              0%, 25% { opacity: 0; transform: translate(15px, -15px) scale(0.6) rotate(0deg); }
+              35% { opacity: 1; transform: translate(5px, -5px) scale(1) rotate(-45deg); }
+              55% { opacity: 0; transform: translate(-15px, 15px) scale(0.8) rotate(-120deg); }
               100% { opacity: 0; transform: translate(0, 0); }
             }
             .truck-chassis-anim {
               animation: truckBounce 1.4s ease-in-out infinite;
             }
             .dump-bed-anim {
-              transform-origin: 74px 46px;
+              transform-origin: 14px 46px;
               animation: dumpAction 3.6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
             }
             .wheel-anim-1 {
@@ -148,6 +148,7 @@ export default function AnimatedDumpTruck({
               animation: exhaustSmoke 2s ease-out 0.8s infinite;
             }
             .trash-falling {
+              transform-origin: 10px 40px;
               animation: trashTumble 3.6s ease-in infinite;
             }
           `}</style>
@@ -176,9 +177,9 @@ export default function AnimatedDumpTruck({
         {/* Falling Trash particles during dump */}
         {animated && (
           <g className="trash-falling">
-            <rect x="76" y="44" width="4" height="4" rx="1" fill={colorMap.trash} stroke={colorMap.stroke} strokeWidth="1" />
-            <polygon points="82,46 86,43 85,48" fill={colorMap.bed} stroke={colorMap.stroke} strokeWidth="1" />
-            <circle cx="80" cy="50" r="2" fill="#22c55e" stroke={colorMap.stroke} strokeWidth="0.8" />
+            <rect x="6" y="38" width="5" height="5" rx="1" fill={colorMap.trash} stroke={colorMap.stroke} strokeWidth="1" />
+            <polygon points="12,42 6,45 8,36" fill={colorMap.bedAccent} stroke={colorMap.stroke} strokeWidth="1" />
+            <circle cx="2" cy="40" r="2.5" fill="#3b82f6" stroke={colorMap.stroke} strokeWidth="1" />
           </g>
         )}
 
@@ -257,8 +258,8 @@ export default function AnimatedDumpTruck({
             </text>
 
             {/* Tailgate Hinge Pin */}
-            <circle cx="73" cy="24" r="2" fill="#000000" />
-            <circle cx="74" cy="46" r="2.5" fill="#000000" />
+            <circle cx="14" cy="24" r="2" fill="#000000" />
+            <circle cx="14" cy="46" r="2.5" fill="#000000" />
           </g>
 
           {/* CHASSIS & UNDERCARRIAGE */}
