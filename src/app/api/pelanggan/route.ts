@@ -79,44 +79,43 @@ export async function POST(request: Request) {
       );
     }
 
-    // Generate kode pelanggan per kelurahan: {KODE-KELURAHAN}-{TOKEN}, misal KAL-8F3K2P
-    let kodePelanggan = await generateKodePelanggan(parseInt(kelurahanId));
+    // Kode pelanggan kini menggunakan nomor WhatsApp (noTelepon)
+    const kodePelanggan = noTelepon;
 
-    // Retry bila kode bentrok (dua request paralel) — generate ulang lalu create lagi
     let pelanggan;
-    for (let coba = 0; ; coba++) {
-      try {
-        pelanggan = await prisma.pelanggan.create({
-          data: {
-            nama,
-            noTelepon,
-            kodePelanggan,
-            kategori: kategori || "level_1",
-            alamat,
-            rtRw,
-            fotoRumah,
-            patokanLokasi,
-            latitude: latitude ? parseFloat(latitude) : null,
-            longitude: longitude ? parseFloat(longitude) : null,
-            koordinatSumber: koordinatSumber || null,
-            koordinatAkurasi: koordinatAkurasi ? parseFloat(koordinatAkurasi) : null,
-            penanggungjawab,
-            referal,
-            customTarif: customTarif ? parseFloat(customTarif) : null,
-            kelurahanId: parseInt(kelurahanId),
-            paketId: paketId ? parseInt(paketId) : null,
-            status: status || "aktif",
-            catatan: catatan || null,
-          },
-          include: { kelurahan: true, paket: true },
-        });
-        break;
-      } catch (e) {
-        const bentrok =
-          e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002";
-        if (coba >= 2 || !bentrok) throw e;
-        kodePelanggan = await generateKodePelanggan(parseInt(kelurahanId));
+    try {
+      pelanggan = await prisma.pelanggan.create({
+        data: {
+          nama,
+          noTelepon,
+          kodePelanggan,
+          kategori: kategori || "level_1",
+          alamat,
+          rtRw,
+          fotoRumah,
+          patokanLokasi,
+          latitude: latitude ? parseFloat(latitude) : null,
+          longitude: longitude ? parseFloat(longitude) : null,
+          koordinatSumber: koordinatSumber || null,
+          koordinatAkurasi: koordinatAkurasi ? parseFloat(koordinatAkurasi) : null,
+          penanggungjawab,
+          referal,
+          customTarif: customTarif ? parseFloat(customTarif) : null,
+          kelurahanId: parseInt(kelurahanId),
+          paketId: paketId ? parseInt(paketId) : null,
+          status: status || "aktif",
+          catatan: catatan || null,
+        },
+        include: { kelurahan: true, paket: true },
+      });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+        return NextResponse.json(
+          { error: "Nomor WhatsApp ini sudah terdaftar. Silakan gunakan nomor lain." },
+          { status: 400 }
+        );
       }
+      throw e;
     }
 
     // Auto-generate tagihan bulan ini — hanya untuk pelanggan aktif

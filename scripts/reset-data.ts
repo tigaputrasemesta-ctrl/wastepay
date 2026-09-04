@@ -121,7 +121,7 @@ async function main() {
         kategori,
         alamat: isKalibaru ? `Jl. Neon Kalibaru Blok ${i}` : `Jl. Cilodong Raya Gang ${i}`,
         rtRw: `00${(i % 5) + 1}/00${(i % 3) + 1}`,
-        kodePelanggan: `CIL-${isKalibaru ? 'KALI' : 'CLDG'}-${String(i).padStart(3, '0')}`,
+        kodePelanggan: `0811000${String(i).padStart(4, '0')}`,
         patokanLokasi: `Dekat Tiang Listrik No ${i}`,
         wilayahId: wilId,
         paketId: paketA.id,

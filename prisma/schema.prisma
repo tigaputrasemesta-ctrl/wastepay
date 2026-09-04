@@ -135,7 +135,7 @@ model Paket {
 model Pelanggan {
   id               Int       @id @default(autoincrement())
   nama             String
-  noTelepon        String
+  noTelepon        String    @unique
   kategori         String    @default("level_1") // level_1 | level_2 | level_3 | level_4 | level_5 | level_6 | level_7 | level_8 | level_9 | level_10
   alamat           String
   rtRw             String? // RT/RW

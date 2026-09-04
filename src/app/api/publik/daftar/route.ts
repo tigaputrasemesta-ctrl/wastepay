@@ -169,49 +169,49 @@ export async function POST(request: Request) {
       }
     }
 
-    let kodePelanggan = await generateKodePelanggan(kelurahanId);
+    // Kode pelanggan kini menggunakan nomor WhatsApp (noTelepon)
+    const kodePelanggan = noTelepon;
     const rtRw = formatRtRw(rt, rw);
 
-    // Retry bila kode bentrok (sangat jarang) — generate ulang lalu create lagi
     let pelanggan;
-    for (let coba = 0; ; coba++) {
-      try {
-        pelanggan = await prisma.pelanggan.create({
-          data: {
-            nama,
-            noTelepon,
-            kategori,
-            alamat,
-            rtRw: rtRw || null,
-            kodePelanggan,
-            fotoRumah: fotoRumah || null,
-            patokanLokasi: patokanLokasi || null,
-            penanggungjawab: penanggungjawab || null,
-            referal: referal || null,
-            latitude,
-            longitude,
-            koordinatSumber,
-            koordinatAkurasi,
-            status: "calon", // belum aktif — tagihan dibuat setelah disetujui
-            wilayahId,
-            kelurahanId,
-            paketId,
-            catatan: [
-              "Daftar mandiri via website",
-              `(${kecamatan} / ${kelurahan})`,
-              rtRw ? `RT/RW: ${rtRw}` : null,
-            ]
-              .filter(Boolean)
-              .join(" "),
-          },
-        });
-        break;
-      } catch (e) {
-        const bentrok =
-          e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002";
-        if (coba >= 2 || !bentrok) throw e;
-        kodePelanggan = await generateKodePelanggan(kelurahanId);
+    try {
+      pelanggan = await prisma.pelanggan.create({
+        data: {
+          nama,
+          noTelepon,
+          kategori,
+          alamat,
+          rtRw: rtRw || null,
+          kodePelanggan,
+          fotoRumah: fotoRumah || null,
+          patokanLokasi: patokanLokasi || null,
+          penanggungjawab: penanggungjawab || null,
+          referal: referal || null,
+          latitude,
+          longitude,
+          koordinatSumber,
+          koordinatAkurasi,
+          status: "calon", // belum aktif — tagihan dibuat setelah disetujui
+          wilayahId,
+          kelurahanId,
+          paketId,
+          catatan: [
+            "Daftar mandiri via website",
+            `(${kecamatan} / ${kelurahan})`,
+            rtRw ? `RT/RW: ${rtRw}` : null,
+          ]
+            .filter(Boolean)
+            .join(" "),
+        },
+      });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+        return NextResponse.json(
+          { error: "Nomor WhatsApp ini sudah pernah didaftarkan. Silakan hubungi admin." },
+          { status: 400 }
+        );
       }
+      throw e;
     }
 
     await logAudit("create", "Pelanggan", pelanggan.id, undefined, {
