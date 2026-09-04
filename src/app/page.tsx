@@ -283,13 +283,21 @@ export default async function LandingPage() {
           </div>
 
           {/* Navigasi Footer & Copyright */}
-          <div className="flex flex-col md:items-end justify-between font-bold uppercase tracking-widest text-xs gap-8 md:gap-4">
-            <div className="flex flex-wrap gap-4">
-              <Link href="/lacak" className="hover:text-green-600">Lacak Truk</Link>
-              <Link href="/bayar" className="hover:text-red-600">Cek Tagihan</Link>
-              <Link href="/pengaduan" className="hover:text-red-600">Pusat Bantuan</Link>
+          <div className="flex flex-col md:items-end justify-between gap-8 md:gap-0 mt-8 md:mt-0">
+            <div className="flex flex-wrap md:justify-end gap-3">
+              <Link href="/lacak" className="bg-white border-2 border-black px-4 py-2 text-[11px] font-black uppercase tracking-widest hover:bg-green-400 hover:-translate-y-0.5 transition-transform shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+                Lacak Truk
+              </Link>
+              <Link href="/bayar" className="bg-white border-2 border-black px-4 py-2 text-[11px] font-black uppercase tracking-widest hover:bg-yellow-300 hover:-translate-y-0.5 transition-transform shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+                Cek Tagihan
+              </Link>
+              <Link href="/pengaduan" className="bg-white border-2 border-black px-4 py-2 text-[11px] font-black uppercase tracking-widest hover:bg-red-400 hover:-translate-y-0.5 transition-transform shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+                Pusat Bantuan
+              </Link>
             </div>
-            <span className="mt-auto opacity-70">© 2026 HERO ZERO WASTE DEPOK</span>
+            <div className="bg-black text-white px-5 py-3 mt-auto w-fit border-2 border-black shadow-[4px_4px_0_0_#ef4444]">
+              <span className="text-[11px] font-black uppercase tracking-widest">© 2026 HERO ZERO WASTE DEPOK</span>
+            </div>
           </div>
           
         </div>
