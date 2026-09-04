@@ -74,7 +74,7 @@ export default function PublicLayout({
             </div>
             <div className="flex flex-col gap-3">
               <Link href="/pengaduan" className="hover:text-red-600">Lapor Sampah</Link>
-              <span>Bot WA: 0857-1625-1003</span>
+              <span>Bot WA: +62 814-0078-2617</span>
             </div>
           </div>
         </div>
