@@ -586,19 +586,19 @@ export default function MapView({
         <button
           type="button"
           onClick={() => setTileMode("google-streets")}
-          className={`px-3 py-1 text-xs font-black uppercase transition-all ${
+          className={`px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs font-black uppercase transition-all ${
             tileMode === "google-streets"
               ? "bg-emerald-400 text-black border-2 border-black shadow-[2px_2px_0_0_#000]"
               : "text-gray-700 hover:bg-gray-100 border-2 border-transparent"
           }`}
           title="Peta jalan Google Maps lengkap nama gang dan pemukiman Depok"
         >
-          🗺️ Google Maps
+          🗺️ <span className="hidden sm:inline">Google </span>Maps
         </button>
         <button
           type="button"
           onClick={() => setTileMode("google-hybrid")}
-          className={`px-3 py-1 text-xs font-black uppercase transition-all ${
+          className={`px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs font-black uppercase transition-all ${
             tileMode === "google-hybrid"
               ? "bg-emerald-400 text-black border-2 border-black shadow-[2px_2px_0_0_#000]"
               : "text-gray-700 hover:bg-gray-100 border-2 border-transparent"
@@ -610,7 +610,7 @@ export default function MapView({
         <button
           type="button"
           onClick={() => setTileMode("dark")}
-          className={`px-3 py-1 text-xs font-black uppercase transition-all ${
+          className={`px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs font-black uppercase transition-all ${
             tileMode === "dark"
               ? "bg-emerald-400 text-black border-2 border-black shadow-[2px_2px_0_0_#000]"
               : "text-gray-700 hover:bg-gray-100 border-2 border-transparent"

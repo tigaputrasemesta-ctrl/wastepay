@@ -325,34 +325,50 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
 
   return (
     <div className="space-y-4 pb-12">
-      {/* ── BAGIAN ATAS: PETA FULL ── */}
-      <div className="relative h-[65vh] min-h-[500px] rounded-none-none border-2 border-black overflow-hidden border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] z-0">
-        <MapView
-          pelanggan={peta}
-          komplain={komplainFilter}
-          petugas={petugas}
-          kendaraan={tampilkanArmada ? kendaraan : []}
-          transit={transit}
-          pusatPetugas={pusatPetugas}
-          selectedId={selectedId}
-          setSelectedId={pilihPelanggan}
-          selectedKomplainId={selectedKomplainId}
-          setSelectedKomplainId={pilihKomplain}
-          tampilkanCakupan={tampilkanCakupan}
-          tampilkanBatas={tampilkanBatas}
-          tampilkanBatasKelurahan={tampilkanBatasKelurahan}
-          tampilkanRt={tampilkanRt}
-          ruteTerpilih={ruteTerpilih}
-          invalidateKey={1}
-          warnaStatus={WARNA_STATUS}
-        />
-        
-        {/* Tombol ciutkan panel (TIDAK DIPAKAI LAGI) - diganti floating info ringan */}
-        <div className="absolute top-4 right-4 z-[1000] pointer-events-none">
-          <div className="bg-white border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] backdrop-blur-md border border-black px-3 py-2 font-mono text-[10px] text-black font-black shadow-[0_0_10px_#000] rounded-none">
-            {ruteAktif.length} rute · {ruteTerpilih ? ruteTerpilih.nama : "semua pelanggan"} ·{" "}
-            {RT_RTRW_DEPOK.length} titik RT
+      {/* ── BAGIAN ATAS: PETA OPERASIONAL DENGAN TOP STATUS BAR ── */}
+      <div className="border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] bg-white overflow-hidden">
+        {/* Top Status & Filter Header Bar */}
+        <div className="bg-black text-white px-3 sm:px-4 py-2 flex flex-wrap items-center justify-between gap-2 border-b-2 border-black">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
+            <span className="font-mono font-black text-xs uppercase tracking-wider text-white">
+              🗺️ PETA OPERASIONAL DEPOK
+            </span>
           </div>
+          <div className="flex items-center gap-1.5 sm:gap-2 font-mono text-[10px] flex-wrap">
+            <span className="bg-emerald-400 text-black px-2 py-0.5 font-black uppercase shadow-[2px_2px_0_0_#000] border border-black">
+              📍 {ruteTerpilih ? `RUTE: ${ruteTerpilih.nama}` : "SEMUA PELANGGAN"}
+            </span>
+            <span className="bg-yellow-400 text-black px-2 py-0.5 font-black uppercase shadow-[2px_2px_0_0_#000] border border-black">
+              🚛 {ruteAktif.length} RUTE AKTIF
+            </span>
+            <span className="bg-white text-black px-2 py-0.5 font-black uppercase shadow-[2px_2px_0_0_#000] border border-black">
+              📌 {RT_RTRW_DEPOK.length} TITIK RT
+            </span>
+          </div>
+        </div>
+
+        {/* Map Canvas - Bersih dari floating badge yang menghalangi */}
+        <div className="relative h-[65vh] min-h-[500px]">
+          <MapView
+            pelanggan={peta}
+            komplain={komplainFilter}
+            petugas={petugas}
+            kendaraan={tampilkanArmada ? kendaraan : []}
+            transit={transit}
+            pusatPetugas={pusatPetugas}
+            selectedId={selectedId}
+            setSelectedId={pilihPelanggan}
+            selectedKomplainId={selectedKomplainId}
+            setSelectedKomplainId={pilihKomplain}
+            tampilkanCakupan={tampilkanCakupan}
+            tampilkanBatas={tampilkanBatas}
+            tampilkanBatasKelurahan={tampilkanBatasKelurahan}
+            tampilkanRt={tampilkanRt}
+            ruteTerpilih={ruteTerpilih}
+            invalidateKey={1}
+            warnaStatus={WARNA_STATUS}
+          />
         </div>
       </div>
 
