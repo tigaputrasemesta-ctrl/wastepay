@@ -4,7 +4,7 @@ import TvMap from "@/components/TvMap";
 import type { PelangganPeta } from "@/components/PetaMap";
 
 export const metadata = {
-  title: "Peta TV | O2W",
+  title: "Peta TV | TPS HERU",
   description: "Peta operasional fullscreen untuk layar besar / TV",
 };
 

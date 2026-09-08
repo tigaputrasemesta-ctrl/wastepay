@@ -53,8 +53,8 @@ export default function LoginPage() {
     <div className="min-h-screen bg-[#f4f4f0] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="text-center space-y-4">
-          <div className="inline-block px-4 py-1 border-2 border-black font-bold uppercase text-xs mb-2 bg-black text-white">
-            O2W / LOGIN ADMIN
+          <div className="inline-block px-4 py-1 border-2 border-black font-bold uppercase text-xs mb-2 bg-black text-white shadow-[2px_2px_0_0_#10b981]">
+            TPS HERU / LOGIN ADMIN
           </div>
           <h2 className="text-5xl font-black uppercase tracking-tighter">
             MASUK <span className="text-red-600">SISTEM.</span>
@@ -85,7 +85,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-[#f4f4f0] hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 uppercase"
-                  placeholder="admin@o2whero.com"
+                  placeholder="admin@tpsheru.com"
                 />
               </div>
             </div>
@@ -134,11 +134,11 @@ export default function LoginPage() {
             href="/unduh"
             className="inline-block hm-border bg-white px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-colors"
           >
-            📱 Unduh App Android (O₂W Lapangan)
+            📱 Unduh App Android (TPS HERU Lapangan)
           </Link>
         </div>
         <div className="mt-8 text-center text-xs font-bold uppercase tracking-widest text-black">
-          <p>O2W HERO DEPOK © {new Date().getFullYear()}</p>
+          <p>TPS HERU DEPOK © {new Date().getFullYear()}</p>
           <div className="mt-2 flex items-center justify-center gap-2">
             <span className="w-2 h-2 bg-green-500 rounded-full border border-black animate-pulse" /> SISTEM ONLINE
           </div>

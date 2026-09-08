@@ -18,8 +18,8 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Hero Zero Waste - O₂W",
-  description: "Layanan pengelolaan sampah untuk warga & pelaku usaha Kota Depok",
+  title: "TPS HERU - Sistem Pengelolaan Sampah Depok",
+  description: "Layanan pengelolaan dan retribusi sampah terpadu untuk warga dan pelaku usaha Kota Depok",
 };
 
 export default function RootLayout({

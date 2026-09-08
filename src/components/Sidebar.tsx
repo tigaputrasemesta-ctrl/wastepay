@@ -365,8 +365,8 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="flex items-center justify-between px-4 h-14 border-b-2 border-black bg-[#f4f4f0]">
         {collapsed ? (
-          <div className="w-8 h-8 border-2 border-black bg-black flex items-center justify-center shrink-0">
-            <span className="text-[10px] font-black text-white leading-none">O2W</span>
+          <div className="w-8 h-8 border-2 border-black bg-black flex items-center justify-center shrink-0 shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+            <span className="text-[9px] font-black text-white leading-none tracking-tighter">TPS</span>
           </div>
         ) : (
           <O2WLogo size="sm" />

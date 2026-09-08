@@ -78,8 +78,8 @@ export default async function InvoiceTagihanPage({
           {/* Header: logo + nomor invoice */}
           <div className="invoice-head">
             <div className="logo">
-              <div className="logo-box">O2W</div>
-              <span className="logo-text">O2W Hero Zero Waste</span>
+              <div className="logo-box">TPS</div>
+              <span className="logo-text">TPS HERU DEPOK</span>
             </div>
             <div className="invoice-number">
               <h4>Nomor Invoice</h4>
@@ -207,7 +207,7 @@ export default async function InvoiceTagihanPage({
 
           {/* Footer bawah */}
           <div className="invoice-bottom">
-            <p>~ Supported By O2W Hero Zero Waste</p>
+            <p>~ Supported By TPS HERU DEPOK</p>
             <span>Invoice ini di-generate pada: {formatTanggalWaktuIndo(new Date())}</span>
           </div>
         </div>

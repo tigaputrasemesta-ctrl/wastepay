@@ -101,7 +101,7 @@ export default async function TagihanCetakPage({
               <div className="tc-invoice" key={t.id}>
                 {/* Kepala */}
                 <div className="tc-head">
-                  <div className="tc-logo-box">O2W</div>
+                  <div className="tc-logo-box">TPS</div>
                   <div className="tc-company">
                     <h1>{perusahaan.nama}</h1>
                     <p>{perusahaan.alamat} · WA {perusahaan.whatsapp}</p>

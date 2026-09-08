@@ -8,7 +8,7 @@ import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 import "./peta.css";
 
 export const metadata = {
-  title: "Peta Wilayah | O2W",
+  title: "Peta Wilayah | TPS HERU",
   description: "Peta sebaran pelanggan dan cakupan layanan sampah Kota Depok",
 };
 

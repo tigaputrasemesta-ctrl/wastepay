@@ -95,7 +95,7 @@ export default function Error({
       
       {/* Footer Info */}
       <div className="mt-8 text-center text-xs font-bold uppercase tracking-widest text-neutral-500">
-        O₂W Hero Zero Waste · Depok 2026
+        TPS HERU · Depok 2026
       </div>
     </div>
   );

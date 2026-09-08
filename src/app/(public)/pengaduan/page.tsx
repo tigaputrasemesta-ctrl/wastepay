@@ -3,8 +3,8 @@ import Link from "next/link";
 import PengaduanForm from "@/components/PengaduanForm";
 
 export const metadata: Metadata = {
-  title: "Ngadu Dimari | O2W Hero Zero Waste",
-  description: "Lapor sampah lu kalau kagak diangkut",
+  title: "Lapor Pengaduan | TPS HERU Depok",
+  description: "Layanan pengaduan dan komplain penjemputan sampah TPS HERU Kota Depok",
 };
 
 const PANDUAN = [
@@ -29,8 +29,8 @@ export default function PengaduanPage() {
   return (
     <div className="py-12 space-y-12">
       <div className="text-center md:text-left">
-        <div className="inline-block px-4 py-1 hm-border font-bold uppercase text-xs mb-2 bg-[#f4f4f0]">
-          O2W / SISTEM LAPOR CEPAT
+        <div className="inline-block px-4 py-1 hm-border font-bold uppercase text-xs mb-2 bg-[#f4f4f0] shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+          TPS HERU / SISTEM LAPOR CEPAT
         </div>
         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">
           SAMPAH TIDAK DIANGKUT? <br />

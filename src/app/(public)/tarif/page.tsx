@@ -4,8 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { formatRupiah } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Daftar Tarif | O2W Hero Zero Waste",
-  description: "Biaya langganan sampah",
+  title: "Daftar Tarif | TPS HERU Depok",
+  description: "Biaya langganan dan retribusi sampah TPS HERU Kota Depok",
 };
 
 export const dynamic = "force-dynamic";
@@ -34,8 +34,8 @@ export default async function TarifPage() {
     <div className="py-12 space-y-12">
       <div className="flex flex-wrap items-end justify-between gap-8 mb-8">
         <div>
-          <div className="inline-block px-4 py-1 hm-border font-bold uppercase text-xs mb-2 bg-[#f4f4f0]">
-            O2W / TARIF LAYANAN
+          <div className="inline-block px-4 py-1 hm-border font-bold uppercase text-xs mb-2 bg-[#f4f4f0] shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+            TPS HERU / TARIF LAYANAN
           </div>
           <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">
             DAFTAR <span className="text-red-600">HARGA.</span>

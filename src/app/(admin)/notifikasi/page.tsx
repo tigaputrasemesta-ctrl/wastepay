@@ -108,7 +108,7 @@ export default function NotifikasiPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         <button
           onClick={() => {
-            setForm({ tipe: "tagihan_jatuh_tempo", judul: "Pengingat Tagihan", pesan: "Yth. Pelanggan O2W,\n\nTagihan bulan ini sudah tersedia. Mohon segera melakukan pembayaran sebelum tanggal 15.\n\nTerima kasih.", pelangganId: "", semuaPelanggan: true });
+            setForm({ tipe: "tagihan_jatuh_tempo", judul: "Pengingat Tagihan", pesan: "Yth. Pelanggan TPS HERU,\n\nTagihan bulan ini sudah tersedia. Mohon segera melakukan pembayaran sebelum tanggal 15.\n\nTerima kasih.", pelangganId: "", semuaPelanggan: true });
             setShowForm(true);
           }}
           className="bg-hm-card bg-white p-0 overflow-hidden border-2 border-black rounded-none-xl p-4 text-left hover:border-vest/40 transition text-sm"
@@ -118,7 +118,7 @@ export default function NotifikasiPage() {
         </button>
         <button
           onClick={() => {
-            setForm({ tipe: "jadwal_pengangkutan", judul: "Jadwal Pengangkutan", pesan: "Yth. Pelanggan O2W,\n\nPengangkutan sampah akan dilakukan besok sesuai jadwal. Mohon siapkan sampah di depan rumah.\n\nTerima kasih.", pelangganId: "", semuaPelanggan: true });
+            setForm({ tipe: "jadwal_pengangkutan", judul: "Jadwal Pengangkutan", pesan: "Yth. Pelanggan TPS HERU,\n\nPengangkutan sampah akan dilakukan besok sesuai jadwal. Mohon siapkan sampah di depan rumah.\n\nTerima kasih.", pelangganId: "", semuaPelanggan: true });
             setShowForm(true);
           }}
           className="bg-hm-card bg-white p-0 overflow-hidden border-2 border-black rounded-none-xl p-4 text-left hover:border-vest/40 transition text-sm"
@@ -128,7 +128,7 @@ export default function NotifikasiPage() {
         </button>
         <button
           onClick={() => {
-            setForm({ tipe: "pengumuman", judul: "Pengumuman Libur", pesan: "Yth. Pelanggan O2W,\n\nDiberitahukan bahwa layanan pengangkutan sampah libur pada hari besar nasional. Jadwal akan kembali normal pada hari berikutnya.\n\nTerima kasih.", pelangganId: "", semuaPelanggan: true });
+            setForm({ tipe: "pengumuman", judul: "Pengumuman Libur", pesan: "Yth. Pelanggan TPS HERU,\n\nDiberitahukan bahwa layanan pengangkutan sampah libur pada hari besar nasional. Jadwal akan kembali normal pada hari berikutnya.\n\nTerima kasih.", pelangganId: "", semuaPelanggan: true });
             setShowForm(true);
           }}
           className="bg-hm-card bg-white p-0 overflow-hidden border-2 border-black rounded-none-xl p-4 text-left hover:border-vest/40 transition text-sm"

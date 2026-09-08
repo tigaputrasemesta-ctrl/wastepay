@@ -13,36 +13,30 @@ export default function O2WLogo({
   href = null,
   className = "",
 }: Props) {
-  const textSize = 
-    size === "sm" ? "text-2xl" : 
-    size === "md" ? "text-4xl" : 
-    size === "lg" ? "text-6xl" : "text-8xl";
+  const badgeSize =
+    size === "sm" ? "px-1.5 py-0.5 text-[10px]" :
+    size === "md" ? "px-2 py-0.5 text-xs" :
+    size === "lg" ? "px-3 py-1 text-sm" : "px-4 py-1.5 text-base";
+
+  const textSize =
+    size === "sm" ? "text-xl" :
+    size === "md" ? "text-3xl" :
+    size === "lg" ? "text-5xl" : "text-7xl";
 
   const logoContent = (
-    <div className={`relative inline-block ${className}`}>
-      {/* Glitch layer behind */}
-      <h1 className={`font-black font-display tracking-tighter ${textSize} text-transparent absolute top-0 left-0 glitch-text opacity-40`}>
-        O2W
-      </h1>
-      
-      {/* Main text */}
-      <h1 className={`font-black font-display tracking-tighter ${textSize} text-white relative z-10 flex items-baseline`}>
-        <span className="text-[var(--neon-cyan)] neon-pulse transition-colors duration-700" style={{ textShadow: "0 0 15px var(--neon-cyan)" }}>
-          O
-        </span>
-        <span className="text-[var(--neon-pink)] neon-pulse transition-colors duration-700" style={{ textShadow: "0 0 15px var(--neon-pink)", animationDelay: "0.4s" }}>
-          2
-        </span>
-        <span className="text-[var(--neon-yellow)] neon-pulse transition-colors duration-700" style={{ textShadow: "0 0 15px var(--neon-yellow)", animationDelay: "0.8s" }}>
-          W
-        </span>
-      </h1>
+    <div className={`inline-flex items-center gap-2 select-none ${className}`}>
+      <span className={`bg-black text-white font-black tracking-widest border-2 border-black ${badgeSize} shadow-[2px_2px_0_0_rgba(0,0,0,1)]`}>
+        TPS
+      </span>
+      <span className={`font-black font-display tracking-tight text-black ${textSize}`}>
+        HERU<span className="text-emerald-600">.</span>
+      </span>
     </div>
   );
 
   if (href) {
     return (
-      <Link href={href} className="group inline-block hover:scale-105 transition-transform duration-300">
+      <Link href={href} className="group inline-block hover:translate-x-0.5 hover:-translate-y-0.5 transition-transform">
         {logoContent}
       </Link>
     );

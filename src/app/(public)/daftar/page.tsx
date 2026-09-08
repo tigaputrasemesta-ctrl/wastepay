@@ -5,8 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { formatRupiah } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Daftar | O2W Hero Zero Waste",
-  description: "Daftar layanan sampah O2W Hero Depok",
+  title: "Daftar Layanan | TPS HERU Depok",
+  description: "Daftar layanan pengelolaan sampah TPS HERU Kota Depok",
 };
 
 const ALUR_DAFTAR = [
@@ -49,11 +49,11 @@ export default async function DaftarPage() {
   return (
     <div className="py-12 space-y-12">
       <div className="text-center md:text-left">
-        <div className="inline-block px-4 py-1 hm-border font-bold uppercase text-xs mb-2 bg-[#f4f4f0]">
-          O2W / PENDAFTARAN BARU
+        <div className="inline-block px-4 py-1 hm-border font-bold uppercase text-xs mb-2 bg-[#f4f4f0] shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+          TPS HERU / PENDAFTARAN BARU
         </div>
         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">
-          GABUNG O2W <span className="text-green-600">SEKARANG.</span>
+          GABUNG TPS HERU <span className="text-green-600">SEKARANG.</span>
         </h1>
         <p className="font-bold uppercase tracking-widest text-sm max-w-2xl mt-4">
           {tarifMin > 0 ? (

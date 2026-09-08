@@ -16,10 +16,10 @@ export const PPN_RATE = 11;
  */
 export function companyInfo() {
   return {
-    nama: process.env.COMPANY_NAME?.trim() || "O2W HERO ZERO WASTE",
-    alamat: process.env.COMPANY_ADDRESS?.trim() || "Jl. Contoh No. 1, Jakarta",
-    whatsapp: process.env.COMPANY_WHATSAPP?.trim() || "08xx-xxxx-xxxx",
-    email: process.env.COMPANY_EMAIL?.trim() || "info.herozerowaste@gmail.com",
+    nama: process.env.COMPANY_NAME?.trim() || "TPS HERU - PENGELOLAAN SAMPAH",
+    alamat: process.env.COMPANY_ADDRESS?.trim() || "Jl. Contoh No. 1, Kota Depok",
+    whatsapp: process.env.COMPANY_WHATSAPP?.trim() || "0814-0078-2617",
+    email: process.env.COMPANY_EMAIL?.trim() || "tpsheru@gmail.com",
   };
 }
 

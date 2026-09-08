@@ -29,13 +29,13 @@ export default async function LandingPage() {
       {/* Marquee Banner */}
       <div className="hm-marquee text-lg font-bold uppercase tracking-[0.2em] sticky top-0 z-50">
         <div className="hm-marquee-content">
-          <span>O₂W HERO ZERO WASTE</span>
+          <span>TPS HERU ZERO WASTE</span>
           <AnimatedDumpTruck size="xs" theme="green" />
           <span>DEPOK BERSIH 2026</span>
           <AnimatedDumpTruck size="xs" theme="yellow" />
           <span>SISTEM PENGELOLAAN SAMPAH</span>
           <AnimatedDumpTruck size="xs" theme="red" />
-          <span>O₂W HERO ZERO WASTE</span>
+          <span>TPS HERU ZERO WASTE</span>
           <AnimatedDumpTruck size="xs" theme="green" />
           <span>DEPOK BERSIH 2026</span>
           <AnimatedDumpTruck size="xs" theme="yellow" />
@@ -46,15 +46,24 @@ export default async function LandingPage() {
 
       {/* Navbar */}
       <nav className="border-b-2 border-black px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4 bg-white z-40 relative">
-        <div className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-3">
           <AnimatedDumpTruck size="md" theme="green" />
-          <span className="text-3xl font-black tracking-tighter">O₂W HERO.</span>
-        </div>
-        <div className="flex gap-6 font-bold uppercase tracking-widest text-sm">
+          <div className="flex items-center gap-2">
+            <span className="bg-black text-white font-black px-2 py-0.5 text-xs tracking-widest border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+              TPS
+            </span>
+            <span className="text-3xl font-black tracking-tighter">
+              HERU<span className="text-emerald-600">.</span>
+            </span>
+          </div>
+        </Link>
+        <div className="flex items-center gap-6 font-bold uppercase tracking-widest text-sm">
           <Link href="/lacak" className="hover:text-green-600 transition-colors">Lacak Truk</Link>
           <Link href="/bayar" className="hover:text-red-600 transition-colors">Tagihan</Link>
           <Link href="/pengaduan" className="hover:text-red-600 transition-colors">Komplain</Link>
-          <Link href="/daftar" className="text-green-600 hover:text-black transition-colors">Daftar</Link>
+          <Link href="/daftar" className="bg-emerald-500 text-black border-2 border-black px-3 py-1 font-black hover:bg-black hover:text-white transition-colors shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+            Daftar TPS HERU
+          </Link>
         </div>
       </nav>
 
@@ -63,7 +72,7 @@ export default async function LandingPage() {
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div className="order-2 md:order-1">
             <div className="inline-block px-4 py-1 border-2 border-black font-bold uppercase text-xs mb-6 bg-[#f4f4f0]">
-              Edisi 2026 / Kota Depok
+              Edisi 2026 / Kota Depok · TPS HERU
             </div>
             <h1 className="text-6xl md:text-8xl font-black uppercase leading-[0.85] tracking-tighter mb-8">
               Bebas<br/>
@@ -72,11 +81,11 @@ export default async function LandingPage() {
               <span className="text-red-600">Pusing.</span>
             </h1>
             <p className="text-xl md:text-2xl font-medium mb-8 max-w-lg leading-snug">
-              Buang cara lama. Bergabunglah dengan sistem retribusi & angkut sampah otomatis kami. Jadwal pasti, bayar gampang.
+              Buang cara lama. Bergabunglah dengan sistem retribusi & angkut sampah modern TPS HERU. Jadwal pasti, bayar gampang.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link href="/daftar" className="hm-btn-red text-lg flex items-center justify-center gap-2">
-                GABUNG SEKARANG <AnimatedDumpTruck size="xs" theme="white" />
+                GABUNG TPS HERU <AnimatedDumpTruck size="xs" theme="white" />
               </Link>
               <Link href="/lacak" className="hm-btn flex items-center justify-center gap-2">
                 LACAK TRUK <ArrowRight className="w-5 h-5" />
@@ -251,17 +260,17 @@ export default async function LandingPage() {
       {/* CTA Footer */}
       <footer className="max-w-6xl mx-auto px-6 mt-20 text-center">
         <h2 className="text-4xl md:text-6xl font-black uppercase mb-6 tracking-tighter">
-          Sudah Siap <br/> <span className="text-red-600">Zero Waste?</span>
+          Sudah Siap <br/> <span className="text-emerald-600">Bebas Sampah Bersama TPS HERU?</span>
         </h2>
         <Link href="/daftar" className="hm-btn-green text-xl py-4 px-12 inline-block shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-          GABUNG O₂W SEKARANG
+          GABUNG TPS HERU SEKARANG
         </Link>
         
         <div className="mt-20 pt-12 border-t-2 border-black flex flex-col md:flex-row justify-between gap-12 text-left">
           
           {/* Kontak Support */}
           <div className="flex flex-col gap-5">
-            <p className="font-black text-lg uppercase tracking-tight">BUTUH BANTUAN? HUBUNGI KAMI:</p>
+            <p className="font-black text-lg uppercase tracking-tight">BUTUH BANTUAN? HUBUNGI TPS HERU:</p>
             <div className="flex flex-col sm:flex-row gap-4">
               <a 
                 href="https://wa.me/6281400782617" 
@@ -269,14 +278,14 @@ export default async function LandingPage() {
                 rel="noreferrer" 
                 className="bg-green-400 hover:bg-green-300 border-2 border-black p-4 flex flex-col gap-1 transition-transform hover:-translate-y-1 shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)]"
               >
-                <span className="text-[10px] font-black uppercase tracking-widest text-black">💬 WHATSAPP</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-black">💬 WHATSAPP RESMI</span>
                 <span className="text-lg font-black text-black">0814-0078-2617</span>
               </a>
               <a 
                 href="mailto:cv.herozerowaste@gmail.com" 
                 className="bg-white hover:bg-gray-100 border-2 border-black p-4 flex flex-col gap-1 transition-transform hover:-translate-y-1 shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)]"
               >
-                <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">✉️ EMAIL</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">✉️ EMAIL DUKUNGAN</span>
                 <span className="text-lg font-black text-black">cv.herozerowaste@gmail.com</span>
               </a>
             </div>
@@ -295,8 +304,8 @@ export default async function LandingPage() {
                 Pusat Bantuan
               </Link>
             </div>
-            <div className="bg-black text-white px-5 py-3 mt-auto w-fit border-2 border-black shadow-[4px_4px_0_0_#ef4444]">
-              <span className="text-[11px] font-black uppercase tracking-widest">© 2026 HERO ZERO WASTE DEPOK</span>
+            <div className="bg-black text-white px-5 py-3 mt-auto w-fit border-2 border-black shadow-[4px_4px_0_0_#10b981]">
+              <span className="text-[11px] font-black uppercase tracking-widest">© 2026 TPS HERU DEPOK</span>
             </div>
           </div>
           

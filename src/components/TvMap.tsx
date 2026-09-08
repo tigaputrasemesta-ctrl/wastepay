@@ -153,7 +153,7 @@ export default function TvMap({ pelanggan, token }: Props) {
             </h1>
           </div>
           <p className="font-mono text-[11px] text-green-300/90 mt-2 uppercase tracking-[0.2em]">
-            O₂W Hero Zero Waste · Kota Depok · LIVE
+            TPS HERU · Kota Depok · LIVE MONITORING
           </p>
         </div>
 

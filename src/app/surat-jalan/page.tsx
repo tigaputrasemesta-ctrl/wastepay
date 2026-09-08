@@ -88,7 +88,7 @@ export default async function SuratJalanPage({
           {/* Kepala */}
           <div className="sj-head">
             <div className="sj-head-left">
-              <div className="sj-logo-box">O2W</div>
+              <div className="sj-logo-box">TPS</div>
               <div>
                 <h1>{perusahaan.nama}</h1>
                 <p>{perusahaan.alamat} · {perusahaan.whatsapp}</p>

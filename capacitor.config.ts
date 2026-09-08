@@ -14,7 +14,7 @@ import type { CapacitorConfig } from "@capacitor/cli";
  */
 const config: CapacitorConfig = {
   appId: "id.o2whero.lapangan",
-  appName: "O2W Lapangan",
+  appName: "TPS HERU Lapangan",
   webDir: "public",
   server: {
     url: process.env.CAPACITOR_URL || "https://wastepay-gold.vercel.app",

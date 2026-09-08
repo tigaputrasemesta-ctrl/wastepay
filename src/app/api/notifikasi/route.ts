@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     const hasil = await kirimBlastWa(
       targets,
       tipe || "pengumuman",
-      () => ({ judul, pesan: `*${judul}*\n\n${pesan}\n\n— O2W Hero Zero Waste` }),
+      () => ({ judul, pesan: `*${judul}*\n\n${pesan}\n\n— TPS HERU DEPOK` }),
       { createdById: user.id }
     );
 
