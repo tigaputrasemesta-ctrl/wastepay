@@ -1,8 +1,8 @@
-# O2W Hero Zero Waste (SPLYNX)
+# TPS HERU - SISTEM PENGELOLAAN SAMPAH
 
 > Sistem manajemen retribusi/pembayaran sampah berbasis web — siklus lengkap untuk satu badan pengelola sampah (TPST / RT / RW / perusahaan). Kode internal: `wastepay`.
 
-O2W Hero Zero Waste menangani seluruh alur pengelolaan iuran sampah: **pendaftaran pelanggan → penagihan bulanan → pembayaran (tunai & non-tunai via Duitku) → penjadwalan pengangkutan → komplain → laporan keuangan → rekonsiliasi kas → notifikasi WhatsApp**.
+TPS HERU menangani seluruh alur pengelolaan iuran sampah: **pendaftaran pelanggan → penagihan bulanan → pembayaran (tunai & non-tunai via Duitku) → penjadwalan pengangkutan → komplain → laporan keuangan → rekonsiliasi kas → notifikasi WhatsApp**.
 
 ## Stack
 
