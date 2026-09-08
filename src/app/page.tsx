@@ -1,7 +1,10 @@
 import Link from "next/link";
-import { Truck, MapPin, Smartphone, ArrowRight, Megaphone } from "lucide-react";
+import { Truck, MapPin, Smartphone, ArrowRight, Megaphone, ShieldCheck, Sparkles } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import AnimatedDumpTruck from "@/components/AnimatedDumpTruck";
+import TrustStatsBar from "@/components/TrustStatsBar";
+import TimelineSection from "@/components/TimelineSection";
+import TestimonialsSection from "@/components/TestimonialsSection";
 
 export const dynamic = "force-dynamic";
 
@@ -18,15 +21,15 @@ export default async function LandingPage() {
     pengumuman = await prisma.pengumuman.findMany({
       where: { untukWilayahId: null },
       orderBy: [{ penting: "desc" }, { createdAt: "desc" }],
-      take: 3
+      take: 3,
     });
   } catch {
     // ignore
   }
+
   return (
-    <div className="min-h-screen bg-white text-black font-sans selection:bg-red-500 selection:text-white pb-20">
-      
-      {/* Marquee Banner */}
+    <div className="min-h-screen bg-white text-black font-sans selection:bg-red-500 selection:text-white">
+      {/* ── A. Top Marquee Bar (Existing — Pertahankan) ── */}
       <div className="hm-marquee text-lg font-bold uppercase tracking-[0.2em] sticky top-0 z-50">
         <div className="hm-marquee-content">
           <span>TPS HERU ZERO WASTE</span>
@@ -44,7 +47,7 @@ export default async function LandingPage() {
         </div>
       </div>
 
-      {/* Navbar */}
+      {/* ── B. Navbar ── */}
       <nav className="border-b-2 border-black px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4 bg-white z-40 relative">
         <Link href="/" className="flex items-center gap-3">
           <AnimatedDumpTruck size="md" theme="green" />
@@ -57,48 +60,67 @@ export default async function LandingPage() {
             </span>
           </div>
         </Link>
-        <div className="flex items-center gap-6 font-bold uppercase tracking-widest text-sm">
-          <Link href="/lacak" className="hover:text-green-600 transition-colors">Lacak Truk</Link>
-          <Link href="/bayar" className="hover:text-red-600 transition-colors">Tagihan</Link>
-          <Link href="/pengaduan" className="hover:text-red-600 transition-colors">Komplain</Link>
-          <Link href="/daftar" className="bg-emerald-500 text-black border-2 border-black px-3 py-1 font-black hover:bg-black hover:text-white transition-colors shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+        <div className="flex items-center gap-6 font-bold uppercase tracking-widest text-sm flex-wrap justify-center">
+          <Link href="/lacak" className="hover:text-green-600 transition-colors">
+            Lacak Truk
+          </Link>
+          <Link href="/bayar" className="hover:text-red-600 transition-colors">
+            Tagihan
+          </Link>
+          <Link href="/pengaduan" className="hover:text-red-600 transition-colors">
+            Komplain
+          </Link>
+          <Link
+            href="/daftar"
+            className="bg-emerald-500 text-black border-2 border-black px-4 py-1.5 font-black hover:bg-black hover:text-white transition-colors shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
+          >
             Daftar TPS HERU
           </Link>
         </div>
       </nav>
 
-      {/* Hero Section */}
+      {/* ── C. Hero Section ── */}
       <main className="px-6 py-12 md:py-24 max-w-6xl mx-auto">
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div className="order-2 md:order-1">
-            <div className="inline-block px-4 py-1 border-2 border-black font-bold uppercase text-xs mb-6 bg-[#f4f4f0]">
+            <div className="inline-block px-4 py-1 border-2 border-black font-bold uppercase text-xs mb-6 bg-[#f4f4f0] shadow-[2px_2px_0_0_#000]">
               Edisi 2026 / Kota Depok · TPS HERU
             </div>
-            <h1 className="text-6xl md:text-8xl font-black uppercase leading-[0.85] tracking-tighter mb-8">
-              Bebas<br/>
-              <span className="text-green-600">Sampah.</span><br/>
-              Tanpa<br/>
+
+            <h1 className="text-6xl md:text-8xl font-black uppercase leading-[0.85] tracking-tighter mb-6">
+              Bebas<br />
+              <span className="text-green-600">Sampah.</span><br />
+              Tanpa<br />
               <span className="text-red-600">Pusing.</span>
             </h1>
-            <p className="text-xl md:text-2xl font-medium mb-8 max-w-lg leading-snug">
+
+            <p className="text-xl md:text-2xl font-medium mb-6 max-w-lg leading-snug text-gray-800">
               Buang cara lama. Bergabunglah dengan sistem retribusi & angkut sampah modern TPS HERU. Jadwal pasti, bayar gampang.
             </p>
+
+            {/* Badge Rekam Jejak (Baru Sesuai Prompt) */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-amber-50 border-2 border-black font-bold text-xs sm:text-sm text-gray-900 mb-8 shadow-[3px_3px_0_0_#000]">
+              <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
+              <span>Melayani Depok sejak 2014 • Dipercaya 2.000+ pelanggan</span>
+            </div>
+
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/daftar" className="hm-btn-red text-lg flex items-center justify-center gap-2">
-                GABUNG TPS HERU <AnimatedDumpTruck size="xs" theme="white" />
+              <Link href="/daftar" className="hm-btn-red text-lg flex items-center justify-center gap-2 shadow-[4px_4px_0_0_#000]">
+                GABUNG TPS HERU 🚛
               </Link>
-              <Link href="/lacak" className="hm-btn flex items-center justify-center gap-2">
-                LACAK TRUK <ArrowRight className="w-5 h-5" />
+              <Link href="/lacak" className="hm-btn flex items-center justify-center gap-2 shadow-[4px_4px_0_0_#000]">
+                LACAK TRUK 📍
               </Link>
             </div>
           </div>
-          
+
+          {/* Visual Live Tracking Widget */}
           <div className="order-1 md:order-2 relative hm-card p-0 overflow-hidden group bg-green-50 h-[400px] md:h-[500px] flex items-center justify-center">
             <div className="absolute top-4 left-4 z-10 bg-white hm-border px-3 py-1 font-bold text-xs uppercase flex items-center gap-2 shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse border border-black"></span>
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse border border-black" />
               Live Tracking
             </div>
-            
+
             {/* SVG Brutalist Map Animation */}
             <svg className="w-full h-full p-8" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
               <defs>
@@ -126,35 +148,39 @@ export default async function LandingPage() {
                   `}
                 </style>
               </defs>
-              
+
               {/* Background Grid */}
               <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="2"/>
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="2" />
               </pattern>
               <rect width="100%" height="100%" fill="url(#grid)" />
-              
+
               {/* Map Zones */}
               <rect x="40" y="40" width="120" height="120" fill="#fca5a5" stroke="black" strokeWidth="4" />
-              <text x="60" y="80" fontFamily="monospace" fontWeight="bold" fontSize="14" fill="black">ZONE A</text>
+              <text x="60" y="80" fontFamily="monospace" fontWeight="bold" fontSize="14" fill="black">
+                ZONE A
+              </text>
               <rect x="240" y="200" width="120" height="120" fill="#fef08a" stroke="black" strokeWidth="4" />
-              <text x="260" y="240" fontFamily="monospace" fontWeight="bold" fontSize="14" fill="black">ZONE B</text>
+              <text x="260" y="240" fontFamily="monospace" fontWeight="bold" fontSize="14" fill="black">
+                ZONE B
+              </text>
 
               {/* The Route */}
-              <path 
+              <path
                 className="route-path"
-                d="M 50 350 L 150 250 L 300 250 L 300 100 L 100 100" 
-                fill="none" 
-                stroke="black" 
-                strokeWidth="12" 
+                d="M 50 350 L 150 250 L 300 250 L 300 100 L 100 100"
+                fill="none"
+                stroke="black"
+                strokeWidth="12"
                 strokeLinecap="square"
                 strokeLinejoin="miter"
               />
-              <path 
+              <path
                 className="route-path"
-                d="M 50 350 L 150 250 L 300 250 L 300 100 L 100 100" 
-                fill="none" 
-                stroke="#22c55e" 
-                strokeWidth="6" 
+                d="M 50 350 L 150 250 L 300 250 L 300 100 L 100 100"
+                fill="none"
+                stroke="#22c55e"
+                strokeWidth="6"
                 strokeLinecap="square"
                 strokeLinejoin="miter"
               />
@@ -166,27 +192,107 @@ export default async function LandingPage() {
               <circle cx="300" cy="100" r="10" fill="white" stroke="black" strokeWidth="4" />
               <circle cx="100" cy="100" r="12" fill="#ef4444" stroke="black" strokeWidth="4" />
 
-              {/* Moving Truck (Emoji or SVG icon) */}
+              {/* Moving Truck */}
               <g className="truck-move">
                 <rect x="-15" y="-15" width="30" height="30" fill="white" stroke="black" strokeWidth="3" />
-                <text x="-10" y="5" fontSize="20">🚛</text>
+                <text x="-10" y="5" fontSize="20">
+                  🚛
+                </text>
               </g>
             </svg>
           </div>
         </div>
       </main>
 
-      {/* Pengumuman Section */}
+      {/* ── D. Trust Stats Bar (BARU — Rekam Jejak 12 Tahun) ── */}
+      <TrustStatsBar />
+
+      {/* ── E. Cerita Kami / Timeline Section (BARU — Dari Gerobak ke Geotag) ── */}
+      <TimelineSection />
+
+      {/* ── F. Fitur Utama (Existing 3 Cards) ── */}
+      <section className="border-b-2 border-black bg-[#f4f4f0] py-20 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center gap-4 mb-12">
+            <AnimatedDumpTruck size="lg" theme="black" />
+            <h2 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tighter">
+              Fitur Utama
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Feature 1 */}
+            <div className="hm-card bg-white">
+              <div className="w-16 h-16 border-2 border-black rounded-full flex items-center justify-center bg-blue-100 mb-6 shadow-[2px_2px_0_0_#000]">
+                <MapPin className="w-8 h-8 text-blue-600" />
+              </div>
+              <h3 className="text-2xl font-black uppercase mb-3">Lacak Posisi Truk</h3>
+              <p className="font-medium text-base sm:text-lg leading-snug text-gray-800">
+                Pantau pergerakan armada secara real-time. Tidak ada lagi drama nunggu truk sampah yang tak kunjung datang.
+              </p>
+              <Link
+                href="/lacak"
+                className="inline-block mt-5 border-b-2 border-black font-black uppercase text-sm hover:text-green-600 hover:border-green-600"
+              >
+                Lacak Sekarang &rarr;
+              </Link>
+            </div>
+
+            {/* Feature 2 */}
+            <div className="hm-card bg-white">
+              <div className="w-16 h-16 border-2 border-black rounded-full flex items-center justify-center bg-red-100 mb-6 shadow-[2px_2px_0_0_#000]">
+                <Truck className="w-8 h-8 text-red-600" />
+              </div>
+              <h3 className="text-2xl font-black uppercase mb-3">Lapor & Geotag</h3>
+              <p className="font-medium text-base sm:text-lg leading-snug text-gray-800">
+                Sampah terlewat? Foto dan kirim. Sistem Geotag akan melacak lokasi akurat Anda, dan unit reaksi cepat meluncur hari itu juga.
+              </p>
+              <Link
+                href="/pengaduan"
+                className="inline-block mt-5 border-b-2 border-black font-black uppercase text-sm hover:text-red-600 hover:border-red-600"
+              >
+                Lapor Sekarang &rarr;
+              </Link>
+            </div>
+
+            {/* Feature 3 */}
+            <div className="hm-card bg-white">
+              <div className="w-16 h-16 border-2 border-black rounded-full flex items-center justify-center bg-green-100 mb-6 shadow-[2px_2px_0_0_#000]">
+                <Smartphone className="w-8 h-8 text-green-600" />
+              </div>
+              <h3 className="text-2xl font-black uppercase mb-3">Notif WhatsApp</h3>
+              <p className="font-medium text-base sm:text-lg leading-snug text-gray-800">
+                Lupa bayar? Asisten Bot kami siap mengingatkan. Struk juga langsung dikirim ke chat WA Anda. Tarif flat Rp 50.000/bulan!
+              </p>
+              <Link
+                href="/bayar"
+                className="inline-block mt-5 border-b-2 border-black font-black uppercase text-sm hover:text-green-600 hover:border-green-600"
+              >
+                Cek Tagihan &rarr;
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pengumuman Section (Jika Ada) */}
       {pengumuman.length > 0 && (
-        <section className="border-t-2 border-black bg-yellow-400 py-16 px-6">
+        <section className="border-b-2 border-black bg-yellow-400 py-16 px-6">
           <div className="max-w-6xl mx-auto">
             <div className="flex items-center gap-4 mb-10">
               <Megaphone className="w-10 h-10 fill-black" />
-              <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter">Papan Pengumuman</h2>
+              <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter">
+                Papan Pengumuman
+              </h2>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
               {pengumuman.map((p) => (
-                <div key={p.id} className={`hm-card p-6 ${p.penting ? 'bg-red-500 text-white' : 'bg-white text-black'}`}>
+                <div
+                  key={p.id}
+                  className={`hm-card p-6 ${
+                    p.penting ? "bg-red-500 text-white" : "bg-white text-black"
+                  }`}
+                >
                   {p.penting && (
                     <div className="inline-block px-2 py-1 bg-black text-white text-[10px] font-bold uppercase tracking-widest mb-3">
                       PENTING
@@ -195,7 +301,11 @@ export default async function LandingPage() {
                   <h3 className="text-xl font-black uppercase mb-3 leading-tight">{p.judul}</h3>
                   <p className="font-medium text-sm leading-relaxed mb-4">{p.isi}</p>
                   <p className="text-[10px] font-bold uppercase tracking-widest opacity-70">
-                    {p.createdAt.toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}
+                    {p.createdAt.toLocaleDateString("id-ID", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
                   </p>
                 </div>
               ))}
@@ -204,88 +314,49 @@ export default async function LandingPage() {
         </section>
       )}
 
-      {/* Why Choose Us */}
-      <section className="border-y-2 border-black bg-[#f4f4f0] py-20 px-6 mt-12">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center gap-4 mb-12">
-            <AnimatedDumpTruck size="lg" theme="black" />
-            <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">Fitur Utama</h2>
-          </div>
+      {/* ── G. Testimoni Warga Depok (BARU) ── */}
+      <TestimonialsSection />
 
-          <div className="grid md:grid-cols-3 gap-6">
-            
-            {/* Feature 1 */}
-            <div className="hm-card bg-white">
-              <div className="w-16 h-16 border-2 border-black rounded-full flex items-center justify-center bg-blue-100 mb-6">
-                <MapPin className="w-8 h-8 text-blue-600" />
-              </div>
-              <h3 className="text-2xl font-black uppercase mb-3">Lacak Posisi Truk</h3>
-              <p className="font-medium text-lg leading-snug">
-                Pantau pergerakan armada secara real-time. Tidak ada lagi drama nunggu truk sampah yang tak kunjung datang.
-              </p>
-              <Link href="/lacak" className="inline-block mt-4 border-b-2 border-black font-bold uppercase text-sm hover:text-green-600 hover:border-green-600">
-                Lacak Sekarang
-              </Link>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="hm-card bg-white">
-              <div className="w-16 h-16 border-2 border-black rounded-full flex items-center justify-center bg-red-100 mb-6">
-                <Truck className="w-8 h-8 text-red-600" />
-              </div>
-              <h3 className="text-2xl font-black uppercase mb-3">Lapor & Geotag</h3>
-              <p className="font-medium text-lg leading-snug">
-                Sampah terlewat? Foto dan kirim. Sistem Geotag akan melacak lokasi akurat Anda, dan unit reaksi cepat meluncur hari itu juga.
-              </p>
-              <Link href="/pengaduan" className="inline-block mt-4 border-b-2 border-black font-bold uppercase text-sm hover:text-red-600 hover:border-red-600">
-                Lapor Sekarang
-              </Link>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="hm-card bg-white">
-              <div className="w-16 h-16 border-2 border-black rounded-full flex items-center justify-center bg-green-100 mb-6">
-                <Smartphone className="w-8 h-8 text-green-600" />
-              </div>
-              <h3 className="text-2xl font-black uppercase mb-3">Notif WhatsApp</h3>
-              <p className="font-medium text-lg leading-snug">
-                Lupa bayar? Asisten Bot kami siap mengingatkan. Struk juga langsung dikirim ke chat WA Anda. Tarif flat Rp 50.000/bulan!
-              </p>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Footer */}
-      <footer className="max-w-6xl mx-auto px-6 mt-20 text-center">
-        <h2 className="text-4xl md:text-6xl font-black uppercase mb-6 tracking-tighter">
-          Sudah Siap <br/> <span className="text-emerald-600">Bebas Sampah Bersama TPS HERU?</span>
+      {/* ── H. CTA Penutup & I. Footer Kontak ── */}
+      <footer className="max-w-6xl mx-auto px-6 py-20 text-center">
+        <h2 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase mb-4 tracking-tighter leading-tight">
+          Sudah Siap <br />
+          <span className="text-emerald-600">Bebas Sampah Bersama TPS HERU?</span>
         </h2>
-        <Link href="/daftar" className="hm-btn-green text-xl py-4 px-12 inline-block shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-          GABUNG TPS HERU SEKARANG
+        <p className="text-lg md:text-xl font-medium text-gray-700 max-w-2xl mx-auto mb-8">
+          Gabung dengan 2.000+ keluarga & pelaku usaha yang sudah lebih dulu bebas drama sampah di Kota Depok.
+        </p>
+
+        <Link
+          href="/daftar"
+          className="hm-btn-green text-xl py-4 px-12 inline-block shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+        >
+          GABUNG TPS HERU SEKARANG 🚛
         </Link>
-        
+
         <div className="mt-20 pt-12 border-t-2 border-black flex flex-col md:flex-row justify-between gap-12 text-left">
-          
           {/* Kontak Support */}
           <div className="flex flex-col gap-5">
             <p className="font-black text-lg uppercase tracking-tight">BUTUH BANTUAN? HUBUNGI TPS HERU:</p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <a 
-                href="https://wa.me/6281400782617" 
-                target="_blank" 
-                rel="noreferrer" 
+              <a
+                href="https://wa.me/6281400782617"
+                target="_blank"
+                rel="noreferrer"
                 className="bg-green-400 hover:bg-green-300 border-2 border-black p-4 flex flex-col gap-1 transition-transform hover:-translate-y-1 shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)]"
               >
-                <span className="text-[10px] font-black uppercase tracking-widest text-black">💬 WHATSAPP RESMI</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-black">
+                  💬 WHATSAPP RESMI
+                </span>
                 <span className="text-lg font-black text-black">0814-0078-2617</span>
               </a>
-              <a 
-                href="mailto:cv.herozerowaste@gmail.com" 
+              <a
+                href="mailto:cv.herozerowaste@gmail.com"
                 className="bg-white hover:bg-gray-100 border-2 border-black p-4 flex flex-col gap-1 transition-transform hover:-translate-y-1 shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)]"
               >
-                <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">✉️ EMAIL DUKUNGAN</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">
+                  ✉️ EMAIL DUKUNGAN
+                </span>
                 <span className="text-lg font-black text-black">cv.herozerowaste@gmail.com</span>
               </a>
             </div>
@@ -294,13 +365,22 @@ export default async function LandingPage() {
           {/* Navigasi Footer & Copyright */}
           <div className="flex flex-col md:items-end justify-between gap-8 md:gap-0 mt-8 md:mt-0">
             <div className="flex flex-wrap md:justify-end gap-3">
-              <Link href="/lacak" className="bg-white border-2 border-black px-4 py-2 text-[11px] font-black uppercase tracking-widest hover:bg-green-400 hover:-translate-y-0.5 transition-transform shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+              <Link
+                href="/lacak"
+                className="bg-white border-2 border-black px-4 py-2 text-[11px] font-black uppercase tracking-widest hover:bg-green-400 hover:-translate-y-0.5 transition-transform shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
+              >
                 Lacak Truk
               </Link>
-              <Link href="/bayar" className="bg-white border-2 border-black px-4 py-2 text-[11px] font-black uppercase tracking-widest hover:bg-yellow-300 hover:-translate-y-0.5 transition-transform shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+              <Link
+                href="/bayar"
+                className="bg-white border-2 border-black px-4 py-2 text-[11px] font-black uppercase tracking-widest hover:bg-yellow-300 hover:-translate-y-0.5 transition-transform shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
+              >
                 Cek Tagihan
               </Link>
-              <Link href="/pengaduan" className="bg-white border-2 border-black px-4 py-2 text-[11px] font-black uppercase tracking-widest hover:bg-red-400 hover:-translate-y-0.5 transition-transform shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+              <Link
+                href="/pengaduan"
+                className="bg-white border-2 border-black px-4 py-2 text-[11px] font-black uppercase tracking-widest hover:bg-red-400 hover:-translate-y-0.5 transition-transform shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
+              >
                 Pusat Bantuan
               </Link>
             </div>
@@ -308,7 +388,6 @@ export default async function LandingPage() {
               <span className="text-[11px] font-black uppercase tracking-widest">© 2026 TPS HERU DEPOK</span>
             </div>
           </div>
-          
         </div>
       </footer>
     </div>
