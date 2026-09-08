@@ -102,7 +102,7 @@ export default async function KwitansiPage({
           {/* Kepala */}
           <div className="kwitansi-head">
             <div className="kwitansi-logo">
-              <div className="kwitansi-logo-box">O2W</div>
+              <div className="kwitansi-logo-box">TPS</div>
               <span className="kwitansi-logo-text">
                 {perusahaan.nama}
                 <em>UNIT PENGELOLA SAMPAH</em>

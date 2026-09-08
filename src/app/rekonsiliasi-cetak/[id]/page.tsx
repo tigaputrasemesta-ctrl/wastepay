@@ -56,7 +56,7 @@ export default async function RekonsiliasiCetakPage({
         {/* Lembar berita acara */}
         <div className="ba-sheet">
           <div className="ba-head">
-            <div className="ba-logo-box">O2W</div>
+            <div className="ba-logo-box">TPS</div>
             <div>
               <h1>{perusahaan.nama}</h1>
               <p>{perusahaan.alamat}</p>

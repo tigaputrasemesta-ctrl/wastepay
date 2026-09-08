@@ -50,7 +50,7 @@ export default async function KlaimCetakPage({
 
         <div className="slip-sheet">
           <div className="slip-head">
-            <div className="slip-logo-box">O2W</div>
+            <div className="slip-logo-box">TPS</div>
             <div>
               <h1>{perusahaan.nama}</h1>
               <p>{perusahaan.alamat}</p>
