@@ -17,7 +17,7 @@ const config: CapacitorConfig = {
   appName: "TPS HERU Lapangan",
   webDir: "public",
   server: {
-    url: process.env.CAPACITOR_URL || "https://wastepay-gold.vercel.app",
+    url: process.env.CAPACITOR_URL || "https://tpsheru.vercel.app",
     cleartext: true,
     // Buka langsung ke dashboard mobile petugas (bukan landing page publik)
     appStartPath: "/m",

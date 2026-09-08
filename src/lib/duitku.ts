@@ -85,7 +85,7 @@ export function getAppBaseUrl(): string {
     return `https://${process.env.VERCEL_URL.replace(/\/$/, "")}`;
   }
   // Fallback domain default production
-  return "https://wastepay.vercel.app";
+  return "https://tpsheru.vercel.app";
 }
 
 /** URL callback (webhook) — WAJIB publik HTTPS saat production. */

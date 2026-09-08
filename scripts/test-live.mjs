@@ -2,7 +2,7 @@
 // Jalankan:
 //   node scripts/test-live.mjs
 // Target bisa di-override:  BASE_URL=https://... node scripts/test-live.mjs
-const BASE = process.env.BASE_URL || "https://wastepay-gold.vercel.app";
+const BASE = process.env.BASE_URL || "https://tpsheru.vercel.app";
 
 const results = [];
 function check(name, ok, detail = "") {
