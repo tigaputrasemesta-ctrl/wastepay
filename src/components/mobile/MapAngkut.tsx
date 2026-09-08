@@ -109,6 +109,7 @@ export default function MapAngkut({ tugas }: { tugas: TugasMap[] }) {
             attribution={tileConfig.attribution}
             url={tileConfig.url}
             subdomains={tileConfig.subdomains}
+            maxZoom={tileConfig.maxZoom}
           />
 
           {tugas.map((t) => (

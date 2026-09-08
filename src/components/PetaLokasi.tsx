@@ -113,6 +113,7 @@ export default function PetaLokasi({
         attribution={tileConfig.attribution}
         url={tileConfig.url}
         subdomains={tileConfig.subdomains}
+        maxZoom={tileConfig.maxZoom}
       />
       {valid && (
         <Titik latitude={latitude!} longitude={longitude!} onChange={onChange} />

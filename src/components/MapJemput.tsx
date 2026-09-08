@@ -106,6 +106,7 @@ export default function MapJemput({ pickup, truk, userPos }: Props) {
         attribution={tileConfig.attribution}
         url={tileConfig.url}
         subdomains={tileConfig.subdomains}
+        maxZoom={tileConfig.maxZoom}
       />
 
       {/* Rute armada → rumah (garis putus-putus hijau) */}

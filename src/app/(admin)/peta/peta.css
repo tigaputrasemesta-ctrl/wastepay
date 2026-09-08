@@ -294,11 +294,3 @@
   transform: scale(1.1) rotate(15deg);
   background: #fde047;
 }
-
-/* ── Filter dark untuk basemap OpenStreetMap fallback (bebas API key) ── */
-.dark-tiles .leaflet-tile {
-  filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7) !important;
-}
-
-
-
