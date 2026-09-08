@@ -582,7 +582,7 @@ export default function MapView({
       center={[-6.4005, 106.8242]}
       zoom={13}
       scrollWheelZoom
-      className="h-full w-full"
+      className={`h-full w-full ${!tileConfig.isCarto ? "dark-tiles" : ""}`}
       style={{ background: "#0d0e10" }}
     >
       <MapReadyWrapper>
@@ -590,7 +590,6 @@ export default function MapView({
           attribution={tileConfig.attribution}
           url={tileConfig.url}
           subdomains={tileConfig.subdomains}
-          className={tileConfig.className}
         />
         <ZoomTracker onZoom={setZoom} />
         <InvalidateSize invalidateKey={invalidateKey} />

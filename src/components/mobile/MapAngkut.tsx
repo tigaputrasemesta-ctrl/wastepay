@@ -108,7 +108,6 @@ export default function MapAngkut({ tugas }: { tugas: TugasMap[] }) {
             attribution={getMapTileConfig("light").attribution}
             url={getMapTileConfig("light").url}
             subdomains={getMapTileConfig("light").subdomains}
-            className={getMapTileConfig("light").className}
           />
 
           {tugas.map((t) => (

@@ -13,16 +13,16 @@ export function getMapTileConfig(theme: "light" | "dark" = "light") {
       attribution:
         '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank" rel="noreferrer">CARTO</a>',
       subdomains: "abcd",
-      className: "",
+      isCarto: true,
     };
   }
 
-  // Fallback bebas API key menggunakan OpenStreetMap resmi
+  // Fallback bebas API key menggunakan OpenStreetMap resmi (100% gratis, tanpa watermark)
   return {
     url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> kontributor',
     subdomains: "abc",
-    className: theme === "dark" ? "map-tiles-dark" : "",
+    isCarto: false,
   };
 }
