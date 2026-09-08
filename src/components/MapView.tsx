@@ -575,6 +575,7 @@ export default function MapView({
   const komplainSel = komplain.find((k) => k.id === selectedKomplainId);
   const pusatKomplain = komplainSel ? (komplainSel.posisi as [number, number]) : null;
   // Prioritas terbang: petugas (direktori online) → komplain → pelanggan
+  const pusatFly = pusatPetugas ?? (komplainSel ? pusatKomplain : pusat);
   const tileConfig = useMemo(() => getMapTileConfig("dark"), []);
 
   return (

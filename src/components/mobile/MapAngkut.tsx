@@ -86,6 +86,7 @@ export default function MapAngkut({ tugas }: { tugas: TugasMap[] }) {
   );
 
   const center: [number, number] = posSaya ?? (points[0] ?? PUSAT_DEPOK);
+  const tileConfig = useMemo(() => getMapTileConfig("light"), []);
 
   return (
     <div className="border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] overflow-hidden">
@@ -105,9 +106,9 @@ export default function MapAngkut({ tugas }: { tugas: TugasMap[] }) {
           style={{ background: "#e8f0e6" }}
         >
           <TileLayer
-            attribution={getMapTileConfig("light").attribution}
-            url={getMapTileConfig("light").url}
-            subdomains={getMapTileConfig("light").subdomains}
+            attribution={tileConfig.attribution}
+            url={tileConfig.url}
+            subdomains={tileConfig.subdomains}
           />
 
           {tugas.map((t) => (
