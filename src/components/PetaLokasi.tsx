@@ -11,6 +11,7 @@ import {
   useMapEvents,
 } from "react-leaflet";
 import type { LeafletEvent, LeafletMouseEvent } from "leaflet";
+import { getMapTileConfig } from "@/lib/map-tile";
 
 const PUSAT_DEPOK: [number, number] = [-6.4005, 106.8242];
 
@@ -98,6 +99,8 @@ export default function PetaLokasi({
 
   const center: [number, number] = valid ? [latitude!, longitude!] : PUSAT_DEPOK;
 
+  const tileConfig = getMapTileConfig("light");
+
   return (
     <MapContainer
       center={center}
@@ -107,9 +110,10 @@ export default function PetaLokasi({
       style={{ background: "#e8f0e6" }}
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
-        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-        subdomains="abcd"
+        attribution={tileConfig.attribution}
+        url={tileConfig.url}
+        subdomains={tileConfig.subdomains}
+        className={tileConfig.className}
       />
       {valid && (
         <Titik latitude={latitude!} longitude={longitude!} onChange={onChange} />

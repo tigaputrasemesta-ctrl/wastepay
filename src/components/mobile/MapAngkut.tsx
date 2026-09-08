@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import L from "leaflet";
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMap } from "react-leaflet";
+import { getMapTileConfig } from "@/lib/map-tile";
 
 export type TugasMap = {
   id: number;
@@ -104,9 +105,10 @@ export default function MapAngkut({ tugas }: { tugas: TugasMap[] }) {
           style={{ background: "#e8f0e6" }}
         >
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
-            url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-            subdomains="abcd"
+            attribution={getMapTileConfig("light").attribution}
+            url={getMapTileConfig("light").url}
+            subdomains={getMapTileConfig("light").subdomains}
+            className={getMapTileConfig("light").className}
           />
 
           {tugas.map((t) => (

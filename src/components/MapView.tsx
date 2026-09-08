@@ -19,6 +19,7 @@ import { deteksiZona, formatJarak, panjangRute, titikTengah, urutkanRute } from 
 import type { Titik } from "@/lib/geo";
 import type { KomplainPeta, PelangganPeta, RutePeta } from "./PetaMap";
 import { KOMPLAIN_LABEL, KOMPLAIN_WARNA } from "@/lib/komplain";
+import { getMapTileConfig } from "@/lib/map-tile";
 
 export type PetugasPeta = {
   petugasId: number;
@@ -574,7 +575,7 @@ export default function MapView({
   const komplainSel = komplain.find((k) => k.id === selectedKomplainId);
   const pusatKomplain = komplainSel ? (komplainSel.posisi as [number, number]) : null;
   // Prioritas terbang: petugas (direktori online) → komplain → pelanggan
-  const pusatFly = pusatPetugas ?? (komplainSel ? pusatKomplain : pusat);
+  const tileConfig = useMemo(() => getMapTileConfig("dark"), []);
 
   return (
     <MapContainer
@@ -586,9 +587,10 @@ export default function MapView({
     >
       <MapReadyWrapper>
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-          subdomains="abcd"
+          attribution={tileConfig.attribution}
+          url={tileConfig.url}
+          subdomains={tileConfig.subdomains}
+          className={tileConfig.className}
         />
         <ZoomTracker onZoom={setZoom} />
         <InvalidateSize invalidateKey={invalidateKey} />

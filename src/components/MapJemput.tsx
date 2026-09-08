@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import { useEffect, useMemo, useRef } from "react";
 import L from "leaflet";
 import { MapContainer, TileLayer, Marker, Polyline, Tooltip, ZoomControl, useMap } from "react-leaflet";
+import { getMapTileConfig } from "@/lib/map-tile";
 
 export type TitikMap = { latitude: number; longitude: number };
 
@@ -90,6 +91,8 @@ export default function MapJemput({ pickup, truk, userPos }: Props) {
     ? [pickup.latitude, pickup.longitude]
     : PUSAT_DEPOK;
 
+  const tileConfig = useMemo(() => getMapTileConfig("light"), []);
+
   return (
     <MapContainer
       center={center}
@@ -100,9 +103,10 @@ export default function MapJemput({ pickup, truk, userPos }: Props) {
       style={{ background: "#e8f0e6" }}
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
-        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-        subdomains="abcd"
+        attribution={tileConfig.attribution}
+        url={tileConfig.url}
+        subdomains={tileConfig.subdomains}
+        className={tileConfig.className}
       />
 
       {/* Rute armada → rumah (garis putus-putus hijau) */}
