@@ -19,7 +19,7 @@ import { deteksiZona, formatJarak, panjangRute, titikTengah, urutkanRute } from 
 import type { Titik } from "@/lib/geo";
 import type { KomplainPeta, PelangganPeta, RutePeta } from "./PetaMap";
 import { KOMPLAIN_LABEL, KOMPLAIN_WARNA } from "@/lib/komplain";
-import { getMapTileConfig } from "@/lib/map-tile";
+import { getMapTileConfig, type MapTileType } from "@/lib/map-tile";
 
 export type PetugasPeta = {
   petugasId: number;
@@ -576,23 +576,66 @@ export default function MapView({
   const pusatKomplain = komplainSel ? (komplainSel.posisi as [number, number]) : null;
   // Prioritas terbang: petugas (direktori online) → komplain → pelanggan
   const pusatFly = pusatPetugas ?? (komplainSel ? pusatKomplain : pusat);
-  const tileConfig = useMemo(() => getMapTileConfig("dark"), []);
+  const [tileMode, setTileMode] = useState<MapTileType>("google-streets");
+  const tileConfig = useMemo(() => getMapTileConfig(tileMode), [tileMode]);
 
   return (
-    <MapContainer
-      center={[-6.4005, 106.8242]}
-      zoom={13}
-      scrollWheelZoom
-      className="h-full w-full"
-      style={{ background: "#0d0e10" }}
-    >
-      <MapReadyWrapper>
-        <TileLayer
-          attribution={tileConfig.attribution}
-          url={tileConfig.url}
-          subdomains={tileConfig.subdomains}
-          maxZoom={tileConfig.maxZoom}
-        />
+    <div className="relative h-full w-full">
+      {/* Tombol Pilihan Basemap: Google Maps Jalan & Gang / Satelit / Gelap */}
+      <div className="absolute top-3 right-3 z-[1000] flex items-center bg-white border-2 border-black p-1 shadow-[4px_4px_0_0_#000] gap-1">
+        <button
+          type="button"
+          onClick={() => setTileMode("google-streets")}
+          className={`px-3 py-1 text-xs font-black uppercase transition-all ${
+            tileMode === "google-streets"
+              ? "bg-emerald-400 text-black border-2 border-black shadow-[2px_2px_0_0_#000]"
+              : "text-gray-700 hover:bg-gray-100 border-2 border-transparent"
+          }`}
+          title="Peta jalan Google Maps lengkap nama gang dan pemukiman Depok"
+        >
+          🗺️ Google Maps
+        </button>
+        <button
+          type="button"
+          onClick={() => setTileMode("google-hybrid")}
+          className={`px-3 py-1 text-xs font-black uppercase transition-all ${
+            tileMode === "google-hybrid"
+              ? "bg-emerald-400 text-black border-2 border-black shadow-[2px_2px_0_0_#000]"
+              : "text-gray-700 hover:bg-gray-100 border-2 border-transparent"
+          }`}
+          title="Foto udara satelit Google Maps berlabel jalan & gang"
+        >
+          🛰️ Satelit
+        </button>
+        <button
+          type="button"
+          onClick={() => setTileMode("dark")}
+          className={`px-3 py-1 text-xs font-black uppercase transition-all ${
+            tileMode === "dark"
+              ? "bg-emerald-400 text-black border-2 border-black shadow-[2px_2px_0_0_#000]"
+              : "text-gray-700 hover:bg-gray-100 border-2 border-transparent"
+          }`}
+          title="Peta mode gelap matte"
+        >
+          🌙 Gelap
+        </button>
+      </div>
+
+      <MapContainer
+        center={[-6.4005, 106.8242]}
+        zoom={13}
+        scrollWheelZoom
+        className="h-full w-full"
+        style={{ background: tileMode === "dark" ? "#0d0e10" : "#f4f4f0" }}
+      >
+        <MapReadyWrapper>
+          <TileLayer
+            key={tileMode}
+            attribution={tileConfig.attribution}
+            url={tileConfig.url}
+            subdomains={tileConfig.subdomains}
+            maxZoom={tileConfig.maxZoom}
+          />
         <ZoomTracker onZoom={setZoom} />
         <InvalidateSize invalidateKey={invalidateKey} />
 
@@ -764,5 +807,6 @@ export default function MapView({
       <FitBounds rutePoints={ruteUrut} points={titik} />
       </MapReadyWrapper>
     </MapContainer>
+    </div>
   );
 }
