@@ -292,7 +292,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
         lat != null && lng != null
           ? [lat, lng]
           : (() => {
-              const { rt } = cariRtTerdekat([-6.4005, 106.8242]);
+              const { rt } = cariRtTerdekat([-6.424838, 106.832667]);
               return [rt.lat, rt.lng];
             })();
       return { ...k, posisi };

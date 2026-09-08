@@ -13,7 +13,7 @@ import {
 import type { LeafletEvent, LeafletMouseEvent } from "leaflet";
 import { getMapTileConfig } from "@/lib/map-tile";
 
-const PUSAT_DEPOK: [number, number] = [-6.4005, 106.8242];
+const PUSAT_DEPOK: [number, number] = [-6.424838, 106.832667];
 
 type Props = {
   latitude: number | null;

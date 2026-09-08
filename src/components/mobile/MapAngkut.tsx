@@ -16,7 +16,7 @@ export type TugasMap = {
   status: string;
 };
 
-const PUSAT_DEPOK: [number, number] = [-6.4005, 106.8242];
+const PUSAT_DEPOK: [number, number] = [-6.424838, 106.832667];
 
 const WARNA_STATUS: Record<string, string> = {
   terjadwal: "#38bdf8",

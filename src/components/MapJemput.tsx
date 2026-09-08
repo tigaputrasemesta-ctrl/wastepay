@@ -14,7 +14,7 @@ type Props = {
   userPos: TitikMap | null;
 };
 
-const PUSAT_DEPOK: [number, number] = [-6.4005, 106.8242];
+const PUSAT_DEPOK: [number, number] = [-6.424838, 106.832667];
 
 function pinPickup() {
   return L.divIcon({

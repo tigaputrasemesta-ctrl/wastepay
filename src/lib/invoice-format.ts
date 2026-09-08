@@ -16,12 +16,16 @@ export const PPN_RATE = 11;
  */
 export function companyInfo() {
   return {
-    nama: process.env.COMPANY_NAME?.trim() || "TPS HERU - PENGELOLAAN SAMPAH",
+    nama: process.env.COMPANY_NAME?.trim() || "TPS HERU",
     unit: "Unit Pengelolaan & Retribusi Kebersihan (TPS 3R)",
-    alamat: process.env.COMPANY_ADDRESS?.trim() || "Jl. Raya Sawangan No. 45, Kota Depok, Jawa Barat 16436",
-    whatsapp: process.env.COMPANY_WHATSAPP?.trim() || "0814-0078-2617",
-    email: process.env.COMPANY_EMAIL?.trim() || "tpsheru@gmail.com",
-    kota: "Kota Depok, Jawa Barat",
+    alamat:
+      process.env.COMPANY_ADDRESS?.trim() ||
+      "Jl. Kandang Ayam, Kalibaru, Kec. Cilodong, Kota Depok, Jawa Barat 16414",
+    whatsapp: process.env.COMPANY_WHATSAPP?.trim() || "+62 814-0078-2617",
+    email: process.env.COMPANY_EMAIL?.trim() || "cv.herozerowaste@gmail.com",
+    kota: "Kota Depok, Jawa Barat 16414",
+    latitude: -6.424838,
+    longitude: 106.832667,
   };
 }
 

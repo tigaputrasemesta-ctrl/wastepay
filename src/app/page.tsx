@@ -360,6 +360,21 @@ export default async function LandingPage() {
                 <span className="text-lg font-black text-black">cv.herozerowaste@gmail.com</span>
               </a>
             </div>
+            {/* Alamat Kantor Operasional & TPS */}
+            <div className="bg-white border-2 border-black p-4 flex items-start gap-3 shadow-[4px_4px_0_0_rgba(0,0,0,1)] max-w-lg">
+              <span className="text-2xl mt-0.5">📍</span>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">
+                  KANTOR OPERASIONAL &amp; TPS
+                </span>
+                <p className="text-sm font-black text-black leading-snug">
+                  Jl. Kandang Ayam, Kalibaru, Kec. Cilodong, Kota Depok, Jawa Barat 16414
+                </p>
+                <span className="text-[10px] font-mono text-gray-500 font-bold mt-1">
+                  Koordinat: -6.424838, 106.832667
+                </span>
+              </div>
+            </div>
           </div>
 
           {/* Navigasi Footer & Copyright */}
