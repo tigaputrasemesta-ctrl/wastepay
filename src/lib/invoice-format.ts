@@ -17,9 +17,11 @@ export const PPN_RATE = 11;
 export function companyInfo() {
   return {
     nama: process.env.COMPANY_NAME?.trim() || "TPS HERU - PENGELOLAAN SAMPAH",
-    alamat: process.env.COMPANY_ADDRESS?.trim() || "Jl. Contoh No. 1, Kota Depok",
+    unit: "Unit Pengelolaan & Retribusi Kebersihan (TPS 3R)",
+    alamat: process.env.COMPANY_ADDRESS?.trim() || "Jl. Raya Sawangan No. 45, Kota Depok, Jawa Barat 16436",
     whatsapp: process.env.COMPANY_WHATSAPP?.trim() || "0814-0078-2617",
     email: process.env.COMPANY_EMAIL?.trim() || "tpsheru@gmail.com",
+    kota: "Kota Depok, Jawa Barat",
   };
 }
 
@@ -90,3 +92,34 @@ export function labelMetodePembayaran(metode?: string | null): string {
   };
   return map[base] || map[metode] || duitkuChannelLabel(base);
 }
+
+/**
+ * Konversi angka nominal rupiah ke ejaan terbilang bahasa Indonesia.
+ * Contoh: 22200 -> "Dua Puluh Dua Ribu Dua Ratus"
+ */
+export function terbilang(angka: number): string {
+  const nominal = Math.abs(Math.round(angka));
+  const huruf = [
+    "", "Satu", "Dua", "Tiga", "Empat", "Lima",
+    "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"
+  ];
+  if (nominal < 12) return huruf[nominal];
+  if (nominal < 20) return `${terbilang(nominal - 10)} Belas`;
+  if (nominal < 100) return `${terbilang(Math.floor(nominal / 10))} Puluh ${terbilang(nominal % 10)}`.trim();
+  if (nominal < 200) return `Seratus ${terbilang(nominal - 100)}`.trim();
+  if (nominal < 1000) return `${terbilang(Math.floor(nominal / 100))} Ratus ${terbilang(nominal % 100)}`.trim();
+  if (nominal < 2000) return `Seribu ${terbilang(nominal - 1000)}`.trim();
+  if (nominal < 1000000) return `${terbilang(Math.floor(nominal / 1000))} Ribu ${terbilang(nominal % 1000)}`.trim();
+  if (nominal < 1000000000) return `${terbilang(Math.floor(nominal / 1000000))} Juta ${terbilang(nominal % 1000000)}`.trim();
+  if (nominal < 1000000000000) return `${terbilang(Math.floor(nominal / 1000000000))} Milyar ${terbilang(nominal % 1000000000)}`.trim();
+  return String(nominal);
+}
+
+/**
+ * Ejaan nominal rupiah lengkap: e.g. "Dua Puluh Dua Ribu Dua Ratus Rupiah"
+ */
+export function terbilangRupiah(amount: number): string {
+  if (amount === 0) return "Nol Rupiah";
+  return `${terbilang(amount)} Rupiah`;
+}
+

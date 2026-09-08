@@ -12,24 +12,37 @@ import {
   PPN_RATE,
   labelMetodePembayaran,
   companyInfo,
+  terbilangRupiah,
 } from "@/lib/invoice";
 import "./invoice.css";
 
 /**
- * Masking nomor telepon untuk halaman publik (invoice bisa di-enumerate):
- * 081234567890 → 0812••••7890. Konsisten dengan /api/publik/tagihan-detail
- * yang juga tidak mengekspos noTelepon lengkap.
+ * Masking nomor telepon untuk halaman publik (anti-enumerasi nomor lengkap):
+ * 081234567890 → 0812••••7890.
  */
 function maskNoTelepon(no: string | null | undefined): string {
-  if (!no) return "";
+  if (!no) return "-";
   const s = no.trim();
   if (s.length <= 4) return "••••";
   return `${s.slice(0, 4)}••••${s.slice(-4)}`;
 }
 
+const LABEL_KATEGORI: Record<string, string> = {
+  level_1: "Rumah Tangga — Volume Sangat Kecil",
+  level_2: "Rumah Tangga — Volume Kecil–Sedang",
+  level_3: "Rumah Tangga — Volume Sedang",
+  level_4: "Rumah Tangga — Volume Sedang–Besar",
+  level_5: "Rumah Tangga / Usaha Kecil — Volume Besar",
+  level_6: "Komersial / Ruko / Niaga — Volume Sangat Besar",
+  level_7: "Komersial / Restoran / Sentra Bisnis",
+  level_8: "Komersial Skala Besar / Pasar",
+  level_9: "Volume Maksimal / Pusat Industri",
+  level_10: "Korporasi & Kawasan Khusus",
+};
+
 /**
- * /invoice-tagihan?invoice=INV/XXX/202606
- * Invoice printable (PDF via window.print) — pola skylite.id.
+ * /invoice-tagihan?invoice=INV/XXX/YYYYMM
+ * Lembar Faktur Retribusi Sampah Resmi — Desain Modern TPS HERU
  */
 export default async function InvoiceTagihanPage({
   searchParams,
@@ -52,164 +65,365 @@ export default async function InvoiceTagihanPage({
   const proto = h.get("x-forwarded-proto") || "http";
   const baseUrl = `${proto}://${host}`;
   const qrData = `${baseUrl}/invoice-tagihan?invoice=${encodeURIComponent(tagihan.noInvoice || "")}`;
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrData)}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(qrData)}`;
 
-  const pembayaran = tagihan.pembayaran[0];
+  const pembayaran = tagihan.pembayaran?.[0];
   const pembayaranMetode = pembayaran?.metode || "tunai";
+
+  const alamatLengkap = [
+    tagihan.pelanggan.alamat,
+    tagihan.pelanggan.rtRw ? `RT/RW ${tagihan.pelanggan.rtRw}` : null,
+    tagihan.pelanggan.kelurahan?.nama ? `Kel. ${tagihan.pelanggan.kelurahan.nama}` : null,
+    tagihan.pelanggan.patokanLokasi ? `Patokan: ${tagihan.pelanggan.patokanLokasi}` : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <div className="invoice-page-bg">
       <div id="TopLevelWrapper" className="invoice-wrapper">
+        {/* Toolbar Aksi (Hanya Tampil di Layar / Non-Print) */}
         <div className="invoice-toolbar">
-          <div className="left-section">
-            <strong>
-              Invoice Periode {namaPeriode} - {tagihan.pelanggan.nama}
-            </strong>
-          </div>
-          <div className="right-section">
-            <TombolPrintInvoice />
-            <Link href={`/bayar-tagihan?invoice=${encodeURIComponent(tagihan.noInvoice || "")}`}>
-              ← Kembali ke status tagihan
+          <div className="invoice-toolbar-left">
+            <Link
+              href={`/bayar-tagihan?invoice=${encodeURIComponent(tagihan.noInvoice || "")}`}
+              className="invoice-back-link"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              <span>Kembali ke Status Pembayaran</span>
             </Link>
+          </div>
+
+          <div className="invoice-toolbar-right">
+            {!lunas && (
+              <Link
+                href={`/bayar-tagihan?invoice=${encodeURIComponent(tagihan.noInvoice || "")}`}
+                className="invoice-pay-btn"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+                <span>Bayar Sekarang</span>
+              </Link>
+            )}
+            <TombolPrintInvoice label="Cetak / Unduh PDF" />
           </div>
         </div>
 
+        {/* Lembar Faktur Fisik / Printable Sheet */}
         <div className="invoice-sheet">
-          {/* Header: logo + nomor invoice */}
-          <div className="invoice-head">
-            <div className="logo">
-              <div className="logo-box">TPS</div>
-              <span className="logo-text">TPS HERU DEPOK</span>
-            </div>
-            <div className="invoice-number">
-              <h4>Nomor Invoice</h4>
-              <span>{tagihan.noInvoice}</span>
-            </div>
-          </div>
+          {/* Bar Hazard / Aksen Identitas Atas */}
+          <div className="invoice-brand-stripe" />
 
-          {/* Penerbit & penerima */}
-          <div className="invoice-parties">
-            <div>
-              <div className="party-label">Diterbitkan Oleh:</div>
-              <strong>{perusahaan.nama}</strong>
-              <p className="party-address">
-                {perusahaan.alamat} <br />
-                WhatsApp: {perusahaan.whatsapp}<br />
-                Email: {perusahaan.email}
-              </p>
-            </div>
-            <div>
-              <div className="party-label">Ditujukan Kepada:</div>
-              <div className="party-row">
-                <span>Yth. Bapak/Ibu&nbsp;</span>
-                <p>
-                  {tagihan.pelanggan.nama}{" "}
-                  {tagihan.pelanggan.noTelepon ? `(${maskNoTelepon(tagihan.pelanggan.noTelepon)})` : ""}
-                </p>
+          <div className="invoice-sheet-inner">
+            {/* Header Dokumen Resmi */}
+            <div className="invoice-header">
+              <div className="invoice-header-brand">
+                <div className="invoice-logo-mark">
+                  <span className="logo-tps">TPS</span>
+                  <div className="logo-info">
+                    <div className="logo-name">
+                      HERU<span className="logo-dot">.</span>
+                    </div>
+                    <span className="logo-sub">UNIT PENGELOLAAN SAMPAH</span>
+                  </div>
+                </div>
+                <div className="invoice-org-details">
+                  <p className="org-title">{perusahaan.unit || "Unit Pengelolaan & Retribusi Kebersihan Lingkungan"}</p>
+                  <p className="org-address">{perusahaan.alamat}</p>
+                  <p className="org-contact">
+                    WhatsApp: <strong>{perusahaan.whatsapp}</strong> · Email: {perusahaan.email}
+                  </p>
+                </div>
               </div>
-              <div className="party-row">
-                <span>ID Pelanggan&nbsp;</span>
-                <p>{tagihan.pelanggan.kodePelanggan}</p>
-              </div>
-              <div className="party-row">
-                <span>Jatuh Tempo&nbsp;</span>
-                <p>{formatTanggalIndo(tagihan.jatuhTempo)}</p>
-              </div>
-            </div>
-          </div>
 
-          {/* Tabel layanan */}
-          <div className="invoice-items">
-            <div className="items-header">
-              <div className="col-name">Informasi Layanan</div>
-              <div className="col-price">Subtotal</div>
+              <div className="invoice-header-title">
+                <div className="doc-badge">SURAT TAGIHAN RESMI</div>
+                <h1 className="doc-title">FAKTUR RETRIBUSI</h1>
+                <p className="doc-sub">OFFICIAL WASTE RETRIBUTION INVOICE</p>
+                <div className="doc-invoice-no">
+                  <span>No. Faktur:</span>
+                  <strong>{tagihan.noInvoice}</strong>
+                </div>
+              </div>
             </div>
-            <div className="item-row">
-              <div className="col-name">
-                <span className="item-title">
-                  {tagihan.keterangan || `Iuran sampah ${namaPeriode}`}
+
+            {/* Status Stamp & Metadata Bar */}
+            <div className="invoice-meta-bar">
+              <div className="meta-card">
+                <span className="meta-label">Nomor Faktur</span>
+                <span className="meta-value font-mono">{tagihan.noInvoice}</span>
+              </div>
+              <div className="meta-card">
+                <span className="meta-label">Periode Retribusi</span>
+                <span className="meta-value uppercase">{namaPeriode}</span>
+              </div>
+              <div className="meta-card">
+                <span className="meta-label">Tanggal Jatuh Tempo</span>
+                <span className="meta-value font-semibold text-rose-700">
+                  {formatTanggalIndo(tagihan.jatuhTempo)}
                 </span>
               </div>
-              <div className="col-price">
-                <p>{formatRupiahSkylite(rincian.base)}</p>
+              <div className="meta-card status-card">
+                <span className="meta-label">Status Pembayaran</span>
+                <span className={`status-pill ${lunas ? "status-lunas" : "status-unpaid"}`}>
+                  {lunas ? "✓ LUNAS / TERVERIFIKASI" : "MENUNGGU PEMBAYARAN"}
+                </span>
               </div>
             </div>
-            {tagihan.denda ? (
-              <div className="item-row">
-                <div className="col-name">
-                  <span className="item-title">Denda keterlambatan</span>
-                </div>
-                <div className="col-price">
-                  <p>{formatRupiahSkylite(tagihan.denda)}</p>
-                </div>
-              </div>
-            ) : null}
-          </div>
 
-          {/* Ringkasan PPN + total */}
-          <div className="invoice-summary">
-            <div className="summary-row">
-              <p>Biaya PPN ({PPN_RATE}%)</p>
-              <p>+ {formatRupiahSkylite(rincian.ppn)}</p>
-            </div>
-            {tagihan.denda ? (
-              <div className="summary-row">
-                <p>Denda</p>
-                <p>+ {formatRupiahSkylite(tagihan.denda)}</p>
+            {/* Pihak Terkait: Penerbit & Wajib Retribusi */}
+            <div className="invoice-parties-section">
+              <div className="party-box party-issuer">
+                <div className="party-heading">DITERBITKAN OLEH:</div>
+                <div className="party-main-name">{perusahaan.nama}</div>
+                <div className="party-desc">
+                  <p>Penyelenggara Layanan Pengangkutan Sampah Terpadu & TPS 3R</p>
+                  <p>{perusahaan.alamat}</p>
+                  <p>Kota Depok, Jawa Barat</p>
+                  <div className="party-chip">LAYANAN RESMI KOTA DEPOK</div>
+                </div>
               </div>
-            ) : null}
-            <div className="summary-total">
-              <h5>TOTAL</h5>
-              <h4>{formatRupiahSkylite(rincian.total)}</h4>
-            </div>
-          </div>
 
-          {/* Status pembayaran + QR */}
-          <div className="invoice-footer">
-            <div>
-              {lunas ? (
-                <>
-                  <p className="footer-text">Invoice ini sudah dilunaskan dengan metode:</p>
-                  <h6>{labelMetodePembayaran(pembayaranMetode)}</h6>
-                  {tagihan.tanggalLunas && (
-                    <p className="footer-text">
-                      Dibayar pada {formatTanggalWaktuIndo(tagihan.tanggalLunas)}
-                    </p>
-                  )}
-                  <p className="footer-text">Pembayaran diproses oleh petugas:</p>
-                  <h6>Payment Gateway</h6>
-                </>
-              ) : (
-                <>
-                  <p className="footer-text">Status: <strong>Belum Dibayar</strong></p>
-                  <p className="footer-text">
-                    Selesaikan pembayaran sebelum {formatTanggalIndo(tagihan.jatuhTempo)}
+              <div className="party-box party-customer">
+                <div className="party-heading">WAJIB RETRIBUSI / DITUJUKAN KEPADA:</div>
+                <div className="party-main-name">{tagihan.pelanggan.nama}</div>
+                <div className="party-meta-grid">
+                  <div className="party-meta-row">
+                    <span className="meta-k">ID Pelanggan</span>
+                    <span className="meta-v font-mono font-bold">{tagihan.pelanggan.kodePelanggan}</span>
+                  </div>
+                  <div className="meta-k-row">
+                    <span className="meta-k">Kategori</span>
+                    <span className="meta-v">
+                      {LABEL_KATEGORI[tagihan.pelanggan.kategori] || tagihan.pelanggan.kategori}
+                    </span>
+                  </div>
+                  <div className="meta-k-row">
+                    <span className="meta-k">Alamat Lengkap</span>
+                    <span className="meta-v">{alamatLengkap || "-"}</span>
+                  </div>
+                  <div className="meta-k-row">
+                    <span className="meta-k">No. WhatsApp</span>
+                    <span className="meta-v font-mono">{maskNoTelepon(tagihan.pelanggan.noTelepon)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Tabel Rincian Retribusi */}
+            <div className="invoice-table-wrapper">
+              <table className="invoice-items-table">
+                <thead>
+                  <tr>
+                    <th className="th-no">No</th>
+                    <th className="th-desc">Uraian Komponen Retribusi</th>
+                    <th className="th-period">Periode</th>
+                    <th className="th-base text-right">Tarif Dasar</th>
+                    <th className="th-ppn text-right">PPN (11%)</th>
+                    <th className="th-total text-right">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="td-no font-mono">01</td>
+                    <td className="td-desc">
+                      <strong>
+                        {tagihan.keterangan || "Jasa Pengangkutan & Pengolahan Sampah Lingkungan"}
+                      </strong>
+                      <p className="item-subtext">
+                        Pelayanan angkut sampah terpadu, pemilahan organik/anorganik, dan operasional TPS 3R
+                      </p>
+                    </td>
+                    <td className="td-period font-mono">{namaPeriode}</td>
+                    <td className="td-base text-right font-mono">{formatRupiahSkylite(rincian.base)}</td>
+                    <td className="td-ppn text-right font-mono">{formatRupiahSkylite(rincian.ppn)}</td>
+                    <td className="td-total text-right font-mono font-bold">
+                      {formatRupiahSkylite(rincian.subTotalPpn)}
+                    </td>
+                  </tr>
+
+                  {tagihan.denda ? (
+                    <tr className="row-denda">
+                      <td className="td-no font-mono">02</td>
+                      <td className="td-desc">
+                        <strong className="text-rose-700">Denda / Sanksi Keterlambatan Pembayaran</strong>
+                        <p className="item-subtext">
+                          Biaya kompensasi administrasi keterlambatan pembayaran tagihan
+                        </p>
+                      </td>
+                      <td className="td-period font-mono">{namaPeriode}</td>
+                      <td className="td-base text-right font-mono">{formatRupiahSkylite(tagihan.denda)}</td>
+                      <td className="td-ppn text-right font-mono">Rp0,-</td>
+                      <td className="td-total text-right font-mono font-bold text-rose-700">
+                        {formatRupiahSkylite(tagihan.denda)}
+                      </td>
+                    </tr>
+                  ) : null}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Terbilang & Perhitungan Total */}
+            <div className="invoice-summary-container">
+              {/* Kolom Terbilang & Catatan Legal */}
+              <div className="summary-left">
+                <div className="terbilang-card">
+                  <span className="terbilang-title">TERBILANG (IN WORDS):</span>
+                  <p className="terbilang-words">
+                    &ldquo;{terbilangRupiah(rincian.total)}&rdquo;
                   </p>
-                </>
-              )}
-              <div className="footer-note">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style={{ display: "inline-block", verticalAlign: "middle" }}>
-                  <path fillRule="evenodd" clipRule="evenodd" d="M17.641 5.18a3.46 3.46 0 0 0 1.439.37 1.68 1.68 0 0 1 1.61 1.84v3.5c0 5.42-3.37 8.21-6.69 10.21a3 3 0 0 1-2.01.64 3.7 3.7 0 0 1-2-.6c-4.05-2.33-6.76-4.97-6.76-10.25v-3.5a1.75 1.75 0 0 1 1.65-1.84 3.57 3.57 0 0 0 2.41-1.26 6.46 6.46 0 0 1 4.69-2.05 5.9 5.9 0 0 1 4.51 2 3.46 3.46 0 0 0 1.151.94ZM13.23 19.89c4.25-2.61 6-5.21 6-9l.02-3.5c0-.08-.01-.34-.15-.34a4.89 4.89 0 0 1-3.62-1.72A4.42 4.42 0 0 0 12 3.74a5 5 0 0 0-3.71 1.67 4.92 4.92 0 0 1-3.35 1.64c-.07 0-.15.18-.15.34v3.54c0 4.57 2.28 6.82 6 8.95.362.25.79.39 1.23.4a1.51 1.51 0 0 0 1.07-.28l.14-.11ZM11 13l3-3a.75.75 0 0 1 1 1l-3.46 3.53a.74.74 0 0 1-.53.22.78.78 0 0 1-.51-.2l-2.08-1.91a.75.75 0 0 1 1-1.11L11 13Z" />
-                </svg>
-                <p>
-                  Invoice ini resmi dan diproses secara otomatis oleh sistem.
-                  <br />
-                  Hubungi Customer Service kami untuk informasi lebih lanjut.
-                </p>
+                </div>
+
+                <div className="invoice-legal-note">
+                  <div className="legal-icon">ℹ️</div>
+                  <p className="legal-text">
+                    Faktur retribusi ini adalah dokumen resmi yang sah diterbitkan oleh sistem penagihan terpadu TPS HERU. Retribusi digunakan untuk operasional kebersihan dan kelestarian lingkungan Kota Depok.
+                  </p>
+                </div>
+              </div>
+
+              {/* Kolom Kalkulasi Angka */}
+              <div className="summary-right">
+                <div className="calc-row">
+                  <span className="calc-label">Subtotal Tarif Pokok</span>
+                  <span className="calc-val font-mono">{formatRupiahSkylite(rincian.base)}</span>
+                </div>
+                <div className="calc-row">
+                  <span className="calc-label">PPN {PPN_RATE}% (UU RI No. 7/2021)</span>
+                  <span className="calc-val font-mono">+ {formatRupiahSkylite(rincian.ppn)}</span>
+                </div>
+                {tagihan.denda ? (
+                  <div className="calc-row text-rose-700">
+                    <span className="calc-label">Denda Keterlambatan</span>
+                    <span className="calc-val font-mono">+ {formatRupiahSkylite(tagihan.denda)}</span>
+                  </div>
+                ) : null}
+
+                <div className="grand-total-box">
+                  <div className="grand-total-label">TOTAL TAGIHAN</div>
+                  <div className="grand-total-amount font-mono">
+                    {formatRupiahSkylite(rincian.total)}
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="qr-box">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={qrUrl} width={110} alt="QR-Code Invoice" />
-              <span className="qr-caption">Scan untuk verifikasi</span>
+
+            {/* Verifikasi Pembayaran & Tanda Tangan Digital */}
+            <div className="invoice-settlement-row">
+              {/* Box Status / Panduan Pembayaran */}
+              <div className="settlement-info-box">
+                {lunas ? (
+                  <div className="paid-settlement-content">
+                    <div className="paid-stamp-wrapper">
+                      <div className="paid-official-stamp">
+                        <span>LUNAS</span>
+                        <small>TPS HERU DEPOK</small>
+                      </div>
+                    </div>
+                    <div className="paid-meta-list">
+                      <div className="paid-meta-item">
+                        <span className="pm-label">Metode Pembayaran:</span>
+                        <span className="pm-value font-bold">{labelMetodePembayaran(pembayaranMetode)}</span>
+                      </div>
+                      {tagihan.tanggalLunas && (
+                        <div className="paid-meta-item">
+                          <span className="pm-label">Tanggal Lunas:</span>
+                          <span className="pm-value font-mono font-semibold">
+                            {formatTanggalWaktuIndo(tagihan.tanggalLunas)}
+                          </span>
+                        </div>
+                      )}
+                      <div className="paid-meta-item">
+                        <span className="pm-label">ID Transaksi / Ref:</span>
+                        <span className="pm-value font-mono">
+                          {pembayaran?.duitkuTransaction?.orderId || (pembayaran?.id ? `PAY-${pembayaran.id}` : "PG-AUTO-VERIFIED")}
+                        </span>
+                      </div>
+                      <div className="paid-meta-item">
+                        <span className="pm-label">Verifikator:</span>
+                        <span className="pm-value">
+                          {pembayaran?.verifiedBy?.nama || "Payment Gateway Otomatis TPS HERU"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="unpaid-instruction-content">
+                    <div className="unpaid-badge-box">
+                      <span className="unpaid-dot" />
+                      <strong>MENUNGGU PEMBAYARAN</strong>
+                    </div>
+                    <p className="unpaid-guide-text">
+                      Silakan selesaikan pembayaran sebelum tanggal <strong>{formatTanggalIndo(tagihan.jatuhTempo)}</strong> melalui portal online atau transfer perbankan:
+                    </p>
+                    <ul className="unpaid-channels-list">
+                      <li>• <strong>QRIS</strong> (BCA, Mandiri, BRI, GoPay, OVO, Dana, ShopeePay)</li>
+                      <li>• <strong>Virtual Account</strong> Bank Resmi & Transfer Otomatis</li>
+                      <li>• <strong>Petugas Lapangan</strong> TPS HERU saat penjemputan sampah</li>
+                    </ul>
+                    <div className="portal-direct-hint">
+                      Portal Pembayaran: <code>{baseUrl}/bayar-tagihan?invoice={encodeURIComponent(tagihan.noInvoice || "")}</code>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Box QR Code Verifikasi */}
+              <div className="invoice-qr-box">
+                <div className="qr-frame">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={qrUrl} width={110} height={110} alt="QR-Code Verifikasi Faktur" />
+                </div>
+                <div className="qr-text">
+                  <span className="qr-headline">VALIDASI KEASLIAN</span>
+                  <span className="qr-sub">Scan QR Code untuk memverifikasi dokumen di portal resmi</span>
+                </div>
+              </div>
+
+              {/* Box Pengesahan Resmi */}
+              <div className="invoice-sign-box">
+                <span className="sign-city">Kota Depok, {formatTanggalIndo(tagihan.createdAt || tagihan.jatuhTempo)}</span>
+                <span className="sign-org">Unit Pengelolaan Retribusi TPS HERU</span>
+                
+                <div className="sign-seal-area">
+                  <div className="digital-seal">
+                    <svg className="w-5 h-5 text-emerald-600 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    <span>TERVALIDASI SECARA ELEKTRONIK</span>
+                  </div>
+                </div>
+
+                <div className="sign-signer">
+                  <strong>Bendahara Retribusi TPS HERU</strong>
+                  <span className="font-mono text-[9px] text-gray-500">ID SISTEM: TPS-FIN-DPK</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Bawah Lembar Faktur */}
+            <div className="invoice-bottom-bar">
+              <div className="bottom-left">
+                <span>TPS HERU DEPOK — PENGELOLAAN SAMPAH RAMAH LINGKUNGAN</span>
+              </div>
+              <div className="bottom-right font-mono">
+                <span>Dokumen di-generate: {formatTanggalWaktuIndo(new Date())}</span>
+              </div>
             </div>
           </div>
+        </div>
 
-          {/* Footer bawah */}
-          <div className="invoice-bottom">
-            <p>~ Supported By TPS HERU DEPOK</p>
-            <span>Invoice ini di-generate pada: {formatTanggalWaktuIndo(new Date())}</span>
-          </div>
+        {/* Bawah Halaman (Layar saja) */}
+        <div className="invoice-page-foot-screen">
+          <p>
+            Memerlukan bantuan terkait faktur ini? Hubungi Customer Care TPS HERU di WhatsApp{" "}
+            <a href={`https://wa.me/${perusahaan.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer">
+              {perusahaan.whatsapp}
+            </a>
+          </p>
         </div>
       </div>
     </div>

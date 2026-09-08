@@ -31,6 +31,9 @@ export async function getTagihanByNoInvoice(noInvoice: string) {
           kodePelanggan: true,
           alamat: true,
           kategori: true,
+          rtRw: true,
+          patokanLokasi: true,
+          kelurahan: { select: { nama: true } },
         },
       },
       pembayaran: {
@@ -42,6 +45,8 @@ export async function getTagihanByNoInvoice(noInvoice: string) {
           jumlah: true,
           tanggal: true,
           createdAt: true,
+          verifiedBy: { select: { nama: true } },
+          duitkuTransaction: { select: { orderId: true, reference: true } },
         },
       },
     },
