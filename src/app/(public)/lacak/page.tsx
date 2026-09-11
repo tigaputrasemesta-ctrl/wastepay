@@ -3,8 +3,8 @@ import Link from "next/link";
 import LacakJemputan from "@/components/LacakJemputan";
 
 export const metadata: Metadata = {
-  title: "Lacak Jemputan | TPS HERU Depok",
-  description: "Pantau posisi armada angkut sampah TPS HERU secara real-time seperti ojek online",
+  title: "Lacak Jemputan | UPS HERU Depok",
+  description: "Pantau posisi armada angkut sampah UPS HERU secara real-time seperti ojek online",
 };
 
 const PANDUAN = [
@@ -30,7 +30,7 @@ export default function LacakPage() {
     <div className="py-12 space-y-12">
       <div className="text-center md:text-left">
         <div className="inline-block px-4 py-1 hm-border font-bold uppercase text-xs mb-2 bg-[#f4f4f0] shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
-          TPS HERU / LACAK JEMPUTAN
+          UPS HERU / LACAK JEMPUTAN
         </div>
         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">
           ARMADA DI <span className="text-green-600">PETA.</span>

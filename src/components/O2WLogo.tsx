@@ -26,7 +26,7 @@ export default function O2WLogo({
   const logoContent = (
     <div className={`inline-flex items-center gap-2 select-none ${className}`}>
       <span className={`bg-black text-white font-black tracking-widest border-2 border-black ${badgeSize} shadow-[2px_2px_0_0_rgba(0,0,0,1)]`}>
-        TPS
+        UPS
       </span>
       <span className={`font-black font-display tracking-tight text-black ${textSize}`}>
         HERU<span className="text-emerald-600">.</span>

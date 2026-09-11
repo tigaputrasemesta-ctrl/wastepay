@@ -26,6 +26,6 @@ export function getApkUrl(): string {
   // Bisa di-override lewat env MOBILE_APK_URL bila APK di-hosting di tempat lain.
   return (
     process.env.MOBILE_APK_URL ||
-    "https://tpsheru.vercel.app/apk/TPS-HERU-Lapangan.apk"
+    "https://upsheru.vercel.app/apk/UPS-HERU-Lapangan.apk"
   );
 }

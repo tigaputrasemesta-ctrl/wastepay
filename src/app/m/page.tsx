@@ -125,7 +125,7 @@ export default function MobileHome() {
       </div>
 
       <p className="text-center text-[10px] font-mono font-bold text-gray-400">
-        TPS HERU · APK INTERNAL PETUGAS
+        UPS HERU · APK INTERNAL PETUGAS
       </p>
     </div>
   );

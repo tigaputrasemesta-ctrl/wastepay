@@ -16,7 +16,7 @@ export const PPN_RATE = 11;
  */
 export function companyInfo() {
   return {
-    nama: process.env.COMPANY_NAME?.trim() || "TPS HERU",
+    nama: process.env.COMPANY_NAME?.trim() || "UPS HERU",
     unit: "Unit Pengelolaan & Retribusi Kebersihan (TPS 3R)",
     alamat:
       process.env.COMPANY_ADDRESS?.trim() ||

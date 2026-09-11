@@ -32,13 +32,13 @@ export default async function LandingPage() {
       {/* ── A. Top Marquee Bar (Existing — Pertahankan) ── */}
       <div className="hm-marquee text-lg font-bold uppercase tracking-[0.2em] sticky top-0 z-50">
         <div className="hm-marquee-content">
-          <span>TPS HERU ZERO WASTE</span>
+          <span>UPS HERU ZERO WASTE</span>
           <AnimatedDumpTruck size="xs" theme="green" />
           <span>DEPOK BERSIH 2026</span>
           <AnimatedDumpTruck size="xs" theme="yellow" />
           <span>SISTEM PENGELOLAAN SAMPAH</span>
           <AnimatedDumpTruck size="xs" theme="red" />
-          <span>TPS HERU ZERO WASTE</span>
+          <span>UPS HERU ZERO WASTE</span>
           <AnimatedDumpTruck size="xs" theme="green" />
           <span>DEPOK BERSIH 2026</span>
           <AnimatedDumpTruck size="xs" theme="yellow" />
@@ -53,7 +53,7 @@ export default async function LandingPage() {
           <AnimatedDumpTruck size="md" theme="green" />
           <div className="flex items-center gap-2">
             <span className="bg-black text-white font-black px-2 py-0.5 text-xs tracking-widest border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
-              TPS
+              UPS
             </span>
             <span className="text-3xl font-black tracking-tighter">
               HERU<span className="text-emerald-600">.</span>
@@ -74,7 +74,7 @@ export default async function LandingPage() {
             href="/daftar"
             className="bg-emerald-500 text-black border-2 border-black px-4 py-1.5 font-black hover:bg-black hover:text-white transition-colors shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
           >
-            Daftar TPS HERU
+            Daftar UPS HERU
           </Link>
         </div>
       </nav>
@@ -84,7 +84,7 @@ export default async function LandingPage() {
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div className="order-2 md:order-1">
             <div className="inline-block px-4 py-1 border-2 border-black font-bold uppercase text-xs mb-6 bg-[#f4f4f0] shadow-[2px_2px_0_0_#000]">
-              Edisi 2026 / Kota Depok · TPS HERU
+              Edisi 2026 / Kota Depok · UPS HERU
             </div>
 
             <h1 className="text-6xl md:text-8xl font-black uppercase leading-[0.85] tracking-tighter mb-6">
@@ -95,7 +95,7 @@ export default async function LandingPage() {
             </h1>
 
             <p className="text-xl md:text-2xl font-medium mb-6 max-w-lg leading-snug text-gray-800">
-              Buang cara lama. Bergabunglah dengan sistem retribusi & angkut sampah modern TPS HERU. Jadwal pasti, bayar gampang.
+              Buang cara lama. Bergabunglah dengan sistem retribusi & angkut sampah modern UPS HERU. Jadwal pasti, bayar gampang.
             </p>
 
             {/* Badge Rekam Jejak (Baru Sesuai Prompt) */}
@@ -106,7 +106,7 @@ export default async function LandingPage() {
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Link href="/daftar" className="hm-btn-red text-lg flex items-center justify-center gap-2 shadow-[4px_4px_0_0_#000]">
-                GABUNG TPS HERU 🚛
+                GABUNG UPS HERU 🚛
               </Link>
               <Link href="/lacak" className="hm-btn flex items-center justify-center gap-2 shadow-[4px_4px_0_0_#000]">
                 LACAK TRUK 📍
@@ -321,7 +321,7 @@ export default async function LandingPage() {
       <footer className="max-w-6xl mx-auto px-6 py-20 text-center">
         <h2 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase mb-4 tracking-tighter leading-tight">
           Sudah Siap <br />
-          <span className="text-emerald-600">Bebas Sampah Bersama TPS HERU?</span>
+          <span className="text-emerald-600">Bebas Sampah Bersama UPS HERU?</span>
         </h2>
         <p className="text-lg md:text-xl font-medium text-gray-700 max-w-2xl mx-auto mb-8">
           Gabung dengan 2.000+ keluarga & pelaku usaha yang sudah lebih dulu bebas drama sampah di Kota Depok.
@@ -331,13 +331,13 @@ export default async function LandingPage() {
           href="/daftar"
           className="hm-btn-green text-xl py-4 px-12 inline-block shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
         >
-          GABUNG TPS HERU SEKARANG 🚛
+          GABUNG UPS HERU SEKARANG 🚛
         </Link>
 
         <div className="mt-20 pt-12 border-t-2 border-black flex flex-col md:flex-row justify-between gap-12 text-left">
           {/* Kontak Support */}
           <div className="flex flex-col gap-5">
-            <p className="font-black text-lg uppercase tracking-tight">BUTUH BANTUAN? HUBUNGI TPS HERU:</p>
+            <p className="font-black text-lg uppercase tracking-tight">BUTUH BANTUAN? HUBUNGI UPS HERU:</p>
             <div className="flex flex-col sm:flex-row gap-4">
               <a
                 href="https://wa.me/6281400782617"
@@ -360,12 +360,12 @@ export default async function LandingPage() {
                 <span className="text-lg font-black text-black">cv.herozerowaste@gmail.com</span>
               </a>
             </div>
-            {/* Alamat Kantor Operasional & TPS */}
+            {/* Alamat Kantor Operasional & UPS */}
             <div className="bg-white border-2 border-black p-4 flex items-start gap-3 shadow-[4px_4px_0_0_rgba(0,0,0,1)] max-w-lg">
               <span className="text-2xl mt-0.5">📍</span>
               <div className="flex flex-col gap-0.5">
                 <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">
-                  KANTOR OPERASIONAL &amp; TPS
+                  KANTOR OPERASIONAL &amp; UPS
                 </span>
                 <p className="text-sm font-black text-black leading-snug">
                   Jl. Kandang Ayam, Kalibaru, Kec. Cilodong, Kota Depok, Jawa Barat 16414
@@ -400,7 +400,7 @@ export default async function LandingPage() {
               </Link>
             </div>
             <div className="bg-black text-white px-5 py-3 mt-auto w-fit border-2 border-black shadow-[4px_4px_0_0_#10b981]">
-              <span className="text-[11px] font-black uppercase tracking-widest">© 2026 TPS HERU DEPOK</span>
+              <span className="text-[11px] font-black uppercase tracking-widest">© 2026 UPS HERU DEPOK</span>
             </div>
           </div>
         </div>

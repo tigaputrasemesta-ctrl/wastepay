@@ -36,7 +36,7 @@ export default function NotFound() {
       </div>
 
       <div className="mt-8 text-center text-xs font-bold uppercase tracking-widest text-neutral-500">
-        TPS HERU · Depok 2026
+        UPS HERU · Depok 2026
       </div>
     </div>
   );

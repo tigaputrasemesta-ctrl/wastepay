@@ -3,7 +3,7 @@ import Link from "next/link";
 import AnimatedDumpTruck from "@/components/AnimatedDumpTruck";
 
 export const metadata: Metadata = {
-  title: "TPS HERU - Portal Warga Depok",
+  title: "UPS HERU - Portal Warga Depok",
   description: "Sistem Pengelolaan Sampah Modern Kota Depok",
 };
 
@@ -17,13 +17,13 @@ export default function PublicLayout({
       {/* Marquee Banner */}
       <div className="hm-marquee text-lg font-bold uppercase tracking-[0.2em] sticky top-0 z-50">
         <div className="hm-marquee-content">
-          <span>TPS HERU ZERO WASTE</span>
+          <span>UPS HERU ZERO WASTE</span>
           <AnimatedDumpTruck size="xs" theme="green" />
           <span>DEPOK BERSIH 2026</span>
           <AnimatedDumpTruck size="xs" theme="yellow" />
           <span>SISTEM PENGELOLAAN SAMPAH</span>
           <AnimatedDumpTruck size="xs" theme="red" />
-          <span>TPS HERU ZERO WASTE</span>
+          <span>UPS HERU ZERO WASTE</span>
           <AnimatedDumpTruck size="xs" theme="green" />
           <span>DEPOK BERSIH 2026</span>
           <AnimatedDumpTruck size="xs" theme="yellow" />
@@ -38,7 +38,7 @@ export default function PublicLayout({
           <AnimatedDumpTruck size="md" theme="green" />
           <div className="flex items-center gap-2">
             <span className="bg-black text-white font-black px-2 py-0.5 text-xs tracking-widest border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
-              TPS
+              UPS
             </span>
             <span className="text-3xl font-black tracking-tighter">
               HERU<span className="text-emerald-600">.</span>
@@ -51,7 +51,7 @@ export default function PublicLayout({
           <Link href="/tarif" className="hover:text-green-600 transition-colors">Tarif</Link>
           <Link href="/pengaduan" className="hover:text-red-600 transition-colors">Komplain</Link>
           <Link href="/daftar" className="bg-emerald-500 text-black border-2 border-black px-3 py-1.5 font-black hover:bg-black hover:text-white transition-colors shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
-            Daftar TPS HERU
+            Daftar UPS HERU
           </Link>
           <Link href="/login" className="border-l-2 border-black pl-6 hover:text-blue-600 transition-colors">Admin</Link>
         </div>
@@ -72,7 +72,7 @@ export default function PublicLayout({
               </div>
               <div className="flex items-center gap-2">
                 <span className="bg-black text-white font-black px-2 py-0.5 text-xs tracking-widest border-2 border-black">
-                  TPS
+                  UPS
                 </span>
                 <span className="text-3xl font-black tracking-tighter uppercase">
                   HERU<span className="text-emerald-600">.</span>
@@ -92,7 +92,7 @@ export default function PublicLayout({
               <Link href="/tarif" className="bg-white border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-widest hover:bg-black hover:text-white transition-colors shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]">Daftar Tarif</Link>
             </div>
             <div className="flex flex-col gap-3">
-              <Link href="/daftar" className="bg-white border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-widest hover:bg-black hover:text-white transition-colors shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]">Gabung TPS HERU</Link>
+              <Link href="/daftar" className="bg-white border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-widest hover:bg-black hover:text-white transition-colors shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]">Gabung UPS HERU</Link>
               <Link href="/pengaduan" className="bg-red-400 border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-widest hover:bg-black hover:text-white transition-colors shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]">Lapor Sampah</Link>
               <a href="https://wa.me/6281400782617" target="_blank" rel="noreferrer" className="bg-blue-300 border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-widest hover:bg-black hover:text-white transition-colors shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]">
                 💬 BOT WA
@@ -104,7 +104,7 @@ export default function PublicLayout({
         {/* Footer Bottom */}
         <div className="max-w-6xl mx-auto mt-16 pt-8 border-t-4 border-black flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="bg-black text-white px-6 py-3 border-2 border-black shadow-[4px_4px_0_0_#10b981]">
-            <span className="text-xs font-black uppercase tracking-widest">© 2026 TPS HERU DEPOK</span>
+            <span className="text-xs font-black uppercase tracking-widest">© 2026 UPS HERU DEPOK</span>
           </div>
           <div className="bg-white px-4 py-2 border-2 border-black border-dashed font-black uppercase text-xs tracking-widest">
             EST. 2024 · KOTA DEPOK

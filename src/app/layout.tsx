@@ -18,7 +18,7 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TPS HERU - Sistem Pengelolaan Sampah Depok",
+  title: "UPS HERU - Sistem Pengelolaan Sampah Depok",
   description: "Layanan pengelolaan dan retribusi sampah terpadu untuk warga dan pelaku usaha Kota Depok",
 };
 

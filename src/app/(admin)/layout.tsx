@@ -16,7 +16,7 @@ export default function AdminLayout({
           <header className="h-14 flex items-center justify-between px-5 bg-white border-b-2 border-black">
             <div className="flex items-center gap-3 font-bold text-xs uppercase tracking-widest">
               <span className="hidden sm:inline bg-black text-white px-2 py-1 font-black shadow-[2px_2px_0_0_#10b981]">
-                TPS HERU ADMIN
+                UPS HERU ADMIN
               </span>
               <span className="hidden sm:inline">CONTROL PANEL</span>
             </div>

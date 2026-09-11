@@ -61,7 +61,7 @@ export default function VersionCheck() {
 
         <div className="p-5 space-y-3">
           <p className="text-sm font-black uppercase">
-            TPS HERU Lapangan v{terbaru.versionName}
+            UPS HERU Lapangan v{terbaru.versionName}
           </p>
 
           <ul className="space-y-1">

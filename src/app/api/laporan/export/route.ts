@@ -71,7 +71,7 @@ export async function GET(request: Request) {
   ]);
 
   const rows: (string | number | null)[][] = [];
-  rows.push(["LAPORAN TPS HERU DEPOK", "", ""]);
+  rows.push(["LAPORAN UPS HERU DEPOK", "", ""]);
   rows.push([`Periode: ${NAMA_BULAN[bulan - 1]} ${tahun}`, "", ""]);
   rows.push([""]);
   rows.push(["RINGKASAN KEUANGAN", "", ""]);
@@ -142,7 +142,7 @@ export async function GET(request: Request) {
   return new NextResponse("\uFEFF" + csv, {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="tps-heru-laporan-${tahun}-${String(bulan).padStart(2, "0")}.csv"`,
+      "Content-Disposition": `attachment; filename="ups-heru-laporan-${tahun}-${String(bulan).padStart(2, "0")}.csv"`,
     },
   });
 }

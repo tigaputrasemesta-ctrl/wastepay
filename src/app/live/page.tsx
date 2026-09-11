@@ -4,7 +4,7 @@ import { ROLE_HIERARCHY, type Role } from "@/lib/rbac";
 import LiveReport from "@/components/LiveReport";
 
 export const metadata = {
-  title: "Live Report | TPS HERU",
+  title: "Live Report | UPS HERU",
   description: "Laporan aktivitas realtime untuk layar besar / dashboard",
 };
 

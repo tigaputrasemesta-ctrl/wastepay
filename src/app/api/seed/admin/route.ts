@@ -47,7 +47,7 @@ export async function POST(request: Request) {
       data: {
         email: "admin.herozerowaste@gmail.com",
         password: hashedPassword,
-        nama: "Admin TPS HERU",
+        nama: "Admin UPS HERU",
         role: "superadmin",
       },
     });

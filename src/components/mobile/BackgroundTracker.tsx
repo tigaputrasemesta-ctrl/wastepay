@@ -76,7 +76,7 @@ export default function BackgroundTracker() {
       try {
         const id = await BackgroundGeolocation.addWatcher(
           {
-            backgroundTitle: "TPS HERU Lapangan",
+            backgroundTitle: "UPS HERU Lapangan",
             backgroundMessage: "GPS aktif untuk pemantauan armada",
             requestPermissions: true,
             distanceFilter: 50, // kirim ulang bila pindah ≥ 50 m (hemat baterai/data)

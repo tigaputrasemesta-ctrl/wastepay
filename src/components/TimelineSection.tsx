@@ -63,7 +63,7 @@ export default function TimelineSection() {
         {/* Header Section */}
         <div className="mb-14">
           <div className="inline-block px-3 py-1 bg-black text-white font-black text-xs uppercase tracking-widest mb-4 border-2 border-black shadow-[2px_2px_0_0_#10b981]">
-            PERJALANAN 12 TAHUN TPS HERU
+            PERJALANAN 12 TAHUN UPS HERU
           </div>
           <h2 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tighter text-black leading-none">
             Dari Gerobak <br />

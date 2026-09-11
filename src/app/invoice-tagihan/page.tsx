@@ -42,7 +42,7 @@ const LABEL_KATEGORI: Record<string, string> = {
 
 /**
  * /invoice-tagihan?invoice=INV/XXX/YYYYMM
- * Lembar Faktur Retribusi Sampah Resmi — Desain Modern TPS HERU
+ * Lembar Faktur Retribusi Sampah Resmi — Desain Modern UPS HERU
  */
 export default async function InvoiceTagihanPage({
   searchParams,
@@ -122,7 +122,7 @@ export default async function InvoiceTagihanPage({
             <div className="invoice-header">
               <div className="invoice-header-brand">
                 <div className="invoice-logo-mark">
-                  <span className="logo-tps">TPS</span>
+                  <span className="logo-tps">UPS</span>
                   <div className="logo-info">
                     <div className="logo-name">
                       HERU<span className="logo-dot">.</span>
@@ -280,7 +280,7 @@ export default async function InvoiceTagihanPage({
                 <div className="invoice-legal-note">
                   <div className="legal-icon">ℹ️</div>
                   <p className="legal-text">
-                    Faktur retribusi ini adalah dokumen resmi yang sah diterbitkan oleh sistem penagihan terpadu TPS HERU. Retribusi digunakan untuk operasional kebersihan dan kelestarian lingkungan Kota Depok.
+                    Faktur retribusi ini adalah dokumen resmi yang sah diterbitkan oleh sistem penagihan terpadu UPS HERU. Retribusi digunakan untuk operasional kebersihan dan kelestarian lingkungan Kota Depok.
                   </p>
                 </div>
               </div>
@@ -320,7 +320,7 @@ export default async function InvoiceTagihanPage({
                     <div className="paid-stamp-wrapper">
                       <div className="paid-official-stamp">
                         <span>LUNAS</span>
-                        <small>TPS HERU DEPOK</small>
+                        <small>UPS HERU DEPOK</small>
                       </div>
                     </div>
                     <div className="paid-meta-list">
@@ -345,7 +345,7 @@ export default async function InvoiceTagihanPage({
                       <div className="paid-meta-item">
                         <span className="pm-label">Verifikator:</span>
                         <span className="pm-value">
-                          {pembayaran?.verifiedBy?.nama || "Payment Gateway Otomatis TPS HERU"}
+                          {pembayaran?.verifiedBy?.nama || "Payment Gateway Otomatis UPS HERU"}
                         </span>
                       </div>
                     </div>
@@ -362,7 +362,7 @@ export default async function InvoiceTagihanPage({
                     <ul className="unpaid-channels-list">
                       <li>• <strong>QRIS</strong> (BCA, Mandiri, BRI, GoPay, OVO, Dana, ShopeePay)</li>
                       <li>• <strong>Virtual Account</strong> Bank Resmi & Transfer Otomatis</li>
-                      <li>• <strong>Petugas Lapangan</strong> TPS HERU saat penjemputan sampah</li>
+                      <li>• <strong>Petugas Lapangan</strong> UPS HERU saat penjemputan sampah</li>
                     </ul>
                     <div className="portal-direct-hint">
                       Portal Pembayaran: <code>{baseUrl}/bayar-tagihan?invoice={encodeURIComponent(tagihan.noInvoice || "")}</code>
@@ -386,7 +386,7 @@ export default async function InvoiceTagihanPage({
               {/* Box Pengesahan Resmi */}
               <div className="invoice-sign-box">
                 <span className="sign-city">Kota Depok, {formatTanggalIndo(tagihan.createdAt || tagihan.jatuhTempo)}</span>
-                <span className="sign-org">Unit Pengelolaan Retribusi TPS HERU</span>
+                <span className="sign-org">Unit Pengelolaan Retribusi UPS HERU</span>
                 
                 <div className="sign-seal-area">
                   <div className="digital-seal">
@@ -398,8 +398,8 @@ export default async function InvoiceTagihanPage({
                 </div>
 
                 <div className="sign-signer">
-                  <strong>Bendahara Retribusi TPS HERU</strong>
-                  <span className="font-mono text-[9px] text-gray-500">ID SISTEM: TPS-FIN-DPK</span>
+                  <strong>Bendahara Retribusi UPS HERU</strong>
+                  <span className="font-mono text-[9px] text-gray-500">ID SISTEM: UPS-FIN-DPK</span>
                 </div>
               </div>
             </div>
@@ -407,7 +407,7 @@ export default async function InvoiceTagihanPage({
             {/* Footer Bawah Lembar Faktur */}
             <div className="invoice-bottom-bar">
               <div className="bottom-left">
-                <span>TPS HERU DEPOK — PENGELOLAAN SAMPAH RAMAH LINGKUNGAN</span>
+                <span>UPS HERU DEPOK — PENGELOLAAN SAMPAH RAMAH LINGKUNGAN</span>
               </div>
               <div className="bottom-right font-mono">
                 <span>Dokumen di-generate: {formatTanggalWaktuIndo(new Date())}</span>
@@ -419,7 +419,7 @@ export default async function InvoiceTagihanPage({
         {/* Bawah Halaman (Layar saja) */}
         <div className="invoice-page-foot-screen">
           <p>
-            Memerlukan bantuan terkait faktur ini? Hubungi Customer Care TPS HERU di WhatsApp{" "}
+            Memerlukan bantuan terkait faktur ini? Hubungi Customer Care UPS HERU di WhatsApp{" "}
             <a href={`https://wa.me/${perusahaan.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer">
               {perusahaan.whatsapp}
             </a>

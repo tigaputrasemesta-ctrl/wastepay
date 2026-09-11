@@ -52,7 +52,7 @@ function Sticker({ p, idx }: { p: Pelanggan; idx: number }) {
   return (
     <div className="relative w-[92mm] h-[54mm] bg-white text-black p-2.5 flex flex-col overflow-hidden print:shadow-none" style={{ breakInside: "avoid" }}>
       <div className="flex items-center justify-between border-b-2 border-black pb-1">
-        <span className="font-black uppercase tracking-tighter font-bold text-[9px] tracking-[0.15em]">TPS HERU DEPOK</span>
+        <span className="font-black uppercase tracking-tighter font-bold text-[9px] tracking-[0.15em]">UPS HERU DEPOK</span>
         <span className="font-mono font-bold text-[8px] border border-black px-1">{KATEGORI_LABEL[p.kategori] ?? "PELANGGAN"}</span>
       </div>
       <div className="text-center mt-1.5">

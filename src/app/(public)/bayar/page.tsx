@@ -141,7 +141,7 @@ export default function BayarPage() {
     <div className="py-12 space-y-12">
       <div className="text-center space-y-4">
         <div className="inline-block px-4 py-1 hm-border font-bold uppercase text-xs mb-2 bg-[#f4f4f0] shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
-          TPS HERU / LOKET PEMBAYARAN
+          UPS HERU / LOKET PEMBAYARAN
         </div>
         <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">
           CEK <span className="text-red-600">TAGIHAN.</span>

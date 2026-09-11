@@ -14,10 +14,10 @@ import type { CapacitorConfig } from "@capacitor/cli";
  */
 const config: CapacitorConfig = {
   appId: "id.o2whero.lapangan",
-  appName: "TPS HERU Lapangan",
+  appName: "UPS HERU Lapangan",
   webDir: "public",
   server: {
-    url: process.env.CAPACITOR_URL || "https://tpsheru.vercel.app",
+    url: process.env.CAPACITOR_URL || "https://upsheru.vercel.app",
     cleartext: true,
     // Buka langsung ke dashboard mobile petugas (bukan landing page publik)
     appStartPath: "/m",

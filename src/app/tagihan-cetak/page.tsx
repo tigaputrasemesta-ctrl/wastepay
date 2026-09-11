@@ -119,7 +119,7 @@ export default async function TagihanCetakPage({
                 {/* Kepala Surat */}
                 <div className="tc-head">
                   <div className="tc-brand">
-                    <div className="tc-logo-box">TPS</div>
+                    <div className="tc-logo-box">UPS</div>
                     <div className="tc-company">
                       <div className="tc-brand-title">
                         HERU<span className="text-emerald-500">.</span>
@@ -236,7 +236,7 @@ export default async function TagihanCetakPage({
                       </>
                     )}
                     <div className="tc-small-note">
-                      Dokumen retribusi resmi TPS HERU Kota Depok #{idx + 1}
+                      Dokumen retribusi resmi UPS HERU Kota Depok #{idx + 1}
                     </div>
                   </div>
 
@@ -250,7 +250,7 @@ export default async function TagihanCetakPage({
                   <div className="tc-terima">
                     <span>Petugas / Kasir,</span>
                     <div className="tc-sign-space" />
-                    <span className="tc-sign-name">( TPS HERU DEPOK )</span>
+                    <span className="tc-sign-name">( UPS HERU DEPOK )</span>
                   </div>
                 </div>
               </div>

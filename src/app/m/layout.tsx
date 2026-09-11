@@ -135,7 +135,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
         <header className="sticky top-0 z-40 bg-white border-b-2 border-black px-4 py-3 flex items-center justify-between gap-2">
           <div className="min-w-0">
             <p className="text-sm font-black uppercase tracking-tight leading-tight truncate">
-              TPS HERU <span className="text-emerald-600">Lapangan</span>
+              UPS HERU <span className="text-emerald-600">Lapangan</span>
             </p>
             <p className="text-[10px] font-mono font-bold text-gray-500 truncate">
               {profil ? profil.nama : user.nama} · {jabatan.map((j) => j.toUpperCase()).join("/") || "PETUGAS"}
