@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import MobileTracker from "@/components/mobile/MobileTracker";
 import BackgroundTracker from "@/components/mobile/BackgroundTracker";
 import VersionCheck from "@/components/mobile/VersionCheck";
+import MobileSessionGuard, { clearMobileSession } from "@/components/mobile/MobileSessionGuard";
 
 type Profil = {
   id: number;
@@ -115,6 +116,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
   }, [user]);
 
   async function logout() {
+    clearMobileSession();
     await fetch("/api/auth/logout", { method: "POST" });
     router.replace("/login?next=/m");
   }
@@ -136,6 +138,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
 
   return (
     <ToastProvider>
+      <MobileSessionGuard />
       <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col pb-24">
         {/* Top bar (GoPartner Style) */}
         <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 px-4 py-2.5 flex items-center justify-between gap-3 shadow-xs">

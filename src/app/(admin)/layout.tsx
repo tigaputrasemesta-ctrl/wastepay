@@ -1,7 +1,18 @@
+import type { Metadata } from "next";
 import Sidebar from "@/components/Sidebar";
 import StatusBar from "@/components/StatusBar";
 import NotificationBell from "@/components/NotificationBell";
 import { ToastProvider } from "@/components/Toast";
+
+export const metadata: Metadata = {
+  title: "Admin Panel | UPS HERU WastePay",
+  robots: {
+    index: false,
+    follow: false,
+    noarchive: true,
+    nosnippet: true,
+  },
+};
 
 export default function AdminLayout({
   children,

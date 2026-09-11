@@ -137,6 +137,24 @@ export async function GET(request: Request) {
           latitude: true,
           longitude: true,
           patokanLokasi: true,
+          noTelepon: true,
+          fotoRumah: true,
+          tagihan: {
+            where: {
+              status: { in: ["tunggakan", "belum_bayar"] },
+              deletedAt: null,
+            },
+            select: {
+              id: true,
+              bulan: true,
+              tahun: true,
+              jumlah: true,
+              denda: true,
+              status: true,
+              jatuhTempo: true,
+            },
+            orderBy: [{ tahun: "asc" }, { bulan: "asc" }],
+          },
         },
       },
       petugas: { select: { id: true, nama: true } },
@@ -148,7 +166,32 @@ export async function GET(request: Request) {
     orderBy: [{ tanggal: "desc" }, { pelanggan: { nama: "asc" } }],
   });
 
-  return NextResponse.json(pengangkutan);
+  const now = new Date();
+  const hasil = pengangkutan.map((p) => {
+    const unpaid = p.pelanggan.tagihan || [];
+    const tunggakanList = unpaid.filter(
+      (t) => t.status === "tunggakan" || new Date(t.jatuhTempo) < now
+    );
+    const isMenunggak = tunggakanList.length > 0;
+    const totalTunggakan = tunggakanList.reduce(
+      (acc, t) => acc + (t.jumlah || 0) + (t.denda || 0),
+      0
+    );
+    const bulanMenunggak = tunggakanList.map((t) => `${t.bulan}/${t.tahun}`);
+
+    return {
+      ...p,
+      tunggakan: {
+        isMenunggak,
+        jumlahBulan: tunggakanList.length,
+        totalNominal: totalTunggakan,
+        daftarBulan: bulanMenunggak,
+        bolehPickup: !isMenunggak,
+      },
+    };
+  });
+
+  return NextResponse.json(hasil);
 }
 
 export async function POST(request: Request) {

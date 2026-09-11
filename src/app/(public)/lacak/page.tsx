@@ -4,8 +4,17 @@ import { ArrowRight, Info, MapPin, Smartphone, Clock } from "lucide-react";
 import LacakJemputan from "@/components/LacakJemputan";
 
 export const metadata: Metadata = {
-  title: "Pelacakan Armada | WastePay Depok",
-  description: "Pantau posisi armada penjemputan sampah WastePay secara real-time dengan estimasi waktu tiba (ETA).",
+  title: "Pelacakan Armada Truk Sampah Real-Time",
+  description:
+    "Pantau posisi armada truk pengangkut sampah WastePay UPS HERU Kota Depok secara langsung di peta digital dengan perkiraan waktu tiba (ETA).",
+  alternates: {
+    canonical: "/lacak",
+  },
+  openGraph: {
+    title: "Lacak Armada Truk Sampah Real-Time | UPS HERU Depok",
+    description:
+      "Pantau posisi truk penjemput sampah secara langsung di peta interaktif dengan estimasi waktu tiba akurat.",
+  },
 };
 
 const PANDUAN = [

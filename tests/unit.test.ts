@@ -464,3 +464,75 @@ describe("notifikasi summary", () => {
   });
 });
 
+import { getSiteUrl, SITE_CONFIG, generateLocalBusinessJsonLd } from "../src/lib/seo";
+import robots from "../src/app/robots";
+import sitemap from "../src/app/sitemap";
+import manifest from "../src/app/manifest";
+
+describe("seo module", () => {
+  it("getSiteUrl: mengembalikan default fallback jika env kosong", () => {
+    const origEnv = process.env.NEXT_PUBLIC_APP_URL;
+    delete process.env.NEXT_PUBLIC_APP_URL;
+    delete process.env.APP_URL;
+    delete process.env.VERCEL_PROJECT_PRODUCTION_URL;
+    delete process.env.VERCEL_URL;
+
+    const url = getSiteUrl();
+    expect(url).toBe("https://upsheru.vercel.app");
+
+    if (origEnv) process.env.NEXT_PUBLIC_APP_URL = origEnv;
+  });
+
+  it("getSiteUrl: memprioritaskan NEXT_PUBLIC_APP_URL jika disetel", () => {
+    const orig = process.env.NEXT_PUBLIC_APP_URL;
+    process.env.NEXT_PUBLIC_APP_URL = "https://custom-wastepay.depok.go.id/";
+    expect(getSiteUrl()).toBe("https://custom-wastepay.depok.go.id");
+    if (orig) process.env.NEXT_PUBLIC_APP_URL = orig;
+    else delete process.env.NEXT_PUBLIC_APP_URL;
+  });
+
+  it("generateLocalBusinessJsonLd: menghasilkan schema valid untuk LocalBusiness dan GovernmentService", () => {
+    const schema = generateLocalBusinessJsonLd() as {
+      "@context": string;
+      "@graph": Array<{ "@type": string | string[]; name: string }>;
+    };
+    expect(schema["@context"]).toBe("https://schema.org");
+    expect(Array.isArray(schema["@graph"])).toBe(true);
+
+    const business = schema["@graph"].find((item) =>
+      Array.isArray(item["@type"]) ? item["@type"].includes("LocalBusiness") : item["@type"] === "LocalBusiness"
+    );
+    expect(business).toBeDefined();
+    expect(business?.name).toBe(SITE_CONFIG.name);
+
+    const service = schema["@graph"].find((item) => item["@type"] === "GovernmentService");
+    expect(service).toBeDefined();
+  });
+
+  it("robots: mengonfigurasi allow public dan disallow rute privat serta sitemap", () => {
+    const r = robots();
+    expect(r.sitemap).toContain("/sitemap.xml");
+    const rules = Array.isArray(r.rules) ? r.rules[0] : r.rules;
+    expect(rules?.allow).toContain("/");
+    expect(rules?.disallow).toContain("/dashboard");
+    expect(rules?.disallow).toContain("/api/");
+  });
+
+  it("sitemap: mengembalikan daftar rute publik dengan prioritas", () => {
+    const s = sitemap();
+    expect(Array.isArray(s)).toBe(true);
+    const urls = s.map((entry) => entry.url);
+    expect(urls.some((u) => u.endsWith("/lacak"))).toBe(true);
+    expect(urls.some((u) => u.endsWith("/bayar"))).toBe(true);
+    expect(urls.some((u) => u.endsWith("/tarif"))).toBe(true);
+  });
+
+  it("manifest: mengembalikan metadata PWA yang valid", () => {
+    const m = manifest();
+    expect(m.name).toBe("UPS HERU WastePay - Pengelolaan Sampah Depok");
+    expect(m.theme_color).toBe("#059669");
+    expect(m.display).toBe("standalone");
+    expect(m.icons?.length).toBeGreaterThan(0);
+  });
+});
+

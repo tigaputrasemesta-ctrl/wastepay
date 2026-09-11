@@ -32,8 +32,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: result.error }, { status: 401 });
     }
 
+    // Jika akun petugas, berikan masa berlaku cookie 90 hari agar tidak mudah terlogout
+    const isPetugas = result.user.role === "petugas";
+    const cookieMaxAge = isPetugas ? 90 * 24 * 60 * 60 : 7 * 24 * 60 * 60;
+
     const response = NextResponse.json({
       user: result.user,
+      token: result.token,
       message: "Login berhasil",
     });
 
@@ -41,7 +46,7 @@ export async function POST(request: Request) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60, // 7 days
+      maxAge: cookieMaxAge,
       path: "/",
     });
 

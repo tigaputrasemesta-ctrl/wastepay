@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Truck, MapPin, Smartphone, ArrowRight, Megaphone, ShieldCheck, Sparkles, Navigation, CheckCircle2 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
@@ -5,8 +6,17 @@ import AnimatedDumpTruck from "@/components/AnimatedDumpTruck";
 import TrustStatsBar from "@/components/TrustStatsBar";
 import TimelineSection from "@/components/TimelineSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
+import JsonLd from "@/components/JsonLd";
+import { generateLocalBusinessJsonLd } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "UPS HERU WastePay - Sistem Pengelolaan & Retribusi Sampah Kota Depok",
+  alternates: {
+    canonical: "/",
+  },
+};
 
 export default async function LandingPage() {
   type PengumumanRingkas = {
@@ -29,6 +39,7 @@ export default async function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-emerald-600 selection:text-white">
+      <JsonLd data={generateLocalBusinessJsonLd()} />
       {/* ── A. Sticky Modern Navbar ── */}
       <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-6 py-3.5 transition-all">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">

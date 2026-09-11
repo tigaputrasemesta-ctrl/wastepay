@@ -28,6 +28,12 @@ export default function LoginPage() {
       if (!res.ok) {
         setError(data.error);
       } else {
+        if (data.token && typeof window !== "undefined") {
+          try {
+            localStorage.setItem("wp_mobile_token", data.token);
+            localStorage.setItem("wp_mobile_user", JSON.stringify(data.user));
+          } catch {}
+        }
         // Honor ?next= tujuan awal (mis. dari APK → /m), dengan batas hanya
         // path internal yang diawali "/" (anti open-redirect).
         const params = new URLSearchParams(window.location.search);

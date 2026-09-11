@@ -5,8 +5,12 @@ import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import CameraGps from "@/components/mobile/CameraGps";
 import MapAngkut from "@/components/mobile/MapAngkut";
+import ProximityPickupModal from "@/components/mobile/ProximityPickupModal";
+import DriverTaskHUD from "@/components/mobile/DriverTaskHUD";
+import { useProximityPickup, type ProximityTugas } from "@/hooks/useProximityPickup";
+import { useWakeLock } from "@/hooks/useWakeLock";
+import { playSound, speakText, vibrate } from "@/lib/mobile-feedback";
 import { todayLocalISO } from "@/lib/utils";
-
 
 type Profil = { id: number; nama: string; jabatan: string | null; kelurahan: string | null };
 type Kendaraan = { id: number; nama: string; platNomor: string | null; jenis: string; petugas?: { id: number; nama: string } | null };
@@ -18,8 +22,25 @@ type Tugas = {
   berat?: number;
   jenisSampah?: string;
   catatan?: string;
-  pelanggan: { id: number; nama: string; alamat: string; kodePelanggan: string; latitude?: number | null; longitude?: number | null; patokanLokasi?: string | null };
+  pelanggan: {
+    id: number;
+    nama: string;
+    alamat: string;
+    kodePelanggan: string;
+    latitude?: number | null;
+    longitude?: number | null;
+    patokanLokasi?: string | null;
+    noTelepon?: string | null;
+    fotoRumah?: string | null;
+  };
   kendaraan?: { id: number; nama: string; platNomor: string | null } | null;
+  tunggakan?: {
+    isMenunggak: boolean;
+    jumlahBulan: number;
+    totalNominal: number;
+    daftarBulan: string[];
+    bolehPickup: boolean;
+  };
 };
 
 const STATUS_META: Record<string, { label: string; cls: string }> = {
@@ -46,6 +67,109 @@ export default function MobileAngkut() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [pesan, setPesan] = useState("");
+
+  const [driverPos, setDriverPos] = useState<{ lat: number; lng: number; akurasi?: number } | null>(null);
+  const [radiusMeter, setRadiusMeter] = useState<number>(20);
+  const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
+  const [voiceEnabled, setVoiceEnabled] = useState<boolean>(true);
+  const [muatanTruk, setMuatanTruk] = useState<number>(25);
+
+  // Screen Wake Lock API: layar tetap aktif saat patroli rute
+  useWakeLock(true);
+
+  // Watch GPS driver untuk deteksi proximity real-time
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !("geolocation" in navigator)) return;
+    const id = navigator.geolocation.watchPosition(
+      (pos) => {
+        setDriverPos({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          akurasi: Math.round(pos.coords.accuracy),
+        });
+      },
+      () => {},
+      { enableHighAccuracy: true, maximumAge: 4000, timeout: 12000 }
+    );
+    return () => navigator.geolocation.clearWatch(id);
+  }, []);
+
+  const {
+    activeTask,
+    activeDistance,
+    closestTask,
+    closestDistance,
+    dismissActiveTask,
+    forceOpenTask,
+  } = useProximityPickup({
+    driverPos,
+    tugasList: data,
+    radiusMeter,
+    soundEnabled,
+    voiceEnabled,
+  });
+
+  // Handler Ceklis Hijau Cepat (1-Tap Pickup)
+  async function handleQuickPickup(taskId: number) {
+    const kId = kendaraanSaya.length > 0 ? kendaraanSaya[0].id : null;
+    const body = {
+      status: "diambil",
+      catatan: "Pickup cepat via Proximity GPS (1-Tap)",
+      kendaraanId: kId,
+      latitude: driverPos?.lat || null,
+      longitude: driverPos?.lng || null,
+      jenisSampah: "campuran",
+    };
+    try {
+      const res = await fetch(`/api/pengangkutan/${taskId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (res.ok) {
+        playSound("success");
+        vibrate("success");
+        speakText("Pickup berhasil dicatat.");
+        setPesan("✓ Berhasil mencatat pickup (1-Tap)");
+        dismissActiveTask();
+        await fetchData();
+      } else {
+        const d = await res.json();
+        setPesan(d.error || "Gagal mencatat pickup");
+      }
+    } catch {
+      setPesan("Kendala koneksi saat mencatat");
+    }
+  }
+
+  // Handler Lewati Konsumen Menunggak
+  async function handleSkipOverdue(taskId: number, catatan: string) {
+    const body = {
+      status: "tidak_diangkut",
+      catatan: catatan || "Dilewati: Ada tunggakan iuran belum lunas",
+      latitude: driverPos?.lat || null,
+      longitude: driverPos?.lng || null,
+    };
+    try {
+      const res = await fetch(`/api/pengangkutan/${taskId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (res.ok) {
+        playSound("skip");
+        speakText("Rumah dilewati.");
+        setPesan("✓ Rumah berhasil dilewati (Menunggak)");
+        dismissActiveTask();
+        await fetchData();
+      } else {
+        const d = await res.json();
+        setPesan(d.error || "Gagal memperbarui status");
+      }
+    } catch {
+      setPesan("Kendala koneksi saat memperbarui");
+    }
+  }
 
   const [form, setForm] = useState({
     status: "diambil",
@@ -190,6 +314,109 @@ export default function MobileAngkut() {
           </div>
         </div>
 
+        {/* ── Radar & Proximity Toolbar (Hands-Free Mode) ── */}
+        <div className="bg-slate-900 text-white rounded-2xl p-3 shadow-md space-y-2.5">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-2.5 w-2.5">
+                <span
+                  className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                    driverPos ? "bg-emerald-400" : "bg-amber-400"
+                  }`}
+                />
+                <span
+                  className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
+                    driverPos ? "bg-emerald-500" : "bg-amber-500"
+                  }`}
+                />
+              </span>
+              <span className="text-xs font-bold text-slate-100">
+                {driverPos
+                  ? `Radar Aktif (±${driverPos.akurasi || 5}m)`
+                  : "Mencari GPS Petugas..."}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              {/* Toggle Radius 10m vs 20m */}
+              <div className="inline-flex bg-slate-800 rounded-xl p-0.5 text-[11px] font-bold border border-slate-700">
+                <button
+                  type="button"
+                  onClick={() => setRadiusMeter(10)}
+                  className={`px-2 py-0.5 rounded-lg transition-all ${
+                    radiusMeter === 10
+                      ? "bg-emerald-500 text-white shadow-xs"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  10m
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRadiusMeter(20)}
+                  className={`px-2 py-0.5 rounded-lg transition-all ${
+                    radiusMeter === 20
+                      ? "bg-emerald-500 text-white shadow-xs"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  20m
+                </button>
+              </div>
+
+              {/* Toggle Audio & Voice */}
+              <button
+                type="button"
+                onClick={() => {
+                  const next = !soundEnabled;
+                  setSoundEnabled(next);
+                  setVoiceEnabled(next);
+                }}
+                className={`px-2.5 py-1 rounded-xl text-xs font-bold border transition-colors ${
+                  soundEnabled
+                    ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                    : "bg-slate-800 text-slate-400 border-slate-700"
+                }`}
+              >
+                {soundEnabled ? "🔊 Suara On" : "🔇 Mute"}
+              </button>
+            </div>
+          </div>
+
+          {/* Closest Target Hint */}
+          {closestTask && closestDistance !== null && (
+            <div className="flex items-center justify-between bg-white/10 rounded-xl px-2.5 py-1.5 text-xs">
+              <div className="flex items-center gap-1.5 truncate">
+                <span className="text-xs">🎯</span>
+                <span className="font-extrabold text-white truncate">
+                  {closestTask.pelanggan.nama}
+                </span>
+                <span className="text-[10px] text-slate-300">
+                  ({closestDistance}m lagi)
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 shrink-0">
+                {closestTask.tunggakan?.isMenunggak ? (
+                  <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-rose-500/30 text-rose-200 border border-rose-400/40">
+                    ⛔ Menunggak
+                  </span>
+                ) : (
+                  <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-emerald-500/30 text-emerald-200">
+                    ✓ Lunas
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => forceOpenTask(closestTask.id)}
+                  className="px-2 py-0.5 bg-white text-slate-900 rounded-lg text-[10px] font-black active:scale-95 transition-transform"
+                >
+                  ⚡ Pop-up
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Filter Tabs */}
         <div className="flex gap-1.5 p-1 bg-slate-100 rounded-2xl text-xs font-bold">
           <button
@@ -239,9 +466,36 @@ export default function MobileAngkut() {
                 latitude: t.pelanggan.latitude!,
                 longitude: t.pelanggan.longitude!,
                 status: t.status,
+                patokanLokasi: t.pelanggan.patokanLokasi,
+                tunggakan: t.tunggakan,
               }))}
+            posSaya={driverPos}
+            radiusMeter={radiusMeter}
+            onQuickPickup={handleQuickPickup}
+            onSkipOverdue={handleSkipOverdue}
+            onSelectTask={(taskId) => forceOpenTask(taskId)}
           />
         </div>
+      )}
+
+      {/* Gojek/Grab-Style Driver HUD: Multi-stop progress, Capacity, and Floating Target Card */}
+      {data.length > 0 && (
+        <DriverTaskHUD
+          activeTask={activeTask || closestTask}
+          jarakMeter={activeTask ? activeDistance : closestDistance}
+          radiusMeter={radiusMeter}
+          totalTasks={data.length}
+          completedTasks={selesaiCount}
+          muatanTruk={muatanTruk}
+          onMuatanChange={setMuatanTruk}
+          onQuickPickup={handleQuickPickup}
+          onSkipOverdue={handleSkipOverdue}
+          onOpenFullForm={(t) => {
+            const original = data.find((d) => d.id === t.id);
+            if (original) bukaForm(original);
+          }}
+          onDismissActive={activeTask ? dismissActiveTask : undefined}
+        />
       )}
 
       {pesan && (
@@ -309,6 +563,19 @@ export default function MobileAngkut() {
                       </span>
                     </div>
                   )}
+                  {t.tunggakan?.isMenunggak ? (
+                    <div className="mt-1">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 text-[10px] font-black border border-rose-200 animate-pulse">
+                        ⛔ MENUNGGAK {t.tunggakan.jumlahBulan} BULAN — JANGAN ANGKUT
+                      </span>
+                    </div>
+                  ) : !isDone ? (
+                    <div className="mt-1">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-bold border border-emerald-200">
+                        ✓ LUNAS
+                      </span>
+                    </div>
+                  ) : null}
                 </div>
 
                 <span
@@ -336,16 +603,31 @@ export default function MobileAngkut() {
               </button>
 
               {!isEditing ? (
-                <div className="flex gap-2 pt-1">
+                <div className="flex gap-2 pt-1 flex-wrap">
+                  {!isDone && (
+                    <button
+                      type="button"
+                      onClick={() => forceOpenTask(t.id)}
+                      className={`px-3 py-3 rounded-2xl text-xs font-black shadow-xs active:scale-98 transition-all flex items-center justify-center gap-1.5 ${
+                        t.tunggakan?.isMenunggak
+                          ? "bg-rose-600 hover:bg-rose-500 text-white"
+                          : "bg-emerald-600 hover:bg-emerald-500 text-white"
+                      }`}
+                    >
+                      <span>⚡</span>
+                      <span>{t.tunggakan?.isMenunggak ? "Cek Menunggak" : "1-Tap Ceklis"}</span>
+                    </button>
+                  )}
+
                   <button
                     onClick={() => {
                       bukaForm(t);
                       setForm((f) => ({ ...f, status: "diambil" }));
                     }}
-                    className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl text-xs font-bold shadow-sm active:scale-98 transition-all flex items-center justify-center gap-1.5"
+                    className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-2xl text-xs font-bold active:scale-98 transition-all flex items-center justify-center gap-1.5"
                   >
                     <span>📸</span>
-                    <span>Tandai Diangkut</span>
+                    <span>Detail / Foto</span>
                   </button>
                   <button
                     onClick={() => {
@@ -481,6 +763,22 @@ export default function MobileAngkut() {
             </div>
           );
         })
+      )}
+
+      {/* ── Modal Pop-up Proximity (Radius 10m/20m) ── */}
+      {activeTask && activeDistance !== null && (
+        <ProximityPickupModal
+          tugas={activeTask}
+          jarakMeter={activeDistance}
+          kendaraanNama={kendaraanSaya[0]?.nama}
+          onConfirmPickup={handleQuickPickup}
+          onSkipOverdue={handleSkipOverdue}
+          onOpenFullForm={(task) => {
+            const found = data.find((item) => item.id === task.id);
+            if (found) bukaForm(found);
+          }}
+          onDismiss={dismissActiveTask}
+        />
       )}
     </div>
   );

@@ -3,8 +3,12 @@ import Link from "next/link";
 import AnimatedDumpTruck from "@/components/AnimatedDumpTruck";
 
 export const metadata: Metadata = {
-  title: "UPS HERU - Portal Warga Depok",
-  description: "Sistem Pengelolaan Sampah Modern Kota Depok",
+  title: {
+    default: "Portal Layanan Warga | UPS HERU WastePay Depok",
+    template: "%s | UPS HERU WastePay Depok",
+  },
+  description:
+    "Portal resmi layanan warga Kota Depok: pendaftaran jemput sampah, cek & bayar tagihan retribusi, pelacakan armada truk sampah, dan pusat pengaduan kebersihan.",
 };
 
 export default function PublicLayout({

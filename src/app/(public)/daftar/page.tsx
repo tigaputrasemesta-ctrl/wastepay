@@ -5,8 +5,17 @@ import { prisma } from "@/lib/prisma";
 import { formatRupiah } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Daftar Layanan | UPS HERU Depok",
-  description: "Daftar layanan pengelolaan sampah UPS HERU Kota Depok",
+  title: "Pendaftaran Pelanggan Baru Pengelolaan Sampah",
+  description:
+    "Formulir online pendaftaran layanan angkut sampah terpadu Kota Depok untuk rumah tangga, tempat usaha/niaga, dan instansi. Bebas biaya pendaftaran.",
+  alternates: {
+    canonical: "/daftar",
+  },
+  openGraph: {
+    title: "Daftar Layanan Angkut Sampah Kota Depok | UPS HERU WastePay",
+    description:
+      "Daftar layanan jemput sampah rutin untuk rumah tangga dan tempat usaha di Depok. Penjemputan terjadwal dan pelacakan truk real-time.",
+  },
 };
 
 const ALUR_DAFTAR = [

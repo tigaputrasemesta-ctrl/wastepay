@@ -38,6 +38,46 @@ export async function createSession(user: SessionUser & { tokenVersion: number }
   return token;
 }
 
+export async function createMobileSession(user: SessionUser & { tokenVersion: number }): Promise<string> {
+  const token = await new SignJWT({
+    id: user.id,
+    email: user.email,
+    nama: user.nama,
+    role: user.role,
+    v: user.tokenVersion,
+  })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("90d")
+    .sign(JWT_SECRET);
+
+  return token;
+}
+
+export async function verifySessionToken(token: string): Promise<SessionUser | null> {
+  try {
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+    const p = payload as unknown as {
+      id: number;
+      email: string;
+      nama: string;
+      role: string;
+      v?: number;
+    };
+
+    const user = await prisma.user.findUnique({
+      where: { id: p.id },
+      select: { tokenVersion: true, aktif: true },
+    });
+    if (!user || !user.aktif) return null;
+    if (p.v !== undefined && user.tokenVersion !== p.v) return null;
+
+    return { id: p.id, email: p.email, nama: p.nama, role: p.role };
+  } catch {
+    return null;
+  }
+}
+
 export async function getSession(): Promise<SessionUser | null> {
   try {
     const cookieStore = await cookies();

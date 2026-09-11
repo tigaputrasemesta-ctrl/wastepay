@@ -4,8 +4,17 @@ import { prisma } from "@/lib/prisma";
 import { formatRupiah } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Daftar Tarif | UPS HERU Depok",
-  description: "Biaya langganan dan retribusi sampah UPS HERU Kota Depok",
+  title: "Daftar Tarif & Paket Retribusi Resmi",
+  description:
+    "Informasi transparansi biaya langganan dan retribusi resmi penjemputan sampah Kota Depok untuk kategori Rumah Tangga, Niaga/Usaha, dan Khusus.",
+  alternates: {
+    canonical: "/tarif",
+  },
+  openGraph: {
+    title: "Daftar Tarif Resmi Retribusi Sampah Kota Depok | UPS HERU",
+    description:
+      "Transparansi biaya retribusi sampah resmi Kota Depok. Pilihan paket fleksibel untuk rumah tangga hingga tempat usaha.",
+  },
 };
 
 export const dynamic = "force-dynamic";

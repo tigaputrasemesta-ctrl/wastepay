@@ -1,7 +1,17 @@
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import TombolPrintInvoice from "@/components/TombolPrintInvoice";
+
+export const metadata: Metadata = {
+  title: "Faktur Tagihan",
+  robots: {
+    index: false,
+    follow: false,
+    noarchive: true,
+  },
+};
 import {
   getTagihanByNoInvoice,
   hitungRincian,

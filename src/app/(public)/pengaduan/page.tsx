@@ -3,8 +3,17 @@ import Link from "next/link";
 import PengaduanForm from "@/components/PengaduanForm";
 
 export const metadata: Metadata = {
-  title: "Pusat Pengaduan | WastePay Depok",
-  description: "Layanan pengaduan dan bantuan penjemputan sampah WastePay Kota Depok",
+  title: "Pusat Pengaduan & Bantuan Pelanggan",
+  description:
+    "Layanan bantuan dan pusat pengaduan sampah warga Kota Depok: laporkan sampah belum terangkut, kendala armada, atau pertanyaan retribusi.",
+  alternates: {
+    canonical: "/pengaduan",
+  },
+  openGraph: {
+    title: "Pusat Bantuan & Pengaduan Warga | UPS HERU Depok",
+    description:
+      "Sampaikan kendala penjemputan sampah Anda langsung ke tim operasional armada kami.",
+  },
 };
 
 const PANDUAN = [

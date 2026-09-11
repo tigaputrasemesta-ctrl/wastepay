@@ -17,9 +17,55 @@ const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
 });
 
+import { getSiteUrl, SITE_CONFIG } from "@/lib/seo";
+
 export const metadata: Metadata = {
-  title: "UPS HERU - Sistem Pengelolaan Sampah Depok",
-  description: "Layanan pengelolaan dan retribusi sampah terpadu untuk warga dan pelaku usaha Kota Depok",
+  metadataBase: new URL(getSiteUrl()),
+  title: {
+    default: SITE_CONFIG.titleDefault,
+    template: SITE_CONFIG.titleTemplate,
+  },
+  description: SITE_CONFIG.description,
+  keywords: SITE_CONFIG.keywords,
+  authors: SITE_CONFIG.authors,
+  creator: SITE_CONFIG.creator,
+  publisher: SITE_CONFIG.publisher,
+  formatDetection: {
+    telephone: true,
+    address: true,
+    email: false,
+  },
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "id_ID",
+    url: "/",
+    siteName: SITE_CONFIG.name,
+    title: SITE_CONFIG.titleDefault,
+    description: SITE_CONFIG.description,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_CONFIG.titleDefault,
+    description: SITE_CONFIG.description,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/o2w-logo-v3.png",
+  },
 };
 
 export default function RootLayout({

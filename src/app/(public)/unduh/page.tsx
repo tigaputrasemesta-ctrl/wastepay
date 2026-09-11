@@ -1,8 +1,23 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Download, Smartphone } from "lucide-react";
 import { MOBILE_VERSION, getApkUrl } from "@/lib/mobile-version";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Unduh Aplikasi WastePay Driver Mobile",
+  description:
+    "Unduh aplikasi resmi WastePay Driver Mobile untuk petugas penjemputan sampah UPS HERU Kota Depok (Android APK).",
+  alternates: {
+    canonical: "/unduh",
+  },
+  openGraph: {
+    title: "Unduh Aplikasi Driver WastePay | UPS HERU Depok",
+    description:
+      "Aplikasi Android untuk petugas armada angkut sampah dan operasional lapangan UPS HERU.",
+  },
+};
 
 export default function UnduhPage() {
   const apkUrl = getApkUrl();
