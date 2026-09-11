@@ -456,41 +456,31 @@ export default function MobileAngkut() {
       {/* ── MODE PETA LIVE ── */}
       {viewMode === "map" && (
         <div className="space-y-3">
-          {data.filter((t) => t.pelanggan.latitude && t.pelanggan.longitude).length > 0 ? (
-            <MapAngkut
-              tugas={data
-                .filter((t) => t.pelanggan.latitude && t.pelanggan.longitude)
-                .map((t) => ({
-                  id: t.id,
-                  nama: t.pelanggan.nama,
-                  alamat: t.pelanggan.alamat,
-                  kodePelanggan: t.pelanggan.kodePelanggan,
-                  latitude: t.pelanggan.latitude!,
-                  longitude: t.pelanggan.longitude!,
-                  status: t.status,
-                  patokanLokasi: t.pelanggan.patokanLokasi,
-                  noTelepon: t.pelanggan.noTelepon,
-                  fotoRumah: t.pelanggan.fotoRumah,
-                  tunggakan: t.tunggakan,
-                }))}
-              posSaya={driverPos}
-              radiusMeter={radiusMeter}
-              onQuickPickup={handleQuickPickup}
-              onSkipOverdue={handleSkipOverdue}
-              onSelectTask={(taskId) => forceOpenTask(taskId)}
-            />
-          ) : (
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center text-white space-y-2">
-              <div className="text-3xl">📍</div>
-              <p className="text-sm font-bold">Belum Ada Titik Koordinat GPS</p>
-              <p className="text-xs text-slate-400">
-                Data rumah pelanggan pada jadwal ini belum memiliki koordinat lintang/bujur.
-              </p>
-            </div>
-          )}
+          <MapAngkut
+            tugas={data
+              .filter((t) => t.pelanggan.latitude && t.pelanggan.longitude)
+              .map((t) => ({
+                id: t.id,
+                nama: t.pelanggan.nama,
+                alamat: t.pelanggan.alamat,
+                kodePelanggan: t.pelanggan.kodePelanggan,
+                latitude: t.pelanggan.latitude!,
+                longitude: t.pelanggan.longitude!,
+                status: t.status,
+                patokanLokasi: t.pelanggan.patokanLokasi,
+                noTelepon: t.pelanggan.noTelepon,
+                fotoRumah: t.pelanggan.fotoRumah,
+                tunggakan: t.tunggakan,
+              }))}
+            posSaya={driverPos}
+            radiusMeter={radiusMeter}
+            onQuickPickup={handleQuickPickup}
+            onSkipOverdue={handleSkipOverdue}
+            onSelectTask={(taskId) => forceOpenTask(taskId)}
+          />
 
           {/* Gojek/Grab-Style Driver HUD: Multi-stop progress, Capacity, and Floating Target Card */}
-          {data.length > 0 && (
+          {data.length > 0 ? (
             <DriverTaskHUD
               activeTask={activeTask || closestTask}
               jarakMeter={activeTask ? activeDistance : closestDistance}
@@ -507,6 +497,15 @@ export default function MobileAngkut() {
               }}
               onDismissActive={activeTask ? dismissActiveTask : undefined}
             />
+          ) : (
+            <div className="bg-slate-900/90 backdrop-blur-md rounded-2xl p-4 border border-slate-800 text-center text-slate-300 text-xs space-y-1">
+              <p className="font-bold text-white">
+                ℹ️ Tidak ada jadwal antrean untuk tanggal ini ({format(new Date(tanggal), "EEEE, d MMMM yyyy", { locale: id })})
+              </p>
+              <p className="text-[11px] text-slate-400">
+                Peta tetap aktif memantau pergerakan armada Anda. Ganti tanggal jadwal di bagian atas jika ingin memeriksa antrean hari lain.
+              </p>
+            </div>
           )}
         </div>
       )}

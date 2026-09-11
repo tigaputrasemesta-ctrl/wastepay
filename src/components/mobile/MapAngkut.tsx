@@ -216,6 +216,9 @@ function MapController({
     } else if (all.length === 1) {
       map.setView(all[0], 16);
       initialFitDone.current = true;
+    } else if (all.length === 0) {
+      map.setView(PUSAT_DEPOK, 14);
+      initialFitDone.current = true;
     }
   }, [points, posSaya, map]);
 
@@ -576,6 +579,19 @@ export default function MapAngkut({
             />
           ))}
         </MapContainer>
+
+        {/* Floating Standby Banner if 0 tasks */}
+        {tugas.length === 0 && (
+          <div className="absolute top-3 left-3 right-16 z-[400] bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-2xl p-2.5 text-white shadow-xl flex items-center gap-2.5 pointer-events-none">
+            <span className="text-lg">ℹ️</span>
+            <div className="text-[11px] leading-tight">
+              <p className="font-bold text-slate-100">Peta Siaga: Belum Ada Titik Antrean</p>
+              <p className="text-slate-400 text-[10px]">
+                Peta aktif melacak posisi GPS armada. Ganti tanggal jadwal untuk rute hari lain.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* ── FLOATING MAP FAB BUTTONS (Right Side) ── */}
         <div className="absolute right-3 top-3 z-[400] flex flex-col gap-2">
