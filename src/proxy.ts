@@ -154,6 +154,7 @@ const API_ROLE_MAP: Record<string, number> = {
   // Denda juga ditambahkan ke daftar API_ROLE_MAP
   "POST:/api/tagihan/generate": 50,
   "POST:/api/tagihan/tunggakan": 50,
+  "POST:/api/tagihan/blast-rt": 20,
 
   // Pembayaran — kasir boleh mencatat, verifikasi/reset hanya admin+
   // Pembayaran — petugas tagih boleh mencatat & memverifikasi (guard jabatan di handler)

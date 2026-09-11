@@ -23,6 +23,7 @@ export async function GET(request: Request) {
   const status = searchParams.get("status");
   const pelangganId = searchParams.get("pelangganId");
   const wilayahId = searchParams.get("wilayahId");
+  const rt = searchParams.get("rt")?.trim();
   // ?saya=1 → petugas tagih: hanya tagihan pelanggan di KELURAHAN-nya
   const saya = searchParams.get("saya") === "1";
 
@@ -60,7 +61,17 @@ export async function GET(request: Request) {
     if (!Number.isInteger(wid)) {
       return NextResponse.json({ error: "wilayahId tidak valid" }, { status: 400 });
     }
-    where.pelanggan = { wilayahId: wid };
+    where.pelanggan = { ...(where.pelanggan as Prisma.PelangganWhereInput || {}), wilayahId: wid };
+  }
+  if (rt) {
+    where.pelanggan = {
+      ...(where.pelanggan as Prisma.PelangganWhereInput || {}),
+      OR: [
+        { wilayah: { rt } },
+        { wilayah: { nama: { contains: rt, mode: "insensitive" } } },
+        { rtRw: { contains: rt, mode: "insensitive" } },
+      ],
+    };
   }
   if (saya) {
     const session = await getSession();
@@ -70,14 +81,27 @@ export async function GET(request: Request) {
       if (!kelurahanId) {
         return NextResponse.json({ error: "Akun belum ter-link ke kelurahan petugas" }, { status: 403 });
       }
-      where.pelanggan = { kelurahanId };
+      where.pelanggan = { ...(where.pelanggan as Prisma.PelangganWhereInput || {}), kelurahanId };
     }
   }
 
   const tagihan = await prisma.tagihan.findMany({
     where,
     include: {
-      pelanggan: { select: { id: true, nama: true, alamat: true, noTelepon: true, kodePelanggan: true, kategori: true, customTarif: true } },
+      pelanggan: {
+        select: {
+          id: true,
+          nama: true,
+          alamat: true,
+          noTelepon: true,
+          kodePelanggan: true,
+          kategori: true,
+          customTarif: true,
+          rtRw: true,
+          wilayahId: true,
+          wilayah: { select: { id: true, nama: true, rt: true, rw: true } },
+        },
+      },
       pembayaran: true,
     },
     orderBy: [{ tahun: "desc" }, { bulan: "desc" }, { pelanggan: { nama: "asc" } }],
