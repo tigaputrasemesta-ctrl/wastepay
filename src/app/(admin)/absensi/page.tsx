@@ -96,7 +96,7 @@ export default function AbsensiPage() {
     <div className="space-y-6 max-w-7xl mx-auto">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 mb-1">Absensi Petugas</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Absensi Petugas</h1>
           <p className="text-sm text-slate-500 font-medium">Pencatatan presensi kerja dan jam operasional armada petugas</p>
         </div>
         <Link

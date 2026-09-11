@@ -35,7 +35,7 @@ function badgeJabatan(jabatan?: string | null) {
     survei: "bg-purple-400/10 text-purple-300 border border-purple-500/30",
   };
   return jabatan.split(",").filter(Boolean).map((j) => (
-    <span key={j} className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium mr-1 ${warna[j] ?? "bg-gray-100 border border-slate-200/80 text-gray-600 font-bold"}`}>
+    <span key={j} className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium mr-1 ${warna[j] ?? "bg-slate-100 border border-slate-200 text-slate-600 font-medium"}`}>
       {JABATAN_OPTIONS.find((o) => o.value === j)?.label ?? j}
     </span>
   ));
@@ -159,8 +159,8 @@ export default function PetugasPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Petugas</h1>
-          <p className="text-sm text-gray-600 font-bold mt-1">Kelola petugas pengangkut sampah</p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Petugas</h1>
+          <p className="text-sm text-slate-500 font-medium">Kelola petugas pengangkut sampah</p>
         </div>
         <button
           onClick={openCreate}
@@ -206,7 +206,7 @@ export default function PetugasPage() {
                           <p className="font-semibold text-slate-900">{p.nama}</p>
                           {p.email && <p className="text-xs text-slate-400">{p.email}</p>}
                           {p.user && (
-                            <p className="text-[10px] text-emerald-600 font-mono">
+                            <p className="text-[10px] text-emerald-600 font-medium">
                               ◉ login: {p.user.nama}
                             </p>
                           )}
@@ -219,7 +219,7 @@ export default function PetugasPage() {
                         {p.kelurahan?.nama ?? "—"}
                       </span>
                       {p.kelurahan?.kecamatan && (
-                        <p className="text-[10px] text-slate-400 font-mono mt-0.5">
+                        <p className="text-[10px] text-slate-400 font-medium mt-0.5">
                           ✓ {p.kelurahan.kecamatan}
                         </p>
                       )}

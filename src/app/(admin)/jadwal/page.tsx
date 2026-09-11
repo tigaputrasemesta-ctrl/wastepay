@@ -109,8 +109,8 @@ export default function JadwalPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Jadwal Pengangkutan</h1>
-          <p className="text-sm text-gray-600 font-bold mt-1">Atur jadwal pengangkutan per pelanggan dan rute</p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Jadwal Pengangkutan</h1>
+          <p className="text-sm text-slate-500 font-medium">Atur jadwal pengangkutan per pelanggan dan rute</p>
         </div>
         <button
           onClick={openCreate}
@@ -202,22 +202,22 @@ export default function JadwalPage() {
                               {j.pelanggan.latitude.toFixed(5)}, {j.pelanggan.longitude.toFixed(5)}
                             </a>
                           ) : (
-                            <span className="text-xs text-gray-400 font-bold">Tanpa koordinat</span>
+                            <span className="text-xs text-slate-400 font-medium">Tanpa koordinat</span>
                           )}
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-gray-600 font-bold">
+                    <td className="px-4 py-3 text-slate-700 font-medium">
                       {j.rute.nama}
                       {j.rute.zona?.nama && (
-                        <span className="ml-1 text-xs text-purple-500">· {j.rute.zona.nama}</span>
+                        <span className="ml-1 text-xs text-purple-600">· {j.rute.zona.nama}</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-gray-600 font-bold text-xs">{j.jam || "-"}</td>
-                    <td className="px-4 py-3 text-center text-gray-600 font-bold text-xs">{j._count.pengangkutan}</td>
+                    <td className="px-4 py-3 text-slate-600 font-medium text-xs tabular-nums">{j.jam || "-"}</td>
+                    <td className="px-4 py-3 text-center text-slate-600 font-medium text-xs tabular-nums">{j._count.pengangkutan}</td>
                     <td className="px-4 py-3 text-center">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                        j.aktif ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" : "bg-gray-100 border border-slate-200/80 text-gray-600 font-bold"
+                        j.aktif ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-slate-100 border border-slate-200 text-slate-600 font-medium"
                       }`}>
                         {j.aktif ? "Aktif" : "Nonaktif"}
                       </span>
@@ -226,7 +226,7 @@ export default function JadwalPage() {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => openEdit(j)}
-                          className="text-gray-600 font-bold hover:text-sky-300 transition"
+                          className="text-slate-400 hover:text-sky-600 transition"
                           title="Edit"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

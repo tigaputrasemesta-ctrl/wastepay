@@ -36,11 +36,11 @@ export default async function LivePage({
           <p className="font-extrabold uppercase tracking-widest text-white text-2xl">
             Akses Ditolak
           </p>
-          <p className="font-mono text-sm text-white/50 mt-3 uppercase tracking-wider">
-            Token layar TV tidak valid / tidak disertakan
+          <p className="text-sm font-medium text-white/60 mt-3">
+            Token layar TV tidak valid atau tidak disertakan
           </p>
-          <p className="font-mono text-xs text-white/40 mt-6">
-            Gunakan: <span className="text-emerald-400">/live?t=TOKEN</span>
+          <p className="text-xs text-white/40 mt-6 font-medium">
+            Gunakan: <code className="font-mono text-emerald-400 bg-white/5 px-2 py-1 rounded-lg">/live?t=TOKEN</code>
           </p>
         </div>
       </div>

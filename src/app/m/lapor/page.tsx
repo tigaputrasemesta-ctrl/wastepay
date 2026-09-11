@@ -148,7 +148,7 @@ export default function MobileLapor() {
       {pelanggan && (
         <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 space-y-4">
           <div className="pb-4 border-b border-slate-100">
-            <span className="inline-block text-[10px] font-mono font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md mb-1.5">
+            <span className="inline-block text-[10px] font-mono font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md mb-1.5">
               {pelanggan.kodePelanggan}
             </span>
             <p className="text-xl font-extrabold text-slate-900 tracking-tight leading-tight">

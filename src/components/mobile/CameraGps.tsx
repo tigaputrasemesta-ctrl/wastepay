@@ -277,10 +277,10 @@ export default function CameraGps({
             )}
           </div>
 
-          <div className="text-[11px] font-mono font-medium text-slate-500">
+          <div className="text-[11px] font-medium text-slate-500">
             {punyaKoordinat ? (
-              <span className="text-emerald-700 font-semibold">
-                ● {latitude.slice(0, 9)}, {longitude.slice(0, 9)}
+              <span className="text-emerald-700 font-medium">
+                ● <span className="font-mono tabular-nums font-semibold">{latitude.slice(0, 9)}, {longitude.slice(0, 9)}</span>
                 {koordinatSumber ? ` · ${SUMBER_LABEL[koordinatSumber] || koordinatSumber}` : ""}
                 {koordinatAkurasi ? ` · ±${koordinatAkurasi}m` : ""}
               </span>

@@ -11,7 +11,7 @@ const MapView = dynamic(() => import("@/components/MapView"), {
   ssr: false,
   loading: () => (
     <div className="h-full w-full flex items-center justify-center bg-slate-950">
-      <p className="font-mono font-bold uppercase tracking-widest text-emerald-400 animate-pulse text-sm">
+      <p className="font-bold uppercase tracking-wider text-emerald-400 animate-pulse text-sm">
         Memuat Peta Operasional…
       </p>
     </div>
@@ -148,20 +148,20 @@ export default function TvMap({ pelanggan, token }: Props) {
         <div className="bg-slate-950/85 rounded-2xl border border-white/15 px-5 py-3.5 backdrop-blur-md shadow-2xl">
           <div className="flex items-center gap-3">
             <span className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse ring-4 ring-emerald-400/30" />
-            <h1 className="font-sans font-black uppercase tracking-wider text-white text-xl sm:text-2xl leading-none">
+            <h1 className="font-extrabold uppercase tracking-wider text-white text-xl sm:text-2xl leading-none">
               Peta Operasional
             </h1>
           </div>
-          <p className="font-mono text-[11px] text-emerald-400 mt-2 uppercase tracking-wider">
+          <p className="text-xs font-semibold text-emerald-400 mt-2 uppercase tracking-wider">
             UPS HERU · Kota Depok · LIVE MONITORING
           </p>
         </div>
 
         <div className="bg-slate-950/85 rounded-2xl border border-white/15 px-5 py-3.5 backdrop-blur-md shadow-2xl text-right">
-          <div className="font-mono font-black text-white text-2xl sm:text-3xl leading-none tabular-nums">
+          <div className="font-extrabold text-white text-2xl sm:text-3xl leading-none tabular-nums">
             {jam}
           </div>
-          <div className="font-mono text-[11px] text-white/70 uppercase tracking-wider mt-1">
+          <div className="text-xs font-medium text-white/70 uppercase tracking-wider mt-1">
             {tanggal}
           </div>
         </div>
@@ -174,7 +174,7 @@ export default function TvMap({ pelanggan, token }: Props) {
         <Chip label="Armada Online" value={kendaraanOnline} color="text-amber-400" dot="#fbbf24" />
         <Chip label="Pengaduan Baru" value={komplainBaru} color="text-rose-400" dot="#f87171" />
         {lastRefresh && (
-          <span className="font-mono text-[10px] text-white/50 uppercase tracking-wider bg-slate-950/70 border border-white/10 rounded-full px-3 py-1.5 backdrop-blur-sm">
+          <span className="text-[10px] font-medium text-white/60 uppercase tracking-wider bg-slate-950/70 border border-white/10 rounded-full px-3 py-1.5 backdrop-blur-sm">
             update {new Date(lastRefresh).toLocaleTimeString("id-ID")}
           </span>
         )}
@@ -197,10 +197,10 @@ function Chip({
   return (
     <span className="inline-flex items-center gap-2.5 bg-slate-950/85 rounded-2xl border border-white/15 px-3.5 py-2 backdrop-blur-md shadow-lg">
       <span className="w-2 h-2 rounded-full" style={{ background: dot }} />
-      <span className={`font-mono font-black text-lg tabular-nums leading-none ${color}`}>
+      <span className={`font-bold text-lg tabular-nums leading-none ${color}`}>
         {value}
       </span>
-      <span className="font-mono text-[10px] text-white/70 uppercase tracking-wider">{label}</span>
+      <span className="text-xs font-semibold text-white/70 uppercase tracking-wider">{label}</span>
     </span>
   );
 }

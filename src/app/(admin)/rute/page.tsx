@@ -220,8 +220,8 @@ export default function RutePage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Rute & Jadwal</h1>
-          <p className="text-sm text-gray-600 font-bold mt-1">Atur rute pengangkutan sampah</p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Rute & Jadwal</h1>
+          <p className="text-sm text-slate-500 font-medium">Atur rute pengangkutan sampah</p>
         </div>
         <button
           onClick={openCreate}

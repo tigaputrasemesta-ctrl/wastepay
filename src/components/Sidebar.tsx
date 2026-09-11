@@ -366,7 +366,7 @@ export default function Sidebar() {
       <div className="flex items-center justify-between px-4 h-16 border-b border-slate-100 bg-white">
         {collapsed ? (
           <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center shrink-0 shadow-xs">
-            <span className="text-xs font-black text-white leading-none">WP</span>
+            <span className="text-xs font-extrabold text-white leading-none">WP</span>
           </div>
         ) : (
           <div className="flex items-center gap-2.5">

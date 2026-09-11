@@ -189,7 +189,7 @@ function BayarTagihanContent() {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
         <AnimatedDumpTruck size="lg" theme="green" />
-        <p className="font-black text-sm tracking-widest uppercase text-gray-800 animate-pulse">
+        <p className="font-bold text-sm tracking-wider uppercase text-slate-700 animate-pulse">
           Memuat data tagihan...
         </p>
       </div>
@@ -441,7 +441,7 @@ function BayarTagihanContent() {
                         : "border-slate-300 bg-white"
                     }`}
                   >
-                    {isSelected && <span className="text-xs font-black">✓</span>}
+                    {isSelected && <span className="text-xs font-bold">✓</span>}
                   </div>
                 </button>
               );

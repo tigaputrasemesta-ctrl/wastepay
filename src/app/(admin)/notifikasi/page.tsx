@@ -90,8 +90,8 @@ export default function NotifikasiPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Notifikasi WhatsApp</h1>
-          <p className="text-sm text-gray-600 font-bold mt-1">Kirim pengumuman & pengingat ke pelanggan</p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Notifikasi WhatsApp</h1>
+          <p className="text-sm text-slate-500 font-medium">Kirim pengumuman & pengingat ke pelanggan</p>
         </div>
         <button
           onClick={() => { setShowForm(true); setResult(null); }}

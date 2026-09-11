@@ -312,7 +312,7 @@ export default async function DashboardPage() {
               </div>
             </div>
             <div>
-              <p className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+              <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight tabular-nums">
                 {c.value}
               </p>
               <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between">
@@ -338,7 +338,7 @@ export default async function DashboardPage() {
             </p>
           </div>
           <div className="flex items-baseline gap-1.5">
-            <span className="text-2xl font-black text-emerald-600">{persenTerkumpul}%</span>
+            <span className="text-2xl font-extrabold text-emerald-600 tabular-nums">{persenTerkumpul}%</span>
             <span className="text-xs font-semibold text-slate-400">terkumpul</span>
           </div>
         </div>
@@ -538,7 +538,7 @@ export default async function DashboardPage() {
           <div className="mt-5 pt-4 border-t border-slate-100">
             <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-200">
               <span className="text-xs font-semibold text-slate-700">Piutang Retribusi Belum Masuk</span>
-              <span className={`text-sm font-black ${sisa > 0 ? "text-rose-600" : "text-emerald-600"}`}>
+              <span className={`text-sm font-bold tabular-nums ${sisa > 0 ? "text-rose-600" : "text-emerald-600"}`}>
                 {formatRupiah(sisa)}
               </span>
             </div>

@@ -138,8 +138,8 @@ export default function SurveiPage() {
     <div className="p-4 md:p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Survei Pelanggan</h1>
-          <p className="text-sm text-slate-500 font-medium mt-1">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Survei Pelanggan</h1>
+          <p className="text-sm text-slate-500 font-medium">
             Calon pelanggan menunggu survei — lengkapi foto rumah & geo tag, lalu aktifkan layanan
           </p>
         </div>

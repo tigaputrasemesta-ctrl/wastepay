@@ -95,8 +95,8 @@ export default function TpaPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">TPA</h1>
-          <p className="text-sm text-slate-500 font-normal mt-1">Tempat Pemrosesan Akhir sampah</p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">TPA</h1>
+          <p className="text-sm text-slate-500 font-medium">Tempat Pemrosesan Akhir sampah</p>
         </div>
         <button
           onClick={openCreate}

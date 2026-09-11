@@ -116,7 +116,7 @@ export default function AdminChat() {
     <div className="max-w-7xl mx-auto">
       <div className="flex items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 mb-1">Chat Petugas Lapangan</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Chat Petugas Lapangan</h1>
           <p className="text-sm text-slate-500 font-medium">Pusat koordinasi langsung admin dan armada petugas di lapangan</p>
         </div>
         {threadTerpilih && (

@@ -21,10 +21,10 @@ export default function InteractiveBentoTarif({ tarifList }: { tarifList: Katego
 
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4 relative z-10">
         <div>
-          <span className="font-mono text-xs text-lime-400 uppercase tracking-widest">— HITUNG IURAN KAMU —</span>
-          <h3 className="font-display text-2xl font-bold text-white mt-1">Berapa Biaya Iuran Rumah / Usaha Kamu?</h3>
+          <span className="text-xs font-bold text-lime-400 uppercase tracking-wider">— HITUNG IURAN KAMU —</span>
+          <h3 className="text-2xl font-extrabold text-white mt-1 tracking-tight">Berapa Biaya Iuran Rumah / Usaha Kamu?</h3>
         </div>
-        <span className="text-xs font-mono text-slate-300 bg-white/5 px-3 py-1 rounded-full border border-white/10">
+        <span className="text-xs font-semibold text-slate-300 bg-white/5 px-3 py-1 rounded-full border border-white/10">
           GRATIS SURVEI & AKTIVASI
         </span>
       </div>
@@ -35,7 +35,7 @@ export default function InteractiveBentoTarif({ tarifList }: { tarifList: Katego
           <button
             key={item.kategori}
             onClick={() => setSelectedIdx(idx)}
-            className={`px-4 py-2 rounded-xl text-xs font-mono whitespace-nowrap transition-all ${
+            className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
               selectedIdx === idx
                 ? "bg-lime-400 text-[#090b0e] font-bold shadow-md shadow-lime-400/20"
                 : "bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10"
@@ -49,28 +49,28 @@ export default function InteractiveBentoTarif({ tarifList }: { tarifList: Katego
       {/* Active Category Details Showcase */}
       <div className="grid sm:grid-cols-3 gap-4 pt-2 relative z-10">
         <div className="p-4 rounded-xl bg-[#090b0e] border border-white/10 space-y-1">
-          <span className="text-[10px] font-mono text-slate-400 uppercase block">KATEGORI PILIHAN</span>
-          <p className="font-display text-lg font-bold text-white">{activeItem.label}</p>
-          <span className="text-[11px] font-mono text-lime-400">Kode Kategori: {activeItem.kategori}</span>
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">KATEGORI PILIHAN</span>
+          <p className="text-lg font-bold text-white">{activeItem.label}</p>
+          <span className="text-[11px] font-medium text-lime-400">Kode Kategori: <span className="font-mono font-semibold">{activeItem.kategori}</span></span>
         </div>
 
         <div className="p-4 rounded-xl bg-[#090b0e] border border-lime-400/30 space-y-1">
-          <span className="text-[10px] font-mono text-slate-400 uppercase block">IURAN HANYA</span>
-          <p className="font-display text-3xl font-extrabold text-lime-400">
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">IURAN HANYA</span>
+          <p className="text-3xl font-extrabold text-lime-400 tracking-tight">
             {formatRupiah(activeItem.tarif)}
-            <span className="text-xs text-slate-400 font-mono font-normal"> /bulan</span>
+            <span className="text-xs text-slate-400 font-normal"> /bulan</span>
           </p>
-          <span className="text-[10px] font-mono text-slate-400">Fixed rate, gak bakal naik mendadak</span>
+          <span className="text-[10px] text-slate-400">Fixed rate, gak bakal naik mendadak</span>
         </div>
 
         <div className="p-4 rounded-xl bg-[#090b0e] border border-white/10 space-y-1 flex flex-col justify-between">
           <div>
-            <span className="text-[10px] font-mono text-slate-400 uppercase block">JADWAL PENGAMBILAN</span>
-            <p className="font-display text-base font-bold text-emerald-400">Rutin 2x – 3x / Minggu</p>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">JADWAL PENGAMBILAN</span>
+            <p className="text-base font-bold text-emerald-400">Rutin 2x – 3x / Minggu</p>
           </div>
           <Link
             href={`/daftar?kategori=${encodeURIComponent(activeItem.kategori)}`}
-            className="w-full text-center bg-lime-400 hover:bg-lime-300 text-[#090b0e] font-mono text-xs font-bold py-2.5 rounded-lg transition-all mt-2"
+            className="w-full text-center bg-lime-400 hover:bg-lime-300 text-[#090b0e] text-xs font-bold py-2.5 rounded-lg transition-all mt-2"
           >
             Daftar Kategori Ini →
           </Link>

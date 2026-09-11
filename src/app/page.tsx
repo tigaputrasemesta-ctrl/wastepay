@@ -127,7 +127,7 @@ export default async function LandingPage() {
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                   <span>LIVE GPS DEPOK</span>
                 </div>
-                <span className="text-[10px] text-slate-400 font-mono">AKTIF SEKARANG</span>
+                <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">AKTIF SEKARANG</span>
               </div>
 
               {/* Vector Simulated Map */}
@@ -157,7 +157,7 @@ export default async function LandingPage() {
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                   <span>Status: Penjemputan Rute Pagi</span>
                 </div>
-                <span className="text-emerald-400 font-bold font-mono">18 / 24 RT Selesai</span>
+                <span className="text-emerald-400 font-bold">18 / 24 RT Selesai</span>
               </div>
             </div>
           </div>

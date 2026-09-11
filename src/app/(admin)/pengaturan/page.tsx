@@ -138,8 +138,8 @@ export default function PengaturanPage() {
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-black text-slate-900 tracking-tight">Pengaturan</h1>
-        <p className="text-sm text-gray-600 font-bold mt-1">Kelola pengaturan aplikasi</p>
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Pengaturan</h1>
+        <p className="text-sm text-slate-500 font-medium">Kelola pengaturan aplikasi</p>
       </div>
 
       {/* Pembayaran Online (Duitku) */}

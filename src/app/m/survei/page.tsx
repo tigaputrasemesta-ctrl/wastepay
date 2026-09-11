@@ -151,7 +151,7 @@ export default function MobileSurvei() {
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <span className="font-mono text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                    <span className="font-mono text-[10px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
                       {c.kodePelanggan}
                     </span>
                     <span className="text-xs text-slate-400">· {c.kelurahan?.nama || "Dinas Pusat"}</span>

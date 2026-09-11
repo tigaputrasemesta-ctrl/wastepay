@@ -29,7 +29,7 @@ export default function PublicLayout({
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="text-lg font-black text-slate-900 tracking-tight">
+                <span className="text-lg font-extrabold text-slate-900 tracking-tight">
                   UPS HERU<span className="text-emerald-600">.</span>
                 </span>
                 <span className="px-1.5 py-0.2 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-bold">
@@ -76,7 +76,7 @@ export default function PublicLayout({
               <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs">
                 <AnimatedDumpTruck size="xs" theme="white" />
               </div>
-              <span className="text-xl font-black text-slate-900 tracking-tight">
+              <span className="text-xl font-extrabold text-slate-900 tracking-tight">
                 UPS HERU<span className="text-emerald-600">.</span>
               </span>
             </div>

@@ -52,8 +52,8 @@ export default function RekonsiliasiPage() {
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-black text-slate-900 tracking-tight">Rekonsiliasi Harian</h1>
-        <p className="text-sm text-gray-600 font-bold mt-1">Cocokkan pemasukan tunai dengan fisik</p>
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Rekonsiliasi Harian</h1>
+        <p className="text-sm text-slate-500 font-medium">Cocokkan pemasukan tunai dengan fisik</p>
       </div>
 
       {/* Form Rekonsiliasi */}

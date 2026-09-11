@@ -181,7 +181,7 @@ export default function TarifPage() {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 mb-1">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">
           Manajemen Tarif
         </h1>
         <p className="text-sm text-slate-500 font-medium">

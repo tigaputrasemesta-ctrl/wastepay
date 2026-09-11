@@ -112,9 +112,9 @@ export default function SurveiDetailPage() {
           <Link href="/survei" className="text-xs text-emerald-600 hover:text-emerald-700 font-semibold underline">
             ← Kembali ke Survei
           </Link>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight mt-2">{data.nama}</h1>
-          <p className="font-mono text-xs text-slate-400 mt-1">
-            {data.kodePelanggan} · daftar {formatDate(data.createdAt)}
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 mt-2 leading-none">{data.nama}</h1>
+          <p className="text-xs text-slate-500 font-medium mt-1">
+            <span className="font-mono text-slate-400">{data.kodePelanggan}</span> · daftar {formatDate(data.createdAt)}
           </p>
         </div>
         <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${

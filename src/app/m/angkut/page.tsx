@@ -163,7 +163,7 @@ export default function MobileAngkut() {
       <div className="bg-white rounded-3xl p-4 border border-slate-200/80 shadow-xs space-y-3">
         <div className="flex items-center justify-between gap-2">
           <div>
-            <h1 className="text-lg font-black text-slate-900 tracking-tight">Rute Pengangkutan</h1>
+            <h1 className="text-lg font-bold text-slate-900 tracking-tight">Rute Pengangkutan</h1>
             <p className="text-xs text-slate-500 font-medium">
               {format(new Date(tanggal), "EEEE, d MMMM yyyy", { locale: id })}
             </p>
@@ -180,7 +180,7 @@ export default function MobileAngkut() {
         <div>
           <div className="flex items-center justify-between text-xs font-bold mb-1.5">
             <span className="text-slate-600">Progres Pengangkutan</span>
-            <span className="text-emerald-700 font-black">{selesaiCount} / {totalCount} Selesai ({percentComplete}%)</span>
+            <span className="text-emerald-700 font-bold tabular-nums">{selesaiCount} / {totalCount} Selesai ({percentComplete}%)</span>
           </div>
           <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
             <div
@@ -264,7 +264,7 @@ export default function MobileAngkut() {
           <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto text-xl">
             🎉
           </div>
-          <p className="text-sm font-black text-slate-900">
+          <p className="text-sm font-bold text-slate-900">
             {filterTab === "belum" ? "Semua Pengangkutan Selesai!" : "Tidak Ada Data"}
           </p>
           <p className="text-xs text-slate-500">
@@ -295,7 +295,7 @@ export default function MobileAngkut() {
                     <span className="font-extrabold text-sm text-slate-900 truncate">
                       {t.pelanggan.nama}
                     </span>
-                    <span className="px-1.5 py-0.2 rounded-md bg-slate-100 text-[10px] font-mono font-bold text-slate-600">
+                    <span className="px-1.5 py-0.2 rounded-md bg-slate-100 text-[10px] font-mono font-medium text-slate-600">
                       {t.pelanggan.kodePelanggan}
                     </span>
                   </div>

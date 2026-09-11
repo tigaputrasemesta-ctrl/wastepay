@@ -59,8 +59,8 @@ export default function AuditLogPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Audit Log</h1>
-          <p className="text-sm text-gray-600 font-bold mt-1">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Audit Log</h1>
+          <p className="text-sm text-slate-500 font-medium">
             Jejak perubahan data oleh pengguna (hanya superadmin)
           </p>
         </div>
@@ -122,7 +122,7 @@ export default function AuditLogPage() {
                   if (!detail && log.dataLama) detail = log.dataLama;
                   return (
                     <tr key={log.id} className="hover:bg-slate-50/80 transition-colors text-xs">
-                      <td className="px-4 py-3 text-slate-500 font-mono whitespace-nowrap">{formatWaktu(log.createdAt)}</td>
+                      <td className="px-4 py-3 text-slate-500 tabular-nums whitespace-nowrap">{formatWaktu(log.createdAt)}</td>
                       <td className="px-4 py-3 font-semibold text-slate-900">{log.user?.nama || "—"}</td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold ${aksi.cls}`}>

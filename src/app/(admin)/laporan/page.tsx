@@ -18,8 +18,8 @@ export default async function LaporanPage({
       <div className="mb-6">
         <div className="flex items-start justify-between flex-wrap gap-4">
           <div>
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Laporan Keuangan & Operasional</h1>
-            <p className="text-sm text-gray-600 font-bold mt-1">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Laporan Keuangan & Operasional</h1>
+            <p className="text-sm text-slate-500 font-medium">
               Ringkasan {NAMA_BULAN[bulan - 1]} {tahun}
             </p>
           </div>
@@ -208,9 +208,9 @@ export default async function LaporanPage({
                   {data.sampahByTpa.map((s) => (
                     <tr key={s.tpaId} className="border-b border-slate-100 hover:bg-slate-50/50">
                       <td className="px-3 py-2.5 font-medium text-slate-900">{s.nama}</td>
-                      <td className="px-3 py-2.5 text-right text-slate-600 font-mono text-xs">{s.volume.toFixed(1)}</td>
-                      <td className="px-3 py-2.5 text-right text-slate-600 font-mono text-xs">{s.berat.toFixed(1)}</td>
-                      <td className="px-3 py-2.5 text-right text-slate-600 font-mono text-xs">{s.count}</td>
+                      <td className="px-3 py-2.5 text-right text-slate-600 tabular-nums text-xs font-medium">{s.volume.toFixed(1)}</td>
+                      <td className="px-3 py-2.5 text-right text-slate-600 tabular-nums text-xs font-medium">{s.berat.toFixed(1)}</td>
+                      <td className="px-3 py-2.5 text-right text-slate-600 tabular-nums text-xs font-medium">{s.count}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -240,9 +240,9 @@ export default async function LaporanPage({
                 {data.tagihanMenunggak.map((t) => (
                   <tr key={t.id} className="border-b border-slate-100 hover:bg-slate-50/50">
                     <td className="px-3 py-2.5 font-medium text-slate-900">{t.pelanggan.nama}</td>
-                    <td className="px-3 py-2.5 text-slate-500 font-mono text-xs">{t.pelanggan.noTelepon}</td>
+                    <td className="px-3 py-2.5 text-slate-500 text-xs">{t.pelanggan.noTelepon}</td>
                     <td className="px-3 py-2.5 text-slate-600">{["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"][t.bulan - 1]} {t.tahun}</td>
-                    <td className="px-3 py-2.5 text-right text-rose-600 font-bold font-mono">{formatRupiah(t.jumlah)}</td>
+                    <td className="px-3 py-2.5 text-right text-rose-600 font-bold tabular-nums">{formatRupiah(t.jumlah)}</td>
                   </tr>
                 ))}
               </tbody>

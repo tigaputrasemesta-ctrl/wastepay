@@ -158,7 +158,7 @@ export default function ZonaPage() {
     <div className="p-6">
       <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mb-1">Zona Pengangkutan</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Zona Pengangkutan</h1>
           <p className="text-sm text-slate-500 font-medium max-w-3xl">
             Area zonasi operasional di dalam kelurahan untuk pembagian rute dan penugasan armada petugas angkut sampah.
           </p>

@@ -38,7 +38,7 @@ export default function LacakPage() {
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
           <span>Live Tracking GPS Armada</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
           Lacak Armada Sampah <span className="text-emerald-600">Real-Time.</span>
         </h1>
         <p className="text-sm md:text-base text-slate-600 mt-3 leading-relaxed">
@@ -58,7 +58,7 @@ export default function LacakPage() {
                 const Icon = p.icon;
                 return (
                   <div key={p.no} className="flex gap-4 items-start">
-                    <div className="w-10 h-10 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-700 shrink-0 font-black text-xs">
+                    <div className="w-10 h-10 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-700 shrink-0 font-bold text-xs">
                       {p.no}
                     </div>
                     <div>

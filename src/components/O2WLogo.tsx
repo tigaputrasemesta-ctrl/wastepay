@@ -28,7 +28,7 @@ export default function O2WLogo({
       <span className={`bg-emerald-600 text-white font-bold tracking-wider rounded-lg ${badgeSize} shadow-2xs`}>
         UPS
       </span>
-      <span className={`font-black font-display tracking-tight text-slate-900 ${textSize}`}>
+      <span className={`font-extrabold tracking-tight text-slate-900 ${textSize}`}>
         HERU<span className="text-emerald-600">.</span>
       </span>
     </div>

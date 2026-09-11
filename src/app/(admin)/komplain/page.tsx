@@ -51,8 +51,8 @@ export default function KomplainPage() {
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Komplain</h1>
-        <p className="text-xs font-medium text-slate-500 mt-1">Kelola laporan dan komplain penanganan sampah warga</p>
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Komplain</h1>
+        <p className="text-sm text-slate-500 font-medium">Kelola laporan dan komplain penanganan sampah warga</p>
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm">

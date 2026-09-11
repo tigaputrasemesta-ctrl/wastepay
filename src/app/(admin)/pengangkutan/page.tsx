@@ -168,8 +168,8 @@ export default function PengangkutanPage() {
     <div className="p-4 md:p-6">
       {profil && <LacakLokasi profil={profil} kendaraan={kendaraanSaya} />}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Pengangkutan</h1>
-        <p className="text-xs font-medium text-slate-500 mt-1">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Pengangkutan</h1>
+        <p className="text-sm text-slate-500 font-medium">
           {user?.role === "petugas" ? "Tugas pengangkutan hari ini" : "Riwayat pengangkutan sampah"}
         </p>
       </div>

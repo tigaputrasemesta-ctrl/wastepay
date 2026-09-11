@@ -94,11 +94,11 @@ export default function MobileHome() {
         <div className="grid grid-cols-3 gap-2 mt-4 pt-3.5 border-t border-white/15 text-center">
           <div className="bg-white/10 rounded-2xl py-2 px-1">
             <p className="text-[10px] text-emerald-100 font-medium">Tugas Angkut</p>
-            <p className="text-base font-black mt-0.5">{jumlahTugas !== null ? jumlahTugas : "—"}</p>
+            <p className="text-lg font-bold tabular-nums mt-0.5">{jumlahTugas !== null ? jumlahTugas : "—"}</p>
           </div>
           <div className="bg-white/10 rounded-2xl py-2 px-1">
             <p className="text-[10px] text-emerald-100 font-medium">Calon Warga</p>
-            <p className="text-base font-black mt-0.5">{jumlahCalon !== null ? jumlahCalon : "—"}</p>
+            <p className="text-lg font-bold tabular-nums mt-0.5">{jumlahCalon !== null ? jumlahCalon : "—"}</p>
           </div>
           <div className="bg-white/10 rounded-2xl py-2 px-1">
             <p className="text-[10px] text-emerald-100 font-medium">Presensi</p>

@@ -14,7 +14,7 @@ export default function UnduhPage() {
       <header className="border-b border-slate-200/80 px-6 py-4 bg-white/90 backdrop-blur-md sticky top-0 z-30">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
-            <span className="w-9 h-9 rounded-xl bg-emerald-600 text-white font-black flex items-center justify-center text-base shadow-sm">
+            <span className="w-9 h-9 rounded-xl bg-emerald-600 text-white font-extrabold flex items-center justify-center text-base shadow-sm">
               W
             </span>
             <div className="leading-tight">

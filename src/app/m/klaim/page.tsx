@@ -208,12 +208,12 @@ export default function MobileKlaim() {
                     <span className="inline-block text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md mb-1">
                       {KATEGORI.find((x) => x.value === k.kategori)?.label || k.kategori}
                     </span>
-                    <p className="text-xs font-mono text-slate-400">
+                    <p className="text-xs text-slate-400 font-medium">
                       {format(new Date(k.tanggal), "d MMM yyyy", { locale: id })}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-base font-black text-slate-900">
+                    <p className="text-base font-bold tabular-nums text-slate-900">
                       Rp {k.nominal.toLocaleString("id-ID")}
                     </p>
                     <span className={`inline-block px-2.5 py-0.5 text-[10px] font-semibold rounded-full mt-1 ${meta.cls}`}>

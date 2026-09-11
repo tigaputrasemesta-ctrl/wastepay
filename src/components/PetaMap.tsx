@@ -335,7 +335,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
               🗺️ PETA OPERASIONAL DEPOK
             </span>
           </div>
-          <div className="flex items-center gap-2 font-mono text-[11px] flex-wrap">
+          <div className="flex items-center gap-2 text-[11px] font-semibold flex-wrap">
             <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-full font-medium">
               📍 {ruteTerpilih ? `RUTE: ${ruteTerpilih.nama}` : "SEMUA PELANGGAN"}
             </span>
@@ -491,7 +491,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                         setFilterStatus("semua");
                         setCari("");
                       }}
-                      className="text-[9px] font-mono text-[#facc15] hover:underline ml-2"
+                      className="text-[10px] font-bold text-amber-400 hover:underline ml-2"
                       title="Reset Filter"
                     >
                       [RESET]

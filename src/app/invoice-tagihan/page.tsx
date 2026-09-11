@@ -206,8 +206,8 @@ export default async function InvoiceTagihanPage({
                     <span className="meta-v">{alamatLengkap || "-"}</span>
                   </div>
                   <div className="meta-k-row">
-                    <span className="meta-k">No. WhatsApp</span>
-                    <span className="meta-v font-mono">{maskNoTelepon(tagihan.pelanggan.noTelepon)}</span>
+                    <span className="meta-k">Kontak WA / HP</span>
+                    <span className="meta-v font-medium">{maskNoTelepon(tagihan.pelanggan.noTelepon)}</span>
                   </div>
                 </div>
               </div>
@@ -228,7 +228,7 @@ export default async function InvoiceTagihanPage({
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="td-no font-mono">01</td>
+                    <td className="td-no tabular-nums">01</td>
                     <td className="td-desc">
                       <strong>
                         {tagihan.keterangan || "Jasa Pengangkutan & Pengolahan Sampah Lingkungan"}
@@ -237,27 +237,27 @@ export default async function InvoiceTagihanPage({
                         Pelayanan angkut sampah terpadu, pemilahan organik/anorganik, dan operasional TPS 3R
                       </p>
                     </td>
-                    <td className="td-period font-mono">{namaPeriode}</td>
-                    <td className="td-base text-right font-mono">{formatRupiahSkylite(rincian.base)}</td>
-                    <td className="td-ppn text-right font-mono">{formatRupiahSkylite(rincian.ppn)}</td>
-                    <td className="td-total text-right font-mono font-bold">
+                    <td className="td-period font-medium">{namaPeriode}</td>
+                    <td className="td-base text-right tabular-nums">{formatRupiahSkylite(rincian.base)}</td>
+                    <td className="td-ppn text-right tabular-nums">{formatRupiahSkylite(rincian.ppn)}</td>
+                    <td className="td-total text-right tabular-nums font-bold">
                       {formatRupiahSkylite(rincian.subTotalPpn)}
                     </td>
                   </tr>
 
                   {tagihan.denda ? (
                     <tr className="row-denda">
-                      <td className="td-no font-mono">02</td>
+                      <td className="td-no tabular-nums">02</td>
                       <td className="td-desc">
                         <strong className="text-rose-700">Denda / Sanksi Keterlambatan Pembayaran</strong>
                         <p className="item-subtext">
                           Biaya kompensasi administrasi keterlambatan pembayaran tagihan
                         </p>
                       </td>
-                      <td className="td-period font-mono">{namaPeriode}</td>
-                      <td className="td-base text-right font-mono">{formatRupiahSkylite(tagihan.denda)}</td>
-                      <td className="td-ppn text-right font-mono">Rp0,-</td>
-                      <td className="td-total text-right font-mono font-bold text-rose-700">
+                      <td className="td-period font-medium">{namaPeriode}</td>
+                      <td className="td-base text-right tabular-nums">{formatRupiahSkylite(tagihan.denda)}</td>
+                      <td className="td-ppn text-right tabular-nums">Rp0,-</td>
+                      <td className="td-total text-right tabular-nums font-bold text-rose-700">
                         {formatRupiahSkylite(tagihan.denda)}
                       </td>
                     </tr>
@@ -289,22 +289,22 @@ export default async function InvoiceTagihanPage({
               <div className="summary-right">
                 <div className="calc-row">
                   <span className="calc-label">Subtotal Tarif Pokok</span>
-                  <span className="calc-val font-mono">{formatRupiahSkylite(rincian.base)}</span>
+                  <span className="calc-val tabular-nums font-semibold">{formatRupiahSkylite(rincian.base)}</span>
                 </div>
                 <div className="calc-row">
                   <span className="calc-label">PPN {PPN_RATE}% (UU RI No. 7/2021)</span>
-                  <span className="calc-val font-mono">+ {formatRupiahSkylite(rincian.ppn)}</span>
+                  <span className="calc-val tabular-nums font-semibold">+ {formatRupiahSkylite(rincian.ppn)}</span>
                 </div>
                 {tagihan.denda ? (
                   <div className="calc-row text-rose-700">
                     <span className="calc-label">Denda Keterlambatan</span>
-                    <span className="calc-val font-mono">+ {formatRupiahSkylite(tagihan.denda)}</span>
+                    <span className="calc-val tabular-nums font-semibold">+ {formatRupiahSkylite(tagihan.denda)}</span>
                   </div>
                 ) : null}
 
                 <div className="grand-total-box">
                   <div className="grand-total-label">TOTAL TAGIHAN</div>
-                  <div className="grand-total-amount font-mono">
+                  <div className="grand-total-amount tabular-nums font-bold">
                     {formatRupiahSkylite(rincian.total)}
                   </div>
                 </div>
@@ -331,7 +331,7 @@ export default async function InvoiceTagihanPage({
                       {tagihan.tanggalLunas && (
                         <div className="paid-meta-item">
                           <span className="pm-label">Tanggal Lunas:</span>
-                          <span className="pm-value font-mono font-semibold">
+                          <span className="pm-value tabular-nums font-semibold">
                             {formatTanggalWaktuIndo(tagihan.tanggalLunas)}
                           </span>
                         </div>
@@ -409,7 +409,7 @@ export default async function InvoiceTagihanPage({
               <div className="bottom-left">
                 <span>UPS HERU DEPOK — PENGELOLAAN SAMPAH RAMAH LINGKUNGAN</span>
               </div>
-              <div className="bottom-right font-mono">
+              <div className="bottom-right tabular-nums text-xs">
                 <span>Dokumen di-generate: {formatTanggalWaktuIndo(new Date())}</span>
               </div>
             </div>

@@ -307,11 +307,11 @@ export default function LacakJemputan() {
             {jarak != null && etaMenit != null && (
               <div className="grid grid-cols-2 gap-2.5">
                 <div className="bg-emerald-50 rounded-2xl border border-emerald-100 p-3 text-center">
-                  <p className="text-2xl font-black text-emerald-800 leading-none">{etaMenit}</p>
+                  <p className="text-2xl font-extrabold text-emerald-800 leading-none tabular-nums">{etaMenit}</p>
                   <p className="text-[10px] font-bold uppercase text-emerald-700 mt-1">Perkiraan Menit</p>
                 </div>
                 <div className="bg-slate-50 rounded-2xl border border-slate-200/70 p-3 text-center">
-                  <p className="text-2xl font-black text-slate-800 leading-none">{formatJarak(jarak)}</p>
+                  <p className="text-2xl font-extrabold text-slate-800 leading-none tabular-nums">{formatJarak(jarak)}</p>
                   <p className="text-[10px] font-bold uppercase text-slate-500 mt-1">Jarak dari Rumah</p>
                 </div>
               </div>

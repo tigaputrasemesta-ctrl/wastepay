@@ -137,14 +137,14 @@ export default function DetailPelangganPage() {
           </svg>
         </button>
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">{data.nama}</h1>
-          <p className="text-sm text-gray-600 font-bold">Detail pelanggan</p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">{data.nama}</h1>
+          <p className="text-sm text-slate-500 font-medium">Detail pelanggan</p>
         </div>
         <span className={`ml-auto inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
           data.status === "aktif" ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" :
           data.status === "calon" ? "bg-sky-400/10 text-sky-400 border border-sky-500/30" :
           data.status === "libur" ? "bg-amber-400/10 text-amber-400 border border-amber-500/30" :
-          "bg-gray-100 border border-slate-200/80 text-gray-600 font-bold border border-slate-200/80"
+          "bg-slate-100 border border-slate-200 text-slate-600 font-medium"
         }`}>
           {data.status === "calon" ? "Calon" : data.status.charAt(0).toUpperCase() + data.status.slice(1)}
         </span>
@@ -179,8 +179,8 @@ export default function DetailPelangganPage() {
           {/* Kode Pelanggan & Barcode */}
           {data.kodePelanggan && (
             <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 text-center">
-              <p className="text-xs text-gray-400 font-bold uppercase tracking-wide mb-2">Kode Pelanggan</p>
-              <p className="text-2xl font-black text-slate-900 tracking-tight tracking-widest mb-3">{data.kodePelanggan}</p>
+              <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide mb-2">Kode Pelanggan</p>
+              <p className="text-2xl font-extrabold text-slate-900 tracking-tight tracking-widest mb-3 font-mono">{data.kodePelanggan}</p>
               {/* Barcode visual */}
               <svg className="mx-auto" width="220" height="50" viewBox="0 0 220 50">
                 <rect x="0" y="0" width="4" height="44" fill="#000" />
@@ -282,7 +282,7 @@ export default function DetailPelangganPage() {
             <div className="space-y-3 text-sm">
               <div>
                 <p className="text-xs text-slate-500 font-medium">No. Telepon</p>
-                <p className="font-semibold text-slate-900 font-mono text-sm">{data.noTelepon}</p>
+                <p className="font-semibold text-slate-900 text-sm">{data.noTelepon}</p>
               </div>
               <div>
                 <p className="text-xs text-slate-500 font-medium">Kategori</p>
@@ -440,8 +440,8 @@ export default function DetailPelangganPage() {
                         <td className="px-3 py-2.5 font-medium text-slate-900">
                           {bulanList[t.bulan - 1]} {t.tahun}
                         </td>
-                        <td className="px-3 py-2.5 text-right font-semibold text-slate-900 font-mono">{formatRupiah(t.jumlah)}</td>
-                        <td className="px-3 py-2.5 text-slate-500 font-mono text-xs">{formatDate(t.jatuhTempo)}</td>
+                        <td className="px-3 py-2.5 text-right font-semibold text-slate-900 tabular-nums">{formatRupiah(t.jumlah)}</td>
+                        <td className="px-3 py-2.5 text-slate-500 text-xs">{formatDate(t.jatuhTempo)}</td>
                         <td className="px-3 py-2.5 text-center">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
                             t.status === "lunas" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
@@ -479,8 +479,8 @@ export default function DetailPelangganPage() {
                   <tbody>
                     {data.pembayaran.map((p) => (
                       <tr key={p.id} className="border-b border-slate-100 hover:bg-slate-50/50">
-                        <td className="px-3 py-2.5 text-slate-500 font-mono text-xs">{formatDate(p.createdAt)}</td>
-                        <td className="px-3 py-2.5 text-right font-semibold text-emerald-600 font-mono">{formatRupiah(p.jumlah)}</td>
+                        <td className="px-3 py-2.5 text-slate-500 text-xs">{formatDate(p.createdAt)}</td>
+                        <td className="px-3 py-2.5 text-right font-semibold text-emerald-600 tabular-nums">{formatRupiah(p.jumlah)}</td>
                         <td className="px-3 py-2.5 text-slate-600 capitalize">
                           {p.metode === "duitku" ? "Payment Gateway" : p.metode.charAt(0).toUpperCase() + p.metode.slice(1)}
                         </td>
@@ -533,7 +533,7 @@ export default function DetailPelangganPage() {
                   <tbody>
                     {data.pengangkutan.map((p) => (
                       <tr key={p.id} className="border-b border-slate-100 hover:bg-slate-50/50">
-                        <td className="px-3 py-2.5 text-slate-500 font-mono text-xs">{formatDate(p.tanggal)}</td>
+                        <td className="px-3 py-2.5 text-slate-500 text-xs">{formatDate(p.tanggal)}</td>
                         <td className="px-3 py-2.5 text-slate-900 font-medium">{p.petugas?.nama || "—"}</td>
                         <td className="px-3 py-2.5 text-center">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${

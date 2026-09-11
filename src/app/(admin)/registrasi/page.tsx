@@ -261,8 +261,8 @@ export default function DaftarPelangganPage() {
         <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wider">
           REGISTRASI
         </p>
-        <h1 className="text-2xl font-bold text-slate-900 mt-1">Pendaftaran Pelanggan Baru</h1>
-        <p className="text-sm text-slate-500 mt-1">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Pendaftaran Pelanggan Baru</h1>
+        <p className="text-sm text-slate-500 font-medium mt-1">
           Pendataan internal — petugas mengisi data pelanggan untuk layanan iuran sampah
         </p>
       </div>
@@ -599,7 +599,7 @@ export default function DaftarPelangganPage() {
                       placeholder="Contoh: 50000"
                     />
                     {parseFloat(form.customTarif) > 0 && (
-                      <p className="text-xs text-emerald-600 mt-1 font-mono font-semibold">= {formatRupiah(parseFloat(form.customTarif))} / bulan</p>
+                      <p className="text-xs text-emerald-600 mt-1 font-semibold">= {formatRupiah(parseFloat(form.customTarif))} / bulan</p>
                     )}
                   </div>
                 )}
@@ -681,7 +681,7 @@ export default function DaftarPelangganPage() {
                 <div>
                   <p className="label !mb-1 text-xs font-semibold text-slate-500">IDENTITAS</p>
                   <p className="font-semibold text-slate-900 text-base">{form.nama}</p>
-                  <p className="text-sm text-slate-600 font-mono">{form.noTelepon}</p>
+                  <p className="text-sm text-slate-600">{form.noTelepon}</p>
                   <p className="text-sm text-slate-600 mt-1">
                     {KATEGORI_OPTIONS.find((k) => k.value === form.kategori)?.label || form.kategori}
                   </p>
@@ -750,7 +750,7 @@ export default function DaftarPelangganPage() {
               {form.catatan && (
                 <div>
                   <p className="label !mb-1">CATATAN INTERNAL</p>
-                  <p className="text-sm text-gray-600 font-bold">{form.catatan}</p>
+                  <p className="text-sm text-slate-600 font-medium">{form.catatan}</p>
                 </div>
               )}
               {form.fotoRumah && (

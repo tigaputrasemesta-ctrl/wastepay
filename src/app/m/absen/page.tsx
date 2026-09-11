@@ -109,13 +109,13 @@ export default function MobileAbsen() {
         <div className="grid grid-cols-2 gap-3 text-center">
           <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4">
             <span className="text-[11px] font-medium text-slate-400 block mb-1">Jam Masuk</span>
-            <p className={`text-lg font-black tracking-tight ${sudahMasuk ? "text-emerald-600" : "text-slate-300"}`}>
+            <p className={`text-lg font-bold tabular-nums tracking-tight ${sudahMasuk ? "text-emerald-600" : "text-slate-300"}`}>
               {sudahMasuk ? format(new Date(absen!.waktuMasuk!), "HH:mm", { locale: id }) : "— : —"}
             </p>
           </div>
           <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4">
             <span className="text-[11px] font-medium text-slate-400 block mb-1">Jam Selesai</span>
-            <p className={`text-lg font-black tracking-tight ${sudahSelesai ? "text-emerald-600" : "text-slate-300"}`}>
+            <p className={`text-lg font-bold tabular-nums tracking-tight ${sudahSelesai ? "text-emerald-600" : "text-slate-300"}`}>
               {sudahSelesai ? format(new Date(absen!.waktuSelesai!), "HH:mm", { locale: id }) : "— : —"}
             </p>
           </div>
@@ -163,8 +163,8 @@ export default function MobileAbsen() {
 
       {koord && (
         <div className="text-center">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-medium text-slate-500 bg-slate-100">
-            📍 GPS: {koord.lat.toFixed(5)}, {koord.lng.toFixed(5)}
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium text-slate-500 bg-slate-100">
+            📍 GPS: <span className="font-mono tabular-nums">{koord.lat.toFixed(5)}, {koord.lng.toFixed(5)}</span>
           </span>
         </div>
       )}

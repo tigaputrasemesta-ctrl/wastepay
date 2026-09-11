@@ -52,7 +52,7 @@ function Sticker({ p, idx }: { p: Pelanggan; idx: number }) {
   return (
     <div className="relative w-[92mm] h-[54mm] bg-white text-black p-2.5 flex flex-col overflow-hidden print:shadow-none" style={{ breakInside: "avoid" }}>
       <div className="flex items-center justify-between border-b-2 border-black pb-1">
-        <span className="font-black uppercase tracking-tighter font-bold text-[9px] tracking-[0.15em]">UPS HERU DEPOK</span>
+        <span className="font-extrabold uppercase text-[9px] tracking-wider">UPS HERU DEPOK</span>
         <span className="font-mono font-bold text-[8px] border border-black px-1">{KATEGORI_LABEL[p.kategori] ?? "PELANGGAN"}</span>
       </div>
       <div className="text-center mt-1.5">
@@ -164,7 +164,7 @@ export default function StickerPage() {
     <div className="p-6">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Stiker Nomor Pelanggan</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Stiker Nomor Pelanggan</h1>
           <p className="text-sm text-slate-500 font-medium mt-1">
             Cetak label yang ditempel di depan rumah tiap pelanggan — petugas angkut tinggal scan/lihat kode saat mengambil sampah.
           </p>

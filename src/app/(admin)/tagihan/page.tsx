@@ -566,8 +566,8 @@ export default function TagihanPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">{isPetugas ? "Tagihan Saya" : "Tagihan"}</h1>
-          <p className="text-sm text-gray-600 font-bold mt-1">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">{isPetugas ? "Tagihan Saya" : "Tagihan"}</h1>
+          <p className="text-sm text-slate-500 font-medium">
             {isPetugas
               ? "Tunggakan & tagihan warga di wilayah Anda — terima bayar tunai langsung"
               : "Kelola tagihan iuran bulanan"}
@@ -786,7 +786,7 @@ export default function TagihanPage() {
               setBulan((new Date().getMonth() + 1).toString());
               setTahun(new Date().getFullYear().toString());
             }}
-            className="px-3 py-2 text-xs font-black uppercase text-gray-800 bg-gray-200 hover:bg-gray-300 border border-slate-200/80 transition"
+            className="px-3.5 py-2 text-xs font-semibold uppercase text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl border border-slate-200 transition"
           >
             Reset Filter
           </button>
@@ -865,7 +865,7 @@ export default function TagihanPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="font-semibold text-slate-900">{t.pelanggan.nama}</div>
-                      <div className="text-xs text-slate-500 font-mono">{t.pelanggan.noTelepon || "—"}</div>
+                      <div className="text-xs text-slate-500">{t.pelanggan.noTelepon || "—"}</div>
                       <div className="mt-1 flex flex-wrap gap-1 items-center">
                         {t.pelanggan.kelurahan?.nama && (
                           <span className="inline-flex items-center text-[10px] font-medium bg-slate-50 text-slate-700 border border-slate-200 px-1.5 py-0.5 rounded-md">
@@ -889,16 +889,16 @@ export default function TagihanPage() {
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-gray-600 font-bold">
+                    <td className="px-4 py-3 text-slate-700 font-medium">
                       {bulanList.find((b) => b.value === t.bulan.toString())?.label} {t.tahun}
                     </td>
-                    <td className="px-4 py-3 text-right font-medium">
+                    <td className="px-4 py-3 text-right font-semibold text-slate-900 tabular-nums">
                       {formatRupiah(t.jumlah + (t.denda || 0))}
-                      {t.denda ? <span className="block text-xs text-red-600">+ denda {formatRupiah(t.denda)}</span> : null}
+                      {t.denda ? <span className="block text-xs text-rose-600 font-medium">+ denda {formatRupiah(t.denda)}</span> : null}
                     </td>
-                    <td className="px-4 py-3 text-gray-600 font-bold text-xs">
+                    <td className="px-4 py-3 text-slate-600 font-medium text-xs">
                       <div>{formatDate(t.jatuhTempo)}</div>
-                      <div className="text-[10px] text-gray-500 font-mono">
+                      <div className="text-[10px] text-slate-400 font-normal">
                         Siklus tgl {new Date(t.jatuhTempo).getDate()}
                       </div>
                     </td>
@@ -1004,7 +1004,7 @@ export default function TagihanPage() {
                             <td className="px-4 py-2.5 text-xs text-slate-600">
                               <div>{p.jatuhTempo ? formatDate(p.jatuhTempo) : "-"}</div>
                               {p.hariSiklus ? (
-                                <span className="text-[10px] text-sky-700 font-mono">
+                                <span className="text-[10px] text-sky-700 font-medium">
                                   Siklus tgl {p.hariSiklus}
                                 </span>
                               ) : null}
@@ -1097,7 +1097,7 @@ export default function TagihanPage() {
             <form onSubmit={handleBayar} className="p-6 space-y-4">
               <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                 <p className="text-xs text-slate-500 font-medium">Jumlah Tagihan</p>
-                <p className="text-2xl font-black text-emerald-600 tracking-tight mt-0.5">{formatRupiah(showBayar.jumlah)}</p>
+                <p className="text-2xl font-extrabold text-emerald-600 tracking-tight mt-0.5 tabular-nums">{formatRupiah(showBayar.jumlah)}</p>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1.5">Metode Pembayaran</label>
@@ -1393,11 +1393,11 @@ export default function TagihanPage() {
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   <div className="border border-slate-200/80 rounded-2xl p-4 bg-white shadow-xs">
                     <p className="text-xs font-semibold text-slate-500">Target Warga</p>
-                    <p className="text-2xl font-black text-slate-900 mt-1">{blastPreview.totalWarga} <span className="text-xs font-normal text-slate-500">Orang</span></p>
+                    <p className="text-2xl font-extrabold text-slate-900 mt-1 tabular-nums">{blastPreview.totalWarga} <span className="text-xs font-normal text-slate-500">Orang</span></p>
                   </div>
                   <div className="border border-slate-200/80 rounded-2xl p-4 bg-white shadow-xs">
                     <p className="text-xs font-semibold text-slate-500">Total Nominal Tagihan</p>
-                    <p className="text-xl font-black text-emerald-600 mt-1">{formatRupiah(blastPreview.totalNominal)}</p>
+                    <p className="text-xl font-extrabold text-emerald-600 mt-1 tabular-nums">{formatRupiah(blastPreview.totalNominal)}</p>
                   </div>
                   <div className="border border-slate-200/80 rounded-2xl p-4 bg-white shadow-xs col-span-2 sm:col-span-1">
                     <p className="text-xs font-semibold text-slate-500">Filter Zona & RT</p>
@@ -1446,11 +1446,11 @@ export default function TagihanPage() {
                     {blastPreview.recipients.map((r, idx) => (
                       <div key={r.tagihanId} className="p-3 flex items-center justify-between hover:bg-slate-50/60 transition-colors gap-2">
                         <div className="flex items-center gap-2.5">
-                          <span className="font-mono text-slate-400 font-medium w-5 text-right">{idx + 1}.</span>
+                          <span className="tabular-nums text-slate-400 font-medium w-5 text-right">{idx + 1}.</span>
                           <div>
                             <p className="font-semibold text-slate-900">{r.nama}</p>
                             <div className="text-[11px] text-slate-500 flex items-center gap-1.5 flex-wrap mt-0.5">
-                              <span className="font-mono">{r.noTelepon || "Tanpa No. WA"}</span>
+                              <span className="tabular-nums font-medium text-slate-600">{r.noTelepon || "Tanpa No. WA"}</span>
                               {r.kelurahanNama && r.kelurahanNama !== "-" && (
                                 <span className="border border-slate-200 px-1.5 py-0.2 bg-slate-100 text-slate-600 rounded text-[10px]">
                                   🏛️ {r.kelurahanNama}

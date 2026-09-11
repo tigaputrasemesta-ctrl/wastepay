@@ -69,11 +69,11 @@
   }
 
   .stencil {
-    @apply font-mono text-[11px] font-bold text-slate-400 uppercase tracking-wider;
+    @apply text-[11px] font-semibold text-slate-500 uppercase tracking-wider;
   }
 
   .stat-num {
-    @apply font-mono font-bold text-slate-900 tracking-tight;
+    @apply font-bold tabular-nums text-slate-900 tracking-tight;
   }
 
   .hm-marquee {

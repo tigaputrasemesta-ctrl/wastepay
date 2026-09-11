@@ -531,8 +531,8 @@ export default function FormDaftar() {
             <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex justify-between items-center gap-3">
               <div className="min-w-0">
                 <p className="font-extrabold text-xs">Titik Lokasi Tersimpan</p>
-                <p className="text-[11px] text-emerald-700 font-mono break-all mt-0.5">
-                  {gpsData.lat.toFixed(6)}, {gpsData.lng.toFixed(6)} · ±{Math.round(gpsData.acc)} m
+                <p className="text-[11px] text-emerald-700 font-medium break-all mt-0.5">
+                  <span className="font-mono tabular-nums">{gpsData.lat.toFixed(6)}, {gpsData.lng.toFixed(6)}</span> · ±{Math.round(gpsData.acc)} m
                   {koordinatSumber === "exif_foto" ? " (dari foto)" : koordinatSumber === "manual" ? " (manual)" : ""}
                 </p>
               </div>
