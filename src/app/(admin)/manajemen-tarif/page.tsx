@@ -174,22 +174,22 @@ export default function TarifPage() {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="mb-8 border-b-4 border-black pb-4">
-        <h1 className="text-4xl sm:text-5xl font-black uppercase tracking-tighter text-black leading-none mb-1">
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-black leading-none mb-1">
           MANAJEMEN TARIF
         </h1>
-        <p className="text-xs font-bold uppercase tracking-widest bg-yellow-300 inline-block px-2 border-2 border-black">
+        <p className="text-xs font-bold uppercase tracking-widest bg-yellow-300 inline-block px-2 border border-slate-200/80">
           Kelola Harga Kategori Dasar dan Paket Langganan Khusus
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Kategori Tarif */}
-        <div className="bg-white border-4 border-black shadow-[8px_8px_0_0_rgba(0,0,0,1)]">
+        <div className="bg-white border-4 border-black shadow-lg">
           <div className="flex items-center justify-between p-4 border-b-4 border-black bg-blue-300">
             <h2 className="font-black uppercase tracking-widest text-lg">Kategori Dasar</h2>
             <button
               onClick={() => openKat(null)}
-              className="bg-white border-2 border-black px-3 py-1 text-xs font-black uppercase hover:bg-black hover:text-white transition-colors shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
+              className="bg-white border border-slate-200/80 px-3 py-1 text-xs font-black uppercase hover:bg-black hover:text-white transition-colors shadow-xs"
             >
               + Tambah
             </button>
@@ -197,10 +197,10 @@ export default function TarifPage() {
           <div className="p-0 overflow-x-auto">
             <table className="w-full text-sm text-left">
               <thead>
-                <tr className="bg-gray-100 text-black font-black uppercase text-[10px] border-b-2 border-black">
-                  <th className="px-4 py-3 border-r-2 border-black">Label</th>
-                  <th className="px-4 py-3 border-r-2 border-black">Kode ID</th>
-                  <th className="px-4 py-3 border-r-2 border-black">Tarif (Rp)</th>
+                <tr className="bg-gray-100 text-black font-black uppercase text-[10px] border-b border-slate-200">
+                  <th className="px-4 py-3 border-r border-slate-200">Label</th>
+                  <th className="px-4 py-3 border-r border-slate-200">Kode ID</th>
+                  <th className="px-4 py-3 border-r border-slate-200">Tarif (Rp)</th>
                   <th className="px-4 py-3 text-center">Aksi</th>
                 </tr>
               </thead>
@@ -211,14 +211,14 @@ export default function TarifPage() {
                   </tr>
                 ) : (
                   kategoris.map(k => (
-                    <tr key={k.id} className="border-b-2 border-black hover:bg-yellow-50">
-                      <td className="px-4 py-3 border-r-2 border-black font-black uppercase text-xs">{k.label}</td>
-                      <td className="px-4 py-3 border-r-2 border-black font-bold text-xs"><span className="bg-gray-200 px-1 border border-black">{k.kategori}</span></td>
-                      <td className="px-4 py-3 border-r-2 border-black font-black text-green-600">{k.tarif.toLocaleString("id-ID")}</td>
+                    <tr key={k.id} className="border-b border-slate-200 hover:bg-yellow-50">
+                      <td className="px-4 py-3 border-r border-slate-200 font-black uppercase text-xs">{k.label}</td>
+                      <td className="px-4 py-3 border-r border-slate-200 font-bold text-xs"><span className="bg-gray-200 px-1 border border-slate-200/80">{k.kategori}</span></td>
+                      <td className="px-4 py-3 border-r border-slate-200 font-black text-green-600">{k.tarif.toLocaleString("id-ID")}</td>
                       <td className="px-4 py-3 text-center">
                         <div className="flex justify-center gap-2">
-                          <button onClick={() => openKat(k)} className="px-2 py-1 bg-yellow-300 border-2 border-black text-[10px] font-black uppercase shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:bg-yellow-400">Edit</button>
-                          <button onClick={() => setDeleteKat(k)} className="px-2 py-1 bg-red-400 text-white border-2 border-black text-[10px] font-black uppercase shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:bg-red-500">Del</button>
+                          <button onClick={() => openKat(k)} className="px-2 py-1 bg-yellow-300 border border-slate-200/80 text-[10px] font-black uppercase shadow-xs hover:bg-yellow-400">Edit</button>
+                          <button onClick={() => setDeleteKat(k)} className="px-2 py-1 bg-red-400 text-white border border-slate-200/80 text-[10px] font-black uppercase shadow-xs hover:bg-red-500">Del</button>
                         </div>
                       </td>
                     </tr>
@@ -230,12 +230,12 @@ export default function TarifPage() {
         </div>
 
         {/* Paket Langganan */}
-        <div className="bg-white border-4 border-black shadow-[8px_8px_0_0_rgba(0,0,0,1)]">
+        <div className="bg-white border-4 border-black shadow-lg">
           <div className="flex items-center justify-between p-4 border-b-4 border-black bg-purple-300">
             <h2 className="font-black uppercase tracking-widest text-lg">Paket Khusus</h2>
             <button
               onClick={() => openPaket(null)}
-              className="bg-white border-2 border-black px-3 py-1 text-xs font-black uppercase hover:bg-black hover:text-white transition-colors shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
+              className="bg-white border border-slate-200/80 px-3 py-1 text-xs font-black uppercase hover:bg-black hover:text-white transition-colors shadow-xs"
             >
               + Tambah
             </button>
@@ -243,11 +243,11 @@ export default function TarifPage() {
           <div className="p-0 overflow-x-auto">
             <table className="w-full text-sm text-left">
               <thead>
-                <tr className="bg-gray-100 text-black font-black uppercase text-[10px] border-b-2 border-black">
-                  <th className="px-4 py-3 border-r-2 border-black">Nama Paket</th>
-                  <th className="px-4 py-3 border-r-2 border-black">Kode ID</th>
-                  <th className="px-4 py-3 border-r-2 border-black">Deskripsi</th>
-                  <th className="px-4 py-3 border-r-2 border-black">Tarif (Rp)</th>
+                <tr className="bg-gray-100 text-black font-black uppercase text-[10px] border-b border-slate-200">
+                  <th className="px-4 py-3 border-r border-slate-200">Nama Paket</th>
+                  <th className="px-4 py-3 border-r border-slate-200">Kode ID</th>
+                  <th className="px-4 py-3 border-r border-slate-200">Deskripsi</th>
+                  <th className="px-4 py-3 border-r border-slate-200">Tarif (Rp)</th>
                   <th className="px-4 py-3 text-center">Aksi</th>
                 </tr>
               </thead>
@@ -258,15 +258,15 @@ export default function TarifPage() {
                   </tr>
                 ) : (
                   pakets.map(p => (
-                    <tr key={p.id} className="border-b-2 border-black hover:bg-yellow-50">
-                      <td className="px-4 py-3 border-r-2 border-black font-black uppercase text-xs">{p.nama}</td>
-                      <td className="px-4 py-3 border-r-2 border-black font-bold text-xs"><span className="bg-gray-200 px-1 border border-black">{p.kode || "—"}</span></td>
-                      <td className="px-4 py-3 border-r-2 border-black font-bold text-xs truncate max-w-[150px]" title={p.deskripsi || ""}>{p.deskripsi || "-"}</td>
-                      <td className="px-4 py-3 border-r-2 border-black font-black text-green-600">{p.harga != null ? p.harga.toLocaleString("id-ID") : "Variabel"}</td>
+                    <tr key={p.id} className="border-b border-slate-200 hover:bg-yellow-50">
+                      <td className="px-4 py-3 border-r border-slate-200 font-black uppercase text-xs">{p.nama}</td>
+                      <td className="px-4 py-3 border-r border-slate-200 font-bold text-xs"><span className="bg-gray-200 px-1 border border-slate-200/80">{p.kode || "—"}</span></td>
+                      <td className="px-4 py-3 border-r border-slate-200 font-bold text-xs truncate max-w-[150px]" title={p.deskripsi || ""}>{p.deskripsi || "-"}</td>
+                      <td className="px-4 py-3 border-r border-slate-200 font-black text-green-600">{p.harga != null ? p.harga.toLocaleString("id-ID") : "Variabel"}</td>
                       <td className="px-4 py-3 text-center">
                         <div className="flex justify-center gap-2">
-                          <button onClick={() => openPaket(p)} className="px-2 py-1 bg-yellow-300 border-2 border-black text-[10px] font-black uppercase shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:bg-yellow-400">Edit</button>
-                          <button onClick={() => setDeletePaket(p)} className="px-2 py-1 bg-red-400 text-white border-2 border-black text-[10px] font-black uppercase shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:bg-red-500">Del</button>
+                          <button onClick={() => openPaket(p)} className="px-2 py-1 bg-yellow-300 border border-slate-200/80 text-[10px] font-black uppercase shadow-xs hover:bg-yellow-400">Edit</button>
+                          <button onClick={() => setDeletePaket(p)} className="px-2 py-1 bg-red-400 text-white border border-slate-200/80 text-[10px] font-black uppercase shadow-xs hover:bg-red-500">Del</button>
                         </div>
                       </td>
                     </tr>
@@ -280,8 +280,8 @@ export default function TarifPage() {
 
       {/* Modal Kategori */}
       {showKatForm && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-white w-full max-w-md border-4 border-black shadow-[8px_8px_0_0_rgba(0,0,0,1)]">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+          <div className="bg-white w-full max-w-md border-4 border-black shadow-lg">
             <div className="p-4 border-b-4 border-black bg-blue-300 flex justify-between items-center">
               <h2 className="font-black uppercase tracking-widest">{katEditing ? "Edit Kategori" : "Tambah Kategori"}</h2>
               <button onClick={() => setShowKatForm(false)} className="font-black text-xl hover:text-white">&times;</button>
@@ -289,21 +289,21 @@ export default function TarifPage() {
             <form onSubmit={saveKat} className="p-5 space-y-4">
               <div>
                 <label className="block text-xs font-black uppercase mb-1">Kode ID (Tanpa spasi)</label>
-                <input type="text" value={katForm.kategori} onChange={e => setKatForm({...katForm, kategori: e.target.value})} className="w-full border-2 border-black px-3 py-2 text-sm font-bold shadow-[4px_4px_0_0_rgba(0,0,0,1)] focus:bg-yellow-100 outline-none" required placeholder="contoh: level_1" disabled={!!katEditing} />
+                <input type="text" value={katForm.kategori} onChange={e => setKatForm({...katForm, kategori: e.target.value})} className="w-full border border-slate-200/80 px-3 py-2 text-sm font-bold shadow-sm focus:bg-yellow-100 outline-none" required placeholder="contoh: level_1" disabled={!!katEditing} />
               </div>
               <div>
                 <label className="block text-xs font-black uppercase mb-1">Label Tampilan</label>
-                <input type="text" value={katForm.label} onChange={e => setKatForm({...katForm, label: e.target.value})} className="w-full border-2 border-black px-3 py-2 text-sm font-bold shadow-[4px_4px_0_0_rgba(0,0,0,1)] focus:bg-yellow-100 outline-none" required placeholder="contoh: Rumah Tangga Biasa" />
+                <input type="text" value={katForm.label} onChange={e => setKatForm({...katForm, label: e.target.value})} className="w-full border border-slate-200/80 px-3 py-2 text-sm font-bold shadow-sm focus:bg-yellow-100 outline-none" required placeholder="contoh: Rumah Tangga Biasa" />
               </div>
               <div>
                 <label className="block text-xs font-black uppercase mb-1">Tarif Bulanan (Rp)</label>
-                <input type="number" value={katForm.tarif} onChange={e => setKatForm({...katForm, tarif: e.target.value})} className="w-full border-2 border-black px-3 py-2 text-sm font-bold shadow-[4px_4px_0_0_rgba(0,0,0,1)] focus:bg-yellow-100 outline-none" required />
+                <input type="number" value={katForm.tarif} onChange={e => setKatForm({...katForm, tarif: e.target.value})} className="w-full border border-slate-200/80 px-3 py-2 text-sm font-bold shadow-sm focus:bg-yellow-100 outline-none" required />
               </div>
               <div>
                 <label className="block text-xs font-black uppercase mb-1">Deskripsi</label>
-                <textarea value={katForm.deskripsi} onChange={e => setKatForm({...katForm, deskripsi: e.target.value})} className="w-full border-2 border-black px-3 py-2 text-sm font-bold shadow-[4px_4px_0_0_rgba(0,0,0,1)] focus:bg-yellow-100 outline-none" rows={2} />
+                <textarea value={katForm.deskripsi} onChange={e => setKatForm({...katForm, deskripsi: e.target.value})} className="w-full border border-slate-200/80 px-3 py-2 text-sm font-bold shadow-sm focus:bg-yellow-100 outline-none" rows={2} />
               </div>
-              <button type="submit" className="w-full bg-green-400 border-2 border-black py-3 font-black uppercase shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:bg-green-300">Simpan</button>
+              <button type="submit" className="w-full bg-green-400 border border-slate-200/80 py-3 font-black uppercase shadow-sm hover:bg-green-300">Simpan</button>
             </form>
           </div>
         </div>
@@ -311,8 +311,8 @@ export default function TarifPage() {
 
       {/* Modal Paket */}
       {showPaketForm && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-white w-full max-w-md border-4 border-black shadow-[8px_8px_0_0_rgba(0,0,0,1)]">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+          <div className="bg-white w-full max-w-md border-4 border-black shadow-lg">
             <div className="p-4 border-b-4 border-black bg-purple-300 flex justify-between items-center">
               <h2 className="font-black uppercase tracking-widest">{paketEditing ? "Edit Paket" : "Tambah Paket"}</h2>
               <button onClick={() => setShowPaketForm(false)} className="font-black text-xl hover:text-white">&times;</button>
@@ -320,21 +320,21 @@ export default function TarifPage() {
             <form onSubmit={savePaket} className="p-5 space-y-4">
               <div>
                 <label className="block text-xs font-black uppercase mb-1">Kode ID (opsional)</label>
-                <input type="text" value={paketForm.kode} onChange={e => setPaketForm({...paketForm, kode: e.target.value})} className="w-full border-2 border-black px-3 py-2 text-sm font-bold shadow-[4px_4px_0_0_rgba(0,0,0,1)] focus:bg-yellow-100 outline-none" placeholder="contoh: paket_event" />
+                <input type="text" value={paketForm.kode} onChange={e => setPaketForm({...paketForm, kode: e.target.value})} className="w-full border border-slate-200/80 px-3 py-2 text-sm font-bold shadow-sm focus:bg-yellow-100 outline-none" placeholder="contoh: paket_event" />
               </div>
               <div>
                 <label className="block text-xs font-black uppercase mb-1">Nama Paket</label>
-                <input type="text" value={paketForm.nama} onChange={e => setPaketForm({...paketForm, nama: e.target.value})} className="w-full border-2 border-black px-3 py-2 text-sm font-bold shadow-[4px_4px_0_0_rgba(0,0,0,1)] focus:bg-yellow-100 outline-none" required />
+                <input type="text" value={paketForm.nama} onChange={e => setPaketForm({...paketForm, nama: e.target.value})} className="w-full border border-slate-200/80 px-3 py-2 text-sm font-bold shadow-sm focus:bg-yellow-100 outline-none" required />
               </div>
               <div>
                 <label className="block text-xs font-black uppercase mb-1">Harga Bulanan (Rp) — kosongkan jika variabel</label>
-                <input type="number" value={paketForm.harga} onChange={e => setPaketForm({...paketForm, harga: e.target.value})} className="w-full border-2 border-black px-3 py-2 text-sm font-bold shadow-[4px_4px_0_0_rgba(0,0,0,1)] focus:bg-yellow-100 outline-none" />
+                <input type="number" value={paketForm.harga} onChange={e => setPaketForm({...paketForm, harga: e.target.value})} className="w-full border border-slate-200/80 px-3 py-2 text-sm font-bold shadow-sm focus:bg-yellow-100 outline-none" />
               </div>
               <div>
                 <label className="block text-xs font-black uppercase mb-1">Deskripsi</label>
-                <textarea value={paketForm.deskripsi} onChange={e => setPaketForm({...paketForm, deskripsi: e.target.value})} className="w-full border-2 border-black px-3 py-2 text-sm font-bold shadow-[4px_4px_0_0_rgba(0,0,0,1)] focus:bg-yellow-100 outline-none" rows={3} />
+                <textarea value={paketForm.deskripsi} onChange={e => setPaketForm({...paketForm, deskripsi: e.target.value})} className="w-full border border-slate-200/80 px-3 py-2 text-sm font-bold shadow-sm focus:bg-yellow-100 outline-none" rows={3} />
               </div>
-              <button type="submit" className="w-full bg-green-400 border-2 border-black py-3 font-black uppercase shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:bg-green-300">Simpan</button>
+              <button type="submit" className="w-full bg-green-400 border border-slate-200/80 py-3 font-black uppercase shadow-sm hover:bg-green-300">Simpan</button>
             </form>
           </div>
         </div>

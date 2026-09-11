@@ -168,26 +168,26 @@ export default function PengangkutanPage() {
     <div className="p-4 md:p-6">
       {profil && <LacakLokasi profil={profil} kendaraan={kendaraanSaya} />}
       <div className="mb-6">
-        <h1 className="font-black uppercase tracking-tighter text-2xl text-black font-black">Pengangkutan</h1>
-        <p className="text-sm text-gray-600 font-bold mt-1">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Pengangkutan</h1>
+        <p className="text-xs font-medium text-slate-500 mt-1">
           {user?.role === "petugas" ? "Tugas pengangkutan hari ini" : "Riwayat pengangkutan sampah"}
         </p>
       </div>
 
       {/* Filter - compact for mobile */}
-      <div className="flex gap-2 mb-4 flex-wrap">
+      <div className="flex gap-2.5 mb-4 flex-wrap items-center">
         <input
           type="date"
           value={tanggal}
           onChange={(e) => setTanggal(e.target.value)}
-          className="px-3 py-2 border-2 border-black rounded-none text-sm flex-1 min-w-[140px]"
+          className="px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-medium text-slate-800 flex-1 min-w-[140px] shadow-2xs outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
         />
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-3 py-2 border-2 border-black rounded-none text-sm flex-1 min-w-[120px]"
+          className="px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-medium text-slate-800 flex-1 min-w-[120px] shadow-2xs outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
         >
-          <option value="">Semua</option>
+          <option value="">Semua Status</option>
           {STATUS_OPTIONS.map((s) => (
             <option key={s.value} value={s.value}>{s.label}</option>
           ))}
@@ -195,65 +195,65 @@ export default function PengangkutanPage() {
         <Link
           href={`/surat-jalan?tanggal=${tanggal}`}
           target="_blank"
-          className="inline-flex items-center gap-2 px-3 py-2 bg-black text-white text-sm font-bold hover:bg-gray-800 transition"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition shadow-2xs"
         >
           🖨 Surat Jalan
         </Link>
       </div>
 
       {/* Desktop Table View */}
-      <div className="hidden md:block hm-card bg-white p-0 overflow-hidden">
+      <div className="hidden md:block bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-black text-white font-black border-b border-2 border-black">
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Tanggal</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Kode</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Pelanggan</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Volume</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Jenis</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Petugas</th>
-                <th className="text-center px-4 py-3 font-medium text-gray-600 font-bold">Status</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Catatan</th>
+              <tr className="bg-slate-50 text-slate-600 font-bold text-xs border-b border-slate-200">
+                <th className="text-left px-4 py-3.5 whitespace-nowrap">Tanggal</th>
+                <th className="text-left px-4 py-3.5 whitespace-nowrap">Kode</th>
+                <th className="text-left px-4 py-3.5 whitespace-nowrap">Pelanggan</th>
+                <th className="text-left px-4 py-3.5 whitespace-nowrap">Volume</th>
+                <th className="text-left px-4 py-3.5 whitespace-nowrap">Jenis</th>
+                <th className="text-left px-4 py-3.5 whitespace-nowrap">Petugas</th>
+                <th className="text-center px-4 py-3.5 whitespace-nowrap">Status</th>
+                <th className="text-left px-4 py-3.5">Catatan</th>
                 {(user?.role === "admin" || user?.role === "superadmin" || user?.role === "petugas") && (
-                  <th className="text-center px-4 py-3 font-medium text-gray-600 font-bold">Aksi</th>
+                  <th className="text-center px-4 py-3.5 whitespace-nowrap">Aksi</th>
                 )}
               </tr>
             </thead>
-            <tbody>
+            <tbody className="text-slate-800 divide-y divide-slate-100">
               {loading ? (
-                <tr><td colSpan={9} className="px-4 py-8 text-center text-gray-400 font-bold">Memuat...</td></tr>
+                <tr><td colSpan={9} className="px-4 py-8 text-center text-slate-400 text-xs font-medium">Memuat data...</td></tr>
               ) : data.length === 0 ? (
-                <tr><td colSpan={9} className="px-4 py-8 text-center text-gray-400 font-bold">Belum ada data</td></tr>
+                <tr><td colSpan={9} className="px-4 py-8 text-center text-slate-400 text-xs font-medium">Belum ada data pengangkutan</td></tr>
               ) : (
                 data.map((d) => (
-                  <tr key={d.id} className="border-b border-2 border-black hover:bg-gray-100 border-2 border-black">
-                    <td className="px-4 py-3 text-gray-600 font-bold text-xs">{formatDate(d.tanggal)}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-gray-600 font-bold">{d.pelanggan.kodePelanggan}</td>
-                    <td className="px-4 py-3">
-                      <div className="font-medium text-black font-black">{d.pelanggan.nama}</div>
-                      <div className="text-xs text-gray-600 font-bold">{d.pelanggan.alamat}</div>
-                      {d.zona?.nama && <div className="text-xs text-purple-500 font-bold">🗺️ {d.zona.nama}</div>}
+                  <tr key={d.id} className="hover:bg-slate-50/70 transition-colors">
+                    <td className="px-4 py-3.5 text-slate-500 text-xs whitespace-nowrap">{formatDate(d.tanggal)}</td>
+                    <td className="px-4 py-3.5 font-mono text-xs text-slate-600 whitespace-nowrap">{d.pelanggan.kodePelanggan}</td>
+                    <td className="px-4 py-3.5">
+                      <div className="font-bold text-slate-900 text-sm">{d.pelanggan.nama}</div>
+                      <div className="text-xs text-slate-500">{d.pelanggan.alamat}</div>
+                      {d.zona?.nama && <div className="text-[11px] text-purple-600 font-semibold mt-0.5">🗺️ {d.zona.nama}</div>}
                     </td>
-                    <td className="px-4 py-3 text-gray-600 font-bold text-xs">
+                    <td className="px-4 py-3.5 text-slate-600 text-xs whitespace-nowrap">
                       {d.volume ? `${d.volume} m³` : "-"}
                       {d.berat ? ` / ${d.berat} kg` : ""}
                     </td>
-                    <td className="px-4 py-3 text-gray-600 font-bold text-xs">
+                    <td className="px-4 py-3.5 text-slate-600 text-xs whitespace-nowrap">
                       {d.jenisSampah ? JENIS_SAMPAH.find((j) => j.value === d.jenisSampah)?.label || d.jenisSampah : "-"}
                     </td>
-                    <td className="px-4 py-3 text-gray-600 font-bold">{d.petugas?.nama || "-"}</td>
-                    <td className="px-4 py-3 text-center">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium ${getStatusInfo(d.status).color}`}>
+                    <td className="px-4 py-3.5 text-slate-600 text-xs whitespace-nowrap">{d.petugas?.nama || "-"}</td>
+                    <td className="px-4 py-3.5 text-center whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold ${getStatusInfo(d.status).color}`}>
                         {getStatusInfo(d.status).label}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-600 font-bold text-xs max-w-[150px] truncate">{d.catatan || "-"}</td>
+                    <td className="px-4 py-3.5 text-slate-600 text-xs max-w-[150px] truncate">{d.catatan || "-"}</td>
                     {(user?.role === "admin" || user?.role === "superadmin" || user?.role === "petugas") && (
-                      <td className="px-4 py-3 text-center">
+                      <td className="px-4 py-3.5 text-center whitespace-nowrap">
                         <button
                           onClick={() => startEdit(d)}
-                          className="text-xs bg-gray-100 border-2 border-black text-indigo-700 px-2 py-1 rounded-none hover:bg-indigo-200 transition"
+                          className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-xl font-bold transition shadow-2xs"
                         >
                           Update
                         </button>
@@ -270,39 +270,39 @@ export default function PengangkutanPage() {
       {/* Mobile Card View */}
       <div className="md:hidden space-y-3">
         {loading ? (
-          <div className="text-center text-gray-400 font-bold py-8">Memuat...</div>
+          <div className="text-center text-slate-400 font-medium py-8 text-xs">Memuat data...</div>
         ) : data.length === 0 ? (
-          <div className="text-center text-gray-400 font-bold py-8">Belum ada data</div>
+          <div className="text-center text-slate-400 font-medium py-8 text-xs">Belum ada data pengangkutan</div>
         ) : (
           data.map((d) => (
-            <div key={d.id} className="hm-card bg-white p-0 overflow-hidden p-4">
+            <div key={d.id} className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm space-y-2">
               <div className="flex items-start justify-between mb-2">
                 <div>
-                  <span className="font-mono text-xs text-gray-400 font-bold">{d.pelanggan.kodePelanggan}</span>
-                  <h3 className="font-semibold text-black font-black">{d.pelanggan.nama}</h3>
-                  <p className="text-xs text-gray-600 font-bold">{d.pelanggan.alamat}</p>
-                  {d.zona?.nama && <p className="text-xs text-purple-500 font-bold">🗺️ {d.zona.nama}</p>}
+                  <span className="font-mono text-xs text-slate-400">{d.pelanggan.kodePelanggan}</span>
+                  <h3 className="font-bold text-slate-900 text-sm">{d.pelanggan.nama}</h3>
+                  <p className="text-xs text-slate-500">{d.pelanggan.alamat}</p>
+                  {d.zona?.nama && <p className="text-[11px] text-purple-600 font-semibold mt-0.5">🗺️ {d.zona.nama}</p>}
                 </div>
-                <span className={`inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium ${getStatusInfo(d.status).color}`}>
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold ${getStatusInfo(d.status).color}`}>
                   {getStatusInfo(d.status).label}
                 </span>
               </div>
-              <div className="flex flex-wrap gap-2 text-xs text-gray-600 font-bold mt-2">
+              <div className="flex flex-wrap gap-2 text-xs text-slate-600 mt-2">
                 <span>{formatDate(d.tanggal)}</span>
                 {d.volume && <span>Volume: {d.volume} m³</span>}
                 {d.berat && <span>Berat: {d.berat} kg</span>}
                 {d.jenisSampah && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-none-full bg-emerald-400/10 text-emerald-400 border border-emerald-500/30">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold">
                     {JENIS_SAMPAH.find((j) => j.value === d.jenisSampah)?.label}
                   </span>
                 )}
                 {d.petugas && <span>Petugas: {d.petugas.nama}</span>}
               </div>
-              {d.catatan && <p className="text-xs text-gray-600 font-bold mt-2 italic">{d.catatan}</p>}
+              {d.catatan && <p className="text-xs text-slate-500 italic mt-2">{d.catatan}</p>}
               {(user?.role === "admin" || user?.role === "superadmin" || user?.role === "petugas") && (
                 <button
                   onClick={() => startEdit(d)}
-                  className="mt-3 w-full text-center text-sm bg-indigo-50 text-indigo-700 py-2 rounded-none hover:bg-gray-100 border-2 border-black transition"
+                  className="mt-3 w-full text-center text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl transition shadow-2xs"
                 >
                   Update Status
                 </button>
@@ -314,23 +314,26 @@ export default function PengangkutanPage() {
 
       {/* Update Modal */}
       {updating && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="hm-card bg-white p-0 overflow-hidden w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-2 border-black">
-              <h2 className="font-semibold text-black font-black">Update Pengangkutan</h2>
-              <button onClick={() => setUpdating(null)} className="text-gray-400 font-bold hover:text-gray-600 font-bold">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-md">
+            <div className="flex items-center justify-between px-6 py-4.5 bg-slate-900 text-white">
+              <h2 className="font-bold text-base tracking-wide">Update Pengangkutan</h2>
+              <button
+                onClick={() => setUpdating(null)}
+                className="w-8 h-8 rounded-xl flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Status</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">Status Pengangkutan</label>
                 <select
                   value={editForm.status}
                   onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
-                  className="w-full px-3 py-2 border-2 border-black rounded-none text-sm"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900"
                 >
                   {STATUS_OPTIONS.map((s) => (
                     <option key={s.value} value={s.value}>{s.label}</option>
@@ -339,32 +342,32 @@ export default function PengangkutanPage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Volume (m³)</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Volume (m³)</label>
                   <input
                     type="number" step="0.1"
                     value={editForm.volume}
                     onChange={(e) => setEditForm({ ...editForm, volume: e.target.value })}
-                    className="w-full px-3 py-2 border-2 border-black rounded-none text-sm"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900"
                     placeholder="0.0"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Berat (kg)</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Berat (kg)</label>
                   <input
                     type="number" step="0.1"
                     value={editForm.berat}
                     onChange={(e) => setEditForm({ ...editForm, berat: e.target.value })}
-                    className="w-full px-3 py-2 border-2 border-black rounded-none text-sm"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900"
                     placeholder="0.0"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Jenis Sampah</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">Jenis Sampah</label>
                 <select
                   value={editForm.jenisSampah}
                   onChange={(e) => setEditForm({ ...editForm, jenisSampah: e.target.value })}
-                  className="w-full px-3 py-2 border-2 border-black rounded-none text-sm"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900"
                 >
                   <option value="">Pilih jenis</option>
                   {JENIS_SAMPAH.map((j) => (
@@ -373,11 +376,11 @@ export default function PengangkutanPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Kendaraan Pengangkut</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">Kendaraan Pengangkut</label>
                 <select
                   value={editForm.kendaraanId}
                   onChange={(e) => setEditForm({ ...editForm, kendaraanId: e.target.value })}
-                  className="w-full px-3 py-2 border-2 border-black rounded-none text-sm"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900"
                 >
                   <option value="">— {user?.role === "petugas" ? "Pilih kendaraan Anda" : "Tanpa kendaraan"} —</option>
                   {kendaraanSaya.map((k) => (
@@ -388,33 +391,33 @@ export default function PengangkutanPage() {
                   ))}
                 </select>
                 {user?.role === "petugas" && editForm.status === "sudah_diambil" && !editForm.kendaraanId && (
-                  <p className="text-[11px] text-red-600 mt-1">Wajib pilih kendaraan untuk pickup</p>
+                  <p className="text-[11px] text-rose-600 font-semibold mt-1">Wajib pilih kendaraan untuk pickup</p>
                 )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Catatan</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">Catatan</label>
                 <textarea
                   value={editForm.catatan}
                   onChange={(e) => setEditForm({ ...editForm, catatan: e.target.value })}
-                  className="w-full px-3 py-2 border-2 border-black rounded-none text-sm"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900 placeholder:text-slate-400"
                   rows={2}
-                  placeholder="Kendala atau catatan"
+                  placeholder="Kendala atau catatan..."
                 />
               </div>
-              <div className="flex gap-3 pt-2">
+              <div className="flex gap-3 pt-3 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setUpdating(null)}
-                  className="flex-1 px-4 py-2 border-2 border-black rounded-none text-sm text-gray-600 font-bold hover:bg-gray-100 border-2 border-black"
+                  className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors"
                 >
                   Batal
                 </button>
                 <button
                   type="button"
                   onClick={() => handleUpdate(updating)}
-                  className="flex-1 px-4 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black rounded-none text-sm hover:bg-green-300"
+                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md active:scale-98 transition-all"
                 >
-                  Simpan
+                  Simpan Status
                 </button>
               </div>
             </div>

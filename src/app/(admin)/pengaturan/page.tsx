@@ -138,7 +138,7 @@ export default function PengaturanPage() {
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h1 className="font-black uppercase tracking-tighter text-2xl text-black font-black">Pengaturan</h1>
+        <h1 className="text-2xl font-black text-slate-900 tracking-tight">Pengaturan</h1>
         <p className="text-sm text-gray-600 font-bold mt-1">Kelola pengaturan aplikasi</p>
       </div>
 
@@ -147,8 +147,8 @@ export default function PengaturanPage() {
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold text-black font-black">💳 Pembayaran Online (Duitku)</h2>
           {duitkuStatus && (
-            <span className={`inline-flex items-center px-2.5 py-1 rounded-none-full text-xs font-medium ${
-              duitkuStatus.enabled ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" : "bg-gray-100 border-2 border-black text-gray-600 font-bold"
+            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
+              duitkuStatus.enabled ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" : "bg-gray-100 border border-slate-200/80 text-gray-600 font-bold"
             }`}>
               {duitkuStatus.enabled ? "✓ Aktif" : "Belum dikonfigurasi"}
             </span>
@@ -159,25 +159,25 @@ export default function PengaturanPage() {
         ) : (
           <div className="space-y-3 text-sm">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div className="bg-black text-white font-black rounded-none p-3 border-2 border-black">
+              <div className="bg-slate-50 text-slate-700 font-semibold rounded-none p-3 border border-slate-200/80">
                 <p className="text-xs text-gray-600 font-bold mb-1">Mode</p>
                 <p className="font-medium text-black font-black">
                   {duitkuStatus.production ? "Production" : "Sandbox (uji coba)"}
                 </p>
               </div>
-              <div className="bg-black text-white font-black rounded-none p-3 border-2 border-black">
+              <div className="bg-slate-50 text-slate-700 font-semibold rounded-none p-3 border border-slate-200/80">
                 <p className="text-xs text-gray-600 font-bold mb-1">Merchant Code</p>
                 <p className={`font-medium ${duitkuStatus.merchantCodeSet ? "text-green-600" : "text-red-600"}`}>
                   {duitkuStatus.merchantCodeSet ? "✓ Terisi" : "✗ Kosong"}
                 </p>
               </div>
-              <div className="bg-black text-white font-black rounded-none p-3 border-2 border-black">
+              <div className="bg-slate-50 text-slate-700 font-semibold rounded-none p-3 border border-slate-200/80">
                 <p className="text-xs text-gray-600 font-bold mb-1">API Key</p>
                 <p className={`font-medium ${duitkuStatus.apiKeySet ? "text-green-600" : "text-red-600"}`}>
                   {duitkuStatus.apiKeySet ? "✓ Terisi" : "✗ Kosong"}
                 </p>
               </div>
-              <div className="bg-black text-white font-black rounded-none p-3 border-2 border-black">
+              <div className="bg-slate-50 text-slate-700 font-semibold rounded-none p-3 border border-slate-200/80">
                 <p className="text-xs text-gray-600 font-bold mb-1">API</p>
                 <p className="font-medium text-black font-black">{duitkuStatus.baseUrl}</p>
               </div>
@@ -191,7 +191,7 @@ export default function PengaturanPage() {
             <ol className="text-xs text-gray-600 font-bold space-y-1 list-decimal list-inside">
               <li>Daftar di <b>member.duitku.com</b> (mode Sandbox untuk uji coba).</li>
               <li>Salin <b>Merchant Code</b> & <b>API Key</b> (menu Settings).</li>
-              <li>Isi di file <code className="bg-gray-100 border-2 border-black px-1 rounded-none">.env</code>: <code className="bg-gray-100 border-2 border-black px-1 rounded-none">DUITKU_MERCHANT_CODE</code>, <code className="bg-gray-100 border-2 border-black px-1 rounded-none">DUITKU_API_KEY</code> (dan <code className="bg-gray-100 border-2 border-black px-1 rounded-none">DUITKU_IS_PRODUCTION</code> untuk production).</li>
+              <li>Isi di file <code className="bg-gray-100 border border-slate-200/80 px-1 rounded-none">.env</code>: <code className="bg-gray-100 border border-slate-200/80 px-1 rounded-none">DUITKU_MERCHANT_CODE</code>, <code className="bg-gray-100 border border-slate-200/80 px-1 rounded-none">DUITKU_API_KEY</code> (dan <code className="bg-gray-100 border border-slate-200/80 px-1 rounded-none">DUITKU_IS_PRODUCTION</code> untuk production).</li>
               <li>Restart server, lalu tombol <b>⚡ Bayar Online</b> otomatis muncul di halaman publik /bayar & /bayar-tagihan.</li>
               <li>Pembayaran yang sukses diverifikasi otomatis via callback Duitku (tanpa perlu verifikasi admin).</li>
             </ol>
@@ -203,7 +203,7 @@ export default function PengaturanPage() {
       <div className="hm-card bg-white p-0 overflow-hidden p-5 mb-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold text-black font-black">Wilayah / RT / RW</h2>
-          <button onClick={() => setShowWilayahForm(true)} className="shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 hover:bg-green-300 text-black px-3 py-1.5 rounded-none text-xs font-medium transition">
+          <button onClick={() => setShowWilayahForm(true)} className="shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-green-400 hover:bg-green-300 text-black px-3 py-1.5 rounded-none text-xs font-medium transition">
             + Tambah Wilayah
           </button>
         </div>
@@ -212,7 +212,7 @@ export default function PengaturanPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {wilayahList.map((w) => (
-              <div key={w.id} className="relative bg-black text-white font-black rounded-none p-3 border-2 border-black group">
+              <div key={w.id} className="relative bg-slate-50 text-slate-700 font-semibold rounded-none p-3 border border-slate-200/80 group">
                 <p className="font-medium text-white font-black pr-8">{w.nama}</p>
                 <p className="text-xs text-gray-400 font-bold mt-1">
                   {[w.rt && `RT ${w.rt}`, w.rw && `RW ${w.rw}`, w.kelurahanRef?.nama].filter(Boolean).join(", ") || "-"}
@@ -245,7 +245,7 @@ export default function PengaturanPage() {
               type="password"
               value={pwForm.passwordLama}
               onChange={(e) => setPwForm({ ...pwForm, passwordLama: e.target.value })}
-              className="w-full px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
+              className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
               required
             />
           </div>
@@ -255,7 +255,7 @@ export default function PengaturanPage() {
               type="password"
               value={pwForm.passwordBaru}
               onChange={(e) => setPwForm({ ...pwForm, passwordBaru: e.target.value })}
-              className="w-full px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
+              className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
               minLength={8}
               required
             />
@@ -266,7 +266,7 @@ export default function PengaturanPage() {
               type="password"
               value={pwForm.konfirmasi}
               onChange={(e) => setPwForm({ ...pwForm, konfirmasi: e.target.value })}
-              className="w-full px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
+              className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
               minLength={8}
               required
             />
@@ -276,7 +276,7 @@ export default function PengaturanPage() {
           <button
             type="submit"
             disabled={pwLoading}
-            className="px-4 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 hover:bg-green-300 disabled:opacity-50 text-black rounded-none text-sm font-medium transition"
+            className="px-4 py-2 shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-green-400 hover:bg-green-300 disabled:opacity-50 text-black rounded-none text-sm font-medium transition"
           >
             {pwLoading ? "Menyimpan..." : "Ganti Password"}
           </button>
@@ -303,9 +303,9 @@ export default function PengaturanPage() {
       </div>
 
       {showWilayahForm && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="hm-card bg-white p-0 overflow-hidden w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-2 border-black">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
               <h2 className="font-semibold text-black font-black">Tambah Wilayah</h2>
               <button onClick={() => setShowWilayahForm(false)} className="text-gray-400 font-bold hover:text-gray-600 font-bold">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
@@ -314,16 +314,16 @@ export default function PengaturanPage() {
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Nama Wilayah *</label>
-                <input type="text" value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none text-sm" placeholder="RT 01" required />
+                <input type="text" value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm" placeholder="RT 01" required />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-600 font-bold mb-1">RT</label>
-                  <input type="text" value={form.rt} onChange={(e) => setForm({ ...form, rt: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none text-sm" placeholder="001" />
+                  <input type="text" value={form.rt} onChange={(e) => setForm({ ...form, rt: e.target.value })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm" placeholder="001" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-600 font-bold mb-1">RW</label>
-                  <input type="text" value={form.rw} onChange={(e) => setForm({ ...form, rw: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none text-sm" placeholder="003" />
+                  <input type="text" value={form.rw} onChange={(e) => setForm({ ...form, rw: e.target.value })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm" placeholder="003" />
                 </div>
               </div>
               <div>
@@ -331,7 +331,7 @@ export default function PengaturanPage() {
                 <select
                   value={form.kelurahanId}
                   onChange={(e) => setForm({ ...form, kelurahanId: e.target.value })}
-                  className="w-full px-3 py-2 border-2 border-black rounded-none text-sm bg-white"
+                  className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm bg-white"
                   required
                 >
                   <option value="">Pilih Kelurahan</option>
@@ -345,7 +345,7 @@ export default function PengaturanPage() {
                 <select
                   value={form.zonaId}
                   onChange={(e) => setForm({ ...form, zonaId: e.target.value })}
-                  className="w-full px-3 py-2 border-2 border-black rounded-none text-sm bg-white"
+                  className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm bg-white"
                 >
                   <option value="">Tanpa zona</option>
                   {zonaList.map((z) => (
@@ -354,8 +354,8 @@ export default function PengaturanPage() {
                 </select>
               </div>
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => setShowWilayahForm(false)} className="flex-1 px-4 py-2 border-2 border-black rounded-none text-sm text-gray-600 font-bold hover:bg-gray-100 border-2 border-black">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black rounded-none text-sm hover:bg-green-300">Simpan</button>
+                <button type="button" onClick={() => setShowWilayahForm(false)} className="flex-1 px-4 py-2 border border-slate-200/80 rounded-xl text-sm text-slate-700 font-medium hover:bg-slate-50/80 transition">Batal</button>
+                <button type="submit" className="flex-1 px-4 py-2 shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all text-sm hover:bg-green-300">Simpan</button>
               </div>
             </form>
           </div>

@@ -64,6 +64,18 @@
     @apply bg-white rounded-2xl border border-slate-200/80 p-6 md:p-8 shadow-sm hover:shadow-md transition-all;
   }
 
+  .input, input.input, select.input, textarea.input {
+    @apply w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all;
+  }
+
+  .stencil {
+    @apply font-mono text-[11px] font-bold text-slate-400 uppercase tracking-wider;
+  }
+
+  .stat-num {
+    @apply font-mono font-bold text-slate-900 tracking-tight;
+  }
+
   .hm-marquee {
     @apply w-full border-y border-slate-200 py-2.5 overflow-hidden bg-slate-50 flex whitespace-nowrap items-center text-slate-700;
   }
@@ -98,10 +110,10 @@
   width: 34px;
   height: 34px;
   background: #ef4444;
-  border: 3px solid #111111;
+  border: 2.5px solid #ffffff;
   border-radius: 50% 50% 50% 0;
   transform: rotate(-45deg);
-  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
 }
 .pin-jemput-dot::after {
   content: "";
@@ -119,15 +131,16 @@
   left: 24px;
   top: -26px;
   white-space: nowrap;
-  background: #111111;
+  background: #0f172a;
   color: #ffffff;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: ui-sans-serif, system-ui, sans-serif;
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  padding: 3px 7px;
-  border-radius: 2px;
-  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.25);
+  letter-spacing: 0.04em;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
 .truk-jemput {
@@ -140,14 +153,14 @@
   width: 40px;
   height: 40px;
   background: #059669;
-  border: 3px solid #111111;
+  border: 2.5px solid #ffffff;
   border-radius: 9999px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 20px;
   line-height: 1;
-  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 16px rgba(5, 150, 105, 0.45);
   z-index: 2;
 }
 .truk-jemput-pulse {
@@ -175,17 +188,147 @@
   width: 18px;
   height: 18px;
   background: #3b82f6;
-  border: 3px solid #ffffff;
+  border: 2.5px solid #ffffff;
   border-radius: 9999px;
-  box-shadow: 0 0 0 2px #111111;
+  box-shadow: 0 0 0 2px #3b82f6;
 }
 
 .tooltip-jemput {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: ui-sans-serif, system-ui, sans-serif;
   font-size: 11px;
-  font-weight: 700;
-  color: #111111;
-  border: 2px solid #111111;
-  border-radius: 4px;
-  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.25);
+  font-weight: 600;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* ===== CleanTech SaaS & Mobility Systemic Modernizer ===== */
+/* Softens legacy neo-brutalist utility classes across all admin and operational modules */
+.border-2.border-black,
+.border-4.border-black,
+.border.border-black,
+.border-black {
+  border-width: 1px !important;
+  border-color: rgb(226 232 240 / 0.9) !important;
+}
+
+.border-b-4.border-black,
+.border-b-2.border-black {
+  border-bottom-width: 1px !important;
+  border-bottom-color: rgb(226 232 240 / 0.9) !important;
+}
+
+.border-r-2.border-black {
+  border-right-width: 1px !important;
+  border-right-color: rgb(241 245 249 / 0.9) !important;
+}
+
+.border-t-2.border-black {
+  border-top-width: 1px !important;
+  border-top-color: rgb(226 232 240 / 0.9) !important;
+}
+
+.border-l-2.border-black {
+  border-left-width: 3px !important;
+  border-left-color: rgb(16 185 129) !important; /* emerald-500 */
+}
+
+.divide-y-2.divide-black,
+.divide-y.divide-black {
+  border-color: rgb(241 245 249) !important;
+}
+
+/* Table styles: when the table header had harsh bg-black text-white */
+table thead tr.bg-black,
+table thead tr {
+  background-color: rgb(248 250 252) !important;
+  color: rgb(71 85 105) !important;
+  border-bottom: 1px solid rgb(226 232 240) !important;
+}
+
+table thead tr.bg-black th,
+table thead th {
+  color: rgb(71 85 105) !important;
+  font-weight: 600 !important;
+}
+
+/* Soften harsh brutalist table borders */
+table tbody tr {
+  border-bottom: 1px solid rgb(241 245 249) !important;
+}
+
+table tbody td {
+  border-color: rgb(241 245 249) !important;
+}
+
+/* Soften harsh yellow badges and highlight boxes */
+.bg-yellow-300.border-2.border-black,
+.bg-yellow-300.border.border-black,
+.bg-yellow-400.border-2.border-black,
+.bg-yellow-400.border.border-black,
+.bg-yellow-400.text-black {
+  background-color: rgb(254 243 199) !important; /* amber-100 */
+  color: rgb(146 64 14) !important; /* amber-800 */
+  border-color: rgb(253 230 138) !important;
+  border-radius: 9999px !important;
+}
+
+.bg-yellow-50.border-2.border-black {
+  background-color: rgb(248 250 252) !important;
+  border-color: rgb(226 232 240) !important;
+  border-radius: 1rem !important;
+}
+
+/* Soften green buttons with brutalist black borders */
+.bg-green-400.text-black,
+.bg-green-300.text-black,
+button.bg-green-400 {
+  background-color: rgb(5 150 105) !important; /* emerald-600 */
+  color: #ffffff !important;
+  border-color: rgb(5 150 105) !important;
+  border-radius: 0.75rem !important;
+}
+
+.bg-green-400.text-black:hover,
+.bg-green-300.text-black:hover,
+button.bg-green-400:hover {
+  background-color: rgb(16 185 129) !important; /* emerald-500 */
+  color: #ffffff !important;
+}
+
+/* Fix typo rounded-none-full */
+.rounded-none-full {
+  border-radius: 9999px !important;
+}
+
+/* Round base inputs and dropdowns that used rounded-none */
+input.rounded-none, select.rounded-none, textarea.rounded-none {
+  border-radius: 0.75rem !important;
+}
+
+/* Round buttons that used rounded-none */
+button.rounded-none {
+  border-radius: 0.75rem !important;
+}
+
+/* Modal backdrops */
+.fixed.inset-0.bg-black\/80,
+.fixed.inset-0.bg-black\/70,
+.fixed.inset-0.bg-black\/60 {
+  background-color: rgb(15 23 42 / 0.5) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+/* Soften brutalist offset shadows into soft SaaS elevation */
+[class*="shadow-[4px_4px_0_0_rgba(0,0,0,1)]"],
+[class*="shadow-[2px_2px_0_0_rgba(0,0,0,1)]"],
+[class*="shadow-[3px_3px_0_0_rgba(0,0,0,1)]"],
+[class*="shadow-[6px_6px_0_0_rgba(0,0,0,1)]"],
+[class*="shadow-[8px_8px_0_0_rgba(0,0,0,1)]"],
+[class*="shadow-[4px_4px_0_0_#000]"],
+[class*="shadow-[2px_2px_0_0_#000]"],
+[class*="shadow-[2px_2px_0_0_#000000]"],
+[class*="shadow-[4px_4px_0_0_#000000]"] {
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05) !important;
 }

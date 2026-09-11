@@ -106,10 +106,10 @@ export default function PengeluaranPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-black uppercase tracking-tighter text-2xl text-black font-black">Pengeluaran</h1>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Pengeluaran</h1>
           <p className="text-sm text-gray-600 font-bold mt-1">Catat pengeluaran operasional</p>
         </div>
-        <button onClick={openCreate} className="shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 hover:bg-green-300 text-black px-4 py-2 rounded-none text-sm font-medium transition flex items-center gap-2">
+        <button onClick={openCreate} className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-2">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
           Catat Pengeluaran
         </button>
@@ -117,11 +117,11 @@ export default function PengeluaranPage() {
 
       {/* Filter & Total */}
       <div className="flex gap-3 mb-4 items-end flex-wrap">
-        <select value={bulan} onChange={(e) => setBulan(e.target.value)} className="px-3 py-2 border-2 border-black rounded-none text-sm">
+        <select value={bulan} onChange={(e) => setBulan(e.target.value)} className="px-3 py-2 border border-slate-200/80 rounded-none text-sm">
           <option value="">Semua Bulan</option>
           {[1,2,3,4,5,6,7,8,9,10,11,12].map((b) => <option key={b} value={b}>{["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"][b-1]}</option>)}
         </select>
-        <select value={tahun} onChange={(e) => setTahun(e.target.value)} className="px-3 py-2 border-2 border-black rounded-none text-sm">
+        <select value={tahun} onChange={(e) => setTahun(e.target.value)} className="px-3 py-2 border border-slate-200/80 rounded-none text-sm">
           {[2024, 2025, 2026, 2027, 2028].map((t) => <option key={t} value={t}>{t}</option>)}
         </select>
         <div className="ml-auto text-right">
@@ -135,7 +135,7 @@ export default function PengeluaranPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-black text-white font-black border-b border-2 border-black">
+              <tr className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Tanggal</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Kategori</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Keterangan</th>
@@ -151,10 +151,10 @@ export default function PengeluaranPage() {
                 <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-400 font-bold">Belum ada pengeluaran</td></tr>
               ) : (
                 pengeluaran.map((p) => (
-                  <tr key={p.id} className="border-b border-2 border-black hover:bg-gray-100 border-2 border-black">
+                  <tr key={p.id} className="border-b border-slate-200 hover:bg-slate-50/80 transition">
                     <td className="px-4 py-3 text-gray-600 font-bold text-xs">{formatDate(p.tanggal)}</td>
                     <td className="px-4 py-3">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium bg-danger/10 text-red-400 border border-red-500/30">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-danger/10 text-red-400 border border-red-500/30">
                         {KATEGORI_PENGELUARAN.find((k) => k.value === p.kategori)?.label || p.kategori}
                       </span>
                     </td>
@@ -166,12 +166,12 @@ export default function PengeluaranPage() {
                         <Link
                           href={`/pengeluaran-cetak/${p.id}`}
                           target="_blank"
-                          className="p-1.5 text-green-600 hover:bg-green-50 border-2 border-black rounded-none transition"
+                          className="p-1.5 text-green-600 hover:bg-green-50 border border-slate-200/80 rounded-none transition"
                           title="Cetak Slip"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H8v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
                         </Link>
-                        <button onClick={() => openEdit(p)} className="p-1.5 text-gray-600 font-bold hover:bg-gray-100 border-2 border-black hover:text-sky-300 rounded-none transition" title="Edit">
+                        <button onClick={() => openEdit(p)} className="p-1.5 text-gray-600 font-bold hover:bg-slate-50/80 transition hover:text-sky-300 rounded-none transition" title="Edit">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                         </button>
                         <button onClick={() => setDeleteTarget(p)} className="p-1.5 text-red-600 hover:bg-danger/10 rounded-none transition" title="Hapus">
@@ -199,14 +199,14 @@ export default function PengeluaranPage() {
               <span className="font-semibold text-red-600">{formatRupiah(p.jumlah)}</span>
             </div>
             <div className="flex items-center gap-2 text-xs">
-              <span className="inline-flex items-center px-2 py-0.5 rounded-none-full bg-danger/10 text-red-400 border border-red-500/30">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-danger/10 text-red-400 border border-red-500/30">
                 {KATEGORI_PENGELUARAN.find((k) => k.value === p.kategori)?.label || p.kategori}
               </span>
               <span className="text-gray-400 font-bold">oleh {p.dicatatBy.nama}</span>
             </div>
             <div className="flex gap-2 mt-3">
-              <Link href={`/pengeluaran-cetak/${p.id}`} target="_blank" className="flex-1 text-center text-sm bg-white border-2 border-black text-black font-black hover:text-green-600 py-2 rounded-none transition">Cetak Slip</Link>
-              <button onClick={() => openEdit(p)} className="flex-1 text-center text-sm bg-gray-100 border-2 border-black border-2 border-black text-black font-black hover:border-vest hover:text-green-600 py-2 rounded-none transition">Edit</button>
+              <Link href={`/pengeluaran-cetak/${p.id}`} target="_blank" className="flex-1 text-center text-sm bg-white border border-slate-200/80 text-black font-black hover:text-green-600 py-2 rounded-none transition">Cetak Slip</Link>
+              <button onClick={() => openEdit(p)} className="flex-1 text-center text-sm bg-gray-100 border border-slate-200/80 border border-slate-200/80 text-black font-black hover:border-vest hover:text-green-600 py-2 rounded-none transition">Edit</button>
               <button onClick={() => setDeleteTarget(p)} className="flex-1 text-center text-sm bg-danger/10 border border-danger/30 text-red-400 py-2 rounded-none hover:bg-danger/20 transition">Hapus</button>
             </div>
           </div>
@@ -215,9 +215,9 @@ export default function PengeluaranPage() {
 
       {/* Form Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="hm-card bg-white p-0 overflow-hidden w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-2 border-black">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
               <h2 className="font-semibold text-black font-black">{editing ? "Edit Pengeluaran" : "Catat Pengeluaran"}</h2>
               <button onClick={() => { setShowForm(false); setEditing(null); }} className="text-gray-400 font-bold hover:text-gray-600 font-bold">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
@@ -226,25 +226,25 @@ export default function PengeluaranPage() {
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Tanggal</label>
-                <input type="date" value={form.tanggal} onChange={(e) => setForm({ ...form, tanggal: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" />
+                <input type="date" value={form.tanggal} onChange={(e) => setForm({ ...form, tanggal: e.target.value })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Kategori *</label>
-                <select value={form.kategori} onChange={(e) => setForm({ ...form, kategori: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" required>
+                <select value={form.kategori} onChange={(e) => setForm({ ...form, kategori: e.target.value })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" required>
                   {KATEGORI_PENGELUARAN.map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Jumlah *</label>
-                <input type="number" value={form.jumlah} onChange={(e) => setForm({ ...form, jumlah: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" placeholder="50000" required />
+                <input type="number" value={form.jumlah} onChange={(e) => setForm({ ...form, jumlah: e.target.value })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" placeholder="50000" required />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Keterangan *</label>
-                <textarea value={form.keterangan} onChange={(e) => setForm({ ...form, keterangan: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" rows={2} placeholder="Isi BBM motor" required />
+                <textarea value={form.keterangan} onChange={(e) => setForm({ ...form, keterangan: e.target.value })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" rows={2} placeholder="Isi BBM motor" required />
               </div>
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="flex-1 px-4 py-2 border-2 border-black rounded-none text-sm text-gray-600 font-bold hover:bg-gray-100 border-2 border-black">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black rounded-none text-sm hover:bg-green-300">{editing ? "Simpan" : "Simpan"}</button>
+                <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="flex-1 px-4 py-2 border border-slate-200/80 rounded-xl text-sm text-slate-700 font-medium hover:bg-slate-50/80 transition">Batal</button>
+                <button type="submit" className="flex-1 px-4 py-2 shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all text-sm hover:bg-green-300">{editing ? "Simpan" : "Simpan"}</button>
               </div>
             </form>
           </div>

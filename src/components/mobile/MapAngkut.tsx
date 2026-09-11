@@ -30,8 +30,8 @@ function pinTugas(t: TugasMap) {
   return L.divIcon({
     className: "",
     html: `<div style="transform:translate(-50%,-100%);text-align:center">
-      <div style="width:26px;height:26px;margin:0 auto;border-radius:50%;background:${warna};border:2px solid #000;box-shadow:2px 2px 0 0 rgba(0,0,0,1);display:flex;align-items:center;justify-content:center;font-size:12px">📍</div>
-      <div style="margin-top:2px;font-family:ui-monospace,monospace;font-size:9px;font-weight:800;color:#000;background:#fff;border:1px solid #000;padding:1px 4px;white-space:nowrap">${t.nama.replace(/["&<>]/g, "")}</div>
+      <div style="width:28px;height:28px;margin:0 auto;border-radius:9999px;background:${warna};border:2.5px solid #ffffff;box-shadow:0 4px 10px rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:center;font-size:13px">📍</div>
+      <div style="margin-top:3px;font-family:ui-sans-serif,system-ui,sans-serif;font-size:10px;font-weight:700;color:#ffffff;background:#0f172a;border:1px solid rgba(255,255,255,0.2);border-radius:9999px;padding:2px 8px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.2)">${t.nama.replace(/["&<>]/g, "")}</div>
     </div>`,
     iconSize: [1, 1],
     iconAnchor: [0, 0],
@@ -89,10 +89,10 @@ export default function MapAngkut({ tugas }: { tugas: TugasMap[] }) {
   const tileConfig = useMemo(() => getMapTileConfig("light"), []);
 
   return (
-    <div className="border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] overflow-hidden">
-      <div className="bg-black text-white px-3 py-2 flex items-center justify-between">
-        <p className="text-[11px] font-black uppercase tracking-widest">🗺️ Peta Tugas</p>
-        <span className="text-[9px] font-mono font-bold text-green-400">
+    <div className="rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+      <div className="bg-slate-900 text-white px-4 py-3 flex items-center justify-between">
+        <p className="text-xs font-bold tracking-wide flex items-center gap-1.5"><span>🗺️</span> Peta Tugas</p>
+        <span className="text-[10px] font-medium text-emerald-400">
           {points.length} titik · {posSaya ? "● GPS aktif" : "○ GPS…"}
         </span>
       </div>

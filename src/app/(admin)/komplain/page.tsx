@@ -51,54 +51,57 @@ export default function KomplainPage() {
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h1 className="font-black uppercase tracking-tighter text-2xl text-black font-black">Komplain</h1>
-        <p className="text-sm text-gray-600 font-bold mt-1">Kelola laporan dan komplain warga</p>
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Komplain</h1>
+        <p className="text-xs font-medium text-slate-500 mt-1">Kelola laporan dan komplain penanganan sampah warga</p>
       </div>
 
-      <div className="hm-card bg-white p-0 overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-black text-white font-black border-b border-2 border-black">
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Tanggal</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Pelanggan</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Jenis</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Deskripsi</th>
-                <th className="text-center px-4 py-3 font-medium text-gray-600 font-bold">Status</th>
-                <th className="text-center px-4 py-3 font-medium text-gray-600 font-bold">Aksi</th>
+              <tr className="bg-slate-50 text-slate-600 font-bold text-xs border-b border-slate-200">
+                <th className="text-left px-4 py-3.5 whitespace-nowrap">Tanggal</th>
+                <th className="text-left px-4 py-3.5 whitespace-nowrap">Pelanggan</th>
+                <th className="text-left px-4 py-3.5 whitespace-nowrap">Jenis</th>
+                <th className="text-left px-4 py-3.5">Deskripsi</th>
+                <th className="text-center px-4 py-3.5 whitespace-nowrap">Status</th>
+                <th className="text-center px-4 py-3.5 whitespace-nowrap">Aksi</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="text-slate-800 divide-y divide-slate-100">
               {loading ? (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-400 font-bold">Memuat...</td></tr>
+                <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-400 text-xs font-medium">Memuat komplain...</td></tr>
               ) : komplain.length === 0 ? (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-400 font-bold">Belum ada komplain</td></tr>
+                <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-400 text-xs font-medium">Belum ada komplain</td></tr>
               ) : (
                 komplain.map((k) => (
-                  <tr key={k.id} className="border-b border-2 border-black hover:bg-gray-100 border-2 border-black">
-                    <td className="px-4 py-3 text-gray-600 font-bold text-xs">{formatDate(k.createdAt)}</td>
-                    <td className="px-4 py-3">
-                      <div className="font-medium text-black font-black">{k.pelanggan.nama}</div>
-                      <div className="text-xs text-gray-600 font-bold">{k.pelanggan.noTelepon}</div>
+                  <tr key={k.id} className="hover:bg-slate-50/70 transition-colors">
+                    <td className="px-4 py-3.5 text-slate-500 text-xs whitespace-nowrap">{formatDate(k.createdAt)}</td>
+                    <td className="px-4 py-3.5 whitespace-nowrap">
+                      <div className="font-bold text-slate-900 text-xs sm:text-sm">{k.pelanggan.nama}</div>
+                      <div className="text-[11px] text-slate-500">{k.pelanggan.noTelepon}</div>
                     </td>
-                    <td className="px-4 py-3">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium bg-amber/10 text-amber-400 border border-amber-500/30">
+                    <td className="px-4 py-3.5 whitespace-nowrap">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
                         {k.jenis === "tidak_diangkut" ? "Tidak Diangkut" : k.jenis === "sampah_menumpuk" ? "Sampah Menumpuk" : "Lainnya"}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-600 font-bold max-w-xs truncate">{k.deskripsi}</td>
-                    <td className="px-4 py-3 text-center">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium ${
-                        k.status === "baru" ? "bg-danger/10 text-red-400 border border-red-500/30" :
-                        k.status === "diproses" ? "bg-amber/10 text-amber-400 border border-amber-500/30" :
-                        "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30"
+                    <td className="px-4 py-3.5 text-slate-700 text-xs max-w-xs truncate">{k.deskripsi}</td>
+                    <td className="px-4 py-3.5 text-center whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
+                        k.status === "baru" ? "bg-rose-50 text-rose-700 border border-rose-200" :
+                        k.status === "diproses" ? "bg-amber-50 text-amber-700 border border-amber-200" :
+                        "bg-emerald-50 text-emerald-700 border border-emerald-200"
                       }`}>
                         {k.status.charAt(0).toUpperCase() + k.status.slice(1)}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-3.5 text-center whitespace-nowrap">
                       {k.status !== "selesai" && (
-                        <button onClick={() => setShowResolve(k)} className="text-xs bg-green-400/10 text-green-600 px-3 py-1 rounded-none-full hover:bg-blue-200 transition">
+                        <button
+                          onClick={() => setShowResolve(k)}
+                          className="text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-xl font-bold transition-all shadow-2xs"
+                        >
                           Proses
                         </button>
                       )}
@@ -112,33 +115,57 @@ export default function KomplainPage() {
       </div>
 
       {showResolve && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="hm-card bg-white p-0 overflow-hidden w-full max-w-lg">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-2 border-black">
-              <h2 className="font-semibold text-black font-black">Proses Komplain</h2>
-              <button onClick={() => setShowResolve(null)} className="text-gray-400 font-bold hover:text-gray-600 font-bold">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-lg">
+            <div className="flex items-center justify-between px-6 py-4.5 bg-slate-900 text-white">
+              <h2 className="font-bold text-base tracking-wide">Proses Laporan Komplain</h2>
+              <button
+                onClick={() => setShowResolve(null)}
+                className="w-8 h-8 rounded-xl flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
             <form onSubmit={handleResolve} className="p-6 space-y-4">
-              <div className="bg-black text-white font-black p-3 rounded-none text-sm">
-                <p className="font-medium text-black font-black">{showResolve.pelanggan.nama}</p>
-                <p className="text-gray-600 font-bold mt-1">{showResolve.deskripsi}</p>
+              <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl text-xs space-y-1">
+                <p className="font-bold text-slate-900 text-sm">{showResolve.pelanggan.nama}</p>
+                <p className="text-slate-600 font-normal leading-relaxed">{showResolve.deskripsi}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Status</label>
-                <select value={formResolve.status} onChange={(e) => setFormResolve({ ...formResolve, status: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none text-sm">
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">Status Penyelesaian</label>
+                <select
+                  value={formResolve.status}
+                  onChange={(e) => setFormResolve({ ...formResolve, status: e.target.value })}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900"
+                >
                   <option value="diproses">Diproses</option>
                   <option value="selesai">Selesai</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Tanggapan</label>
-                <textarea value={formResolve.tanggapan} onChange={(e) => setFormResolve({ ...formResolve, tanggapan: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none text-sm" rows={3} placeholder="Berikan tanggapan..." />
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">Tanggapan / Catatan Tindak Lanjut</label>
+                <textarea
+                  value={formResolve.tanggapan}
+                  onChange={(e) => setFormResolve({ ...formResolve, tanggapan: e.target.value })}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900 placeholder:text-slate-400"
+                  rows={3}
+                  placeholder="Berikan tanggapan untuk warga..."
+                />
               </div>
-              <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => setShowResolve(null)} className="flex-1 px-4 py-2 border-2 border-black rounded-none text-sm text-gray-600 font-bold hover:bg-gray-100 border-2 border-black">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black rounded-none text-sm hover:bg-green-300">Simpan</button>
+              <div className="flex gap-3 pt-3 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setShowResolve(null)}
+                  className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md active:scale-98 transition-all"
+                >
+                  Simpan Status
+                </button>
               </div>
             </form>
           </div>

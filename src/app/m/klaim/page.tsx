@@ -25,9 +25,9 @@ const KATEGORI = [
 ];
 
 const STATUS_META: Record<string, { label: string; cls: string }> = {
-  menunggu: { label: "Menunggu", cls: "bg-amber-400 text-black" },
-  disetujui: { label: "Disetujui", cls: "bg-green-600 text-white" },
-  ditolak: { label: "Ditolak", cls: "bg-red-600 text-white" },
+  menunggu: { label: "Menunggu", cls: "bg-amber-100 text-amber-800 border border-amber-200" },
+  disetujui: { label: "Disetujui", cls: "bg-emerald-100 text-emerald-800 border border-emerald-200" },
+  ditolak: { label: "Ditolak", cls: "bg-rose-100 text-rose-800 border border-rose-200" },
 };
 
 export default function MobileKlaim() {
@@ -58,8 +58,6 @@ export default function MobileKlaim() {
   }, []);
 
   useEffect(() => {
-    // fetch on mount: setState terjadi setelah await (async), bukan sinkron di body effect
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
   }, [fetchData]);
 
@@ -83,7 +81,7 @@ export default function MobileKlaim() {
       });
       const d = await res.json();
       if (res.ok) {
-        setPesan("Klaim terkirim ✓");
+        setPesan("Pengajuan klaim berhasil dikirim ✓");
         setBukaForm(false);
         setForm({ kategori: "bbm", nominal: "", keterangan: "", fotoBukti: "", latitude: "", longitude: "", koordinatSumber: "", koordinatAkurasi: "" });
         fetchData();
@@ -91,44 +89,51 @@ export default function MobileKlaim() {
         setPesan(d.error || "Gagal mengirim klaim");
       }
     } catch {
-      setPesan("Gagal mengirim klaim");
+      setPesan("Gagal mengirim klaim, periksa koneksi internet");
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between gap-2">
+    <div className="space-y-5 pb-8">
+      <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-black uppercase tracking-tighter">Klaim</h1>
-          <p className="text-xs font-bold text-gray-500">BBM, perawatan, & pengeluaran lain</p>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 mb-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            Reimbursement & Kas Operasional
+          </div>
+          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Klaim Biaya</h1>
+          <p className="text-xs font-medium text-slate-500">Penggantian biaya BBM, servis & pengeluaran tak terduga</p>
         </div>
         <button
           onClick={() => setBukaForm((v) => !v)}
-          className="px-3 py-2.5 bg-black text-white border-2 border-black text-[11px] font-black uppercase tracking-wide"
+          className="px-4 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold shadow-xs transition-all shrink-0"
         >
-          {bukaForm ? "Tutup" : "+ Buat Klaim"}
+          {bukaForm ? "Tutup Form" : "+ Buat Klaim"}
         </button>
       </div>
 
       {pesan && (
-        <p className={`text-center text-sm font-black p-3 border-2 ${pesan.includes("✓") ? "border-green-600 text-green-700 bg-green-50" : "border-red-600 text-red-700 bg-red-50"}`}>
+        <p className={`text-center text-xs font-semibold p-3.5 rounded-2xl border ${pesan.includes("✓") ? "border-emerald-200 text-emerald-800 bg-emerald-50" : "border-rose-200 text-rose-800 bg-rose-50"}`}>
           {pesan}
         </p>
       )}
 
       {bukaForm && (
-        <div className="bg-white border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] p-4 space-y-3">
-          <p className="text-xs font-black uppercase tracking-widest">Klaim Baru</p>
+        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 space-y-4">
+          <div className="pb-3 border-b border-slate-100">
+            <h2 className="text-sm font-bold text-slate-900">Formulir Pengajuan Klaim Baru</h2>
+            <p className="text-xs text-slate-500 mt-0.5">Sertakan foto struk / nota sah pembelian</p>
+          </div>
 
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[10px] font-black uppercase text-gray-500 mb-1">Kategori</label>
+              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Kategori</label>
               <select
                 value={form.kategori}
                 onChange={(e) => setForm({ ...form, kategori: e.target.value })}
-                className="w-full px-2 py-2.5 border-2 border-black text-sm font-bold outline-none bg-white"
+                className="w-full px-3 py-2.5 rounded-2xl border border-slate-200 text-xs font-medium outline-none bg-slate-50/50 focus:bg-white focus:border-emerald-500"
               >
                 {KATEGORI.map((k) => (
                   <option key={k.value} value={k.value}>{k.label}</option>
@@ -136,31 +141,31 @@ export default function MobileKlaim() {
               </select>
             </div>
             <div>
-              <label className="block text-[10px] font-black uppercase text-gray-500 mb-1">Nominal (Rp) *</label>
+              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Nominal (Rp) *</label>
               <input
                 type="number"
                 inputMode="numeric"
                 value={form.nominal}
                 onChange={(e) => setForm({ ...form, nominal: e.target.value })}
                 placeholder="50000"
-                className="w-full px-2 py-2.5 border-2 border-black text-sm font-bold outline-none"
+                className="w-full px-3 py-2.5 rounded-2xl border border-slate-200 text-xs font-medium outline-none bg-slate-50/50 focus:bg-white focus:border-emerald-500"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-[10px] font-black uppercase text-gray-500 mb-1">Keterangan *</label>
+            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Keterangan *</label>
             <textarea
               value={form.keterangan}
               onChange={(e) => setForm({ ...form, keterangan: e.target.value })}
-              placeholder="isi bensin 5 liter, ganti ban, dll"
+              placeholder="Contoh: Pembelian bensin 5 liter di SPBU Kalimulya, ganti ban bocor..."
               rows={2}
-              className="w-full px-2 py-2 border-2 border-black text-sm font-bold outline-none"
+              className="w-full px-3 py-2.5 rounded-2xl border border-slate-200 text-xs font-medium outline-none bg-slate-50/50 focus:bg-white focus:border-emerald-500"
             />
           </div>
 
           <CameraGps
-            label="Foto Bukti (struk/nota)"
+            label="Foto Bukti (Struk / Nota)"
             foto={form.fotoBukti}
             latitude={form.latitude}
             longitude={form.longitude}
@@ -175,49 +180,69 @@ export default function MobileKlaim() {
           <button
             onClick={submit}
             disabled={submitting}
-            className="w-full py-3.5 bg-green-600 text-white border-2 border-black text-sm font-black uppercase tracking-widest shadow-[3px_3px_0_0_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50"
+            className="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-2xl text-sm font-bold shadow-xs transition-all disabled:opacity-50"
           >
-            {submitting ? "Mengirim…" : "Kirim Klaim"}
+            {submitting ? "Mengirim Pengajuan…" : "Kirim Pengajuan Klaim"}
           </button>
         </div>
       )}
 
       {loading ? (
-        <p className="font-mono font-bold text-gray-500 text-center py-10">MEMUAT…</p>
+        <div className="flex items-center justify-center py-16">
+          <div className="w-6 h-6 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+        </div>
       ) : klaim.length === 0 ? (
-        <div className="border-2 border-black bg-white p-8 text-center">
-          <p className="text-lg font-black uppercase tracking-tight">Belum ada klaim</p>
+        <div className="rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-xs">
+          <span className="text-3xl block mb-2">🧾</span>
+          <p className="text-sm font-bold text-slate-700">Belum Ada Riwayat Klaim</p>
+          <p className="text-xs text-slate-400 mt-1">Tekan tombol "+ Buat Klaim" untuk mencatat pengeluaran operasional.</p>
         </div>
       ) : (
-        klaim.map((k) => {
-          const meta = STATUS_META[k.status] || STATUS_META.menunggu;
-          return (
-            <div key={k.id} className="bg-white border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] p-4 space-y-2">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="font-black uppercase tracking-tight">{KATEGORI.find((x) => x.value === k.kategori)?.label || k.kategori}</p>
-                  <p className="text-[11px] font-mono font-bold text-gray-400">{format(new Date(k.tanggal), "d MMM yyyy", { locale: id })}</p>
+        <div className="space-y-3">
+          {klaim.map((k) => {
+            const meta = STATUS_META[k.status] || STATUS_META.menunggu;
+            return (
+              <div key={k.id} className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-4 space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <span className="inline-block text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md mb-1">
+                      {KATEGORI.find((x) => x.value === k.kategori)?.label || k.kategori}
+                    </span>
+                    <p className="text-xs font-mono text-slate-400">
+                      {format(new Date(k.tanggal), "d MMM yyyy", { locale: id })}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-base font-black text-slate-900">
+                      Rp {k.nominal.toLocaleString("id-ID")}
+                    </p>
+                    <span className={`inline-block px-2.5 py-0.5 text-[10px] font-semibold rounded-full mt-1 ${meta.cls}`}>
+                      {meta.label}
+                    </span>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-lg font-black">Rp {k.nominal.toLocaleString("id-ID")}</p>
-                  <span className={`inline-block px-2 py-0.5 text-[9px] font-black uppercase border-2 border-black ${meta.cls}`}>{meta.label}</span>
-                </div>
-              </div>
-              <p className="text-[11px] font-bold text-gray-600">{k.keterangan}</p>
-              {k.fotoBukti && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={k.fotoBukti} alt="Bukti" className="w-20 h-20 object-cover border-2 border-black" />
-              )}
-              {k.catatanAdmin && (
-                <p className="text-[11px] font-bold text-gray-500 border-t border-dashed border-gray-300 pt-2">
-                  <span className="uppercase font-black text-gray-600">Admin: </span>
-                  {k.catatanAdmin}
+
+                <p className="text-xs text-slate-600 leading-relaxed bg-slate-50/70 p-2.5 rounded-xl">
+                  {k.keterangan}
                 </p>
-              )}
-            </div>
-          );
-        })
+
+                {k.fotoBukti && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={k.fotoBukti} alt="Bukti Struk" className="w-20 h-20 object-cover rounded-xl border border-slate-200" />
+                )}
+
+                {k.catatanAdmin && (
+                  <div className="text-[11px] text-slate-500 bg-amber-50/70 border border-amber-200/60 rounded-xl p-2.5">
+                    <span className="font-bold text-amber-900">Catatan Admin: </span>
+                    {k.catatanAdmin}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       )}
     </div>
   );
 }
+

@@ -24,69 +24,66 @@ export default function Error({
     Boolean(error.digest?.length);
 
   return (
-    <div className="min-h-screen bg-[#f4f4f0] text-black font-sans flex flex-col items-center justify-center p-6 selection:bg-red-500 selection:text-white">
-      <div className="max-w-xl w-full bg-white border-4 border-black p-8 md:p-10 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col items-center justify-center p-6 selection:bg-emerald-600 selection:text-white">
+      <div className="max-w-xl w-full bg-white rounded-3xl border border-slate-200/90 p-8 sm:p-10 shadow-sm">
         {/* Header Badge */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 bg-red-500 text-white border-2 border-black flex items-center justify-center font-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+        <div className="flex items-center gap-3.5 mb-6">
+          <div className="w-12 h-12 bg-rose-50 text-rose-600 border border-rose-100 rounded-2xl flex items-center justify-center font-bold shadow-xs shrink-0">
             <AlertTriangle className="w-6 h-6" />
           </div>
           <div>
-            <div className="text-xs font-black uppercase tracking-widest text-red-600">
-              Terjadi Kesalahan Server
+            <div className="text-xs font-semibold uppercase tracking-wider text-rose-600">
+              Terjadi Kendala Sistem
             </div>
-            <h1 className="text-3xl font-black uppercase tracking-tight">
-              Sistem Mengalami Kendala
+            <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+              Gagal Memuat Halaman
             </h1>
           </div>
         </div>
 
         {/* Error Details */}
-        <div className="bg-neutral-100 border-2 border-black p-4 mb-6 space-y-2 font-mono text-xs">
+        <div className="bg-slate-50 rounded-2xl border border-slate-200/80 p-4 mb-6 space-y-2 font-mono text-xs">
           {error.digest && (
-            <div className="flex justify-between items-center border-b border-neutral-300 pb-2">
-              <span className="text-neutral-500 font-bold uppercase">Kode Error (Digest):</span>
-              <span className="font-bold text-red-600 bg-white px-2 py-0.5 border border-black">
+            <div className="flex justify-between items-center border-b border-slate-200 pb-2">
+              <span className="text-slate-500 font-medium">Digest ID:</span>
+              <span className="font-bold text-slate-800 bg-white px-2 py-0.5 rounded border border-slate-200">
                 {error.digest}
               </span>
             </div>
           )}
-          <div className="break-words text-neutral-800">
-            {error.message || "Aplikasi mengalami kegagalan memuat data pada server."}
+          <div className="break-words text-slate-700">
+            {error.message || "Aplikasi mengalami kendala saat memproses permintaan."}
           </div>
         </div>
 
         {/* Diagnostic Guide if likely environment / database issue */}
         {isDbOrEnvError && (
-          <div className="mb-6 p-4 border-2 border-dashed border-amber-600 bg-amber-50 text-xs space-y-2">
-            <div className="font-bold text-amber-900 uppercase flex items-center gap-1.5">
-              <Key className="w-4 h-4" /> Kemungkinan Penyebab (Vercel / Hosting):
+          <div className="mb-6 p-4 rounded-2xl border border-amber-200 bg-amber-50/70 text-xs space-y-2">
+            <div className="font-semibold text-amber-900 flex items-center gap-1.5">
+              <Key className="w-4 h-4 text-amber-700" /> Diagnostik Konfigurasi Server:
             </div>
-            <ul className="list-disc list-inside space-y-1 text-amber-950">
+            <ul className="list-disc list-inside space-y-1 text-amber-800">
               <li>
-                <code className="bg-amber-100 px-1 font-bold">JWT_SECRET</code> belum disetel di Environment Variables Vercel.
+                Pastikan <code className="bg-amber-100/80 px-1 rounded font-bold">DATABASE_URL</code> dan kredensial database terhubung.
               </li>
               <li>
-                <code className="bg-amber-100 px-1 font-bold">DATABASE_URL</code> belum tersambung atau database (Supabase/Neon) sedang inaktif.
-              </li>
-              <li>
-                Koneksi pool SSL database membutuhkan <code className="bg-amber-100 px-1 font-bold">DATABASE_SSL_REJECT_UNAUTHORIZED=false</code>.
+                Pastikan <code className="bg-amber-100/80 px-1 rounded font-bold">JWT_SECRET</code> telah disetel di Environment Variables.
               </li>
             </ul>
           </div>
         )}
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 pt-2">
+        <div className="flex flex-col sm:flex-row gap-3 pt-2">
           <button
             onClick={() => reset()}
-            className="flex-1 hm-btn-red py-3 text-sm flex items-center justify-center gap-2 cursor-pointer"
+            className="flex-1 py-3 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             <RefreshCw className="w-4 h-4" /> Coba Muat Ulang
           </button>
           <Link
             href="/"
-            className="flex-1 hm-btn py-3 text-sm flex items-center justify-center gap-2"
+            className="flex-1 py-3 px-5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-semibold text-sm border border-slate-200 shadow-sm transition-all flex items-center justify-center gap-2"
           >
             <Home className="w-4 h-4" /> Kembali ke Beranda
           </Link>
@@ -94,8 +91,8 @@ export default function Error({
       </div>
       
       {/* Footer Info */}
-      <div className="mt-8 text-center text-xs font-bold uppercase tracking-widest text-neutral-500">
-        UPS HERU · Depok 2026
+      <div className="mt-8 text-center text-xs font-medium text-slate-400">
+        WastePay • Dinas UPS HERU Kota Depok
       </div>
     </div>
   );

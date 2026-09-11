@@ -16,41 +16,41 @@ export default function GlobalError({
 
   return (
     <html lang="id">
-      <body className="min-h-screen bg-[#f4f4f0] text-black font-sans flex flex-col items-center justify-center p-6 m-0">
-        <div className="max-w-lg w-full bg-white border-4 border-black p-8 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-red-600 text-white border-2 border-black flex items-center justify-center font-black">
+      <body className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col items-center justify-center p-6 m-0 antialiased">
+        <div className="max-w-lg w-full bg-white rounded-3xl border border-slate-200/80 p-8 shadow-2xl">
+          <div className="flex items-center gap-3.5 mb-6">
+            <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 border border-rose-200 flex items-center justify-center font-bold shrink-0">
               <AlertTriangle className="w-6 h-6" />
             </div>
             <div>
-              <div className="text-xs font-black uppercase tracking-widest text-red-600">
+              <div className="text-xs font-bold uppercase tracking-wider text-rose-600">
                 Critical Error
               </div>
-              <h1 className="text-2xl font-black uppercase tracking-tight">
+              <h1 className="text-xl font-bold tracking-tight text-slate-900">
                 Sistem Terhenti
               </h1>
             </div>
           </div>
 
-          <div className="bg-neutral-100 border-2 border-black p-4 mb-6 font-mono text-xs space-y-2">
+          <div className="bg-slate-50 rounded-2xl border border-slate-200 p-4 mb-6 font-mono text-xs space-y-2">
             {error.digest && (
-              <div className="flex justify-between border-b border-neutral-300 pb-2">
-                <span className="text-neutral-500 font-bold">DIGEST:</span>
-                <span className="font-bold text-red-600 bg-white px-2 py-0.5 border border-black">
+              <div className="flex justify-between border-b border-slate-200 pb-2">
+                <span className="text-slate-500 font-bold">DIGEST:</span>
+                <span className="font-bold text-rose-600 bg-white px-2 py-0.5 rounded border border-slate-200">
                   {error.digest}
                 </span>
               </div>
             )}
-            <div className="break-words text-neutral-800">
+            <div className="break-words text-slate-700">
               {error.message || "Aplikasi mengalami kegagalan pada layout utama."}
             </div>
           </div>
 
           <button
             onClick={() => reset()}
-            className="w-full inline-block px-8 py-3 bg-red-600 text-white border-2 border-black font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-colors text-center cursor-pointer"
+            className="w-full py-3.5 bg-rose-600 hover:bg-rose-500 text-white rounded-2xl font-bold text-sm shadow-md active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
-            <RefreshCw className="w-4 h-4 inline-block mr-2" /> Muat Ulang Aplikasi
+            <RefreshCw className="w-4 h-4 inline-block mr-1" /> Muat Ulang Aplikasi
           </button>
         </div>
       </body>

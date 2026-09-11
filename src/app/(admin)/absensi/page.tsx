@@ -95,11 +95,11 @@ export default function AbsensiPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between border-b-4 border-black pb-4">
-        <h1 className="text-4xl font-black uppercase tracking-tighter">ABSENSI PETUGAS</h1>
+        <h1 className="text-4xl font-bold tracking-tight">ABSENSI PETUGAS</h1>
         <Link
           href={`/absensi-cetak?bulan=${new Date().getMonth() + 1}&tahun=${new Date().getFullYear()}`}
           target="_blank"
-          className="shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-black text-white hover:bg-gray-800 px-4 py-2 rounded-none text-sm font-bold uppercase"
+          className="shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-black text-white hover:bg-gray-800 px-4 py-2 rounded-none text-sm font-bold uppercase"
         >
           🖨 Rekap Absensi
         </Link>
@@ -112,7 +112,7 @@ export default function AbsensiPage() {
       )}
 
       {/* Panel Clock In/Out */}
-      <div className="bg-yellow-50 border-4 border-black p-6 shadow-[8px_8px_0_0_rgba(0,0,0,1)]">
+      <div className="bg-yellow-50 border-4 border-black p-6 shadow-lg">
         <h2 className="text-2xl font-black uppercase mb-4">STATUS HARI INI</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -120,7 +120,7 @@ export default function AbsensiPage() {
             onClick={() => handleAbsen("masuk")}
             disabled={hasMasuk || actionLoading}
             className={`p-6 border-4 border-black font-black uppercase text-xl flex flex-col items-center justify-center gap-2 transition-transform ${
-              hasMasuk ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-green-400 hover:bg-green-500 hover:-translate-y-1 shadow-[4px_4px_0_0_rgba(0,0,0,1)]"
+              hasMasuk ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-green-400 hover:bg-green-500 hover:-translate-y-1 shadow-sm"
             }`}
           >
             <span>▶ MULAI KERJA</span>
@@ -131,7 +131,7 @@ export default function AbsensiPage() {
             onClick={() => handleAbsen("selesai")}
             disabled={!hasMasuk || hasSelesai || actionLoading}
             className={`p-6 border-4 border-black font-black uppercase text-xl flex flex-col items-center justify-center gap-2 transition-transform ${
-              !hasMasuk || hasSelesai ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-red-400 hover:bg-red-500 hover:-translate-y-1 shadow-[4px_4px_0_0_rgba(0,0,0,1)]"
+              !hasMasuk || hasSelesai ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-red-400 hover:bg-red-500 hover:-translate-y-1 shadow-sm"
             }`}
           >
             <span>⏹ SELESAI KERJA</span>
@@ -145,7 +145,7 @@ export default function AbsensiPage() {
 
       {/* Riwayat Absensi */}
       <div className="hm-card bg-white mt-8">
-        <h2 className="text-2xl font-black uppercase mb-6 border-b-2 border-black pb-2">RIWAYAT ABSENSI</h2>
+        <h2 className="text-2xl font-black uppercase mb-6 border-b border-slate-200 pb-2">RIWAYAT ABSENSI</h2>
         
         {loading ? (
           <p className="font-bold uppercase animate-pulse">Memuat data...</p>
@@ -154,33 +154,33 @@ export default function AbsensiPage() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-black text-white uppercase text-sm">
-                  <th className="p-3 border-2 border-black">Petugas</th>
-                  <th className="p-3 border-2 border-black">Waktu Masuk</th>
-                  <th className="p-3 border-2 border-black">Waktu Selesai</th>
-                  <th className="p-3 border-2 border-black">Status</th>
+                  <th className="p-3 border border-slate-200/80">Petugas</th>
+                  <th className="p-3 border border-slate-200/80">Waktu Masuk</th>
+                  <th className="p-3 border border-slate-200/80">Waktu Selesai</th>
+                  <th className="p-3 border border-slate-200/80">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {data.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="p-4 border-2 border-black text-center font-bold uppercase text-gray-500">
+                    <td colSpan={4} className="p-4 border border-slate-200/80 text-center font-bold uppercase text-gray-500">
                       Belum ada data absensi
                     </td>
                   </tr>
                 ) : (
                   data.map((row) => (
                     <tr key={row.id} className="hover:bg-gray-50 text-sm font-bold uppercase">
-                      <td className="p-3 border-2 border-black">{row.petugas.nama}</td>
-                      <td className="p-3 border-2 border-black">
+                      <td className="p-3 border border-slate-200/80">{row.petugas.nama}</td>
+                      <td className="p-3 border border-slate-200/80">
                         {format(new Date(row.waktuMasuk), "dd MMM yyyy, HH:mm", { locale: id })}
                       </td>
-                      <td className="p-3 border-2 border-black">
+                      <td className="p-3 border border-slate-200/80">
                         {row.waktuSelesai 
                           ? format(new Date(row.waktuSelesai), "dd MMM yyyy, HH:mm", { locale: id })
                           : "-"}
                       </td>
-                      <td className="p-3 border-2 border-black">
-                        <span className={`px-2 py-1 border-2 border-black ${row.status === 'hadir' ? 'bg-green-100 text-green-700' : 'bg-gray-100'}`}>
+                      <td className="p-3 border border-slate-200/80">
+                        <span className={`px-2 py-1 border border-slate-200/80 ${row.status === 'hadir' ? 'bg-green-100 text-green-700' : 'bg-gray-100'}`}>
                           {row.status}
                         </span>
                       </td>

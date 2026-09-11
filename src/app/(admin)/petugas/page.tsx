@@ -35,7 +35,7 @@ function badgeJabatan(jabatan?: string | null) {
     survei: "bg-purple-400/10 text-purple-300 border border-purple-500/30",
   };
   return jabatan.split(",").filter(Boolean).map((j) => (
-    <span key={j} className={`inline-flex items-center px-2 py-0.5 rounded-none-full text-[10px] font-medium mr-1 ${warna[j] ?? "bg-gray-100 border-2 border-black text-gray-600 font-bold"}`}>
+    <span key={j} className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium mr-1 ${warna[j] ?? "bg-gray-100 border border-slate-200/80 text-gray-600 font-bold"}`}>
       {JABATAN_OPTIONS.find((o) => o.value === j)?.label ?? j}
     </span>
   ));
@@ -159,12 +159,12 @@ export default function PetugasPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-black uppercase tracking-tighter text-2xl text-black font-black">Petugas</h1>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Petugas</h1>
           <p className="text-sm text-gray-600 font-bold mt-1">Kelola petugas pengangkut sampah</p>
         </div>
         <button
           onClick={openCreate}
-          className="shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 hover:bg-green-300 text-black px-4 py-2 rounded-none text-sm font-medium transition flex items-center gap-2"
+          className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -178,7 +178,7 @@ export default function PetugasPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-black text-white font-black border-b border-2 border-black">
+              <tr className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Nama</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">No. Telepon</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Kelurahan</th>
@@ -196,10 +196,10 @@ export default function PetugasPage() {
                 <tr><td colSpan={8} className="px-4 py-8 text-center text-gray-400 font-bold">Belum ada petugas</td></tr>
               ) : (
                 petugas.map((p) => (
-                  <tr key={p.id} className="border-b border-2 border-black hover:bg-gray-100 border-2 border-black">
+                  <tr key={p.id} className="border-b border-slate-200 hover:bg-slate-50/80 transition">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-none-full bg-green-400/10 flex items-center justify-center text-green-600 font-semibold text-xs">
+                        <div className="w-8 h-8 rounded-full bg-green-400/10 flex items-center justify-center text-green-600 font-semibold text-xs">
                           {p.nama.charAt(0).toUpperCase()}
                         </div>
                         <div>
@@ -215,7 +215,7 @@ export default function PetugasPage() {
                     </td>
                     <td className="px-4 py-3 text-gray-600 font-bold">{p.noTelepon}</td>
                     <td className="px-4 py-3">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium bg-green-400/10 text-blue-800">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-400/10 text-blue-800">
                         {p.kelurahan?.nama ?? "—"}
                       </span>
                       {p.kelurahan?.kecamatan && (
@@ -230,10 +230,10 @@ export default function PetugasPage() {
                     <td className="px-4 py-3 text-center">
                       <button
                         onClick={() => toggleAktif(p)}
-                        className={`inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium transition ${
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium transition ${
                           p.aktif
                             ? "bg-green-400/10 text-emerald-800 hover:bg-emerald-200"
-                            : "bg-gray-100 border-2 border-black text-black font-black hover:bg-gray-100 border-2 border-black"
+                            : "bg-gray-100 border border-slate-200/80 text-black font-black hover:bg-slate-50/80 transition"
                         }`}
                       >
                         {p.aktif ? "Aktif" : "Nonaktif"}
@@ -277,7 +277,7 @@ export default function PetugasPage() {
           <div key={p.id} className="hm-card bg-white p-0 overflow-hidden p-4">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-none-full bg-green-400/10 flex items-center justify-center text-green-600 font-semibold text-xs">
+                <div className="w-8 h-8 rounded-full bg-green-400/10 flex items-center justify-center text-green-600 font-semibold text-xs">
                   {p.nama.charAt(0).toUpperCase()}
                 </div>
                 <div>
@@ -287,8 +287,8 @@ export default function PetugasPage() {
               </div>
               <button
                 onClick={() => toggleAktif(p)}
-                className={`inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium ${
-                  p.aktif ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" : "bg-gray-100 border-2 border-black text-gray-600 font-bold border-2 border-black"
+                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                  p.aktif ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" : "bg-gray-100 border border-slate-200/80 text-gray-600 font-bold border border-slate-200/80"
                 }`}
               >
                 {p.aktif ? "Aktif" : "Nonaktif"}
@@ -300,7 +300,7 @@ export default function PetugasPage() {
               <span>{p._count.pengangkutan} angkut</span>
             </div>
             <div className="flex gap-2 mt-3">
-              <button onClick={() => openEdit(p)} className="flex-1 text-center text-sm bg-gray-100 border-2 border-black border-2 border-black text-black font-black hover:border-vest hover:text-green-600 py-2 rounded-none transition">Edit</button>
+              <button onClick={() => openEdit(p)} className="flex-1 text-center text-sm bg-gray-100 border border-slate-200/80 border border-slate-200/80 text-black font-black hover:border-vest hover:text-green-600 py-2 rounded-none transition">Edit</button>
               <button onClick={() => setDeleteTarget(p)} className="flex-1 text-center text-sm bg-danger/10 border border-danger/30 text-red-400 py-2 rounded-none hover:bg-danger/20 transition">Hapus</button>
             </div>
           </div>
@@ -309,9 +309,9 @@ export default function PetugasPage() {
 
       {/* Form Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="hm-card bg-white p-0 overflow-hidden w-full max-w-md max-h-[80vh] overflow-y-auto">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-2 border-black">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
               <h2 className="font-semibold text-black font-black">{editing ? "Edit Petugas" : "Tambah Petugas"}</h2>
               <button onClick={() => { setShowForm(false); setEditing(null); }} className="text-gray-400 font-bold hover:text-gray-600 font-bold">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -322,19 +322,19 @@ export default function PetugasPage() {
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Nama *</label>
-                <input type="text" value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" required />
+                <input type="text" value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" required />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600 font-bold mb-1">No. Telepon *</label>
-                <input type="text" value={form.noTelepon} onChange={(e) => setForm({ ...form, noTelepon: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" required />
+                <input type="text" value={form.noTelepon} onChange={(e) => setForm({ ...form, noTelepon: e.target.value })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" required />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Email</label>
-                <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" />
+                <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Kelurahan *</label>
-                <select value={form.kelurahanId} onChange={(e) => setForm({ ...form, kelurahanId: e.target.value, zonaIds: [] })} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" required>
+                <select value={form.kelurahanId} onChange={(e) => setForm({ ...form, kelurahanId: e.target.value, zonaIds: [] })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" required>
                   <option value="">Pilih Kelurahan</option>
                   {kelurahanList.map((k) => <option key={k.id} value={k.id}>{k.nama}{k.kecamatan ? ` · ${k.kecamatan}` : ""}</option>)}
                 </select>
@@ -355,7 +355,7 @@ export default function PetugasPage() {
                           className={`flex items-center justify-center px-2 py-2 border rounded-none text-xs cursor-pointer transition ${
                             checked
                               ? "bg-green-400/15 border-vest text-green-600 font-semibold"
-                              : "bg-hm-card bg-white p-0 overflow-hidden border-2 border-black text-gray-600 font-bold hover:bg-gray-100"
+                              : "bg-hm-card bg-white p-0 overflow-hidden border border-slate-200/80 text-gray-600 font-bold hover:bg-gray-100"
                           }`}
                         >
                           <input
@@ -385,7 +385,7 @@ export default function PetugasPage() {
                   {JABATAN_OPTIONS.map((j) => {
                     const on = form.jabatan.includes(j.value);
                     return (
-                      <label key={j.value} className={`flex items-start gap-3 p-3 rounded-none border cursor-pointer transition ${on ? "border-vest/50 bg-green-400/5" : "border-2 border-black hover:bg-gray-100 border-2 border-black"}`}>
+                      <label key={j.value} className={`flex items-start gap-3 p-3 rounded-none border cursor-pointer transition ${on ? "border-vest/50 bg-green-400/5" : "border border-slate-200/80 hover:bg-slate-50/80 transition"}`}>
                         <input
                           type="checkbox"
                           checked={on}
@@ -410,7 +410,7 @@ export default function PetugasPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Akun Login</label>
-                <select value={form.userId} onChange={(e) => setForm({ ...form, userId: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm">
+                <select value={form.userId} onChange={(e) => setForm({ ...form, userId: e.target.value })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm">
                   <option value="">{editing ? "— Tanpa akun login —" : "— Tanpa akun login —"}</option>
                   {editing?.user && (
                     <option value={editing.user.id}>{editing.user.nama} ({editing.user.email})</option>
@@ -424,8 +424,8 @@ export default function PetugasPage() {
                 </p>
               </div>
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="flex-1 px-4 py-2 border-2 border-black rounded-none text-sm text-gray-600 font-bold hover:bg-gray-100 border-2 border-black">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black rounded-none text-sm hover:bg-green-300">{editing ? "Simpan" : "Tambah"}</button>
+                <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="flex-1 px-4 py-2 border border-slate-200/80 rounded-xl text-sm text-slate-700 font-medium hover:bg-slate-50/80 transition">Batal</button>
+                <button type="submit" className="flex-1 px-4 py-2 shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all text-sm hover:bg-green-300">{editing ? "Simpan" : "Tambah"}</button>
               </div>
             </form>
           </div>

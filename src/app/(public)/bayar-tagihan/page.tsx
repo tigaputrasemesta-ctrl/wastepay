@@ -198,17 +198,23 @@ function BayarTagihanContent() {
 
   if (error || !detail) {
     return (
-      <div className="max-w-xl mx-auto px-4 py-12">
-        <div className="hm-card bg-red-50 border-2 border-black text-center p-8">
-          <span className="text-4xl block mb-3">⚠️</span>
-          <p className="font-black text-xl uppercase text-red-600">Tagihan Tidak Ditemukan</p>
-          <p className="text-sm font-bold mt-2 text-gray-700">{error || "Pastikan link atau nomor invoice Anda benar."}</p>
-          <Link
-            href="/bayar"
-            className="hm-btn mt-6 inline-block text-xs"
-          >
-            ← Cek Tagihan via Kode Pelanggan
-          </Link>
+      <div className="max-w-xl mx-auto px-4 py-16">
+        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm text-center p-8 sm:p-10">
+          <div className="w-14 h-14 rounded-2xl bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center text-2xl mx-auto mb-4">
+            ⚠️
+          </div>
+          <h2 className="font-extrabold text-xl text-slate-900">Tagihan Tidak Ditemukan</h2>
+          <p className="text-sm text-slate-500 mt-2 leading-relaxed max-w-md mx-auto">
+            {error || "Nomor invoice atau order tidak valid. Pastikan link tagihan yang Anda buka sudah sesuai."}
+          </p>
+          <div className="mt-8 pt-6 border-t border-slate-100">
+            <Link
+              href="/bayar"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-sm transition-all"
+            >
+              ← Cek Tagihan via Kode Pelanggan
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -219,48 +225,50 @@ function BayarTagihanContent() {
   const invoiceUrl = `/invoice-tagihan?invoice=${encodeURIComponent(detail.noInvoice)}`;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-6">
       {/* Header Info */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200/80">
         <div>
-          <span className="text-[11px] font-black uppercase tracking-widest bg-black text-white px-2.5 py-1 inline-block mb-1">
-            PORTAL PEMBAYARAN ONLINE
-          </span>
-          <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-black">
-            Pembayaran Tagihan
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 mb-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            Portal Pembayaran Online Resmi
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Konfirmasi Pembayaran
           </h1>
+          <p className="text-slate-500 text-xs sm:text-sm mt-0.5">
+            Retribusi kebersihan terpadu UPS HERU Kota Depok
+          </p>
         </div>
         <Link
           href={invoiceUrl}
           target="_blank"
-          className="hm-btn px-4 py-2 text-xs flex items-center gap-2"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs border border-slate-200 shadow-sm transition-all self-start sm:self-center"
           title="Buka Lembar Invoice Digital"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+          <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
           </svg>
-          CETAK INVOICE
+          Lihat Invoice PDF
         </Link>
       </div>
 
       {/* Banner Cancel / Pembayaran Belum Selesai */}
       {statusBatal && (
-        <div className="hm-card bg-amber-50 border-2 border-black p-5 mb-6 flex items-start justify-between gap-4 shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
-          <div className="flex items-start gap-4">
-            <div className="w-10 h-10 bg-amber-300 border-2 border-black rounded-full flex items-center justify-center shrink-0 font-black text-lg">
-              ℹ️
-            </div>
+        <div className="p-4 sm:p-5 rounded-2xl bg-amber-50 border border-amber-200/90 text-amber-900 flex items-start justify-between gap-4 shadow-sm">
+          <div className="flex items-start gap-3">
+            <span className="text-xl shrink-0">ℹ️</span>
             <div>
-              <h4 className="font-black text-base uppercase text-black">Transaksi Belum Selesai</h4>
-              <p className="text-xs font-bold text-gray-700 mt-1 leading-relaxed">
-                Pembayaran Anda sebelumnya belum diselesaikan atau waktu transaksi telah berakhir. Tagihan Anda masih aktif dan saldo Anda aman. Silakan pilih kembali metode pembayaran di bawah untuk melanjutkan.
+              <h4 className="font-bold text-sm text-amber-900">Sesi Transaksi Sebelumnya Berakhir</h4>
+              <p className="text-xs text-amber-800 mt-1 leading-relaxed">
+                Pembayaran belum selesai atau waktu transaksi gateway telah kedaluwarsa. Tagihan Anda tetap aman. Silakan pilih kembali metode pembayaran di bawah untuk melanjutkan.
               </p>
             </div>
           </div>
           <button
             type="button"
             onClick={() => setStatusBatal(false)}
-            className="text-xs font-black border-2 border-black px-2 py-1 bg-white hover:bg-black hover:text-white transition-colors"
+            className="text-xs font-bold text-amber-700 hover:text-amber-900 p-1"
             title="Tutup pesan"
           >
             ✕
@@ -270,22 +278,20 @@ function BayarTagihanContent() {
 
       {/* Banner Notifikasi Berhasil */}
       {statusSukses && !lunas && (
-        <div className="hm-card bg-green-50 border-2 border-black p-5 mb-6 flex items-start justify-between gap-4 shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
-          <div className="flex items-start gap-4">
-            <div className="w-10 h-10 bg-green-400 border-2 border-black rounded-full flex items-center justify-center shrink-0 font-black text-lg">
-              ⏳
-            </div>
+        <div className="p-4 sm:p-5 rounded-2xl bg-emerald-50 border border-emerald-200/90 text-emerald-900 flex items-start justify-between gap-4 shadow-sm">
+          <div className="flex items-start gap-3">
+            <span className="text-xl shrink-0">⏳</span>
             <div>
-              <h4 className="font-black text-base uppercase text-black">Pembayaran Sedang Diverifikasi</h4>
-              <p className="text-xs font-bold text-gray-700 mt-1 leading-relaxed">
-                Pembayaran Anda telah diterima oleh gateway dan sedang disinkronkan ke sistem. Status tagihan akan otomatis diperbarui menjadi Lunas.
+              <h4 className="font-bold text-sm text-emerald-900">Pembayaran Sedang Diverifikasi</h4>
+              <p className="text-xs text-emerald-800 mt-1 leading-relaxed">
+                Pembayaran Anda telah diterima oleh payment gateway dan sedang diverifikasi secara otomatis oleh sistem kami.
               </p>
             </div>
           </div>
           <button
             type="button"
             onClick={() => setStatusSukses(false)}
-            className="text-xs font-black border-2 border-black px-2 py-1 bg-white hover:bg-black hover:text-white transition-colors"
+            className="text-xs font-bold text-emerald-700 hover:text-emerald-900 p-1"
             title="Tutup pesan"
           >
             ✕
@@ -294,53 +300,57 @@ function BayarTagihanContent() {
       )}
 
       {/* Kartu Rincian Tagihan */}
-      <div className="hm-card p-0 bg-white overflow-hidden mb-6">
-        <div className="px-6 py-4 bg-[#f4f4f0] border-b-2 border-black flex items-center justify-between">
+      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden">
+        <div className="px-6 py-4 bg-slate-50/80 border-b border-slate-100 flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-gray-600">NOMOR INVOICE</p>
-            <p className="font-mono font-black text-base sm:text-lg text-black">{detail.noInvoice}</p>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Nomor Invoice</p>
+            <p className="font-mono font-bold text-sm sm:text-base text-slate-800">{detail.noInvoice}</p>
           </div>
           <span
-            className={`text-xs font-black uppercase px-3 py-1 border-2 border-black ${
-              lunas ? "bg-green-400 text-black shadow-[2px_2px_0_0_rgba(0,0,0,1)]" : "bg-yellow-300 text-black shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
+            className={`text-xs font-semibold px-3 py-1 rounded-full ${
+              lunas
+                ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                : "bg-amber-100 text-amber-800 border border-amber-200"
             }`}
           >
-            {lunas ? "✓ LUNAS" : "MENUNGGU PEMBAYARAN"}
+            {lunas ? "✓ Lunas" : "Menunggu Pembayaran"}
           </span>
         </div>
 
-        <div className="p-6 space-y-4 divide-y-2 divide-dashed divide-gray-200">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="p-6 space-y-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-5 border-b border-slate-100">
             <div>
-              <p className="text-xs font-bold uppercase text-gray-500">Atas Nama</p>
-              <p className="text-base font-black uppercase text-black mt-0.5">{detail.pelanggan.nama}</p>
-              <p className="text-xs font-mono font-bold text-gray-600">ID: {detail.pelanggan.kodePelanggan}</p>
+              <p className="text-xs font-medium text-slate-400">Pelanggan</p>
+              <p className="text-sm font-bold text-slate-900 mt-0.5">{detail.pelanggan.nama}</p>
+              <p className="text-xs font-mono text-slate-500 mt-0.5">ID: {detail.pelanggan.kodePelanggan}</p>
             </div>
             <div>
-              <p className="text-xs font-bold uppercase text-gray-500">Periode Layanan</p>
-              <p className="text-base font-black uppercase text-black mt-0.5">{namaPeriode}</p>
-              <p className="text-xs font-bold text-red-600">Jatuh Tempo: {formatTanggalIndo(detail.jatuhTempo)}</p>
+              <p className="text-xs font-medium text-slate-400">Periode & Jatuh Tempo</p>
+              <p className="text-sm font-bold text-slate-900 mt-0.5">{namaPeriode}</p>
+              <p className="text-xs font-medium text-slate-500 mt-0.5">
+                Batas bayar: <span className="text-rose-600 font-semibold">{formatTanggalIndo(detail.jatuhTempo)}</span>
+              </p>
             </div>
           </div>
 
-          <div className="pt-4 space-y-2 text-sm">
-            <div className="flex justify-between font-bold text-gray-700">
+          <div className="space-y-2.5 text-xs sm:text-sm">
+            <div className="flex justify-between text-slate-600">
               <span>Iuran Sampah Pokok</span>
-              <span>{formatRupiahSkylite(detail.jumlah)}</span>
+              <span className="font-semibold text-slate-800">{formatRupiahSkylite(detail.jumlah)}</span>
             </div>
-            <div className="flex justify-between font-bold text-gray-700">
+            <div className="flex justify-between text-slate-600">
               <span>PPN ({detail.ppnRate}%)</span>
-              <span>{formatRupiahSkylite(detail.ppn)}</span>
+              <span className="font-semibold text-slate-800">{formatRupiahSkylite(detail.ppn)}</span>
             </div>
             {detail.denda > 0 && (
-              <div className="flex justify-between font-bold text-red-600">
+              <div className="flex justify-between text-rose-600">
                 <span>Denda Keterlambatan</span>
-                <span>+{formatRupiahSkylite(detail.denda)}</span>
+                <span className="font-semibold">+{formatRupiahSkylite(detail.denda)}</span>
               </div>
             )}
-            <div className="flex justify-between items-baseline pt-3 border-t-2 border-black">
-              <span className="font-black text-base uppercase text-black">TOTAL PEMBAYARAN</span>
-              <span className="font-black text-2xl text-red-600 sm:text-3xl">
+            <div className="flex justify-between items-baseline pt-4 border-t border-slate-200">
+              <span className="font-bold text-slate-900 text-sm sm:text-base">Total Tagihan</span>
+              <span className="font-extrabold text-2xl sm:text-3xl text-emerald-600">
                 {formatRupiahSkylite(detail.total)}
               </span>
             </div>
@@ -349,54 +359,55 @@ function BayarTagihanContent() {
       </div>
 
       {bayarError && (
-        <div className="hm-card bg-red-100 border-2 border-black text-red-700 p-4 mb-6 text-sm font-bold uppercase">
+        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
           ⚠️ {bayarError}
         </div>
       )}
 
       {lunas ? (
         /* Tampilan Status Lunas */
-        <div className="hm-card bg-green-50 border-2 border-black p-8 text-center space-y-5">
+        <div className="bg-white rounded-3xl border border-slate-200/90 p-8 sm:p-10 text-center space-y-6 shadow-sm">
           <div className="flex justify-center">
             <AnimatedDumpTruck size="xl" theme="green" />
           </div>
           <div>
-            <span className="inline-block bg-green-500 text-black border-2 border-black font-black uppercase text-xs px-3 py-1 mb-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
-              ✓ PEMBAYARAN SUKSES
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 mb-3">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              Pembayaran Terverifikasi
             </span>
-            <h2 className="text-2xl sm:text-3xl font-black uppercase text-black">Tagihan Telah Dilunasi</h2>
-            <p className="text-xs font-bold text-gray-600 uppercase mt-1">
-              Diterima pada: {detail.tanggalLunas ? formatTanggalWaktuIndo(detail.tanggalLunas) : formatTanggalWaktuIndo(new Date().toISOString())}
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">Tagihan Telah Dilunasi</h2>
+            <p className="text-xs text-slate-500 mt-1">
+              Diterima pada {detail.tanggalLunas ? formatTanggalWaktuIndo(detail.tanggalLunas) : formatTanggalWaktuIndo(new Date().toISOString())}
             </p>
           </div>
           {detail.pembayaranLunas && (
-            <p className="text-sm font-bold bg-white border-2 border-black py-2 px-4 inline-block shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+            <p className="text-xs font-semibold text-slate-700 bg-slate-50 border border-slate-200 py-2 px-4 rounded-xl inline-block">
               Metode: {labelMetodePembayaran(detail.pembayaranLunas.metode)}
             </p>
           )}
           <div className="pt-2 flex flex-wrap justify-center gap-3">
             <Link
               href={invoiceUrl}
-              className="hm-btn-green py-3 px-6 text-sm font-black inline-block shadow-[4px_4px_0_0_rgba(0,0,0,1)]"
+              className="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-sm transition-all"
             >
-              LIHAT KWITANSI / BUKTI PEMBAYARAN
+              Lihat Kwitansi / Bukti Bayar
             </Link>
             <Link
               href="/lacak"
-              className="hm-btn py-3 px-6 text-sm font-black inline-block shadow-[4px_4px_0_0_rgba(0,0,0,1)]"
+              className="px-6 py-3 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-semibold text-sm border border-slate-200 shadow-sm transition-all"
             >
-              LACAK JADWAL TRUK
+              Lacak Jadwal Truk
             </Link>
           </div>
         </div>
       ) : (
         /* Form Pemilihan Channel & Tombol Bayar */
-        <div className="hm-card bg-white border-2 border-black p-6 sm:p-8">
-          <div className="mb-5 pb-3 border-b-2 border-black flex items-center justify-between">
+        <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-sm">
+          <div className="mb-5 pb-4 border-b border-slate-100 flex items-center justify-between">
             <div>
-              <h3 className="font-black text-lg uppercase text-black">Pilih Cara Pembayaran</h3>
-              <p className="text-xs font-bold text-gray-500 uppercase mt-0.5">
-                Pilih metode pembayaran aman via Payment Gateway
+              <h3 className="font-bold text-base text-slate-900">Pilih Metode Pembayaran</h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Pilih opsi pembayaran cepat & aman melalui payment gateway resmi
               </p>
             </div>
             <span className="text-2xl">💳</span>
@@ -411,21 +422,23 @@ function BayarTagihanContent() {
                   type="button"
                   key={m.value}
                   onClick={() => setPilihMetode(m.value)}
-                  className={`relative flex items-center gap-3 border-2 p-3.5 text-left transition-all duration-150 ${
+                  className={`relative flex items-center gap-3 p-3.5 rounded-2xl border text-left transition-all ${
                     isSelected
-                      ? "border-black bg-yellow-300 shadow-[3px_3px_0_0_rgba(0,0,0,1)] -translate-y-0.5"
-                      : "border-black bg-white hover:bg-gray-100 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:-translate-y-0.5"
+                      ? "border-emerald-500 bg-emerald-50/40 ring-1 ring-emerald-500 shadow-xs"
+                      : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/60"
                   }`}
                 >
-                  <span className="text-2xl flex-shrink-0">{m.icon}</span>
+                  <span className="text-2xl shrink-0">{m.icon}</span>
                   <div className="flex-1 min-w-0">
-                    <span className="block text-xs font-black uppercase text-black truncate">
+                    <span className="block text-xs font-bold text-slate-900 truncate">
                       {m.label}
                     </span>
                   </div>
                   <div
-                    className={`w-5 h-5 border-2 border-black rounded-full flex items-center justify-center flex-shrink-0 ${
-                      isSelected ? "bg-black text-yellow-300" : "bg-white"
+                    className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
+                      isSelected
+                        ? "border-emerald-600 bg-emerald-600 text-white"
+                        : "border-slate-300 bg-white"
                     }`}
                   >
                     {isSelected && <span className="text-xs font-black">✓</span>}
@@ -440,52 +453,53 @@ function BayarTagihanContent() {
             type="button"
             onClick={bayarOnline}
             disabled={bayarLoading || !detail.duitkuAktif}
-            className={`w-full py-4 px-6 border-2 border-black font-black uppercase tracking-wider text-base sm:text-lg flex items-center justify-center gap-3 transition-all ${
+            className={`w-full py-4 px-6 rounded-2xl font-bold text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-sm transition-all ${
               bayarLoading
-                ? "bg-gray-300 text-gray-600 cursor-wait shadow-none"
+                ? "bg-slate-200 text-slate-500 cursor-wait"
                 : !detail.duitkuAktif
-                ? "bg-gray-200 text-gray-500 cursor-not-allowed border-gray-400"
-                : "bg-green-500 hover:bg-green-400 active:bg-green-600 text-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
+                ? "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
+                : "bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white"
             }`}
           >
             {bayarLoading ? (
               <>
-                <div className="w-5 h-5 border-3 border-black border-t-transparent rounded-full animate-spin" />
-                <span>MEMPROSES PEMBAYARAN...</span>
+                <div className="w-5 h-5 border-2 border-slate-600 border-t-transparent rounded-full animate-spin" />
+                <span>Memproses Pembayaran...</span>
               </>
             ) : !detail.duitkuAktif ? (
-              <span>PEMBAYARAN ONLINE BELUM AKTIF</span>
+              <span>Pembayaran Online Belum Dikonfigurasi</span>
             ) : (
               <>
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
                 <span>
-                  BAYAR SEKARANG • {formatRupiahSkylite(detail.total)}
+                  Bayar Sekarang • {formatRupiahSkylite(detail.total)}
                 </span>
               </>
             )}
           </button>
 
           {!detail.duitkuAktif && (
-            <p className="text-xs font-bold text-gray-500 mt-3 text-center uppercase">
-              Silakan gunakan menu{" "}
-              <Link href="/bayar" className="text-black underline font-black hover:text-red-600">
-                Cek Tagihan & Upload Bukti Transfer Manual
+            <p className="text-xs text-slate-500 mt-3 text-center">
+              Alternatif transfer manual:{" "}
+              <Link href="/bayar" className="text-emerald-700 font-semibold underline hover:text-emerald-800">
+                Unggah Bukti Transfer di Sini
               </Link>
             </p>
           )}
 
-          <div className="mt-4 pt-4 border-t-2 border-gray-200 flex items-center justify-center gap-2 text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-            <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+          <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-center gap-2 text-[11px] font-medium text-slate-400">
+            <svg className="w-4 h-4 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z" clipRule="evenodd" />
             </svg>
-            <span>TERENKRIPSI & AMAN OLEH PAYMENT GATEWAY RESMI</span>
+            <span>Transaksi Terenkripsi & Dijamin Aman oleh Gateway Berizin Resmi BI</span>
           </div>
         </div>
       )}
     </div>
   );
 }
+
 
 

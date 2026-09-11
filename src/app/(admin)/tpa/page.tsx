@@ -95,12 +95,12 @@ export default function TpaPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-black uppercase tracking-tighter text-2xl text-black font-black">TPA</h1>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">TPA</h1>
           <p className="text-sm text-gray-600 font-bold mt-1">Tempat Pemrosesan Akhir sampah</p>
         </div>
         <button
           onClick={openCreate}
-          className="shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 hover:bg-green-300 text-black px-4 py-2 rounded-none text-sm font-medium transition flex items-center gap-2"
+          className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -114,7 +114,7 @@ export default function TpaPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-black text-white font-black border-b border-2 border-black">
+              <tr className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Nama</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Alamat</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Kota</th>
@@ -130,13 +130,13 @@ export default function TpaPage() {
                 <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-400 font-bold">Belum ada TPA</td></tr>
               ) : (
                 data.map((t) => (
-                  <tr key={t.id} className="border-b border-2 border-black hover:bg-gray-100 border-2 border-black">
+                  <tr key={t.id} className="border-b border-slate-200 hover:bg-slate-50/80 transition">
                     <td className="px-4 py-3 font-medium text-black font-black">{t.nama}</td>
                     <td className="px-4 py-3 text-gray-600 font-bold max-w-xs truncate">{t.alamat || "-"}</td>
                     <td className="px-4 py-3 text-gray-600 font-bold">{t.kota || "-"}</td>
                     <td className="px-4 py-3 text-right text-gray-600 font-bold">{t.jarak ? `${t.jarak} km` : "-"}</td>
                     <td className="px-4 py-3 text-center">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium ${t.aktif ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" : "bg-gray-100 border-2 border-black text-gray-600 font-bold border-2 border-black"}`}>
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${t.aktif ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" : "bg-gray-100 border border-slate-200/80 text-gray-600 font-bold border border-slate-200/80"}`}>
                         {t.aktif ? "Aktif" : "Nonaktif"}
                       </span>
                     </td>
@@ -144,7 +144,7 @@ export default function TpaPage() {
                       <div className="flex items-center justify-center gap-1">
                         <button
                           onClick={() => openEdit(t)}
-                          className="p-1.5 text-gray-600 font-bold hover:bg-gray-100 border-2 border-black hover:text-sky-300 rounded-none transition"
+                          className="p-1.5 text-gray-600 font-bold hover:bg-slate-50/80 transition hover:text-sky-300 rounded-none transition"
                           title="Edit"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -176,7 +176,7 @@ export default function TpaPage() {
           <div key={t.id} className="hm-card bg-white p-0 overflow-hidden p-4">
             <div className="flex items-center justify-between mb-2">
               <h3 className="font-semibold text-black font-black">{t.nama}</h3>
-              <span className={`inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium ${t.aktif ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" : "bg-gray-100 border-2 border-black text-gray-600 font-bold border-2 border-black"}`}>
+              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${t.aktif ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" : "bg-gray-100 border border-slate-200/80 text-gray-600 font-bold border border-slate-200/80"}`}>
                 {t.aktif ? "Aktif" : "Nonaktif"}
               </span>
             </div>
@@ -186,7 +186,7 @@ export default function TpaPage() {
               {t.jarak && <p>📏 {t.jarak} km</p>}
             </div>
             <div className="flex gap-2 mt-3">
-              <button onClick={() => openEdit(t)} className="flex-1 text-center text-sm bg-gray-100 border-2 border-black border-2 border-black text-black font-black hover:border-vest hover:text-green-600 py-2 rounded-none transition">Edit</button>
+              <button onClick={() => openEdit(t)} className="flex-1 text-center text-sm bg-gray-100 border border-slate-200/80 border border-slate-200/80 text-black font-black hover:border-vest hover:text-green-600 py-2 rounded-none transition">Edit</button>
               <button onClick={() => setDeleteTarget(t)} className="flex-1 text-center text-sm bg-danger/10 border border-danger/30 text-red-400 py-2 rounded-none hover:bg-danger/20 transition">Hapus</button>
             </div>
           </div>
@@ -195,9 +195,9 @@ export default function TpaPage() {
 
       {/* Form Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="hm-card bg-white p-0 overflow-hidden w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-2 border-black">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
               <h2 className="font-semibold text-black font-black">{editing ? "Edit TPA" : "Tambah TPA"}</h2>
               <button onClick={() => { setShowForm(false); setEditing(null); }} className="text-gray-400 font-bold hover:text-gray-600 font-bold">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -208,25 +208,25 @@ export default function TpaPage() {
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Nama TPA *</label>
-                <input type="text" value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" required />
+                <input type="text" value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" required />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Alamat</label>
-                <textarea value={form.alamat} onChange={(e) => setForm({ ...form, alamat: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" rows={2} />
+                <textarea value={form.alamat} onChange={(e) => setForm({ ...form, alamat: e.target.value })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" rows={2} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Kota</label>
-                  <input type="text" value={form.kota} onChange={(e) => setForm({ ...form, kota: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" />
+                  <input type="text" value={form.kota} onChange={(e) => setForm({ ...form, kota: e.target.value })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Jarak (km)</label>
-                  <input type="number" step="0.1" value={form.jarak} onChange={(e) => setForm({ ...form, jarak: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" placeholder="0" />
+                  <input type="number" step="0.1" value={form.jarak} onChange={(e) => setForm({ ...form, jarak: e.target.value })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" placeholder="0" />
                 </div>
               </div>
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="flex-1 px-4 py-2 border-2 border-black rounded-none text-sm text-gray-600 font-bold hover:bg-gray-100 border-2 border-black">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black rounded-none text-sm hover:bg-green-300">{editing ? "Simpan" : "Tambah"}</button>
+                <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="flex-1 px-4 py-2 border border-slate-200/80 rounded-xl text-sm text-slate-700 font-medium hover:bg-slate-50/80 transition">Batal</button>
+                <button type="submit" className="flex-1 px-4 py-2 shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all text-sm hover:bg-green-300">{editing ? "Simpan" : "Tambah"}</button>
               </div>
             </form>
           </div>

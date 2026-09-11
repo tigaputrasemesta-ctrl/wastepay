@@ -115,23 +115,23 @@ export default function BackgroundTracker() {
   }, [kirim]);
 
   return (
-    <div className="bg-white border-2 border-black px-3 py-1.5 flex items-center justify-between gap-2">
+    <div className="bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2 flex items-center justify-between gap-2 mx-3 my-1 shadow-2xs">
       <div className="flex items-center gap-2 min-w-0">
         <span
           className={`w-2 h-2 rounded-full shrink-0 ${
-            status === "Background GPS aktif" ? "bg-green-500 animate-pulse" : "bg-amber-400"
+            status === "Background GPS aktif" ? "bg-emerald-500 animate-pulse" : "bg-amber-400"
           }`}
         />
-        <span className="text-[10px] font-black uppercase tracking-widest shrink-0">
+        <span className="text-[10px] font-bold tracking-wider text-slate-700 shrink-0">
           BG GPS
         </span>
-        <span className="font-mono text-[9px] text-gray-500 truncate">{status}</span>
+        <span className="text-[10px] font-medium text-slate-500 truncate">{status}</span>
       </div>
       {perluIzin && (
         <button
           type="button"
           onClick={() => BackgroundGeolocation.openSettings().catch(() => {})}
-          className="shrink-0 px-2 py-1 bg-amber-300 border-2 border-black text-[9px] font-black uppercase"
+          className="shrink-0 px-2.5 py-1 bg-amber-100 hover:bg-amber-200 border border-amber-300 rounded-lg text-[10px] font-semibold text-amber-800 transition-colors"
         >
           Buka Pengaturan
         </button>

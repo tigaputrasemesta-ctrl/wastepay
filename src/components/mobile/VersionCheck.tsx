@@ -51,34 +51,34 @@ export default function VersionCheck() {
   const wajib = currentCode != null && currentCode < terbaru.minVersionCode;
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[100] p-4">
-      <div className="bg-white w-full max-w-sm border-4 border-black shadow-[8px_8px_0_0_rgba(0,0,0,1)]">
-        <div className="px-5 py-3 border-b-4 border-black bg-red-500">
-          <h2 className="font-black uppercase tracking-widest text-white">
-            {wajib ? "Update Wajib" : "Versi Baru Tersedia"}
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-[100] p-4 animate-in fade-in duration-150">
+      <div className="bg-white w-full max-w-sm rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden">
+        <div className={`px-6 py-4.5 ${wajib ? "bg-rose-600" : "bg-emerald-600"}`}>
+          <h2 className="font-bold text-sm tracking-wide text-white flex items-center gap-2">
+            <span>🚀</span> {wajib ? "Pembaruan Aplikasi Wajib" : "Versi Baru Tersedia"}
           </h2>
         </div>
 
-        <div className="p-5 space-y-3">
-          <p className="text-sm font-black uppercase">
+        <div className="p-6 space-y-4">
+          <p className="text-sm font-bold text-slate-900">
             UPS HERU Lapangan v{terbaru.versionName}
           </p>
 
-          <ul className="space-y-1">
+          <ul className="space-y-1.5">
             {terbaru.changelog.map((c, i) => (
-              <li key={i} className="text-xs font-bold flex gap-2">
-                <span className="text-green-600 shrink-0">▸</span>
+              <li key={i} className="text-xs font-medium text-slate-600 flex gap-2">
+                <span className="text-emerald-600 shrink-0 font-bold">✓</span>
                 <span>{c}</span>
               </li>
             ))}
           </ul>
 
-          <div className="flex gap-2 pt-2">
+          <div className="flex gap-2.5 pt-2">
             {!wajib && (
               <button
                 type="button"
                 onClick={() => setTampil(false)}
-                className="flex-1 px-3 py-2 border-2 border-black text-xs font-black uppercase text-gray-600 hover:bg-gray-100"
+                className="flex-1 py-3 border border-slate-200 text-xs font-bold rounded-2xl text-slate-600 hover:bg-slate-50 transition-colors"
               >
                 Nanti
               </button>
@@ -88,7 +88,7 @@ export default function VersionCheck() {
                 href={terbaru.apkUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 px-3 py-2 bg-green-400 border-2 border-black text-xs font-black uppercase text-center shadow-[3px_3px_0_0_rgba(0,0,0,1)] hover:-translate-y-0.5 transition"
+                className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-xs font-bold rounded-2xl text-white text-center shadow-md active:scale-98 transition-all"
               >
                 Unduh APK
               </a>
@@ -96,7 +96,7 @@ export default function VersionCheck() {
               <button
                 type="button"
                 disabled
-                className="flex-1 px-3 py-2 bg-green-400 border-2 border-black text-xs font-black uppercase opacity-60"
+                className="flex-1 py-3 bg-emerald-600 text-xs font-bold rounded-2xl text-white opacity-60"
               >
                 Hubungi Admin
               </button>

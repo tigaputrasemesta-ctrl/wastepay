@@ -566,7 +566,7 @@ export default function TagihanPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-black uppercase tracking-tighter text-2xl text-black font-black">{isPetugas ? "Tagihan Saya" : "Tagihan"}</h1>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">{isPetugas ? "Tagihan Saya" : "Tagihan"}</h1>
           <p className="text-sm text-gray-600 font-bold mt-1">
             {isPetugas
               ? "Tunggakan & tagihan warga di wilayah Anda — terima bayar tunai langsung"
@@ -637,7 +637,7 @@ export default function TagihanPage() {
                     <div className="mt-1">
                       <details className="text-xs">
                         <summary className="cursor-pointer text-green-600 hover:text-green-600 font-medium">Lihat bukti</summary>
-                        <Image src={p.buktiBayar} alt="Bukti pembayaran" width={240} height={180} unoptimized className="mt-2 max-h-40 rounded-none border-2 border-black object-cover" />
+                        <Image src={p.buktiBayar} alt="Bukti pembayaran" width={240} height={180} unoptimized className="mt-2 max-h-40 rounded-none border border-slate-200/80 object-cover" />
                       </details>
                     </div>
                   )}
@@ -659,7 +659,7 @@ export default function TagihanPage() {
                     <>
                       <button
                         onClick={() => verifikasiPembayaran(p.id, "terverifikasi")}
-                        className="text-xs shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black px-3 py-1.5 rounded-none hover:bg-green-300 transition"
+                        className="text-xs shadow-sm hover:shadow-md active:scale-[0.98] transition-all shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-green-400 text-black px-3 py-1.5 rounded-none hover:bg-green-300 transition"
                       >
                         Verifikasi
                       </button>
@@ -786,23 +786,23 @@ export default function TagihanPage() {
               setBulan((new Date().getMonth() + 1).toString());
               setTahun(new Date().getFullYear().toString());
             }}
-            className="px-3 py-2 text-xs font-black uppercase text-gray-800 bg-gray-200 hover:bg-gray-300 border-2 border-black transition"
+            className="px-3 py-2 text-xs font-black uppercase text-gray-800 bg-gray-200 hover:bg-gray-300 border border-slate-200/80 transition"
           >
             Reset Filter
           </button>
         )}
 
         {(kelurahanId || zonaId || wilayahId || rtFilter) && (
-          <div className="flex items-center gap-1.5 text-xs font-bold bg-yellow-200 border-2 border-black px-3 py-1.5 flex-wrap">
+          <div className="flex items-center gap-1.5 text-xs font-bold bg-yellow-200 border border-slate-200/80 px-3 py-1.5 flex-wrap">
             <span>🔍 Filter Aktif:</span>
             {kelurahanId && (
-              <span className="font-black bg-white px-1.5 py-0.5 border border-black text-[11px]">
+              <span className="font-black bg-white px-1.5 py-0.5 border border-slate-200/80 text-[11px]">
                 🏛️ {kelurahanList.find((k) => k.id === parseInt(kelurahanId))?.nama}
               </span>
             )}
             {zonaId && (
               <span
-                className="font-black text-black px-2 py-0.5 text-[11px] border border-black"
+                className="font-black text-black px-2 py-0.5 text-[11px] border border-slate-200/80"
                 style={{
                   backgroundColor: zonaList.find((z) => z.id === parseInt(zonaId))?.warna || "#6ee7b7",
                 }}
@@ -825,7 +825,7 @@ export default function TagihanPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-black text-white font-black border-b border-2 border-black">
+              <tr className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Kode</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">No. Invoice</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Pelanggan</th>
@@ -843,9 +843,9 @@ export default function TagihanPage() {
                 <tr><td colSpan={8} className="px-4 py-8 text-center text-gray-400 font-bold">Belum ada tagihan</td></tr>
               ) : (
                 tagihan.map((t) => (
-                  <tr key={t.id} className="border-b border-2 border-black hover:bg-gray-100 border-2 border-black">
+                  <tr key={t.id} className="border-b border-slate-200 hover:bg-slate-50/80 transition">
                     <td className="px-4 py-3">
-                      <code className="text-xs font-mono font-bold text-black font-black bg-gray-100 border-2 border-black px-1.5 py-0.5 rounded-none">
+                      <code className="text-xs font-mono font-bold text-black font-black bg-gray-100 border border-slate-200/80 px-1.5 py-0.5 rounded-none">
                         {t.pelanggan.kodePelanggan}
                       </code>
                     </td>
@@ -868,13 +868,13 @@ export default function TagihanPage() {
                       <div className="text-xs text-gray-600 font-bold">{t.pelanggan.noTelepon || "-"}</div>
                       <div className="mt-1 flex flex-wrap gap-1 items-center">
                         {t.pelanggan.kelurahan?.nama && (
-                          <span className="inline-flex items-center text-[10px] font-bold bg-white text-black border border-black px-1.5 py-0.5">
+                          <span className="inline-flex items-center text-[10px] font-bold bg-white text-black border border-slate-200/80 px-1.5 py-0.5">
                             🏛️ {t.pelanggan.kelurahan.nama}
                           </span>
                         )}
                         {t.pelanggan.wilayah?.zona?.nama && (
                           <span
-                            className="inline-flex items-center text-[10px] font-black text-black border border-black px-1.5 py-0.5"
+                            className="inline-flex items-center text-[10px] font-black text-black border border-slate-200/80 px-1.5 py-0.5"
                             style={{
                               backgroundColor: t.pelanggan.wilayah.zona.warna || "#a7f3d0",
                             }}
@@ -883,7 +883,7 @@ export default function TagihanPage() {
                           </span>
                         )}
                         {(t.pelanggan.rtRw || t.pelanggan.wilayah?.nama || t.pelanggan.wilayah?.rt) && (
-                          <span className="inline-flex items-center text-[10px] font-black bg-yellow-300 text-black border border-black px-1.5 py-0.5">
+                          <span className="inline-flex items-center text-[10px] font-black bg-yellow-300 text-black border border-slate-200/80 px-1.5 py-0.5">
                             📍 {t.pelanggan.rtRw || `${t.pelanggan.wilayah?.nama || ""}${t.pelanggan.wilayah?.rt ? ` (RT ${t.pelanggan.wilayah.rt})` : ""}`}
                           </span>
                         )}
@@ -903,7 +903,7 @@ export default function TagihanPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-center">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium ${
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                         t.status === "lunas" ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" :
                         t.status === "tunggakan" ? "bg-danger/10 text-red-400 border border-red-500/30" :
                         "bg-amber-400/10 text-amber-400 border border-amber-500/30"
@@ -915,7 +915,7 @@ export default function TagihanPage() {
                       {t.status !== "lunas" ? (
                         <button
                           onClick={() => { setFormBayar({ metode: isPetugas ? "tunai" : "transfer", catatan: isPetugas ? "Bayar tunai via petugas tagih" : "" }); setShowBayar({ tagihanId: t.id, pelangganId: t.pelanggan.id, jumlah: hitungRincian(t.jumlah, t.denda).total }); }}
-                          className="text-xs font-black bg-green-500 hover:bg-green-400 text-black border-2 border-black px-3.5 py-1.5 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[1px_1px_0_0_rgba(0,0,0,1)] transition-all uppercase inline-flex items-center gap-1"
+                          className="text-xs font-black bg-green-500 hover:bg-green-400 text-black border border-slate-200/80 px-3.5 py-1.5 shadow-xs hover:shadow-xs hover:-translate-y-0.5 active:translate-y-0 active:shadow-[1px_1px_0_0_rgba(0,0,0,1)] transition-all uppercase inline-flex items-center gap-1"
                         >
                           <span>💳</span>
                           <span>Bayar</span>
@@ -950,55 +950,55 @@ export default function TagihanPage() {
 
       {/* Modal Auto Generate */}
       {showAutoGenerate && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-white w-full max-w-2xl border-4 border-black shadow-[8px_8px_0_0_rgba(0,0,0,1)]">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+          <div className="bg-white w-full max-w-2xl border-4 border-black shadow-lg">
             <div className="flex items-center justify-between px-6 py-4 border-b-4 border-black bg-sky-300">
               <h2 className="font-black uppercase tracking-widest">Auto-Generate Tagihan</h2>
               <button onClick={() => { setShowAutoGenerate(false); setAutoResult(null); setPreview(null); }} className="font-black text-xl hover:text-white">&times;</button>
             </div>
             <form onSubmit={handleAutoGenerate} className="p-6 space-y-4">
-              <div className="bg-sky-100 border-2 border-black p-3 text-sm">
+              <div className="bg-sky-100 border border-slate-200/80 p-3 text-sm">
                 <p className="font-black uppercase text-xs mb-1">ℹ️ Cara Kerja</p>
                 <p>Nominal dihitung otomatis (tarif kustom → paket → Level). Klik <b>Muat Preview</b> untuk melihat & mengubah nominal per pelanggan sebelum generate.</p>
               </div>
               <div>
                 <label className="block text-xs font-black uppercase mb-1">Periode</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <select value={formAuto.bulan} onChange={(e) => { setFormAuto({ ...formAuto, bulan: e.target.value }); setPreview(null); setAutoResult(null); }} className="px-3 py-2 border-2 border-black text-sm font-bold uppercase" required>
+                  <select value={formAuto.bulan} onChange={(e) => { setFormAuto({ ...formAuto, bulan: e.target.value }); setPreview(null); setAutoResult(null); }} className="px-3 py-2 border border-slate-200/80 text-sm font-bold uppercase" required>
                     {bulanList.map((b) => <option key={b.value} value={b.value}>{b.label}</option>)}
                   </select>
-                  <select value={formAuto.tahun} onChange={(e) => { setFormAuto({ ...formAuto, tahun: e.target.value }); setPreview(null); setAutoResult(null); }} className="px-3 py-2 border-2 border-black text-sm font-bold uppercase" required>
+                  <select value={formAuto.tahun} onChange={(e) => { setFormAuto({ ...formAuto, tahun: e.target.value }); setPreview(null); setAutoResult(null); }} className="px-3 py-2 border border-slate-200/80 text-sm font-bold uppercase" required>
                     {[2024, 2025, 2026, 2027, 2028].map((t) => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
               </div>
 
               {preview === null && (
-                <button type="button" onClick={handleAutoPreview} disabled={previewLoading} className="w-full bg-yellow-300 border-2 border-black py-3 font-black uppercase shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:bg-yellow-200 disabled:opacity-50">
+                <button type="button" onClick={handleAutoPreview} disabled={previewLoading} className="w-full bg-yellow-300 border border-slate-200/80 py-3 font-black uppercase shadow-sm hover:bg-yellow-200 disabled:opacity-50">
                   {previewLoading ? "Memuat..." : "Muat Preview"}
                 </button>
               )}
 
               {preview && preview.length > 0 && (
-                <div className="border-2 border-black">
+                <div className="border border-slate-200/80">
                   <div className="max-h-64 overflow-y-auto">
                     <table className="w-full text-sm">
                       <thead className="sticky top-0 bg-gray-100">
-                        <tr className="text-[10px] font-black uppercase border-b-2 border-black">
-                          <th className="px-3 py-2 text-left border-r-2 border-black">Pelanggan</th>
-                          <th className="px-3 py-2 text-left border-r-2 border-black">Siklus / Jatuh Tempo</th>
-                          <th className="px-3 py-2 text-left border-r-2 border-black">Level</th>
+                        <tr className="text-[10px] font-black uppercase border-b border-slate-200">
+                          <th className="px-3 py-2 text-left border-r border-slate-200">Pelanggan</th>
+                          <th className="px-3 py-2 text-left border-r border-slate-200">Siklus / Jatuh Tempo</th>
+                          <th className="px-3 py-2 text-left border-r border-slate-200">Level</th>
                           <th className="px-3 py-2 text-right">Nominal (Rp)</th>
                         </tr>
                       </thead>
                       <tbody className="text-black">
                         {preview.map((p) => (
                           <tr key={p.pelangganId} className="border-b border-gray-300">
-                            <td className="px-3 py-2 border-r-2 border-black">
+                            <td className="px-3 py-2 border-r border-slate-200">
                               <p className="font-black text-xs uppercase">{p.nama}</p>
                               <p className="text-[10px] text-gray-500">{p.kodePelanggan}{p.paket ? ` · ${p.paket}` : ""}</p>
                             </td>
-                            <td className="px-3 py-2 border-r-2 border-black text-xs font-bold">
+                            <td className="px-3 py-2 border-r border-slate-200 text-xs font-bold">
                               <div>{p.jatuhTempo ? formatDate(p.jatuhTempo) : "-"}</div>
                               {p.hariSiklus ? (
                                 <span className="text-[10px] text-sky-700 font-mono">
@@ -1006,16 +1006,16 @@ export default function TagihanPage() {
                                 </span>
                               ) : null}
                             </td>
-                            <td className="px-3 py-2 border-r-2 border-black text-xs font-bold uppercase">{p.kategori.replace(/_/g, " ")}</td>
+                            <td className="px-3 py-2 border-r border-slate-200 text-xs font-bold uppercase">{p.kategori.replace(/_/g, " ")}</td>
                             <td className="px-3 py-2 text-right">
-                              <input type="number" min={0} value={p.jumlah} onChange={(e) => updatePreviewJumlah(p.pelangganId, Number(e.target.value))} className="w-28 px-2 py-1 border-2 border-black text-right text-sm font-black focus:bg-yellow-100 outline-none" />
+                              <input type="number" min={0} value={p.jumlah} onChange={(e) => updatePreviewJumlah(p.pelangganId, Number(e.target.value))} className="w-28 px-2 py-1 border border-slate-200/80 text-right text-sm font-black focus:bg-yellow-100 outline-none" />
                             </td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
-                  <div className="flex items-center justify-between px-3 py-2 border-t-2 border-black bg-gray-100 text-xs font-black uppercase">
+                  <div className="flex items-center justify-between px-3 py-2 border-t border-slate-200 bg-gray-100 text-xs font-black uppercase">
                     <span>{preview.length} tagihan</span>
                     <span>Total: {formatRupiah(preview.reduce((s, p) => s + (p.jumlah || 0), 0))}</span>
                   </div>
@@ -1023,15 +1023,15 @@ export default function TagihanPage() {
               )}
 
               {autoResult && (
-                <div className="p-3 text-sm bg-emerald-100 border-2 border-black">
+                <div className="p-3 text-sm bg-emerald-100 border border-slate-200/80">
                   <p className="font-black">{autoResult.message}</p>
                   <p className="text-xs mt-1">Dibuat: {autoResult.created} | Sudah ada: {autoResult.skipped}</p>
                 </div>
               )}
 
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => { setShowAutoGenerate(false); setAutoResult(null); setPreview(null); }} className="flex-1 px-4 py-2 border-2 border-black text-sm text-gray-600 font-black uppercase hover:bg-gray-100">Batal</button>
-                <button type="submit" disabled={generating || (preview !== null && preview.length === 0)} className="flex-1 px-4 py-2 bg-green-400 text-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all text-sm font-black uppercase hover:bg-green-300 disabled:opacity-50">
+                <button type="button" onClick={() => { setShowAutoGenerate(false); setAutoResult(null); setPreview(null); }} className="flex-1 px-4 py-2 border border-slate-200/80 text-sm text-gray-600 font-black uppercase hover:bg-gray-100">Batal</button>
+                <button type="submit" disabled={generating || (preview !== null && preview.length === 0)} className="flex-1 px-4 py-2 bg-green-400 text-black shadow-sm hover:shadow-sm hover:-translate-y-1 transition-all text-sm font-black uppercase hover:bg-green-300 disabled:opacity-50">
                   {generating ? "Memproses..." : preview ? `Generate (${preview.length})` : "Generate Semua"}
                 </button>
               </div>
@@ -1042,9 +1042,9 @@ export default function TagihanPage() {
 
       {/* Modal Generate */}
       {showGenerate && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="hm-card bg-white p-0 overflow-hidden w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-2 border-black">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
               <h2 className="font-semibold text-black font-black">Generate Tagihan</h2>
               <button onClick={() => setShowGenerate(false)} className="text-gray-400 font-bold hover:text-gray-600 font-bold">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1056,25 +1056,25 @@ export default function TagihanPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Periode</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <select value={formGenerate.bulan} onChange={(e) => setFormGenerate({ ...formGenerate, bulan: e.target.value })} className="px-3 py-2 border-2 border-black rounded-none text-sm" required>
+                  <select value={formGenerate.bulan} onChange={(e) => setFormGenerate({ ...formGenerate, bulan: e.target.value })} className="px-3 py-2 border border-slate-200/80 rounded-none text-sm" required>
                     {bulanList.map((b) => <option key={b.value} value={b.value}>{b.label}</option>)}
                   </select>
-                  <select value={formGenerate.tahun} onChange={(e) => setFormGenerate({ ...formGenerate, tahun: e.target.value })} className="px-3 py-2 border-2 border-black rounded-none text-sm" required>
+                  <select value={formGenerate.tahun} onChange={(e) => setFormGenerate({ ...formGenerate, tahun: e.target.value })} className="px-3 py-2 border border-slate-200/80 rounded-none text-sm" required>
                     {[2024, 2025, 2026, 2027, 2028].map((t) => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Jumlah Tagihan</label>
-                <input type="number" value={formGenerate.jumlah} onChange={(e) => setFormGenerate({ ...formGenerate, jumlah: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none text-sm" placeholder="50000" required />
+                <input type="number" value={formGenerate.jumlah} onChange={(e) => setFormGenerate({ ...formGenerate, jumlah: e.target.value })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm" placeholder="50000" required />
               </div>
               <div className="flex items-center gap-2">
-                <input type="checkbox" id="untukSemua" checked={formGenerate.untukSemua} onChange={(e) => setFormGenerate({ ...formGenerate, untukSemua: e.target.checked })} className="rounded-none border-2 border-black" />
+                <input type="checkbox" id="untukSemua" checked={formGenerate.untukSemua} onChange={(e) => setFormGenerate({ ...formGenerate, untukSemua: e.target.checked })} className="rounded-none border border-slate-200/80" />
                 <label htmlFor="untukSemua" className="text-sm text-gray-600 font-bold">Generate untuk semua pelanggan aktif</label>
               </div>
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => setShowGenerate(false)} className="flex-1 px-4 py-2 border-2 border-black rounded-none text-sm text-gray-600 font-bold hover:bg-gray-100 border-2 border-black">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black rounded-none text-sm hover:bg-green-300">Generate</button>
+                <button type="button" onClick={() => setShowGenerate(false)} className="flex-1 px-4 py-2 border border-slate-200/80 rounded-xl text-sm text-slate-700 font-medium hover:bg-slate-50/80 transition">Batal</button>
+                <button type="submit" className="flex-1 px-4 py-2 shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all text-sm hover:bg-green-300">Generate</button>
               </div>
             </form>
           </div>
@@ -1083,9 +1083,9 @@ export default function TagihanPage() {
 
       {/* Modal Bayar */}
       {showBayar && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="hm-card bg-white p-0 overflow-hidden w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-2 border-black">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
               <h2 className="font-semibold text-black font-black">Catat Pembayaran</h2>
               <button onClick={() => setShowBayar(null)} className="text-gray-400 font-bold hover:text-gray-600 font-bold">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1096,11 +1096,11 @@ export default function TagihanPage() {
             <form onSubmit={handleBayar} className="p-6 space-y-4">
               <div>
                 <p className="text-sm text-gray-600 font-bold">Jumlah Tagihan</p>
-                <p className="font-black uppercase tracking-tighter text-2xl text-black font-black">{formatRupiah(showBayar.jumlah)}</p>
+                <p className="text-2xl font-black text-slate-900 tracking-tight">{formatRupiah(showBayar.jumlah)}</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Metode Pembayaran</label>
-                <select value={formBayar.metode} onChange={(e) => setFormBayar({ ...formBayar, metode: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none text-sm" required disabled={isPetugas}>
+                <select value={formBayar.metode} onChange={(e) => setFormBayar({ ...formBayar, metode: e.target.value })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm" required disabled={isPetugas}>
                   {isPetugas ? (
                     <option value="tunai">Tunai (diterima petugas)</option>
                   ) : (
@@ -1156,8 +1156,8 @@ export default function TagihanPage() {
 
       {/* Modal Blast WA Tagihan per RT */}
       {showBlastModal && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white w-full max-w-3xl border-4 border-black shadow-[8px_8px_0_0_rgba(0,0,0,1)] my-8">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white w-full max-w-3xl border-4 border-black shadow-lg my-8">
             {/* Modal Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b-4 border-black bg-emerald-400">
               <div className="flex items-center gap-2">
@@ -1169,7 +1169,7 @@ export default function TagihanPage() {
               </div>
               <button
                 onClick={() => { setShowBlastModal(false); setBlastResult(null); }}
-                className="w-8 h-8 flex items-center justify-center font-black text-xl border-2 border-black bg-white hover:bg-black hover:text-white transition"
+                className="w-8 h-8 flex items-center justify-center font-black text-xl border border-slate-200/80 bg-white hover:bg-black hover:text-white transition"
               >
                 ✕
               </button>
@@ -1177,14 +1177,14 @@ export default function TagihanPage() {
 
             <div className="p-6 space-y-5">
               {/* Filter / Kriteria Pengiriman */}
-              <div className="bg-gray-50 border-2 border-black p-4 space-y-3">
+              <div className="bg-gray-50 border border-slate-200/80 p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black uppercase tracking-wider text-black">🎯 Kriteria Target Penerima</span>
                   <button
                     type="button"
                     onClick={() => loadBlastPreview()}
                     disabled={blastLoading}
-                    className="text-xs font-black bg-yellow-300 hover:bg-yellow-200 border-2 border-black px-2.5 py-1 shadow-[2px_2px_0_0_rgba(0,0,0,1)] active:shadow-none transition disabled:opacity-50"
+                    className="text-xs font-black bg-yellow-300 hover:bg-yellow-200 border border-slate-200/80 px-2.5 py-1 shadow-xs active:shadow-none transition disabled:opacity-50"
                   >
                     {blastLoading ? "Memuat..." : "🔄 Refresh Target"}
                   </button>
@@ -1201,7 +1201,7 @@ export default function TagihanPage() {
                         setBlastZonaId("");
                         loadBlastPreview({ kelurahanId: newKel, zonaId: "" });
                       }}
-                      className="w-full px-2 py-2 border-2 border-black text-xs font-bold bg-white focus:outline-none"
+                      className="w-full px-2 py-2 border border-slate-200/80 text-xs font-bold bg-white focus:outline-none"
                     >
                       <option value="">Semua Kelurahan</option>
                       {kelurahanList.map((k) => (
@@ -1221,7 +1221,7 @@ export default function TagihanPage() {
                         setBlastZonaId(newZona);
                         loadBlastPreview({ zonaId: newZona });
                       }}
-                      className="w-full px-2 py-2 border-2 border-black text-xs font-bold bg-white focus:outline-none"
+                      className="w-full px-2 py-2 border border-slate-200/80 text-xs font-bold bg-white focus:outline-none"
                     >
                       <option value="">Semua Zona</option>
                       {availableBlastZonas.map((z) => (
@@ -1240,7 +1240,7 @@ export default function TagihanPage() {
                         setBlastWilayahId(e.target.value);
                         loadBlastPreview({ wilayahId: e.target.value });
                       }}
-                      className="w-full px-2 py-2 border-2 border-black text-xs font-bold bg-white focus:outline-none"
+                      className="w-full px-2 py-2 border border-slate-200/80 text-xs font-bold bg-white focus:outline-none"
                     >
                       <option value="">Semua Wilayah</option>
                       {wilayahList.map((w) => (
@@ -1266,7 +1266,7 @@ export default function TagihanPage() {
                             loadBlastPreview({ rt: blastRt });
                           }
                         }}
-                        className="w-full px-2 py-2 border-2 border-black text-xs font-bold bg-white focus:outline-none placeholder:text-gray-400"
+                        className="w-full px-2 py-2 border border-slate-200/80 text-xs font-bold bg-white focus:outline-none placeholder:text-gray-400"
                       />
                     </div>
                   </div>
@@ -1279,7 +1279,7 @@ export default function TagihanPage() {
                         setBlastStatusFilter(e.target.value);
                         loadBlastPreview({ statusFilter: e.target.value });
                       }}
-                      className="w-full px-2 py-2 border-2 border-black text-xs font-bold bg-white focus:outline-none"
+                      className="w-full px-2 py-2 border border-slate-200/80 text-xs font-bold bg-white focus:outline-none"
                     >
                       <option value="semua_belum_lunas">Semua Belum Lunas</option>
                       <option value="belum_bayar">Hanya Belum Bayar</option>
@@ -1301,7 +1301,7 @@ export default function TagihanPage() {
                           setBlastZonaId(newZ);
                           loadBlastPreview({ zonaId: newZ });
                         }}
-                        className={`text-[11px] font-black px-2 py-0.5 border border-black transition ${
+                        className={`text-[11px] font-black px-2 py-0.5 border border-slate-200/80 transition ${
                           blastZonaId === z.id.toString() ? "bg-black text-white" : "hover:bg-yellow-200"
                         }`}
                         style={blastZonaId !== z.id.toString() ? { backgroundColor: z.warna || "#f3f4f6" } : undefined}
@@ -1335,7 +1335,7 @@ export default function TagihanPage() {
                         setBlastRt(rtVal);
                         loadBlastPreview({ rt: rtVal });
                       }}
-                      className={`text-[11px] font-black px-2 py-0.5 border border-black transition ${
+                      className={`text-[11px] font-black px-2 py-0.5 border border-slate-200/80 transition ${
                         blastRt === rtVal ? "bg-black text-white" : "bg-white hover:bg-yellow-200"
                       }`}
                     >
@@ -1360,7 +1360,7 @@ export default function TagihanPage() {
               {/* Status Gateway Banner */}
               {blastPreview && (
                 <div
-                  className={`p-3 border-2 border-black text-xs font-bold flex items-start gap-2.5 ${
+                  className={`p-3 border border-slate-200/80 text-xs font-bold flex items-start gap-2.5 ${
                     blastPreview.isWaConfigured ? "bg-green-100 text-green-950" : "bg-amber-100 text-amber-950"
                   }`}
                 >
@@ -1385,15 +1385,15 @@ export default function TagihanPage() {
               {/* Ringkasan Target */}
               {blastPreview && (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  <div className="border-2 border-black p-3 bg-yellow-200">
+                  <div className="border border-slate-200/80 p-3 bg-yellow-200">
                     <p className="text-[10px] font-black uppercase text-gray-700">Target Warga</p>
                     <p className="text-2xl font-black text-black">{blastPreview.totalWarga} <span className="text-xs font-bold">Orang</span></p>
                   </div>
-                  <div className="border-2 border-black p-3 bg-sky-200">
+                  <div className="border border-slate-200/80 p-3 bg-sky-200">
                     <p className="text-[10px] font-black uppercase text-gray-700">Total Nominal Tagihan</p>
                     <p className="text-xl font-black text-black">{formatRupiah(blastPreview.totalNominal)}</p>
                   </div>
-                  <div className="border-2 border-black p-3 bg-white col-span-2 sm:col-span-1">
+                  <div className="border border-slate-200/80 p-3 bg-white col-span-2 sm:col-span-1">
                     <p className="text-[10px] font-black uppercase text-gray-700">Filter Zona & RT</p>
                     <p className="text-xs font-black text-black mt-1">
                       {blastPreview.zonaNama ? `🏷️ Zona ${blastPreview.zonaNama}` : (blastZonaId ? `Zona #${blastZonaId}` : "Semua Zona")}
@@ -1406,7 +1406,7 @@ export default function TagihanPage() {
 
               {/* Contoh Format Pesan WA */}
               {blastPreview && blastPreview.sampleMessage && (
-                <div className="border-2 border-black p-3 bg-white">
+                <div className="border border-slate-200/80 p-3 bg-white">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-black uppercase tracking-wider flex items-center gap-1.5">
                       <span>💬</span> Contoh Pesan WhatsApp Yang Dikirim
@@ -1414,7 +1414,7 @@ export default function TagihanPage() {
                     <button
                       type="button"
                       onClick={() => copySampleMessage(blastPreview.sampleMessage)}
-                      className="text-[11px] font-black bg-gray-100 hover:bg-gray-200 border border-black px-2 py-0.5"
+                      className="text-[11px] font-black bg-gray-100 hover:bg-gray-200 border border-slate-200/80 px-2 py-0.5"
                     >
                       {copiedMessage ? "✅ Tersalin!" : "📋 Salin Pesan"}
                     </button>
@@ -1427,7 +1427,7 @@ export default function TagihanPage() {
 
               {/* Daftar Penerima Preview */}
               {blastPreview && blastPreview.recipients.length > 0 && (
-                <div className="border-2 border-black">
+                <div className="border border-slate-200/80">
                   <div className="bg-black text-white px-3 py-2 flex items-center justify-between">
                     <span className="text-xs font-black uppercase">
                       Daftar Warga Target ({blastPreview.recipients.length} dari {blastPreview.totalWarga})
@@ -1446,19 +1446,19 @@ export default function TagihanPage() {
                             <div className="text-[10px] text-gray-600 flex items-center gap-1 flex-wrap mt-0.5">
                               <span>{r.noTelepon || "Tanpa No. WA"}</span>
                               {r.kelurahanNama && r.kelurahanNama !== "-" && (
-                                <span className="border border-black px-1 bg-white text-[9px] font-bold">
+                                <span className="border border-slate-200/80 px-1 bg-white text-[9px] font-bold">
                                   🏛️ {r.kelurahanNama}
                                 </span>
                               )}
                               {r.zonaNama && r.zonaNama !== "-" && (
                                 <span
-                                  className="border border-black px-1.5 text-black text-[9px] font-black"
+                                  className="border border-slate-200/80 px-1.5 text-black text-[9px] font-black"
                                   style={{ backgroundColor: r.zonaWarna || "#a7f3d0" }}
                                 >
                                   🏷️ {r.zonaNama}
                                 </span>
                               )}
-                              <span className="font-bold bg-yellow-200 border border-black px-1 text-[9px]">
+                              <span className="font-bold bg-yellow-200 border border-slate-200/80 px-1 text-[9px]">
                                 📍 {r.rtRw}
                               </span>
                             </div>
@@ -1478,7 +1478,7 @@ export default function TagihanPage() {
                               href={`https://wa.me/${r.noTelepon.replace(/^0/, "62")}?text=${encodeURIComponent(blastPreview.sampleMessage)}`}
                               target="_blank"
                               rel="noreferrer"
-                              className="text-[10px] font-black bg-green-500 hover:bg-green-400 text-black border border-black px-2 py-1 uppercase inline-flex items-center gap-0.5"
+                              className="text-[10px] font-black bg-green-500 hover:bg-green-400 text-black border border-slate-200/80 px-2 py-1 uppercase inline-flex items-center gap-0.5"
                             >
                               WA ↗
                             </a>
@@ -1498,14 +1498,14 @@ export default function TagihanPage() {
                     <h3 className="font-black uppercase text-sm text-black">{blastResult.message}</h3>
                   </div>
                   <div className="flex items-center gap-3 text-xs font-bold mt-2">
-                    <span className="bg-green-300 border border-black px-2 py-1">
+                    <span className="bg-green-300 border border-slate-200/80 px-2 py-1">
                       Terkirim: {blastResult.hasil.terkirim}
                     </span>
-                    <span className="bg-amber-200 border border-black px-2 py-1">
+                    <span className="bg-amber-200 border border-slate-200/80 px-2 py-1">
                       Pending: {blastResult.hasil.pending}
                     </span>
                     {blastResult.hasil.gagal > 0 && (
-                      <span className="bg-red-300 border border-black px-2 py-1">
+                      <span className="bg-red-300 border border-slate-200/80 px-2 py-1">
                         Gagal: {blastResult.hasil.gagal}
                       </span>
                     )}
@@ -1513,13 +1513,13 @@ export default function TagihanPage() {
 
                   {/* Jika mode link manual (wa.me) */}
                   {blastResult.hasil.links && blastResult.hasil.links.length > 0 && (
-                    <div className="mt-4 pt-3 border-t-2 border-black">
+                    <div className="mt-4 pt-3 border-t border-slate-200">
                       <p className="text-xs font-black uppercase mb-2">
                         💬 Tautan WhatsApp Siap Kirim ({blastResult.hasil.links.length} Warga):
                       </p>
                       <div className="max-h-40 overflow-y-auto space-y-1.5 pr-1">
                         {blastResult.hasil.links.map((lnk) => (
-                          <div key={lnk.pelangganId} className="flex items-center justify-between bg-white border border-black px-2.5 py-1.5 text-xs">
+                          <div key={lnk.pelangganId} className="flex items-center justify-between bg-white border border-slate-200/80 px-2.5 py-1.5 text-xs">
                             <div>
                               <span className="font-black">{lnk.nama}</span>{" "}
                               <span className="text-gray-500 text-[11px]">({lnk.noTelepon})</span>
@@ -1528,7 +1528,7 @@ export default function TagihanPage() {
                               href={lnk.link}
                               target="_blank"
                               rel="noreferrer"
-                              className="font-black bg-green-400 hover:bg-green-300 text-black border border-black px-2 py-0.5 text-[10px] uppercase shadow-[1px_1px_0_0_rgba(0,0,0,1)]"
+                              className="font-black bg-green-400 hover:bg-green-300 text-black border border-slate-200/80 px-2 py-0.5 text-[10px] uppercase shadow-[1px_1px_0_0_rgba(0,0,0,1)]"
                             >
                               Buka WA ↗
                             </a>
@@ -1545,7 +1545,7 @@ export default function TagihanPage() {
                 <button
                   type="button"
                   onClick={() => { setShowBlastModal(false); setBlastResult(null); }}
-                  className="flex-1 px-4 py-2.5 border-2 border-black text-sm text-gray-700 font-black hover:bg-gray-100 uppercase transition-all"
+                  className="flex-1 px-4 py-2.5 border border-slate-200/80 text-sm text-gray-700 font-black hover:bg-gray-100 uppercase transition-all"
                 >
                   {blastResult ? "Tutup" : "Batal"}
                 </button>
@@ -1553,7 +1553,7 @@ export default function TagihanPage() {
                   type="button"
                   onClick={handleSendBlast}
                   disabled={blastSending || blastLoading || !blastPreview || blastPreview.totalWarga === 0}
-                  className="flex-1 px-4 py-2.5 bg-emerald-400 hover:bg-emerald-300 text-black border-2 border-black font-black text-sm uppercase shadow-[3px_3px_0_0_rgba(0,0,0,1)] hover:shadow-[5px_5px_0_0_rgba(0,0,0,1)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[1px_1px_0_0_rgba(0,0,0,1)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2.5 bg-emerald-400 hover:bg-emerald-300 text-black border border-slate-200/80 font-black text-sm uppercase shadow-xs hover:shadow-[5px_5px_0_0_rgba(0,0,0,1)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[1px_1px_0_0_rgba(0,0,0,1)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {blastSending ? (
                     <>

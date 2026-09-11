@@ -83,32 +83,40 @@ export default function MobileAbsen() {
   const sudahSelesai = Boolean(absen?.waktuSelesai);
 
   if (loading) {
-    return <p className="font-mono font-bold text-gray-500 text-center py-10">MEMUAT…</p>;
+    return (
+      <div className="flex items-center justify-center py-16">
+        <div className="w-6 h-6 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5 pb-8">
       <div>
-        <h1 className="text-2xl font-black uppercase tracking-tighter">Absensi GPS</h1>
-        <p className="text-xs font-bold text-gray-500">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 mb-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          Verifikasi GPS Driver & Kru Lapangan
+        </div>
+        <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Presensi Kehadiran</h1>
+        <p className="text-xs font-medium text-slate-500 mt-0.5">
           {format(new Date(), "EEEE, d MMMM yyyy", { locale: id })}
         </p>
       </div>
 
       {/* Status hari ini */}
-      <div className="bg-white border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] p-4 space-y-2">
-        <p className="text-xs font-black uppercase tracking-widest">Status Hari Ini</p>
-        <div className="grid grid-cols-2 gap-2 text-center">
-          <div className="border-2 border-black p-3">
-            <p className="text-[10px] font-black uppercase text-gray-500">Masuk</p>
-            <p className={`text-sm font-black ${sudahMasuk ? "text-green-600" : "text-gray-400"}`}>
-              {sudahMasuk ? format(new Date(absen!.waktuMasuk!), "HH:mm", { locale: id }) : "—"}
+      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 space-y-4">
+        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Rekap Waktu Hari Ini</p>
+        <div className="grid grid-cols-2 gap-3 text-center">
+          <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4">
+            <span className="text-[11px] font-medium text-slate-400 block mb-1">Jam Masuk</span>
+            <p className={`text-lg font-black tracking-tight ${sudahMasuk ? "text-emerald-600" : "text-slate-300"}`}>
+              {sudahMasuk ? format(new Date(absen!.waktuMasuk!), "HH:mm", { locale: id }) : "— : —"}
             </p>
           </div>
-          <div className="border-2 border-black p-3">
-            <p className="text-[10px] font-black uppercase text-gray-500">Selesai</p>
-            <p className={`text-sm font-black ${sudahSelesai ? "text-green-600" : "text-gray-400"}`}>
-              {sudahSelesai ? format(new Date(absen!.waktuSelesai!), "HH:mm", { locale: id }) : "—"}
+          <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4">
+            <span className="text-[11px] font-medium text-slate-400 block mb-1">Jam Selesai</span>
+            <p className={`text-lg font-black tracking-tight ${sudahSelesai ? "text-emerald-600" : "text-slate-300"}`}>
+              {sudahSelesai ? format(new Date(absen!.waktuSelesai!), "HH:mm", { locale: id }) : "— : —"}
             </p>
           </div>
         </div>
@@ -119,32 +127,50 @@ export default function MobileAbsen() {
         <button
           onClick={() => handleAbsen("masuk")}
           disabled={actionLoading}
-          className="w-full py-5 bg-green-600 text-white border-2 border-black text-base font-black uppercase tracking-widest shadow-[4px_4px_0_0_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50"
+          className="w-full py-4 px-6 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white rounded-2xl font-bold text-base shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50"
         >
-          {actionLoading ? "Mendapatkan lokasi…" : "✓ Absen Masuk"}
+          {actionLoading ? (
+            <>
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <span>Memverifikasi Lokasi GPS…</span>
+            </>
+          ) : (
+            <span>✓ Absen Masuk Sekarang</span>
+          )}
         </button>
       ) : !sudahSelesai ? (
         <button
           onClick={() => handleAbsen("selesai")}
           disabled={actionLoading}
-          className="w-full py-5 bg-red-600 text-white border-2 border-black text-base font-black uppercase tracking-widest shadow-[4px_4px_0_0_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50"
+          className="w-full py-4 px-6 bg-slate-800 hover:bg-slate-900 active:scale-[0.99] text-white rounded-2xl font-bold text-base shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50"
         >
-          {actionLoading ? "Mendapatkan lokasi…" : "■ Absen Selesai"}
+          {actionLoading ? (
+            <>
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <span>Memverifikasi Lokasi GPS…</span>
+            </>
+          ) : (
+            <span>■ Selesaikan Tugas Hari Ini</span>
+          )}
         </button>
       ) : (
-        <div className="border-2 border-green-600 bg-green-50 p-4 text-center">
-          <p className="text-sm font-black uppercase text-green-700">Hari ini selesai ✓</p>
-          <p className="text-[11px] font-bold text-green-600 mt-1">Terima kasih, sampai besok!</p>
+        <div className="rounded-3xl border border-emerald-200 bg-emerald-50/70 p-6 text-center space-y-1">
+          <span className="text-2xl block mb-1">🎉</span>
+          <p className="text-sm font-bold text-emerald-900">Operasional Hari Ini Selesai</p>
+          <p className="text-xs text-emerald-700">Terima kasih atas kerja keras Anda menjaga kebersihan Kota Depok!</p>
         </div>
       )}
 
       {koord && (
-        <p className="font-mono text-[11px] font-bold text-gray-500 text-center">
-          Koordinat terkirim: {koord.lat.toFixed(5)}, {koord.lng.toFixed(5)}
-        </p>
+        <div className="text-center">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-medium text-slate-500 bg-slate-100">
+            📍 GPS: {koord.lat.toFixed(5)}, {koord.lng.toFixed(5)}
+          </span>
+        </div>
       )}
+
       {pesan && (
-        <p className={`text-center text-sm font-black p-3 border-2 ${pesan.includes("berhasil") ? "border-green-600 text-green-700 bg-green-50" : "border-red-600 text-red-700 bg-red-50"}`}>
+        <p className={`text-center text-xs font-semibold p-3.5 rounded-2xl border ${pesan.includes("berhasil") ? "border-emerald-200 text-emerald-800 bg-emerald-50" : "border-rose-200 text-rose-800 bg-rose-50"}`}>
           {pesan}
         </p>
       )}

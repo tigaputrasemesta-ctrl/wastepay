@@ -90,12 +90,12 @@ export default function NotifikasiPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-black uppercase tracking-tighter text-2xl text-black font-black">Notifikasi WhatsApp</h1>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Notifikasi WhatsApp</h1>
           <p className="text-sm text-gray-600 font-bold mt-1">Kirim pengumuman & pengingat ke pelanggan</p>
         </div>
         <button
           onClick={() => { setShowForm(true); setResult(null); }}
-          className="shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 hover:bg-green-300 text-black px-4 py-2 rounded-none text-sm font-medium transition flex items-center gap-2"
+          className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -111,7 +111,7 @@ export default function NotifikasiPage() {
             setForm({ tipe: "tagihan_jatuh_tempo", judul: "Pengingat Tagihan", pesan: "Yth. Pelanggan UPS HERU,\n\nTagihan bulan ini sudah tersedia. Mohon segera melakukan pembayaran sebelum tanggal 15.\n\nTerima kasih.", pelangganId: "", semuaPelanggan: true });
             setShowForm(true);
           }}
-          className="bg-hm-card bg-white p-0 overflow-hidden border-2 border-black rounded-none-xl p-4 text-left hover:border-vest/40 transition text-sm"
+          className="bg-hm-card bg-white p-0 overflow-hidden border border-slate-200/80 rounded-none-xl p-4 text-left hover:border-vest/40 transition text-sm"
         >
           <p className="font-semibold text-black font-black">📋 Pengingat Tagihan</p>
           <p className="text-gray-600 font-bold mt-1">Kirim pengingat pembayaran ke semua pelanggan</p>
@@ -121,7 +121,7 @@ export default function NotifikasiPage() {
             setForm({ tipe: "jadwal_pengangkutan", judul: "Jadwal Pengangkutan", pesan: "Yth. Pelanggan UPS HERU,\n\nPengangkutan sampah akan dilakukan besok sesuai jadwal. Mohon siapkan sampah di depan rumah.\n\nTerima kasih.", pelangganId: "", semuaPelanggan: true });
             setShowForm(true);
           }}
-          className="bg-hm-card bg-white p-0 overflow-hidden border-2 border-black rounded-none-xl p-4 text-left hover:border-vest/40 transition text-sm"
+          className="bg-hm-card bg-white p-0 overflow-hidden border border-slate-200/80 rounded-none-xl p-4 text-left hover:border-vest/40 transition text-sm"
         >
           <p className="font-semibold text-black font-black">🗑️ Pengingat Jadwal</p>
           <p className="text-gray-600 font-bold mt-1">Info jadwal pengangkutan besok</p>
@@ -131,7 +131,7 @@ export default function NotifikasiPage() {
             setForm({ tipe: "pengumuman", judul: "Pengumuman Libur", pesan: "Yth. Pelanggan UPS HERU,\n\nDiberitahukan bahwa layanan pengangkutan sampah libur pada hari besar nasional. Jadwal akan kembali normal pada hari berikutnya.\n\nTerima kasih.", pelangganId: "", semuaPelanggan: true });
             setShowForm(true);
           }}
-          className="bg-hm-card bg-white p-0 overflow-hidden border-2 border-black rounded-none-xl p-4 text-left hover:border-vest/40 transition text-sm"
+          className="bg-hm-card bg-white p-0 overflow-hidden border border-slate-200/80 rounded-none-xl p-4 text-left hover:border-vest/40 transition text-sm"
         >
           <p className="font-semibold text-black font-black">📢 Pengumuman Libur</p>
           <p className="text-gray-600 font-bold mt-1">Info libur & perubahan jadwal</p>
@@ -140,7 +140,7 @@ export default function NotifikasiPage() {
           onClick={() => {
             setShowForm(true);
           }}
-          className="bg-hm-card bg-white p-0 overflow-hidden border-2 border-black rounded-none-xl p-4 text-left hover:border-vest/40 transition text-sm"
+          className="bg-hm-card bg-white p-0 overflow-hidden border border-slate-200/80 rounded-none-xl p-4 text-left hover:border-vest/40 transition text-sm"
         >
           <p className="font-semibold text-black font-black">✏️ Kustom</p>
           <p className="text-gray-600 font-bold mt-1">Buat pesan notifikasi sendiri</p>
@@ -149,7 +149,7 @@ export default function NotifikasiPage() {
 
       {/* Riwayat */}
       <div className="hm-card bg-white p-0 overflow-hidden">
-        <div className="px-4 py-3 border-b border-2 border-black">
+        <div className="px-4 py-3 border-b border-slate-200">
           <h2 className="font-semibold text-black font-black">Riwayat Notifikasi</h2>
         </div>
         <div className="divide-y divide-asphalt-line">
@@ -164,7 +164,7 @@ export default function NotifikasiPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-black font-black">{n.judul}</span>
-                      <span className={`text-xs px-1.5 py-0.5 rounded-none-full ${
+                      <span className={`text-xs px-1.5 py-0.5 rounded-full ${
                         n.tipe === "pengumuman" ? "bg-green-400/10 text-green-600 border border-vest/30" :
                         n.tipe === "tagihan_jatuh_tempo" ? "bg-danger/10 text-red-400 border border-red-500/30" :
                         "bg-amber/10 text-amber-400 border border-amber-500/30"
@@ -177,7 +177,7 @@ export default function NotifikasiPage() {
                       Ke: {n.pelanggan?.nama || n.penerima} • {formatDate(n.createdAt)}
                     </p>
                   </div>
-                  <span className={`text-xs px-2 py-0.5 rounded-none-full ${
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${
                     n.status === "terkirim" ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" :
                     n.status === "pending" ? "bg-amber/10 text-amber-400 border border-amber-500/30" :
                     "bg-danger/10 text-red-400 border border-red-500/30"
@@ -193,9 +193,9 @@ export default function NotifikasiPage() {
 
       {/* Form Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="hm-card bg-white p-0 overflow-hidden w-full max-w-lg">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-2 border-black">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
               <h2 className="font-semibold text-black font-black">Kirim Notifikasi</h2>
               <button onClick={() => { setShowForm(false); setResult(null); }} className="text-gray-400 font-bold hover:text-gray-600 font-bold">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -209,7 +209,7 @@ export default function NotifikasiPage() {
                 <select
                   value={form.tipe}
                   onChange={(e) => setForm({ ...form, tipe: e.target.value })}
-                  className="w-full px-3 py-2 border-2 border-black rounded-none text-sm"
+                  className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm"
                 >
                   {TIPE_NOTIF.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
                 </select>
@@ -220,7 +220,7 @@ export default function NotifikasiPage() {
                   type="text"
                   value={form.judul}
                   onChange={(e) => setForm({ ...form, judul: e.target.value })}
-                  className="w-full px-3 py-2 border-2 border-black rounded-none text-sm"
+                  className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm"
                   required
                 />
               </div>
@@ -229,7 +229,7 @@ export default function NotifikasiPage() {
                 <textarea
                   value={form.pesan}
                   onChange={(e) => setForm({ ...form, pesan: e.target.value })}
-                  className="w-full px-3 py-2 border-2 border-black rounded-none text-sm"
+                  className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm"
                   rows={4}
                   required
                 />
@@ -240,7 +240,7 @@ export default function NotifikasiPage() {
                     type="checkbox"
                     checked={form.semuaPelanggan}
                     onChange={(e) => setForm({ ...form, semuaPelanggan: e.target.checked, pelangganId: "" })}
-                    className="rounded-none border-2 border-black"
+                    className="rounded-none border border-slate-200/80"
                   />
                   <span className="text-sm text-gray-600 font-bold">Kirim ke semua pelanggan aktif</span>
                 </label>
@@ -251,7 +251,7 @@ export default function NotifikasiPage() {
                   <select
                     value={form.pelangganId}
                     onChange={(e) => setForm({ ...form, pelangganId: e.target.value })}
-                    className="w-full px-3 py-2 border-2 border-black rounded-none text-sm"
+                    className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm"
                   >
                     <option value="">Pilih pelanggan</option>
                     {pelangganList.map((p) => (
@@ -294,14 +294,14 @@ export default function NotifikasiPage() {
                 <button
                   type="button"
                   onClick={() => { setShowForm(false); setResult(null); }}
-                  className="flex-1 px-4 py-2 border-2 border-black rounded-none text-sm text-gray-600 font-bold hover:bg-gray-100 border-2 border-black"
+                  className="flex-1 px-4 py-2 border border-slate-200/80 rounded-xl text-sm text-slate-700 font-medium hover:bg-slate-50/80 transition"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={sending}
-                  className="flex-1 px-4 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black rounded-none text-sm hover:bg-green-300 disabled:opacity-50"
+                  className="flex-1 px-4 py-2 shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all text-sm hover:bg-green-300 disabled:opacity-50"
                 >
                   {sending ? "Mengirim..." : "Kirim via WA"}
                 </button>

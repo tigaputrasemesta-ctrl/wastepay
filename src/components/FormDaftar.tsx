@@ -8,8 +8,8 @@ import { kompresGambar, ekstrakGpsFoto } from "@/lib/foto";
 const PetaLokasi = dynamic(() => import("@/components/PetaLokasi"), {
   ssr: false,
   loading: () => (
-    <div className="h-64 w-full border-2 border-black bg-[#e8f0e6] flex items-center justify-center">
-      <p className="text-xs font-black uppercase animate-pulse">MEMUAT PETA…</p>
+    <div className="h-64 w-full rounded-2xl border border-slate-200 bg-slate-50 flex items-center justify-center">
+      <p className="text-xs font-semibold text-slate-500 animate-pulse">Memuat peta…</p>
     </div>
   ),
 });
@@ -278,45 +278,45 @@ export default function FormDaftar() {
 
         {jenisLayanan === 'kategori' ? (
           <div>
-            <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="d-kategori">
-              PILIH KATEGORI PELANGGAN
+            <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-kategori">
+              Pilih Kategori Pelanggan
             </label>
             <div className="relative">
-              <select id="d-kategori" value={kategori} onChange={(e) => setKategori(e.target.value)} className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 appearance-none uppercase cursor-pointer">
+              <select id="d-kategori" value={kategori} onChange={(e) => setKategori(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer">
                 {(opsi?.kategoriTarif ?? []).map((k) => (
                   <option key={k.kategori} value={k.kategori}>
-                    {k.label} — RP {k.tarif.toLocaleString("id-ID")}/BULAN
+                    {k.label} — Rp {k.tarif.toLocaleString("id-ID")}/bulan
                   </option>
                 ))}
               </select>
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none font-bold text-lg">▼</div>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">▼</div>
             </div>
             {tarifKategori && (
-              <p className="text-[10px] font-bold mt-2 uppercase border-2 border-black p-2 bg-yellow-50 inline-block text-black">
-                TARIF: RP {tarifKategori.tarif.toLocaleString("id-ID")}/BULAN
+              <p className="text-xs font-semibold mt-2.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 inline-block">
+                Tarif: Rp {tarifKategori.tarif.toLocaleString("id-ID")}/bulan
                 {tarifKategori.deskripsi ? ` (${tarifKategori.deskripsi})` : ""}
               </p>
             )}
           </div>
         ) : (
           <div>
-            <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="d-paket">
-              PILIH PAKET KHUSUS
+            <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-paket">
+              Pilih Paket Khusus
             </label>
             <div className="relative">
-              <select id="d-paket" value={paketId} onChange={(e) => setPaketId(e.target.value)} className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 appearance-none uppercase cursor-pointer">
-                <option value="" disabled>— PILIH PAKET —</option>
+              <select id="d-paket" value={paketId} onChange={(e) => setPaketId(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer">
+                <option value="" disabled>— Pilih Paket —</option>
                 {(opsi?.paket ?? []).map((p) => (
                   <option key={p.id} value={p.id}>
-                    {p.nama} - RP {p.harga.toLocaleString("id-ID")}/BULAN
+                    {p.nama} - Rp {p.harga.toLocaleString("id-ID")}/bulan
                   </option>
                 ))}
               </select>
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none font-bold text-lg">▼</div>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">▼</div>
             </div>
             {paketId && (opsi?.paket ?? []).find(p => p.id.toString() === paketId)?.deskripsi && (
-              <p className="text-[10px] font-bold mt-2 uppercase border-2 border-black p-2 bg-green-50 text-green-700 inline-block">
-                INFO PAKET: {(opsi?.paket ?? []).find(p => p.id.toString() === paketId)?.deskripsi}
+              <p className="text-xs font-semibold mt-2.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 inline-block">
+                Info Paket: {(opsi?.paket ?? []).find(p => p.id.toString() === paketId)?.deskripsi}
               </p>
             )}
           </div>
@@ -325,8 +325,8 @@ export default function FormDaftar() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="d-kecamatan">
-            KECAMATAN <span className="text-red-600">*</span>
+          <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-kecamatan">
+            Kecamatan <span className="text-rose-500">*</span>
           </label>
           <div className="relative">
             <select
@@ -336,54 +336,54 @@ export default function FormDaftar() {
                 setKecamatan(e.target.value);
                 setKelurahan("");
               }}
-              className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 appearance-none uppercase"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer"
               required
             >
-              <option value="">— PILIH KECAMATAN —</option>
+              <option value="">— Pilih Kecamatan —</option>
               {(opsi?.wilayah ?? []).map((w) => (
                 <option key={w.kecamatan} value={w.kecamatan}>
                   {w.kecamatan}
                 </option>
               ))}
             </select>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none font-bold text-lg">▼</div>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">▼</div>
           </div>
         </div>
         <div>
-          <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="d-kelurahan">
-            KELURAHAN <span className="text-red-600">*</span>
+          <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-kelurahan">
+            Kelurahan <span className="text-rose-500">*</span>
           </label>
           <div className="relative">
             <select
               id="d-kelurahan"
               value={kelurahan}
               onChange={(e) => setKelurahan(e.target.value)}
-              className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 appearance-none uppercase disabled:opacity-50"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer disabled:opacity-50"
               required
               disabled={!kecamatan}
             >
-              <option value="">— PILIH KELURAHAN —</option>
+              <option value="">— Pilih Kelurahan —</option>
               {kelurahanList.map((kel) => (
                 <option key={kel} value={kel}>
                   {kel}
                 </option>
               ))}
             </select>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none font-bold text-lg">▼</div>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">▼</div>
           </div>
         </div>
       </div>
 
       <div>
-        <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="d-alamat">
-          ALAMAT LENGKAP <span className="text-red-600">*</span>
+        <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-alamat">
+          Alamat Lengkap <span className="text-rose-500">*</span>
         </label>
         <textarea
           id="d-alamat"
           value={alamat}
           onChange={(e) => setAlamat(e.target.value)}
-          placeholder="CONTOH: JALAN MARGONDA RAYA NO. 123"
-          className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 uppercase min-h-[80px] resize-y"
+          placeholder="Contoh: Jalan Margonda Raya No. 123"
+          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all min-h-[80px] resize-y placeholder:text-slate-400"
           required
           minLength={10}
         />
@@ -391,49 +391,49 @@ export default function FormDaftar() {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="d-rt">
-            RT (OPSIONAL)
+          <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-rt">
+            RT (Opsional)
           </label>
           <input
             id="d-rt"
             value={rt}
             onChange={(e) => setRt(e.target.value)}
             placeholder="001"
-            className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 uppercase"
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
             inputMode="numeric"
           />
         </div>
         <div>
-          <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="d-rw">
-            RW (OPSIONAL)
+          <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-rw">
+            RW (Opsional)
           </label>
           <input
             id="d-rw"
             value={rw}
             onChange={(e) => setRw(e.target.value)}
             placeholder="002"
-            className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 uppercase"
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
             inputMode="numeric"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="d-patokan">
-          PATOKAN LOKASI (OPSIONAL)
+        <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-patokan">
+          Patokan Lokasi (Opsional)
         </label>
         <input
           id="d-patokan"
           value={patokanLokasi}
           onChange={(e) => setPatokanLokasi(e.target.value)}
-          placeholder="CONTOH: DEPAN WARUNG MAKMUR"
-          className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 uppercase"
+          placeholder="Contoh: Depan Warung Makmur"
+          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
         />
       </div>
 
       <div>
-        <label className="block text-xs font-bold uppercase tracking-widest mb-2">
-          FOTO DEPAN RUMAH (OPSIONAL)
+        <label className="block text-xs font-bold text-slate-700 mb-1.5">
+          Foto Depan Rumah (Opsional)
         </label>
         <input
           ref={kameraRef}
@@ -451,30 +451,30 @@ export default function FormDaftar() {
           onChange={(e) => handleFoto(e.target.files?.[0])}
         />
         {fotoRumah ? (
-          <div className="p-3 border-2 border-black bg-white flex gap-4 items-start">
+          <div className="p-3.5 rounded-2xl border border-slate-200 bg-slate-50 flex gap-4 items-start">
             <Image
               src={fotoRumah}
               alt="Foto depan rumah"
               unoptimized
               width={128}
               height={128}
-              className="w-32 h-32 object-cover border-2 border-black shrink-0"
+              className="w-28 h-28 object-cover rounded-xl border border-slate-200 shrink-0"
             />
             <div className="flex-1 space-y-2">
-              <p className="text-[10px] font-bold text-green-600 uppercase">✓ FOTO TERSIMPAN</p>
+              <p className="text-xs font-bold text-emerald-600">✓ Foto Tersimpan</p>
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
                   onClick={() => kameraRef.current?.click()}
                   disabled={fotoLoading}
-                  className="px-3 py-2 border-2 border-black font-black uppercase text-xs bg-yellow-50 hover:bg-yellow-100 disabled:opacity-50"
+                  className="px-3.5 py-1.5 rounded-xl border border-slate-200 font-semibold text-xs bg-white hover:bg-slate-100 text-slate-700 transition-colors disabled:opacity-50"
                 >
                   {fotoLoading ? "Memproses..." : "Ganti Foto"}
                 </button>
                 <button
                   type="button"
                   onClick={() => setFotoRumah("")}
-                  className="px-3 py-2 border-2 border-black font-black uppercase text-xs bg-red-50 text-red-600 hover:bg-red-100"
+                  className="px-3.5 py-1.5 rounded-xl border border-rose-200 font-semibold text-xs bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors"
                 >
                   Hapus
                 </button>
@@ -487,35 +487,35 @@ export default function FormDaftar() {
               type="button"
               onClick={() => kameraRef.current?.click()}
               disabled={fotoLoading}
-              className="w-full p-4 border-2 border-black font-black uppercase text-sm flex items-center justify-center gap-2 bg-white hover:bg-gray-50 hover:-translate-y-1 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] transition-all disabled:opacity-50"
+              className="w-full py-3.5 border border-slate-200 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 shadow-2xs transition-all disabled:opacity-50"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-              {fotoLoading ? "MEMPROSES..." : "AMBIL FOTO"}
+              {fotoLoading ? "Memproses..." : "Ambil Foto"}
             </button>
             <button
               type="button"
               onClick={() => galeriRef.current?.click()}
               disabled={fotoLoading}
-              className="w-full p-4 border-2 border-black font-black uppercase text-sm flex items-center justify-center gap-2 bg-white hover:bg-gray-50 hover:-translate-y-1 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] transition-all disabled:opacity-50"
+              className="w-full py-3.5 border border-slate-200 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 shadow-2xs transition-all disabled:opacity-50"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              DARI GALERI
+              Dari Galeri
             </button>
           </div>
         )}
-        <p className="text-[10px] font-bold text-gray-500 mt-2 uppercase">
-          FOTO MEMBANTU PETUGAS MENGENALI RUMAH ANDA SAAT SURVEI & ANGKUT. FOTO DIPERKECIL OTOMATIS.
+        <p className="text-[11px] text-slate-500 mt-2">
+          Foto membantu petugas mengenali rumah Anda saat survei & jemput sampah. Foto diperkecil otomatis.
         </p>
       </div>
 
       <div>
-        <label className="block text-xs font-bold uppercase tracking-widest mb-2">
-          TITIK LOKASI (GPS)
+        <label className="block text-xs font-bold text-slate-700 mb-1.5">
+          Titik Lokasi (GPS)
         </label>
         <div className="space-y-3">
           <PetaLokasi

@@ -10,7 +10,7 @@ import { formatDate, formatRupiah } from "@/lib/utils";
 const PetaLokasi = dynamic(() => import("@/components/PetaLokasi"), {
   ssr: false,
   loading: () => (
-    <div className="h-64 w-full border-2 border-black bg-[#e8f0e6] flex items-center justify-center">
+    <div className="h-64 w-full border border-slate-200/80 bg-[#e8f0e6] flex items-center justify-center">
       <p className="text-xs font-black uppercase animate-pulse">MEMUAT PETA…</p>
     </div>
   ),
@@ -93,7 +93,7 @@ export default function SurveiDetailPage() {
   if (error || !data) {
     return (
       <div className="hm-card bg-white p-0 overflow-hidden p-10 text-center">
-        <p className="font-black uppercase tracking-tighter text-2xl text-red-600">{error || "Tidak ditemukan"}</p>
+        <p className="font-bold tracking-tight text-2xl text-red-600">{error || "Tidak ditemukan"}</p>
         <Link href="/survei" className="inline-block mt-4 text-sm text-green-600 hover:text-sky-300 font-bold underline">
           ← Kembali ke Survei
         </Link>
@@ -112,12 +112,12 @@ export default function SurveiDetailPage() {
           <Link href="/survei" className="text-xs text-green-600 hover:text-sky-300 font-bold underline">
             ← Kembali ke Survei
           </Link>
-          <h1 className="font-black uppercase tracking-tighter text-2xl text-black mt-2">{data.nama}</h1>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight mt-2">{data.nama}</h1>
           <p className="font-mono text-xs text-gray-400 font-bold mt-1">
             {data.kodePelanggan} · daftar {formatDate(data.createdAt)}
           </p>
         </div>
-        <span className={`inline-flex items-center px-3 py-1 border-2 border-black text-[11px] font-black uppercase ${
+        <span className={`inline-flex items-center px-3 py-1 border border-slate-200/80 text-[11px] font-black uppercase ${
           data.status === "aktif" ? "bg-green-400 text-black" : "bg-yellow-300 text-black"
         }`}>
           {status}
@@ -129,11 +129,11 @@ export default function SurveiDetailPage() {
         <div className="hm-card bg-white p-0 overflow-hidden p-4">
           <p className="stencil text-green-600 mb-3">FOTO RUMAH</p>
           {data.fotoRumah ? (
-            <div className="relative h-64 w-full border-2 border-black bg-gray-100 overflow-hidden">
+            <div className="relative h-64 w-full border border-slate-200/80 bg-gray-100 overflow-hidden">
               <Image src={data.fotoRumah} alt={`Foto rumah ${data.nama}`} fill className="object-cover" />
             </div>
           ) : (
-            <div className="h-64 w-full border-2 border-black bg-[#f4f4f0] flex items-center justify-center text-gray-400 font-bold text-sm">
+            <div className="h-64 w-full border border-slate-200/80 bg-[#f4f4f0] flex items-center justify-center text-gray-400 font-bold text-sm">
               BELUM ADA FOTO
             </div>
           )}
@@ -145,7 +145,7 @@ export default function SurveiDetailPage() {
             <div className="space-y-3">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div>
-                  <span className={`inline-flex items-center px-2 py-0.5 border-2 border-black text-[10px] font-bold ${
+                  <span className={`inline-flex items-center px-2 py-0.5 border border-slate-200/80 text-[10px] font-bold ${
                     data.koordinatSumber === "manual" ? "bg-gray-100 text-gray-600" : "bg-green-400/10 text-green-600 border-black"
                   }`}>
                     {koordinatSumber}
@@ -165,12 +165,12 @@ export default function SurveiDetailPage() {
               <p className="font-mono text-[11px] text-gray-500 font-bold">
                 {data.latitude.toFixed(6)}, {data.longitude.toFixed(6)}
               </p>
-              <div className="h-64 border-2 border-black overflow-hidden">
+              <div className="h-64 border border-slate-200/80 overflow-hidden">
                 <PetaLokasi latitude={data.latitude} longitude={data.longitude} className="h-64 w-full" />
               </div>
             </div>
           ) : (
-            <div className="h-64 w-full border-2 border-black bg-[#f4f4f0] flex items-center justify-center text-gray-400 font-bold text-sm">
+            <div className="h-64 w-full border border-slate-200/80 bg-[#f4f4f0] flex items-center justify-center text-gray-400 font-bold text-sm">
               BELUM ADA TITIK LOKASI
             </div>
           )}

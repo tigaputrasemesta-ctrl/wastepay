@@ -40,8 +40,8 @@ function ChipCheck({ checked }: { checked: boolean }) {
 
 function chipCls(checked: boolean) {
   return checked
-    ? "flex items-center justify-center gap-1.5 px-2 py-2 border-2 border-black bg-green-400 text-black font-bold shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
-    : "flex items-center justify-center gap-1.5 px-2 py-2 border-2 border-black bg-white text-gray-600 font-semibold hover:bg-gray-100";
+    ? "flex items-center justify-center gap-1.5 px-2 py-2 border border-slate-200/80 bg-green-400 text-black font-bold shadow-xs"
+    : "flex items-center justify-center gap-1.5 px-2 py-2 border border-slate-200/80 bg-white text-gray-600 font-semibold hover:bg-gray-100";
 }
 
 export default function RutePage() {
@@ -220,12 +220,12 @@ export default function RutePage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-black uppercase tracking-tighter text-2xl text-black font-black">Rute & Jadwal</h1>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Rute & Jadwal</h1>
           <p className="text-sm text-gray-600 font-bold mt-1">Atur rute pengangkutan sampah</p>
         </div>
         <button
           onClick={openCreate}
-          className="shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 hover:bg-green-300 text-black px-4 py-2 rounded-none text-sm font-medium transition flex items-center gap-2"
+          className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -239,7 +239,7 @@ export default function RutePage() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-black text-white font-black border-b border-2 border-black">
+              <tr className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Nama Rute</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Kelurahan</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Zona</th>
@@ -258,17 +258,17 @@ export default function RutePage() {
                 <tr><td colSpan={9} className="px-4 py-8 text-center text-gray-400 font-bold">Belum ada rute</td></tr>
               ) : (
                 rute.map((r) => (
-                  <tr key={r.id} className="border-b border-2 border-black hover:bg-gray-100">
+                  <tr key={r.id} className="border-b border-slate-200 hover:bg-gray-100">
                     <td className="px-4 py-3 font-medium text-black font-black">{r.nama}</td>
                     <td className="px-4 py-3">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium bg-sky-400/10 text-sky-400 border border-sky-500/30">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-sky-400/10 text-sky-400 border border-sky-500/30">
                         {r.kelurahans && r.kelurahans.length > 0 
                           ? r.kelurahans.map(k => k.nama).join(", ")
                           : r.kelurahan?.nama ?? "—"}
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium bg-purple-400/10 text-purple-500 border border-purple-500/30">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-400/10 text-purple-500 border border-purple-500/30">
                         {r.zonas && r.zonas.length > 0 
                           ? r.zonas.map(z => z.nama).join(", ")
                           : r.zona?.nama ?? "—"}
@@ -277,7 +277,7 @@ export default function RutePage() {
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1">
                         {r.hari.split(",").map((h) => (
-                          <span key={h} className="bg-gray-100 border-2 border-black text-gray-600 font-bold px-2 py-0.5 rounded-none text-xs">{h.slice(0, 3)}</span>
+                          <span key={h} className="bg-gray-100 border border-slate-200/80 text-gray-600 font-bold px-2 py-0.5 rounded-none text-xs">{h.slice(0, 3)}</span>
                         ))}
                       </div>
                     </td>
@@ -287,10 +287,10 @@ export default function RutePage() {
                     <td className="px-4 py-3 text-center">
                       <button
                         onClick={() => toggleAktif(r)}
-                        className={`inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium transition ${
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium transition ${
                           r.aktif
                             ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30"
-                            : "bg-gray-100 border-2 border-black text-gray-600 font-bold border-2 border-black"
+                            : "bg-gray-100 border border-slate-200/80 text-gray-600 font-bold border border-slate-200/80"
                         }`}
                       >
                         {r.aktif ? "Aktif" : "Nonaktif"}
@@ -343,8 +343,8 @@ export default function RutePage() {
               <h3 className="font-semibold text-black font-black">{r.nama}</h3>
               <button
                 onClick={() => toggleAktif(r)}
-                className={`inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium ${
-                  r.aktif ? "bg-green-400/10 text-emerald-800" : "bg-gray-100 border-2 border-black text-black font-black"
+                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                  r.aktif ? "bg-green-400/10 text-emerald-800" : "bg-gray-100 border border-slate-200/80 text-black font-black"
                 }`}
               >
                 {r.aktif ? "Aktif" : "Nonaktif"}
@@ -368,7 +368,7 @@ export default function RutePage() {
             </div>
             <div className="flex gap-2 mt-3">
               <button onClick={() => bukaMap(r)} className="flex-1 text-center text-sm bg-green-400/10 border border-vest/30 text-green-600 py-2 rounded-none hover:bg-green-400/20 transition">🗺️ Map</button>
-              <button onClick={() => openEdit(r)} className="flex-1 text-center text-sm bg-gray-100 border-2 border-black border-2 border-black text-black font-black py-2 rounded-none hover:border-vest hover:text-green-600 transition">Edit</button>
+              <button onClick={() => openEdit(r)} className="flex-1 text-center text-sm bg-gray-100 border border-slate-200/80 border border-slate-200/80 text-black font-black py-2 rounded-none hover:border-vest hover:text-green-600 transition">Edit</button>
               <button onClick={() => setDeleteTarget(r)} className="flex-1 text-center text-sm bg-danger/10 border border-danger/30 text-red-400 py-2 rounded-none hover:bg-danger/20 transition">Hapus</button>
             </div>
           </div>
@@ -377,9 +377,9 @@ export default function RutePage() {
 
       {/* Form Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="w-full max-w-md max-h-[85vh] overflow-y-auto bg-white border-2 border-black shadow-[8px_8px_0_0_rgba(0,0,0,1)]">
-            <div className="sticky top-0 flex items-center justify-between px-6 py-4 border-b-2 border-black bg-white">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+          <div className="w-full max-w-md max-h-[85vh] overflow-y-auto bg-white border border-slate-200/80 shadow-lg">
+            <div className="sticky top-0 flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-white">
               <h2 className="text-lg font-black uppercase tracking-tight text-black">{editing ? "Edit Rute" : "Tambah Rute"}</h2>
               <button onClick={() => { setShowForm(false); setEditing(null); }} className="text-gray-400 hover:text-black transition" aria-label="Tutup">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -390,7 +390,7 @@ export default function RutePage() {
             <form onSubmit={handleSubmit} className="p-6 space-y-5">
               <div>
                 <label className="block text-sm font-bold text-gray-800 mb-1.5">Nama Rute <span className="text-red-500">*</span></label>
-                <input type="text" value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm bg-white" placeholder="cth: Rute A - RT 01" required />
+                <input type="text" value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm bg-white" placeholder="cth: Rute A - RT 01" required />
               </div>
               <div>
                 <label className="block text-sm font-bold text-gray-800 mb-1.5">
@@ -494,11 +494,11 @@ export default function RutePage() {
               </div>
               <div>
                 <label className="block text-sm font-bold text-gray-800 mb-1.5">Jam</label>
-                <input type="time" value={form.jam} onChange={(e) => setForm({ ...form, jam: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm bg-white" />
+                <input type="time" value={form.jam} onChange={(e) => setForm({ ...form, jam: e.target.value })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm bg-white" />
               </div>
               <div>
                 <label className="block text-sm font-bold text-gray-800 mb-1.5">Petugas</label>
-                <select value={form.petugasId} onChange={(e) => setForm({ ...form, petugasId: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm bg-white">
+                <select value={form.petugasId} onChange={(e) => setForm({ ...form, petugasId: e.target.value })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm bg-white">
                   <option value="">Pilih Petugas (angkut)</option>
                   {petugasList.filter((p) => p.aktif !== false && (p.jabatan || "").split(",").includes("angkut")).map((p) => (
                     <option key={p.id} value={p.id}>{p.nama}</option>
@@ -506,8 +506,8 @@ export default function RutePage() {
                 </select>
               </div>
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="flex-1 px-4 py-2.5 border-2 border-black rounded-none text-sm font-bold text-gray-700 hover:bg-gray-100 transition">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2.5 border-2 border-black bg-green-400 text-black rounded-none text-sm font-bold shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:bg-green-300 hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-0.5 transition-all">{editing ? "Simpan" : "Tambah"}</button>
+                <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="flex-1 px-4 py-2.5 border border-slate-200/80 rounded-none text-sm font-bold text-gray-700 hover:bg-gray-100 transition">Batal</button>
+                <button type="submit" className="flex-1 px-4 py-2.5 border border-slate-200/80 bg-green-400 text-black rounded-none text-sm font-bold shadow-xs hover:bg-green-300 hover:shadow-sm hover:-translate-y-0.5 transition-all">{editing ? "Simpan" : "Tambah"}</button>
               </div>
             </form>
           </div>

@@ -208,7 +208,7 @@ export default function CameraGps({
 
   return (
     <div className="space-y-2">
-      <p className="text-xs font-black uppercase tracking-widest">{label}</p>
+      <p className="text-xs font-semibold text-slate-700 uppercase tracking-wider">{label}</p>
 
       <input
         ref={kameraRef}
@@ -228,12 +228,12 @@ export default function CameraGps({
 
       <div className="flex gap-3 items-start">
         {/* Preview */}
-        <div className="w-24 h-24 shrink-0 border-2 border-black bg-black text-white flex items-center justify-center overflow-hidden">
+        <div className="w-24 h-24 shrink-0 rounded-2xl border border-slate-200 bg-slate-100 flex items-center justify-center overflow-hidden shadow-xs">
           {foto ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={foto} alt="Preview" className="w-full h-full object-cover" />
           ) : (
-            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
@@ -246,7 +246,7 @@ export default function CameraGps({
               type="button"
               onClick={() => (pakaiKameraNative ? handleNativePhoto(CameraSource.Camera) : kameraRef.current?.click())}
               disabled={processing}
-              className="px-3 py-2.5 bg-green-600 text-white border-2 border-black text-xs font-black uppercase tracking-wider shadow-[3px_3px_0_0_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50"
+              className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-semibold shadow-xs transition-all disabled:opacity-50"
             >
               {processing ? "Memproses…" : "📷 Kamera"}
             </button>
@@ -254,7 +254,7 @@ export default function CameraGps({
               type="button"
               onClick={() => (pakaiKameraNative ? handleNativePhoto(CameraSource.Photos) : galeriRef.current?.click())}
               disabled={processing}
-              className="px-3 py-2.5 bg-white text-black border-2 border-black text-xs font-black uppercase tracking-wider shadow-[3px_3px_0_0_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50"
+              className="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold shadow-xs transition-all disabled:opacity-50"
             >
               Galeri
             </button>
@@ -262,7 +262,7 @@ export default function CameraGps({
               type="button"
               onClick={getCurrentLocation}
               disabled={gpsLoading}
-              className="px-3 py-2.5 bg-amber-400 text-black border-2 border-black text-xs font-black uppercase tracking-wider shadow-[3px_3px_0_0_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50"
+              className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-white text-xs font-semibold shadow-xs transition-all disabled:opacity-50"
             >
               {gpsLoading ? "GPS…" : "📍 GPS"}
             </button>
@@ -270,29 +270,30 @@ export default function CameraGps({
               <button
                 type="button"
                 onClick={() => onFotoChange("")}
-                className="px-3 py-2.5 bg-white text-red-600 border-2 border-red-600 text-xs font-black uppercase tracking-wider"
+                className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 text-xs font-semibold transition-colors"
               >
                 Hapus
               </button>
             )}
           </div>
 
-          <div className="text-[11px] font-mono font-bold text-gray-600">
+          <div className="text-[11px] font-mono font-medium text-slate-500">
             {punyaKoordinat ? (
-              <span className="text-green-700">
+              <span className="text-emerald-700 font-semibold">
                 ● {latitude.slice(0, 9)}, {longitude.slice(0, 9)}
                 {koordinatSumber ? ` · ${SUMBER_LABEL[koordinatSumber] || koordinatSumber}` : ""}
                 {koordinatAkurasi ? ` · ±${koordinatAkurasi}m` : ""}
               </span>
             ) : (
-              <span className="text-amber-600">○ Belum ada koordinat — ambil foto/GPS</span>
+              <span className="text-amber-600">○ Belum ada koordinat — ambil foto atau tekan GPS</span>
             )}
           </div>
 
-          {pesan && <p className="text-[11px] font-bold text-gray-500">{pesan}</p>}
-          {foto && !pesan && <p className="text-[10px] font-bold text-gray-400">{hint}</p>}
+          {pesan && <p className="text-[11px] font-medium text-slate-500">{pesan}</p>}
+          {foto && !pesan && <p className="text-[10px] text-slate-400">{hint}</p>}
         </div>
       </div>
     </div>
   );
 }
+

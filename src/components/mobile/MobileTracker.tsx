@@ -150,13 +150,13 @@ export default function MobileTracker() {
   const kendaraanTerpilih = kendaraan.find((k) => k.id.toString() === kendaraanId);
 
   return (
-    <div className="bg-black text-white border-2 border-black shadow-[3px_3px_0_0_rgba(0,0,0,0.25)]">
-      <div className="flex items-center justify-between gap-2 px-3 py-2">
+    <div className="bg-slate-900 text-white rounded-2xl border border-slate-800 shadow-sm mx-3 my-2 overflow-hidden">
+      <div className="flex items-center justify-between gap-2 px-3.5 py-2.5">
         <div className="flex items-center gap-2 min-w-0">
-          <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${titik ? "bg-green-400 animate-pulse" : "bg-amber-400"}`} />
-          <span className="text-[10px] font-black uppercase tracking-widest shrink-0">GPS Live</span>
+          <span className={`w-2 h-2 rounded-full shrink-0 ${titik ? "bg-emerald-400 animate-pulse" : "bg-amber-400"}`} />
+          <span className="text-xs font-bold tracking-wide shrink-0">GPS Live</span>
           {titik && (
-            <span className="font-mono text-[9px] text-green-300 truncate">
+            <span className="font-mono text-[10px] text-emerald-300 truncate">
               {titik.lat.toFixed(5)}, {titik.lng.toFixed(5)}
             </span>
           )}
@@ -175,7 +175,7 @@ export default function MobileTracker() {
                   // ignore
                 }
               }}
-              className="bg-white text-black text-[10px] font-bold px-1 py-1 max-w-[120px] outline-none"
+              className="bg-slate-800 text-white border border-slate-700 rounded-lg text-xs font-medium px-2 py-1 max-w-[130px] outline-none"
               title="Kendaraan"
             >
               <option value="">— Kendaraan —</option>
@@ -187,11 +187,11 @@ export default function MobileTracker() {
             </select>
           )}
           {kendaraanTerpilih && (
-            <span className="font-mono text-[9px] text-amber-300 hidden sm:inline">
+            <span className="text-[10px] font-medium text-amber-300 hidden sm:inline">
               {kendaraanTerpilih.nama}
             </span>
           )}
-          <span className="font-mono text-[9px] text-gray-300 truncate">{status}</span>
+          <span className="text-[10px] text-slate-400 truncate">{status}</span>
         </div>
       </div>
     </div>

@@ -138,7 +138,7 @@ export default function SurveiPage() {
     <div className="p-4 md:p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-black uppercase tracking-tighter text-2xl text-black font-black">Survei Pelanggan</h1>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Survei Pelanggan</h1>
           <p className="text-sm text-gray-600 font-bold mt-1">
             Calon pelanggan menunggu survei — isi foto rumah & geo tag, lalu aktifkan
           </p>
@@ -150,7 +150,7 @@ export default function SurveiPage() {
         <div className="hm-card bg-white p-0 overflow-hidden p-8 text-center text-gray-400 font-bold font-mono">MEMUAT…</div>
       ) : calon.length === 0 ? (
         <div className="hm-card bg-white p-0 overflow-hidden p-10 text-center">
-          <p className="font-black uppercase tracking-tighter text-2xl text-green-600 tracking-wide">TIDAK ADA CALON</p>
+          <p className="font-bold tracking-tight text-2xl text-green-600 tracking-wide">TIDAK ADA CALON</p>
           <p className="text-sm text-gray-600 font-bold mt-2">
             Semua pendaftar sudah disurvei. Calon baru muncul di sini setelah warga
             mengisi form pendaftaran online.
@@ -192,13 +192,13 @@ export default function SurveiPage() {
                 )}
                 <Link
                   href={`/survei/${c.id}`}
-                  className="px-4 py-2 border-2 border-black rounded-none text-sm font-bold hover:bg-gray-100 transition-all"
+                  className="px-4 py-2 border border-slate-200/80 rounded-none text-sm font-bold hover:bg-gray-100 transition-all"
                 >
                   Detail
                 </Link>
                 <button
                   onClick={() => bukaSurvei(c)}
-                  className="shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 hover:bg-green-300 text-black px-4 py-2 rounded-none text-sm font-medium transition"
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all"
                 >
                   Survei & Aktifkan
                 </button>
@@ -210,9 +210,9 @@ export default function SurveiPage() {
 
       {/* ── Modal survei ── */}
       {survei && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="hm-card bg-white p-0 overflow-hidden w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-2 border-black sticky top-0 bg-white z-10">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 sticky top-0 bg-white z-10">
               <div>
                 <h2 className="font-semibold text-black font-black">Survei: {survei.nama}</h2>
                 <p className="font-mono text-[10px] text-gray-400 font-bold">{survei.kodePelanggan}</p>
@@ -242,7 +242,7 @@ export default function SurveiPage() {
                   type="text"
                   value={form.alamat}
                   onChange={(e) => setForm({ ...form, alamat: e.target.value })}
-                  className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm"
+                  className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm"
                 />
               </div>
 
@@ -253,7 +253,7 @@ export default function SurveiPage() {
                     type="text"
                     value={form.rt}
                     onChange={(e) => setForm({ ...form, rt: e.target.value })}
-                    className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm"
+                    className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm"
                     placeholder="001"
                   />
                 </div>
@@ -263,7 +263,7 @@ export default function SurveiPage() {
                     type="text"
                     value={form.rw}
                     onChange={(e) => setForm({ ...form, rw: e.target.value })}
-                    className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm"
+                    className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm"
                     placeholder="003"
                   />
                 </div>
@@ -275,7 +275,7 @@ export default function SurveiPage() {
                   type="text"
                   value={form.patokanLokasi}
                   onChange={(e) => setForm({ ...form, patokanLokasi: e.target.value })}
-                  className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm"
+                  className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm"
                   placeholder="Depan masjid / dekat warung…"
                 />
               </div>
@@ -287,7 +287,7 @@ export default function SurveiPage() {
                     type="text"
                     value={form.penanggungjawab}
                     onChange={(e) => setForm({ ...form, penanggungjawab: e.target.value })}
-                    className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm"
+                    className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm"
                   />
                 </div>
                 <div>
@@ -296,7 +296,7 @@ export default function SurveiPage() {
                     type="text"
                     value={form.referal}
                     onChange={(e) => setForm({ ...form, referal: e.target.value })}
-                    className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm"
+                    className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm"
                   />
                 </div>
               </div>
@@ -306,13 +306,13 @@ export default function SurveiPage() {
                 <textarea
                   value={form.catatan}
                   onChange={(e) => setForm({ ...form, catatan: e.target.value })}
-                  className="w-full px-3 py-2 border-2 border-black rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm min-h-[64px]"
+                  className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm min-h-[64px]"
                   placeholder="Kondisi rumah, jadwal angkut yang cocok, dll"
                 />
               </div>
 
               {/* Foto rumah + geo tag */}
-              <div className="border-t border-2 border-black pt-4">
+              <div className="border-t border border-slate-200/80 pt-4">
                 <p className="stencil text-green-600 mb-3">FOTO RUMAH & GEO TAG</p>
                 <GeotagPhoto
                   foto={form.fotoRumah}
@@ -331,14 +331,14 @@ export default function SurveiPage() {
                 <button
                   type="button"
                   onClick={() => setSurvei(null)}
-                  className="flex-1 px-4 py-2 border-2 border-black rounded-none text-sm text-gray-600 font-bold hover:bg-gray-100 border-2 border-black"
+                  className="flex-1 px-4 py-2 border border-slate-200/80 rounded-xl text-sm text-slate-700 font-medium hover:bg-slate-50/80 transition"
                 >
                   Batal
                 </button>
                 <button
                   onClick={simpan}
                   disabled={saving}
-                  className="flex-1 px-4 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black rounded-none text-sm font-medium hover:bg-green-300 disabled:opacity-60"
+                  className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all disabled:opacity-60"
                 >
                   {saving ? "Menyimpan…" : "Simpan & Aktifkan Pelanggan"}
                 </button>

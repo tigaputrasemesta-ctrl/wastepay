@@ -112,7 +112,7 @@ export default function KlaimPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between border-b-4 border-black pb-4">
-        <h1 className="text-4xl font-black uppercase tracking-tighter">
+        <h1 className="text-4xl font-bold tracking-tight">
           {isAdmin ? "KONTROL KLAIM DANA" : "KLAIM DANA LAPANGAN"}
         </h1>
       </div>
@@ -125,8 +125,8 @@ export default function KlaimPage() {
 
       {/* Form Pengajuan Klaim (Hanya untuk Petugas) */}
       {!isAdmin && (
-        <form onSubmit={handleSubmit} className="bg-white border-4 border-black p-6 shadow-[8px_8px_0_0_rgba(0,0,0,1)]">
-          <h2 className="text-xl font-black uppercase mb-4 border-b-2 border-black pb-2">BUAT PENGAJUAN BARU</h2>
+        <form onSubmit={handleSubmit} className="bg-white border-4 border-black p-6 shadow-lg">
+          <h2 className="text-xl font-black uppercase mb-4 border-b border-slate-200 pb-2">BUAT PENGAJUAN BARU</h2>
           
           <div className="space-y-4">
             <div>
@@ -174,7 +174,7 @@ export default function KlaimPage() {
 
       {/* Daftar Klaim */}
       <div className="hm-card bg-white mt-8">
-        <h2 className="text-2xl font-black uppercase mb-6 border-b-2 border-black pb-2">
+        <h2 className="text-2xl font-black uppercase mb-6 border-b border-slate-200 pb-2">
           {isAdmin ? "MENUNGGU PERSETUJUAN & RIWAYAT" : "RIWAYAT KLAIM SAYA"}
         </h2>
         
@@ -185,32 +185,32 @@ export default function KlaimPage() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-black text-white uppercase text-sm">
-                  {isAdmin && <th className="p-3 border-2 border-black">Petugas</th>}
-                  <th className="p-3 border-2 border-black">Tanggal</th>
-                  <th className="p-3 border-2 border-black">Kategori</th>
-                  <th className="p-3 border-2 border-black">Keterangan</th>
-                  <th className="p-3 border-2 border-black">Nominal</th>
-                  <th className="p-3 border-2 border-black">Status</th>
-                  {isAdmin && <th className="p-3 border-2 border-black">Aksi (Kontrol)</th>}
-                  <th className="p-3 border-2 border-black">Slip</th>
+                  {isAdmin && <th className="p-3 border border-slate-200/80">Petugas</th>}
+                  <th className="p-3 border border-slate-200/80">Tanggal</th>
+                  <th className="p-3 border border-slate-200/80">Kategori</th>
+                  <th className="p-3 border border-slate-200/80">Keterangan</th>
+                  <th className="p-3 border border-slate-200/80">Nominal</th>
+                  <th className="p-3 border border-slate-200/80">Status</th>
+                  {isAdmin && <th className="p-3 border border-slate-200/80">Aksi (Kontrol)</th>}
+                  <th className="p-3 border border-slate-200/80">Slip</th>
                 </tr>
               </thead>
               <tbody>
                 {data.length === 0 ? (
                   <tr>
-                    <td colSpan={isAdmin ? 8 : 6} className="p-4 border-2 border-black text-center font-bold uppercase text-gray-500">
+                    <td colSpan={isAdmin ? 8 : 6} className="p-4 border border-slate-200/80 text-center font-bold uppercase text-gray-500">
                       Belum ada data klaim
                     </td>
                   </tr>
                 ) : (
                   data.map((row) => (
                     <tr key={row.id} className="hover:bg-gray-50 text-sm font-bold uppercase">
-                      {isAdmin && <td className="p-3 border-2 border-black">{row.petugas.nama}</td>}
-                      <td className="p-3 border-2 border-black">
+                      {isAdmin && <td className="p-3 border border-slate-200/80">{row.petugas.nama}</td>}
+                      <td className="p-3 border border-slate-200/80">
                         {format(new Date(row.tanggal), "dd MMM yyyy", { locale: id })}
                       </td>
-                      <td className="p-3 border-2 border-black">{row.kategori.replace("_", " ")}</td>
-                      <td className="p-3 border-2 border-black">
+                      <td className="p-3 border border-slate-200/80">{row.kategori.replace("_", " ")}</td>
+                      <td className="p-3 border border-slate-200/80">
                         {row.keterangan}
                         {row.catatanAdmin && (
                           <div className="mt-1 text-xs text-red-600 bg-red-50 p-1 border border-red-600">
@@ -218,11 +218,11 @@ export default function KlaimPage() {
                           </div>
                         )}
                       </td>
-                      <td className="p-3 border-2 border-black font-black text-red-600">
+                      <td className="p-3 border border-slate-200/80 font-black text-red-600">
                         Rp {row.nominal.toLocaleString("id-ID")}
                       </td>
-                      <td className="p-3 border-2 border-black">
-                        <span className={`px-2 py-1 border-2 border-black font-black text-[10px] ${
+                      <td className="p-3 border border-slate-200/80">
+                        <span className={`px-2 py-1 border border-slate-200/80 font-black text-[10px] ${
                           row.status === 'disetujui' ? 'bg-green-100 text-green-700' : 
                           row.status === 'ditolak' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-800'
                         }`}>
@@ -230,20 +230,20 @@ export default function KlaimPage() {
                         </span>
                       </td>
                       {isAdmin && (
-                        <td className="p-3 border-2 border-black">
+                        <td className="p-3 border border-slate-200/80">
                           {row.status === "menunggu" ? (
                             <div className="flex gap-2">
                               <button 
                                 onClick={() => handleProses(row.id, "disetujui")}
                                 disabled={processingId === row.id}
-                                className="px-3 py-1 bg-green-500 text-white font-black hover:bg-green-600 border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
+                                className="px-3 py-1 bg-green-500 text-white font-black hover:bg-green-600 border border-slate-200/80 shadow-xs"
                               >
                                 TERIMA
                               </button>
                               <button 
                                 onClick={() => handleProses(row.id, "ditolak")}
                                 disabled={processingId === row.id}
-                                className="px-3 py-1 bg-red-500 text-white font-black hover:bg-red-600 border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
+                                className="px-3 py-1 bg-red-500 text-white font-black hover:bg-red-600 border border-slate-200/80 shadow-xs"
                               >
                                 TOLAK
                               </button>
@@ -255,7 +255,7 @@ export default function KlaimPage() {
                           )}
                         </td>
                       )}
-                      <td className="p-3 border-2 border-black text-center">
+                      <td className="p-3 border border-slate-200/80 text-center">
                         <Link
                           href={`/klaim-cetak/${row.id}`}
                           target="_blank"

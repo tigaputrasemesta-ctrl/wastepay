@@ -46,7 +46,7 @@ function JudulSection({ kode, judul, desc }: { kode: string; judul: string; desc
         <span className="w-6 h-1 hazard inline-block" />
         {kode}
       </p>
-      <h2 className="font-black uppercase tracking-tighter text-xl text-black font-black tracking-wide mt-2">{judul}</h2>
+      <h2 className="text-xl font-black text-slate-900 tracking-tight tracking-wide mt-2">{judul}</h2>
       <p className="text-sm text-gray-600 font-bold mt-1">{desc}</p>
     </div>
   );
@@ -204,23 +204,23 @@ export default function DaftarPelangganPage() {
     const statusLabel = STATUS_OPTIONS.find((s) => s.value === form.status)?.label ?? form.status;
     return (
       <div className="p-6 max-w-2xl mx-auto">
-        <div className="hm-card bg-white p-0 overflow-hidden shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all p-8 text-center">
-          <div className="w-16 h-16 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400/10 flex items-center justify-center mx-auto mb-4">
+        <div className="hm-card bg-white p-0 overflow-hidden shadow-sm hover:shadow-md active:scale-[0.98] transition-all p-8 text-center">
+          <div className="w-16 h-16 shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-green-400/10 flex items-center justify-center mx-auto mb-4">
             <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
           <p className="stencil text-green-600 mb-2">PENDAFTARAN BERHASIL</p>
-          <h2 className="font-black uppercase tracking-tighter text-2xl text-black font-black mb-2">{successData?.nama}</h2>
+          <h2 className="text-2xl font-black text-slate-900 tracking-tight mb-2">{successData?.nama}</h2>
           <p className="text-sm text-gray-600 font-bold mb-6">
             Status: <span className={`badge ${statusLabel === "Aktif" ? "badge-vest" : "badge-amber"}`}>{statusLabel}</span>
             {form.status === "aktif" && " — tagihan bulan ini sudah dibuat otomatis."}
           </p>
 
           {successData?.kode && (
-            <div className="bg-black text-white font-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all p-6 mb-6 inline-block">
+            <div className="bg-slate-50 text-slate-700 font-semibold shadow-sm hover:shadow-md active:scale-[0.98] transition-all p-6 mb-6 inline-block">
               <p className="stencil text-gray-400 font-bold text-[10px] mb-2">KODE PELANGGAN</p>
-              <p className="font-black uppercase tracking-tighter text-3xl text-black font-black tracking-widest mb-3">{successData.kode}</p>
+              <p className="font-bold tracking-tight text-3xl text-black font-black tracking-widest mb-3">{successData.kode}</p>
               {/* Barcode SVG */}
               <svg className="mx-auto" width="200" height="50" viewBox="0 0 200 50" aria-hidden>
                 {successData.kode.split("").map((char, i) => (
@@ -236,7 +236,7 @@ export default function DaftarPelangganPage() {
           <div className="flex items-center justify-center gap-3">
             <button
               onClick={() => router.push("/pelanggan")}
-              className="btn btn-primary shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all px-4 py-2 text-sm"
+              className="btn btn-primary shadow-sm hover:shadow-md active:scale-[0.98] transition-all px-4 py-2 text-sm"
             >
               Lihat Data Pelanggan
             </button>
@@ -246,7 +246,7 @@ export default function DaftarPelangganPage() {
                 setSuccessData(null);
                 resetForm();
               }}
-              className="btn shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all px-4 py-2 text-sm"
+              className="btn shadow-sm hover:shadow-md active:scale-[0.98] transition-all px-4 py-2 text-sm"
             >
               Daftar Lagi
             </button>
@@ -263,7 +263,7 @@ export default function DaftarPelangganPage() {
           <span className="w-8 h-1.5 hazard inline-block" />
           REGISTRASI
         </p>
-        <h1 className="font-black uppercase tracking-tighter text-2xl text-black font-black mt-2">Pendaftaran Pelanggan Baru</h1>
+        <h1 className="text-2xl font-black text-slate-900 tracking-tight mt-2">Pendaftaran Pelanggan Baru</h1>
         <p className="text-sm text-gray-600 font-bold mt-1">
           Pendataan internal — petugas mengisi data pelanggan untuk layanan iuran sampah
         </p>
@@ -279,12 +279,12 @@ export default function DaftarPelangganPage() {
               <div key={s.id} className={`flex items-center ${idx < STEPS.length - 1 ? "flex-1" : ""}`}>
                 <div className="flex items-center gap-2">
                   <div
-                    className={`shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all w-9 h-9 flex items-center justify-center font-black uppercase tracking-tighter text-sm transition ${
+                    className={`shadow-sm hover:shadow-md active:scale-[0.98] transition-all w-9 h-9 flex items-center justify-center font-bold tracking-tight text-sm transition ${
                       selesai
                         ? "bg-green-400/25 text-green-600"
                         : aktif
                         ? "bg-green-400 text-black shadow-[0_0_18px_rgba(183,225,60,0.35)]"
-                        : "bg-gray-100 border-2 border-black text-gray-400 font-bold"
+                        : "bg-gray-100 border border-slate-200/80 text-gray-400 font-bold"
                     }`}
                   >
                     {selesai ? (
@@ -304,7 +304,7 @@ export default function DaftarPelangganPage() {
                   </span>
                 </div>
                 {idx < STEPS.length - 1 && (
-                  <div className={`flex-1 h-0.5 mx-3 ${selesai ? "bg-green-400" : "bg-gray-100 border-2 border-black"}`} />
+                  <div className={`flex-1 h-0.5 mx-3 ${selesai ? "bg-green-400" : "bg-gray-100 border border-slate-200/80"}`} />
                 )}
               </div>
             );
@@ -312,7 +312,7 @@ export default function DaftarPelangganPage() {
         </div>
       </div>
 
-      <div className="hm-card bg-white p-0 overflow-hidden shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all p-6 md:p-8">
+      <div className="hm-card bg-white p-0 overflow-hidden shadow-sm hover:shadow-md active:scale-[0.98] transition-all p-6 md:p-8">
         {/* ═══ STEP 1: DATA DIRI ═══ */}
         {step === 1 && (
           <div className="space-y-6">
@@ -349,10 +349,10 @@ export default function DaftarPelangganPage() {
                 {KATEGORI_OPTIONS.map((k) => (
                   <label
                     key={k.value}
-                    className={`shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all flex flex-col items-center gap-1 px-3 py-3 border cursor-pointer transition ${
+                    className={`shadow-sm hover:shadow-md active:scale-[0.98] transition-all flex flex-col items-center gap-1 px-3 py-3 border cursor-pointer transition ${
                       form.kategori === k.value
                         ? "border-vest bg-green-400/10 shadow-[0_0_14px_rgba(183,225,60,0.18)]"
-                        : "border-2 border-black hover:border-2 border-black bg-white/30"
+                        : "border border-slate-200/80 hover:border border-slate-200/80 bg-white/30"
                     }`}
                   >
                     <input
@@ -503,13 +503,13 @@ export default function DaftarPelangganPage() {
             />
 
             {/* Tarif default kategori */}
-            <div className="shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400/5 border border-vest/40 p-4">
+            <div className="shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-green-400/5 border border-vest/40 p-4">
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="label !mb-1 text-green-600">TARIF DEFAULT — {kategoriTarifTerpilih?.label ?? form.kategori}</p>
                   <p className="text-xs text-gray-600 font-bold">{kategoriTarifTerpilih?.deskripsi ?? "Tarif berdasarkan kategori"}</p>
                 </div>
-                <p className="font-black uppercase tracking-tighter text-xl text-green-600 whitespace-nowrap">{formatRupiah(tarifDefaultKategori)}<span className="text-xs text-gray-400 font-bold">/bln</span></p>
+                <p className="font-bold tracking-tight text-xl text-green-600 whitespace-nowrap">{formatRupiah(tarifDefaultKategori)}<span className="text-xs text-gray-400 font-bold">/bln</span></p>
               </div>
             </div>
 
@@ -518,7 +518,7 @@ export default function DaftarPelangganPage() {
               <>
                 <div className="flex items-center gap-3">
                   <span className="stencil text-gray-400 font-bold text-[10px]">ATAU PILIH PAKET</span>
-                  <div className="flex-1 h-px bg-gray-100 border-2 border-black" />
+                  <div className="flex-1 h-px bg-gray-100 border border-slate-200/80" />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {paketList.map((p) => {
@@ -526,10 +526,10 @@ export default function DaftarPelangganPage() {
                     return (
                       <label
                         key={p.id}
-                        className={`shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all relative border p-4 cursor-pointer transition ${
+                        className={`shadow-sm hover:shadow-md active:scale-[0.98] transition-all relative border p-4 cursor-pointer transition ${
                           dipilih
                             ? "border-vest bg-green-400/10 shadow-[0_0_14px_rgba(183,225,60,0.18)]"
-                            : "border-2 border-black bg-white/30 hover:border-2 border-black"
+                            : "border border-slate-200/80 bg-white/30 hover:border border-slate-200/80"
                         }`}
                       >
                         <input
@@ -545,16 +545,16 @@ export default function DaftarPelangganPage() {
                         />
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1">
-                            <h3 className="font-black uppercase tracking-tighter text-sm text-black font-black tracking-wide">{p.nama}</h3>
+                            <h3 className="font-bold tracking-tight text-sm text-black font-black tracking-wide">{p.nama}</h3>
                             {p.deskripsi && <p className="text-xs text-gray-600 font-bold mt-1">{p.deskripsi}</p>}
                           </div>
                           <div className="text-right whitespace-nowrap">
-                            <p className="font-black uppercase tracking-tighter text-lg text-green-600">{p.harga != null ? formatRupiah(p.harga) : "Variabel"}</p>
+                            <p className="font-bold tracking-tight text-lg text-green-600">{p.harga != null ? formatRupiah(p.harga) : "Variabel"}</p>
                             <p className="text-[10px] text-gray-400 font-bold">{p.harga != null ? "/bulan" : "sesuai kebutuhan"}</p>
                           </div>
                         </div>
                         {dipilih && (
-                          <span className="absolute -top-2 -right-2 w-6 h-6 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 flex items-center justify-center">
+                          <span className="absolute -top-2 -right-2 w-6 h-6 shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-green-400 flex items-center justify-center">
                             <svg className="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                             </svg>
@@ -567,7 +567,7 @@ export default function DaftarPelangganPage() {
               </>
             )}
             {paketList.length === 0 && (
-              <div className="text-center py-4 bg-black text-white font-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all">
+              <div className="text-center py-4 bg-slate-50 text-slate-700 font-semibold shadow-sm hover:shadow-md active:scale-[0.98] transition-all">
                 <p className="text-gray-400 font-bold text-sm mb-2">Belum ada paket tersedia — pakai tarif default kategori</p>
               </div>
             )}
@@ -575,9 +575,9 @@ export default function DaftarPelangganPage() {
             {/* Tarif kustom */}
             <div className="flex items-center gap-3">
               <span className="stencil text-gray-400 font-bold text-[10px]">ATAU TARIF KUSTOM</span>
-              <div className="flex-1 h-px bg-gray-100 border-2 border-black" />
+              <div className="flex-1 h-px bg-gray-100 border border-slate-200/80" />
             </div>
-            <label className="shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all flex items-start gap-3 p-4 border-2 border-black bg-white/30 cursor-pointer transition">
+            <label className="shadow-sm hover:shadow-md active:scale-[0.98] transition-all flex items-start gap-3 p-4 border border-slate-200/80 bg-white/30 cursor-pointer transition">
               <input
                 type="checkbox"
                 checked={useCustomTarif}
@@ -609,7 +609,7 @@ export default function DaftarPelangganPage() {
             </label>
 
             {/* Ringkasan tarif */}
-            <div className="shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-black text-white font-black border-2 border-black p-4 flex items-center justify-between">
+            <div className="shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-slate-50 text-slate-700 font-semibold border border-slate-200/80 p-4 flex items-center justify-between">
               <div>
                 <p className="label !mb-1">TARIF AKHIR</p>
                 <p className="text-xs text-gray-600 font-bold">
@@ -620,7 +620,7 @@ export default function DaftarPelangganPage() {
                     : `Default kategori ${kategoriTarifTerpilih?.label ?? form.kategori}`}
                 </p>
               </div>
-              <p className="font-black uppercase tracking-tighter text-2xl text-green-600">
+              <p className="font-bold tracking-tight text-2xl text-green-600">
                 {formatRupiah(tarifAkhir)}
                 <span className="text-xs text-gray-400 font-bold">/bln</span>
               </p>
@@ -633,10 +633,10 @@ export default function DaftarPelangganPage() {
                 {STATUS_OPTIONS.map((s) => (
                   <label
                     key={s.value}
-                    className={`shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all flex items-start gap-3 p-3 border cursor-pointer transition ${
+                    className={`shadow-sm hover:shadow-md active:scale-[0.98] transition-all flex items-start gap-3 p-3 border cursor-pointer transition ${
                       form.status === s.value
                         ? "border-vest bg-green-400/10"
-                        : "border-2 border-black bg-white/30 hover:border-2 border-black"
+                        : "border border-slate-200/80 bg-white/30 hover:border border-slate-200/80"
                     }`}
                   >
                     <input
@@ -678,7 +678,7 @@ export default function DaftarPelangganPage() {
               judul="Periksa Kembali Data"
               desc="Pastikan seluruh data benar sebelum pelanggan didaftarkan"
             />
-            <div className="shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-black text-white font-black border-2 border-black p-5 space-y-4">
+            <div className="shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-slate-50 text-slate-700 font-semibold border border-slate-200/80 p-5 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <p className="label !mb-1">IDENTITAS</p>
@@ -706,7 +706,7 @@ export default function DaftarPelangganPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <p className="label !mb-1">TARIF IURAN</p>
-                  <p className="font-black uppercase tracking-tighter text-lg text-green-600">{formatRupiah(tarifAkhir)}<span className="text-xs text-gray-400 font-bold">/bln</span></p>
+                  <p className="font-bold tracking-tight text-lg text-green-600">{formatRupiah(tarifAkhir)}<span className="text-xs text-gray-400 font-bold">/bln</span></p>
                   <p className="text-xs text-gray-600 font-bold">
                     {useCustomTarif
                       ? "Tarif kustom"
@@ -758,7 +758,7 @@ export default function DaftarPelangganPage() {
               {form.fotoRumah && (
                 <div>
                   <p className="label !mb-1">FOTO RUMAH</p>
-                  <Image src={form.fotoRumah} alt="Foto rumah" width={128} height={128} unoptimized className="mt-1 max-h-32 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all object-cover" />
+                  <Image src={form.fotoRumah} alt="Foto rumah" width={128} height={128} unoptimized className="mt-1 max-h-32 shadow-sm hover:shadow-md active:scale-[0.98] transition-all object-cover" />
                 </div>
               )}
             </div>
@@ -767,17 +767,17 @@ export default function DaftarPelangganPage() {
 
         {/* Error */}
         {error && (
-          <div className="mt-4 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-danger/10 text-red-600 text-sm px-4 py-3 border border-danger/40 font-mono">
+          <div className="mt-4 shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-danger/10 text-red-600 text-sm px-4 py-3 border border-danger/40 font-mono">
             ⚠ {error}
           </div>
         )}
 
         {/* Navigation */}
-        <div className="flex items-center justify-between mt-8 pt-6 border-t border-2 border-black">
+        <div className="flex items-center justify-between mt-8 pt-6 border-t border border-slate-200/80">
           <button
             type="button"
             onClick={step === 1 ? () => router.push("/pelanggan") : prevStep}
-            className="btn shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all px-4 py-2 text-sm"
+            className="btn shadow-sm hover:shadow-md active:scale-[0.98] transition-all px-4 py-2 text-sm"
           >
             {step === 1 ? "Batal" : "← Kembali"}
           </button>
@@ -790,7 +790,7 @@ export default function DaftarPelangganPage() {
             <button
               type="button"
               onClick={nextStep}
-              className="btn btn-primary shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all px-6 py-2 text-sm"
+              className="btn btn-primary shadow-sm hover:shadow-md active:scale-[0.98] transition-all px-6 py-2 text-sm"
             >
               Lanjut →
             </button>
@@ -799,7 +799,7 @@ export default function DaftarPelangganPage() {
               type="button"
               onClick={handleSubmit}
               disabled={submitting}
-              className="btn btn-primary shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all px-6 py-2 text-sm disabled:opacity-50 flex items-center gap-2"
+              className="btn btn-primary shadow-sm hover:shadow-md active:scale-[0.98] transition-all px-6 py-2 text-sm disabled:opacity-50 flex items-center gap-2"
             >
               {submitting ? (
                 <>

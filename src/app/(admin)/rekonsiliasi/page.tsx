@@ -52,7 +52,7 @@ export default function RekonsiliasiPage() {
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h1 className="font-black uppercase tracking-tighter text-2xl text-black font-black">Rekonsiliasi Harian</h1>
+        <h1 className="text-2xl font-black text-slate-900 tracking-tight">Rekonsiliasi Harian</h1>
         <p className="text-sm text-gray-600 font-bold mt-1">Cocokkan pemasukan tunai dengan fisik</p>
       </div>
 
@@ -67,7 +67,7 @@ export default function RekonsiliasiPage() {
                 type="number"
                 value={form.totalTunaiFisik}
                 onChange={(e) => setForm({ ...form, totalTunaiFisik: e.target.value })}
-                className="w-full px-3 py-2 border-2 border-black rounded-none text-sm"
+                className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm"
                 placeholder="0"
                 required
               />
@@ -78,7 +78,7 @@ export default function RekonsiliasiPage() {
                 type="text"
                 value={form.catatan}
                 onChange={(e) => setForm({ ...form, catatan: e.target.value })}
-                className="w-full px-3 py-2 border-2 border-black rounded-none text-sm"
+                className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm"
                 placeholder="Opsional"
               />
             </div>
@@ -112,7 +112,7 @@ export default function RekonsiliasiPage() {
             </div>
           )}
 
-          <button type="submit" className="shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black px-6 py-2 rounded-none text-sm font-medium hover:bg-green-300 transition">
+          <button type="submit" className="shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-green-400 text-black px-6 py-2 rounded-none text-sm font-medium hover:bg-green-300 transition">
             Buat Rekonsiliasi
           </button>
         </form>
@@ -120,13 +120,13 @@ export default function RekonsiliasiPage() {
 
       {/* Riwayat */}
       <div className="hm-card bg-white p-0 overflow-hidden">
-        <div className="px-4 py-3 border-b border-2 border-black">
+        <div className="px-4 py-3 border-b border-slate-200">
           <h2 className="font-semibold text-black font-black">Riwayat Rekonsiliasi</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-black text-white font-black border-b border-2 border-black">
+              <tr className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Tanggal</th>
                 <th className="text-right px-4 py-3 font-medium text-gray-600 font-bold">Pemasukan</th>
                 <th className="text-right px-4 py-3 font-medium text-gray-600 font-bold">Pengeluaran</th>
@@ -144,7 +144,7 @@ export default function RekonsiliasiPage() {
                 <tr><td colSpan={8} className="px-4 py-8 text-center text-gray-400 font-bold">Belum ada rekonsiliasi</td></tr>
               ) : (
                 data.map((r) => (
-                  <tr key={r.id} className="border-b border-2 border-black hover:bg-gray-100 border-2 border-black">
+                  <tr key={r.id} className="border-b border-slate-200 hover:bg-slate-50/80 transition">
                     <td className="px-4 py-3 text-xs text-gray-600 font-bold">{formatDate(r.tanggal)}</td>
                     <td className="px-4 py-3 text-right font-medium text-black font-black">{formatRupiah(r.totalPemasukan)}</td>
                     <td className="px-4 py-3 text-right text-red-600">{formatRupiah(r.totalPengeluaran)}</td>

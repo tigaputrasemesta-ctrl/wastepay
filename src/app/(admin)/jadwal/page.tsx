@@ -109,12 +109,12 @@ export default function JadwalPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-black uppercase tracking-tighter text-2xl text-black font-black">Jadwal Pengangkutan</h1>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Jadwal Pengangkutan</h1>
           <p className="text-sm text-gray-600 font-bold mt-1">Atur jadwal pengangkutan per pelanggan dan rute</p>
         </div>
         <button
           onClick={openCreate}
-          className="shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 hover:bg-green-300 text-black px-4 py-2 rounded-none text-sm font-medium transition flex items-center gap-2"
+          className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -128,7 +128,7 @@ export default function JadwalPage() {
         <select
           value={filterHari}
           onChange={(e) => setFilterHari(e.target.value)}
-          className="px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
+          className="px-3 py-2 border border-slate-200/80 rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
         >
           <option value="">Semua Hari</option>
           {HARI_LIST.map((h) => <option key={h} value={h}>{h}</option>)}
@@ -136,7 +136,7 @@ export default function JadwalPage() {
         <select
           value={filterRute}
           onChange={(e) => setFilterRute(e.target.value)}
-          className="px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
+          className="px-3 py-2 border border-slate-200/80 rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
         >
           <option value="">Semua Rute</option>
           {ruteList.map((r) => <option key={r.id} value={r.id}>{r.nama}</option>)}
@@ -148,7 +148,7 @@ export default function JadwalPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-black text-white font-black border-b border-2 border-black">
+              <tr className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Hari</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Pelanggan</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Rute</th>
@@ -165,9 +165,9 @@ export default function JadwalPage() {
                 <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-400 font-bold">Belum ada jadwal</td></tr>
               ) : (
                 jadwal.map((j) => (
-                  <tr key={j.id} className="border-b border-2 border-black hover:bg-gray-100 border-2 border-black">
+                  <tr key={j.id} className="border-b border-slate-200 hover:bg-slate-50/80 transition">
                     <td className="px-4 py-3">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium bg-sky-400/10 text-sky-400 border border-sky-500/30">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-sky-400/10 text-sky-400 border border-sky-500/30">
                         {j.hari}
                       </span>
                     </td>
@@ -180,7 +180,7 @@ export default function JadwalPage() {
                             unoptimized
                             width={48}
                             height={48}
-                            className="w-12 h-12 rounded-none object-cover border-2 border-black shrink-0"
+                            className="w-12 h-12 rounded-none object-cover border border-slate-200/80 shrink-0"
                           />
                         )}
                         <div>
@@ -216,8 +216,8 @@ export default function JadwalPage() {
                     <td className="px-4 py-3 text-gray-600 font-bold text-xs">{j.jam || "-"}</td>
                     <td className="px-4 py-3 text-center text-gray-600 font-bold text-xs">{j._count.pengangkutan}</td>
                     <td className="px-4 py-3 text-center">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium ${
-                        j.aktif ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" : "bg-gray-100 border-2 border-black text-gray-600 font-bold"
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                        j.aktif ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" : "bg-gray-100 border border-slate-200/80 text-gray-600 font-bold"
                       }`}>
                         {j.aktif ? "Aktif" : "Nonaktif"}
                       </span>
@@ -254,9 +254,9 @@ export default function JadwalPage() {
 
       {/* Modal Form */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="hm-card bg-white p-0 overflow-hidden w-full max-w-lg">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-2 border-black">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
               <h2 className="font-semibold text-black font-black">{editing ? "Edit Jadwal" : "Tambah Jadwal"}</h2>
               <button onClick={() => setShowForm(false)} className="text-gray-400 font-bold hover:text-gray-600 font-bold">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -270,7 +270,7 @@ export default function JadwalPage() {
                 <select
                   value={form.pelangganId}
                   onChange={(e) => setForm({ ...form, pelangganId: e.target.value })}
-                  className="w-full px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
                   required
                 >
                   <option value="">Pilih Pelanggan</option>
@@ -286,7 +286,7 @@ export default function JadwalPage() {
                 <select
                   value={form.ruteId}
                   onChange={(e) => setForm({ ...form, ruteId: e.target.value })}
-                  className="w-full px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
                   required
                 >
                   <option value="">Pilih Rute</option>
@@ -308,7 +308,7 @@ export default function JadwalPage() {
                         className={`flex items-center justify-center px-2 py-2 border rounded-none text-xs cursor-pointer transition ${
                           checked
                             ? "bg-green-400/15 border-vest text-green-600 font-semibold"
-                            : "bg-hm-card bg-white p-0 overflow-hidden border-2 border-black text-gray-600 font-bold hover:bg-gray-100 border-2 border-black"
+                            : "bg-hm-card bg-white p-0 overflow-hidden border border-slate-200/80 text-gray-600 font-bold hover:bg-slate-50/80 transition"
                         }`}
                       >
                         <input
@@ -330,7 +330,7 @@ export default function JadwalPage() {
                   type="time"
                   value={form.jam}
                   onChange={(e) => setForm({ ...form, jam: e.target.value })}
-                  className="w-full px-3 py-2 border-2 border-black rounded-none text-sm"
+                  className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm"
                 />
               </div>
 
@@ -338,13 +338,13 @@ export default function JadwalPage() {
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="flex-1 px-4 py-2 border-2 border-black rounded-none text-sm text-gray-600 font-bold hover:bg-gray-100 border-2 border-black"
+                  className="flex-1 px-4 py-2 border border-slate-200/80 rounded-xl text-sm text-slate-700 font-medium hover:bg-slate-50/80 transition"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black rounded-none text-sm hover:bg-green-300"
+                  className="flex-1 px-4 py-2 shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all text-sm hover:bg-green-300"
                 >
                   {editing ? "Simpan" : "Tambah"}
                 </button>

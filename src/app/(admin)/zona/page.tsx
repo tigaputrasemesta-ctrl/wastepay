@@ -158,7 +158,7 @@ export default function ZonaPage() {
     <div className="p-6">
       <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="font-black uppercase tracking-tighter text-2xl text-black">Zona Angkut</h1>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Zona Angkut</h1>
           <p className="text-sm text-gray-600 font-bold mt-1">
             Zona area pengambilan sampah di dalam tiap kelurahan. Satu kelurahan bisa punya beberapa zona custom,
             dan nanti tiap zona bisa ditugaskan petugas angkut yang berbeda.
@@ -166,7 +166,7 @@ export default function ZonaPage() {
         </div>
         <button
           onClick={openCreate}
-          className="shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 hover:bg-green-300 text-black px-4 py-2 rounded-none text-sm font-bold"
+          className="shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-green-400 hover:bg-green-300 text-black px-4 py-2 rounded-none text-sm font-bold"
         >
           + Tambah Zona
         </button>
@@ -177,7 +177,7 @@ export default function ZonaPage() {
         <select
           value={String(filterKelurahan)}
           onChange={(e) => setFilterKelurahan(e.target.value === "" ? "" : Number(e.target.value))}
-          className="px-3 py-2 border-2 border-black rounded-none text-sm bg-white"
+          className="px-3 py-2 border border-slate-200/80 rounded-none text-sm bg-white"
         >
           <option value="">Semua Kelurahan</option>
           {kelurahanList.map((k) => (
@@ -197,10 +197,10 @@ export default function ZonaPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {filteredZona.map((z) => (
-            <div key={z.id} className="relative bg-black text-white rounded-none p-4 border-2 border-black">
+            <div key={z.id} className="relative bg-black text-white rounded-none p-4 border border-slate-200/80">
               <div className="flex items-start gap-3">
                 <span
-                  className="w-4 h-4 mt-1 shrink-0 border-2 border-black"
+                  className="w-4 h-4 mt-1 shrink-0 border border-slate-200/80"
                   style={{ backgroundColor: z.warna || "#ef4444" }}
                   title={z.warna || ""}
                 />
@@ -211,8 +211,8 @@ export default function ZonaPage() {
                 </div>
               </div>
               <div className="flex gap-2 mt-3 text-[11px] font-bold">
-                <span className="bg-white text-black px-2 py-1 border-2 border-black">{z._count?.wilayah ?? 0} RT</span>
-                <span className="bg-white text-black px-2 py-1 border-2 border-black">{z._count?.petugas ?? 0} Petugas Angkut</span>
+                <span className="bg-white text-black px-2 py-1 border border-slate-200/80">{z._count?.wilayah ?? 0} RT</span>
+                <span className="bg-white text-black px-2 py-1 border border-slate-200/80">{z._count?.petugas ?? 0} Petugas Angkut</span>
               </div>
               <div className="absolute top-3 right-3 flex gap-1">
                 <button onClick={() => openEdit(z)} className="text-white hover:text-green-400 p-1" title="Edit">
@@ -228,9 +228,9 @@ export default function ZonaPage() {
       )}
 
       {showForm && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="hm-card bg-white overflow-hidden w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between px-6 py-4 border-b-2 border-black">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
               <h2 className="font-semibold text-black font-black">{editing ? "Edit Zona" : "Tambah Zona"}</h2>
               <button onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-600">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
@@ -242,7 +242,7 @@ export default function ZonaPage() {
                 <select
                   value={form.kelurahanId}
                   onChange={(e) => setForm({ ...form, kelurahanId: e.target.value })}
-                  className="w-full px-3 py-2 border-2 border-black rounded-none text-sm bg-white"
+                  className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm bg-white"
                   required
                 >
                   <option value="">Pilih kelurahan...</option>
@@ -257,7 +257,7 @@ export default function ZonaPage() {
                   type="text"
                   value={form.nama}
                   onChange={(e) => setForm({ ...form, nama: e.target.value })}
-                  className="w-full px-3 py-2 border-2 border-black rounded-none text-sm"
+                  className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm"
                   placeholder="misal: Zona A - RT 01-05"
                   required
                 />
@@ -268,7 +268,7 @@ export default function ZonaPage() {
                   type="text"
                   value={form.keterangan}
                   onChange={(e) => setForm({ ...form, keterangan: e.target.value })}
-                  className="w-full px-3 py-2 border-2 border-black rounded-none text-sm"
+                  className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm"
                   placeholder="misal: gang sempit, pakai gerobak"
                 />
               </div>
@@ -296,7 +296,7 @@ export default function ZonaPage() {
                     Belum ada petugas dengan jabatan <b>angkut</b>. Tambahkan dulu di menu Petugas.
                   </p>
                 ) : (
-                  <div className="space-y-1 max-h-40 overflow-y-auto border-2 border-black p-2">
+                  <div className="space-y-1 max-h-40 overflow-y-auto border border-slate-200/80 p-2">
                     {angkutPetugas.map((p) => (
                       <label key={p.id} className="flex items-center gap-2 text-sm font-bold cursor-pointer">
                         <input
@@ -312,10 +312,10 @@ export default function ZonaPage() {
                 )}
               </div>
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => setShowForm(false)} className="flex-1 px-4 py-2 border-2 border-black rounded-none text-sm text-gray-600 font-bold hover:bg-gray-100">
+                <button type="button" onClick={() => setShowForm(false)} className="flex-1 px-4 py-2 border border-slate-200/80 rounded-xl text-sm text-slate-700 font-medium hover:bg-gray-100">
                   Batal
                 </button>
-                <button type="submit" disabled={saving} className="flex-1 px-4 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black rounded-none text-sm hover:bg-green-300 disabled:opacity-50">
+                <button type="submit" disabled={saving} className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all text-sm hover:bg-green-300 disabled:opacity-50">
                   {saving ? "Menyimpan..." : "Simpan"}
                 </button>
               </div>

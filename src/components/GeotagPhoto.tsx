@@ -124,7 +124,7 @@ export default function GeotagPhoto({
 
   return (
     <div className="space-y-3">
-      <label className="block text-sm font-medium text-gray-600 font-bold">
+      <label className="block text-xs font-bold text-slate-700">
         Foto Depan Rumah + Geotag
       </label>
 
@@ -147,11 +147,11 @@ export default function GeotagPhoto({
 
       <div className="flex items-start gap-4">
         {/* Preview foto */}
-        <div className="w-32 h-32 rounded-none-xl border-2 border-dashed border-2 border-black overflow-hidden flex items-center justify-center bg-black text-white font-black shrink-0">
+        <div className="w-28 h-28 rounded-2xl border border-dashed border-slate-300 overflow-hidden flex items-center justify-center bg-slate-50 text-slate-400 shrink-0">
           {foto ? (
-            <NextImage src={foto} alt="Foto depan rumah" unoptimized width={128} height={128} className="w-full h-full object-cover" />
+            <NextImage src={foto} alt="Foto depan rumah" unoptimized width={112} height={112} className="w-full h-full object-cover" />
           ) : (
-            <svg className="w-10 h-10 text-gray-400 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
@@ -164,7 +164,7 @@ export default function GeotagPhoto({
               type="button"
               onClick={() => kameraRef.current?.click()}
               disabled={processing}
-              className="flex items-center gap-1.5 px-3 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black rounded-none text-xs font-medium hover:bg-green-300 transition disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-sm transition-all disabled:opacity-50"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -176,7 +176,7 @@ export default function GeotagPhoto({
               type="button"
               onClick={() => galeriRef.current?.click()}
               disabled={processing}
-              className="flex items-center gap-1.5 px-3 py-2 border-2 border-black text-gray-600 font-bold rounded-none text-xs font-medium hover:bg-gray-100 border-2 border-black transition disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-semibold shadow-sm transition-all disabled:opacity-50"
             >
               Pilih dari Galeri
             </button>
@@ -184,9 +184,9 @@ export default function GeotagPhoto({
               type="button"
               onClick={getCurrentLocation}
               disabled={gpsLoading}
-              className="flex items-center gap-1.5 px-3 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black rounded-none text-xs font-medium hover:bg-green-300 transition disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-2 bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 rounded-xl text-xs font-semibold transition-all disabled:opacity-50"
             >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
@@ -196,7 +196,7 @@ export default function GeotagPhoto({
               <button
                 type="button"
                 onClick={() => onFotoChange("")}
-                className="px-3 py-2 border border-danger/40 text-red-600 rounded-none text-xs font-medium hover:bg-danger/5 transition"
+                className="px-3 py-2 border border-rose-200 bg-rose-50 text-rose-600 rounded-xl text-xs font-semibold hover:bg-rose-100 transition-colors"
               >
                 Hapus Foto
               </button>
@@ -204,8 +204,8 @@ export default function GeotagPhoto({
           </div>
 
           {foto && (
-            <div className="flex items-center gap-2 text-xs text-green-600">
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center gap-1.5 text-xs font-medium text-emerald-600">
+              <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
               Foto tersimpan (otomatis dikecilkan agar hemat penyimpanan)
@@ -217,63 +217,61 @@ export default function GeotagPhoto({
       {/* Koordinat */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs text-gray-600 font-bold mb-1">Latitude</label>
+          <label className="block text-xs font-medium text-slate-600 mb-1">Latitude</label>
           <input
             type="number"
             step="any"
             value={latitude}
             onChange={(e) => onKoordinatChange(e.target.value, longitude, "manual", koordinatAkurasi)}
-            className="w-full px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
+            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
             placeholder="-6.2088"
           />
         </div>
         <div>
-          <label className="block text-xs text-gray-600 font-bold mb-1">Longitude</label>
+          <label className="block text-xs font-medium text-slate-600 mb-1">Longitude</label>
           <input
             type="number"
             step="any"
             value={longitude}
             onChange={(e) => onKoordinatChange(latitude, e.target.value, "manual", koordinatAkurasi)}
-            className="w-full px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
+            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
             placeholder="106.8456"
           />
         </div>
       </div>
 
       {pesan && (
-        <div className="bg-amber-500/10 text-amber-300 text-xs px-3 py-2 rounded-none border border-amber-500/30">
+        <div className="bg-amber-50 text-amber-800 text-xs px-3 py-2 rounded-xl border border-amber-200">
           {pesan}
         </div>
       )}
 
       {latitude && longitude && (
-        <div className="bg-green-400/5 rounded-none p-3 text-xs text-green-600">
+        <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-800">
           <div className="flex flex-wrap items-center gap-2 mb-1">
-            <span className="font-medium flex items-center gap-1">
+            <span className="font-semibold flex items-center gap-1">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               Lokasi tersimpan
             </span>
-            <span className={`inline-flex items-center px-2 py-0.5 rounded-none-full text-[10px] font-semibold ${
-              koordinatSumber === "exif_foto"
-                ? "bg-green-400/10 text-green-600"
-                : koordinatSumber === "gps_perangkat"
-                ? "bg-green-400/10 text-green-600"
-                : "bg-gray-100 border-2 border-black text-gray-600 font-bold"
+            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+              koordinatSumber === "exif_foto" || koordinatSumber === "gps_perangkat"
+                ? "bg-emerald-100 text-emerald-700"
+                : "bg-slate-200 text-slate-700"
             }`}>
               {SUMBER_LABEL[koordinatSumber] || "Manual"}
             </span>
             {koordinatAkurasi && (
-              <span className="text-green-600">± {koordinatAkurasi} m</span>
+              <span className="text-emerald-700">± {koordinatAkurasi} m</span>
             )}
           </div>
           <p className="font-mono">{latitude}, {longitude}</p>
           <button
             type="button"
             onClick={openInGoogleMaps}
-            className="mt-1.5 inline-flex items-center gap-1 text-green-600 hover:text-sky-300 font-medium"
+            className="mt-1.5 inline-flex items-center gap-1 text-emerald-700 hover:text-emerald-900 font-semibold"
           >
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -283,7 +281,7 @@ export default function GeotagPhoto({
         </div>
       )}
 
-      <p className="text-xs text-gray-400 font-bold">
+      <p className="text-[11px] text-slate-500">
         Saat memotret dengan kamera, koordinat GPS di dalam foto otomatis terbaca (geotag) dan menjadi acuan
         titik pengambilan sampah untuk rute pengangkutan. Pastikan lokasi kamera aktif.
       </p>

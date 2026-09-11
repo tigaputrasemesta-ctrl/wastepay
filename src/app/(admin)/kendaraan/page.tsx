@@ -110,30 +110,30 @@ export default function KendaraanPage() {
     <div className="p-6">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="font-black uppercase tracking-tighter text-2xl text-black font-black">Daftar Kendaraan</h1>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Daftar Kendaraan</h1>
           <p className="text-sm text-gray-600 font-bold mt-1">
             Dump truck standby di lapak → pickup angkut dari rumah → setor ke lapak → truk buang ke TPA
           </p>
         </div>
-        <button onClick={() => openForm()} className="shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 hover:bg-green-300 text-black px-4 py-2 rounded-none text-sm font-medium transition">+ Kendaraan</button>
+        <button onClick={() => openForm()} className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all">+ Kendaraan</button>
       </div>
 
       {/* Ringkasan */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
         <div className="hm-card bg-white p-0 overflow-hidden p-4">
-          <p className="text-2xl font-black uppercase tracking-tighter text-black font-black">{kendaraan.filter((k) => k.aktif).length}</p>
+          <p className="text-2xl font-bold tracking-tight text-black font-black">{kendaraan.filter((k) => k.aktif).length}</p>
           <p className="stencil text-[10px] text-gray-400 font-bold mt-1">KENDARAAN AKTIF</p>
         </div>
         <div className="hm-card bg-white p-0 overflow-hidden p-4">
-          <p className="text-2xl font-black uppercase tracking-tighter text-black font-black">{totalDump}</p>
+          <p className="text-2xl font-bold tracking-tight text-black font-black">{totalDump}</p>
           <p className="stencil text-[10px] text-amber mt-1">DUMP TRUCK</p>
         </div>
         <div className="hm-card bg-white p-0 overflow-hidden p-4">
-          <p className="text-2xl font-black uppercase tracking-tighter text-black font-black">{totalPickup}</p>
+          <p className="text-2xl font-bold tracking-tight text-black font-black">{totalPickup}</p>
           <p className="stencil text-[10px] text-green-600 mt-1">PICKUP</p>
         </div>
         <div className="hm-card bg-white p-0 overflow-hidden p-4">
-          <p className="text-2xl font-black uppercase tracking-tighter text-black font-black">
+          <p className="text-2xl font-bold tracking-tight text-black font-black">
             {kendaraan.reduce((s, k) => s + (k._count?.pengangkutan ?? 0), 0)}
           </p>
           <p className="stencil text-[10px] text-gray-400 font-bold mt-1">TOTAL ANGKUT</p>
@@ -163,7 +163,7 @@ export default function KendaraanPage() {
         <div className="hm-card bg-white p-0 overflow-hidden overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-2 border-black stencil text-[10px] text-gray-400 font-bold">
+              <tr className="border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
                 <th className="text-left px-4 py-3">KENDARAAN</th>
                 <th className="text-left px-4 py-3">JENIS</th>
                 <th className="text-left px-4 py-3">KAPASITAS</th>
@@ -177,10 +177,10 @@ export default function KendaraanPage() {
               {tersaring.map((k) => {
                 const j = JENIS.find((x) => x.value === k.jenis) ?? JENIS[0];
                 return (
-                  <tr key={k.id} className="border-b border-2 border-black/50 hover:bg-gray-100 border-2 border-black/40 transition">
+                  <tr key={k.id} className="border-b border-slate-200/50 hover:bg-gray-100 border-b border-slate-100 transition">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <span className="w-9 h-9 rounded-none-full bg-green-400/10 flex items-center justify-center text-lg shrink-0">{j.ikon}</span>
+                        <span className="w-9 h-9 rounded-full bg-green-400/10 flex items-center justify-center text-lg shrink-0">{j.ikon}</span>
                         <div>
                           <p className="font-medium text-black font-black">{k.nama}</p>
                           <p className="font-mono text-[10px] text-gray-400 font-bold">{k.platNomor ?? "—"}</p>
@@ -194,7 +194,7 @@ export default function KendaraanPage() {
                     <td className="px-4 py-3">
                       <button
                         onClick={() => toggleAktif(k)}
-                        className={`text-[10px] font-mono px-2 py-1 rounded-none ${k.aktif ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30 font-medium" : "bg-gray-100 border-2 border-black text-gray-600 font-bold border-2 border-black"}`}
+                        className={`text-[10px] font-mono px-2 py-1 rounded-none ${k.aktif ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30 font-medium" : "bg-gray-100 border border-slate-200/80 text-gray-600 font-bold border border-slate-200/80"}`}
                       >
                         {k.aktif ? "AKTIF" : "NONAKTIF"}
                       </button>
@@ -218,9 +218,9 @@ export default function KendaraanPage() {
 
       {/* Modal */}
       {show && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="hm-card bg-white p-0 overflow-hidden w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-2 border-black">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
               <h2 className="font-semibold text-black font-black">{edit ? "Edit Kendaraan" : "Tambah Kendaraan"}</h2>
               <button onClick={() => setShow(false)} className="text-gray-400 font-bold hover:text-gray-600 font-bold">✕</button>
             </div>
@@ -253,8 +253,8 @@ export default function KendaraanPage() {
                 </select>
               </div>
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => setShow(false)} className="flex-1 px-4 py-2 border-2 border-black rounded-none text-sm text-gray-600 font-bold hover:bg-gray-100 border-2 border-black">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 text-black rounded-none text-sm font-medium hover:bg-green-300">{edit ? "Simpan" : "Tambah"}</button>
+                <button type="button" onClick={() => setShow(false)} className="flex-1 px-4 py-2 border border-slate-200/80 rounded-xl text-sm text-slate-700 font-medium hover:bg-slate-50/80 transition">Batal</button>
+                <button type="submit" className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all">{edit ? "Simpan" : "Tambah"}</button>
               </div>
             </form>
           </div>

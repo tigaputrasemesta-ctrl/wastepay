@@ -582,14 +582,14 @@ export default function MapView({
   return (
     <div className="relative h-full w-full">
       {/* Tombol Pilihan Basemap: Google Maps Jalan & Gang / Satelit / Gelap */}
-      <div className="absolute top-3 right-3 z-[1000] flex items-center bg-white border-2 border-black p-1 shadow-[4px_4px_0_0_#000] gap-1">
+      <div className="absolute top-3 right-3 z-[1000] flex items-center bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-2xl p-1 shadow-lg gap-1">
         <button
           type="button"
           onClick={() => setTileMode("google-streets")}
-          className={`px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs font-black uppercase transition-all ${
+          className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
             tileMode === "google-streets"
-              ? "bg-emerald-400 text-black border-2 border-black shadow-[2px_2px_0_0_#000]"
-              : "text-gray-700 hover:bg-gray-100 border-2 border-transparent"
+              ? "bg-emerald-600 text-white shadow-sm"
+              : "text-slate-600 hover:bg-slate-100"
           }`}
           title="Peta jalan Google Maps lengkap nama gang dan pemukiman Depok"
         >
@@ -598,10 +598,10 @@ export default function MapView({
         <button
           type="button"
           onClick={() => setTileMode("google-hybrid")}
-          className={`px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs font-black uppercase transition-all ${
+          className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
             tileMode === "google-hybrid"
-              ? "bg-emerald-400 text-black border-2 border-black shadow-[2px_2px_0_0_#000]"
-              : "text-gray-700 hover:bg-gray-100 border-2 border-transparent"
+              ? "bg-emerald-600 text-white shadow-sm"
+              : "text-slate-600 hover:bg-slate-100"
           }`}
           title="Foto udara satelit Google Maps berlabel jalan & gang"
         >
@@ -610,10 +610,10 @@ export default function MapView({
         <button
           type="button"
           onClick={() => setTileMode("dark")}
-          className={`px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs font-black uppercase transition-all ${
+          className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
             tileMode === "dark"
-              ? "bg-emerald-400 text-black border-2 border-black shadow-[2px_2px_0_0_#000]"
-              : "text-gray-700 hover:bg-gray-100 border-2 border-transparent"
+              ? "bg-emerald-600 text-white shadow-sm"
+              : "text-slate-600 hover:bg-slate-100"
           }`}
           title="Peta mode gelap matte"
         >
@@ -626,7 +626,7 @@ export default function MapView({
         zoom={14}
         scrollWheelZoom
         className="h-full w-full"
-        style={{ background: tileMode === "dark" ? "#0d0e10" : "#f4f4f0" }}
+        style={{ background: tileMode === "dark" ? "#0d0e10" : "#f8fafc" }}
       >
         <MapReadyWrapper>
           <TileLayer
