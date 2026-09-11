@@ -8,12 +8,18 @@ import {
   TileLayer,
   Marker,
   Circle,
-  Popup,
-  ZoomControl,
+  Polyline,
   useMap,
 } from "react-leaflet";
+import Image from "next/image";
 import { getMapTileConfig, type MapTileType } from "@/lib/map-tile";
 import { formatRupiah } from "@/lib/utils";
+import {
+  buildWhatsAppDriverUrl,
+  buildNavigationUrl,
+  buildCallUrl,
+} from "@/lib/driver-actions";
+import { jarakMeter } from "@/lib/geo";
 
 export type TugasMap = {
   id: number;
@@ -24,6 +30,9 @@ export type TugasMap = {
   longitude: number;
   status: string;
   patokanLokasi?: string | null;
+  noTelepon?: string | null;
+  fotoRumah?: string | null;
+  urutan?: number;
   tunggakan?: {
     isMenunggak: boolean;
     jumlahBulan: number;
@@ -40,81 +49,94 @@ export type MapAngkutProps = {
   onQuickPickup?: (taskId: number) => Promise<void>;
   onSkipOverdue?: (taskId: number, catatan: string) => Promise<void>;
   onSelectTask?: (taskId: number) => void;
+  className?: string;
 };
 
 const PUSAT_DEPOK: [number, number] = [-6.424838, 106.832667];
 
 /**
- * Pin Marker Dinamis untuk Rumah Pelanggan
- * Membedakan secara visual:
- * - Hijau: Sudah diambil (selesai)
- * - Merah Menyala (Hazard): Menunggak iuran (⛔ JANGAN ANGKUT)
- * - Biru: Terjadwal (Lunas / siap angkut)
- * - Kuning/Abu: Kosong / kendala
+ * Pin Marker Dinamis & Estetik untuk Rumah Pelanggan
+ * - Nomor urut antrean (#1, #2, #3...)
+ * - Badge status: Hijau (Selesai), Biru (Antrean Lunas), Merah (Menunggak)
+ * - Gelombang halo berdenyut untuk rumah yang menunggak
  */
-function buatPinTugas(t: TugasMap) {
+function buatPinTugas(t: TugasMap, urutan?: number, isSelected?: boolean) {
   const isMenunggak = Boolean(t.tunggakan?.isMenunggak);
   const isSelesai = t.status === "diambil";
   const isKendala = t.status === "tidak_diangkut";
-  const isKosong = t.status === "kosong";
 
-  let bgColor = "#0284c7"; // Sky 600 default
-  let icon = "🏠";
-  let badgeBorder = "border: 2px solid #ffffff;";
-  let pulseAnimation = "";
-  let badgeLabel = t.nama.replace(/["&<>]/g, "");
+  let bgColor = "#0284c7"; // Sky 600
+  let icon = typeof urutan === "number" ? `#${urutan}` : "🏠";
+  let pulseHtml = "";
+  let labelText = t.nama.replace(/["&<>]/g, "");
 
   if (isMenunggak && t.status === "terjadwal") {
     bgColor = "#e11d48"; // Rose 600
     icon = "⛔";
-    badgeBorder = "border: 2.5px solid #fecdd3;";
-    pulseAnimation = "animation: pulse 1.5s infinite;";
-    badgeLabel = `⛔ ${badgeLabel} (${t.tunggakan?.jumlahBulan || 1} bln)`;
+    pulseHtml = `
+      <div style="
+        position: absolute;
+        width: 46px;
+        height: 46px;
+        top: -23px;
+        left: -23px;
+        border-radius: 50%;
+        background: rgba(225, 29, 72, 0.35);
+        border: 1.5px solid #f43f5e;
+        animation: ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+      "></div>
+    `;
+    labelText = `⛔ ${labelText}`;
   } else if (isSelesai) {
     bgColor = "#059669"; // Emerald 600
     icon = "✓";
-    badgeBorder = "border: 2px solid #a7f3d0;";
   } else if (isKendala) {
-    bgColor = "#dc2626";
+    bgColor = "#64748b"; // Slate 500
     icon = "✕";
-  } else if (isKosong) {
-    bgColor = "#d97706";
-    icon = "⚠️";
   }
 
+  const selectedRing = isSelected
+    ? "outline: 3.5px solid #38bdf8; outline-offset: 2px; transform: scale(1.18);"
+    : "";
+
   const html = `
-    <div style="transform:translate(-50%,-100%);text-align:center;cursor:pointer;${pulseAnimation}">
+    <div style="transform:translate(-50%,-100%);text-align:center;cursor:pointer;position:relative;transition:all 0.2s ease;">
+      ${pulseHtml}
       <div style="
         width: 32px;
         height: 32px;
         margin: 0 auto;
         border-radius: 9999px;
         background: ${bgColor};
-        ${badgeBorder}
-        box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+        border: 2.5px solid #ffffff;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.4);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 15px;
+        font-size: 12px;
         font-weight: 900;
         color: #ffffff;
+        ${selectedRing}
       ">
         ${icon}
       </div>
       <div style="
-        margin-top: 3px;
+        margin-top: 2px;
         font-family: ui-sans-serif, system-ui, sans-serif;
-        font-size: 10px;
+        font-size: 9px;
         font-weight: 800;
         color: #ffffff;
         background: ${isMenunggak && t.status === "terjadwal" ? "#881337" : "#0f172a"};
         border: 1px solid rgba(255,255,255,0.25);
         border-radius: 9999px;
-        padding: 2px 8px;
+        padding: 1.5px 6px;
         white-space: nowrap;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
       ">
-        ${badgeLabel}
+        ${labelText}
       </div>
     </div>
   `;
@@ -124,36 +146,35 @@ function buatPinTugas(t: TugasMap) {
     html,
     iconSize: [1, 1],
     iconAnchor: [0, 0],
-    popupAnchor: [0, -38],
   });
 }
 
-/** Pin Posisi Truk Driver Lapangan */
+/** Pin Truk Pengemudi dengan Gelombang Radar */
 function buatPinDriver() {
   const html = `
     <div style="transform:translate(-50%,-50%);position:relative;cursor:pointer">
       <div style="
         position: absolute;
-        width: 44px;
-        height: 44px;
-        top: -22px;
-        left: -22px;
+        width: 48px;
+        height: 48px;
+        top: -24px;
+        left: -24px;
         border-radius: 50%;
         background: rgba(16, 185, 129, 0.25);
-        border: 1.5px solid #10b981;
+        border: 2px solid #10b981;
         animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
       "></div>
       <div style="
-        width: 36px;
-        height: 36px;
+        width: 38px;
+        height: 38px;
         border-radius: 50%;
         background: #064e3b;
         border: 2.5px solid #ffffff;
-        box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+        box-shadow: 0 4px 14px rgba(0,0,0,0.45);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
+        font-size: 19px;
       ">
         🚛
       </div>
@@ -168,25 +189,29 @@ function buatPinDriver() {
   });
 }
 
-/** Controller Peta Internal untuk aksi Center, FitBounds, dll */
+/** Map Controller for Camera Movements */
 function MapController({
   points,
   posSaya,
   centerTrigger,
+  fitAllTrigger,
+  flyToPos,
 }: {
   points: [number, number][];
   posSaya: [number, number] | null;
   centerTrigger: number;
+  fitAllTrigger: number;
+  flyToPos: [number, number] | null;
 }) {
   const map = useMap();
   const initialFitDone = useRef(false);
 
-  // Fit bounds awal saat rute termuat
+  // Fit bounds awal
   useEffect(() => {
     if (initialFitDone.current) return;
     const all = posSaya ? [...points, posSaya] : points;
     if (all.length >= 2) {
-      map.fitBounds(all, { padding: [50, 50], maxZoom: 16 });
+      map.fitBounds(all, { padding: [40, 40], maxZoom: 16 });
       initialFitDone.current = true;
     } else if (all.length === 1) {
       map.setView(all[0], 16);
@@ -194,12 +219,31 @@ function MapController({
     }
   }, [points, posSaya, map]);
 
-  // Center trigger saat tombol Target diklik
+  // Center ke posisi sopir
   useEffect(() => {
     if (centerTrigger > 0 && posSaya) {
       map.flyTo(posSaya, 17, { animate: true, duration: 0.8 });
     }
   }, [centerTrigger, posSaya, map]);
+
+  // Fit seluruh rute
+  useEffect(() => {
+    if (fitAllTrigger > 0) {
+      const all = posSaya ? [...points, posSaya] : points;
+      if (all.length >= 2) {
+        map.fitBounds(all, { padding: [50, 50] });
+      } else if (all.length === 1) {
+        map.setView(all[0], 16);
+      }
+    }
+  }, [fitAllTrigger, points, posSaya, map]);
+
+  // Fly ke pin yang diklik
+  useEffect(() => {
+    if (flyToPos) {
+      map.flyTo(flyToPos, 18, { animate: true, duration: 0.6 });
+    }
+  }, [flyToPos, map]);
 
   return null;
 }
@@ -211,14 +255,19 @@ export default function MapAngkut({
   onQuickPickup,
   onSkipOverdue,
   onSelectTask,
+  className = "",
 }: MapAngkutProps) {
   const [internalPos, setInternalPos] = useState<[number, number] | null>(null);
   const [tileMode, setTileMode] = useState<MapTileType>("google-streets");
   const [isExpanded, setIsExpanded] = useState(false);
-  const [filterMode, setFilterMode] = useState<"semua" | "antrean" | "menunggak">("semua");
+  const [filterMode, setFilterMode] = useState<"semua" | "antrean" | "menunggak" | "selesai">("semua");
+  const [selectedTask, setSelectedTask] = useState<TugasMap | null>(null);
   const [centerTrigger, setCenterTrigger] = useState(0);
+  const [fitAllTrigger, setFitAllTrigger] = useState(0);
+  const [flyToPos, setFlyToPos] = useState<[number, number] | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
 
-  // Fallback GPS lokal jika externalPos tidak disediakan
+  // Fallback GPS lokal
   useEffect(() => {
     if (externalPos) {
       setInternalPos([externalPos.lat, externalPos.lng]);
@@ -237,58 +286,102 @@ export default function MapAngkut({
     ? [externalPos.lat, externalPos.lng]
     : internalPos;
 
-  // Filter tugas pada peta
+  // Filter tugas
   const filteredTugas = useMemo(() => {
-    if (filterMode === "antrean") {
-      return tugas.filter((t) => t.status === "terjadwal");
-    }
-    if (filterMode === "menunggak") {
-      return tugas.filter((t) => t.tunggakan?.isMenunggak);
-    }
+    if (filterMode === "antrean") return tugas.filter((t) => t.status === "terjadwal");
+    if (filterMode === "menunggak") return tugas.filter((t) => t.tunggakan?.isMenunggak);
+    if (filterMode === "selesai") return tugas.filter((t) => t.status === "diambil");
     return tugas;
   }, [tugas, filterMode]);
 
+  // Points untuk bounds
   const points = useMemo(
     () => filteredTugas.map((t) => [t.latitude, t.longitude] as [number, number]),
     [filteredTugas]
   );
+
+  // Route Polyline Points: Driver Pos -> Pending Task #1 -> Pending Task #2 ...
+  const routeTrajectory = useMemo(() => {
+    const pending = tugas.filter((t) => t.status === "terjadwal");
+    const coords: [number, number][] = [];
+    if (activeDriverPos) coords.push(activeDriverPos);
+    for (const t of pending) {
+      coords.push([t.latitude, t.longitude]);
+    }
+    return coords.length >= 2 ? coords : [];
+  }, [tugas, activeDriverPos]);
 
   const initialCenter: [number, number] = activeDriverPos ?? (points[0] ?? PUSAT_DEPOK);
   const tileConfig = useMemo(() => getMapTileConfig(tileMode), [tileMode]);
 
   const totalMenunggak = tugas.filter((t) => t.tunggakan?.isMenunggak).length;
   const totalSelesai = tugas.filter((t) => t.status === "diambil").length;
+  const totalAntrean = tugas.filter((t) => t.status === "terjadwal").length;
+
+  // Handler saat pin ditekan
+  const handlePinClick = (t: TugasMap) => {
+    setSelectedTask(t);
+    setFlyToPos([t.latitude, t.longitude]);
+    onSelectTask?.(t.id);
+  };
+
+  // Jarak ke selected task
+  const selectedDistance = useMemo(() => {
+    if (!selectedTask || !activeDriverPos) return null;
+    return jarakMeter(activeDriverPos, [selectedTask.latitude, selectedTask.longitude]);
+  }, [selectedTask, activeDriverPos]);
+
+  const selectedIsMenunggak = Boolean(selectedTask?.tunggakan?.isMenunggak);
+  const selectedWaUrl = selectedTask
+    ? buildWhatsAppDriverUrl({
+        phone: selectedTask.noTelepon,
+        nama: selectedTask.nama,
+        alamat: selectedTask.alamat,
+        patokan: selectedTask.patokanLokasi,
+        isMenunggak: selectedIsMenunggak,
+      })
+    : null;
+
+  const selectedNavUrl = selectedTask
+    ? buildNavigationUrl(selectedTask.latitude, selectedTask.longitude)
+    : null;
+
+  const selectedTelUrl = selectedTask
+    ? buildCallUrl(selectedTask.noTelepon)
+    : null;
 
   return (
     <div
-      className={`rounded-3xl border border-slate-200/90 shadow-md overflow-hidden transition-all duration-300 bg-white ${
-        isExpanded ? "fixed inset-2 z-50 flex flex-col sm:inset-6" : "relative"
-      }`}
+      className={`rounded-3xl border border-slate-800/90 shadow-2xl overflow-hidden transition-all duration-300 bg-slate-950 flex flex-col ${
+        isExpanded
+          ? "fixed inset-2 z-50 sm:inset-6 shadow-2xl ring-4 ring-emerald-500/20"
+          : "relative h-[55vh] min-h-[420px]"
+      } ${className}`}
     >
-      {/* ── Modern Map Top Control Bar ── */}
-      <div className="bg-slate-900 text-white px-4 py-3 flex flex-wrap items-center justify-between gap-2 shadow-sm shrink-0">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-sm">
+      {/* ── TOP LOGISTICS NAVIGATION HEADER BAR ── */}
+      <div className="bg-slate-900/95 backdrop-blur-md text-white px-3.5 py-2.5 flex items-center justify-between gap-2 border-b border-slate-800 z-10 shrink-0">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-base shadow-md shadow-emerald-600/30 shrink-0">
             🗺️
           </div>
-          <div>
+          <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <h2 className="text-xs font-black tracking-tight text-white">Radar Peta Rute</h2>
-              {totalMenunggak > 0 && (
-                <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-rose-500 text-white animate-pulse">
-                  {totalMenunggak} Menunggak
-                </span>
-              )}
+              <h3 className="text-xs font-black tracking-tight text-white truncate">
+                Peta Navigasi Armada
+              </h3>
+              <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-800/60 shrink-0">
+                Radar: {radiusMeter}m
+              </span>
             </div>
-            <p className="text-[10px] text-slate-400 font-medium">
-              {totalSelesai}/{tugas.length} Selesai • Radius: <span className="text-emerald-400 font-bold">{radiusMeter}m</span>
+            <p className="text-[10px] text-slate-400 font-medium truncate">
+              {totalSelesai}/{tugas.length} Selesai • {totalAntrean} Menunggu
             </p>
           </div>
         </div>
 
-        {/* Toolbar buttons: Layer Switcher & Expand */}
-        <div className="flex items-center gap-1.5">
-          {/* Layer Selector */}
+        {/* Action Controls: Layer Switcher & Fullscreen */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          {/* Tile Layer Selector */}
           <div className="bg-slate-800 rounded-xl p-0.5 flex border border-slate-700 text-[10px] font-bold">
             <button
               type="button"
@@ -312,6 +405,17 @@ export default function MapAngkut({
             >
               Satelit
             </button>
+            <button
+              type="button"
+              onClick={() => setTileMode("dark")}
+              className={`px-2 py-1 rounded-lg transition-all ${
+                tileMode === "dark"
+                  ? "bg-emerald-500 text-white"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              Malam
+            </button>
           </div>
 
           {/* Expand / Minimize Toggle */}
@@ -319,23 +423,23 @@ export default function MapAngkut({
             type="button"
             onClick={() => setIsExpanded(!isExpanded)}
             className="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold transition-all active:scale-95"
-            title={isExpanded ? "Kecilkan Peta" : "Perbesar Peta Layar Penuh"}
+            title={isExpanded ? "Kecilkan Peta" : "Mode Layar Penuh"}
           >
-            {isExpanded ? "✕ Tutup Layar" : "⤢ Perbesar"}
+            {isExpanded ? "✕ Ciutkan" : "⤢ Penuh"}
           </button>
         </div>
       </div>
 
-      {/* ── Sub-Filter Bar (Antrean vs Menunggak) ── */}
-      <div className="bg-slate-100/90 border-b border-slate-200/80 px-3 py-1.5 flex items-center justify-between text-xs font-bold shrink-0">
-        <div className="flex gap-1.5">
+      {/* ── FILTER CHIPS STRIP ── */}
+      <div className="bg-slate-900/80 backdrop-blur-xs border-b border-slate-800/80 px-3 py-1.5 flex items-center justify-between text-xs font-bold shrink-0 z-10 overflow-x-auto gap-1">
+        <div className="flex items-center gap-1">
           <button
             type="button"
             onClick={() => setFilterMode("semua")}
-            className={`px-2.5 py-1 rounded-lg text-[11px] transition-all ${
+            className={`px-2.5 py-1 rounded-lg text-[11px] transition-all shrink-0 ${
               filterMode === "semua"
-                ? "bg-white text-slate-900 shadow-2xs font-extrabold"
-                : "text-slate-500 hover:text-slate-900"
+                ? "bg-white text-slate-950 font-black shadow-xs"
+                : "text-slate-400 hover:text-white"
             }`}
           >
             Semua ({tugas.length})
@@ -343,51 +447,60 @@ export default function MapAngkut({
           <button
             type="button"
             onClick={() => setFilterMode("antrean")}
-            className={`px-2.5 py-1 rounded-lg text-[11px] transition-all ${
+            className={`px-2.5 py-1 rounded-lg text-[11px] transition-all shrink-0 ${
               filterMode === "antrean"
-                ? "bg-white text-emerald-700 shadow-2xs font-extrabold"
-                : "text-slate-500 hover:text-slate-900"
+                ? "bg-emerald-500 text-slate-950 font-black shadow-xs"
+                : "text-slate-400 hover:text-white"
             }`}
           >
-            Antrean ({tugas.filter((t) => t.status === "terjadwal").length})
+            Antrean ({totalAntrean})
           </button>
           {totalMenunggak > 0 && (
             <button
               type="button"
               onClick={() => setFilterMode("menunggak")}
-              className={`px-2.5 py-1 rounded-lg text-[11px] transition-all ${
+              className={`px-2.5 py-1 rounded-lg text-[11px] transition-all shrink-0 ${
                 filterMode === "menunggak"
-                  ? "bg-rose-600 text-white shadow-2xs font-extrabold"
-                  : "text-rose-600 hover:text-rose-700"
+                  ? "bg-rose-500 text-white font-black shadow-xs animate-pulse"
+                  : "text-rose-400 hover:text-rose-300"
               }`}
             >
               ⛔ Menunggak ({totalMenunggak})
             </button>
           )}
+          <button
+            type="button"
+            onClick={() => setFilterMode("selesai")}
+            className={`px-2.5 py-1 rounded-lg text-[11px] transition-all shrink-0 ${
+              filterMode === "selesai"
+                ? "bg-teal-500 text-slate-950 font-black shadow-xs"
+                : "text-slate-400 hover:text-white"
+            }`}
+          >
+            Selesai ({totalSelesai})
+          </button>
         </div>
 
-        {/* GPS Live Indicator */}
-        <div className="flex items-center gap-1.5 text-[10px] text-slate-600">
+        {/* GPS Live Pill */}
+        <div className="flex items-center gap-1.5 text-[10px] text-slate-400 shrink-0 pl-2">
           <span
             className={`w-2 h-2 rounded-full ${
-              activeDriverPos ? "bg-emerald-500 animate-pulse" : "bg-amber-400"
+              activeDriverPos ? "bg-emerald-400 animate-pulse" : "bg-amber-400"
             }`}
           />
-          <span className="font-semibold">
-            {activeDriverPos ? "GPS Terkunci" : "Mencari GPS..."}
-          </span>
+          <span>{activeDriverPos ? "GPS Terkunci" : "Mencari GPS..."}</span>
         </div>
       </div>
 
-      {/* ── Leaflet Map Container ── */}
-      <div className={`w-full relative ${isExpanded ? "flex-1 min-h-0" : "h-[45vh] min-h-[300px]"}`}>
+      {/* ── MAP CANVAS CONTAINER ── */}
+      <div className="relative flex-1 w-full min-h-0 bg-slate-950">
         <MapContainer
           center={initialCenter}
           zoom={16}
           scrollWheelZoom
           zoomControl={false}
           className="h-full w-full"
-          style={{ background: "#f8fafc" }}
+          style={{ background: "#090d16" }}
         >
           <TileLayer
             key={tileMode}
@@ -397,151 +510,277 @@ export default function MapAngkut({
             maxZoom={tileConfig.maxZoom}
           />
 
-          {/* Marker Pelanggan */}
-          {filteredTugas.map((t) => (
-            <Marker
-              key={`tugas-${t.id}`}
-              position={[t.latitude, t.longitude]}
-              icon={buatPinTugas(t)}
-              eventHandlers={{
-                click: () => onSelectTask?.(t.id),
-              }}
-            >
-              <Popup className="custom-driver-popup">
-                <div className="p-1 space-y-2 text-slate-900 font-sans min-w-[200px]">
-                  {/* Status Badge */}
-                  <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-1.5">
-                    {t.tunggakan?.isMenunggak ? (
-                      <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-rose-100 text-rose-800">
-                        ⛔ JANGAN ANGKUT (MENUNGGAK)
-                      </span>
-                    ) : t.status === "diambil" ? (
-                      <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-100 text-emerald-800">
-                        ✓ SELESAI PICKUP
-                      </span>
-                    ) : (
-                      <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-sky-100 text-sky-800">
-                        SIAP PICKUP (LUNAS)
-                      </span>
-                    )}
-                    <span className="text-[10px] font-mono text-slate-400">
-                      {t.kodePelanggan}
-                    </span>
-                  </div>
+          <MapController
+            points={points}
+            posSaya={activeDriverPos}
+            centerTrigger={centerTrigger}
+            fitAllTrigger={fitAllTrigger}
+            flyToPos={flyToPos}
+          />
 
-                  {/* Customer Info */}
-                  <div>
-                    <p className="font-extrabold text-sm text-slate-900 leading-tight">
-                      {t.nama}
-                    </p>
-                    <p className="text-[11px] text-slate-600 mt-0.5">{t.alamat}</p>
-                    {t.patokanLokasi && (
-                      <p className="text-[10px] font-bold text-amber-800 mt-0.5">
-                        📍 {t.patokanLokasi}
-                      </p>
-                    )}
-                  </div>
+          {/* Glow Trajectory Route Polyline */}
+          {routeTrajectory.length >= 2 && (
+            <>
+              {/* Outer Glow Halo */}
+              <Polyline
+                positions={routeTrajectory}
+                pathOptions={{
+                  color: "#059669",
+                  weight: 7,
+                  opacity: 0.35,
+                  lineCap: "round",
+                }}
+              />
+              {/* Inner Dashed Line */}
+              <Polyline
+                positions={routeTrajectory}
+                pathOptions={{
+                  color: "#34d399",
+                  weight: 3.5,
+                  dashArray: "6, 10",
+                  opacity: 0.95,
+                  lineCap: "round",
+                }}
+              />
+            </>
+          )}
 
-                  {/* Tunggakan Details if any */}
-                  {t.tunggakan?.isMenunggak && (
-                    <div className="p-2 rounded-xl bg-rose-50 text-[10px] font-semibold text-rose-900 border border-rose-200">
-                      <p className="font-black">
-                        Tunggakan: {t.tunggakan.jumlahBulan} Bulan (
-                        {formatRupiah(t.tunggakan.totalNominal)})
-                      </p>
-                      <p className="text-rose-700 mt-0.5">
-                        Instruksi: Lewati penjemputan sampah rumah ini.
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Quick Action in Popup */}
-                  {t.status === "terjadwal" && (
-                    <div className="pt-1 flex flex-col gap-1.5">
-                      {t.tunggakan?.isMenunggak ? (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            onSkipOverdue?.(
-                              t.id,
-                              `Dilewati via Peta: Menunggak ${t.tunggakan?.jumlahBulan} bulan`
-                            )
-                          }
-                          className="w-full py-2 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs shadow-xs"
-                        >
-                          🚫 Lewati Rumah Ini
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => onQuickPickup?.(t.id)}
-                          className="w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-xs flex items-center justify-center gap-1.5"
-                        >
-                          <span>✓</span>
-                          <span>Selesai Angkut (1-Tap)</span>
-                        </button>
-                      )}
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          window.open(
-                            `https://www.google.com/maps?q=${t.latitude},${t.longitude}`,
-                            "_system"
-                          )
-                        }
-                        className="w-full py-1.5 text-center text-[10px] font-bold text-slate-600 hover:text-slate-900 bg-slate-100 rounded-lg"
-                      >
-                        🧭 Buka Google Maps
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </Popup>
-            </Marker>
-          ))}
-
-          {/* Marker & Radar Geofence Circle Driver */}
+          {/* Posisi Truk Driver */}
           {activeDriverPos && (
             <>
-              {/* Lingkaran Radar Proximity Interaktif (10m / 20m) */}
+              <Marker position={activeDriverPos} icon={buatPinDriver()} />
+              {/* Dynamic Radar Geofence Ring */}
               <Circle
                 center={activeDriverPos}
                 radius={radiusMeter}
                 pathOptions={{
                   color: "#10b981",
-                  fillColor: "#34d399",
-                  fillOpacity: 0.18,
-                  weight: 2,
+                  fillColor: "#10b981",
+                  fillOpacity: 0.15,
+                  weight: 1.5,
                   dashArray: "4, 6",
                 }}
               />
-              {/* Pin Truk Driver */}
-              <Marker position={activeDriverPos} icon={buatPinDriver()} interactive={false} />
             </>
           )}
 
-          <ZoomControl position="bottomright" />
-          <MapController
-            points={points}
-            posSaya={activeDriverPos}
-            centerTrigger={centerTrigger}
-          />
+          {/* Markers Rumah Pelanggan */}
+          {filteredTugas.map((t, idx) => (
+            <Marker
+              key={`tugas-${t.id}`}
+              position={[t.latitude, t.longitude]}
+              icon={buatPinTugas(t, idx + 1, selectedTask?.id === t.id)}
+              eventHandlers={{
+                click: () => handlePinClick(t),
+              }}
+            />
+          ))}
         </MapContainer>
 
-        {/* ── Floating Action Buttons (FAB) on Map ── */}
-        <div className="absolute top-3 right-3 z-[400] flex flex-col gap-2">
-          {activeDriverPos && (
-            <button
-              type="button"
-              onClick={() => setCenterTrigger((prev) => prev + 1)}
-              className="w-10 h-10 rounded-2xl bg-white text-slate-800 border border-slate-200/90 shadow-md flex items-center justify-center font-bold text-lg active:scale-95 transition-all hover:bg-emerald-50 hover:text-emerald-700"
-              title="Pusatkan ke Posisi Truk Saya"
-            >
-              🎯
-            </button>
-          )}
+        {/* ── FLOATING MAP FAB BUTTONS (Right Side) ── */}
+        <div className="absolute right-3 top-3 z-[400] flex flex-col gap-2">
+          {/* Center on Driver */}
+          <button
+            type="button"
+            onClick={() => setCenterTrigger((c) => c + 1)}
+            className="w-10 h-10 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 text-white border border-slate-700 shadow-xl flex items-center justify-center text-base transition-all"
+            title="Pusatkan Lokasi Saya"
+          >
+            🎯
+          </button>
+
+          {/* Fit All Points */}
+          <button
+            type="button"
+            onClick={() => setFitAllTrigger((f) => f + 1)}
+            className="w-10 h-10 rounded-2xl bg-slate-900/90 hover:bg-slate-800 active:scale-95 text-white border border-slate-700 shadow-xl flex items-center justify-center text-sm font-bold transition-all"
+            title="Tampilkan Seluruh Rute"
+          >
+            📍
+          </button>
         </div>
+
+        {/* ── INTERACTIVE BOTTOM DRAWER FOR SELECTED PIN (ALA GOJEK / GRAB) ── */}
+        {selectedTask && (
+          <div className="absolute inset-x-3 bottom-3 z-[400] animate-in slide-in-from-bottom-5 duration-200">
+            <div
+              className={`rounded-3xl p-4 shadow-2xl backdrop-blur-md border transition-all ${
+                selectedIsMenunggak
+                  ? "bg-slate-950/95 border-rose-500/60 ring-2 ring-rose-500/20 text-white"
+                  : "bg-slate-950/95 border-emerald-500/50 ring-2 ring-emerald-500/20 text-white"
+              }`}
+            >
+              {/* Header Drawer */}
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                      selectedIsMenunggak
+                        ? "bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse"
+                        : selectedTask.status === "diambil"
+                        ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
+                        : "bg-sky-500/20 text-sky-300 border border-sky-500/40"
+                    }`}
+                  >
+                    <span>
+                      {selectedIsMenunggak
+                        ? "⛔ MENUNGGAK (JANGAN ANGKUT)"
+                        : selectedTask.status === "diambil"
+                        ? "✓ SUDAH DIAMBIL"
+                        : "SIAP PICKUP"}
+                    </span>
+                  </span>
+                  {selectedDistance !== null && (
+                    <span className="text-[10px] font-bold text-slate-300 bg-slate-800 px-2 py-0.5 rounded-md">
+                      📍 {selectedDistance}m lagi
+                    </span>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedTask(null)}
+                  className="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center font-bold text-xs transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Customer Body */}
+              <div className="py-2.5 flex items-start justify-between gap-3">
+                <div className="space-y-0.5 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-sm font-black text-white truncate">
+                      {selectedTask.nama}
+                    </h4>
+                    <span className="text-[10px] font-mono font-bold text-slate-400 bg-slate-800 px-1.5 py-0.2 rounded shrink-0">
+                      {selectedTask.kodePelanggan}
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-300 line-clamp-1">
+                    {selectedTask.alamat}
+                  </p>
+
+                  {selectedTask.patokanLokasi && (
+                    <p className="text-[11px] text-amber-300 font-medium">
+                      📍 Patokan: {selectedTask.patokanLokasi}
+                    </p>
+                  )}
+                </div>
+
+                {selectedTask.fotoRumah && (
+                  <div className="w-12 h-12 rounded-xl overflow-hidden border border-slate-700 shrink-0 bg-slate-800 relative">
+                    <Image
+                      src={selectedTask.fotoRumah}
+                      alt="Foto Rumah"
+                      fill
+                      className="object-cover"
+                      sizes="48px"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Tunggakan Info if Applicable */}
+              {selectedIsMenunggak && (
+                <div className="mb-2 p-2 rounded-xl bg-rose-950/70 border border-rose-800 text-[11px] text-rose-200 flex items-center justify-between">
+                  <span>
+                    ⚠️ Tunggakan: {selectedTask.tunggakan?.jumlahBulan} Bulan
+                  </span>
+                  <span className="font-black text-rose-400">
+                    {formatRupiah(selectedTask.tunggakan?.totalNominal || 0)}
+                  </span>
+                </div>
+              )}
+
+              {/* Action Buttons Row */}
+              <div className="grid grid-cols-3 gap-2 pt-1">
+                {/* 1. Turn-by-Turn Google Maps Navigation */}
+                {selectedNavUrl ? (
+                  <a
+                    href={selectedNavUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="py-2 px-2 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-100 font-bold text-xs flex items-center justify-center gap-1.5 transition-all border border-slate-700"
+                  >
+                    <span>🧭</span>
+                    <span>Navigasi</span>
+                  </a>
+                ) : (
+                  <div className="py-2 text-center text-xs text-slate-500 bg-slate-900 rounded-xl">
+                    No GPS
+                  </div>
+                )}
+
+                {/* 2. WhatsApp Warga */}
+                {selectedWaUrl ? (
+                  <a
+                    href={selectedWaUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="py-2 px-2 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 active:scale-95 text-emerald-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all border border-emerald-700/60"
+                  >
+                    <span>💬</span>
+                    <span>WA Warga</span>
+                  </a>
+                ) : (
+                  <div className="py-2 text-center text-xs text-slate-500 bg-slate-900 rounded-xl">
+                    No WA
+                  </div>
+                )}
+
+                {/* 3. Action Pickup or Skip */}
+                {selectedTask.status === "terjadwal" ? (
+                  selectedIsMenunggak ? (
+                    <button
+                      type="button"
+                      disabled={actionLoading}
+                      onClick={async () => {
+                        setActionLoading(true);
+                        try {
+                          await onSkipOverdue?.(
+                            selectedTask.id,
+                            `Dilewati via Peta: Menunggak ${selectedTask.tunggakan?.jumlahBulan} bulan`
+                          );
+                          setSelectedTask(null);
+                        } finally {
+                          setActionLoading(false);
+                        }
+                      }}
+                      className="py-2 px-2 rounded-xl bg-rose-600 hover:bg-rose-500 active:scale-95 text-white font-black text-xs flex items-center justify-center gap-1 transition-all shadow-md shadow-rose-600/30"
+                    >
+                      <span>🚫</span>
+                      <span>Lewati</span>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={actionLoading}
+                      onClick={async () => {
+                        setActionLoading(true);
+                        try {
+                          await onQuickPickup?.(selectedTask.id);
+                          setSelectedTask(null);
+                        } finally {
+                          setActionLoading(false);
+                        }
+                      }}
+                      className="py-2 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-black text-xs flex items-center justify-center gap-1 transition-all shadow-md shadow-emerald-600/30"
+                    >
+                      <span>✓</span>
+                      <span>Pickup</span>
+                    </button>
+                  )
+                ) : (
+                  <div className="py-2 text-center text-xs text-emerald-400 font-bold bg-emerald-950/60 rounded-xl border border-emerald-800/40">
+                    ✓ Selesai
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

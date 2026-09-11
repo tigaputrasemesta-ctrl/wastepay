@@ -73,6 +73,7 @@ export default function MobileAngkut() {
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [voiceEnabled, setVoiceEnabled] = useState<boolean>(true);
   const [muatanTruk, setMuatanTruk] = useState<number>(25);
+  const [viewMode, setViewMode] = useState<"map" | "list">("map");
 
   // Screen Wake Lock API: layar tetap aktif saat patroli rute
   useWakeLock(true);
@@ -416,118 +417,157 @@ export default function MobileAngkut() {
             </div>
           )}
         </div>
-
-        {/* Filter Tabs */}
-        <div className="flex gap-1.5 p-1 bg-slate-100 rounded-2xl text-xs font-bold">
-          <button
-            onClick={() => setFilterTab("belum")}
-            className={`flex-1 py-1.5 rounded-xl transition-all ${
-              filterTab === "belum"
-                ? "bg-white text-slate-900 shadow-xs"
-                : "text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            Antrean ({data.filter((t) => t.status === "terjadwal").length})
-          </button>
-          <button
-            onClick={() => setFilterTab("selesai")}
-            className={`flex-1 py-1.5 rounded-xl transition-all ${
-              filterTab === "selesai"
-                ? "bg-white text-slate-900 shadow-xs"
-                : "text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            Selesai ({selesaiCount})
-          </button>
-          <button
-            onClick={() => setFilterTab("semua")}
-            className={`flex-1 py-1.5 rounded-xl transition-all ${
-              filterTab === "semua"
-                ? "bg-white text-slate-900 shadow-xs"
-                : "text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            Semua ({totalCount})
-          </button>
-        </div>
       </div>
 
-      {/* Map if available */}
-      {data.filter((t) => t.pelanggan.latitude && t.pelanggan.longitude).length > 0 && (
-        <div className="rounded-3xl overflow-hidden border border-slate-200 shadow-xs">
-          <MapAngkut
-            tugas={data
-              .filter((t) => t.pelanggan.latitude && t.pelanggan.longitude)
-              .map((t) => ({
-                id: t.id,
-                nama: t.pelanggan.nama,
-                alamat: t.pelanggan.alamat,
-                kodePelanggan: t.pelanggan.kodePelanggan,
-                latitude: t.pelanggan.latitude!,
-                longitude: t.pelanggan.longitude!,
-                status: t.status,
-                patokanLokasi: t.pelanggan.patokanLokasi,
-                tunggakan: t.tunggakan,
-              }))}
-            posSaya={driverPos}
-            radiusMeter={radiusMeter}
-            onQuickPickup={handleQuickPickup}
-            onSkipOverdue={handleSkipOverdue}
-            onSelectTask={(taskId) => forceOpenTask(taskId)}
-          />
+      {/* ── VIEW MODE SWITCHER: PETA LIVE vs DAFTAR ANTREAN ── */}
+      <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-900 rounded-2xl border border-slate-800 shadow-lg">
+        <button
+          type="button"
+          onClick={() => setViewMode("map")}
+          className={`py-2 px-3 rounded-xl text-xs font-black flex items-center justify-center gap-2 transition-all ${
+            viewMode === "map"
+              ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/30"
+              : "text-slate-400 hover:text-white"
+          }`}
+        >
+          <span>🗺️</span>
+          <span>Peta Navigasi Live</span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-black/40">
+            {data.filter((t) => t.pelanggan.latitude && t.pelanggan.longitude).length}
+          </span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setViewMode("list")}
+          className={`py-2 px-3 rounded-xl text-xs font-black flex items-center justify-center gap-2 transition-all ${
+            viewMode === "list"
+              ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/30"
+              : "text-slate-400 hover:text-white"
+          }`}
+        >
+          <span>📋</span>
+          <span>Daftar Rute</span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-black/40">
+            {filteredData.length}
+          </span>
+        </button>
+      </div>
+
+      {/* ── MODE PETA LIVE ── */}
+      {viewMode === "map" && (
+        <div className="space-y-3">
+          {data.filter((t) => t.pelanggan.latitude && t.pelanggan.longitude).length > 0 ? (
+            <MapAngkut
+              tugas={data
+                .filter((t) => t.pelanggan.latitude && t.pelanggan.longitude)
+                .map((t) => ({
+                  id: t.id,
+                  nama: t.pelanggan.nama,
+                  alamat: t.pelanggan.alamat,
+                  kodePelanggan: t.pelanggan.kodePelanggan,
+                  latitude: t.pelanggan.latitude!,
+                  longitude: t.pelanggan.longitude!,
+                  status: t.status,
+                  patokanLokasi: t.pelanggan.patokanLokasi,
+                  noTelepon: t.pelanggan.noTelepon,
+                  fotoRumah: t.pelanggan.fotoRumah,
+                  tunggakan: t.tunggakan,
+                }))}
+              posSaya={driverPos}
+              radiusMeter={radiusMeter}
+              onQuickPickup={handleQuickPickup}
+              onSkipOverdue={handleSkipOverdue}
+              onSelectTask={(taskId) => forceOpenTask(taskId)}
+            />
+          ) : (
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center text-white space-y-2">
+              <div className="text-3xl">📍</div>
+              <p className="text-sm font-bold">Belum Ada Titik Koordinat GPS</p>
+              <p className="text-xs text-slate-400">
+                Data rumah pelanggan pada jadwal ini belum memiliki koordinat lintang/bujur.
+              </p>
+            </div>
+          )}
+
+          {/* Gojek/Grab-Style Driver HUD: Multi-stop progress, Capacity, and Floating Target Card */}
+          {data.length > 0 && (
+            <DriverTaskHUD
+              activeTask={activeTask || closestTask}
+              jarakMeter={activeTask ? activeDistance : closestDistance}
+              radiusMeter={radiusMeter}
+              totalTasks={data.length}
+              completedTasks={selesaiCount}
+              muatanTruk={muatanTruk}
+              onMuatanChange={setMuatanTruk}
+              onQuickPickup={handleQuickPickup}
+              onSkipOverdue={handleSkipOverdue}
+              onOpenFullForm={(t) => {
+                const original = data.find((d) => d.id === t.id);
+                if (original) bukaForm(original);
+              }}
+              onDismissActive={activeTask ? dismissActiveTask : undefined}
+            />
+          )}
         </div>
       )}
 
-      {/* Gojek/Grab-Style Driver HUD: Multi-stop progress, Capacity, and Floating Target Card */}
-      {data.length > 0 && (
-        <DriverTaskHUD
-          activeTask={activeTask || closestTask}
-          jarakMeter={activeTask ? activeDistance : closestDistance}
-          radiusMeter={radiusMeter}
-          totalTasks={data.length}
-          completedTasks={selesaiCount}
-          muatanTruk={muatanTruk}
-          onMuatanChange={setMuatanTruk}
-          onQuickPickup={handleQuickPickup}
-          onSkipOverdue={handleSkipOverdue}
-          onOpenFullForm={(t) => {
-            const original = data.find((d) => d.id === t.id);
-            if (original) bukaForm(original);
-          }}
-          onDismissActive={activeTask ? dismissActiveTask : undefined}
-        />
-      )}
-
-      {pesan && (
-        <div className={`text-center text-xs font-bold p-3 rounded-2xl transition-all ${
-          pesan.includes("✓")
-            ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
-            : "bg-rose-50 text-rose-800 border border-rose-200"
-        }`}>
-          {pesan}
-        </div>
-      )}
-
-      {loading ? (
-        <div className="py-12 flex flex-col items-center justify-center gap-2">
-          <div className="w-8 h-8 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-xs font-semibold text-slate-400">Memuat rute tugas...</p>
-        </div>
-      ) : filteredData.length === 0 ? (
-        <div className="bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-2">
-          <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto text-xl">
-            🎉
+      {/* ── MODE DAFTAR RUTE ── */}
+      {viewMode === "list" && (
+        <div className="space-y-3">
+          {/* Filter Tabs */}
+          <div className="flex gap-1.5 p-1 bg-slate-100 rounded-2xl text-xs font-bold">
+            <button
+              onClick={() => setFilterTab("belum")}
+              className={`flex-1 py-1.5 rounded-xl transition-all ${
+                filterTab === "belum"
+                  ? "bg-white text-slate-900 shadow-xs"
+                  : "text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              Antrean ({data.filter((t) => t.status === "terjadwal").length})
+            </button>
+            <button
+              onClick={() => setFilterTab("selesai")}
+              className={`flex-1 py-1.5 rounded-xl transition-all ${
+                filterTab === "selesai"
+                  ? "bg-white text-slate-900 shadow-xs"
+                  : "text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              Selesai ({selesaiCount})
+            </button>
+            <button
+              onClick={() => setFilterTab("semua")}
+              className={`flex-1 py-1.5 rounded-xl transition-all ${
+                filterTab === "semua"
+                  ? "bg-white text-slate-900 shadow-xs"
+                  : "text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              Semua ({totalCount})
+            </button>
           </div>
-          <p className="text-sm font-bold text-slate-900">
-            {filterTab === "belum" ? "Semua Pengangkutan Selesai!" : "Tidak Ada Data"}
-          </p>
-          <p className="text-xs text-slate-500">
-            {filterTab === "belum"
-              ? "Hebat! Tidak ada lagi rumah yang menunggu pengangkutan pada jadwal ini."
-              : "Belum ada catatan tugas pada filter yang dipilih."}
-          </p>
-        </div>
-      ) : (
+
+          {loading ? (
+            <div className="py-12 flex flex-col items-center justify-center gap-2">
+              <div className="w-8 h-8 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+              <p className="text-xs font-semibold text-slate-400">Memuat rute tugas...</p>
+            </div>
+          ) : filteredData.length === 0 ? (
+            <div className="bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-2">
+              <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto text-xl">
+                🎉
+              </div>
+              <p className="text-sm font-bold text-slate-900">
+                {filterTab === "belum" ? "Semua Pengangkutan Selesai!" : "Tidak Ada Data"}
+              </p>
+              <p className="text-xs text-slate-500">
+                {filterTab === "belum"
+                  ? "Hebat! Tidak ada lagi rumah yang menunggu pengangkutan pada jadwal ini."
+                  : "Belum ada catatan tugas pada filter yang dipilih."}
+              </p>
+            </div>
+          ) : (
         filteredData.map((t) => {
           const isDone = t.status !== "terjadwal";
           const isEditing = editingId === t.id;
@@ -593,14 +633,28 @@ export default function MobileAngkut() {
                 </span>
               </div>
 
-              {/* Navigation Button */}
-              <button
-                type="button"
-                onClick={() => window.open(mapsUrl(t), "_system")}
-                className="w-full py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 active:scale-98 transition-all"
-              >
-                <span>🧭 Buka Navigasi Rute Maps</span>
-              </button>
+              {/* Navigation & Map Buttons */}
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setViewMode("map");
+                    forceOpenTask(t.id);
+                  }}
+                  className="py-2.5 px-3 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 active:scale-98 transition-all shadow-xs"
+                >
+                  <span>🗺️</span>
+                  <span>Lihat di Peta</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => window.open(mapsUrl(t), "_system")}
+                  className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 active:scale-98 transition-all"
+                >
+                  <span>🧭</span>
+                  <span>Google Maps</span>
+                </button>
+              </div>
 
               {!isEditing ? (
                 <div className="flex gap-2 pt-1 flex-wrap">
@@ -763,6 +817,8 @@ export default function MobileAngkut() {
             </div>
           );
         })
+      )}
+        </div>
       )}
 
       {/* ── Modal Pop-up Proximity (Radius 10m/20m) ── */}
