@@ -7,6 +7,7 @@ import CameraGps from "@/components/mobile/CameraGps";
 import MapAngkut from "@/components/mobile/MapAngkut";
 import ProximityPickupModal from "@/components/mobile/ProximityPickupModal";
 import DriverTaskHUD from "@/components/mobile/DriverTaskHUD";
+import GojekDriverCockpit from "@/components/mobile/GojekDriverCockpit";
 import { useProximityPickup, type ProximityTugas } from "@/hooks/useProximityPickup";
 import { useWakeLock } from "@/hooks/useWakeLock";
 import { playSound, speakText, vibrate } from "@/lib/mobile-feedback";
@@ -453,10 +454,10 @@ export default function MobileAngkut() {
         </button>
       </div>
 
-      {/* ── MODE PETA LIVE ── */}
+      {/* ── MODE PETA LIVE (GOJEK DRIVER ON-TRIP COCKPIT) ── */}
       {viewMode === "map" && (
         <div className="space-y-3">
-          <MapAngkut
+          <GojekDriverCockpit
             tugas={data
               .filter((t) => t.pelanggan.latitude && t.pelanggan.longitude)
               .map((t) => ({
@@ -472,32 +473,27 @@ export default function MobileAngkut() {
                 fotoRumah: t.pelanggan.fotoRumah,
                 tunggakan: t.tunggakan,
               }))}
+            activeTarget={activeTask || closestTask}
             posSaya={driverPos}
             radiusMeter={radiusMeter}
+            muatanTruk={muatanTruk}
+            onMuatanChange={setMuatanTruk}
             onQuickPickup={handleQuickPickup}
             onSkipOverdue={handleSkipOverdue}
-            onSelectTask={(taskId) => forceOpenTask(taskId)}
+            onOpenFullForm={(t) => {
+              const original = data.find((d) => d.id === t.id);
+              if (original) bukaForm(original);
+            }}
+            onSelectTarget={(taskId) => forceOpenTask(taskId)}
+            soundEnabled={soundEnabled}
+            onToggleSound={() => {
+              const next = !soundEnabled;
+              setSoundEnabled(next);
+              setVoiceEnabled(next);
+            }}
           />
 
-          {/* Gojek/Grab-Style Driver HUD: Multi-stop progress, Capacity, and Floating Target Card */}
-          {data.length > 0 ? (
-            <DriverTaskHUD
-              activeTask={activeTask || closestTask}
-              jarakMeter={activeTask ? activeDistance : closestDistance}
-              radiusMeter={radiusMeter}
-              totalTasks={data.length}
-              completedTasks={selesaiCount}
-              muatanTruk={muatanTruk}
-              onMuatanChange={setMuatanTruk}
-              onQuickPickup={handleQuickPickup}
-              onSkipOverdue={handleSkipOverdue}
-              onOpenFullForm={(t) => {
-                const original = data.find((d) => d.id === t.id);
-                if (original) bukaForm(original);
-              }}
-              onDismissActive={activeTask ? dismissActiveTask : undefined}
-            />
-          ) : (
+          {data.length === 0 && (
             <div className="bg-slate-900/90 backdrop-blur-md rounded-2xl p-4 border border-slate-800 text-center text-slate-300 text-xs space-y-1">
               <p className="font-bold text-white">
                 ℹ️ Tidak ada jadwal antrean untuk tanggal ini ({format(new Date(tanggal), "EEEE, d MMMM yyyy", { locale: id })})
