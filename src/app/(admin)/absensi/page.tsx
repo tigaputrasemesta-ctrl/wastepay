@@ -93,94 +93,121 @@ export default function AbsensiPage() {
   const hasSelesai = statusHariIni?.waktuSelesai != null;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between border-b-4 border-black pb-4">
-        <h1 className="text-4xl font-bold tracking-tight">ABSENSI PETUGAS</h1>
+    <div className="space-y-6 max-w-7xl mx-auto">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 mb-1">Absensi Petugas</h1>
+          <p className="text-sm text-slate-500 font-medium">Pencatatan presensi kerja dan jam operasional armada petugas</p>
+        </div>
         <Link
           href={`/absensi-cetak?bulan=${new Date().getMonth() + 1}&tahun=${new Date().getFullYear()}`}
           target="_blank"
-          className="shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-black text-white hover:bg-gray-800 px-4 py-2 rounded-none text-sm font-bold uppercase"
+          className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-xs hover:shadow active:scale-[0.98] transition-all flex items-center gap-2"
         >
-          🖨 Rekap Absensi
+          <span>🖨</span>
+          <span>Rekap Absensi</span>
         </Link>
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 border-4 border-red-600 p-4 font-bold uppercase text-sm">
+        <div className="bg-rose-50 text-rose-700 border border-rose-200 rounded-2xl p-4 text-sm font-medium">
           {error}
         </div>
       )}
 
       {/* Panel Clock In/Out */}
-      <div className="bg-yellow-50 border-4 border-black p-6 shadow-lg">
-        <h2 className="text-2xl font-black uppercase mb-4">STATUS HARI INI</h2>
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-base font-bold text-slate-900">Status Kehadiran Hari Ini</h2>
+          {hasMasuk && (
+            <span className="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200/60 rounded-full text-xs font-semibold inline-flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              Tercatat Hadir
+            </span>
+          )}
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <button
             onClick={() => handleAbsen("masuk")}
             disabled={hasMasuk || actionLoading}
-            className={`p-6 border-4 border-black font-black uppercase text-xl flex flex-col items-center justify-center gap-2 transition-transform ${
-              hasMasuk ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-green-400 hover:bg-green-500 hover:-translate-y-1 shadow-sm"
+            className={`p-6 rounded-2xl border font-bold text-base flex flex-col items-center justify-center gap-2 transition-all ${
+              hasMasuk
+                ? "bg-slate-50 border-slate-200 text-slate-400 cursor-not-allowed"
+                : "bg-emerald-600 hover:bg-emerald-500 text-white border-transparent shadow-sm hover:shadow active:scale-[0.98]"
             }`}
           >
-            <span>▶ MULAI KERJA</span>
-            {hasMasuk && <span className="text-xs">✅ SUDAH TERCATAT</span>}
+            <span className="text-xl">▶</span>
+            <span>Mulai Kerja (Clock In)</span>
+            {hasMasuk && <span className="text-xs text-emerald-600 font-semibold mt-1">✅ Sudah Tercatat Masuk</span>}
           </button>
           
           <button
             onClick={() => handleAbsen("selesai")}
             disabled={!hasMasuk || hasSelesai || actionLoading}
-            className={`p-6 border-4 border-black font-black uppercase text-xl flex flex-col items-center justify-center gap-2 transition-transform ${
-              !hasMasuk || hasSelesai ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-red-400 hover:bg-red-500 hover:-translate-y-1 shadow-sm"
+            className={`p-6 rounded-2xl border font-bold text-base flex flex-col items-center justify-center gap-2 transition-all ${
+              !hasMasuk || hasSelesai
+                ? "bg-slate-50 border-slate-200 text-slate-400 cursor-not-allowed"
+                : "bg-rose-600 hover:bg-rose-500 text-white border-transparent shadow-sm hover:shadow active:scale-[0.98]"
             }`}
           >
-            <span>⏹ SELESAI KERJA</span>
-            {hasSelesai && <span className="text-xs">✅ SUDAH TERCATAT</span>}
+            <span className="text-xl">⏹</span>
+            <span>Selesai Kerja (Clock Out)</span>
+            {hasSelesai && <span className="text-xs text-rose-600 font-semibold mt-1">✅ Sudah Selesai Tugas</span>}
           </button>
         </div>
-        <p className="text-xs font-bold uppercase mt-4 text-gray-600">
-          * Pastikan GPS (Lokasi) diaktifkan sebelum menekan tombol absen.
+        <p className="text-xs text-slate-500 font-medium mt-4 flex items-center gap-1.5">
+          <span>📍</span>
+          <span>Pastikan GPS (Layanan Lokasi) diaktifkan pada browser/perangkat sebelum menekan tombol absen.</span>
         </p>
       </div>
 
       {/* Riwayat Absensi */}
-      <div className="hm-card bg-white mt-8">
-        <h2 className="text-2xl font-black uppercase mb-6 border-b border-slate-200 pb-2">RIWAYAT ABSENSI</h2>
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/70 flex items-center justify-between">
+          <div>
+            <h2 className="font-bold text-slate-900 text-base">Riwayat Absensi</h2>
+            <p className="text-xs text-slate-500">Log waktu mulai dan selesai tugas seluruh petugas</p>
+          </div>
+          <span className="text-xs font-semibold text-slate-500">{data.length} Entri</span>
+        </div>
         
         {loading ? (
-          <p className="font-bold uppercase animate-pulse">Memuat data...</p>
+          <div className="p-8 text-center text-slate-400 font-medium text-xs">Memuat data absensi...</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-black text-white uppercase text-sm">
-                  <th className="p-3 border border-slate-200/80">Petugas</th>
-                  <th className="p-3 border border-slate-200/80">Waktu Masuk</th>
-                  <th className="p-3 border border-slate-200/80">Waktu Selesai</th>
-                  <th className="p-3 border border-slate-200/80">Status</th>
+                <tr className="bg-slate-50/80 text-slate-600 font-semibold text-xs border-b border-slate-200 uppercase tracking-wider">
+                  <th className="px-6 py-3.5">Petugas</th>
+                  <th className="px-6 py-3.5">Waktu Masuk</th>
+                  <th className="px-6 py-3.5">Waktu Selesai</th>
+                  <th className="px-6 py-3.5">Status</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-100">
                 {data.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="p-4 border border-slate-200/80 text-center font-bold uppercase text-gray-500">
+                    <td colSpan={4} className="px-6 py-8 text-center text-xs text-slate-400 font-medium">
                       Belum ada data absensi
                     </td>
                   </tr>
                 ) : (
                   data.map((row) => (
-                    <tr key={row.id} className="hover:bg-gray-50 text-sm font-bold uppercase">
-                      <td className="p-3 border border-slate-200/80">{row.petugas.nama}</td>
-                      <td className="p-3 border border-slate-200/80">
+                    <tr key={row.id} className="hover:bg-slate-50/80 transition-colors text-xs">
+                      <td className="px-6 py-3.5 font-semibold text-slate-900">{row.petugas.nama}</td>
+                      <td className="px-6 py-3.5 text-slate-600 font-medium">
                         {format(new Date(row.waktuMasuk), "dd MMM yyyy, HH:mm", { locale: id })}
                       </td>
-                      <td className="p-3 border border-slate-200/80">
+                      <td className="px-6 py-3.5 text-slate-600 font-medium">
                         {row.waktuSelesai 
                           ? format(new Date(row.waktuSelesai), "dd MMM yyyy, HH:mm", { locale: id })
-                          : "-"}
+                          : <span className="text-slate-400 italic">Sedang bertugas</span>}
                       </td>
-                      <td className="p-3 border border-slate-200/80">
-                        <span className={`px-2 py-1 border border-slate-200/80 ${row.status === 'hadir' ? 'bg-green-100 text-green-700' : 'bg-gray-100'}`}>
+                      <td className="px-6 py-3.5">
+                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold inline-block ${
+                          row.status === 'hadir' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60' : 'bg-slate-100 text-slate-600'
+                        }`}>
                           {row.status}
                         </span>
                       </td>

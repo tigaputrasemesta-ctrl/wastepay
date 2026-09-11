@@ -10,9 +10,9 @@ import type { PetugasPeta, KendaraanPeta, TransitPeta } from "./MapView";
 const MapView = dynamic(() => import("@/components/MapView"), {
   ssr: false,
   loading: () => (
-    <div className="h-full w-full flex items-center justify-center bg-[#0d0e10]">
-      <p className="font-display font-black uppercase tracking-[0.3em] text-green-400 animate-pulse">
-        MEMUAT PETA…
+    <div className="h-full w-full flex items-center justify-center bg-slate-950">
+      <p className="font-mono font-bold uppercase tracking-widest text-emerald-400 animate-pulse text-sm">
+        Memuat Peta Operasional…
       </p>
     </div>
   ),
@@ -122,7 +122,7 @@ export default function TvMap({ pelanggan, token }: Props) {
   });
 
   return (
-    <div className="relative w-screen h-[100dvh] bg-[#0d0e10] overflow-hidden">
+    <div className="relative w-screen h-[100dvh] bg-slate-950 overflow-hidden">
       <MapView
         pelanggan={pelangganPeta}
         komplain={komplainPosisi}
@@ -145,23 +145,23 @@ export default function TvMap({ pelanggan, token }: Props) {
 
       {/* ── Header overlay (layar besar) ── */}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-[1000] flex items-start justify-between gap-4 p-4 sm:p-6">
-        <div className="bg-black/70 border-2 border-white/20 px-5 py-3 backdrop-blur-sm">
+        <div className="bg-slate-950/85 rounded-2xl border border-white/15 px-5 py-3.5 backdrop-blur-md shadow-2xl">
           <div className="flex items-center gap-3">
-            <span className="w-3 h-3 rounded-full bg-green-400 animate-pulse shadow-[0_0_10px_#4ade80]" />
-            <h1 className="font-display font-black uppercase tracking-[0.25em] text-white text-xl sm:text-2xl leading-none">
+            <span className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse ring-4 ring-emerald-400/30" />
+            <h1 className="font-sans font-black uppercase tracking-wider text-white text-xl sm:text-2xl leading-none">
               Peta Operasional
             </h1>
           </div>
-          <p className="font-mono text-[11px] text-green-300/90 mt-2 uppercase tracking-[0.2em]">
+          <p className="font-mono text-[11px] text-emerald-400 mt-2 uppercase tracking-wider">
             UPS HERU · Kota Depok · LIVE MONITORING
           </p>
         </div>
 
-        <div className="bg-black/70 border-2 border-white/20 px-5 py-3 backdrop-blur-sm text-right">
-          <div className="font-display font-black text-white text-2xl sm:text-3xl leading-none tabular-nums">
+        <div className="bg-slate-950/85 rounded-2xl border border-white/15 px-5 py-3.5 backdrop-blur-md shadow-2xl text-right">
+          <div className="font-mono font-black text-white text-2xl sm:text-3xl leading-none tabular-nums">
             {jam}
           </div>
-          <div className="font-mono text-[11px] text-white/60 uppercase tracking-[0.2em] mt-1">
+          <div className="font-mono text-[11px] text-white/70 uppercase tracking-wider mt-1">
             {tanggal}
           </div>
         </div>
@@ -170,11 +170,11 @@ export default function TvMap({ pelanggan, token }: Props) {
       {/* ── Stats footer (layar besar) ── */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1000] flex flex-wrap items-center gap-2 p-4 sm:p-6">
         <Chip label="Pelanggan" value={pelangganPeta.length} color="text-white" dot="#e5e7eb" />
-        <Chip label="Petugas Online" value={petugasOnline} color="text-green-300" dot="#4ade80" />
-        <Chip label="Armada Online" value={kendaraanOnline} color="text-yellow-300" dot="#facc15" />
-        <Chip label="Pengaduan Baru" value={komplainBaru} color="text-red-300" dot="#ef4444" />
+        <Chip label="Petugas Online" value={petugasOnline} color="text-emerald-400" dot="#34d399" />
+        <Chip label="Armada Online" value={kendaraanOnline} color="text-amber-400" dot="#fbbf24" />
+        <Chip label="Pengaduan Baru" value={komplainBaru} color="text-rose-400" dot="#f87171" />
         {lastRefresh && (
-          <span className="font-mono text-[10px] text-white/40 uppercase tracking-wider bg-black/50 border border-white/10 px-2 py-1">
+          <span className="font-mono text-[10px] text-white/50 uppercase tracking-wider bg-slate-950/70 border border-white/10 rounded-full px-3 py-1.5 backdrop-blur-sm">
             update {new Date(lastRefresh).toLocaleTimeString("id-ID")}
           </span>
         )}
@@ -195,12 +195,12 @@ function Chip({
   dot: string;
 }) {
   return (
-    <span className="inline-flex items-center gap-2 bg-black/70 border-2 border-white/20 px-3 py-1.5 backdrop-blur-sm">
+    <span className="inline-flex items-center gap-2.5 bg-slate-950/85 rounded-2xl border border-white/15 px-3.5 py-2 backdrop-blur-md shadow-lg">
       <span className="w-2 h-2 rounded-full" style={{ background: dot }} />
-      <span className={`font-display font-black text-lg tabular-nums leading-none ${color}`}>
+      <span className={`font-mono font-black text-lg tabular-nums leading-none ${color}`}>
         {value}
       </span>
-      <span className="font-mono text-[10px] text-white/60 uppercase tracking-wider">{label}</span>
+      <span className="font-mono text-[10px] text-white/70 uppercase tracking-wider">{label}</span>
     </span>
   );
 }

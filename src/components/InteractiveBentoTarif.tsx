@@ -37,7 +37,7 @@ export default function InteractiveBentoTarif({ tarifList }: { tarifList: Katego
             onClick={() => setSelectedIdx(idx)}
             className={`px-4 py-2 rounded-xl text-xs font-mono whitespace-nowrap transition-all ${
               selectedIdx === idx
-                ? "bg-lime-400 text-[#090b0e] font-bold shadow-[0_0_15px_rgba(183,225,60,0.3)]"
+                ? "bg-lime-400 text-[#090b0e] font-bold shadow-md shadow-lime-400/20"
                 : "bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10"
             }`}
           >

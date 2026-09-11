@@ -26,10 +26,10 @@ type Pengangkutan = {
 };
 
 const STATUS_OPTIONS = [
-  { value: "terjadwal", label: "Terjadwal", color: "bg-sky-400/10 text-sky-400 border border-sky-500/30" },
-  { value: "diambil", label: "Diambil", color: "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" },
-  { value: "tidak_diangkut", label: "Tidak Diangkut", color: "bg-danger/10 text-red-400 border border-red-500/30" },
-  { value: "kosong", label: "Kosong", color: "bg-amber-400/10 text-amber-400 border border-amber-500/30" },
+  { value: "terjadwal", label: "Terjadwal", color: "bg-sky-50 text-sky-700 border border-sky-200" },
+  { value: "diambil", label: "Diambil", color: "bg-emerald-50 text-emerald-700 border border-emerald-200" },
+  { value: "tidak_diangkut", label: "Tidak Diangkut", color: "bg-rose-50 text-rose-700 border border-rose-200" },
+  { value: "kosong", label: "Kosong", color: "bg-amber-50 text-amber-700 border border-amber-200" },
 ];
 
 const JENIS_SAMPAH = [

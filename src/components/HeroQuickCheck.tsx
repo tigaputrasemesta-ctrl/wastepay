@@ -14,48 +14,46 @@ export default function HeroQuickCheck() {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* Header bar */}
-      <div className="flex items-center justify-between border-b border-[var(--neon-cyan)] pb-3">
+      <div className="flex items-center justify-between border-b border-slate-200/80 pb-3">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 bg-[var(--neon-pink)] animate-pulse shadow-[0_0_8px_var(--neon-pink)]" />
-          <span className="font-mono text-xs text-[var(--neon-cyan)] font-bold tracking-[0.2em] uppercase glitch-text">
-            CEK TAGIHAN KAGAK PAKE LAMA
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse ring-4 ring-emerald-500/20" />
+          <span className="text-xs font-bold text-slate-900 tracking-wider uppercase">
+            Cek Tagihan Cepat & Praktis
           </span>
         </div>
-        <span className="text-[9px] font-mono text-[var(--neon-yellow)] bg-[rgba(252,238,10,0.1)] px-2 py-1 border border-[var(--neon-yellow)] tracking-widest uppercase shadow-[0_0_5px_rgba(252,238,10,0.3)]">
-          {"// KHUSUS WARGA DEPOK"}
+        <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-1 border border-emerald-200 rounded-full">
+          Khusus Warga Depok
         </span>
       </div>
 
       {/* Quick Check Form */}
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3">
         <div>
-          <label className="block text-[10px] font-mono tracking-widest text-[var(--neon-cyan)] mb-2 uppercase">
-            &gt; KETIK KODE RUMAH LU DIMARI :
+          <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+            Ketik Kode Rumah / ID Pelanggan:
           </label>
           <div className="relative group">
             <input
               type="text"
               value={kode}
               onChange={(e) => setKode(e.target.value.toUpperCase())}
-              placeholder="CONTOH: DPK-001"
-              className="w-full bg-[rgba(0,243,255,0.02)] border border-[var(--neon-cyan)] px-4 py-3 text-sm font-mono text-white placeholder-[rgba(0,243,255,0.3)] focus:border-[var(--neon-pink)] focus:ring-1 focus:ring-[var(--neon-pink)] outline-none transition-all uppercase shadow-[inset_0_0_10px_rgba(0,243,255,0.1)]"
-              style={{ clipPath: "polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))" }}
+              placeholder="Contoh: DPK-001"
+              className="w-full bg-slate-50 border border-slate-200 px-4 py-3 text-sm rounded-2xl text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all uppercase font-medium"
             />
             <button
               type="submit"
-              className="absolute right-1 top-1 bottom-1 bg-[var(--neon-cyan)] hover:bg-[var(--neon-pink)] text-black font-mono text-xs font-bold px-4 transition-all uppercase hover:shadow-[0_0_15px_var(--neon-pink)]"
-              style={{ clipPath: "polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))" }}
+              className="absolute right-1.5 top-1.5 bottom-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 rounded-xl transition-all shadow-xs active:scale-98"
             >
-              CEK_COY 
+              Cek Tagihan
             </button>
           </div>
         </div>
 
         {/* Quick sample chips */}
-        <div className="flex items-center gap-2 flex-wrap text-[9px] font-mono text-slate-500 pt-1 uppercase tracking-widest">
-          <span>COBAIN KODE INI NGAB:</span>
+        <div className="flex items-center gap-2 flex-wrap text-xs text-slate-500 pt-1">
+          <span>Contoh kode:</span>
           {["DPK-001", "DPK-002", "DPK-003"].map((sample) => (
             <button
               key={sample}
@@ -64,9 +62,9 @@ export default function HeroQuickCheck() {
                 setKode(sample);
                 router.push(`/bayar?kode=${sample}`);
               }}
-              className="px-2 py-0.5 border border-slate-700 hover:border-[var(--neon-cyan)] text-slate-400 hover:text-[var(--neon-cyan)] transition-colors hover:shadow-[0_0_5px_var(--neon-cyan)] hover:bg-[rgba(0,243,255,0.1)]"
+              className="px-2.5 py-1 border border-slate-200 bg-white hover:border-emerald-300 hover:bg-emerald-50/50 text-slate-600 hover:text-emerald-700 rounded-lg text-xs font-mono font-medium transition-colors"
             >
-              [{sample}]
+              {sample}
             </button>
           ))}
         </div>
@@ -74,36 +72,30 @@ export default function HeroQuickCheck() {
 
       {/* Card Info Mockup */}
       <div className="pt-2">
-        <div className="relative bg-[rgba(0,0,0,0.5)] border border-[var(--neon-lime)] p-4 shadow-[0_0_10px_rgba(57,255,20,0.1)] before:content-[''] before:absolute before:-top-1 before:-left-1 before:w-2 before:h-2 before:bg-[var(--neon-lime)] before:shadow-[0_0_5px_var(--neon-lime)]" style={{ clipPath: "polygon(0 15px, 15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%)" }}>
-          
-          {/* Scanline inside card */}
-          <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(57,255,20,0.05)_50%)] bg-[length:100%_4px] pointer-events-none" />
-
-          <div className="relative z-10">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-[var(--neon-lime)] text-black flex items-center justify-center font-mono font-black text-xs shadow-[0_0_10px_var(--neon-lime)]" style={{ clipPath: "polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%)" }}>
-                  DB
-                </div>
-                <div>
-                  <p className="text-xs font-mono font-bold text-white uppercase tracking-widest">KARTU ANGGOTA LU</p>
-                  <p className="text-[8px] font-mono text-[var(--neon-lime)] uppercase tracking-[0.2em]">&gt; PENGELOLA SAMPAH DEPOK</p>
-                </div>
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-sm">
+                WP
               </div>
-              <span className="text-[9px] font-mono text-black font-bold bg-[var(--neon-lime)] px-2 py-0.5 shadow-[0_0_10px_var(--neon-lime)] animate-pulse">
-                [ NYALA TERUS ]
-              </span>
+              <div>
+                <p className="text-xs font-bold text-slate-900">Kartu Anggota WastePay</p>
+                <p className="text-[11px] text-emerald-700 font-medium">Pengelolaan Sampah Kota Depok</p>
+              </div>
             </div>
+            <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">
+              ● Layanan Aktif
+            </span>
+          </div>
 
-            <div className="grid grid-cols-2 gap-2 text-[10px] font-mono">
-              <div className="border border-slate-800 p-2 bg-[rgba(255,255,255,0.02)] border-l-[var(--neon-cyan)] border-l-2">
-                <span className="text-[8px] text-[var(--neon-cyan)] block uppercase mb-1">&gt; JADWAL ANGKUT LU</span>
-                <span className="text-white font-bold">2X / MINGGU, MANTAP</span>
-              </div>
-              <div className="border border-slate-800 p-2 bg-[rgba(255,255,255,0.02)] border-l-[var(--neon-pink)] border-l-2">
-                <span className="text-[8px] text-[var(--neon-pink)] block uppercase mb-1">&gt; STATUS IURAN COY</span>
-                <span className="text-white font-bold blink">BELOM BAYAR LU</span>
-              </div>
+          <div className="grid grid-cols-2 gap-3 text-xs">
+            <div className="border border-slate-100 p-3 bg-slate-50/70 rounded-xl">
+              <span className="text-[10px] text-slate-500 block font-semibold mb-1">JADWAL ANGKUT</span>
+              <span className="text-slate-900 font-bold">2× / Minggu (Rutin)</span>
+            </div>
+            <div className="border border-slate-100 p-3 bg-slate-50/70 rounded-xl">
+              <span className="text-[10px] text-slate-500 block font-semibold mb-1">METODE BAYAR</span>
+              <span className="text-emerald-700 font-bold">QRIS Instant Otomatis</span>
             </div>
           </div>
         </div>

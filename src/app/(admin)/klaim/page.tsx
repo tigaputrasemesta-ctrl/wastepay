@@ -110,30 +110,38 @@ export default function KlaimPage() {
   const isAdmin = role === "admin" || role === "superadmin";
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between border-b-4 border-black pb-4">
-        <h1 className="text-4xl font-bold tracking-tight">
-          {isAdmin ? "KONTROL KLAIM DANA" : "KLAIM DANA LAPANGAN"}
-        </h1>
+    <div className="space-y-6 max-w-7xl mx-auto">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 mb-1">
+            {isAdmin ? "Kontrol Klaim Dana Operasional" : "Klaim Dana Lapangan"}
+          </h1>
+          <p className="text-sm text-slate-500 font-medium">
+            {isAdmin ? "Persetujuan dan audit reimbursement pengeluaran armada lapangan" : "Formulir pengajuan penggantian dana BBM, servis, dan operasional"}
+          </p>
+        </div>
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 border-4 border-red-600 p-4 font-bold uppercase text-sm">
+        <div className="bg-rose-50 text-rose-700 border border-rose-200 rounded-2xl p-4 text-sm font-medium">
           {error}
         </div>
       )}
 
       {/* Form Pengajuan Klaim (Hanya untuk Petugas) */}
       {!isAdmin && (
-        <form onSubmit={handleSubmit} className="bg-white border-4 border-black p-6 shadow-lg">
-          <h2 className="text-xl font-black uppercase mb-4 border-b border-slate-200 pb-2">BUAT PENGAJUAN BARU</h2>
+        <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs">
+          <div className="border-b border-slate-200 pb-3 mb-5">
+            <h2 className="text-base font-bold text-slate-900">Buat Pengajuan Baru</h2>
+            <p className="text-xs text-slate-500">Lengkapi data klaim operasional armada</p>
+          </div>
           
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-widest mb-2">Kategori</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">Kategori Pengeluaran</label>
               <select 
                 value={kategori} onChange={(e) => setKategori(e.target.value)}
-                className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-black appearance-none uppercase"
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
               >
                 <option value="bbm">Bahan Bakar (BBM)</option>
                 <option value="perawatan">Perawatan / Bengkel / Tambal Ban</option>
@@ -143,125 +151,131 @@ export default function KlaimPage() {
             </div>
             
             <div>
-              <label className="block text-xs font-bold uppercase tracking-widest mb-2">Nominal (Rp)</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">Nominal (Rp)</label>
               <input 
                 type="number" required
                 value={nominal} onChange={(e) => setNominal(e.target.value)}
-                placeholder="CONTOH: 50000"
-                className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-black"
+                placeholder="Contoh: 50000"
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
               />
             </div>
             
             <div>
-              <label className="block text-xs font-bold uppercase tracking-widest mb-2">Keterangan / Rincian</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">Keterangan / Rincian</label>
               <textarea 
                 required
                 value={keterangan} onChange={(e) => setKeterangan(e.target.value)}
-                placeholder="Tuliskan keterangan detail..."
-                className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-black min-h-[100px]"
+                placeholder="Tuliskan rincian pengeluaran secara lengkap..."
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all min-h-[90px]"
               />
             </div>
 
             <button
               type="submit" disabled={submitting}
-              className="w-full hm-btn-red"
+              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-xl shadow-xs hover:shadow active:scale-[0.98] transition-all disabled:opacity-50"
             >
-              {submitting ? "MENGIRIM..." : "KIRIM PENGAJUAN SEKARANG"}
+              {submitting ? "Mengirim pengajuan..." : "Kirim Pengajuan Sekarang"}
             </button>
           </div>
         </form>
       )}
 
       {/* Daftar Klaim */}
-      <div className="hm-card bg-white mt-8">
-        <h2 className="text-2xl font-black uppercase mb-6 border-b border-slate-200 pb-2">
-          {isAdmin ? "MENUNGGU PERSETUJUAN & RIWAYAT" : "RIWAYAT KLAIM SAYA"}
-        </h2>
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden mt-8">
+        <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/70 flex items-center justify-between">
+          <div>
+            <h2 className="font-bold text-slate-900 text-base">
+              {isAdmin ? "Menunggu Persetujuan & Riwayat Klaim" : "Riwayat Pengajuan Saya"}
+            </h2>
+            <p className="text-xs text-slate-500">Daftar klaim yang masuk beserta status audit</p>
+          </div>
+          <span className="text-xs font-semibold text-slate-500">{data.length} Entri</span>
+        </div>
         
         {loading ? (
-          <p className="font-bold uppercase animate-pulse">Memuat data...</p>
+          <div className="p-8 text-center text-slate-400 font-medium text-xs">Memuat data klaim...</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-black text-white uppercase text-sm">
-                  {isAdmin && <th className="p-3 border border-slate-200/80">Petugas</th>}
-                  <th className="p-3 border border-slate-200/80">Tanggal</th>
-                  <th className="p-3 border border-slate-200/80">Kategori</th>
-                  <th className="p-3 border border-slate-200/80">Keterangan</th>
-                  <th className="p-3 border border-slate-200/80">Nominal</th>
-                  <th className="p-3 border border-slate-200/80">Status</th>
-                  {isAdmin && <th className="p-3 border border-slate-200/80">Aksi (Kontrol)</th>}
-                  <th className="p-3 border border-slate-200/80">Slip</th>
+                <tr className="bg-slate-50/80 text-slate-600 font-semibold text-xs border-b border-slate-200 uppercase tracking-wider">
+                  {isAdmin && <th className="px-5 py-3.5">Petugas</th>}
+                  <th className="px-5 py-3.5">Tanggal</th>
+                  <th className="px-5 py-3.5">Kategori</th>
+                  <th className="px-5 py-3.5">Keterangan</th>
+                  <th className="px-5 py-3.5">Nominal</th>
+                  <th className="px-5 py-3.5">Status</th>
+                  {isAdmin && <th className="px-5 py-3.5 text-center">Aksi (Kontrol)</th>}
+                  <th className="px-5 py-3.5 text-center">Slip</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-100">
                 {data.length === 0 ? (
                   <tr>
-                    <td colSpan={isAdmin ? 8 : 6} className="p-4 border border-slate-200/80 text-center font-bold uppercase text-gray-500">
+                    <td colSpan={isAdmin ? 8 : 6} className="px-5 py-8 text-center text-xs text-slate-400 font-medium">
                       Belum ada data klaim
                     </td>
                   </tr>
                 ) : (
                   data.map((row) => (
-                    <tr key={row.id} className="hover:bg-gray-50 text-sm font-bold uppercase">
-                      {isAdmin && <td className="p-3 border border-slate-200/80">{row.petugas.nama}</td>}
-                      <td className="p-3 border border-slate-200/80">
+                    <tr key={row.id} className="hover:bg-slate-50/80 transition-colors text-xs">
+                      {isAdmin && <td className="px-5 py-3.5 font-semibold text-slate-900">{row.petugas.nama}</td>}
+                      <td className="px-5 py-3.5 text-slate-600 font-medium">
                         {format(new Date(row.tanggal), "dd MMM yyyy", { locale: id })}
                       </td>
-                      <td className="p-3 border border-slate-200/80">{row.kategori.replace("_", " ")}</td>
-                      <td className="p-3 border border-slate-200/80">
-                        {row.keterangan}
+                      <td className="px-5 py-3.5 capitalize text-slate-700">{row.kategori.replace("_", " ")}</td>
+                      <td className="px-5 py-3.5 text-slate-600 max-w-[200px]">
+                        <div>{row.keterangan}</div>
                         {row.catatanAdmin && (
-                          <div className="mt-1 text-xs text-red-600 bg-red-50 p-1 border border-red-600">
+                          <div className="mt-1 text-xs text-rose-600 bg-rose-50 p-1.5 rounded-lg border border-rose-200">
                             Pesan Admin: {row.catatanAdmin}
                           </div>
                         )}
                       </td>
-                      <td className="p-3 border border-slate-200/80 font-black text-red-600">
+                      <td className="px-5 py-3.5 font-bold text-slate-900">
                         Rp {row.nominal.toLocaleString("id-ID")}
                       </td>
-                      <td className="p-3 border border-slate-200/80">
-                        <span className={`px-2 py-1 border border-slate-200/80 font-black text-[10px] ${
-                          row.status === 'disetujui' ? 'bg-green-100 text-green-700' : 
-                          row.status === 'ditolak' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-800'
+                      <td className="px-5 py-3.5">
+                        <span className={`px-2.5 py-0.5 rounded-full font-semibold text-[11px] inline-block capitalize ${
+                          row.status === 'disetujui' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60' : 
+                          row.status === 'ditolak' ? 'bg-rose-50 text-rose-700 border border-rose-200/60' : 'bg-amber-50 text-amber-800 border border-amber-200/60'
                         }`}>
                           {row.status}
                         </span>
                       </td>
                       {isAdmin && (
-                        <td className="p-3 border border-slate-200/80">
+                        <td className="px-5 py-3.5 text-center">
                           {row.status === "menunggu" ? (
-                            <div className="flex gap-2">
+                            <div className="flex justify-center gap-1.5">
                               <button 
                                 onClick={() => handleProses(row.id, "disetujui")}
                                 disabled={processingId === row.id}
-                                className="px-3 py-1 bg-green-500 text-white font-black hover:bg-green-600 border border-slate-200/80 shadow-xs"
+                                className="px-2.5 py-1 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-500 shadow-xs transition-all text-xs"
                               >
-                                TERIMA
+                                Terima
                               </button>
                               <button 
                                 onClick={() => handleProses(row.id, "ditolak")}
                                 disabled={processingId === row.id}
-                                className="px-3 py-1 bg-red-500 text-white font-black hover:bg-red-600 border border-slate-200/80 shadow-xs"
+                                className="px-2.5 py-1 bg-rose-50 text-rose-600 font-semibold rounded-lg hover:bg-rose-100 transition-all text-xs"
                               >
-                                TOLAK
+                                Tolak
                               </button>
                             </div>
                           ) : (
-                            <span className="text-xs font-bold text-gray-500">
-                              Oleh: {row.diperiksaBy?.nama}
+                            <span className="text-xs text-slate-400 font-medium">
+                              {row.diperiksaBy ? `Oleh: ${row.diperiksaBy.nama}` : "-"}
                             </span>
                           )}
                         </td>
                       )}
-                      <td className="p-3 border border-slate-200/80 text-center">
+                      <td className="px-5 py-3.5 text-center">
                         <Link
                           href={`/klaim-cetak/${row.id}`}
                           target="_blank"
-                          className="text-green-600 underline font-bold text-xs hover:text-green-700"
+                          className="text-emerald-600 hover:text-emerald-700 font-semibold text-xs transition-colors"
                         >
-                          CETAK
+                          Cetak ↗
                         </Link>
                       </td>
                     </tr>

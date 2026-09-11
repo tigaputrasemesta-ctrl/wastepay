@@ -14,9 +14,9 @@ type AuditLogItem = {
 };
 
 const AKSI_LABEL: Record<string, { label: string; cls: string }> = {
-  create: { label: "Buat", cls: "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" },
-  update: { label: "Ubah", cls: "bg-sky-400/10 text-sky-400 border border-sky-500/30" },
-  delete: { label: "Hapus", cls: "bg-danger/10 text-red-400 border border-red-500/30" },
+  create: { label: "Buat", cls: "bg-emerald-50 text-emerald-700 border border-emerald-200" },
+  update: { label: "Ubah", cls: "bg-sky-50 text-sky-700 border border-sky-200" },
+  delete: { label: "Hapus", cls: "bg-rose-50 text-rose-700 border border-rose-200" },
 };
 
 function formatWaktu(iso: string): string {
@@ -71,7 +71,7 @@ export default function AuditLogPage() {
         <select
           value={filterEntitas}
           onChange={(e) => setFilterEntitas(e.target.value)}
-          className="px-3 py-2 border border-slate-200/80 rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
+          className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
         >
           <option value="">Semua Entitas</option>
           {entitasList.map((e) => (
@@ -81,7 +81,7 @@ export default function AuditLogPage() {
         <select
           value={filterAksi}
           onChange={(e) => setFilterAksi(e.target.value)}
-          className="px-3 py-2 border border-slate-200/80 rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
+          className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
         >
           <option value="">Semua Aksi</option>
           <option value="create">Buat</option>
@@ -90,51 +90,51 @@ export default function AuditLogPage() {
         </select>
         <button
           onClick={() => fetchData()}
-          className="px-4 py-2 border border-slate-200/80 rounded-xl text-sm text-slate-700 font-medium hover:bg-slate-50/80 transition transition"
+          className="px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 shadow-xs hover:shadow active:scale-[0.98] transition-all"
         >
           Muat Ulang
         </button>
       </div>
 
       {/* Table */}
-      <div className="hm-card bg-white p-0 overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Waktu</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Pengguna</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Aksi</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Entitas</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">ID</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Detail</th>
+              <tr className="bg-slate-50/80 text-slate-600 font-semibold text-xs border-b border-slate-200 uppercase tracking-wider">
+                <th className="text-left px-4 py-3.5">Waktu</th>
+                <th className="text-left px-4 py-3.5">Pengguna</th>
+                <th className="text-left px-4 py-3.5">Aksi</th>
+                <th className="text-left px-4 py-3.5">Entitas</th>
+                <th className="text-left px-4 py-3.5">ID</th>
+                <th className="text-left px-4 py-3.5">Detail</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-100">
               {loading ? (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-400 font-bold">Memuat...</td></tr>
+                <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-400 font-medium text-xs">Memuat log audit...</td></tr>
               ) : logs.length === 0 ? (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-400 font-bold">Belum ada log</td></tr>
+                <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-400 font-medium text-xs">Belum ada log aktivitas</td></tr>
               ) : (
                 logs.map((log) => {
-                  const aksi = AKSI_LABEL[log.aksi] ?? { label: log.aksi, cls: "bg-gray-100 border border-slate-200/80 text-gray-600 font-bold" };
+                  const aksi = AKSI_LABEL[log.aksi] ?? { label: log.aksi, cls: "bg-slate-100 border border-slate-200 text-slate-700" };
                   let detail = log.dataBaru;
                   if (!detail && log.dataLama) detail = log.dataLama;
                   return (
-                    <tr key={log.id} className="border-b border-slate-200 hover:bg-slate-50/80 transition">
-                      <td className="px-4 py-3 text-gray-600 font-bold text-xs whitespace-nowrap">{formatWaktu(log.createdAt)}</td>
-                      <td className="px-4 py-3 text-gray-600 font-bold">{log.user?.nama || "—"}</td>
+                    <tr key={log.id} className="hover:bg-slate-50/80 transition-colors text-xs">
+                      <td className="px-4 py-3 text-slate-500 font-mono whitespace-nowrap">{formatWaktu(log.createdAt)}</td>
+                      <td className="px-4 py-3 font-semibold text-slate-900">{log.user?.nama || "—"}</td>
                       <td className="px-4 py-3">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${aksi.cls}`}>
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold ${aksi.cls}`}>
                           {aksi.label}
                         </span>
                       </td>
-                      <td className="px-4 py-3 font-medium text-black font-black">{log.entitas}</td>
-                      <td className="px-4 py-3 text-gray-600 font-bold">{log.entitasId}</td>
+                      <td className="px-4 py-3 font-medium text-slate-900">{log.entitas}</td>
+                      <td className="px-4 py-3 text-slate-500 font-mono">{log.entitasId}</td>
                       <td className="px-4 py-3">
                         <details className="text-xs">
-                          <summary className="cursor-pointer text-green-600 hover:text-green-600 font-medium">Lihat detail</summary>
-                          <pre className="mt-2 bg-slate-50 text-slate-700 font-semibold border border-slate-200/80 rounded-none p-2 text-[11px] text-gray-600 font-bold overflow-x-auto max-h-40">
+                          <summary className="cursor-pointer text-emerald-600 hover:text-emerald-700 font-medium">Lihat detail</summary>
+                          <pre className="mt-2 bg-slate-50 text-slate-700 border border-slate-200 rounded-xl p-3 text-[11px] font-mono overflow-x-auto max-h-40">
                             {detail || "—"}
                           </pre>
                         </details>

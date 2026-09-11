@@ -10,8 +10,8 @@ import { formatDate, formatRupiah } from "@/lib/utils";
 const PetaLokasi = dynamic(() => import("@/components/PetaLokasi"), {
   ssr: false,
   loading: () => (
-    <div className="h-64 w-full border border-slate-200/80 bg-[#e8f0e6] flex items-center justify-center">
-      <p className="text-xs font-black uppercase animate-pulse">MEMUAT PETA…</p>
+    <div className="h-64 w-full border border-slate-200/80 bg-slate-100 rounded-2xl flex items-center justify-center">
+      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider animate-pulse">Memuat Peta…</p>
     </div>
   ),
 });
@@ -56,8 +56,8 @@ const STATUS_LABEL: Record<string, string> = {
 function Info({ label, value }: { label: string; value: string | null | undefined }) {
   return (
     <div>
-      <p className="text-gray-600 font-bold text-xs uppercase tracking-wider">{label}</p>
-      <p className="text-sm text-black font-black mt-0.5 break-words">{value || "—"}</p>
+      <p className="text-slate-500 text-xs font-medium uppercase tracking-wider">{label}</p>
+      <p className="text-sm font-semibold text-slate-900 mt-1 break-words">{value || "—"}</p>
     </div>
   );
 }
@@ -84,17 +84,17 @@ export default function SurveiDetailPage() {
 
   if (loading) {
     return (
-      <div className="hm-card bg-white p-0 overflow-hidden p-10 text-center text-gray-400 font-bold font-mono">
-        MEMUAT…
+      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-10 text-center text-slate-400 font-medium">
+        Memuat data survei…
       </div>
     );
   }
 
   if (error || !data) {
     return (
-      <div className="hm-card bg-white p-0 overflow-hidden p-10 text-center">
-        <p className="font-bold tracking-tight text-2xl text-red-600">{error || "Tidak ditemukan"}</p>
-        <Link href="/survei" className="inline-block mt-4 text-sm text-green-600 hover:text-sky-300 font-bold underline">
+      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-10 text-center">
+        <p className="font-semibold text-xl text-rose-600">{error || "Tidak ditemukan"}</p>
+        <Link href="/survei" className="inline-block mt-4 text-sm text-emerald-600 hover:text-emerald-700 font-semibold underline">
           ← Kembali ke Survei
         </Link>
       </div>
@@ -109,16 +109,16 @@ export default function SurveiDetailPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <Link href="/survei" className="text-xs text-green-600 hover:text-sky-300 font-bold underline">
+          <Link href="/survei" className="text-xs text-emerald-600 hover:text-emerald-700 font-semibold underline">
             ← Kembali ke Survei
           </Link>
           <h1 className="text-2xl font-black text-slate-900 tracking-tight mt-2">{data.nama}</h1>
-          <p className="font-mono text-xs text-gray-400 font-bold mt-1">
+          <p className="font-mono text-xs text-slate-400 mt-1">
             {data.kodePelanggan} · daftar {formatDate(data.createdAt)}
           </p>
         </div>
-        <span className={`inline-flex items-center px-3 py-1 border border-slate-200/80 text-[11px] font-black uppercase ${
-          data.status === "aktif" ? "bg-green-400 text-black" : "bg-yellow-300 text-black"
+        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
+          data.status === "aktif" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-amber-50 text-amber-700 border border-amber-200"
         }`}>
           {status}
         </span>
@@ -126,60 +126,60 @@ export default function SurveiDetailPage() {
 
       {/* Foto + Peta */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="hm-card bg-white p-0 overflow-hidden p-4">
-          <p className="stencil text-green-600 mb-3">FOTO RUMAH</p>
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5">
+          <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wider mb-3">Foto Rumah</p>
           {data.fotoRumah ? (
-            <div className="relative h-64 w-full border border-slate-200/80 bg-gray-100 overflow-hidden">
+            <div className="relative h-64 w-full rounded-xl border border-slate-200/80 bg-slate-100 overflow-hidden">
               <Image src={data.fotoRumah} alt={`Foto rumah ${data.nama}`} fill className="object-cover" />
             </div>
           ) : (
-            <div className="h-64 w-full border border-slate-200/80 bg-[#f4f4f0] flex items-center justify-center text-gray-400 font-bold text-sm">
-              BELUM ADA FOTO
+            <div className="h-64 w-full rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 flex items-center justify-center text-slate-400 font-medium text-sm">
+              Belum Ada Foto
             </div>
           )}
         </div>
 
-        <div className="hm-card bg-white p-0 overflow-hidden p-4">
-          <p className="stencil text-green-600 mb-3">TITIK LOKASI (GPS)</p>
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5">
+          <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wider mb-3">Titik Lokasi (GPS)</p>
           {data.latitude != null && data.longitude != null ? (
             <div className="space-y-3">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div>
-                  <span className={`inline-flex items-center px-2 py-0.5 border border-slate-200/80 text-[10px] font-bold ${
-                    data.koordinatSumber === "manual" ? "bg-gray-100 text-gray-600" : "bg-green-400/10 text-green-600 border-black"
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                    data.koordinatSumber === "manual" ? "bg-slate-100 text-slate-600 border border-slate-200" : "bg-emerald-50 text-emerald-700 border border-emerald-200"
                   }`}>
                     {koordinatSumber}
                   </span>
                   {data.koordinatAkurasi ? (
-                    <span className="ml-2 text-xs text-green-600 font-bold">± {Math.round(data.koordinatAkurasi)} m</span>
+                    <span className="ml-2 text-xs text-emerald-600 font-medium">± {Math.round(data.koordinatAkurasi)} m</span>
                   ) : null}
                 </div>
                 <a
                   href={`https://www.google.com/maps?q=${data.latitude},${data.longitude}`}
                   target="_blank"
-                  className="inline-flex items-center gap-1 text-xs text-green-600 hover:text-sky-300 font-medium underline"
+                  className="inline-flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 font-medium underline"
                 >
                   Buka Google Maps ↗
                 </a>
               </div>
-              <p className="font-mono text-[11px] text-gray-500 font-bold">
+              <p className="font-mono text-xs text-slate-400">
                 {data.latitude.toFixed(6)}, {data.longitude.toFixed(6)}
               </p>
-              <div className="h-64 border border-slate-200/80 overflow-hidden">
+              <div className="h-64 rounded-xl border border-slate-200/80 overflow-hidden">
                 <PetaLokasi latitude={data.latitude} longitude={data.longitude} className="h-64 w-full" />
               </div>
             </div>
           ) : (
-            <div className="h-64 w-full border border-slate-200/80 bg-[#f4f4f0] flex items-center justify-center text-gray-400 font-bold text-sm">
-              BELUM ADA TITIK LOKASI
+            <div className="h-64 w-full rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 flex items-center justify-center text-slate-400 font-medium text-sm">
+              Belum Ada Titik Lokasi
             </div>
           )}
         </div>
       </div>
 
       {/* Informasi pendaftar */}
-      <div className="hm-card bg-white p-0 overflow-hidden p-5">
-        <h2 className="font-black text-black mb-4">Informasi Pendaftar</h2>
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+        <h2 className="font-bold text-slate-900 text-base mb-4">Informasi Pendaftar</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
           <Info label="No. WhatsApp" value={data.noTelepon} />
           <Info label="Kategori" value={data.kategori.replace(/_/g, " ")} />

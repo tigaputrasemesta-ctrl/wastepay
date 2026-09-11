@@ -128,7 +128,7 @@ export default function JadwalPage() {
         <select
           value={filterHari}
           onChange={(e) => setFilterHari(e.target.value)}
-          className="px-3 py-2 border border-slate-200/80 rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
+          className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
         >
           <option value="">Semua Hari</option>
           {HARI_LIST.map((h) => <option key={h} value={h}>{h}</option>)}
@@ -136,7 +136,7 @@ export default function JadwalPage() {
         <select
           value={filterRute}
           onChange={(e) => setFilterRute(e.target.value)}
-          className="px-3 py-2 border border-slate-200/80 rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
+          className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
         >
           <option value="">Semua Rute</option>
           {ruteList.map((r) => <option key={r.id} value={r.id}>{r.nama}</option>)}
@@ -144,34 +144,34 @@ export default function JadwalPage() {
       </div>
 
       {/* Table */}
-      <div className="hm-card bg-white p-0 overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Hari</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Pelanggan</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Rute</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Jam</th>
-                <th className="text-center px-4 py-3 font-medium text-gray-600 font-bold">Pengangkutan</th>
-                <th className="text-center px-4 py-3 font-medium text-gray-600 font-bold">Status</th>
-                <th className="text-right px-4 py-3 font-medium text-gray-600 font-bold">Aksi</th>
+              <tr className="bg-slate-50/80 text-slate-600 font-semibold text-xs border-b border-slate-200 uppercase tracking-wider">
+                <th className="text-left px-4 py-3.5">Hari</th>
+                <th className="text-left px-4 py-3.5">Pelanggan</th>
+                <th className="text-left px-4 py-3.5">Rute</th>
+                <th className="text-left px-4 py-3.5">Jam</th>
+                <th className="text-center px-4 py-3.5">Pengangkutan</th>
+                <th className="text-center px-4 py-3.5">Status</th>
+                <th className="text-right px-4 py-3.5">Aksi</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-100">
               {loading ? (
-                <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-400 font-bold">Memuat...</td></tr>
+                <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-400 font-medium text-xs">Memuat jadwal...</td></tr>
               ) : jadwal.length === 0 ? (
-                <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-400 font-bold">Belum ada jadwal</td></tr>
+                <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-400 font-medium text-xs">Belum ada jadwal</td></tr>
               ) : (
                 jadwal.map((j) => (
-                  <tr key={j.id} className="border-b border-slate-200 hover:bg-slate-50/80 transition">
-                    <td className="px-4 py-3">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-sky-400/10 text-sky-400 border border-sky-500/30">
+                  <tr key={j.id} className="hover:bg-slate-50/80 transition-colors text-xs">
+                    <td className="px-4 py-3.5">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
                         {j.hari}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3.5">
                       <div className="flex items-center gap-3">
                         {j.pelanggan.fotoRumah && (
                           <Image
@@ -180,20 +180,20 @@ export default function JadwalPage() {
                             unoptimized
                             width={48}
                             height={48}
-                            className="w-12 h-12 rounded-none object-cover border border-slate-200/80 shrink-0"
+                            className="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0"
                           />
                         )}
                         <div>
-                          <div className="font-medium text-black font-black">{j.pelanggan.nama}</div>
-                          <div className="text-xs text-gray-600 font-bold">{j.pelanggan.alamat}</div>
+                          <div className="font-semibold text-slate-900">{j.pelanggan.nama}</div>
+                          <div className="text-xs text-slate-500">{j.pelanggan.alamat}</div>
                           {j.pelanggan.patokanLokasi && (
-                            <div className="text-xs text-amber">📍 {j.pelanggan.patokanLokasi}</div>
+                            <div className="text-xs text-amber-700 font-medium">📍 {j.pelanggan.patokanLokasi}</div>
                           )}
                           {j.pelanggan.latitude && j.pelanggan.longitude ? (
                             <a
                               href={`https://www.google.com/maps?q=${j.pelanggan.latitude},${j.pelanggan.longitude}`}
                               target="_blank"
-                              className="text-xs text-green-600 hover:text-sky-300 inline-flex items-center gap-0.5"
+                              className="text-xs text-emerald-600 hover:text-emerald-700 font-medium inline-flex items-center gap-0.5"
                             >
                               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -254,23 +254,22 @@ export default function JadwalPage() {
 
       {/* Modal Form */}
       {showForm && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="hm-card bg-white p-0 overflow-hidden w-full max-w-lg">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-              <h2 className="font-semibold text-black font-black">{editing ? "Edit Jadwal" : "Tambah Jadwal"}</h2>
-              <button onClick={() => setShowForm(false)} className="text-gray-400 font-bold hover:text-gray-600 font-bold">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-md">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50/70">
+              <div>
+                <h2 className="font-bold text-slate-900 text-base">{editing ? "Edit Jadwal" : "Tambah Jadwal Baru"}</h2>
+                <p className="text-xs text-slate-500">Atur hari dan rute jemputan pelanggan</p>
+              </div>
+              <button onClick={() => setShowForm(false)} className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-lg leading-none">&times;</button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Pelanggan *</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Pelanggan *</label>
                 <select
                   value={form.pelangganId}
                   onChange={(e) => setForm({ ...form, pelangganId: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                   required
                 >
                   <option value="">Pilih Pelanggan</option>
@@ -282,11 +281,11 @@ export default function JadwalPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Rute *</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Rute *</label>
                 <select
                   value={form.ruteId}
                   onChange={(e) => setForm({ ...form, ruteId: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                   required
                 >
                   <option value="">Pilih Rute</option>
@@ -298,17 +297,17 @@ export default function JadwalPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Hari *</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Hari Jemputan *</label>
                 <div className="grid grid-cols-4 gap-2">
                   {HARI_LIST.map((h) => {
                     const checked = form.hari === h;
                     return (
                       <label
                         key={h}
-                        className={`flex items-center justify-center px-2 py-2 border rounded-none text-xs cursor-pointer transition ${
+                        className={`flex items-center justify-center px-2 py-2 border rounded-xl text-xs font-semibold cursor-pointer transition-all ${
                           checked
-                            ? "bg-green-400/15 border-vest text-green-600 font-semibold"
-                            : "bg-hm-card bg-white p-0 overflow-hidden border border-slate-200/80 text-gray-600 font-bold hover:bg-slate-50/80 transition"
+                            ? "bg-emerald-50 border-emerald-300 text-emerald-700 shadow-xs"
+                            : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
                         }`}
                       >
                         <input
@@ -325,12 +324,12 @@ export default function JadwalPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Jam (opsional)</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Jam Perkiraan (opsional)</label>
                 <input
                   type="time"
                   value={form.jam}
                   onChange={(e) => setForm({ ...form, jam: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-200/80 rounded-none text-sm"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                 />
               </div>
 
@@ -338,13 +337,13 @@ export default function JadwalPage() {
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="flex-1 px-4 py-2 border border-slate-200/80 rounded-xl text-sm text-slate-700 font-medium hover:bg-slate-50/80 transition"
+                  className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-sm text-slate-700 font-semibold transition-all"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all text-sm hover:bg-green-300"
+                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-xs hover:shadow active:scale-[0.98] transition-all text-sm font-semibold"
                 >
                   {editing ? "Simpan" : "Tambah"}
                 </button>

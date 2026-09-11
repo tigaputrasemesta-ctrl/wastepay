@@ -116,11 +116,11 @@ export default function LiveReport({ token }: Props) {
     : [];
 
   return (
-    <div className="w-screen h-[100dvh] bg-[#0d0e10] text-white overflow-hidden flex flex-col font-sans">
+    <div className="w-screen h-[100dvh] bg-slate-950 text-white overflow-hidden flex flex-col font-sans">
       {/* ── Header ── */}
       <header className="shrink-0 flex items-start justify-between gap-4 px-5 sm:px-8 pt-5 sm:pt-7 pb-3 border-b border-white/10">
         <div className="flex items-center gap-3">
-          <span className="w-3.5 h-3.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_12px_#ef4444]" />
+          <span className="w-3.5 h-3.5 rounded-full bg-rose-500 animate-pulse ring-4 ring-rose-500/20" />
           <h1 className="font-black uppercase tracking-[0.15em] text-xl sm:text-3xl leading-none">
             Live Report — Semua Aktivitas
           </h1>

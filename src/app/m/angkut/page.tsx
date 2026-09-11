@@ -23,10 +23,10 @@ type Tugas = {
 };
 
 const STATUS_META: Record<string, { label: string; cls: string }> = {
-  terjadwal: { label: "Terjadwal", cls: "bg-sky-400/15 text-sky-700 border-sky-500/40" },
-  diambil: { label: "Diambil", cls: "bg-green-600 text-white border-black" },
-  tidak_diangkut: { label: "Tidak Diangkut", cls: "bg-red-600 text-white border-black" },
-  kosong: { label: "Kosong", cls: "bg-amber-400 text-black border-black" },
+  terjadwal: { label: "Terjadwal", cls: "bg-sky-50 text-sky-700 border-sky-200" },
+  diambil: { label: "Diambil", cls: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  tidak_diangkut: { label: "Tidak Diangkut", cls: "bg-rose-50 text-rose-700 border-rose-200" },
+  kosong: { label: "Kosong", cls: "bg-amber-50 text-amber-700 border-amber-200" },
 };
 
 const JENIS_SAMPAH = ["organik", "anorganik", "b3", "campuran"];

@@ -19,7 +19,7 @@ const TESTIMONIALS: Testimonial[] = [
     area: "Sawangan, Depok",
     badge: "Warga Terverifikasi",
     initials: "BS",
-    color: "bg-emerald-300",
+    color: "bg-emerald-100 text-emerald-800",
   },
   {
     quote:
@@ -29,7 +29,7 @@ const TESTIMONIALS: Testimonial[] = [
     area: "Beji, Depok",
     badge: "Langganan 4 Tahun",
     initials: "PA",
-    color: "bg-yellow-300",
+    color: "bg-amber-100 text-amber-800",
   },
   {
     quote:
@@ -39,7 +39,7 @@ const TESTIMONIALS: Testimonial[] = [
     area: "Grand Depok City",
     badge: "Pelanggan Aktif",
     initials: "MD",
-    color: "bg-blue-300",
+    color: "bg-blue-100 text-blue-800",
   },
   {
     quote:
@@ -49,7 +49,7 @@ const TESTIMONIALS: Testimonial[] = [
     area: "Margonda Raya",
     badge: "Pelaku Usaha",
     initials: "MR",
-    color: "bg-rose-300",
+    color: "bg-rose-100 text-rose-800",
   },
 ];
 
@@ -106,7 +106,7 @@ export default function TestimonialsSection() {
               <div className="pt-4 border-t border-slate-200/60 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-11 h-11 rounded-2xl flex items-center justify-center font-extrabold text-sm text-slate-800 shadow-xs ${t.color}`}
+                    className={`w-11 h-11 rounded-2xl flex items-center justify-center font-extrabold text-sm shadow-xs ${t.color}`}
                   >
                     {t.initials}
                   </div>

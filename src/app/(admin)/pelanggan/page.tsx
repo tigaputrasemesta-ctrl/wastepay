@@ -236,7 +236,7 @@ export default function PelangganPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-8 border-b border-slate-200 pb-4">
         <div>
-          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-black leading-none mb-1">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">
             Pelanggan
           </h1>
           <p className="text-xs font-medium text-slate-500 mt-1">

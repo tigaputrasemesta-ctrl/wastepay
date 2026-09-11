@@ -119,29 +119,29 @@ export default function KendaraanPage() {
       </div>
 
       {/* Ringkasan */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
-        <div className="hm-card bg-white p-0 overflow-hidden p-4">
-          <p className="text-2xl font-bold tracking-tight text-black font-black">{kendaraan.filter((k) => k.aktif).length}</p>
-          <p className="stencil text-[10px] text-gray-400 font-bold mt-1">KENDARAAN AKTIF</p>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+          <p className="text-2xl font-extrabold tracking-tight text-slate-900">{kendaraan.filter((k) => k.aktif).length}</p>
+          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-1">KENDARAAN AKTIF</p>
         </div>
-        <div className="hm-card bg-white p-0 overflow-hidden p-4">
-          <p className="text-2xl font-bold tracking-tight text-black font-black">{totalDump}</p>
-          <p className="stencil text-[10px] text-amber mt-1">DUMP TRUCK</p>
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+          <p className="text-2xl font-extrabold tracking-tight text-amber-600">{totalDump}</p>
+          <p className="text-[11px] font-bold text-amber-600/80 uppercase tracking-wider mt-1">DUMP TRUCK</p>
         </div>
-        <div className="hm-card bg-white p-0 overflow-hidden p-4">
-          <p className="text-2xl font-bold tracking-tight text-black font-black">{totalPickup}</p>
-          <p className="stencil text-[10px] text-green-600 mt-1">PICKUP</p>
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+          <p className="text-2xl font-extrabold tracking-tight text-emerald-600">{totalPickup}</p>
+          <p className="text-[11px] font-bold text-emerald-600/80 uppercase tracking-wider mt-1">PICKUP</p>
         </div>
-        <div className="hm-card bg-white p-0 overflow-hidden p-4">
-          <p className="text-2xl font-bold tracking-tight text-black font-black">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+          <p className="text-2xl font-extrabold tracking-tight text-slate-900">
             {kendaraan.reduce((s, k) => s + (k._count?.pengangkutan ?? 0), 0)}
           </p>
-          <p className="stencil text-[10px] text-gray-400 font-bold mt-1">TOTAL ANGKUT</p>
+          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-1">TOTAL ANGKUT</p>
         </div>
       </div>
 
       {/* Filter */}
-      <div className="hm-card bg-white p-0 overflow-hidden p-3 mb-4 flex flex-wrap items-center gap-3">
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-4 mb-5 flex flex-wrap items-center gap-3 shadow-xs">
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
@@ -154,16 +154,16 @@ export default function KendaraanPage() {
             <option key={j.value} value={j.value}>{j.ikon} {j.label}</option>
           ))}
         </select>
-        <span className="ml-auto font-mono text-[10px] text-gray-400 font-bold">{tersaring.length} KENDARAAN</span>
+        <span className="ml-auto text-xs font-semibold text-slate-500">{tersaring.length} KENDARAAN</span>
       </div>
 
       {loading ? (
-        <div className="hm-card bg-white p-0 overflow-hidden p-8 text-center text-gray-400 font-bold font-mono">MEMUAT…</div>
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-8 text-center text-slate-400 font-medium">MEMUAT…</div>
       ) : (
-        <div className="hm-card bg-white p-0 overflow-hidden overflow-x-auto">
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              <tr className="bg-slate-50/70 text-slate-600 font-semibold border-b border-slate-200/80 text-xs uppercase tracking-wider">
                 <th className="text-left px-4 py-3">KENDARAAN</th>
                 <th className="text-left px-4 py-3">JENIS</th>
                 <th className="text-left px-4 py-3">KAPASITAS</th>
@@ -177,38 +177,38 @@ export default function KendaraanPage() {
               {tersaring.map((k) => {
                 const j = JENIS.find((x) => x.value === k.jenis) ?? JENIS[0];
                 return (
-                  <tr key={k.id} className="border-b border-slate-200/50 hover:bg-gray-100 border-b border-slate-100 transition">
+                  <tr key={k.id} className="border-b border-slate-100 hover:bg-slate-50/70 transition">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <span className="w-9 h-9 rounded-full bg-green-400/10 flex items-center justify-center text-lg shrink-0">{j.ikon}</span>
+                        <span className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200/60 flex items-center justify-center text-lg shrink-0">{j.ikon}</span>
                         <div>
-                          <p className="font-medium text-black font-black">{k.nama}</p>
-                          <p className="font-mono text-[10px] text-gray-400 font-bold">{k.platNomor ?? "—"}</p>
+                          <p className="font-semibold text-slate-900">{k.nama}</p>
+                          <p className="font-mono text-xs text-slate-500">{k.platNomor ?? "—"}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-gray-600 font-bold text-xs">{j.label}</td>
-                    <td className="px-4 py-3 text-gray-600 font-bold text-xs">{k.kapasitas ? `${k.kapasitas} kg` : "—"}</td>
-                    <td className="px-4 py-3 text-gray-600 font-bold text-xs">{k.petugas?.nama ?? "—"}</td>
-                    <td className="px-4 py-3 text-gray-600 font-bold text-xs">{k._count?.pengangkutan ?? 0}×</td>
+                    <td className="px-4 py-3 text-slate-600 text-xs">{j.label}</td>
+                    <td className="px-4 py-3 text-slate-600 text-xs">{k.kapasitas ? `${k.kapasitas} kg` : "—"}</td>
+                    <td className="px-4 py-3 text-slate-600 text-xs">{k.petugas?.nama ?? "—"}</td>
+                    <td className="px-4 py-3 text-slate-600 text-xs">{k._count?.pengangkutan ?? 0}×</td>
                     <td className="px-4 py-3">
                       <button
                         onClick={() => toggleAktif(k)}
-                        className={`text-[10px] font-mono px-2 py-1 rounded-none ${k.aktif ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30 font-medium" : "bg-gray-100 border border-slate-200/80 text-gray-600 font-bold border border-slate-200/80"}`}
+                        className={`text-xs font-semibold px-2.5 py-0.5 rounded-full transition-all ${k.aktif ? "bg-emerald-50 text-emerald-700 border border-emerald-200/60" : "bg-slate-100 text-slate-500 border border-slate-200"}`}
                       >
-                        {k.aktif ? "AKTIF" : "NONAKTIF"}
+                        {k.aktif ? "Aktif" : "Nonaktif"}
                       </button>
                     </td>
                     <td className="px-4 py-3 text-right whitespace-nowrap">
-                      <button onClick={() => openForm(k)} className="text-xs text-gray-600 font-bold hover:text-green-600 mr-3">Edit</button>
-                      <button onClick={() => hapus(k)} className="text-xs text-gray-600 font-bold hover:text-red-600">Hapus</button>
+                      <button onClick={() => openForm(k)} className="text-xs font-semibold text-slate-600 hover:text-emerald-600 mr-3 transition-colors">Edit</button>
+                      <button onClick={() => hapus(k)} className="text-xs font-semibold text-slate-600 hover:text-rose-600 transition-colors">Hapus</button>
                     </td>
                   </tr>
                 );
               })}
               {tersaring.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-gray-400 font-bold font-mono">Tidak ada kendaraan</td>
+                  <td colSpan={7} className="px-4 py-8 text-center text-slate-400 font-medium text-xs">Tidak ada kendaraan</td>
                 </tr>
               )}
             </tbody>
@@ -218,43 +218,46 @@ export default function KendaraanPage() {
 
       {/* Modal */}
       {show && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="hm-card bg-white p-0 overflow-hidden w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-              <h2 className="font-semibold text-black font-black">{edit ? "Edit Kendaraan" : "Tambah Kendaraan"}</h2>
-              <button onClick={() => setShow(false)} className="text-gray-400 font-bold hover:text-gray-600 font-bold">✕</button>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-md">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/70">
+              <div>
+                <h2 className="font-bold text-slate-900 text-base">{edit ? "Edit Kendaraan" : "Tambah Kendaraan Baru"}</h2>
+                <p className="text-xs text-slate-500">Kelola informasi armada pengangkut</p>
+              </div>
+              <button onClick={() => setShow(false)} className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-lg leading-none">&times;</button>
             </div>
             <form onSubmit={save} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Nama Kendaraan *</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Nama Kendaraan *</label>
                 <input type="text" value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} className="input text-sm" placeholder="Dump Truck 01" required />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Plat Nomor</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">Plat Nomor</label>
                   <input type="text" value={form.platNomor} onChange={(e) => setForm({ ...form, platNomor: e.target.value })} className="input text-sm" placeholder="B 1234 XYZ" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Kapasitas (kg)</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">Kapasitas (kg)</label>
                   <input type="number" value={form.kapasitas} onChange={(e) => setForm({ ...form, kapasitas: e.target.value })} className="input text-sm" />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Jenis *</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Jenis *</label>
                 <select value={form.jenis} onChange={(e) => setForm({ ...form, jenis: e.target.value })} className="input text-sm">
                   {JENIS.map((j) => <option key={j.value} value={j.value}>{j.ikon} {j.label}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Pengemudi</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Pengemudi</label>
                 <select value={form.petugasId} onChange={(e) => setForm({ ...form, petugasId: e.target.value })} className="input text-sm">
                   <option value="">— Belum ada —</option>
                   {petugasList.map((p) => <option key={p.id} value={p.id}>{p.nama}</option>)}
                 </select>
               </div>
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => setShow(false)} className="flex-1 px-4 py-2 border border-slate-200/80 rounded-xl text-sm text-slate-700 font-medium hover:bg-slate-50/80 transition">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all">{edit ? "Simpan" : "Tambah"}</button>
+                <button type="button" onClick={() => setShow(false)} className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-700 font-semibold hover:bg-slate-50 transition-all">Batal</button>
+                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-sm font-semibold shadow-xs hover:shadow active:scale-[0.98] transition-all">{edit ? "Simpan" : "Tambah"}</button>
               </div>
             </form>
           </div>

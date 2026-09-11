@@ -240,26 +240,28 @@
 }
 
 /* Table styles: when the table header had harsh bg-black text-white */
-table thead tr.bg-black,
-table thead tr {
-  background-color: rgb(248 250 252) !important;
-  color: rgb(71 85 105) !important;
-  border-bottom: 1px solid rgb(226 232 240) !important;
-}
+@media screen {
+  table thead tr.bg-black,
+  table thead tr {
+    background-color: rgb(248 250 252) !important;
+    color: rgb(71 85 105) !important;
+    border-bottom: 1px solid rgb(226 232 240) !important;
+  }
 
-table thead tr.bg-black th,
-table thead th {
-  color: rgb(71 85 105) !important;
-  font-weight: 600 !important;
-}
+  table thead tr.bg-black th,
+  table thead th {
+    color: rgb(71 85 105) !important;
+    font-weight: 600 !important;
+  }
 
-/* Soften harsh brutalist table borders */
-table tbody tr {
-  border-bottom: 1px solid rgb(241 245 249) !important;
-}
+  /* Soften harsh brutalist table borders */
+  table tbody tr {
+    border-bottom: 1px solid rgb(241 245 249) !important;
+  }
 
-table tbody td {
-  border-color: rgb(241 245 249) !important;
+  table tbody td {
+    border-color: rgb(241 245 249) !important;
+  }
 }
 
 /* Soften harsh yellow badges and highlight boxes */

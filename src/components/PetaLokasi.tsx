@@ -107,7 +107,7 @@ export default function PetaLokasi({
       zoom={15}
       scrollWheelZoom={scrollWheelZoom}
       className={`w-full ${className}`}
-      style={{ background: "#e8f0e6" }}
+      style={{ background: "#f8fafc" }}
     >
       <TileLayer
         attribution={tileConfig.attribution}

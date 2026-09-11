@@ -19,8 +19,8 @@ import { jarakMeter, formatJarak } from "@/lib/geo";
 const MapJemput = dynamic(() => import("@/components/MapJemput"), {
   ssr: false,
   loading: () => (
-    <div className="h-full w-full flex items-center justify-center bg-[#e8f0e6]">
-      <p className="font-black uppercase tracking-widest text-green-700 animate-pulse">MEMUAT PETA…</p>
+    <div className="h-full w-full flex items-center justify-center bg-slate-50">
+      <p className="font-bold text-xs uppercase tracking-wider text-emerald-600 animate-pulse">Memuat Peta…</p>
     </div>
   ),
 });

@@ -12,7 +12,7 @@ const MapView = dynamic(() => import("@/components/MapView"), {
   ssr: false,
   loading: () => (
     <div className="h-full w-full flex items-center justify-center bg-slate-50">
-      <p className="font-black uppercase tracking-widest text-green-600 font-bold animate-pulse">MEMUAT PETA…</p>
+      <p className="font-bold text-xs uppercase tracking-wider text-emerald-600 animate-pulse">Memuat Peta…</p>
     </div>
   ),
 });
@@ -506,10 +506,10 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                   value={cari}
                   onChange={(e) => setCari(e.target.value)}
                   placeholder="Cari nama / kode / alamat…"
-                  className="w-full bg-white border-b border-slate-200 border border-slate-200/80 focus:border-[#000] text-[#000] placeholder-[#000]/70 rounded-xl px-3 py-2 pl-9 text-xs outline-none transition-colors"
+                  className="w-full bg-white border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-slate-800 placeholder-slate-400 rounded-xl px-3 py-2 pl-9 text-xs outline-none transition-all"
                 />
                 <svg
-                  className="w-4 h-4 text-gray-600 font-bold absolute left-3 top-2.5 pointer-events-none"
+                  className="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -519,7 +519,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                 {cari && (
                   <button
                     onClick={() => setCari("")}
-                    className="absolute right-3 top-2.5 text-xs text-gray-600 font-bold hover:text-[#000] font-mono"
+                    className="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-700"
                   >
                     ✕
                   </button>
@@ -531,7 +531,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                 <select
                   value={filterWilayah}
                   onChange={(e) => setFilterWilayah(e.target.value)}
-                  className="bg-white border-b border-slate-200 border border-slate-200/80 focus:border-[#000] text-[#000] rounded-lg px-2 py-1.5 text-xs truncate outline-none cursor-pointer"
+                  className="bg-white border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-slate-700 rounded-xl px-2.5 py-2 text-xs truncate outline-none cursor-pointer"
                 >
                   <option value="semua">Semua Wilayah</option>
                   {wilayah.map((w) => (
@@ -543,7 +543,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="bg-white border-b border-slate-200 border border-slate-200/80 focus:border-[#000] text-[#000] rounded-lg px-2 py-1.5 text-xs outline-none cursor-pointer"
+                  className="bg-white border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-slate-700 rounded-xl px-2.5 py-2 text-xs outline-none cursor-pointer"
                 >
                   <option value="semua">Semua Status</option>
                   {Object.entries(STATUS_LABEL).map(([k, v]) => (
@@ -582,37 +582,37 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
               <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col">
                 {/* Section Top: Titik Lapak & TPS */}
                 {transit.filter((t) => t.aktif).length > 0 && (
-                  <div className="border-b border-slate-200 flex-shrink-0">
+                  <div className="border-b border-slate-200/80 flex-shrink-0">
                     <button
                       onClick={() => setBukaLapakList((b) => !b)}
-                      className="w-full px-4 py-3 bg-gray-100 flex items-center justify-between text-left hover:bg-gray-100 transition"
+                      className="w-full px-4 py-3 bg-amber-50/70 border-b border-amber-200/60 flex items-center justify-between text-left hover:bg-amber-50 transition"
                     >
-                      <span className="font-mono text-xs font-semibold text-[#facc15] flex items-center gap-2">
+                      <span className="text-xs font-bold text-amber-900 flex items-center gap-2">
                         <span>{bukaLapakList ? "▼" : "▶"}</span>
                         <span>▲ TITIK LAPAK & TPS ({transit.filter((t) => t.aktif).length})</span>
                       </span>
-                      <span className="text-[9px] font-mono text-black bg-[#facc15] px-1.5 py-0.5 rounded-none font-bold uppercase shadow-[0_0_5px_#facc15]">
+                      <span className="text-[10px] font-bold text-amber-800 bg-amber-200/60 border border-amber-300 px-2 py-0.5 rounded-full uppercase">
                         LAPAK READY
                       </span>
                     </button>
 
                     {bukaLapakList && (
-                      <div className="p-2 space-y-1 bg-gray-100 border-b border-slate-200">
+                      <div className="p-2 space-y-1 bg-amber-50/30 border-b border-amber-100">
                         {transit.filter((t) => t.aktif).map((t) => (
                           <button
                             key={`dir-t-top-${t.id}`}
                             onClick={() => setPusatPetugas([t.latitude, t.longitude])}
-                            className="w-full flex items-center gap-3 text-left bg-gray-100 hover:bg-gray-100 border border-[#facc15]/50 rounded-xl px-3 py-2 transition group"
+                            className="w-full flex items-center gap-3 text-left bg-white hover:bg-amber-50/50 border border-amber-200 rounded-xl px-3 py-2 transition group shadow-2xs"
                           >
-                            <span className="text-sm text-[#facc15] font-bold shrink-0">▲</span>
+                            <span className="text-sm text-amber-600 font-bold shrink-0">▲</span>
                             <div className="min-w-0 flex-1">
-                              <span className="block text-xs text-black font-black font-bold truncate">{t.nama}</span>
-                              {t.alamat && <span className="block text-[9px] font-mono text-gray-600 font-bold truncate mt-0.5">{t.alamat}</span>}
+                              <span className="block text-xs text-slate-900 font-semibold truncate">{t.nama}</span>
+                              {t.alamat && <span className="block text-[10px] text-slate-500 truncate mt-0.5">{t.alamat}</span>}
                             </div>
-                            <span className="text-[9px] font-mono text-black bg-[#facc15] px-1.5 py-0.5 rounded-none uppercase shrink-0 font-bold">
+                            <span className="text-[9px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full uppercase shrink-0">
                               LAPAK
                             </span>
-                            <span className="ml-auto text-xs font-mono text-[#facc15] shrink-0 group-hover:translate-x-1 transition-transform font-bold">
+                            <span className="ml-auto text-xs text-amber-500 shrink-0 group-hover:translate-x-1 transition-transform font-bold">
                               ▶
                             </span>
                           </button>
@@ -623,13 +623,13 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                 )}
 
                 {/* Sorting & Stats Header */}
-                <div className="px-4 py-2 bg-white border-b border-slate-200 border-b border-slate-200 flex items-center justify-between font-mono text-[10px] text-gray-600 font-bold flex-shrink-0">
-                  <span className="font-bold">TERTERAKAN: {daftarPetaUrut.length}</span>
+                <div className="px-4 py-2.5 bg-slate-50/80 border-b border-slate-200/80 flex items-center justify-between text-[11px] font-medium text-slate-500 flex-shrink-0">
+                  <span>Terpetakan: <strong className="text-slate-800">{daftarPetaUrut.length}</strong></span>
                   <div className="flex items-center gap-1.5">
-                    <span>SORT:</span>
+                    <span>Sort:</span>
                     <button
                       onClick={() => setUrutkan((s) => (s === "kode" ? "nama" : "kode"))}
-                      className="text-[#000] hover:underline font-bold"
+                      className="text-emerald-700 hover:text-emerald-800 font-bold hover:underline"
                     >
                       {urutkan === "kode" ? "KODE (A-Z)" : "NAMA (A-Z)"}
                     </button>
@@ -647,25 +647,25 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                         key={p.id}
                         onClick={() => pilihPelanggan(p.id)}
                         className={`w-full text-left px-4 py-3 flex items-center justify-between gap-3 transition-colors ${
-                          aktif ? "bg-gray-100 border-l-2 border-[#000]" : "hover:bg-gray-100"
+                          aktif ? "bg-emerald-50/60 border-l-4 border-emerald-500" : "hover:bg-slate-50/80"
                         }`}
                       >
                         <div className="flex items-center gap-3 min-w-0">
                           <span
-                            className="w-3 h-3 rotate-45 shrink-0 shadow-xs"
-                            style={{ background: warna, border: "2px solid #000" }}
+                            className="w-2.5 h-2.5 rounded-full shrink-0 shadow-2xs"
+                            style={{ background: warna }}
                           />
                           <div className="min-w-0">
-                            <span className="block text-xs font-bold text-black font-black truncate">{p.nama}</span>
-                            <span className="block font-mono text-[10px] text-gray-600 font-bold truncate mt-0.5">
-                              <span className="text-[#4ade80] font-bold">{p.kodePelanggan}</span> · {zona ? zona.kelurahan : p.wilayah?.nama ?? "—"}
+                            <span className="block text-xs font-semibold text-slate-900 truncate">{p.nama}</span>
+                            <span className="block text-[11px] text-slate-500 truncate mt-0.5">
+                              <span className="text-emerald-700 font-semibold font-mono">{p.kodePelanggan}</span> · {zona ? zona.kelurahan : p.wilayah?.nama ?? "—"}
                             </span>
                           </div>
                         </div>
-                        <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded-none shrink-0 uppercase font-bold text-black ${
-                          p.status === "aktif" ? "bg-[#4ade80] shadow-[0_0_5px_#4ade80]" :
-                          p.status === "calon" ? "bg-[#facc15] shadow-[0_0_5px_#facc15]" :
-                          "bg-gray-500 text-black font-black"
+                        <span className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full shrink-0 uppercase ${
+                          p.status === "aktif" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
+                          p.status === "calon" ? "bg-amber-50 text-amber-700 border border-amber-200" :
+                          "bg-slate-100 text-slate-600 border border-slate-200"
                         }`}>
                           {p.status}
                         </span>
@@ -673,15 +673,15 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                     );
                   })}
                   {daftarPetaUrut.length === 0 && (
-                    <div className="p-6 text-center text-xs text-gray-600 font-bold space-y-1">
-                      <p className="font-bold text-[#000]">Tidak ada pelanggan berkoordinat</p>
-                      <p className="text-[10px]">Silakan ubah kata pencarian atau filter.</p>
+                    <div className="p-6 text-center text-xs text-slate-500 space-y-1">
+                      <p className="font-semibold text-slate-700">Tidak ada pelanggan berkoordinat</p>
+                      <p className="text-[11px]">Silakan ubah kata pencarian atau filter.</p>
                     </div>
                   )}
                   {daftarPetaUrut.length > 50 && (
-                    <div className="p-3 text-center text-[10px] text-gray-500 font-mono font-bold bg-gray-50 border-t border-slate-200">
+                    <div className="p-3 text-center text-[11px] text-slate-500 font-medium bg-slate-50 border-t border-slate-200/80">
                       Menampilkan 50 dari {daftarPetaUrut.length} pelanggan.
-                      <br />Gunakan pencarian untuk menemukan spesifik pelanggan.
+                      <br />Gunakan pencarian untuk menemukan pelanggan spesifik.
                     </div>
                   )}
                 </div>
@@ -691,9 +691,9 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
             {/* ── Konten tab: Pengaduan ── */}
             {tab === "pengaduan" && (
               <div className="flex-1 flex flex-col min-h-0">
-                <div className="px-4 py-3 border-b border-black flex items-center justify-between bg-white flex-shrink-0">
-                  <p className="font-black uppercase tracking-widest text-[#ef4444] flex items-center gap-2 font-bold text-sm shadow-[0_0_10px_#ef4444]">
-                    <span className="w-2 h-2 rounded-full bg-[#ef4444] animate-blink inline-block shadow-[0_0_5px_#ef4444]" />
+                <div className="px-4 py-3 border-b border-slate-200/80 flex items-center justify-between bg-slate-50/70 flex-shrink-0">
+                  <p className="font-bold text-xs uppercase tracking-wider text-rose-600 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse inline-block" />
                     PENGADUAN LIVE
                   </p>
                   <button
@@ -701,12 +701,12 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                       setMuatKomplain(true);
                       ambilKomplain().finally(() => setMuatKomplain(false));
                     }}
-                    className="font-mono text-[10px] text-[#ef4444]/70 hover:text-[#ef4444] transition-colors border border-slate-200/80 px-3 py-1 rounded-none hover:bg-red-200 font-bold"
+                    className="text-xs text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 px-3 py-1.5 rounded-xl font-semibold transition-colors"
                   >
-                    {muatKomplain ? "MEMUAT…" : "REFRESH"}
+                    {muatKomplain ? "Memuat…" : "Refresh"}
                   </button>
                 </div>
-                <div className="px-3 py-2 border-b border-black flex flex-wrap gap-2 bg-white flex-shrink-0">
+                <div className="px-3 py-2 border-b border-slate-200/80 flex flex-wrap gap-2 bg-white flex-shrink-0">
                   {KOMPLAIN_TABS.map((t) => {
                     const n =
                       t.key === "semua"
@@ -716,10 +716,10 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                       <button
                         key={t.key}
                         onClick={() => setKomplainTab(t.key)}
-                        className={`font-mono text-[10px] px-2 py-1 border rounded-none transition-colors ${
+                        className={`text-xs px-3 py-1 rounded-xl transition-all font-semibold ${
                           komplainTab === t.key
-                            ? "border border-slate-200/80 text-black bg-red-400 font-bold shadow-[0_0_5px_#ef4444]"
-                            : "border border-slate-200/80 text-black bg-white hover:text-[#ef4444] hover:bg-[#ef4444]/5"
+                            ? "bg-rose-600 text-white shadow-xs"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                         }`}
                       >
                         {t.label} ({n})
@@ -732,25 +732,25 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                     <button
                       key={k.id}
                       onClick={() => pilihKomplain(k.id)}
-                      className={`w-full text-left px-4 py-3 flex items-start gap-4 transition-colors ${
-                        selectedKomplainId === k.id ? "bg-[#ef4444]/15 border-l-2 border-[#ef4444]" : "hover:bg-red-200"
+                      className={`w-full text-left px-4 py-3 flex items-start gap-3 transition-colors ${
+                        selectedKomplainId === k.id ? "bg-rose-50/70 border-l-4 border-rose-500" : "hover:bg-slate-50/80"
                       }`}
                     >
                       <span
-                        className="w-3 h-3 rotate-45 shrink-0 mt-1"
-                        style={{ background: KOMPLAIN_WARNA[k.status] ?? "#ef4444", border: "2px solid #000" }}
+                        className="w-2.5 h-2.5 rounded-full shrink-0 mt-1"
+                        style={{ background: KOMPLAIN_WARNA[k.status] ?? "#ef4444" }}
                       />
                       <span className="min-w-0 flex-1">
-                        <span className="block text-sm font-bold text-black font-black truncate">
+                        <span className="block text-xs font-semibold text-slate-900 truncate">
                           {k.pelanggan.nama}{" "}
-                          <span className="text-[#ef4444]/80 font-mono text-[10px] ml-1">
+                          <span className="text-rose-600 font-mono text-[10px] ml-1 font-semibold">
                             [{k.pelanggan.kodePelanggan}]
                           </span>
                         </span>
-                        <span className="block font-mono text-[11px] text-gray-600 font-bold truncate mt-1">
-                          {KOMPLAIN_LABEL[k.jenis] ?? k.jenis} · <span className="text-[#ef4444] font-bold">{k.status.toUpperCase()}</span>
+                        <span className="block text-[11px] text-slate-500 font-medium truncate mt-0.5">
+                          {KOMPLAIN_LABEL[k.jenis] ?? k.jenis} · <span className="text-rose-600 font-semibold">{k.status.toUpperCase()}</span>
                         </span>
-                        <span className="block font-mono text-[10px] text-[#000] mt-1">
+                        <span className="block text-[10px] text-slate-400 mt-0.5">
                           {new Date(k.createdAt).toLocaleString("id-ID", {
                             day: "2-digit",
                             month: "short",
@@ -762,13 +762,13 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                     </button>
                   ))}
                   {komplainFilter.length === 0 && (
-                    <p className="p-6 text-xs text-[#ef4444]/60 italic text-center">
+                    <p className="p-6 text-xs text-slate-400 italic text-center">
                       Tidak ada pengaduan {komplainTab !== "semua" ? `dengan status ${komplainTab}` : ""}.
                     </p>
                   )}
                 </div>
                 {lastRefresh && (
-                  <div className="px-4 py-2 border-t border-black font-mono text-[9px] text-[#ef4444]/60 text-right bg-white border-b border-slate-200">
+                  <div className="px-4 py-2 border-t border-slate-200/80 text-[10px] text-slate-400 text-right bg-slate-50/70">
                     UPDATE {new Date(lastRefresh).toLocaleTimeString("id-ID")} WIB (auto 15 dtk)
                   </div>
                 )}
@@ -778,12 +778,12 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
             {/* ── Konten tab: Rute ── */}
             {tab === "rute" && (
               <div className="flex-1 flex flex-col min-h-0">
-                <div className="px-4 py-3 border-b border-slate-200 space-y-2 bg-white flex-shrink-0">
-                  <p className="font-black uppercase tracking-widest text-[11px] text-gray-600 font-bold font-bold tracking-widest">PILIH RUTE PENGANGKUTAN</p>
+                <div className="px-4 py-3 border-b border-slate-200/80 space-y-2 bg-white flex-shrink-0">
+                  <p className="font-bold uppercase tracking-wider text-[11px] text-slate-700">PILIH RUTE PENGANGKUTAN</p>
                   <select
                     value={ruteId}
                     onChange={(e) => setRuteId(e.target.value)}
-                    className="bg-white border-b border-slate-200 border border-slate-200/80 focus:border-[#000] text-[#000] rounded-xl px-3 py-2 w-full text-xs outline-none cursor-pointer"
+                    className="bg-white border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-slate-700 rounded-xl px-3 py-2 w-full text-xs outline-none cursor-pointer"
                   >
                     <option value="semua">— Semua rute —</option>
                     {rute.map((r) => (
@@ -793,16 +793,16 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                     ))}
                   </select>
                   {ruteTerpilih && (
-                    <div className="font-mono text-[10px] text-[#4ade80] space-y-1 bg-[#4ade80]/5 border border-[#4ade80]/30 p-2.5 rounded-none shadow-[0_0_10px_rgba(57,255,20,0.1)] mt-2">
-                      <p className="font-bold text-[12px]">
+                    <div className="bg-emerald-50/60 border border-emerald-200 p-3 rounded-2xl space-y-1 text-xs text-emerald-900 mt-2">
+                      <p className="font-bold text-xs">
                         {ruteTerpilih.anggota.length} TITIK · {ruteTerpilih.hari}
                         {ruteTerpilih.jam ? ` · ${ruteTerpilih.jam}` : ""}
                       </p>
-                      {ruteTerpilih.petugas && <p>PETUGAS: <span className="text-black font-black font-bold">{ruteTerpilih.petugas}</span></p>}
+                      {ruteTerpilih.petugas && <p>PETUGAS: <span className="font-bold text-slate-900">{ruteTerpilih.petugas}</span></p>}
                       {ruteUrutPanel.length >= 2 && (
-                        <p className="text-[#4ade80]/70 pt-1 border-t border-[#4ade80]/20 mt-1">
+                        <p className="text-emerald-800 pt-1 border-t border-emerald-200/60 mt-1 text-[11px]">
                           EST. JARAK:{" "}
-                          <span className="text-[#facc15] font-bold text-[12px] drop-shadow-[0_0_5px_#facc15]">
+                          <span className="text-amber-700 font-bold">
                             {formatJarak(
                               ruteUrutPanel.reduce((a, x) => a + x.jarakM, 0)
                             )}
@@ -817,25 +817,23 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                   {ruteUrutPanel.map((x, i) => (
                     <div
                       key={x.anggota.id}
-                      className="px-4 py-3 flex items-center gap-3 hover:bg-gray-100 transition"
+                      className="px-4 py-3 flex items-center gap-3 hover:bg-slate-50/80 transition"
                     >
-                      <span className="w-7 h-7 rotate-45 border border-[#000]/60 flex items-center justify-center shrink-0 bg-gray-100 shadow-[0_0_5px_#000]">
-                        <span className="-rotate-45 font-mono text-[11px] font-bold text-[#000]">
-                          {String(i + 1).padStart(2, "0")}
-                        </span>
+                      <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center shrink-0">
+                        {String(i + 1).padStart(2, "0")}
                       </span>
-                      <span className="min-w-0 flex-1 pl-2">
-                        <span className="block text-sm font-bold text-black font-black truncate">{x.anggota.nama}</span>
-                        <span className="block font-mono text-[10px] text-gray-600 font-bold mt-1">
+                      <span className="min-w-0 flex-1 pl-1">
+                        <span className="block text-xs font-semibold text-slate-900 truncate">{x.anggota.nama}</span>
+                        <span className="block text-[11px] text-slate-500 mt-0.5">
                           {i === 0
-                            ? <span className="text-[#facc15] font-bold">🏁 TITIK AWAL</span>
-                            : `jarak dari titik sebelumnya: ${formatJarak(x.jarakM)}`}
+                            ? <span className="text-emerald-700 font-semibold">🏁 Titik Awal</span>
+                            : `Jarak dari titik sebelumnya: ${formatJarak(x.jarakM)}`}
                         </span>
                       </span>
                     </div>
                   ))}
                   {ruteUrutPanel.length === 0 && (
-                    <p className="p-6 text-xs text-gray-600 font-bold italic text-center">
+                    <p className="p-6 text-xs text-slate-400 italic text-center">
                       {ruteTerpilih
                         ? "Rute ini tidak punya titik berkoordinat."
                         : "Pilih rute untuk melihat urutan kunjungan."}
@@ -851,17 +849,13 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
         <div className="lg:col-span-4 space-y-4 flex flex-col h-full">
           
           {/* NO-GEO PANEL */}
-          <div
-            className="bg-white border border-slate-200/80 shadow-sm border border-[#ef4444]/50 relative overflow-hidden flex flex-col shadow-[0_0_15px_rgba(255,0,255,0.15)] flex-1 max-h-[300px]"
-            style={{ /* removed clipPath */ }}
-          >
-            <div className="absolute top-0 right-0 w-1.5 h-full bg-[#ef4444] shadow-[0_0_10px_#ef4444]"></div>
-            
-            <div className="px-4 py-3 bg-[#ef4444]/10 border-b border-black flex-shrink-0">
-              <span className="font-mono text-xs font-bold text-[#ef4444] flex items-center justify-between drop-shadow-[0_0_5px_#ef4444]">
-                <span className="flex items-center gap-2"><span className="animate-pulse">⚠️</span> NO-GEO ({tanpaKoordinatUrut.length})</span>
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs relative overflow-hidden flex flex-col flex-1 max-h-[300px]">
+            <div className="px-4 py-3 bg-rose-50/60 border-b border-rose-100 flex items-center justify-between flex-shrink-0">
+              <span className="text-xs font-bold text-rose-800 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                NO-GEO ({tanpaKoordinatUrut.length})
               </span>
-              <p className="text-[9px] font-mono text-[#ef4444]/70 mt-1">Pelanggan belum berkoordinat</p>
+              <span className="text-[10px] text-rose-600/80 font-medium">Belum berkoordinat</span>
             </div>
 
             <div className="divide-y divide-slate-100 bg-white flex-1 overflow-y-auto custom-scrollbar">
@@ -870,52 +864,47 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                   key={p.id}
                   onClick={() => pilihPelanggan(p.id)}
                   className={`w-full text-left px-4 py-2.5 flex items-center justify-between gap-3 transition-colors ${
-                    selectedId === p.id ? "bg-[#ef4444]/20 border-l-2 border-[#ef4444]" : "hover:bg-red-200"
+                    selectedId === p.id ? "bg-rose-50/70 border-l-4 border-rose-500" : "hover:bg-slate-50/80"
                   }`}
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <span className="w-3 h-3 border border-dashed border-[#ef4444]/70 shrink-0" />
+                    <span className="w-2.5 h-2.5 rounded-full border border-dashed border-rose-400 shrink-0" />
                     <div className="min-w-0">
-                      <span className="block text-xs font-bold text-black font-black truncate">{p.nama}</span>
-                      <span className="block font-mono text-[10px] text-[#ef4444]/90 truncate mt-0.5">
-                        <span className="text-[#ef4444] font-bold">{p.kodePelanggan}</span>
+                      <span className="block text-xs font-semibold text-slate-900 truncate">{p.nama}</span>
+                      <span className="block font-mono text-[10px] text-rose-600 font-semibold truncate mt-0.5">
+                        {p.kodePelanggan}
                       </span>
                     </div>
                   </div>
                 </button>
               ))}
               {tanpaKoordinatUrut.length === 0 && (
-                <p className="p-4 text-xs text-[#ef4444]/50 italic text-center">Semua terpetakan.</p>
+                <p className="p-4 text-xs text-slate-400 italic text-center">Semua terpetakan.</p>
               )}
             </div>
           </div>
 
           {/* ARMADA ONLINE PANEL */}
-          <div
-            className="bg-white border border-slate-200/80 shadow-sm border border-[#facc15]/50 relative overflow-hidden flex flex-col shadow-[0_0_15px_rgba(255,255,0,0.1)] flex-1 max-h-[300px]"
-            style={{ /* removed clipPath */ }}
-          >
-            <div className="px-4 py-3 bg-[#facc15]/10 border-b border-[#facc15]/30 flex-shrink-0">
-              <span className="font-mono text-xs font-bold text-[#facc15] flex items-center justify-between drop-shadow-[0_0_5px_#facc15]">
-                <span className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#facc15] animate-blink shadow-[0_0_5px_#facc15]" />
-                  GPS ONLINE ({totalOnline})
-                </span>
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs relative overflow-hidden flex flex-col flex-1 max-h-[300px]">
+            <div className="px-4 py-3 bg-amber-50/60 border-b border-amber-100 flex items-center justify-between flex-shrink-0">
+              <span className="text-xs font-bold text-amber-900 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                GPS ONLINE ({totalOnline})
               </span>
               {lastPetugas && (
-                <p className="text-[9px] font-mono text-[#facc15]/70 mt-1">UPDATE {new Date(lastPetugas).toLocaleTimeString("id-ID")} WIB</p>
+                <span className="text-[10px] text-amber-700/80 font-medium">{new Date(lastPetugas).toLocaleTimeString("id-ID")} WIB</span>
               )}
             </div>
 
-            <div className="divide-y divide-[#facc15]/20 bg-white flex-1 overflow-y-auto custom-scrollbar p-2 space-y-3">
+            <div className="divide-y divide-slate-100 bg-white flex-1 overflow-y-auto custom-scrollbar p-2 space-y-3">
               {petugas.length === 0 && kendaraan.length === 0 && (
-                <p className="p-4 text-xs text-[#facc15]/50 italic text-center">Tidak ada armada/petugas online.</p>
+                <p className="p-4 text-xs text-slate-400 italic text-center">Tidak ada armada/petugas online.</p>
               )}
               
               {/* Petugas Tracker */}
               {petugas.length > 0 && (
                 <div className="space-y-1.5">
-                  <p className="font-mono text-[9px] text-[#facc15]/90 px-2 font-bold tracking-widest border-b border-[#facc15]/20 pb-1">👤 PETUGAS</p>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 pb-1 border-b border-slate-100">👤 PETUGAS</p>
                   {petugas.map((p) => {
                     const jabat = (p.jabatan || "").split(",").filter(Boolean);
                     const online = isOnline(p.updatedAt);
@@ -923,20 +912,20 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                       <button
                         key={`dir-${p.petugasId}`}
                         onClick={() => setPusatPetugas([p.latitude, p.longitude])}
-                        className="w-full flex items-center gap-2 text-left bg-[#facc15]/5 hover:bg-[#facc15]/20 border border-[#facc15]/30 rounded-xl px-3 py-2 transition group"
+                        className="w-full flex items-center gap-2 text-left bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 rounded-xl px-3 py-2 transition group shadow-2xs"
                       >
                         <span
-                          className={`w-2.5 h-2.5 rounded-full shrink-0 shadow-[0_0_5px_#4ade80] ${
-                            online ? "bg-[#4ade80] animate-blink" : "bg-gray-400"
+                          className={`w-2 h-2 rounded-full shrink-0 ${
+                            online ? "bg-emerald-500 animate-pulse" : "bg-slate-300"
                           }`}
                         />
-                        <span className="text-xs text-black font-black font-bold truncate flex-1">{p.nama}</span>
-                        <span className="text-[9px] font-mono text-black bg-[#facc15] px-1.5 py-0.5 rounded-none uppercase shrink-0 font-bold">
+                        <span className="text-xs font-semibold text-slate-900 truncate flex-1">{p.nama}</span>
+                        <span className="text-[10px] font-semibold text-slate-600 bg-slate-200/70 px-2 py-0.5 rounded-full uppercase shrink-0">
                           {jabat.map((j) => j.slice(0, 3)).join("·") || "PTG"}
                         </span>
                         <span
-                          className={`text-[9px] font-mono shrink-0 font-bold ${
-                            online ? "text-[#4ade80]" : "text-gray-500"
+                          className={`text-[10px] font-semibold shrink-0 ${
+                            online ? "text-emerald-700" : "text-slate-400"
                           }`}
                         >
                           {online ? "ONLINE" : `offline ${formatWaktuRelatifPeta(p.updatedAt)}`} ▶
@@ -950,26 +939,26 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
               {/* Kendaraan Armada */}
               {kendaraan.length > 0 && (
                 <div className="space-y-1.5">
-                  <p className="font-mono text-[9px] text-[#facc15]/90 px-2 font-bold tracking-widest border-b border-[#facc15]/20 pb-1">🚛 KENDARAAN</p>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 pb-1 border-b border-slate-100">🚛 KENDARAAN</p>
                   {kendaraan.map((k) => {
                     const online = isOnline(k.updatedAt);
                     return (
                       <button
                         key={`dir-k-${k.kendaraanId}`}
                         onClick={() => setPusatPetugas([k.latitude, k.longitude])}
-                        className="w-full flex items-center gap-2 text-left bg-[#facc15]/5 hover:bg-[#facc15]/20 border border-[#facc15]/30 rounded-xl px-3 py-2 transition group"
+                        className="w-full flex items-center gap-2 text-left bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 rounded-xl px-3 py-2 transition group shadow-2xs"
                       >
                         <span className="text-sm shrink-0">{k.jenis === "dump_truck" ? "🚛" : "🛺"}</span>
-                        <span className="text-xs text-black font-black font-bold truncate flex-1">
+                        <span className="text-xs font-semibold text-slate-900 truncate flex-1">
                           {k.nama}
-                          {k.platNomor ? <span className="font-mono text-[9px] text-[#facc15]/80 ml-1">[{k.platNomor}]</span> : null}
+                          {k.platNomor ? <span className="font-mono text-[10px] text-slate-500 ml-1">[{k.platNomor}]</span> : null}
                         </span>
-                        <span className="text-[9px] font-mono text-black bg-[#facc15] px-1.5 py-0.5 rounded-none uppercase shrink-0 font-bold">
+                        <span className="text-[10px] font-semibold text-slate-600 bg-slate-200/70 px-2 py-0.5 rounded-full uppercase shrink-0">
                           {k.jenis === "dump_truck" ? "DUMP" : k.jenis === "pickup" ? "PICKUP" : "GEROBAK"}
                         </span>
                         <span
-                          className={`text-[9px] font-mono shrink-0 font-bold ${
-                            online ? "text-[#4ade80]" : "text-gray-500"
+                          className={`text-[10px] font-semibold shrink-0 ${
+                            online ? "text-emerald-700" : "text-slate-400"
                           }`}
                         >
                           {online ? "ONLINE" : `offline ${formatWaktuRelatifPeta(k.updatedAt)}`} ▶

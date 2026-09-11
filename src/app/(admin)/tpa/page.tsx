@@ -96,7 +96,7 @@ export default function TpaPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-black text-slate-900 tracking-tight">TPA</h1>
-          <p className="text-sm text-gray-600 font-bold mt-1">Tempat Pemrosesan Akhir sampah</p>
+          <p className="text-sm text-slate-500 font-normal mt-1">Tempat Pemrosesan Akhir sampah</p>
         </div>
         <button
           onClick={openCreate}
@@ -110,33 +110,33 @@ export default function TpaPage() {
       </div>
 
       {/* Desktop Table */}
-      <div className="hm-card bg-white p-0 overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Nama</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Alamat</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600 font-bold">Kota</th>
-                <th className="text-right px-4 py-3 font-medium text-gray-600 font-bold">Jarak (km)</th>
-                <th className="text-center px-4 py-3 font-medium text-gray-600 font-bold">Status</th>
-                <th className="text-center px-4 py-3 font-medium text-gray-600 font-bold">Aksi</th>
+              <tr className="bg-slate-50/70 text-slate-600 font-semibold border-b border-slate-200/80 text-xs uppercase tracking-wider">
+                <th className="text-left px-4 py-3">Nama</th>
+                <th className="text-left px-4 py-3">Alamat</th>
+                <th className="text-left px-4 py-3">Kota</th>
+                <th className="text-right px-4 py-3">Jarak (km)</th>
+                <th className="text-center px-4 py-3">Status</th>
+                <th className="text-center px-4 py-3">Aksi</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-400 font-bold">Memuat...</td></tr>
+                <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-400 font-medium">Memuat...</td></tr>
               ) : data.length === 0 ? (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-400 font-bold">Belum ada TPA</td></tr>
+                <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-400 font-medium">Belum ada TPA</td></tr>
               ) : (
                 data.map((t) => (
-                  <tr key={t.id} className="border-b border-slate-200 hover:bg-slate-50/80 transition">
-                    <td className="px-4 py-3 font-medium text-black font-black">{t.nama}</td>
-                    <td className="px-4 py-3 text-gray-600 font-bold max-w-xs truncate">{t.alamat || "-"}</td>
-                    <td className="px-4 py-3 text-gray-600 font-bold">{t.kota || "-"}</td>
-                    <td className="px-4 py-3 text-right text-gray-600 font-bold">{t.jarak ? `${t.jarak} km` : "-"}</td>
+                  <tr key={t.id} className="border-b border-slate-100 hover:bg-slate-50/70 transition">
+                    <td className="px-4 py-3 font-semibold text-slate-900">{t.nama}</td>
+                    <td className="px-4 py-3 text-slate-600 max-w-xs truncate">{t.alamat || "-"}</td>
+                    <td className="px-4 py-3 text-slate-600">{t.kota || "-"}</td>
+                    <td className="px-4 py-3 text-right text-slate-600">{t.jarak ? `${t.jarak} km` : "-"}</td>
                     <td className="px-4 py-3 text-center">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${t.aktif ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" : "bg-gray-100 border border-slate-200/80 text-gray-600 font-bold border border-slate-200/80"}`}>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${t.aktif ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-slate-100 text-slate-600 border border-slate-200"}`}>
                         {t.aktif ? "Aktif" : "Nonaktif"}
                       </span>
                     </td>
@@ -144,7 +144,7 @@ export default function TpaPage() {
                       <div className="flex items-center justify-center gap-1">
                         <button
                           onClick={() => openEdit(t)}
-                          className="p-1.5 text-gray-600 font-bold hover:bg-slate-50/80 transition hover:text-sky-300 rounded-none transition"
+                          className="p-1.5 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all"
                           title="Edit"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,7 +153,7 @@ export default function TpaPage() {
                         </button>
                         <button
                           onClick={() => setDeleteTarget(t)}
-                          className="p-1.5 text-red-600 hover:bg-danger/10 rounded-none transition"
+                          className="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
                           title="Hapus"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -173,21 +173,21 @@ export default function TpaPage() {
       {/* Mobile Card View */}
       <div className="md:hidden space-y-3 mt-4">
         {data.map((t) => (
-          <div key={t.id} className="hm-card bg-white p-0 overflow-hidden p-4">
+          <div key={t.id} className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="font-semibold text-black font-black">{t.nama}</h3>
-              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${t.aktif ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" : "bg-gray-100 border border-slate-200/80 text-gray-600 font-bold border border-slate-200/80"}`}>
+              <h3 className="font-semibold text-slate-900">{t.nama}</h3>
+              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${t.aktif ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-slate-100 text-slate-600 border border-slate-200"}`}>
                 {t.aktif ? "Aktif" : "Nonaktif"}
               </span>
             </div>
-            <div className="text-xs text-gray-600 font-bold space-y-1">
+            <div className="text-xs text-slate-600 space-y-1">
               {t.alamat && <p>📍 {t.alamat}</p>}
               {t.kota && <p>🏙️ {t.kota}</p>}
               {t.jarak && <p>📏 {t.jarak} km</p>}
             </div>
             <div className="flex gap-2 mt-3">
-              <button onClick={() => openEdit(t)} className="flex-1 text-center text-sm bg-gray-100 border border-slate-200/80 border border-slate-200/80 text-black font-black hover:border-vest hover:text-green-600 py-2 rounded-none transition">Edit</button>
-              <button onClick={() => setDeleteTarget(t)} className="flex-1 text-center text-sm bg-danger/10 border border-danger/30 text-red-400 py-2 rounded-none hover:bg-danger/20 transition">Hapus</button>
+              <button onClick={() => openEdit(t)} className="flex-1 text-center text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl transition-all">Edit</button>
+              <button onClick={() => setDeleteTarget(t)} className="flex-1 text-center text-xs font-semibold bg-rose-50 hover:bg-rose-100 text-rose-700 py-2.5 rounded-xl transition-all">Hapus</button>
             </div>
           </div>
         ))}
@@ -195,11 +195,11 @@ export default function TpaPage() {
 
       {/* Form Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="hm-card bg-white p-0 overflow-hidden w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-              <h2 className="font-semibold text-black font-black">{editing ? "Edit TPA" : "Tambah TPA"}</h2>
-              <button onClick={() => { setShowForm(false); setEditing(null); }} className="text-gray-400 font-bold hover:text-gray-600 font-bold">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-md">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/70">
+              <h2 className="font-bold text-slate-900 text-base">{editing ? "Edit TPA" : "Tambah TPA"}</h2>
+              <button onClick={() => { setShowForm(false); setEditing(null); }} className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -207,26 +207,26 @@ export default function TpaPage() {
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Nama TPA *</label>
-                <input type="text" value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" required />
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Nama TPA *</label>
+                <input type="text" value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all" required />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Alamat</label>
-                <textarea value={form.alamat} onChange={(e) => setForm({ ...form, alamat: e.target.value })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" rows={2} />
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Alamat</label>
+                <textarea value={form.alamat} onChange={(e) => setForm({ ...form, alamat: e.target.value })} className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all" rows={2} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Kota</label>
-                  <input type="text" value={form.kota} onChange={(e) => setForm({ ...form, kota: e.target.value })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" />
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">Kota</label>
+                  <input type="text" value={form.kota} onChange={(e) => setForm({ ...form, kota: e.target.value })} className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Jarak (km)</label>
-                  <input type="number" step="0.1" value={form.jarak} onChange={(e) => setForm({ ...form, jarak: e.target.value })} className="w-full px-3 py-2 border border-slate-200/80 rounded-none focus:outline-none focus:ring-2 focus:ring-black text-sm" placeholder="0" />
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">Jarak (km)</label>
+                  <input type="number" step="0.1" value={form.jarak} onChange={(e) => setForm({ ...form, jarak: e.target.value })} className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all" placeholder="0" />
                 </div>
               </div>
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="flex-1 px-4 py-2 border border-slate-200/80 rounded-xl text-sm text-slate-700 font-medium hover:bg-slate-50/80 transition">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2 shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all text-sm hover:bg-green-300">{editing ? "Simpan" : "Tambah"}</button>
+                <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-700 font-semibold hover:bg-slate-50 transition-all">Batal</button>
+                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-xs hover:shadow active:scale-[0.98] transition-all text-sm font-semibold">{editing ? "Simpan" : "Tambah"}</button>
               </div>
             </form>
           </div>

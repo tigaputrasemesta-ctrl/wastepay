@@ -178,14 +178,14 @@ export default function LacakLokasi({
   };
 
   return (
-    <div className="panel p-4 flex flex-wrap items-center gap-4">
+    <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs flex flex-wrap items-center gap-4">
       <div className="flex items-center gap-3 min-w-0">
-        <span className="w-10 h-10 rounded-full bg-vest/10 flex items-center justify-center text-vest font-semibold text-xs shrink-0">
+        <span className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-800 font-bold text-xs shrink-0">
           {profil.nama.charAt(0).toUpperCase()}
         </span>
         <div className="min-w-0">
-          <p className="text-sm font-medium text-bone truncate">{profil.nama}</p>
-          <p className="text-[11px] text-bone-faint font-mono">
+          <p className="text-sm font-semibold text-slate-900 truncate">{profil.nama}</p>
+          <p className="text-xs text-slate-500 font-medium">
             {jabat.map((j) => j.toUpperCase()).join(" · ") || "PETUGAS"}
           </p>
         </div>
@@ -200,7 +200,7 @@ export default function LacakLokasi({
                 setKendaraanId(e.target.value);
                 kendaraanIdRef.current = e.target.value;
               }}
-              className="input !w-auto text-sm py-2"
+              className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
             >
               <option value="">— Pilih kendaraan yang dikendarai —</option>
               {kendaraan.map((k) => (
@@ -212,42 +212,42 @@ export default function LacakLokasi({
             </select>
           )}
           {lacak && kendaraanTerpilih && (
-            <span className="font-mono text-[11px] text-amber shrink-0">
+            <span className="text-xs text-amber-700 font-semibold shrink-0">
               🚛 {kendaraanTerpilih.nama}
               {kendaraanTerpilih.platNomor ? ` · ${kendaraanTerpilih.platNomor}` : ""}
             </span>
           )}
           <button
             onClick={lacak ? hentikan : mulai}
-            className={`chamfer-sm px-4 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2 ${
+            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-2 ${
               lacak
-                ? "bg-danger text-white hover:bg-danger/80"
-                : "bg-vest text-asphalt-deep hover:bg-vest-bright"
+                ? "bg-rose-600 hover:bg-rose-500 text-white active:scale-98"
+                : "bg-emerald-600 hover:bg-emerald-500 text-white active:scale-98"
             }`}
           >
-            <span className={`w-2 h-2 rounded-full ${lacak ? "bg-white animate-pulse" : "bg-asphalt-deep/60"}`} />
+            <span className={`w-2 h-2 rounded-full ${lacak ? "bg-white animate-pulse" : "bg-white/80"}`} />
             {lacak ? "Hentikan Lacak" : "Mulai Lacak GPS"}
           </button>
-          <div className="font-mono text-[11px] text-bone-dim">
+          <div className="text-xs text-slate-500 font-medium">
             {lacak ? (
               <>
-                <span className="text-vest">● LIVE {fmtDurasi()}</span>
+                <span className="text-emerald-600 font-bold">● LIVE {fmtDurasi()}</span>
                 {titik && (
-                  <span className="ml-2 block sm:inline">
+                  <span className="ml-2 block sm:inline font-mono text-[11px]">
                     {titik.lat.toFixed(5)}, {titik.lng.toFixed(5)} · ±{Math.round(titik.akurasi)}m
                   </span>
                 )}
-                <span className="block text-[10px] text-bone-faint">
+                <span className="block text-[11px] text-slate-400 mt-0.5">
                   Posisi dikirim tiap 10 dtk · layar dijaga tetap menyala (wake lock)
                 </span>
               </>
             ) : (
-              <span className="text-bone-faint">{status || "Aktifkan GPS agar posisi terlihat di peta"}</span>
+              <span>{status || "Aktifkan GPS agar posisi terlihat di peta"}</span>
             )}
           </div>
         </>
       ) : (
-        <p className="text-xs text-bone-faint font-mono">
+        <p className="text-xs text-slate-400">
           Jabatan ini tidak punya tugas angkut — posisi tidak dikirim.
         </p>
       )}

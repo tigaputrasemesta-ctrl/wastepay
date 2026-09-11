@@ -311,11 +311,11 @@ function PinsKendaraan({ kendaraan }: { kendaraan: KendaraanPeta[] }) {
             })}
           >
             <Tooltip sticky>
-              <span className="font-mono text-[10px] text-bone">
+              <span className="font-mono text-[10px] text-slate-800 font-medium">
                 {icon} {k.nama.toUpperCase()}
                 {k.platNomor ? ` · ${k.platNomor.toUpperCase()}` : ""}
                 <br />
-                <span className="text-bone-dim">
+                <span className="text-slate-500">
                   {isDump ? "DUMP TRUCK" : k.jenis.toUpperCase()} · {k.pengemudi ? `pengemudi: ${k.pengemudi}` : "tanpa pengemudi"}
                   <br />
                   {formatWaktuRelatif(k.updatedAt)} · akurasi {k.akurasi ? Math.round(k.akurasi) : "?"} m
@@ -343,10 +343,10 @@ function PinsTransit({ transit }: { transit: TransitPeta[] }) {
           })}
         >
           <Tooltip sticky>
-            <span className="font-mono text-[10px] text-bone">
+            <span className="font-mono text-[10px] text-slate-800 font-medium">
               ▲ LAPAK / TITIK TRANSIT — {t.nama.toUpperCase()}
-              {t.alamat ? <><br /><span className="text-bone-dim">{t.alamat}</span></> : null}
-              {t.catatan ? <><br /><span className="text-bone-dim">{t.catatan}</span></> : null}
+              {t.alamat ? <><br /><span className="text-slate-500">{t.alamat}</span></> : null}
+              {t.catatan ? <><br /><span className="text-slate-500">{t.catatan}</span></> : null}
             </span>
           </Tooltip>
         </Marker>
@@ -377,11 +377,11 @@ function PinsPetugas({ petugas }: { petugas: PetugasPeta[] }) {
             })}
           >
             <Tooltip sticky>
-              <span className="font-mono text-[10px] text-bone">
+              <span className="font-mono text-[10px] text-slate-800 font-medium">
                 🚛 {p.nama.toUpperCase()}
                 {label ? ` · ${label}` : ""}
                 <br />
-                <span className="text-bone-dim">
+                <span className="text-slate-500">
                   {formatWaktuRelatif(p.updatedAt)} · akurasi {p.akurasi ? Math.round(p.akurasi) : "?"} m
                 </span>
               </span>
@@ -626,7 +626,7 @@ export default function MapView({
         zoom={14}
         scrollWheelZoom
         className="h-full w-full"
-        style={{ background: tileMode === "dark" ? "#0d0e10" : "#f8fafc" }}
+        style={{ background: tileMode === "dark" ? "#020617" : "#f8fafc" }}
       >
         <MapReadyWrapper>
           <TileLayer
@@ -655,7 +655,7 @@ export default function MapView({
               }}
             >
               <Tooltip sticky>
-                <span className="font-mono text-[10px] text-bone">
+                <span className="font-mono text-[10px] text-slate-800 font-medium">
                   BATAS RESMI — KEC. {k.nama}
                 </span>
               </Tooltip>
@@ -725,7 +725,7 @@ export default function MapView({
               }}
             >
               <Tooltip sticky>
-                <span className="font-mono text-[10px] text-bone">
+                <span className="font-mono text-[10px] text-slate-800 font-medium">
                   RT RTRW #{rt.id} — KEL. {rt.kelurahan.toUpperCase()}
                 </span>
               </Tooltip>
@@ -749,17 +749,17 @@ export default function MapView({
           <CircleMarker
             center={ruteUrut[0]}
             radius={7}
-            pathOptions={{ color: "#b7e13c", weight: 2, fillColor: "#b7e13c", fillOpacity: 0.9 }}
+            pathOptions={{ color: "#10b981", weight: 2, fillColor: "#10b981", fillOpacity: 0.9 }}
           >
             <Tooltip sticky>
-              <span className="font-mono text-[10px] text-bone">
+              <span className="font-mono text-[10px] text-slate-800 font-medium">
                 START · {ruteTerpilih.nama}
               </span>
             </Tooltip>
           </CircleMarker>
           <Marker position={ruteUrut[ruteUrut.length - 1]} icon={buatIconRute("#f5a524", "AKH")}>
             <Tooltip sticky>
-              <span className="font-mono text-[10px] text-bone">
+              <span className="font-mono text-[10px] text-slate-800 font-medium">
                 {ruteUrut.length} TITIK · {formatJarak(jarakRute)} (perkiraan)
               </span>
             </Tooltip>

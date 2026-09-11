@@ -55,38 +55,7 @@ export default function MobileHome() {
   const sudahMasuk = Boolean(absen?.waktuMasuk);
   const sudahSelesai = Boolean(absen?.waktuSelesai);
 
-  const cards: { href: string; title: string; desc: string; badge?: string; color: string }[] = [];
-  if (isAngkut) {
-    cards.push({
-      href: "/m/angkut",
-      title: "Tugas Angkut Hari Ini",
-      desc: "Daftar pelanggan + tandai pickup + live GPS",
-      badge: jumlahTugas != null ? `${jumlahTugas} tugas` : "…",
-      color: "bg-green-600 text-white",
-    });
-  }
-  if (isSurvei) {
-    cards.push({
-      href: "/m/survei",
-      title: "Survei Calon Pelanggan",
-      desc: "Foto rumah + geotag + aktifkan",
-      badge: jumlahCalon != null ? `${jumlahCalon} calon` : "…",
-      color: "bg-amber-400 text-black",
-    });
-  }
-  cards.push({
-    href: "/m/klaim",
-    title: "Klaim Pengeluaran",
-    desc: "BBM, perawatan, lainnya + foto bukti",
-    color: "bg-white text-black",
-  });
-  cards.push({
-    href: "/m/absen",
-    title: "Absensi GPS",
-    desc: sudahMasuk ? (sudahSelesai ? "Hari ini sudah selesai" : "Sudah masuk — absen selesai saat pulang") : "Belum absen masuk hari ini",
-    badge: sudahMasuk ? "✓ Masuk" : "Belum",
-    color: "bg-white text-black",
-  });
+
 
   return (
     <div className="space-y-4">

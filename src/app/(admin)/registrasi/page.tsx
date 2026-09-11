@@ -33,21 +33,20 @@ const KATEGORI_OPTIONS = [
 ];
 
 const STATUS_OPTIONS = [
-  { value: "aktif", label: "Aktif", desc: "Langganan berjalan — tagihan bulan ini dibuat otomatis", tone: "badge-vest" },
-  { value: "calon", label: "Calon", desc: "Belum mulai berlangganan — tidak dibuatkan tagihan", tone: "badge-amber" },
-  { value: "nonaktif", label: "Nonaktif", desc: "Berhenti berlangganan — tidak dibuatkan tagihan", tone: "badge-danger" },
-  { value: "libur", label: "Libur", desc: "Berhenti sementara — tidak dibuatkan tagihan", tone: "badge-steel" },
+  { value: "aktif", label: "Aktif", desc: "Langganan berjalan — tagihan bulan ini dibuat otomatis", tone: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  { value: "calon", label: "Calon", desc: "Belum mulai berlangganan — tidak dibuatkan tagihan", tone: "bg-amber-50 text-amber-700 border-amber-200" },
+  { value: "nonaktif", label: "Nonaktif", desc: "Berhenti berlangganan — tidak dibuatkan tagihan", tone: "bg-rose-50 text-rose-700 border-rose-200" },
+  { value: "libur", label: "Libur", desc: "Berhenti sementara — tidak dibuatkan tagihan", tone: "bg-slate-100 text-slate-700 border-slate-200" },
 ];
 
 function JudulSection({ kode, judul, desc }: { kode: string; judul: string; desc: string }) {
   return (
     <div className="mb-6">
-      <p className="stencil text-green-600 flex items-center gap-2">
-        <span className="w-6 h-1 hazard inline-block" />
+      <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wider">
         {kode}
       </p>
-      <h2 className="text-xl font-black text-slate-900 tracking-tight tracking-wide mt-2">{judul}</h2>
-      <p className="text-sm text-gray-600 font-bold mt-1">{desc}</p>
+      <h2 className="text-xl font-bold text-slate-900 mt-1">{judul}</h2>
+      <p className="text-sm text-slate-500 mt-1">{desc}</p>
     </div>
   );
 }
@@ -204,23 +203,23 @@ export default function DaftarPelangganPage() {
     const statusLabel = STATUS_OPTIONS.find((s) => s.value === form.status)?.label ?? form.status;
     return (
       <div className="p-6 max-w-2xl mx-auto">
-        <div className="hm-card bg-white p-0 overflow-hidden shadow-sm hover:shadow-md active:scale-[0.98] transition-all p-8 text-center">
-          <div className="w-16 h-16 shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-green-400/10 flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl p-8 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <p className="stencil text-green-600 mb-2">PENDAFTARAN BERHASIL</p>
-          <h2 className="text-2xl font-black text-slate-900 tracking-tight mb-2">{successData?.nama}</h2>
-          <p className="text-sm text-gray-600 font-bold mb-6">
-            Status: <span className={`badge ${statusLabel === "Aktif" ? "badge-vest" : "badge-amber"}`}>{statusLabel}</span>
+          <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wider mb-1">Pendaftaran Berhasil</p>
+          <h2 className="text-2xl font-bold text-slate-900 mb-2">{successData?.nama}</h2>
+          <p className="text-sm text-slate-500 mb-6">
+            Status: <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">{statusLabel}</span>
             {form.status === "aktif" && " — tagihan bulan ini sudah dibuat otomatis."}
           </p>
 
           {successData?.kode && (
-            <div className="bg-slate-50 text-slate-700 font-semibold shadow-sm hover:shadow-md active:scale-[0.98] transition-all p-6 mb-6 inline-block">
-              <p className="stencil text-gray-400 font-bold text-[10px] mb-2">KODE PELANGGAN</p>
-              <p className="font-bold tracking-tight text-3xl text-black font-black tracking-widest mb-3">{successData.kode}</p>
+            <div className="bg-slate-50 rounded-2xl border border-slate-200/80 p-6 mb-6 inline-block">
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Kode Pelanggan</p>
+              <p className="font-bold text-3xl text-slate-900 tracking-widest mb-3">{successData.kode}</p>
               {/* Barcode SVG */}
               <svg className="mx-auto" width="200" height="50" viewBox="0 0 200 50" aria-hidden>
                 {successData.kode.split("").map((char, i) => (
@@ -229,14 +228,14 @@ export default function DaftarPelangganPage() {
                 <rect x="0" y="0" width="4" height="44" fill="#000" />
                 <rect x="196" y="0" width="4" height="44" fill="#000" />
               </svg>
-              <p className="text-xs text-gray-400 font-bold mt-2 font-mono">{successData.kode}</p>
+              <p className="text-xs text-slate-400 font-mono mt-2">{successData.kode}</p>
             </div>
           )}
 
           <div className="flex items-center justify-center gap-3">
             <button
               onClick={() => router.push("/pelanggan")}
-              className="btn btn-primary shadow-sm hover:shadow-md active:scale-[0.98] transition-all px-4 py-2 text-sm"
+              className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-xs hover:shadow-sm active:scale-95 transition-all"
             >
               Lihat Data Pelanggan
             </button>
@@ -246,7 +245,7 @@ export default function DaftarPelangganPage() {
                 setSuccessData(null);
                 resetForm();
               }}
-              className="btn shadow-sm hover:shadow-md active:scale-[0.98] transition-all px-4 py-2 text-sm"
+              className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition-all"
             >
               Daftar Lagi
             </button>
@@ -259,12 +258,11 @@ export default function DaftarPelangganPage() {
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <div className="mb-8">
-        <p className="stencil text-green-600 flex items-center gap-2">
-          <span className="w-8 h-1.5 hazard inline-block" />
+        <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wider">
           REGISTRASI
         </p>
-        <h1 className="text-2xl font-black text-slate-900 tracking-tight mt-2">Pendaftaran Pelanggan Baru</h1>
-        <p className="text-sm text-gray-600 font-bold mt-1">
+        <h1 className="text-2xl font-bold text-slate-900 mt-1">Pendaftaran Pelanggan Baru</h1>
+        <p className="text-sm text-slate-500 mt-1">
           Pendataan internal — petugas mengisi data pelanggan untuk layanan iuran sampah
         </p>
       </div>
@@ -279,12 +277,12 @@ export default function DaftarPelangganPage() {
               <div key={s.id} className={`flex items-center ${idx < STEPS.length - 1 ? "flex-1" : ""}`}>
                 <div className="flex items-center gap-2">
                   <div
-                    className={`shadow-sm hover:shadow-md active:scale-[0.98] transition-all w-9 h-9 flex items-center justify-center font-bold tracking-tight text-sm transition ${
+                    className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
                       selesai
-                        ? "bg-green-400/25 text-green-600"
+                        ? "bg-emerald-600 text-white"
                         : aktif
-                        ? "bg-green-400 text-black shadow-[0_0_18px_rgba(183,225,60,0.35)]"
-                        : "bg-gray-100 border border-slate-200/80 text-gray-400 font-bold"
+                        ? "bg-emerald-100 text-emerald-700 ring-2 ring-emerald-500 ring-offset-2"
+                        : "bg-slate-100 text-slate-400 border border-slate-200"
                     }`}
                   >
                     {selesai ? (
@@ -296,15 +294,15 @@ export default function DaftarPelangganPage() {
                     )}
                   </div>
                   <span
-                    className={`stencil text-[10px] hidden sm:inline ${
-                      aktif ? "text-green-600" : selesai ? "text-gray-600 font-bold" : "text-gray-400 font-bold"
+                    className={`text-xs font-medium hidden sm:inline ${
+                      aktif ? "text-slate-900 font-semibold" : selesai ? "text-slate-600" : "text-slate-400"
                     }`}
                   >
                     {s.label}
                   </span>
                 </div>
                 {idx < STEPS.length - 1 && (
-                  <div className={`flex-1 h-0.5 mx-3 ${selesai ? "bg-green-400" : "bg-gray-100 border border-slate-200/80"}`} />
+                  <div className={`flex-1 h-0.5 mx-3 ${selesai ? "bg-emerald-500" : "bg-slate-200"}`} />
                 )}
               </div>
             );
@@ -312,7 +310,7 @@ export default function DaftarPelangganPage() {
         </div>
       </div>
 
-      <div className="hm-card bg-white p-0 overflow-hidden shadow-sm hover:shadow-md active:scale-[0.98] transition-all p-6 md:p-8">
+      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-6 md:p-8">
         {/* ═══ STEP 1: DATA DIRI ═══ */}
         {step === 1 && (
           <div className="space-y-6">
@@ -345,14 +343,14 @@ export default function DaftarPelangganPage() {
 
             <div>
               <label className="label">Kategori Pelanggan <span className="text-red-600">*</span></label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
                 {KATEGORI_OPTIONS.map((k) => (
                   <label
                     key={k.value}
-                    className={`shadow-sm hover:shadow-md active:scale-[0.98] transition-all flex flex-col items-center gap-1 px-3 py-3 border cursor-pointer transition ${
+                    className={`rounded-2xl flex flex-col items-center gap-1.5 px-3 py-3.5 border cursor-pointer transition-all ${
                       form.kategori === k.value
-                        ? "border-vest bg-green-400/10 shadow-[0_0_14px_rgba(183,225,60,0.18)]"
-                        : "border border-slate-200/80 hover:border border-slate-200/80 bg-white/30"
+                        ? "border-emerald-500 bg-emerald-50/50 shadow-xs"
+                        : "border-slate-200 hover:border-slate-300 bg-white"
                     }`}
                   >
                     <input
@@ -363,8 +361,8 @@ export default function DaftarPelangganPage() {
                       onChange={(e) => setForm({ ...form, kategori: e.target.value })}
                       className="hidden"
                     />
-                    <span className="text-lg">{k.icon}</span>
-                    <span className="text-xs font-medium text-gray-600 font-bold text-center leading-tight">{k.label}</span>
+                    <span className="text-xl">{k.icon}</span>
+                    <span className="text-xs font-semibold text-slate-700 text-center leading-tight">{k.label}</span>
                   </label>
                 ))}
               </div>
@@ -403,8 +401,8 @@ export default function DaftarPelangganPage() {
               </select>
               {kelurahanTerpilih && (
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <span className="badge badge-vest">{kelurahanTerpilih.kecamatan || "Kec. —"}</span>
-                  <span className="badge badge-steel">{kelurahanTerpilih.nama || "Kel. —"}</span>
+                  <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">{kelurahanTerpilih.kecamatan || "Kec. —"}</span>
+                  <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">{kelurahanTerpilih.nama || "Kel. —"}</span>
                 </div>
               )}
             </div>
@@ -503,13 +501,13 @@ export default function DaftarPelangganPage() {
             />
 
             {/* Tarif default kategori */}
-            <div className="shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-green-400/5 border border-vest/40 p-4">
+            <div className="bg-emerald-50/60 border border-emerald-200 rounded-2xl p-4 shadow-xs">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <p className="label !mb-1 text-green-600">TARIF DEFAULT — {kategoriTarifTerpilih?.label ?? form.kategori}</p>
-                  <p className="text-xs text-gray-600 font-bold">{kategoriTarifTerpilih?.deskripsi ?? "Tarif berdasarkan kategori"}</p>
+                  <p className="text-xs font-bold text-emerald-800 uppercase tracking-wider !mb-1">TARIF DEFAULT — {kategoriTarifTerpilih?.label ?? form.kategori}</p>
+                  <p className="text-xs text-slate-600 font-medium">{kategoriTarifTerpilih?.deskripsi ?? "Tarif berdasarkan kategori"}</p>
                 </div>
-                <p className="font-bold tracking-tight text-xl text-green-600 whitespace-nowrap">{formatRupiah(tarifDefaultKategori)}<span className="text-xs text-gray-400 font-bold">/bln</span></p>
+                <p className="font-bold tracking-tight text-xl text-emerald-700 whitespace-nowrap">{formatRupiah(tarifDefaultKategori)}<span className="text-xs text-slate-400 font-normal">/bln</span></p>
               </div>
             </div>
 
@@ -517,8 +515,8 @@ export default function DaftarPelangganPage() {
             {paketList.length > 0 && (
               <>
                 <div className="flex items-center gap-3">
-                  <span className="stencil text-gray-400 font-bold text-[10px]">ATAU PILIH PAKET</span>
-                  <div className="flex-1 h-px bg-gray-100 border border-slate-200/80" />
+                  <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Atau Pilih Paket</span>
+                  <div className="flex-1 h-px bg-slate-200" />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {paketList.map((p) => {
@@ -526,10 +524,10 @@ export default function DaftarPelangganPage() {
                     return (
                       <label
                         key={p.id}
-                        className={`shadow-sm hover:shadow-md active:scale-[0.98] transition-all relative border p-4 cursor-pointer transition ${
+                        className={`rounded-2xl relative border p-4 cursor-pointer transition-all ${
                           dipilih
-                            ? "border-vest bg-green-400/10 shadow-[0_0_14px_rgba(183,225,60,0.18)]"
-                            : "border border-slate-200/80 bg-white/30 hover:border border-slate-200/80"
+                            ? "border-emerald-500 bg-emerald-50/40 shadow-xs"
+                            : "border-slate-200 bg-white hover:border-slate-300"
                         }`}
                       >
                         <input
@@ -545,18 +543,18 @@ export default function DaftarPelangganPage() {
                         />
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1">
-                            <h3 className="font-bold tracking-tight text-sm text-black font-black tracking-wide">{p.nama}</h3>
-                            {p.deskripsi && <p className="text-xs text-gray-600 font-bold mt-1">{p.deskripsi}</p>}
+                            <h3 className="font-semibold text-sm text-slate-900">{p.nama}</h3>
+                            {p.deskripsi && <p className="text-xs text-slate-500 mt-1">{p.deskripsi}</p>}
                           </div>
                           <div className="text-right whitespace-nowrap">
-                            <p className="font-bold tracking-tight text-lg text-green-600">{p.harga != null ? formatRupiah(p.harga) : "Variabel"}</p>
-                            <p className="text-[10px] text-gray-400 font-bold">{p.harga != null ? "/bulan" : "sesuai kebutuhan"}</p>
+                            <p className="font-bold text-lg text-emerald-600">{p.harga != null ? formatRupiah(p.harga) : "Variabel"}</p>
+                            <p className="text-[10px] text-slate-400">{p.harga != null ? "/bulan" : "sesuai kebutuhan"}</p>
                           </div>
                         </div>
                         {dipilih && (
-                          <span className="absolute -top-2 -right-2 w-6 h-6 shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-green-400 flex items-center justify-center">
-                            <svg className="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                             </svg>
                           </span>
                         )}
@@ -567,17 +565,17 @@ export default function DaftarPelangganPage() {
               </>
             )}
             {paketList.length === 0 && (
-              <div className="text-center py-4 bg-slate-50 text-slate-700 font-semibold shadow-sm hover:shadow-md active:scale-[0.98] transition-all">
-                <p className="text-gray-400 font-bold text-sm mb-2">Belum ada paket tersedia — pakai tarif default kategori</p>
+              <div className="text-center py-4 bg-slate-50 text-slate-500 rounded-2xl border border-slate-200/80">
+                <p className="text-slate-400 font-medium text-sm">Belum ada paket tersedia — pakai tarif default kategori</p>
               </div>
             )}
 
             {/* Tarif kustom */}
             <div className="flex items-center gap-3">
-              <span className="stencil text-gray-400 font-bold text-[10px]">ATAU TARIF KUSTOM</span>
-              <div className="flex-1 h-px bg-gray-100 border border-slate-200/80" />
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Atau Tarif Kustom</span>
+              <div className="flex-1 h-px bg-slate-200" />
             </div>
-            <label className="shadow-sm hover:shadow-md active:scale-[0.98] transition-all flex items-start gap-3 p-4 border border-slate-200/80 bg-white/30 cursor-pointer transition">
+            <label className="rounded-2xl border border-slate-200/80 bg-white p-4 flex items-start gap-3 cursor-pointer hover:border-slate-300 transition-all shadow-xs">
               <input
                 type="checkbox"
                 checked={useCustomTarif}
@@ -586,11 +584,11 @@ export default function DaftarPelangganPage() {
                   if (e.target.checked) setForm({ ...form, paketId: "" });
                   else setForm({ ...form, customTarif: "" });
                 }}
-                className="mt-1 accent-vest"
+                className="mt-1 accent-emerald-600 rounded"
               />
               <div className="flex-1">
-                <p className="text-sm font-medium text-black font-black">Tarif Kustom</p>
-                <p className="text-xs text-gray-600 font-bold">Nominal iuran khusus untuk pelanggan ini (mengalahkan paket)</p>
+                <p className="text-sm font-semibold text-slate-900">Tarif Kustom</p>
+                <p className="text-xs text-slate-500 font-normal">Nominal iuran khusus untuk pelanggan ini (mengalahkan paket)</p>
                 {useCustomTarif && (
                   <div className="mt-3 max-w-xs">
                     <input
@@ -601,7 +599,7 @@ export default function DaftarPelangganPage() {
                       placeholder="Contoh: 50000"
                     />
                     {parseFloat(form.customTarif) > 0 && (
-                      <p className="text-xs text-green-600 mt-1 font-mono">= {formatRupiah(parseFloat(form.customTarif))} / bulan</p>
+                      <p className="text-xs text-emerald-600 mt-1 font-mono font-semibold">= {formatRupiah(parseFloat(form.customTarif))} / bulan</p>
                     )}
                   </div>
                 )}
@@ -609,10 +607,10 @@ export default function DaftarPelangganPage() {
             </label>
 
             {/* Ringkasan tarif */}
-            <div className="shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-slate-50 text-slate-700 font-semibold border border-slate-200/80 p-4 flex items-center justify-between">
+            <div className="bg-slate-50 rounded-2xl border border-slate-200/80 p-4 flex items-center justify-between shadow-xs">
               <div>
-                <p className="label !mb-1">TARIF AKHIR</p>
-                <p className="text-xs text-gray-600 font-bold">
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider !mb-1">TARIF AKHIR</p>
+                <p className="text-xs text-slate-600 font-medium">
                   {useCustomTarif
                     ? "Tarif kustom"
                     : paketTerpilih
@@ -620,9 +618,9 @@ export default function DaftarPelangganPage() {
                     : `Default kategori ${kategoriTarifTerpilih?.label ?? form.kategori}`}
                 </p>
               </div>
-              <p className="font-bold tracking-tight text-2xl text-green-600">
+              <p className="font-bold tracking-tight text-2xl text-emerald-600">
                 {formatRupiah(tarifAkhir)}
-                <span className="text-xs text-gray-400 font-bold">/bln</span>
+                <span className="text-xs text-slate-400 font-normal">/bln</span>
               </p>
             </div>
 
@@ -633,10 +631,10 @@ export default function DaftarPelangganPage() {
                 {STATUS_OPTIONS.map((s) => (
                   <label
                     key={s.value}
-                    className={`shadow-sm hover:shadow-md active:scale-[0.98] transition-all flex items-start gap-3 p-3 border cursor-pointer transition ${
+                    className={`rounded-2xl flex items-start gap-3 p-3.5 border cursor-pointer transition-all ${
                       form.status === s.value
-                        ? "border-vest bg-green-400/10"
-                        : "border border-slate-200/80 bg-white/30 hover:border border-slate-200/80"
+                        ? "border-emerald-500 bg-emerald-50/60 ring-2 ring-emerald-500/10 shadow-xs"
+                        : "border-slate-200 bg-white hover:border-slate-300"
                     }`}
                   >
                     <input
@@ -645,11 +643,11 @@ export default function DaftarPelangganPage() {
                       value={s.value}
                       checked={form.status === s.value}
                       onChange={(e) => setForm({ ...form, status: e.target.value })}
-                      className="mt-0.5 accent-vest"
+                      className="mt-0.5 accent-emerald-600"
                     />
                     <div>
-                      <p className="text-sm font-medium text-black font-black">{s.label}</p>
-                      <p className="text-xs text-gray-600 font-bold mt-0.5">{s.desc}</p>
+                      <p className="text-sm font-semibold text-slate-900">{s.label}</p>
+                      <p className="text-xs text-slate-500 mt-0.5">{s.desc}</p>
                     </div>
                   </label>
                 ))}
@@ -678,24 +676,24 @@ export default function DaftarPelangganPage() {
               judul="Periksa Kembali Data"
               desc="Pastikan seluruh data benar sebelum pelanggan didaftarkan"
             />
-            <div className="shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-slate-50 text-slate-700 font-semibold border border-slate-200/80 p-5 space-y-4">
+            <div className="bg-slate-50 rounded-2xl border border-slate-200/80 p-5 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <p className="label !mb-1">IDENTITAS</p>
-                  <p className="font-medium text-black font-black">{form.nama}</p>
-                  <p className="text-sm text-gray-600 font-bold font-mono">{form.noTelepon}</p>
-                  <p className="text-sm text-gray-600 font-bold mt-1">
+                  <p className="label !mb-1 text-xs font-semibold text-slate-500">IDENTITAS</p>
+                  <p className="font-semibold text-slate-900 text-base">{form.nama}</p>
+                  <p className="text-sm text-slate-600 font-mono">{form.noTelepon}</p>
+                  <p className="text-sm text-slate-600 mt-1">
                     {KATEGORI_OPTIONS.find((k) => k.value === form.kategori)?.label || form.kategori}
                   </p>
                   {form.penanggungjawab && (
-                    <p className="text-sm text-gray-600 font-bold mt-1">PJ: {form.penanggungjawab}</p>
+                    <p className="text-sm text-slate-600 mt-1">PJ: {form.penanggungjawab}</p>
                   )}
                 </div>
                 <div>
-                  <p className="label !mb-1">ALAMAT & WILAYAH</p>
-                  <p className="font-medium text-black font-black">{form.alamat}</p>
-                  {form.rt && form.rw && <p className="text-sm text-gray-600 font-bold">RT {form.rt} / RW {form.rw}</p>}
-                  <p className="text-sm text-gray-600 font-bold">
+                  <p className="label !mb-1 text-xs font-semibold text-slate-500">ALAMAT & WILAYAH</p>
+                  <p className="font-semibold text-slate-900 text-base">{form.alamat}</p>
+                  {form.rt && form.rw && <p className="text-sm text-slate-600">RT {form.rt} / RW {form.rw}</p>}
+                  <p className="text-sm text-slate-600">
                     {kelurahanTerpilih?.nama || "-"}
                     {kelurahanTerpilih?.kecamatan && ` · ${kelurahanTerpilih.kecamatan}`}
                     {kelurahanTerpilih?.kota && ` · ${kelurahanTerpilih.kota}`}
@@ -705,9 +703,9 @@ export default function DaftarPelangganPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <p className="label !mb-1">TARIF IURAN</p>
-                  <p className="font-bold tracking-tight text-lg text-green-600">{formatRupiah(tarifAkhir)}<span className="text-xs text-gray-400 font-bold">/bln</span></p>
-                  <p className="text-xs text-gray-600 font-bold">
+                  <p className="label !mb-1 text-xs font-semibold text-slate-500">TARIF IURAN</p>
+                  <p className="font-bold tracking-tight text-lg text-emerald-600">{formatRupiah(tarifAkhir)}<span className="text-xs text-slate-400 font-normal">/bln</span></p>
+                  <p className="text-xs text-slate-500">
                     {useCustomTarif
                       ? "Tarif kustom"
                       : paketTerpilih
@@ -716,11 +714,11 @@ export default function DaftarPelangganPage() {
                   </p>
                 </div>
                 <div>
-                  <p className="label !mb-1">STATUS</p>
+                  <p className="label !mb-1 text-xs font-semibold text-slate-500">STATUS</p>
                   <p className={`badge ${STATUS_OPTIONS.find((s) => s.value === form.status)?.tone ?? "badge-steel"}`}>
                     {STATUS_OPTIONS.find((s) => s.value === form.status)?.label ?? form.status}
                   </p>
-                  <p className="text-xs text-gray-600 font-bold mt-1">
+                  <p className="text-xs text-slate-500 mt-1">
                     {form.status === "aktif" ? "Tagihan bulan ini dibuat otomatis" : "Tidak dibuatkan tagihan"}
                   </p>
                 </div>
@@ -728,19 +726,19 @@ export default function DaftarPelangganPage() {
 
               {form.patokanLokasi && (
                 <div>
-                  <p className="label !mb-1">PATOKAN LOKASI</p>
-                  <p className="text-sm text-gray-600 font-bold">{form.patokanLokasi}</p>
+                  <p className="label !mb-1 text-xs font-semibold text-slate-500">PATOKAN LOKASI</p>
+                  <p className="text-sm text-slate-600">{form.patokanLokasi}</p>
                 </div>
               )}
               {form.latitude && form.longitude && (
                 <div>
-                  <p className="label !mb-1">KOORDINAT <span className="normal-case">({form.koordinatSumber || "manual"})</span></p>
-                  <p className="text-sm text-gray-600 font-bold font-mono">{form.latitude}, {form.longitude}</p>
+                  <p className="label !mb-1 text-xs font-semibold text-slate-500">KOORDINAT <span className="normal-case">({form.koordinatSumber || "manual"})</span></p>
+                  <p className="text-sm text-slate-600 font-mono">{form.latitude}, {form.longitude}</p>
                   <a
                     href={`https://www.google.com/maps?q=${form.latitude},${form.longitude}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-green-600 hover:text-green-600-bright mt-1 inline-flex items-center gap-1"
+                    className="text-xs text-emerald-600 hover:text-emerald-700 font-medium mt-1 inline-flex items-center gap-1"
                   >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -767,30 +765,30 @@ export default function DaftarPelangganPage() {
 
         {/* Error */}
         {error && (
-          <div className="mt-4 shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-danger/10 text-red-600 text-sm px-4 py-3 border border-danger/40 font-mono">
+          <div className="mt-4 bg-rose-50 text-rose-700 text-sm px-4 py-3 rounded-2xl border border-rose-200 font-medium">
             ⚠ {error}
           </div>
         )}
 
         {/* Navigation */}
-        <div className="flex items-center justify-between mt-8 pt-6 border-t border border-slate-200/80">
+        <div className="flex items-center justify-between mt-8 pt-6 border-t border-slate-200">
           <button
             type="button"
             onClick={step === 1 ? () => router.push("/pelanggan") : prevStep}
-            className="btn shadow-sm hover:shadow-md active:scale-[0.98] transition-all px-4 py-2 text-sm"
+            className="px-5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-sm transition-all"
           >
             {step === 1 ? "Batal" : "← Kembali"}
           </button>
 
-          <div className="stencil text-gray-400 font-bold text-[10px]">
-            LANGKAH {step} / {STEPS.length}
+          <div className="text-xs font-semibold text-slate-400 tracking-wider uppercase">
+            Langkah {step} dari {STEPS.length}
           </div>
 
           {step < 5 ? (
             <button
               type="button"
               onClick={nextStep}
-              className="btn btn-primary shadow-sm hover:shadow-md active:scale-[0.98] transition-all px-6 py-2 text-sm"
+              className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm shadow-xs hover:shadow active:scale-98 transition-all"
             >
               Lanjut →
             </button>
@@ -799,7 +797,7 @@ export default function DaftarPelangganPage() {
               type="button"
               onClick={handleSubmit}
               disabled={submitting}
-              className="btn btn-primary shadow-sm hover:shadow-md active:scale-[0.98] transition-all px-6 py-2 text-sm disabled:opacity-50 flex items-center gap-2"
+              className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm shadow-xs hover:shadow active:scale-98 transition-all disabled:opacity-50 flex items-center gap-2"
             >
               {submitting ? (
                 <>

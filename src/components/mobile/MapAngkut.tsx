@@ -103,7 +103,7 @@ export default function MapAngkut({ tugas }: { tugas: TugasMap[] }) {
           scrollWheelZoom
           zoomControl={false}
           className="h-full w-full"
-          style={{ background: "#e8f0e6" }}
+          style={{ background: "#f8fafc" }}
         >
           <TileLayer
             attribution={tileConfig.attribution}
@@ -115,11 +115,11 @@ export default function MapAngkut({ tugas }: { tugas: TugasMap[] }) {
           {tugas.map((t) => (
             <Marker key={`tugas-${t.id}`} position={[t.latitude, t.longitude]} icon={pinTugas(t)}>
               <Popup>
-                <div className="font-mono text-[11px]">
-                  <p className="font-black uppercase">{t.nama}</p>
-                  <p className="text-gray-600">{t.kodePelanggan}</p>
-                  <p>{t.alamat}</p>
-                  <p className={`font-black uppercase ${t.status === "diambil" ? "text-green-700" : t.status === "tidak_diangkut" ? "text-red-600" : t.status === "kosong" ? "text-amber-600" : "text-sky-600"}`}>
+                <div className="text-xs">
+                  <p className="font-bold text-slate-900">{t.nama}</p>
+                  <p className="text-slate-500 font-mono text-[10px]">{t.kodePelanggan}</p>
+                  <p className="text-slate-600 mt-0.5">{t.alamat}</p>
+                  <p className={`font-semibold uppercase mt-1 ${t.status === "diambil" ? "text-emerald-700" : t.status === "tidak_diangkut" ? "text-rose-600" : t.status === "kosong" ? "text-amber-600" : "text-sky-600"}`}>
                     {t.status}
                   </p>
                 </div>

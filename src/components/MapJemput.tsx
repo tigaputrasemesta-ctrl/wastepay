@@ -100,7 +100,7 @@ export default function MapJemput({ pickup, truk, userPos }: Props) {
       scrollWheelZoom
       zoomControl={false}
       className="h-full w-full"
-      style={{ background: "#e8f0e6" }}
+      style={{ background: "#f8fafc" }}
     >
       <TileLayer
         attribution={tileConfig.attribution}

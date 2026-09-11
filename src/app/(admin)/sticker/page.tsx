@@ -177,19 +177,19 @@ export default function StickerPage() {
       </div>
 
       {/* filter */}
-      <div className="hm-card bg-white p-4 mb-6 flex flex-wrap items-end gap-3">
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-4 mb-6 flex flex-wrap items-end gap-3 shadow-xs">
         <div className="w-48">
-          <label className="block text-xs text-slate-500 font-bold mb-1 font-mono">WILAYAH</label>
-          <select value={filterWilayah} onChange={(e) => setFilterWilayah(e.target.value)} className="input text-sm">
-            <option value="">Semua</option>
+          <label className="block text-xs text-slate-600 font-semibold mb-1">Wilayah</label>
+          <select value={filterWilayah} onChange={(e) => setFilterWilayah(e.target.value)} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+            <option value="">Semua Wilayah</option>
             {wilayah.map((w) => (
               <option key={w.id} value={w.id}>{w.nama}</option>
             ))}
           </select>
         </div>
         <div className="w-56">
-          <label className="block text-xs text-slate-500 font-bold mb-1 font-mono">CARI</label>
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="nama / kode / alamat…" className="input text-sm" />
+          <label className="block text-xs text-slate-600 font-semibold mb-1">Cari Pelanggan</label>
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Nama / kode / alamat…" className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500" />
         </div>
         <label className="flex items-center gap-2 text-sm text-slate-600 font-medium pb-2 cursor-pointer">
           <input type="checkbox" checked={semuaDipilih} onChange={toggleSemua} className="rounded accent-emerald-600" />
@@ -198,7 +198,7 @@ export default function StickerPage() {
       </div>
 
       {loading ? (
-        <div className="hm-card bg-white p-8 text-center text-slate-400 font-medium font-mono">MEMUAT…</div>
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-8 text-center text-slate-400 font-medium shadow-xs">Memuat stiker…</div>
       ) : (
         <div className="flex flex-wrap gap-3">
           {tersaring.map((p, i) => (
@@ -209,7 +209,7 @@ export default function StickerPage() {
               )}
             </button>
           ))}
-          {tersaring.length === 0 && <div className="hm-card bg-white w-full p-8 text-center text-slate-400 font-medium font-mono">Tidak ada pelanggan</div>}
+          {tersaring.length === 0 && <div className="bg-white rounded-2xl border border-slate-200/80 w-full p-8 text-center text-slate-400 font-medium shadow-xs">Tidak ada pelanggan</div>}
         </div>
       )}
     </div>
