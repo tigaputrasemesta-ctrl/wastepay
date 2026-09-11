@@ -11,6 +11,11 @@ function loadJwtSecret(): string {
   const fromEnv = process.env.JWT_SECRET?.trim();
   if (fromEnv) return fromEnv;
 
+  // Saat next build (analisis halaman statis & prerendering), gunakan secret acak sementara
+  if (process.env.NEXT_PHASE === "phase-production-build") {
+    return `build-${randomBytes(48).toString("base64url")}`;
+  }
+
   if (process.env.NODE_ENV === "production") {
     throw new Error(
       "JWT_SECRET belum diatur. Set JWT_SECRET di environment variables sebelum production."

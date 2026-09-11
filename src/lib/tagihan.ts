@@ -61,3 +61,30 @@ export async function updateTunggakan(opts?: { force?: boolean }): Promise<numbe
 export function totalTagihan(jumlah: number, denda?: number | null): number {
   return jumlah + (denda || 0);
 }
+
+/**
+ * Hitung tanggal jatuh tempo tagihan berdasarkan tanggal pendaftaran pelanggan (Anniversary Billing).
+ * Konsumen yang daftar tgl 10 -> jatuh tempo tgl 10 di setiap bulan penagihan (nominal 1 bulan penuh).
+ * Jika bulan tersebut tidak memiliki tanggal tersebut (misal daftar tgl 31, dan bulan Februari hanya ada 28/29 hari),
+ * maka otomatis disesuaikan ke hari terakhir bulan tersebut.
+ *
+ * @param tanggalDaftar Tanggal pendaftaran / aktivasi pelanggan (createdAt)
+ * @param bulan Bulan tagihan (1 - 12)
+ * @param tahun Tahun tagihan (misal 2026)
+ */
+export function hitungJatuhTempoKonsumen(
+  tanggalDaftar: Date | string | null | undefined,
+  bulan: number,
+  tahun: number
+): Date {
+  const d = tanggalDaftar ? new Date(tanggalDaftar) : null;
+  // Jika tanggal daftar tidak valid, fallback default ke tanggal 15
+  const hariSiklus = d && !isNaN(d.getTime()) ? d.getDate() : 15;
+
+  // Hari maksimal pada bulan tujuan (misal Feb: 28/29, Apr: 30, Jan: 31)
+  const maxHariBulan = new Date(tahun, bulan, 0).getDate();
+  const hariJatuhTempo = Math.min(hariSiklus, maxHariBulan);
+
+  return new Date(tahun, bulan - 1, hariJatuhTempo, 23, 59, 59);
+}
+

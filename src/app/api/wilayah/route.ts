@@ -5,7 +5,10 @@ import { logAudit } from "@/lib/audit";
 export async function GET() {
   const wilayah = await prisma.wilayah.findMany({
     orderBy: { nama: "asc" },
-    include: { kelurahanRef: { select: { id: true, nama: true, kecamatan: true } } },
+    include: {
+      kelurahanRef: { select: { id: true, nama: true, kecamatan: true } },
+      zona: { select: { id: true, nama: true, warna: true } },
+    },
   });
   return NextResponse.json(wilayah);
 }

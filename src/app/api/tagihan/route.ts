@@ -3,7 +3,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
-import { updateTunggakan } from "@/lib/tagihan";
+import { updateTunggakan, hitungJatuhTempoKonsumen } from "@/lib/tagihan";
 import { generateNoInvoice } from "@/lib/invoice";
 import {
   buildTagihanWa,
@@ -22,6 +22,8 @@ export async function GET(request: Request) {
   const tahun = searchParams.get("tahun");
   const status = searchParams.get("status");
   const pelangganId = searchParams.get("pelangganId");
+  const kelurahanId = searchParams.get("kelurahanId");
+  const zonaId = searchParams.get("zonaId");
   const wilayahId = searchParams.get("wilayahId");
   const rt = searchParams.get("rt")?.trim();
   // ?saya=1 → petugas tagih: hanya tagihan pelanggan di KELURAHAN-nya
@@ -56,6 +58,34 @@ export async function GET(request: Request) {
     }
     where.pelangganId = pid;
   }
+  if (kelurahanId) {
+    const kid = parseInt(kelurahanId);
+    if (Number.isInteger(kid)) {
+      where.pelanggan = { ...(where.pelanggan as Prisma.PelangganWhereInput || {}), kelurahanId: kid };
+    }
+  }
+  if (zonaId) {
+    const zid = parseInt(zonaId);
+    if (Number.isInteger(zid)) {
+      const wilayahInZona = await prisma.wilayah.findMany({
+        where: { zonaId: zid },
+        select: { id: true, rt: true },
+      });
+      const widList = wilayahInZona.map((w) => w.id);
+      const rtList = wilayahInZona.map((w) => w.rt).filter((rtStr): rtStr is string => Boolean(rtStr));
+
+      where.pelanggan = {
+        ...(where.pelanggan as Prisma.PelangganWhereInput || {}),
+        OR: [
+          { wilayah: { zonaId: zid } },
+          ...(widList.length > 0 ? [{ wilayahId: { in: widList } }] : []),
+          ...rtList.map((rtStr) => ({
+            rtRw: { contains: rtStr, mode: "insensitive" as const },
+          })),
+        ],
+      };
+    }
+  }
   if (wilayahId) {
     const wid = parseInt(wilayahId);
     if (!Number.isInteger(wid)) {
@@ -77,11 +107,11 @@ export async function GET(request: Request) {
     const session = await getSession();
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     if (!PETUGAS_SCOPE_ALL) {
-      const kelurahanId = await getPetugasKelurahan(session.id);
-      if (!kelurahanId) {
+      const kid = await getPetugasKelurahan(session.id);
+      if (!kid) {
         return NextResponse.json({ error: "Akun belum ter-link ke kelurahan petugas" }, { status: 403 });
       }
-      where.pelanggan = { ...(where.pelanggan as Prisma.PelangganWhereInput || {}), kelurahanId };
+      where.pelanggan = { ...(where.pelanggan as Prisma.PelangganWhereInput || {}), kelurahanId: kid };
     }
   }
 
@@ -98,8 +128,20 @@ export async function GET(request: Request) {
           kategori: true,
           customTarif: true,
           rtRw: true,
+          createdAt: true,
+          kelurahanId: true,
+          kelurahan: { select: { id: true, nama: true, kecamatan: true } },
           wilayahId: true,
-          wilayah: { select: { id: true, nama: true, rt: true, rw: true } },
+          wilayah: {
+            select: {
+              id: true,
+              nama: true,
+              rt: true,
+              rw: true,
+              zonaId: true,
+              zona: { select: { id: true, nama: true, warna: true } },
+            },
+          },
         },
       },
       pembayaran: true,
@@ -157,6 +199,13 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "Tarif tidak valid atau tidak ditemukan" }, { status: 400 });
       }
 
+      // Dapatkan data pelanggan untuk tanggal pendaftaran (Anniversary Billing)
+      const pelangganData = await prisma.pelanggan.findUnique({
+        where: { id: pid },
+        select: { createdAt: true },
+      });
+      const jatuhTempo = hitungJatuhTempoKonsumen(pelangganData?.createdAt, bln, thn);
+
       const tagihan = await prisma.tagihan.create({
         data: {
           pelangganId: pid,
@@ -164,7 +213,7 @@ export async function POST(request: Request) {
           tahun: thn,
           jumlah: tarif,
           status: "belum_bayar",
-          jatuhTempo: new Date(thn, bln - 1, 15),
+          jatuhTempo,
         },
         include: { pelanggan: { include: { paket: true } } },
       });
@@ -239,6 +288,9 @@ export async function POST(request: Request) {
         if (!tarif && p.paket?.harga) tarif = p.paket.harga;
         if (!tarif) tarif = kategoriTarifMap.get(p.kategori) ?? 0;
 
+        const jatuhTempo = hitungJatuhTempoKonsumen(p.createdAt, bln, thn);
+        const hariSiklus = new Date(p.createdAt).getDate();
+
         await prisma.tagihan.create({
           data: {
             pelangganId: p.id,
@@ -246,7 +298,8 @@ export async function POST(request: Request) {
             tahun: thn,
             jumlah: tarif,
             status: "belum_bayar",
-            jatuhTempo: new Date(thn, bln - 1, 15),
+            jatuhTempo,
+            keterangan: `Tagihan bulan ${bln}/${thn} (Siklus tgl ${hariSiklus})`,
             noInvoice: generateNoInvoice(p.kodePelanggan, bln, thn),
           },
         });
@@ -259,7 +312,7 @@ export async function POST(request: Request) {
           tahun: thn,
           jumlah: tarif,
           denda: null,
-          jatuhTempo: new Date(thn, bln - 1, 15),
+          jatuhTempo,
         });
         created++;
       }

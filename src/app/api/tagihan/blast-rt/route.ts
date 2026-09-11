@@ -25,6 +25,8 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const {
+      zonaId,
+      kelurahanId,
       wilayahId,
       rt,
       bulan,
@@ -58,7 +60,46 @@ export async function POST(request: Request) {
       if (Number.isInteger(t) && t >= 2000) where.tahun = t;
     }
 
-    // Filter wilayah / RT
+    // Filter kelurahan
+    if (kelurahanId) {
+      const kid = parseInt(kelurahanId);
+      if (Number.isInteger(kid)) {
+        where.pelanggan = {
+          ...(where.pelanggan as Prisma.PelangganWhereInput),
+          kelurahanId: kid,
+        };
+      }
+    }
+
+    // Filter Zona
+    let zonaNama = "";
+    if (zonaId) {
+      const zid = parseInt(zonaId);
+      if (Number.isInteger(zid)) {
+        const zonaObj = await prisma.zona.findUnique({
+          where: { id: zid },
+          include: { wilayah: { select: { id: true, rt: true } } },
+        });
+        if (zonaObj) {
+          zonaNama = zonaObj.nama;
+          const widList = zonaObj.wilayah.map((w) => w.id);
+          const rtList = zonaObj.wilayah.map((w) => w.rt).filter((rtStr): rtStr is string => Boolean(rtStr));
+
+          where.pelanggan = {
+            ...(where.pelanggan as Prisma.PelangganWhereInput),
+            OR: [
+              { wilayah: { zonaId: zid } },
+              ...(widList.length > 0 ? [{ wilayahId: { in: widList } }] : []),
+              ...rtList.map((rtStr) => ({
+                rtRw: { contains: rtStr, mode: "insensitive" as const },
+              })),
+            ],
+          };
+        }
+      }
+    }
+
+    // Filter wilayah spesifik
     if (wilayahId) {
       const wid = parseInt(wilayahId);
       if (Number.isInteger(wid)) {
@@ -69,6 +110,7 @@ export async function POST(request: Request) {
       }
     }
 
+    // Filter RT spesifik
     if (rt && String(rt).trim() !== "") {
       const rtStr = String(rt).trim();
       where.pelanggan = {
@@ -92,7 +134,17 @@ export async function POST(request: Request) {
             noTelepon: true,
             kodePelanggan: true,
             rtRw: true,
-            wilayah: { select: { id: true, nama: true, rt: true, rw: true } },
+            kelurahan: { select: { id: true, nama: true, kecamatan: true } },
+            wilayah: {
+              select: {
+                id: true,
+                nama: true,
+                rt: true,
+                rw: true,
+                zonaId: true,
+                zona: { select: { id: true, nama: true, warna: true } },
+              },
+            },
             paket: { select: { nama: true } },
           },
         },
@@ -109,6 +161,9 @@ export async function POST(request: Request) {
       denda: number;
       status: string;
       rtRw: string;
+      zonaNama: string;
+      zonaWarna: string | null;
+      kelurahanNama: string;
     })[] = [];
 
     const mapTagihan = new Map<number, (typeof tagihanList)[0]>();
@@ -140,7 +195,10 @@ export async function POST(request: Request) {
         total: tagihanWa.total,
         denda: tagihanWa.denda,
         status: t.status,
-        rtRw: t.pelanggan.rtRw || t.pelanggan.wilayah?.nama || "-",
+        rtRw: t.pelanggan.rtRw || (t.pelanggan.wilayah?.rt ? `RT ${t.pelanggan.wilayah.rt}` : "-"),
+        zonaNama: t.pelanggan.wilayah?.zona?.nama || zonaNama || "-",
+        zonaWarna: t.pelanggan.wilayah?.zona?.warna || null,
+        kelurahanNama: t.pelanggan.kelurahan?.nama || "-",
       });
     }
 
@@ -175,6 +233,7 @@ export async function POST(request: Request) {
         sampleMessage,
         recipients: targets.slice(0, 50),
         isWaConfigured: isWaEnabled(),
+        zonaNama: zonaNama || null,
       });
     }
 
@@ -215,6 +274,8 @@ export async function POST(request: Request) {
 
     // Audit log
     await logAudit("create", "BlastWaTagihan", user.id, undefined, {
+      zona: zonaNama || (zonaId ? `Zona #${zonaId}` : "Semua"),
+      kelurahanId: kelurahanId || null,
       rt: rt || "Semua",
       wilayahId: wilayahId || null,
       bulan,

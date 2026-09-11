@@ -78,3 +78,57 @@ describe("Blast WA Tagihan RT", () => {
     expect(typeof enabled).toBe("boolean");
   });
 });
+
+describe("Anniversary Cycle Billing (Siklus Jatuh Tempo Konsumen)", () => {
+  it("menghitung tanggal jatuh tempo sesuai tanggal pendaftaran (contoh tgl 10)", async () => {
+    const { hitungJatuhTempoKonsumen } = await import("../src/lib/tagihan");
+    // Pelanggan daftar pada 10 Mei 2025
+    const regDate = new Date(2025, 4, 10);
+    const jtSeptember = hitungJatuhTempoKonsumen(regDate, 9, 2026);
+
+    expect(jtSeptember.getFullYear()).toBe(2026);
+    expect(jtSeptember.getMonth()).toBe(8); // September = index 8
+    expect(jtSeptember.getDate()).toBe(10);
+  });
+
+  it("menyesuaikan tanggal jika bulan tagihan memiliki hari lebih sedikit (misal daftar tgl 31, tagihan Feb kabisat 2024)", async () => {
+    const { hitungJatuhTempoKonsumen } = await import("../src/lib/tagihan");
+    const regDate = new Date(2024, 0, 31);
+    const jtFeb2024 = hitungJatuhTempoKonsumen(regDate, 2, 2024);
+
+    expect(jtFeb2024.getFullYear()).toBe(2024);
+    expect(jtFeb2024.getMonth()).toBe(1); // Februari
+    expect(jtFeb2024.getDate()).toBe(29); // 2024 adalah tahun kabisat (29 hari)
+  });
+
+  it("menyesuaikan tanggal jika tagihan Feb non-kabisat (misal 2026 -> 28 hari)", async () => {
+    const { hitungJatuhTempoKonsumen } = await import("../src/lib/tagihan");
+    const regDate = new Date(2025, 7, 31);
+    const jtFeb2026 = hitungJatuhTempoKonsumen(regDate, 2, 2026);
+
+    expect(jtFeb2026.getFullYear()).toBe(2026);
+    expect(jtFeb2026.getMonth()).toBe(1); // Februari
+    expect(jtFeb2026.getDate()).toBe(28); // 2026 bukan kabisat (28 hari)
+  });
+
+  it("menyesuaikan bulan 30 hari (misal April) untuk pendaftar tgl 31", async () => {
+    const { hitungJatuhTempoKonsumen } = await import("../src/lib/tagihan");
+    const regDate = "2026-01-31T08:00:00.000Z";
+    const jtApril = hitungJatuhTempoKonsumen(regDate, 4, 2026);
+
+    expect(jtApril.getFullYear()).toBe(2026);
+    expect(jtApril.getMonth()).toBe(3); // April
+    expect(jtApril.getDate()).toBe(30);
+  });
+
+  it("fallback default ke tanggal 15 jika tanggal pendaftaran null atau invalid", async () => {
+    const { hitungJatuhTempoKonsumen } = await import("../src/lib/tagihan");
+    const jtNull = hitungJatuhTempoKonsumen(null, 5, 2026);
+    expect(jtNull.getDate()).toBe(15);
+    expect(jtNull.getMonth()).toBe(4);
+
+    const jtInvalid = hitungJatuhTempoKonsumen("invalid-date-string", 7, 2026);
+    expect(jtInvalid.getDate()).toBe(15);
+    expect(jtInvalid.getMonth()).toBe(6);
+  });
+});

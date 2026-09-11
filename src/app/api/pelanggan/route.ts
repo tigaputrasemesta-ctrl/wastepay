@@ -5,6 +5,7 @@ import { logAudit } from "@/lib/audit";
 import { getSession } from "@/lib/auth";
 import { generateKodePelanggan } from "@/lib/kode-pelanggan";
 import { generateNoInvoice } from "@/lib/invoice";
+import { hitungJatuhTempoKonsumen } from "@/lib/tagihan";
 import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 
 export async function GET(request: Request) {
@@ -153,8 +154,8 @@ export async function POST(request: Request) {
               tahun,
               jumlah: tarif,
               status: "belum_bayar",
-              jatuhTempo: new Date(tahun, bulan - 1, 15),
-              keterangan: "Tagihan perdana",
+              jatuhTempo: hitungJatuhTempoKonsumen(pelanggan.createdAt, bulan, tahun),
+              keterangan: `Tagihan perdana (Siklus tgl ${new Date(pelanggan.createdAt).getDate()})`,
               noInvoice: generateNoInvoice(pelanggan.kodePelanggan, bulan, tahun),
             },
           });

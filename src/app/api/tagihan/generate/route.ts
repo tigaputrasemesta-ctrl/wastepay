@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { hasRole } from "@/lib/rbac";
 import { generateNoInvoice } from "@/lib/invoice";
+import { hitungJatuhTempoKonsumen } from "@/lib/tagihan";
 import {
   buildTagihanWa,
   isWaEnabled,
@@ -19,6 +20,9 @@ type Candidate = {
   noTelepon: string | null;
   paket: string | null;
   jumlah: number;
+  createdAt: string;
+  hariSiklus: number;
+  jatuhTempo: string;
 };
 
 /**
@@ -72,6 +76,10 @@ export async function POST(request: Request) {
       let tarif = pelanggan.customTarif;
       if (!tarif && pelanggan.paket) tarif = pelanggan.paket.harga;
       if (!tarif) tarif = kategoriTarifMap.get(pelanggan.kategori) ?? 0;
+
+      const jt = hitungJatuhTempoKonsumen(pelanggan.createdAt, bulan, tahun);
+      const regDate = new Date(pelanggan.createdAt);
+
       candidates.push({
         pelangganId: pelanggan.id,
         nama: pelanggan.nama,
@@ -80,6 +88,9 @@ export async function POST(request: Request) {
         noTelepon: pelanggan.noTelepon,
         paket: pelanggan.paket?.nama || null,
         jumlah: tarif ?? 0,
+        createdAt: pelanggan.createdAt.toISOString(),
+        hariSiklus: regDate.getDate(),
+        jatuhTempo: jt.toISOString(),
       });
     }
 
@@ -124,7 +135,7 @@ export async function POST(request: Request) {
       const jumlah = overrideMap ? (overrideMap.get(c.pelangganId) ?? 0) : c.jumlah;
 
       try {
-        const jatuhTempo = new Date(tahun, bulan - 1, 15);
+        const jatuhTempo = new Date(c.jatuhTempo);
         const noInvoice = generateNoInvoice(c.kodePelanggan, bulan, tahun);
 
         await prisma.tagihan.create({
@@ -135,7 +146,7 @@ export async function POST(request: Request) {
             jumlah,
             status: "belum_bayar",
             jatuhTempo,
-            keterangan: `Tagihan bulan ${bulan}/${tahun}`,
+            keterangan: `Tagihan bulan ${bulan}/${tahun} (Siklus tgl ${c.hariSiklus})`,
             noInvoice,
           },
         });

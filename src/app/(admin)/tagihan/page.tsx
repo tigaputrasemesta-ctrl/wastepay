@@ -44,14 +44,42 @@ type Tagihan = {
     kategori?: string;
     customTarif?: number;
     rtRw?: string | null;
+    createdAt?: string;
+    kelurahanId?: number | null;
+    kelurahan?: {
+      id: number;
+      nama: string;
+      kecamatan?: string | null;
+    } | null;
     wilayah?: {
       id: number;
       nama: string;
       rt?: string | null;
       rw?: string | null;
+      zonaId?: number | null;
+      zona?: {
+        id: number;
+        nama: string;
+        warna?: string | null;
+      } | null;
     } | null;
   };
   pembayaran: { id: number; jumlah: number; metode: string; status: string; createdAt: string }[];
+};
+
+type KelurahanItem = {
+  id: number;
+  nama: string;
+  kecamatan?: string | null;
+};
+
+type ZonaItem = {
+  id: number;
+  nama: string;
+  keterangan?: string | null;
+  warna?: string | null;
+  kelurahanId: number;
+  kelurahan?: { id: number; nama: string } | null;
 };
 
 type WilayahItem = {
@@ -59,6 +87,9 @@ type WilayahItem = {
   nama: string;
   rt?: string | null;
   rw?: string | null;
+  kelurahanId?: number | null;
+  zonaId?: number | null;
+  zona?: { id: number; nama: string; warna?: string | null } | null;
   kelurahanRef?: { nama: string } | null;
 };
 
@@ -72,6 +103,9 @@ type BlastRecipient = {
   denda: number;
   status: string;
   rtRw: string;
+  zonaNama?: string;
+  zonaWarna?: string | null;
+  kelurahanNama?: string;
 };
 
 type BlastPreviewData = {
@@ -80,6 +114,7 @@ type BlastPreviewData = {
   sampleMessage: string;
   recipients: BlastRecipient[];
   isWaConfigured: boolean;
+  zonaNama?: string | null;
 };
 
 type BlastResultData = {
@@ -115,6 +150,9 @@ type PreviewItem = {
   noTelepon: string | null;
   paket: string | null;
   jumlah: number;
+  createdAt?: string;
+  hariSiklus?: number;
+  jatuhTempo?: string;
 };
 
 function isGateway(metode: string) {
@@ -132,13 +170,21 @@ export default function TagihanPage() {
   const [tahun, setTahun] = useState(new Date().getFullYear().toString());
   const [status, setStatus] = useState("");
 
-  // Filter Wilayah & RT
+  // Master Data Wilayah & Zona
+  const [kelurahanList, setKelurahanList] = useState<KelurahanItem[]>([]);
+  const [zonaList, setZonaList] = useState<ZonaItem[]>([]);
   const [wilayahList, setWilayahList] = useState<WilayahItem[]>([]);
+
+  // Filter Active State
+  const [kelurahanId, setKelurahanId] = useState("");
+  const [zonaId, setZonaId] = useState("");
   const [wilayahId, setWilayahId] = useState("");
   const [rtFilter, setRtFilter] = useState("");
 
-  // Blast WA RT state
+  // Blast WA Modal State
   const [showBlastModal, setShowBlastModal] = useState(false);
+  const [blastKelurahanId, setBlastKelurahanId] = useState("");
+  const [blastZonaId, setBlastZonaId] = useState("");
   const [blastWilayahId, setBlastWilayahId] = useState("");
   const [blastRt, setBlastRt] = useState("");
   const [blastStatusFilter, setBlastStatusFilter] = useState("semua_belum_lunas");
@@ -165,6 +211,8 @@ export default function TagihanPage() {
       if (bulan) params.set("bulan", bulan);
       if (tahun) params.set("tahun", tahun);
       if (status) params.set("status", status);
+      if (kelurahanId) params.set("kelurahanId", kelurahanId);
+      if (zonaId) params.set("zonaId", zonaId);
       if (wilayahId) params.set("wilayahId", wilayahId);
       if (rtFilter.trim()) params.set("rt", rtFilter.trim());
       // Petugas tagih → hanya tagihan pelanggan di wilayahnya
@@ -184,28 +232,51 @@ export default function TagihanPage() {
     } finally {
       setLoading(false);
     }
-  }, [bulan, tahun, status, wilayahId, rtFilter, isPetugas]);
+  }, [bulan, tahun, status, kelurahanId, zonaId, wilayahId, rtFilter, isPetugas]);
 
   useEffect(() => {
     (async () => { await fetchTagihan(); })();
   }, [fetchTagihan]);
 
   useEffect(() => {
-    fetch("/api/wilayah")
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) setWilayahList(data);
-      })
-      .catch((err) => console.error("Gagal memuat daftar wilayah:", err));
+    // Load Kelurahan, Zona, dan Wilayah secara paralel
+    Promise.all([
+      fetch("/api/kelurahan").then((r) => r.json()).catch(() => []),
+      fetch("/api/zona").then((r) => r.json()).catch(() => []),
+      fetch("/api/wilayah").then((r) => r.json()).catch(() => []),
+    ]).then(([kelData, zonaData, wilData]) => {
+      if (Array.isArray(kelData)) setKelurahanList(kelData);
+      if (Array.isArray(zonaData)) setZonaList(zonaData);
+      if (Array.isArray(wilData)) setWilayahList(wilData);
+    });
   }, []);
 
-  async function loadBlastPreview(
-    wId: string = blastWilayahId,
-    rtVal: string = blastRt,
-    bln: string = blastBulan,
-    thn: string = blastTahun,
-    stFilter: string = blastStatusFilter
-  ) {
+  // Filter daftar zona berdasarkan kelurahan yang dipilih
+  const availableZonas = zonaList.filter((z) =>
+    !kelurahanId ? true : z.kelurahanId === parseInt(kelurahanId)
+  );
+
+  const availableBlastZonas = zonaList.filter((z) =>
+    !blastKelurahanId ? true : z.kelurahanId === parseInt(blastKelurahanId)
+  );
+
+  async function loadBlastPreview(params?: {
+    kelurahanId?: string;
+    zonaId?: string;
+    wilayahId?: string;
+    rt?: string;
+    bulan?: string;
+    tahun?: string;
+    statusFilter?: string;
+  }) {
+    const kId = params?.kelurahanId !== undefined ? params.kelurahanId : blastKelurahanId;
+    const zId = params?.zonaId !== undefined ? params.zonaId : blastZonaId;
+    const wId = params?.wilayahId !== undefined ? params.wilayahId : blastWilayahId;
+    const rtVal = params?.rt !== undefined ? params.rt : blastRt;
+    const bln = params?.bulan !== undefined ? params.bulan : blastBulan;
+    const thn = params?.tahun !== undefined ? params.tahun : blastTahun;
+    const stFilter = params?.statusFilter !== undefined ? params.statusFilter : blastStatusFilter;
+
     setBlastLoading(true);
     setBlastResult(null);
     try {
@@ -213,6 +284,8 @@ export default function TagihanPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          kelurahanId: kId ? parseInt(kId) : undefined,
+          zonaId: zId ? parseInt(zId) : undefined,
           wilayahId: wId ? parseInt(wId) : undefined,
           rt: rtVal.trim() || undefined,
           bulan: bln || undefined,
@@ -235,12 +308,16 @@ export default function TagihanPage() {
   }
 
   function handleOpenBlastModal() {
+    const initKel = kelurahanId;
+    const initZona = zonaId;
     const initWilayah = wilayahId;
     const initRt = rtFilter;
     const initBulan = bulan;
     const initTahun = tahun;
     const initStatus = status === "belum_bayar" || status === "tunggakan" ? status : "semua_belum_lunas";
 
+    setBlastKelurahanId(initKel);
+    setBlastZonaId(initZona);
     setBlastWilayahId(initWilayah);
     setBlastRt(initRt);
     setBlastBulan(initBulan);
@@ -249,7 +326,15 @@ export default function TagihanPage() {
     setBlastResult(null);
     setShowBlastModal(true);
 
-    loadBlastPreview(initWilayah, initRt, initBulan, initTahun, initStatus);
+    loadBlastPreview({
+      kelurahanId: initKel,
+      zonaId: initZona,
+      wilayahId: initWilayah,
+      rt: initRt,
+      bulan: initBulan,
+      tahun: initTahun,
+      statusFilter: initStatus,
+    });
   }
 
   async function handleSendBlast() {
@@ -258,9 +343,10 @@ export default function TagihanPage() {
       return;
     }
 
+    const targetDesc = blastPreview.zonaNama ? `Zona ${blastPreview.zonaNama}` : (blastRt ? `RT ${blastRt}` : "seluruh warga");
     const confirmText = blastPreview.isWaConfigured
-      ? `Kirim pesan WhatsApp otomatis ke ${blastPreview.totalWarga} warga?`
-      : `Siapkan link WhatsApp manual untuk ${blastPreview.totalWarga} warga?`;
+      ? `Kirim notifikasi WhatsApp otomatis ke ${blastPreview.totalWarga} warga (${targetDesc})?`
+      : `Siapkan tautan WhatsApp manual untuk ${blastPreview.totalWarga} warga (${targetDesc})?`;
 
     if (!window.confirm(confirmText)) return;
 
@@ -270,6 +356,8 @@ export default function TagihanPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          kelurahanId: blastKelurahanId ? parseInt(blastKelurahanId) : undefined,
+          zonaId: blastZonaId ? parseInt(blastZonaId) : undefined,
           wilayahId: blastWilayahId ? parseInt(blastWilayahId) : undefined,
           rt: blastRt.trim() || undefined,
           bulan: blastBulan || undefined,
@@ -621,7 +709,38 @@ export default function TagihanPage() {
           <option value="tunggakan">Tunggakan</option>
         </select>
 
-        {/* Filter Wilayah */}
+        {/* Filter Kelurahan */}
+        <select
+          value={kelurahanId}
+          onChange={(e) => {
+            setKelurahanId(e.target.value);
+            setZonaId(""); // reset zona saat kelurahan berganti
+          }}
+          className="px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black bg-white font-bold"
+        >
+          <option value="">Semua Kelurahan</option>
+          {kelurahanList.map((k) => (
+            <option key={k.id} value={k.id.toString()}>
+              🏛️ {k.nama} {k.kecamatan ? `(${k.kecamatan})` : ""}
+            </option>
+          ))}
+        </select>
+
+        {/* Filter Zona (Berdasarkan https://o2whero.com/zona) */}
+        <select
+          value={zonaId}
+          onChange={(e) => setZonaId(e.target.value)}
+          className="px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black bg-white font-bold"
+        >
+          <option value="">Semua Zona</option>
+          {availableZonas.map((z) => (
+            <option key={z.id} value={z.id.toString()}>
+              🏷️ {z.nama} {z.kelurahan?.nama ? `(${z.kelurahan.nama})` : ""}
+            </option>
+          ))}
+        </select>
+
+        {/* Filter Wilayah / RT */}
         <select
           value={wilayahId}
           onChange={(e) => setWilayahId(e.target.value)}
@@ -639,7 +758,7 @@ export default function TagihanPage() {
         <div className="relative flex items-center">
           <input
             type="text"
-            placeholder="Filter RT (misal: 01, 02)..."
+            placeholder="Ketik No. RT (misal: 01, 02)..."
             value={rtFilter}
             onChange={(e) => setRtFilter(e.target.value)}
             className="px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black w-48 bg-white font-bold placeholder:font-normal placeholder:text-gray-500"
@@ -655,9 +774,11 @@ export default function TagihanPage() {
           )}
         </div>
 
-        {(wilayahId || rtFilter || status || bulan !== (new Date().getMonth() + 1).toString()) && (
+        {(kelurahanId || zonaId || wilayahId || rtFilter || status || bulan !== (new Date().getMonth() + 1).toString()) && (
           <button
             onClick={() => {
+              setKelurahanId("");
+              setZonaId("");
               setWilayahId("");
               setRtFilter("");
               setStatus("");
@@ -670,12 +791,22 @@ export default function TagihanPage() {
           </button>
         )}
 
-        {(rtFilter || wilayahId) && (
-          <div className="flex items-center gap-1.5 text-xs font-bold bg-yellow-200 border-2 border-black px-3 py-1.5">
-            <span>🔍 Filter RT:</span>
-            {wilayahId && (
-              <span className="font-black underline">
-                {wilayahList.find((w) => w.id === parseInt(wilayahId))?.nama || "Wilayah"}
+        {(kelurahanId || zonaId || wilayahId || rtFilter) && (
+          <div className="flex items-center gap-1.5 text-xs font-bold bg-yellow-200 border-2 border-black px-3 py-1.5 flex-wrap">
+            <span>🔍 Filter Aktif:</span>
+            {kelurahanId && (
+              <span className="font-black bg-white px-1.5 py-0.5 border border-black text-[11px]">
+                🏛️ {kelurahanList.find((k) => k.id === parseInt(kelurahanId))?.nama}
+              </span>
+            )}
+            {zonaId && (
+              <span
+                className="font-black text-black px-2 py-0.5 text-[11px] border border-black"
+                style={{
+                  backgroundColor: zonaList.find((z) => z.id === parseInt(zonaId))?.warna || "#6ee7b7",
+                }}
+              >
+                🏷️ {zonaList.find((z) => z.id === parseInt(zonaId))?.nama}
               </span>
             )}
             {rtFilter && (
@@ -683,7 +814,7 @@ export default function TagihanPage() {
                 RT {rtFilter}
               </span>
             )}
-            <span className="text-gray-800">({tagihan.length} tagihan)</span>
+            <span className="text-gray-800 font-bold">({tagihan.length} tagihan)</span>
           </div>
         )}
       </div>
@@ -734,13 +865,28 @@ export default function TagihanPage() {
                     <td className="px-4 py-3">
                       <div className="font-medium text-black font-black">{t.pelanggan.nama}</div>
                       <div className="text-xs text-gray-600 font-bold">{t.pelanggan.noTelepon || "-"}</div>
-                      {(t.pelanggan.rtRw || t.pelanggan.wilayah?.nama || t.pelanggan.wilayah?.rt) && (
-                        <div className="mt-1">
+                      <div className="mt-1 flex flex-wrap gap-1 items-center">
+                        {t.pelanggan.kelurahan?.nama && (
+                          <span className="inline-flex items-center text-[10px] font-bold bg-white text-black border border-black px-1.5 py-0.5">
+                            🏛️ {t.pelanggan.kelurahan.nama}
+                          </span>
+                        )}
+                        {t.pelanggan.wilayah?.zona?.nama && (
+                          <span
+                            className="inline-flex items-center text-[10px] font-black text-black border border-black px-1.5 py-0.5"
+                            style={{
+                              backgroundColor: t.pelanggan.wilayah.zona.warna || "#a7f3d0",
+                            }}
+                          >
+                            🏷️ {t.pelanggan.wilayah.zona.nama}
+                          </span>
+                        )}
+                        {(t.pelanggan.rtRw || t.pelanggan.wilayah?.nama || t.pelanggan.wilayah?.rt) && (
                           <span className="inline-flex items-center text-[10px] font-black bg-yellow-300 text-black border border-black px-1.5 py-0.5">
                             📍 {t.pelanggan.rtRw || `${t.pelanggan.wilayah?.nama || ""}${t.pelanggan.wilayah?.rt ? ` (RT ${t.pelanggan.wilayah.rt})` : ""}`}
                           </span>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-3 text-gray-600 font-bold">
                       {bulanList.find((b) => b.value === t.bulan.toString())?.label} {t.tahun}
@@ -749,7 +895,12 @@ export default function TagihanPage() {
                       {formatRupiah(t.jumlah + (t.denda || 0))}
                       {t.denda ? <span className="block text-xs text-red-600">+ denda {formatRupiah(t.denda)}</span> : null}
                     </td>
-                    <td className="px-4 py-3 text-gray-600 font-bold text-xs">{formatDate(t.jatuhTempo)}</td>
+                    <td className="px-4 py-3 text-gray-600 font-bold text-xs">
+                      <div>{formatDate(t.jatuhTempo)}</div>
+                      <div className="text-[10px] text-gray-500 font-mono">
+                        Siklus tgl {new Date(t.jatuhTempo).getDate()}
+                      </div>
+                    </td>
                     <td className="px-4 py-3 text-center">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-none-full text-xs font-medium ${
                         t.status === "lunas" ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" :
@@ -834,6 +985,7 @@ export default function TagihanPage() {
                       <thead className="sticky top-0 bg-gray-100">
                         <tr className="text-[10px] font-black uppercase border-b-2 border-black">
                           <th className="px-3 py-2 text-left border-r-2 border-black">Pelanggan</th>
+                          <th className="px-3 py-2 text-left border-r-2 border-black">Siklus / Jatuh Tempo</th>
                           <th className="px-3 py-2 text-left border-r-2 border-black">Level</th>
                           <th className="px-3 py-2 text-right">Nominal (Rp)</th>
                         </tr>
@@ -844,6 +996,14 @@ export default function TagihanPage() {
                             <td className="px-3 py-2 border-r-2 border-black">
                               <p className="font-black text-xs uppercase">{p.nama}</p>
                               <p className="text-[10px] text-gray-500">{p.kodePelanggan}{p.paket ? ` · ${p.paket}` : ""}</p>
+                            </td>
+                            <td className="px-3 py-2 border-r-2 border-black text-xs font-bold">
+                              <div>{p.jatuhTempo ? formatDate(p.jatuhTempo) : "-"}</div>
+                              {p.hariSiklus ? (
+                                <span className="text-[10px] text-sky-700 font-mono">
+                                  Siklus tgl {p.hariSiklus}
+                                </span>
+                              ) : null}
                             </td>
                             <td className="px-3 py-2 border-r-2 border-black text-xs font-bold uppercase">{p.kategori.replace(/_/g, " ")}</td>
                             <td className="px-3 py-2 text-right">
@@ -985,8 +1145,8 @@ export default function TagihanPage() {
               <div className="flex items-center gap-2">
                 <span className="text-2xl">📢</span>
                 <div>
-                  <h2 className="font-black uppercase tracking-tight text-lg text-black">Blast WA Tagihan RT</h2>
-                  <p className="text-xs font-bold text-black/80">Kirim pengingat tagihan WhatsApp massal per wilayah / RT</p>
+                  <h2 className="font-black uppercase tracking-tight text-lg text-black">Blast WA Tagihan Zona & RT</h2>
+                  <p className="text-xs font-bold text-black/80">Kirim pengingat tagihan WhatsApp massal per Zona, Kelurahan, atau RT</p>
                 </div>
               </div>
               <button
@@ -1012,16 +1172,57 @@ export default function TagihanPage() {
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-black uppercase mb-1">Kelurahan</label>
+                    <select
+                      value={blastKelurahanId}
+                      onChange={(e) => {
+                        const newKel = e.target.value;
+                        setBlastKelurahanId(newKel);
+                        setBlastZonaId("");
+                        loadBlastPreview({ kelurahanId: newKel, zonaId: "" });
+                      }}
+                      className="w-full px-2 py-2 border-2 border-black text-xs font-bold bg-white focus:outline-none"
+                    >
+                      <option value="">Semua Kelurahan</option>
+                      {kelurahanList.map((k) => (
+                        <option key={k.id} value={k.id.toString()}>
+                          🏛️ {k.nama}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-black uppercase mb-1">Zona Operasional</label>
+                    <select
+                      value={blastZonaId}
+                      onChange={(e) => {
+                        const newZona = e.target.value;
+                        setBlastZonaId(newZona);
+                        loadBlastPreview({ zonaId: newZona });
+                      }}
+                      className="w-full px-2 py-2 border-2 border-black text-xs font-bold bg-white focus:outline-none"
+                    >
+                      <option value="">Semua Zona</option>
+                      {availableBlastZonas.map((z) => (
+                        <option key={z.id} value={z.id.toString()}>
+                          🏷️ {z.nama}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
                   <div>
                     <label className="block text-[11px] font-black uppercase mb-1">Wilayah</label>
                     <select
                       value={blastWilayahId}
                       onChange={(e) => {
                         setBlastWilayahId(e.target.value);
-                        loadBlastPreview(e.target.value, blastRt, blastBulan, blastTahun, blastStatusFilter);
+                        loadBlastPreview({ wilayahId: e.target.value });
                       }}
-                      className="w-full px-2.5 py-2 border-2 border-black text-xs font-bold bg-white focus:outline-none"
+                      className="w-full px-2 py-2 border-2 border-black text-xs font-bold bg-white focus:outline-none"
                     >
                       <option value="">Semua Wilayah</option>
                       {wilayahList.map((w) => (
@@ -1040,14 +1241,14 @@ export default function TagihanPage() {
                         placeholder="Contoh: 01, 02..."
                         value={blastRt}
                         onChange={(e) => setBlastRt(e.target.value)}
-                        onBlur={() => loadBlastPreview(blastWilayahId, blastRt, blastBulan, blastTahun, blastStatusFilter)}
+                        onBlur={() => loadBlastPreview({ rt: blastRt })}
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             e.preventDefault();
-                            loadBlastPreview(blastWilayahId, blastRt, blastBulan, blastTahun, blastStatusFilter);
+                            loadBlastPreview({ rt: blastRt });
                           }
                         }}
-                        className="w-full px-2.5 py-2 border-2 border-black text-xs font-bold bg-white focus:outline-none placeholder:text-gray-400"
+                        className="w-full px-2 py-2 border-2 border-black text-xs font-bold bg-white focus:outline-none placeholder:text-gray-400"
                       />
                     </div>
                   </div>
@@ -1058,16 +1259,52 @@ export default function TagihanPage() {
                       value={blastStatusFilter}
                       onChange={(e) => {
                         setBlastStatusFilter(e.target.value);
-                        loadBlastPreview(blastWilayahId, blastRt, blastBulan, blastTahun, e.target.value);
+                        loadBlastPreview({ statusFilter: e.target.value });
                       }}
-                      className="w-full px-2.5 py-2 border-2 border-black text-xs font-bold bg-white focus:outline-none"
+                      className="w-full px-2 py-2 border-2 border-black text-xs font-bold bg-white focus:outline-none"
                     >
-                      <option value="semua_belum_lunas">Semua Belum Lunas (Belum Bayar + Tunggakan)</option>
+                      <option value="semua_belum_lunas">Semua Belum Lunas</option>
                       <option value="belum_bayar">Hanya Belum Bayar</option>
                       <option value="tunggakan">Hanya Tunggakan</option>
                     </select>
                   </div>
                 </div>
+
+                {/* Quick Zona buttons */}
+                {availableBlastZonas.length > 0 && (
+                  <div className="flex items-center gap-1.5 flex-wrap pt-1">
+                    <span className="text-[10px] font-black uppercase text-gray-500">Pilih Cepat Zona:</span>
+                    {availableBlastZonas.map((z) => (
+                      <button
+                        key={z.id}
+                        type="button"
+                        onClick={() => {
+                          const newZ = blastZonaId === z.id.toString() ? "" : z.id.toString();
+                          setBlastZonaId(newZ);
+                          loadBlastPreview({ zonaId: newZ });
+                        }}
+                        className={`text-[11px] font-black px-2 py-0.5 border border-black transition ${
+                          blastZonaId === z.id.toString() ? "bg-black text-white" : "hover:bg-yellow-200"
+                        }`}
+                        style={blastZonaId !== z.id.toString() ? { backgroundColor: z.warna || "#f3f4f6" } : undefined}
+                      >
+                        🏷️ {z.nama}
+                      </button>
+                    ))}
+                    {blastZonaId && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setBlastZonaId("");
+                          loadBlastPreview({ zonaId: "" });
+                        }}
+                        className="text-[11px] font-bold text-red-600 underline ml-1 hover:text-black"
+                      >
+                        Reset Zona
+                      </button>
+                    )}
+                  </div>
+                )}
 
                 {/* Quick RT buttons */}
                 <div className="flex items-center gap-1.5 flex-wrap pt-1">
@@ -1078,7 +1315,7 @@ export default function TagihanPage() {
                       type="button"
                       onClick={() => {
                         setBlastRt(rtVal);
-                        loadBlastPreview(blastWilayahId, rtVal, blastBulan, blastTahun, blastStatusFilter);
+                        loadBlastPreview({ rt: rtVal });
                       }}
                       className={`text-[11px] font-black px-2 py-0.5 border border-black transition ${
                         blastRt === rtVal ? "bg-black text-white" : "bg-white hover:bg-yellow-200"
@@ -1092,7 +1329,7 @@ export default function TagihanPage() {
                       type="button"
                       onClick={() => {
                         setBlastRt("");
-                        loadBlastPreview(blastWilayahId, "", blastBulan, blastTahun, blastStatusFilter);
+                        loadBlastPreview({ rt: "" });
                       }}
                       className="text-[11px] font-bold text-red-600 underline ml-1 hover:text-black"
                     >
@@ -1139,9 +1376,10 @@ export default function TagihanPage() {
                     <p className="text-xl font-black text-black">{formatRupiah(blastPreview.totalNominal)}</p>
                   </div>
                   <div className="border-2 border-black p-3 bg-white col-span-2 sm:col-span-1">
-                    <p className="text-[10px] font-black uppercase text-gray-700">Filter Wilayah / RT</p>
+                    <p className="text-[10px] font-black uppercase text-gray-700">Filter Zona & RT</p>
                     <p className="text-xs font-black text-black mt-1">
-                      {blastRt ? `RT ${blastRt}` : "Semua RT"}
+                      {blastPreview.zonaNama ? `🏷️ Zona ${blastPreview.zonaNama}` : (blastZonaId ? `Zona #${blastZonaId}` : "Semua Zona")}
+                      {blastRt ? ` · RT ${blastRt}` : ""}
                       {blastWilayahId ? ` · ${wilayahList.find((w) => w.id === parseInt(blastWilayahId))?.nama || ""}` : ""}
                     </p>
                   </div>
@@ -1177,7 +1415,7 @@ export default function TagihanPage() {
                       Daftar Warga Target ({blastPreview.recipients.length} dari {blastPreview.totalWarga})
                     </span>
                     <span className="text-[10px] font-bold text-gray-300">
-                      Diurutkan per RT & Nama
+                      Diurutkan per Zona & RT
                     </span>
                   </div>
                   <div className="max-h-48 overflow-y-auto divide-y divide-gray-200 text-xs">
@@ -1187,9 +1425,25 @@ export default function TagihanPage() {
                           <span className="font-mono text-gray-400 font-bold w-5 text-right">{idx + 1}.</span>
                           <div>
                             <p className="font-black text-black">{r.nama}</p>
-                            <p className="text-[10px] text-gray-600">
-                              {r.noTelepon || "Tanpa No. WA"} · <span className="font-bold">{r.rtRw}</span>
-                            </p>
+                            <div className="text-[10px] text-gray-600 flex items-center gap-1 flex-wrap mt-0.5">
+                              <span>{r.noTelepon || "Tanpa No. WA"}</span>
+                              {r.kelurahanNama && r.kelurahanNama !== "-" && (
+                                <span className="border border-black px-1 bg-white text-[9px] font-bold">
+                                  🏛️ {r.kelurahanNama}
+                                </span>
+                              )}
+                              {r.zonaNama && r.zonaNama !== "-" && (
+                                <span
+                                  className="border border-black px-1.5 text-black text-[9px] font-black"
+                                  style={{ backgroundColor: r.zonaWarna || "#a7f3d0" }}
+                                >
+                                  🏷️ {r.zonaNama}
+                                </span>
+                              )}
+                              <span className="font-bold bg-yellow-200 border border-black px-1 text-[9px]">
+                                📍 {r.rtRw}
+                              </span>
+                            </div>
                           </div>
                         </div>
                         <div className="text-right flex items-center gap-2">
