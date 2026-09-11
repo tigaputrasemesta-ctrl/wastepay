@@ -358,50 +358,62 @@ export default function Sidebar() {
   return (
     <aside
       className={cn(
-        "bg-white text-black flex flex-col transition-all duration-200 border-r-2 border-black",
+        "bg-white text-slate-800 flex flex-col transition-all duration-200 border-r border-slate-200/80 select-none",
         collapsed ? "w-16" : "w-64"
       )}
     >
       {/* Logo */}
-      <div className="flex items-center justify-between px-4 h-14 border-b-2 border-black bg-[#f4f4f0]">
+      <div className="flex items-center justify-between px-4 h-16 border-b border-slate-100 bg-white">
         {collapsed ? (
-          <div className="w-8 h-8 border-2 border-black bg-black flex items-center justify-center shrink-0 shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
-            <span className="text-[9px] font-black text-white leading-none tracking-tighter">TPS</span>
+          <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center shrink-0 shadow-xs">
+            <span className="text-xs font-black text-white leading-none">WP</span>
           </div>
         ) : (
-          <O2WLogo size="sm" />
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-sm shadow-2xs">
+              🚛
+            </div>
+            <span className="font-extrabold text-base tracking-tight text-slate-900">
+              WastePay <span className="text-emerald-600 text-xs font-bold uppercase ml-1 px-1.5 py-0.5 rounded-full bg-emerald-50">Admin</span>
+            </span>
+          </div>
         )}
         <button
           onClick={() => setCollapsed(!collapsed)}
           aria-label={collapsed ? "Perluas menu" : "Ciutkan menu"}
-          className="text-black hover:text-red-600 transition-colors p-1"
+          className="text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg p-1.5 transition-colors"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-            <path strokeLinecap="square" strokeLinejoin="miter" d={collapsed ? "M13 5l7 7-7 7M5 5l7 7-7 7" : "M11 19l-7-7 7-7m8 14l-7-7 7-7"} />
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d={collapsed ? "M13 5l7 7-7 7M5 5l7 7-7 7" : "M11 19l-7-7 7-7m8 14l-7-7 7-7"} />
           </svg>
         </button>
       </div>
 
       {/* User info */}
       {user && !collapsed && (
-        <div className="px-4 py-3 border-b-2 border-black bg-yellow-50">
-          <p className="text-sm font-black truncate">{user.nama}</p>
-          <p className="text-[10px] uppercase font-bold text-red-600 mt-1 bg-white border border-red-600 inline-block px-1">
-            {ROLE_LABELS[user.role as keyof typeof ROLE_LABELS] || user.role}
-          </p>
+        <div className="px-3.5 py-2.5 mx-3 my-2.5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 font-extrabold flex items-center justify-center text-xs shrink-0">
+            {user.nama.charAt(0).toUpperCase()}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-extrabold text-slate-900 truncate leading-tight">{user.nama}</p>
+            <span className="inline-block text-[10px] font-bold text-emerald-700 uppercase tracking-wide mt-0.5">
+              {ROLE_LABELS[user.role as keyof typeof ROLE_LABELS] || user.role}
+            </span>
+          </div>
         </div>
       )}
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-4 px-2 uppercase scrollbar-thin scrollbar-thumb-black scrollbar-track-transparent">
+      <nav className="flex-1 overflow-y-auto py-3 px-3 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
         {groupedMenus.map((group) => (
-          <div key={group.key} className="mb-6">
+          <div key={group.key} className="mb-5">
             {!collapsed && (
-              <p className="text-[10px] font-black tracking-widest text-gray-500 px-3 mb-2 border-b-2 border-transparent">
+              <p className="text-[10px] font-extrabold tracking-wider text-slate-400 px-3 mb-1.5 uppercase">
                 {group.label}
               </p>
             )}
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               {group.items.map((item) => {
                 const isActive =
                   pathname === item.href ||
@@ -412,11 +424,11 @@ export default function Sidebar() {
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
                     className={cn(
-                      "flex items-center gap-3 pl-3 pr-2 py-2 text-[11px] font-bold transition-all relative group",
-                      collapsed && "justify-center pl-0",
+                      "flex items-center gap-3 px-3 py-2 text-xs font-bold rounded-xl transition-all relative group",
+                      collapsed && "justify-center px-0",
                       isActive
-                        ? "bg-black text-white border-l-4 border-black"
-                        : "text-black hover:bg-gray-100 hover:translate-x-1 border-l-4 border-transparent"
+                        ? "bg-emerald-50 text-emerald-700 font-extrabold shadow-2xs"
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                     )}
                     title={collapsed ? item.label : undefined}
                   >
@@ -425,7 +437,7 @@ export default function Sidebar() {
                     </span>
                     {!collapsed && (
                       <span className="flex items-center justify-between flex-1">
-                        <span className="tracking-widest">{item.label}</span>
+                        <span>{item.label}</span>
                       </span>
                     )}
                   </Link>
@@ -437,19 +449,19 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer / Logout */}
-      <div className="border-t-2 border-black p-2 uppercase bg-[#f4f4f0]">
+      <div className="border-t border-slate-100 p-3 bg-white">
         <button
           onClick={handleLogout}
           aria-label="Keluar dari sistem"
           className={cn(
-            "flex items-center gap-3 px-3 py-2.5 text-black hover:text-white hover:bg-red-600 transition-colors w-full text-[11px] font-bold tracking-widest",
+            "flex items-center gap-2.5 px-3 py-2 rounded-xl text-rose-600 hover:bg-rose-50 transition-colors w-full text-xs font-bold",
             collapsed && "justify-center px-0"
           )}
         >
-          <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-            <path strokeLinecap="square" strokeLinejoin="miter" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
-          {!collapsed && <span>LOGOUT</span>}
+          {!collapsed && <span>Keluar Sistem</span>}
         </button>
       </div>
     </aside>

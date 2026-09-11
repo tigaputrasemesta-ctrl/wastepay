@@ -50,97 +50,102 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f4f0] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="text-center space-y-4">
-          <div className="inline-block px-4 py-1 border-2 border-black font-bold uppercase text-xs mb-2 bg-black text-white shadow-[2px_2px_0_0_#10b981]">
-            UPS HERU / LOGIN ADMIN
-          </div>
-          <h2 className="text-5xl font-black uppercase tracking-tighter">
-            MASUK <span className="text-red-600">SISTEM.</span>
-          </h2>
-          <p className="font-bold uppercase tracking-widest text-xs">
-            HANYA UNTUK STAF DAN PETUGAS.
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center space-y-3">
+        <div className="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-800 border border-emerald-200/80 flex items-center justify-center mx-auto text-2xl shadow-xs">
+          🚛
+        </div>
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+            Portal Petugas & Admin
+          </h1>
+          <p className="text-xs text-slate-500 font-medium mt-1">
+            Sistem Informasi Pengelolaan & Retribusi Sampah Kota Depok
           </p>
         </div>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="hm-card bg-white p-8">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
+        <div className="bg-white rounded-3xl border border-slate-200/80 p-7 sm:p-9 shadow-sm">
+          <form className="space-y-5" onSubmit={handleSubmit}>
+            <div className="space-y-1.5">
               <label
                 htmlFor="email"
-                className="block text-xs font-bold uppercase tracking-widest mb-2"
+                className="block text-xs font-bold text-slate-700"
               >
-                ALAMAT EMAIL <span className="text-red-600">*</span>
+                Alamat Email Petugas / Admin <span className="text-rose-500">*</span>
               </label>
-              <div className="mt-1">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-[#f4f4f0] hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 uppercase"
-                  placeholder="admin@upsheru.com"
-                />
-              </div>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400 placeholder:font-normal"
+                placeholder="nama@upsheru.com"
+              />
             </div>
 
-            <div>
+            <div className="space-y-1.5">
               <label
                 htmlFor="password"
-                className="block text-xs font-bold uppercase tracking-widest mb-2"
+                className="block text-xs font-bold text-slate-700"
               >
-                KATA SANDI <span className="text-red-600">*</span>
+                Kata Sandi <span className="text-rose-500">*</span>
               </label>
-              <div className="mt-1">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-[#f4f4f0] hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 uppercase"
-                  placeholder="••••••••"
-                />
-              </div>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400 placeholder:font-normal"
+                placeholder="Masukkan kata sandi"
+              />
             </div>
 
             {error && (
-              <div className="p-4 border-2 font-bold uppercase text-sm bg-red-50 border-red-600 text-red-600 text-center">
+              <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium text-center">
                 {error}
               </div>
             )}
 
-            <div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="hm-btn-red w-full mt-4"
-              >
-                {loading ? "MEMVERIFIKASI DATA..." : "MASUK SISTEM"}
-              </button>
-            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm shadow-md active:scale-98 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Memverifikasi Akun...</span>
+                </>
+              ) : (
+                <span>Masuk ke Sistem 🔐</span>
+              )}
+            </button>
           </form>
         </div>
+
         <div className="mt-6 text-center">
           <Link
             href="/unduh"
-            className="inline-block hm-border bg-white px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 bg-white border border-slate-200/80 rounded-full px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all shadow-2xs"
           >
-            📱 Unduh App Android (UPS HERU Lapangan)
+            <span>📱</span>
+            <span>Unduh Aplikasi Android Petugas</span>
           </Link>
         </div>
-        <div className="mt-8 text-center text-xs font-bold uppercase tracking-widest text-black">
-          <p>UPS HERU DEPOK © {new Date().getFullYear()}</p>
-          <div className="mt-2 flex items-center justify-center gap-2">
-            <span className="w-2 h-2 bg-green-500 rounded-full border border-black animate-pulse" /> SISTEM ONLINE
+
+        <div className="mt-8 text-center text-[11px] text-slate-400 font-medium">
+          <p>© {new Date().getFullYear()} WastePay • UPS HERU Kota Depok</p>
+          <div className="mt-1.5 flex items-center justify-center gap-1.5 text-emerald-600 font-semibold text-[10px]">
+            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+            <span>SISTEM OPERASIONAL AKTIF</span>
           </div>
         </div>
       </div>

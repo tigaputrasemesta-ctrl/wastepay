@@ -9,12 +9,12 @@
   }
   
   html, body {
-    @apply bg-white text-black font-sans antialiased;
+    @apply bg-white text-slate-900 font-sans antialiased;
     cursor: default;
   }
 
   ::selection {
-    @apply bg-red-500 text-white;
+    @apply bg-emerald-600 text-white;
   }
 }
 

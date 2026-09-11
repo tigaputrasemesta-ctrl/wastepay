@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 
@@ -58,24 +58,25 @@ export default function TimelineSection() {
   const [activeIdx, setActiveIdx] = useState<number>(4);
 
   return (
-    <section className="border-b-2 border-black bg-white py-20 px-6 relative overflow-hidden">
+    <section className="border-b border-slate-200/80 bg-slate-50/50 py-20 px-6 relative overflow-hidden">
       <div className="max-w-6xl mx-auto">
         {/* Header Section */}
         <div className="mb-14">
-          <div className="inline-block px-3 py-1 bg-black text-white font-black text-xs uppercase tracking-widest mb-4 border-2 border-black shadow-[2px_2px_0_0_#10b981]">
-            PERJALANAN 12 TAHUN UPS HERU
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold uppercase tracking-wider rounded-full mb-4">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            Perjalanan 12 Tahun Dedikasi
           </div>
-          <h2 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tighter text-black leading-none">
-            Dari Gerobak <br />
-            <span className="text-emerald-600">ke Geotag.</span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
+            Dari Gerobak Kayu <br />
+            <span className="text-emerald-600">Menuju Era Geotag & GPS.</span>
           </h2>
-          <p className="text-lg md:text-xl font-medium text-gray-700 max-w-2xl mt-4 leading-relaxed">
-            12 tahun kami bolak-balik jalanan Depok — jauh sebelum kata &ldquo;startup sampah&rdquo; jadi tren. Ini perjalanan nyata kami merawat kota.
+          <p className="text-base md:text-lg font-normal text-slate-600 max-w-2xl mt-3 leading-relaxed">
+            12 tahun konsisten merawat jalanan Kota Depok jauh sebelum teknologi pengelolaan sampah menjadi tren. Ini perjalanan nyata transformasi layanan kami.
           </p>
         </div>
 
         {/* Timeline Nav / Tab Buttons (Desktop & Tablet) */}
-        <div className="hidden md:flex items-center justify-between border-2 border-black bg-[#f4f4f0] p-2 mb-8 shadow-[4px_4px_0_0_#000]">
+        <div className="hidden md:flex items-center justify-between bg-white rounded-2xl p-1.5 mb-8 border border-slate-200/80 shadow-xs">
           {MILESTONES.map((m, idx) => {
             const isActive = activeIdx === idx;
             return (
@@ -83,76 +84,74 @@ export default function TimelineSection() {
                 type="button"
                 key={m.year}
                 onClick={() => setActiveIdx(idx)}
-                className={`flex-1 py-3 px-4 text-center font-black uppercase transition-all duration-150 border-2 ${
+                className={`flex-1 py-3 px-4 text-center font-bold transition-all duration-150 rounded-xl ${
                   isActive
-                    ? "bg-black text-white border-black shadow-[3px_3px_0_0_#10b981] -translate-y-0.5"
-                    : "bg-transparent text-gray-600 border-transparent hover:text-black hover:bg-white"
+                    ? "bg-emerald-600 text-white shadow-xs"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                 }`}
               >
-                <span className="text-xs block tracking-widest opacity-80">{m.icon} TAHUN</span>
-                <span className="text-2xl font-mono tracking-tighter">{m.year}</span>
+                <span className="text-[10px] block tracking-widest uppercase opacity-80">{m.icon} {m.year}</span>
+                <span className="text-sm font-extrabold truncate block mt-0.5">{m.badge}</span>
               </button>
             );
           })}
         </div>
 
         {/* Highlight Card for Desktop Selected Milestone */}
-        <div className="hidden md:block hm-card bg-emerald-50 border-2 border-black p-8 mb-12 shadow-[8px_8px_0_0_#000]">
+        <div className="hidden md:block bg-white rounded-3xl border border-slate-200/80 p-8 mb-8 shadow-xs">
           <div className="flex items-start justify-between gap-6">
             <div className="flex-1">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500 text-black border-2 border-black text-xs font-black uppercase tracking-widest mb-4">
-                <span>{MILESTONES[activeIdx].badge}</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold rounded-full mb-4">
+                <span>{MILESTONES[activeIdx].badge} • TAHUN {MILESTONES[activeIdx].year}</span>
               </div>
-              <h3 className="text-3xl font-black uppercase tracking-tight text-black mb-3">
+              <h3 className="text-2xl font-extrabold tracking-tight text-slate-900 mb-2">
                 {MILESTONES[activeIdx].title}
               </h3>
-              <p className="text-lg font-medium text-gray-800 leading-relaxed max-w-3xl">
+              <p className="text-base text-slate-600 leading-relaxed max-w-3xl">
                 {MILESTONES[activeIdx].desc}
               </p>
-              <div className="mt-6 pt-4 border-t-2 border-black/10 flex items-center gap-3 text-xs font-black uppercase text-emerald-800 tracking-wider">
-                <span className="w-2 h-2 rounded-full bg-emerald-600" />
-                <span>Pencapaian: {MILESTONES[activeIdx].highlight}</span>
+              <div className="mt-5 pt-4 border-t border-slate-100 flex items-center gap-2 text-xs font-bold text-emerald-700">
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                <span>Tonggak Utama: {MILESTONES[activeIdx].highlight}</span>
               </div>
             </div>
 
-            <div className="w-24 h-24 bg-white border-2 border-black rounded-2xl flex items-center justify-center text-5xl shadow-[4px_4px_0_0_#000] shrink-0">
+            <div className="w-20 h-20 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center justify-center text-4xl shrink-0">
               {MILESTONES[activeIdx].icon}
             </div>
           </div>
         </div>
 
         {/* Vertical Stepped Cards (Mobile / Responsive Timeline Grid) */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-3.5">
           {MILESTONES.map((m, idx) => {
-            const isLatest = idx === MILESTONES.length - 1;
+            const isActive = activeIdx === idx;
             return (
               <div
                 key={m.year}
                 onClick={() => setActiveIdx(idx)}
-                className={`border-2 border-black p-5 cursor-pointer transition-all duration-200 flex flex-col justify-between ${
-                  activeIdx === idx
-                    ? "bg-yellow-300 shadow-[6px_6px_0_0_#000] -translate-y-1"
-                    : isLatest
-                    ? "bg-emerald-100/70 shadow-[4px_4px_0_0_#000] hover:bg-emerald-100"
-                    : "bg-white shadow-[4px_4px_0_0_#000] hover:bg-gray-50"
+                className={`p-4 rounded-2xl cursor-pointer transition-all duration-200 flex flex-col justify-between border ${
+                  isActive
+                    ? "bg-emerald-50/80 border-emerald-500 shadow-sm ring-2 ring-emerald-500/20"
+                    : "bg-white border-slate-200/80 hover:border-slate-300 shadow-xs"
                 }`}
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-mono text-2xl font-black tracking-tighter text-black">
+                    <span className="text-xl font-extrabold tracking-tight text-slate-900">
                       {m.year}
                     </span>
-                    <span className="text-2xl">{m.icon}</span>
+                    <span className="text-xl">{m.icon}</span>
                   </div>
-                  <h4 className="text-sm font-black uppercase text-black leading-tight mb-2">
+                  <h4 className="text-xs font-bold text-slate-900 leading-tight mb-1.5">
                     {m.title}
                   </h4>
-                  <p className="text-xs font-medium text-gray-700 leading-snug line-clamp-3">
+                  <p className="text-[11px] text-slate-500 leading-normal line-clamp-3">
                     {m.desc}
                   </p>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-black/20 text-[10px] font-black uppercase tracking-wider text-black">
+                <div className="mt-3 pt-2.5 border-t border-slate-100 text-[10px] font-bold uppercase tracking-wide text-emerald-700">
                   {m.badge} &rarr;
                 </div>
               </div>

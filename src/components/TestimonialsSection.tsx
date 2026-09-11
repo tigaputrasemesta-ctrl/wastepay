@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 type Testimonial = {
   quote: string;
@@ -55,25 +55,26 @@ const TESTIMONIALS: Testimonial[] = [
 
 export default function TestimonialsSection() {
   return (
-    <section className="border-b-2 border-black bg-[#f8fafc] py-20 px-6 relative">
+    <section className="border-b border-slate-200/80 bg-white py-20 px-6 relative">
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
-            <span className="inline-block px-3 py-1 bg-emerald-500 text-black border-2 border-black font-black uppercase text-xs tracking-widest mb-3 shadow-[2px_2px_0_0_#000]">
-              SUARA KOMUNITAS
+            <span className="inline-flex items-center gap-2 px-3.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold uppercase tracking-wider rounded-full mb-3">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              Suara Warga & Pelanggan
             </span>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black uppercase tracking-tighter text-black leading-tight">
-              Kata Warga <span className="text-emerald-600">Depok.</span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
+              Testimoni Warga <span className="text-emerald-600">Kota Depok.</span>
             </h2>
-            <p className="text-gray-700 text-base md:text-lg font-medium max-w-xl mt-2">
-              Cerita nyata dari tetangga dan pelaku usaha di Depok yang sudah lebih dulu bebas dari drama sampah harian.
+            <p className="text-slate-600 text-base md:text-lg font-normal max-w-xl mt-2">
+              Cerita nyata dari warga dan pelaku usaha di Depok yang telah menikmati kepastian jadwal penjemputan sampah harian.
             </p>
           </div>
 
-          <div className="flex items-center gap-3 font-mono text-xs font-black uppercase bg-white border-2 border-black px-4 py-2.5 shadow-[3px_3px_0_0_#000] self-start md:self-auto">
+          <div className="flex items-center gap-3 text-xs font-bold bg-slate-50 border border-slate-200/80 px-4 py-2.5 rounded-2xl shadow-xs self-start md:self-auto">
             <span className="text-amber-500 text-sm">★★★★★</span>
-            <span>RATING 4.9/5 DARI 2.000+ WARGA</span>
+            <span className="text-slate-800">Rating 4.9 / 5.0 dari 2.000+ Pelanggan</span>
           </div>
         </div>
 
@@ -82,7 +83,7 @@ export default function TestimonialsSection() {
           {TESTIMONIALS.map((t) => (
             <div
               key={t.name}
-              className="hm-card bg-white p-6 sm:p-8 flex flex-col justify-between border-2 border-black shadow-[6px_6px_0_0_#000] hover:shadow-[8px_8px_0_0_#059669] hover:-translate-y-1 transition-all"
+              className="rounded-3xl bg-slate-50/70 hover:bg-white border border-slate-200/80 hover:border-emerald-300 p-6 sm:p-8 flex flex-col justify-between shadow-xs hover:shadow-md transition-all duration-200"
             >
               <div>
                 {/* Stars & Badge */}
@@ -90,37 +91,37 @@ export default function TestimonialsSection() {
                   <div className="flex gap-1 text-amber-500 text-sm">
                     {"★".repeat(5)}
                   </div>
-                  <span className="inline-block px-2.5 py-0.5 bg-[#f4f4f0] border border-black text-[10px] font-black uppercase tracking-wider text-gray-800">
+                  <span className="inline-block px-2.5 py-1 bg-white border border-slate-200 text-[11px] font-bold text-slate-700 rounded-full shadow-2xs">
                     {t.badge}
                   </span>
                 </div>
 
                 {/* Quote Text */}
-                <p className="text-base sm:text-lg font-bold text-gray-900 leading-snug mb-6">
+                <p className="text-base sm:text-lg font-medium text-slate-800 leading-relaxed mb-6">
                   &ldquo;{t.quote}&rdquo;
                 </p>
               </div>
 
               {/* Author Info */}
-              <div className="pt-4 border-t-2 border-black/10 flex items-center justify-between gap-4">
+              <div className="pt-4 border-t border-slate-200/60 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-11 h-11 border-2 border-black rounded-full flex items-center justify-center font-black text-sm text-black shadow-[2px_2px_0_0_#000] ${t.color}`}
+                    className={`w-11 h-11 rounded-2xl flex items-center justify-center font-extrabold text-sm text-slate-800 shadow-xs ${t.color}`}
                   >
                     {t.initials}
                   </div>
                   <div>
-                    <h4 className="font-black text-sm sm:text-base uppercase text-black leading-tight">
+                    <h4 className="font-extrabold text-sm text-slate-900 leading-tight">
                       {t.name}
                     </h4>
-                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    <p className="text-xs font-medium text-slate-500 mt-0.5">
                       {t.role}
                     </p>
                   </div>
                 </div>
 
                 <div className="text-right">
-                  <span className="inline-block px-2.5 py-1 bg-emerald-100/80 border border-emerald-500 text-[10px] font-black uppercase text-emerald-900 tracking-wider">
+                  <span className="inline-block px-3 py-1 bg-emerald-50 border border-emerald-200 text-[11px] font-bold text-emerald-800 rounded-full">
                     📍 {t.area}
                   </span>
                 </div>

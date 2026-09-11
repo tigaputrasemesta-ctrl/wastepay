@@ -12,23 +12,23 @@ export const metadata: Metadata = {
 const ALUR_DAFTAR = [
   {
     no: "01",
-    judul: "ISI FORMULIR",
-    desc: "Lengkapin data diri sama alamat. Pendaftaran 100% GRATIS.",
+    judul: "Isi Formulir Online",
+    desc: "Lengkapi data diri dan alamat penjemputan. Pendaftaran 100% Bebas Biaya.",
   },
   {
     no: "02",
-    judul: "SURVEI LOKASI",
-    desc: "Petugas kita bakal hubungin buat cek rute angkut sampah.",
+    judul: "Verifikasi Rute Lapangan",
+    desc: "Petugas operasional memetakan koordinat rumah Anda ke armada terdekat.",
   },
   {
     no: "03",
-    judul: "DAPAT KODE",
-    desc: "Kalo ACC, dapet ID Pelanggan buat cek tagihan & lapor.",
+    judul: "Terima ID Pelanggan",
+    desc: "Setelah diverifikasi, Anda akan mendapatkan kode pelanggan resmi via WhatsApp.",
   },
   {
     no: "04",
-    judul: "BERES!",
-    desc: "Sampah diangkut rutin, tagihan dikirim lewat Bot WA.",
+    judul: "Pengangkutan Berjalan",
+    desc: "Sampah diangkut rutin sesuai jadwal, pantau posisi truk di peta kapan saja.",
   },
 ];
 
@@ -47,65 +47,73 @@ export default async function DaftarPage() {
   }
 
   return (
-    <div className="py-12 space-y-12">
-      <div className="text-center md:text-left">
-        <div className="inline-block px-4 py-1 hm-border font-bold uppercase text-xs mb-2 bg-[#f4f4f0] shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
-          UPS HERU / PENDAFTARAN BARU
+    <div className="py-8 md:py-12 space-y-8 md:space-y-10">
+      {/* Header Section */}
+      <div className="max-w-2xl">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold mb-3">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span>Registrasi Pelanggan Baru • Bebas Biaya Daftar</span>
         </div>
-        <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">
-          GABUNG UPS HERU <span className="text-green-600">SEKARANG.</span>
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
+          Daftar Layanan <span className="text-emerald-600">WastePay.</span>
         </h1>
-        <p className="font-bold uppercase tracking-widest text-sm max-w-2xl mt-4">
+        <p className="text-sm md:text-base text-slate-600 mt-3 leading-relaxed">
           {tarifMin > 0 ? (
             <>
-              BIAYA LANGGANAN MULAI DARI <span className="text-red-600">{formatRupiah(tarifMin)}</span> / BULAN. 
-              TIDAK ADA BIAYA PENDAFTARAN. LANGSUNG ISI FORMULIR DI BAWAH.
+              Iuran retribusi mulai dari <span className="font-bold text-emerald-700">{formatRupiah(tarifMin)}/bulan</span>. 
+              Tanpa biaya registrasi awal. Cukup lengkapi formulir di bawah ini.
             </>
           ) : (
-            "TIDAK ADA BIAYA PENDAFTARAN. LANGSUNG ISI FORMULIR DI BAWAH."
+            "Tanpa biaya registrasi awal. Cukup lengkapi formulir di bawah ini untuk mulai berlangganan."
           )}
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-5 gap-12 items-start">
-        {/* Langkah */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="hm-card bg-[#f4f4f0] p-0 divide-y-2 divide-black">
-            <div className="p-6 bg-white">
-              <h2 className="font-black text-2xl uppercase">ALUR DAFTAR</h2>
-            </div>
-            {ALUR_DAFTAR.map((l) => (
-              <div key={l.no} className="flex gap-6 p-6 items-start hover:bg-gray-50 transition-colors">
-                <span className="font-black text-4xl text-black">
-                  {l.no}
-                </span>
-                <div>
-                  <h3 className="font-black uppercase text-lg mb-1">{l.judul}</h3>
-                  <p className="text-xs font-bold uppercase">{l.desc}</p>
+      <div className="grid lg:grid-cols-12 gap-8 items-start">
+        {/* Panduan Alur (5 cols) */}
+        <div className="lg:col-span-5 space-y-4">
+          <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs">
+            <h2 className="font-extrabold text-base text-slate-900 mb-5">
+              Alur Pendaftaran Layanan
+            </h2>
+            <div className="space-y-5">
+              {ALUR_DAFTAR.map((l) => (
+                <div key={l.no} className="flex gap-4 items-start">
+                  <div className="w-10 h-10 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-700 shrink-0 font-extrabold text-xs">
+                    {l.no}
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-sm text-slate-900">{l.judul}</h3>
+                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">{l.desc}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
-          <div className="hm-card bg-red-50">
-            <p className="text-xs font-black text-red-600 uppercase mb-2">CATATAN PENTING</p>
-            <ul className="space-y-2 text-xs font-bold uppercase list-disc pl-4">
-              <li>LAYANAN AKTIF SETELAH DISETUJUI ADMIN.</li>
-              <li>PASTIKAN NOMOR WHATSAPP AKTIF.</li>
-              <li>KODE PELANGGAN AKAN DIKIRIM VIA WA.</li>
+          <div className="p-5 rounded-3xl bg-emerald-50/80 border border-emerald-200/80 text-xs text-emerald-900 leading-relaxed space-y-1.5">
+            <p className="font-bold">Informasi Penting:</p>
+            <ul className="space-y-1 text-emerald-800 text-[11px] list-disc pl-4 font-medium">
+              <li>Layanan aktif segera setelah verifikasi rute selesai oleh tim lapangan.</li>
+              <li>Pastikan nomor WhatsApp aktif untuk pengiriman kode pelanggan dan struk resmi.</li>
+              <li>Jadwal pengangkutan akan disesuaikan dengan ritase wilayah RT Anda.</li>
             </ul>
           </div>
-          
+
           <Link
             href="/bayar"
-            className="hm-btn w-full block text-center bg-[#f4f4f0]"
+            className="flex items-center justify-between p-4 bg-white hover:bg-slate-50 border border-slate-200/80 rounded-2xl transition-all shadow-xs group"
           >
-            SUDAH DAFTAR? CEK TAGIHAN
+            <div>
+              <p className="text-xs font-bold text-slate-900">Sudah Terdaftar Sebelumnya?</p>
+              <p className="text-[11px] text-slate-500">Cek status tagihan atau konfirmasi bukti pembayaran</p>
+            </div>
+            <span className="text-xs font-bold text-emerald-600 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
           </Link>
         </div>
 
-        {/* Form */}
-        <div className="lg:col-span-3">
+        {/* Form Pendaftaran (7 cols) */}
+        <div className="lg:col-span-7">
           <FormDaftar />
         </div>
       </div>

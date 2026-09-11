@@ -573,43 +573,44 @@ export default function TagihanPage() {
               : "Kelola tagihan iuran bulanan"}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
         {!isPetugas && (
         <>
         <button
           onClick={handleOpenBlastModal}
-          className="shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-emerald-400 hover:bg-emerald-300 text-black border-2 border-black px-4 py-2 rounded-none text-sm font-black transition flex items-center gap-2"
+          className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-xs active:scale-98 transition flex items-center gap-1.5"
           title="Kirim pesan WhatsApp massal ke seluruh warga yang belum bayar di RT tertentu"
         >
-          <span className="text-base">📢</span>
+          <span className="text-sm">📢</span>
           <span>Blast WA RT</span>
         </button>
         <button
           onClick={() => setShowGenerate(true)}
-          className="shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-400 hover:bg-green-300 text-black px-4 py-2 rounded-none text-sm font-medium transition flex items-center gap-2"
+          className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow-xs active:scale-98 transition flex items-center gap-1.5"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
-          Generate Tagihan
+          <span>Generate Tagihan</span>
         </button>
         <button
           onClick={() => { setShowAutoGenerate(true); setAutoResult(null); }}
-          className="hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:-translate-y-1 transition-all bg-green-300 text-black px-4 py-2 rounded-none text-sm font-medium transition flex items-center gap-2"
+          className="px-4 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-800 rounded-xl text-xs font-bold shadow-xs active:scale-98 transition flex items-center gap-1.5"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
-          Auto-Generate
+          <span>Auto-Generate</span>
         </button>
         </>
         )}
         <Link
           href={`/tagihan-cetak?bulan=${bulan || new Date().getMonth() + 1}&tahun=${tahun || new Date().getFullYear()}`}
           target="_blank"
-          className="bg-black text-white hover:bg-gray-800 px-4 py-2 rounded-none text-sm font-medium flex items-center gap-2"
+          className="px-4 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-800 rounded-xl text-xs font-bold shadow-xs active:scale-98 transition flex items-center gap-1.5"
         >
-          🖨 Cetak Massal
+          <span>🖨</span>
+          <span>Cetak Massal</span>
         </Link>
         </div>
       </div>
@@ -678,11 +679,11 @@ export default function TagihanPage() {
       )}
 
       {/* Filters */}
-      <div className="flex gap-3 mb-4 flex-wrap items-center">
+      <div className="flex gap-2.5 mb-4 flex-wrap items-center">
         <select
           value={bulan}
           onChange={(e) => setBulan(e.target.value)}
-          className="px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black bg-white font-bold"
+          className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 shadow-2xs"
         >
           <option value="">Semua Bulan</option>
           {bulanList.map((b) => (
@@ -692,7 +693,7 @@ export default function TagihanPage() {
         <select
           value={tahun}
           onChange={(e) => setTahun(e.target.value)}
-          className="px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black bg-white font-bold"
+          className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 shadow-2xs"
         >
           {[2024, 2025, 2026, 2027, 2028].map((t) => (
             <option key={t} value={t}>{t}</option>
@@ -701,7 +702,7 @@ export default function TagihanPage() {
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black bg-white font-bold"
+          className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 shadow-2xs"
         >
           <option value="">Semua Status</option>
           <option value="belum_bayar">Belum Bayar</option>
@@ -716,7 +717,7 @@ export default function TagihanPage() {
             setKelurahanId(e.target.value);
             setZonaId(""); // reset zona saat kelurahan berganti
           }}
-          className="px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black bg-white font-bold"
+          className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 shadow-2xs"
         >
           <option value="">Semua Kelurahan</option>
           {kelurahanList.map((k) => (
@@ -726,11 +727,11 @@ export default function TagihanPage() {
           ))}
         </select>
 
-        {/* Filter Zona (Berdasarkan https://o2whero.com/zona) */}
+        {/* Filter Zona */}
         <select
           value={zonaId}
           onChange={(e) => setZonaId(e.target.value)}
-          className="px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black bg-white font-bold"
+          className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 shadow-2xs"
         >
           <option value="">Semua Zona</option>
           {availableZonas.map((z) => (
@@ -744,7 +745,7 @@ export default function TagihanPage() {
         <select
           value={wilayahId}
           onChange={(e) => setWilayahId(e.target.value)}
-          className="px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black bg-white font-bold"
+          className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 shadow-2xs"
         >
           <option value="">Semua Wilayah</option>
           {wilayahList.map((w) => (
@@ -758,15 +759,15 @@ export default function TagihanPage() {
         <div className="relative flex items-center">
           <input
             type="text"
-            placeholder="Ketik No. RT (misal: 01, 02)..."
+            placeholder="No. RT (misal: 01)..."
             value={rtFilter}
             onChange={(e) => setRtFilter(e.target.value)}
-            className="px-3 py-2 border-2 border-black rounded-none text-sm focus:outline-none focus:ring-2 focus:ring-black w-48 bg-white font-bold placeholder:font-normal placeholder:text-gray-500"
+            className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 w-44 shadow-2xs placeholder:text-slate-400 placeholder:font-normal"
           />
           {rtFilter && (
             <button
               onClick={() => setRtFilter("")}
-              className="absolute right-2 text-xs font-bold text-gray-500 hover:text-black"
+              className="absolute right-2 text-xs font-bold text-slate-400 hover:text-slate-700"
               title="Hapus filter RT"
             >
               ✕
@@ -1113,23 +1114,40 @@ export default function TagihanPage() {
                   )}
                 </select>
                 {isPetugas && (
-                  <p className="text-xs text-green-600 bg-green-400/5 border border-vest/20 rounded-none px-3 py-2 mt-2">
+                  <p className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 mt-2">
                     Anda mencatat <b>pembayaran tunai</b> — tercatat atas nama Anda & langsung lunas.
                   </p>
                 )}
                 {formBayar.metode !== "tunai" && (
-                  <p className="text-xs text-amber bg-amber/5 border border-amber-200 rounded-none px-3 py-2 mt-2">
-                    Pembayaran non-tunai dicatat sebagai <b>pending</b> dan perlu diverifikasi admin di hm-card bg-white p-0 overflow-hidden di atas.
+                  <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 mt-2">
+                    Pembayaran non-tunai dicatat sebagai <b>pending</b> dan perlu diverifikasi admin di antrean verifikasi di atas.
                   </p>
                 )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-600 font-bold mb-1">Catatan (opsional)</label>
-                <input type="text" value={formBayar.catatan} onChange={(e) => setFormBayar({ ...formBayar, catatan: e.target.value })} className="w-full px-3 py-2 border-2 border-black rounded-none text-sm" placeholder="Bayar tunai via petugas" />
+                <label className="block text-xs font-bold text-slate-700 mb-1">Catatan (opsional)</label>
+                <input
+                  type="text"
+                  value={formBayar.catatan}
+                  onChange={(e) => setFormBayar({ ...formBayar, catatan: e.target.value })}
+                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  placeholder="Bayar tunai via petugas"
+                />
               </div>
-              <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => setShowBayar(null)} className="flex-1 px-4 py-2.5 border-2 border-black text-sm text-gray-700 font-black hover:bg-gray-100 uppercase transition-all">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2.5 bg-green-500 hover:bg-green-400 text-black border-2 border-black font-black text-sm uppercase shadow-[3px_3px_0_0_rgba(0,0,0,1)] hover:shadow-[5px_5px_0_0_rgba(0,0,0,1)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[1px_1px_0_0_rgba(0,0,0,1)] transition-all">Konfirmasi Bayar</button>
+              <div className="flex gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowBayar(null)}
+                  className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-xs active:scale-98 transition-all"
+                >
+                  Konfirmasi Bayar
+                </button>
               </div>
             </form>
           </div>

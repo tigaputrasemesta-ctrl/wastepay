@@ -163,23 +163,27 @@ export default function FormDaftar() {
 
   if (status === "ok" && hasil) {
     return (
-      <div className="hm-card text-center bg-green-50 border-green-600">
-        <div className="w-16 h-16 bg-green-600 border-2 border-black flex items-center justify-center mx-auto mb-6">
-          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="bg-white rounded-3xl border border-emerald-200/80 p-8 sm:p-10 text-center shadow-sm space-y-5">
+        <div className="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-3xl flex items-center justify-center mx-auto shadow-xs">
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <p className="font-bold uppercase tracking-widest mb-2 text-green-600">PENDAFTARAN BERHASIL</p>
-        <h3 className="font-black text-3xl mb-4 uppercase">{hasil.namaPelanggan}</h3>
-        <p className="text-sm font-bold uppercase mb-8">
-          Data telah masuk ke sistem kami. Mohon tunggu admin untuk verifikasi dan survei lokasi.
-        </p>
+        <div>
+          <span className="inline-block px-3 py-1 bg-emerald-50 text-emerald-800 text-xs font-bold rounded-full mb-2">
+            Pendaftaran Berhasil Terkirim
+          </span>
+          <h3 className="font-extrabold text-2xl text-slate-900">{hasil.namaPelanggan}</h3>
+          <p className="text-xs text-slate-500 mt-2 max-w-sm mx-auto leading-relaxed">
+            Data Anda telah tersimpan di sistem operasional. Tim survei akan menghubungi Anda untuk verifikasi rute armada.
+          </p>
+        </div>
         {hasil.kodePelanggan && (
-          <div className="border-4 border-black bg-white p-6 inline-block">
-            <p className="font-bold text-xs mb-2 uppercase">KODE PELANGGAN (NO. WHATSAPP)</p>
-            <p className="font-black text-4xl tracking-widest">{hasil.kodePelanggan}</p>
-            <p className="text-xs font-bold text-red-600 mt-2 uppercase">
-              GUNAKAN NOMOR WHATSAPP INI SEBAGAI KODE PELANGGAN UNTUK PENGECEKAN TAGIHAN, MELACAK STATUS, SERTA KOMPLAIN.
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 max-w-sm mx-auto text-center space-y-1">
+            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">ID Pelanggan (Nomor WhatsApp)</p>
+            <p className="font-extrabold text-2xl text-slate-900 font-mono tracking-wide">{hasil.kodePelanggan}</p>
+            <p className="text-[11px] text-emerald-700 font-medium pt-1">
+              Simpan nomor ini untuk pengecekan tagihan bulanan dan pelacakan truk sampah.
             </p>
           </div>
         )}
@@ -188,56 +192,61 @@ export default function FormDaftar() {
   }
 
   return (
-    <form onSubmit={submit} className="hm-card space-y-6 bg-[#f4f4f0]">
-      <div className="flex items-center justify-between border-b-2 border-black pb-4">
-        <span className="font-black uppercase text-2xl">FORMULIR PENDAFTARAN</span>
-        <span className="font-bold text-xs uppercase bg-black text-white px-2 py-1">REG.26</span>
+    <form onSubmit={submit} className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-sm space-y-6">
+      <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div>
+          <h2 className="font-extrabold text-lg text-slate-900">Formulir Pendaftaran</h2>
+          <p className="text-xs text-slate-500">Isi data lengkap lokasi penjemputan sampah Anda</p>
+        </div>
+        <span className="font-bold text-[10px] tracking-wide bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-1 rounded-full">
+          REG-2026
+        </span>
       </div>
 
       <div>
-        <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="d-nama">
-          NAMA LENGKAP / TOKO <span className="text-red-600">*</span>
+        <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-nama">
+          Nama Lengkap / Pemilik Tempat <span className="text-rose-500">*</span>
         </label>
         <input
           id="d-nama"
           value={nama}
           onChange={(e) => setNama(e.target.value)}
-          placeholder="CONTOH: BUDI SANTOSO"
-          className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 uppercase"
+          placeholder="Contoh: Bpk. Budi Santoso"
+          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
           required
           minLength={3}
         />
       </div>
 
       <div>
-        <label className="block text-xs font-bold uppercase tracking-widest mb-2" htmlFor="d-telp">
-          NOMOR WHATSAPP <span className="text-red-600">*</span>
+        <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-telp">
+          Nomor WhatsApp Aktif <span className="text-rose-500">*</span>
         </label>
         <input
           id="d-telp"
           value={noTelepon}
           onChange={(e) => setNoTelepon(e.target.value)}
-          placeholder="CONTOH: 08123456789"
-          className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 uppercase"
+          placeholder="Contoh: 081234567890"
+          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
           required
           inputMode="tel"
         />
-        <p className="text-[10px] font-bold text-red-600 mt-2 uppercase">
-          NOMOR WHATSAPP INI SEKALIGUS MENJADI KODE PELANGGAN ANDA. GUNAKAN NOMOR INI UNTUK PENGECEKAN TAGIHAN, MELACAK JEMPUTAN, SERTA PENGAJUAN KOMPLAIN.
+        <p className="text-[11px] text-slate-500 mt-1.5">
+          Nomor ini akan menjadi ID pelanggan Anda untuk cek tagihan, pelacakan live armada, dan notifikasi WhatsApp.
         </p>
       </div>
 
       <div className="space-y-4">
-        <label className="block text-xs font-bold uppercase tracking-widest mb-2">
-          PILIHAN LAYANAN <span className="text-red-600">*</span>
+        <label className="block text-xs font-bold text-slate-700">
+          Pilihan Layanan <span className="text-rose-500">*</span>
         </label>
         
         <div className="flex flex-col sm:flex-row gap-4 mb-4">
-          <label className={`flex-1 flex items-center gap-3 p-4 border-2 cursor-pointer transition-colors ${jenisLayanan === 'kategori' ? 'border-black bg-yellow-50' : 'border-gray-200 bg-white hover:border-gray-400'}`}>
+          <label className={`flex-1 flex items-center gap-3 p-4 rounded-2xl border cursor-pointer transition-all ${jenisLayanan === 'kategori' ? 'border-emerald-500 bg-emerald-50/50 shadow-xs' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
             <input 
               type="radio" 
               name="jenis_layanan" 
-              className="w-5 h-5 accent-black"
+              className="w-4 h-4 accent-emerald-600"
               checked={jenisLayanan === 'kategori'}
               onChange={() => {
                 setJenisLayanan('kategori');
@@ -245,23 +254,23 @@ export default function FormDaftar() {
               }}
             />
             <div className="flex-1">
-              <span className="block font-black uppercase text-sm">TARIF STANDAR</span>
-              <span className="block text-[10px] font-bold text-gray-500 uppercase mt-1">Berdasarkan jenis bangunan</span>
+              <span className="block font-bold text-xs sm:text-sm text-slate-900">Tarif Standar</span>
+              <span className="block text-[11px] text-slate-500 mt-0.5">Berdasarkan jenis bangunan / rumah</span>
             </div>
           </label>
           
           {(opsi?.paket ?? []).length > 0 && (
-            <label className={`flex-1 flex items-center gap-3 p-4 border-2 cursor-pointer transition-colors ${jenisLayanan === 'paket' ? 'border-black bg-green-50' : 'border-gray-200 bg-white hover:border-gray-400'}`}>
+            <label className={`flex-1 flex items-center gap-3 p-4 rounded-2xl border cursor-pointer transition-all ${jenisLayanan === 'paket' ? 'border-emerald-500 bg-emerald-50/50 shadow-xs' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
               <input 
                 type="radio" 
                 name="jenis_layanan" 
-                className="w-5 h-5 accent-black"
+                className="w-4 h-4 accent-emerald-600"
                 checked={jenisLayanan === 'paket'}
                 onChange={() => setJenisLayanan('paket')}
               />
               <div className="flex-1">
-                <span className="block font-black uppercase text-sm">PAKET KHUSUS</span>
-                <span className="block text-[10px] font-bold text-gray-500 uppercase mt-1">Layanan premium tambahan</span>
+                <span className="block font-bold text-xs sm:text-sm text-slate-900">Paket Khusus</span>
+                <span className="block text-[11px] text-slate-500 mt-0.5">Layanan ritase & volume fleksibel</span>
               </div>
             </label>
           )}
@@ -516,38 +525,38 @@ export default function FormDaftar() {
               setGpsData((prev) => ({ lat, lng, acc: prev?.acc ?? 0 }));
               setKoordinatSumber("manual");
             }}
-            className="h-64 border-2 border-black"
+            className="h-64 rounded-2xl border border-slate-200 overflow-hidden"
           />
           {gpsData ? (
-            <div className="p-3 border-2 border-black bg-green-50 text-green-700 flex justify-between items-center gap-3">
+            <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex justify-between items-center gap-3">
               <div className="min-w-0">
-                <p className="font-black text-xs uppercase">LOKASI TERSIMPAN</p>
-                <p className="text-[10px] font-bold uppercase break-all">
+                <p className="font-extrabold text-xs">Titik Lokasi Tersimpan</p>
+                <p className="text-[11px] text-emerald-700 font-mono break-all mt-0.5">
                   {gpsData.lat.toFixed(6)}, {gpsData.lng.toFixed(6)} · ±{Math.round(gpsData.acc)} m
-                  {koordinatSumber === "exif_foto" ? " (DARI FOTO)" : koordinatSumber === "manual" ? " (MANUAL)" : ""}
+                  {koordinatSumber === "exif_foto" ? " (dari foto)" : koordinatSumber === "manual" ? " (manual)" : ""}
                 </p>
               </div>
-              <button type="button" onClick={getGps} className="text-xs font-bold underline shrink-0">PERBARUI</button>
+              <button type="button" onClick={getGps} className="text-xs font-bold text-emerald-700 hover:underline shrink-0">Perbarui</button>
             </div>
           ) : (
             <button
               type="button"
               onClick={getGps}
               disabled={gpsLoading}
-              className={`w-full p-4 border-2 border-black font-black uppercase text-sm flex items-center justify-center gap-2 transition-colors ${
-                gpsLoading ? "bg-gray-100 text-gray-400" : "bg-white hover:bg-gray-50 hover:-translate-y-1 shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)]"
+              className={`w-full py-3.5 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-98 ${
+                gpsLoading ? "bg-slate-100 text-slate-400" : "bg-slate-100 hover:bg-slate-200 text-slate-800 shadow-2xs"
               }`}
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-              {gpsLoading ? "MENCARI LOKASI..." : "AMBIL TITIK LOKASI SAAT INI"}
+              <span>{gpsLoading ? "Mendeteksi Lokasi GPS..." : "Ambil Titik Lokasi Saya Saat Ini"}</span>
             </button>
           )}
         </div>
-        <p className="text-[10px] font-bold text-gray-500 mt-2 uppercase">
-          SERET PIN DI PETA UNTUK MENYESUAIKAN POSISI RUMAH ANDA. MEMBANTU PETUGAS MENEMUKAN LOKASI DENGAN AKURAT.
+        <p className="text-[11px] text-slate-500 mt-2">
+          Geser atau ketuk pada peta untuk memastikan titik tepat di depan gerbang / rumah Anda.
         </p>
       </div>
 
@@ -565,7 +574,7 @@ export default function FormDaftar() {
       </div>
 
       {pesan && (
-        <div className={`p-4 border-2 font-bold uppercase text-sm ${status === "ok" ? "bg-green-50 border-green-600 text-green-600" : "bg-red-50 border-red-600 text-red-600"}`}>
+        <div className={`p-4 rounded-2xl text-xs font-medium border ${status === "ok" ? "bg-emerald-50 border-emerald-200 text-emerald-800" : "bg-rose-50 border-rose-200 text-rose-800"}`}>
           {pesan}
         </div>
       )}
@@ -573,9 +582,16 @@ export default function FormDaftar() {
       <button
         type="submit"
         disabled={status === "kirim"}
-        className="hm-btn-red w-full"
+        className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-extrabold text-sm shadow-md active:scale-98 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
       >
-        {status === "kirim" ? "MENGIRIM DATA..." : "DAFTAR SEKARANG"}
+        {status === "kirim" ? (
+          <>
+            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            <span>Mengirimkan Formulir...</span>
+          </>
+        ) : (
+          <span>Kirim Pendaftaran Layanan 🚀</span>
+        )}
       </button>
     </form>
   );
