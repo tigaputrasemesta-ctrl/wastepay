@@ -195,52 +195,54 @@ export default function LacakJemputan() {
       {/* Bar input kode pelanggan */}
       <form onSubmit={mulaiLacak} className="flex gap-2">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
+            type="text"
             value={kode}
             onChange={(e) => setKode(e.target.value)}
-            placeholder="KODE PELANGGAN (CONTOH: DPK-001)"
-            className="w-full bg-white hm-border pl-9 pr-3 py-3.5 text-sm font-bold outline-none focus:ring-4 focus:ring-green-500/20 uppercase"
+            placeholder="Masukkan No. WhatsApp / Kode Pelanggan"
+            className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-3 text-xs sm:text-sm font-bold text-slate-900 outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:font-normal placeholder:text-slate-400"
             autoComplete="off"
           />
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="hm-btn-green shrink-0 px-5 disabled:opacity-50"
+          className="px-5 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl text-xs font-bold shadow-xs active:scale-98 transition-all disabled:opacity-50 flex items-center justify-center gap-1.5"
         >
-          {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : "LACAK"}
+          {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <span>Lacak 🔍</span>}
         </button>
       </form>
 
       {error && (
-        <div className="p-3 border-2 border-red-600 bg-red-50 text-red-700 text-xs font-bold uppercase">
+        <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium">
           {error}
         </div>
       )}
 
       {!data && !loading && !error && (
-        <div className="hm-card bg-[#f4f4f0] text-center py-14">
-          <div className="w-16 h-16 mx-auto mb-4 bg-green-600 border-2 border-black rounded-full flex items-center justify-center">
-            <Truck className="w-8 h-8 text-white" />
+        <div className="bg-white rounded-3xl border border-slate-200/80 p-8 sm:p-12 text-center shadow-xs space-y-3">
+          <div className="w-14 h-14 mx-auto bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center shadow-xs">
+            <Truck className="w-7 h-7" />
           </div>
-          <h2 className="font-black text-2xl uppercase tracking-tighter mb-2">Lacak Jemputan Sampah</h2>
-          <p className="text-xs font-bold uppercase text-gray-500 max-w-xs mx-auto">
-            Masukkan kode pelanggan Anda untuk melihat posisi armada angkut secara langsung, seperti ojek online.
+          <h2 className="font-extrabold text-lg text-slate-900">Lacak Armada Sampah Real-Time</h2>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+            Ketik nomor WhatsApp atau ID pelanggan Anda di atas untuk memantau rute truk sampah, estimasi waktu tiba (ETA), dan status penjemputan hari ini.
           </p>
         </div>
       )}
 
       {loading && !data && (
-        <div className="h-[50vh] border-2 border-black bg-[#e8f0e6] flex items-center justify-center">
-          <p className="font-black uppercase tracking-widest text-green-700 animate-pulse">MENCARI ARMADA…</p>
+        <div className="h-[48vh] rounded-3xl border border-slate-200 bg-slate-50 flex flex-col items-center justify-center gap-2">
+          <div className="w-8 h-8 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs font-bold text-slate-500">Mencari Posisi Armada di Peta...</p>
         </div>
       )}
 
       {data && (
         <>
           {/* Peta */}
-          <div className="relative h-[48vh] md:h-[56vh] border-2 border-black overflow-hidden shadow-[8px_8px_0_0_rgba(0,0,0,1)]">
+          <div className="relative h-[48vh] md:h-[54vh] rounded-3xl border border-slate-200 overflow-hidden shadow-xs">
             <MapJemput
               pickup={data.pickup}
               truk={liveFresh}
@@ -251,137 +253,115 @@ export default function LacakJemputan() {
             <button
               onClick={lokasiSaya}
               disabled={locating}
-              className="absolute right-3 top-3 z-[1000] flex items-center gap-1.5 bg-white border-2 border-black px-3 py-2.5 text-[11px] font-black uppercase tracking-wide shadow-[3px_3px_0_0_rgba(0,0,0,1)] active:translate-y-[1px] disabled:opacity-50"
+              className="absolute right-3.5 top-3.5 z-[1000] flex items-center gap-1.5 bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-full px-3.5 py-2 text-xs font-bold text-slate-800 shadow-md active:scale-95 transition-all disabled:opacity-50"
             >
-              <Navigation className="w-3.5 h-3.5 text-green-600" />
-              {locating ? "Mencari…" : "Lokasi Saya"}
+              <Navigation className="w-3.5 h-3.5 text-emerald-600" />
+              <span>{locating ? "Mencari…" : "Lokasi Saya"}</span>
             </button>
 
             {/* Badge status di atas peta */}
             {meta && (
               <div
-                className={`absolute left-3 top-3 z-[1000] max-w-[calc(100%-8.5rem)] px-3 py-2 text-[11px] font-black uppercase tracking-wide border-2 border-black shadow-[3px_3px_0_0_rgba(0,0,0,1)] ${
+                className={`absolute left-3.5 top-3.5 z-[1000] max-w-[calc(100%-9rem)] px-3 py-1.5 rounded-full text-xs font-bold shadow-md flex items-center gap-1.5 ${
                   meta.tone === "selesai"
-                    ? "bg-green-600 text-white"
+                    ? "bg-emerald-600 text-white"
                     : meta.tone === "proses"
-                    ? "bg-yellow-300 text-black"
-                    : "bg-white text-black"
+                    ? "bg-amber-400 text-amber-950"
+                    : "bg-white text-slate-800 border border-slate-200"
                 }`}
               >
-                {meta.tone === "proses" ? "● LIVE" : meta.teks}
+                {meta.tone === "proses" && <span className="w-2 h-2 rounded-full bg-red-600 animate-ping" />}
+                <span className="truncate">{meta.tone === "proses" ? "● ARMADA DI PERJALANAN" : meta.teks}</span>
               </div>
             )}
           </div>
 
           {/* Bottom sheet — kartu status ala Gojek */}
-          <div className="border-2 border-black bg-white shadow-[8px_8px_0_0_rgba(0,0,0,1)] overflow-hidden">
+          <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden space-y-4 p-5">
             {/* Header status */}
-            <div
-              className={`px-4 py-3 flex items-center gap-3 ${
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${
                 meta?.tone === "selesai"
-                  ? "bg-green-600 text-white"
+                  ? "bg-emerald-100 text-emerald-700"
                   : meta?.tone === "proses"
-                  ? "bg-black text-white"
-                  : "bg-[#f4f4f0] text-black"
-              }`}
-            >
-              {meta?.tone === "selesai" ? (
-                <CheckCircle2 className="w-6 h-6" />
-              ) : meta?.tone === "proses" ? (
-                <Truck className="w-6 h-6" />
-              ) : (
-                <Clock className="w-6 h-6" />
-              )}
-              <div>
-                <p className="font-black uppercase tracking-tight leading-tight">{meta?.teks}</p>
-                <p className={`text-[10px] font-bold uppercase ${meta?.tone === "proses" ? "text-gray-300" : "opacity-70"}`}>
+                  ? "bg-amber-100 text-amber-800"
+                  : "bg-slate-100 text-slate-700"
+              }`}>
+                {meta?.tone === "selesai" ? (
+                  <CheckCircle2 className="w-5 h-5" />
+                ) : meta?.tone === "proses" ? (
+                  <Truck className="w-5 h-5" />
+                ) : (
+                  <Clock className="w-5 h-5" />
+                )}
+              </div>
+              <div className="min-w-0">
+                <p className="font-extrabold text-sm text-slate-900 leading-tight">{meta?.teks}</p>
+                <p className="text-xs text-slate-500 mt-0.5 truncate">
                   {meta?.subteks}
                 </p>
               </div>
             </div>
 
-            <div className="p-4 space-y-3">
-              {/* ETA + jarak */}
-              {jarak != null && etaMenit != null && (
-                <div className="flex items-center gap-4">
-                  <div className="flex-1 bg-green-50 border-2 border-green-600 p-3 text-center">
-                    <p className="font-black text-2xl text-green-700 leading-none">{etaMenit}</p>
-                    <p className="text-[10px] font-black uppercase text-green-700">menit lagi</p>
-                  </div>
-                  <div className="flex-1 bg-white border-2 border-black p-3 text-center">
-                    <p className="font-black text-2xl leading-none">{formatJarak(jarak)}</p>
-                    <p className="text-[10px] font-black uppercase text-gray-500">dari rumah Anda</p>
-                  </div>
+            {/* ETA + jarak */}
+            {jarak != null && etaMenit != null && (
+              <div className="grid grid-cols-2 gap-2.5">
+                <div className="bg-emerald-50 rounded-2xl border border-emerald-100 p-3 text-center">
+                  <p className="text-2xl font-black text-emerald-800 leading-none">{etaMenit}</p>
+                  <p className="text-[10px] font-bold uppercase text-emerald-700 mt-1">Perkiraan Menit</p>
                 </div>
-              )}
-
-              {/* Armada */}
-              {data.kendaraan && (
-                <div className="flex items-center gap-3 border-2 border-black p-3 bg-[#f4f4f0]">
-                  <div className="w-10 h-10 bg-black text-white flex items-center justify-center text-lg shrink-0">🚛</div>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-black uppercase text-sm truncate">{data.kendaraan.nama}</p>
-                    <p className="text-[11px] font-bold text-gray-600 uppercase">
-                      {data.kendaraan.platNomor ? `PLAT ${data.kendaraan.platNomor} · ` : ""}
-                      {data.kendaraan.jenis.replace(/_/g, " ").toUpperCase()}
-                    </p>
-                  </div>
-                  {data.petugas && (
-                    <div className="text-right shrink-0">
-                      <p className="text-[11px] font-black uppercase">{data.petugas.nama}</p>
-                      <p className="text-[10px] font-bold text-gray-500 uppercase">petugas</p>
-                    </div>
-                  )}
+                <div className="bg-slate-50 rounded-2xl border border-slate-200/70 p-3 text-center">
+                  <p className="text-2xl font-black text-slate-800 leading-none">{formatJarak(jarak)}</p>
+                  <p className="text-[10px] font-bold uppercase text-slate-500 mt-1">Jarak dari Rumah</p>
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* Titik pickup */}
-              <div className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
-                <div className="min-w-0">
-                  <p className="text-sm font-black uppercase leading-tight">{data.nama}</p>
-                  <p className="text-xs font-bold text-gray-600">
-                    {data.alamat}
-                    {data.rtRw ? ` · ${data.rtRw}` : ""}
+            {/* Armada */}
+            {data.kendaraan && (
+              <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-lg shrink-0 shadow-2xs">
+                  🚛
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-bold text-xs text-slate-900 truncate">{data.kendaraan.nama}</p>
+                  <p className="text-[10px] text-slate-500 font-medium">
+                    {data.kendaraan.platNomor ? `Plat: ${data.kendaraan.platNomor} • ` : ""}
+                    {data.kendaraan.jenis.replace(/_/g, " ")}
                   </p>
-                  {data.patokanLokasi && (
-                    <p className="text-[11px] font-bold text-amber-600 mt-0.5">📍 {data.patokanLokasi}</p>
-                  )}
                 </div>
               </div>
+            )}
 
-              {/* Info jadwal + pembaruan */}
-              {(data.jadwal || liveFresh) && (
-                <div className="flex items-center justify-between text-[10px] font-black uppercase text-gray-500 border-t-2 border-dashed border-gray-300 pt-2">
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5" />
-                    {data.jadwal ? `${data.jadwal.hari}${data.jadwal.jam ? ` · ${data.jadwal.jam}` : ""}` : "Hari ini"}
-                  </span>
-                  {liveFresh && <span>Diperbarui {formatRelatif(liveFresh.updatedAt)}</span>}
-                </div>
-              )}
+            {/* Jadwal dan update waktu */}
+            <div className="flex items-center justify-between text-xs text-slate-500 border-t border-slate-100 pt-3">
+              <span className="flex items-center gap-1.5 font-medium">
+                <Clock className="w-3.5 h-3.5" />
+                {data.jadwal ? `${data.jadwal.hari}${data.jadwal.jam ? ` · ${data.jadwal.jam}` : ""}` : "Hari ini"}
+              </span>
+              {liveFresh && <span>Diperbarui {formatRelatif(liveFresh.updatedAt)}</span>}
+            </div>
 
-              {/* Aksi cepat */}
-              <div className="flex gap-2">
-                <a
-                  href="/pengaduan"
-                  className="flex-1 hm-btn !px-3 !py-2.5 text-[11px] flex items-center justify-center gap-1.5"
-                >
-                  <CircleOff className="w-3.5 h-3.5" /> Lapor Kendala
-                </a>
-                <button
-                  onClick={() => fetchLacak(kodeRef.current)}
-                  className="flex-1 hm-btn !px-3 !py-2.5 text-[11px] flex items-center justify-center gap-1.5"
-                >
-                  <RefreshCw className="w-3.5 h-3.5" /> Perbarui
-                </button>
-                <a
-                  href="/bayar"
-                  className="flex-1 hm-btn !px-3 !py-2.5 text-[11px] flex items-center justify-center gap-1.5"
-                >
-                  <PackageOpen className="w-3.5 h-3.5" /> Bayar
-                </a>
-              </div>
+            {/* Aksi cepat */}
+            <div className="flex gap-2">
+              <a
+                href="/pengaduan"
+                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] rounded-xl py-2.5 px-2 text-center flex items-center justify-center gap-1.5 transition-colors"
+              >
+                <CircleOff className="w-3.5 h-3.5" /> Lapor Kendala
+              </a>
+              <button
+                onClick={() => fetchLacak(kodeRef.current)}
+                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] rounded-xl py-2.5 px-2 flex items-center justify-center gap-1.5 transition-colors"
+              >
+                <RefreshCw className="w-3.5 h-3.5" /> Perbarui
+              </button>
+              <a
+                href="/bayar"
+                className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] rounded-xl py-2.5 px-2 text-center flex items-center justify-center gap-1.5 shadow-xs transition-colors"
+              >
+                <PackageOpen className="w-3.5 h-3.5" /> Bayar
+              </a>
             </div>
           </div>
         </>

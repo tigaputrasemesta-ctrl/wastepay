@@ -13,102 +13,118 @@ export default function PublicLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-white text-black flex flex-col font-sans selection:bg-red-500 selection:text-white">
-      {/* Marquee Banner */}
-      <div className="hm-marquee text-lg font-bold uppercase tracking-[0.2em] sticky top-0 z-50">
-        <div className="hm-marquee-content">
-          <span>UPS HERU ZERO WASTE</span>
-          <AnimatedDumpTruck size="xs" theme="green" />
-          <span>DEPOK BERSIH 2026</span>
-          <AnimatedDumpTruck size="xs" theme="yellow" />
-          <span>SISTEM PENGELOLAAN SAMPAH</span>
-          <AnimatedDumpTruck size="xs" theme="red" />
-          <span>UPS HERU ZERO WASTE</span>
-          <AnimatedDumpTruck size="xs" theme="green" />
-          <span>DEPOK BERSIH 2026</span>
-          <AnimatedDumpTruck size="xs" theme="yellow" />
-          <span>SISTEM PENGELOLAAN SAMPAH</span>
-          <AnimatedDumpTruck size="xs" theme="red" />
-        </div>
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-emerald-500 selection:text-white">
+      {/* Top Notification Banner (Civic Info) */}
+      <div className="bg-emerald-900 text-white text-xs py-2 px-4 text-center font-medium flex items-center justify-center gap-2">
+        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+        <span>Layanan Pengelolaan Sampah Terpadu & Pembayaran Retribusi Digital Kota Depok</span>
       </div>
 
-      {/* HM Navbar */}
-      <nav className="border-b-2 border-black px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4 bg-white z-40 relative sticky top-[52px]">
-        <Link href="/" className="flex items-center gap-3 group">
-          <AnimatedDumpTruck size="md" theme="green" />
-          <div className="flex items-center gap-2">
-            <span className="bg-black text-white font-black px-2 py-0.5 text-xs tracking-widest border-2 border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
-              UPS
-            </span>
-            <span className="text-3xl font-black tracking-tighter">
-              HERU<span className="text-emerald-600">.</span>
-            </span>
-          </div>
-        </Link>
-        <div className="flex flex-wrap justify-center items-center gap-6 font-bold uppercase tracking-widest text-sm">
-          <Link href="/lacak" className="hover:text-green-600 transition-colors">Lacak</Link>
-          <Link href="/bayar" className="hover:text-red-600 transition-colors">Tagihan</Link>
-          <Link href="/tarif" className="hover:text-green-600 transition-colors">Tarif</Link>
-          <Link href="/pengaduan" className="hover:text-red-600 transition-colors">Komplain</Link>
-          <Link href="/daftar" className="bg-emerald-500 text-black border-2 border-black px-3 py-1.5 font-black hover:bg-black hover:text-white transition-colors shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
-            Daftar UPS HERU
+      {/* Modern Clean Navbar */}
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4">
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+              <AnimatedDumpTruck size="xs" theme="white" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-lg font-black text-slate-900 tracking-tight">
+                  UPS HERU<span className="text-emerald-600">.</span>
+                </span>
+                <span className="px-1.5 py-0.2 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                  Depok
+                </span>
+              </div>
+              <p className="text-[10px] text-slate-500 font-medium">Sistem Retribusi Bersih</p>
+            </div>
           </Link>
-          <Link href="/login" className="border-l-2 border-black pl-6 hover:text-blue-600 transition-colors">Admin</Link>
-        </div>
-      </nav>
 
-      <main className="flex-1 max-w-6xl w-full mx-auto p-6">
+          <nav className="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-600">
+            <Link href="/lacak" className="hover:text-emerald-600 transition-colors">Lacak Armada</Link>
+            <Link href="/bayar" className="hover:text-emerald-600 transition-colors">Cek Tagihan</Link>
+            <Link href="/tarif" className="hover:text-emerald-600 transition-colors">Tarif</Link>
+            <Link href="/pengaduan" className="hover:text-emerald-600 transition-colors">Pengaduan</Link>
+          </nav>
+
+          <div className="flex items-center gap-3">
+            <Link
+              href="/daftar"
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow-md active:scale-98 transition-all"
+            >
+              Daftar Warga Baru
+            </Link>
+            <Link
+              href="/login"
+              className="text-xs font-bold text-slate-600 hover:text-slate-900 px-3 py-2 rounded-xl hover:bg-slate-100 transition-colors"
+            >
+              Masuk Petugas
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      <main className="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6">
         {children}
       </main>
 
-      {/* HM Footer */}
-      <footer className="mt-20 border-t-4 border-black bg-white py-12 px-6">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
-          {/* Brand Info */}
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="bg-black text-white p-2 border-2 border-black">
-                <AnimatedDumpTruck size="sm" theme="white" />
+      {/* Modern Trustworthy Footer */}
+      <footer className="mt-16 bg-white border-t border-slate-200 py-12 px-6">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start gap-10">
+          <div className="flex-1 max-w-sm space-y-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+                <AnimatedDumpTruck size="xs" theme="white" />
               </div>
-              <div className="flex items-center gap-2">
-                <span className="bg-black text-white font-black px-2 py-0.5 text-xs tracking-widest border-2 border-black">
-                  UPS
-                </span>
-                <span className="text-3xl font-black tracking-tighter uppercase">
-                  HERU<span className="text-emerald-600">.</span>
-                </span>
-              </div>
+              <span className="text-xl font-black text-slate-900 tracking-tight">
+                UPS HERU<span className="text-emerald-600">.</span>
+              </span>
             </div>
-            <p className="font-bold text-sm max-w-sm leading-snug uppercase border-l-4 border-black pl-4 py-1">
-              SISTEM PENGELOLAAN SAMPAH OTOMATIS KOTA DEPOK. JADWAL PASTI, BAYAR GAMPANG, LINGKUNGAN BERSIH.
+            <p className="text-xs text-slate-500 leading-relaxed font-medium">
+              Sistem Pengelolaan Sampah & Retribusi Terpadu Kota Depok. Layanan jemput sampah terjadwal, pelacakan armada transparan, dan pembayaran iuran bulanan yang mudah.
             </p>
-          </div>
-          
-          {/* Brutalist Links Grid */}
-          <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-            <div className="flex flex-col gap-3">
-              <Link href="/lacak" className="bg-green-400 border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-widest hover:bg-black hover:text-white transition-colors shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]">Lacak Jemputan</Link>
-              <Link href="/bayar" className="bg-yellow-300 border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-widest hover:bg-black hover:text-white transition-colors shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]">Cek Tagihan</Link>
-              <Link href="/tarif" className="bg-white border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-widest hover:bg-black hover:text-white transition-colors shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]">Daftar Tarif</Link>
+            <div className="pt-1">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">
+                🏛️ Binaan Dinas Lingkungan Hidup Kota Depok
+              </span>
             </div>
-            <div className="flex flex-col gap-3">
-              <Link href="/daftar" className="bg-white border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-widest hover:bg-black hover:text-white transition-colors shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]">Gabung UPS HERU</Link>
-              <Link href="/pengaduan" className="bg-red-400 border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-widest hover:bg-black hover:text-white transition-colors shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]">Lapor Sampah</Link>
-              <a href="https://wa.me/6281400782617" target="_blank" rel="noreferrer" className="bg-blue-300 border-2 border-black px-4 py-2 text-xs font-black uppercase tracking-widest hover:bg-black hover:text-white transition-colors shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]">
-                💬 BOT WA
-              </a>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 text-xs font-medium">
+            <div className="space-y-2.5">
+              <p className="font-bold text-slate-900 uppercase tracking-wider text-[11px]">Layanan Warga</p>
+              <ul className="space-y-2 text-slate-600">
+                <li><Link href="/lacak" className="hover:text-emerald-600">Lacak Truk Sampah</Link></li>
+                <li><Link href="/bayar" className="hover:text-emerald-600">Cek Tagihan Bulanan</Link></li>
+                <li><Link href="/tarif" className="hover:text-emerald-600">Daftar Paket Retribusi</Link></li>
+                <li><Link href="/pengaduan" className="hover:text-emerald-600">Lapor Sampah Menumpuk</Link></li>
+              </ul>
+            </div>
+            <div className="space-y-2.5">
+              <p className="font-bold text-slate-900 uppercase tracking-wider text-[11px]">Pendaftaran</p>
+              <ul className="space-y-2 text-slate-600">
+                <li><Link href="/daftar" className="hover:text-emerald-600">Daftar Rumah Tangga</Link></li>
+                <li><Link href="/daftar" className="hover:text-emerald-600">Daftar Toko / Usaha</Link></li>
+                <li><Link href="/daftar" className="hover:text-emerald-600">Kerjasama Pengurus RT/RW</Link></li>
+              </ul>
+            </div>
+            <div className="space-y-2.5 col-span-2 sm:col-span-1">
+              <p className="font-bold text-slate-900 uppercase tracking-wider text-[11px]">Kontak Bantuan</p>
+              <ul className="space-y-2 text-slate-600">
+                <li>
+                  <a href="https://wa.me/6281400782617" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-emerald-700 font-bold hover:underline">
+                    <span>💬</span> WhatsApp Bot 24 Jam
+                  </a>
+                </li>
+                <li>Kota Depok, Jawa Barat</li>
+              </ul>
             </div>
           </div>
         </div>
-        
-        {/* Footer Bottom */}
-        <div className="max-w-6xl mx-auto mt-16 pt-8 border-t-4 border-black flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="bg-black text-white px-6 py-3 border-2 border-black shadow-[4px_4px_0_0_#10b981]">
-            <span className="text-xs font-black uppercase tracking-widest">© 2026 UPS HERU DEPOK</span>
-          </div>
-          <div className="bg-white px-4 py-2 border-2 border-black border-dashed font-black uppercase text-xs tracking-widest">
-            EST. 2024 · KOTA DEPOK
-          </div>
+
+        <div className="max-w-6xl mx-auto mt-12 pt-6 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-slate-400">
+          <p>© 2026 UPS HERU Kota Depok. Hak Cipta Dilindungi.</p>
+          <p className="font-medium">Menuju Depok Bebas Sampah (Zero Waste City)</p>
         </div>
       </footer>
     </div>

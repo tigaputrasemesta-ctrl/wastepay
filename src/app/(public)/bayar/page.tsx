@@ -23,15 +23,15 @@ type HasilCek = {
 };
 
 const BULAN = [
-  "JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI",
-  "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER",
+  "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+  "Juli", "Agustus", "September", "Oktober", "November", "Desember",
 ];
 
 const METODE = [
-  { value: "transfer", label: "TRANSFER BANK" },
-  { value: "ewallet", label: "DOMPET DIGITAL" },
-  { value: "qris", label: "SCAN QRIS" },
-  { value: "virtual_account", label: "VIRTUAL ACCOUNT" },
+  { value: "transfer", label: "Transfer Bank Manual" },
+  { value: "ewallet", label: "Dompet Digital (GoPay / OVO / DANA)" },
+  { value: "qris", label: "Scan QRIS Nasional" },
+  { value: "virtual_account", label: "Virtual Account (BCA / Mandiri / BRI)" },
 ];
 
 function StatusBadge({ status }: { status: string }) {
@@ -39,15 +39,16 @@ function StatusBadge({ status }: { status: string }) {
   const isTunggakan = status === "tunggakan";
   
   const cls = isLunas
-    ? "bg-green-600 text-white"
+    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
     : isTunggakan
-    ? "bg-red-600 text-white"
-    : "bg-yellow-400 text-black";
+    ? "bg-rose-50 text-rose-700 border-rose-200"
+    : "bg-amber-50 text-amber-700 border-amber-200";
     
-  const label = isLunas ? "LUNAS" : isTunggakan ? "TUNGGAKAN" : "BELUM BAYAR";
+  const label = isLunas ? "Lunas" : isTunggakan ? "Tunggakan" : "Belum Dibayar";
   
   return (
-    <span className={`inline-block px-3 py-1 text-xs font-bold uppercase hm-border ${cls}`}>
+    <span className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-full border ${cls}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${isLunas ? "bg-emerald-500" : isTunggakan ? "bg-rose-500" : "bg-amber-500"}`} />
       {label}
     </span>
   );
@@ -70,7 +71,7 @@ export default function BayarPage() {
     const res = await fetch(`/api/publik/tagihan?kode=${encodeURIComponent(kodePelanggan)}`);
     const data = await res.json();
     if (!res.ok) {
-      setError(data.error || "GAGAL KONEK KE SERVER");
+      setError(data.error || "Data pelanggan tidak ditemukan. Pastikan nomor WhatsApp atau kode pelanggan sudah benar.");
       setHasil(null);
     } else {
       setHasil(data);
@@ -86,7 +87,7 @@ export default function BayarPage() {
     try {
       await muatTagihan(kode.trim());
     } catch {
-      setError("SERVER DOWN COY, COBA LAGI BENTARAN");
+      setError("Gagal terhubung ke server. Silakan periksa koneksi internet Anda dan coba lagi.");
     } finally {
       setMencari(false);
     }
@@ -96,7 +97,7 @@ export default function BayarPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 2 * 1024 * 1024) {
-      setKirimError("FILE KEGEDEAN NGAB, MAKS 2MB AJA");
+      setKirimError("Ukuran file terlalu besar. Maksimal ukuran gambar bukti transfer adalah 2MB.");
       return;
     }
     setKirimError("");
@@ -128,143 +129,184 @@ export default function BayarPage() {
         setHasil(null);
         setKode("");
       } else {
-        setKirimError(data.error || "GAGAL KIRIM COY");
+        setKirimError(data.error || "Gagal mengirim bukti pembayaran.");
       }
     } catch {
-      setKirimError("GAGAL KIRIM, JARINGAN AMPAS");
+      setKirimError("Terjadi kendala jaringan saat mengirim bukti pembayaran. Silakan coba lagi.");
     } finally {
       setMengirim(false);
     }
   }
 
   return (
-    <div className="py-12 space-y-12">
-      <div className="text-center space-y-4">
-        <div className="inline-block px-4 py-1 hm-border font-bold uppercase text-xs mb-2 bg-[#f4f4f0] shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
-          UPS HERU / LOKET PEMBAYARAN
+    <div className="py-6 sm:py-10 space-y-8 max-w-4xl mx-auto">
+      {/* Header Banner */}
+      <div className="text-center space-y-3">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">
+          <span>💳</span>
+          <span>Portal Resmi Retribusi Sampah UPS HERU</span>
         </div>
-        <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">
-          CEK <span className="text-red-600">TAGIHAN.</span>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+          Cek & Bayar Tagihan Retribusi
         </h1>
-        <p className="font-bold uppercase tracking-widest text-sm max-w-lg mx-auto">
-          MASUKKAN NOMOR WHATSAPP ANDA (SEBAGAI KODE PELANGGAN) UNTUK MELIHAT TAGIHAN ATAU TUNGGAKAN.
+        <p className="text-sm text-slate-600 max-w-lg mx-auto leading-relaxed">
+          Masukkan nomor WhatsApp atau kode pelanggan Anda untuk melihat rincian iuran sampah bulanan, riwayat pembayaran, dan tagihan aktif.
         </p>
       </div>
 
       {sukses && (
-        <div className="hm-card bg-green-50 flex flex-col items-center text-center">
-          <p className="font-black text-2xl uppercase text-green-600">TRANSAKSI BERHASIL!</p>
-          <p className="text-sm font-bold uppercase mt-2">{sukses}</p>
+        <div className="bg-white rounded-3xl border border-emerald-200 p-6 text-center shadow-sm space-y-2">
+          <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto text-2xl">
+            ✅
+          </div>
+          <p className="font-extrabold text-lg text-emerald-800">Pembayaran Berhasil Dicatat!</p>
+          <p className="text-xs text-slate-600 max-w-md mx-auto">{sukses}</p>
           {sukses.includes("verifikasi") && (
-            <p className="text-xs font-bold uppercase mt-4 border-t-2 border-black pt-4 w-full">
-              ADMIN SEDANG MENGECEK BUKTI. TUNGGU NOTIFIKASI WA DARI KAMI.
+            <p className="text-xs text-slate-500 pt-2 border-t border-slate-100">
+              Tim admin kasir kami sedang memverifikasi mutasi Anda. Bukti tanda terima / kwitansi resmi akan dikirimkan otomatis via WhatsApp.
             </p>
           )}
         </div>
       )}
 
-      {/* Step 1: Cek kode */}
+      {/* Step 1: Form Pencarian Cepat */}
       {!hasil && (
-        <form onSubmit={cekTagihan} className="hm-card max-w-2xl mx-auto bg-[#f4f4f0]">
-          <label className="block text-sm font-bold mb-3 uppercase tracking-widest">
-            KODE PELANGGAN (NO. WHATSAPP)
-          </label>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <input
-              type="text"
-              value={kode}
-              onChange={(e) => setKode(e.target.value.toUpperCase())}
-              className="flex-1 bg-white hm-border px-5 py-4 text-black text-lg font-bold outline-none focus:ring-4 focus:ring-red-500/20 uppercase"
-              placeholder="CONTOH: 081234567890"
-              required
-            />
-            <button
-              type="submit"
-              disabled={mencari}
-              className="hm-btn-red"
-            >
-              {mencari ? "MENCARI..." : "CARI DATA"}
-            </button>
+        <form onSubmit={cekTagihan} className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-sm max-w-xl mx-auto space-y-4">
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-2">
+              Nomor WhatsApp / Kode Pelanggan
+            </label>
+            <div className="flex flex-col sm:flex-row gap-2.5">
+              <div className="relative flex-1">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">📱</span>
+                <input
+                  type="text"
+                  value={kode}
+                  onChange={(e) => setKode(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 text-sm font-bold outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:font-normal placeholder:text-slate-400"
+                  placeholder="Contoh: 081234567890"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={mencari}
+                className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl text-sm shadow-sm active:scale-98 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {mencari ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Mencari...</span>
+                  </>
+                ) : (
+                  <span>Cek Tagihan 🔍</span>
+                )}
+              </button>
+            </div>
           </div>
-          {error && <p className="text-sm font-bold text-red-600 mt-4 uppercase">{error}</p>}
+          {error && (
+            <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-2xl text-xs font-medium">
+              {error}
+            </div>
+          )}
         </form>
       )}
 
-      {/* Step 2: Daftar tagihan */}
+      {/* Step 2: Daftar tagihan pelanggan */}
       {hasil && !pilih && (
-        <div className="space-y-8 animate-in fade-in zoom-in duration-300">
-          
-          <div className="hm-card flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-widest mb-2">IDENTITAS PELANGGAN</p>
-              <h2 className="text-3xl font-black uppercase">{hasil.pelanggan.nama}</h2>
-              <p className="font-medium text-sm mt-2">{hasil.pelanggan.alamat}</p>
+        <div className="space-y-6">
+          {/* Kartu Profil Pelanggan */}
+          <div className="bg-white rounded-3xl border border-slate-200/80 p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-black text-lg shrink-0">
+                {hasil.pelanggan.nama.charAt(0).toUpperCase()}
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-base font-extrabold text-slate-900 truncate">{hasil.pelanggan.nama}</h2>
+                  <span className="px-2 py-0.5 rounded-full bg-slate-100 text-[10px] font-mono font-bold text-slate-700">
+                    {hasil.pelanggan.kodePelanggan}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 font-medium mt-0.5 truncate">{hasil.pelanggan.alamat}</p>
+              </div>
             </div>
-            <div className="bg-[#f4f4f0] hm-border px-6 py-4 text-center">
-              <span className="text-xs font-bold block mb-1 uppercase">ID KODE</span>
-              <span className="text-2xl font-black">{hasil.pelanggan.kodePelanggan}</span>
-            </div>
-          </div>
 
-          <div className="flex items-center justify-between border-b-2 border-black pb-4">
-            <h3 className="font-black text-2xl uppercase">RIWAYAT TAGIHAN</h3>
             <button
               onClick={() => setHasil(null)}
-              className="text-sm font-bold hover:text-red-600 transition-colors uppercase border-b-2 border-transparent hover:border-red-600"
+              className="shrink-0 text-xs font-bold text-slate-600 hover:text-emerald-700 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 transition-all self-start sm:self-auto"
             >
-              CARI KODE LAIN
+              Ganti Nomor / Akun
             </button>
           </div>
 
+          <div className="flex items-center justify-between px-1">
+            <h3 className="text-sm font-extrabold uppercase tracking-wider text-slate-600">
+              Daftar Tagihan & Iuran Bulanan
+            </h3>
+            <span className="text-xs text-slate-400 font-medium">{hasil.tagihan.length} tagihan tercatat</span>
+          </div>
+
           {hasil.tagihan.length === 0 ? (
-            <div className="hm-card text-center bg-green-50">
-              <p className="text-green-600 font-black text-2xl uppercase">BERSIH!</p>
-              <p className="font-bold mt-2 uppercase">TIDAK ADA TAGIHAN ATAU TUNGGAKAN.</p>
+            <div className="bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-2 shadow-xs">
+              <div className="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto text-xl">
+                ✨
+              </div>
+              <p className="text-base font-bold text-slate-900">Tidak Ada Tagihan Tertunggak</p>
+              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                Semua iuran retribusi sampah Anda sudah lunas. Terima kasih atas kepedulian Anda menjaga kebersihan Kota Depok!
+              </p>
             </div>
           ) : (
-            <div className="grid gap-6">
+            <div className="space-y-3.5">
               {hasil.tagihan.map((t) => (
-                <div key={t.id} className="hm-card p-0 flex flex-col md:flex-row md:items-center justify-between group overflow-hidden">
-                  
-                  <div className="p-6 md:p-8 flex-1 border-b-2 md:border-b-0 md:border-r-2 border-black">
-                    <p className="text-3xl font-black mb-1">
-                      {BULAN[t.bulan - 1]} {t.tahun}
-                    </p>
-                    <p className="text-xs font-bold uppercase">
-                      JATUH TEMPO: {formatDate(t.jatuhTempo)}
+                <div
+                  key={t.id}
+                  className="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+                >
+                  <div className="space-y-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg font-black text-slate-900">
+                        {BULAN[t.bulan - 1]} {t.tahun}
+                      </span>
+                      <StatusBadge status={t.status} />
+                    </div>
+                    <p className="text-xs text-slate-500 font-medium">
+                      Jatuh Tempo: <span className="font-semibold text-slate-700">{formatDate(t.jatuhTempo)}</span>
                     </p>
                     {t.denda ? (
-                      <p className="text-xs font-bold text-red-600 mt-2 uppercase inline-block border-2 border-red-600 px-2 py-1 bg-red-50">
-                        DENDA KETERLAMBATAN: {formatRupiah(t.denda)}
+                      <p className="text-xs font-bold text-rose-600">
+                        + Denda Keterlambatan (2%): {formatRupiah(t.denda)}
                       </p>
                     ) : null}
                   </div>
-                  
-                  <div className="p-6 md:p-8 flex flex-col md:items-end gap-4 bg-[#f4f4f0]">
-                    <div className="flex flex-col md:items-end gap-2">
-                      <StatusBadge status={t.status} />
-                      <p className="font-black text-3xl">
+
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between md:justify-end gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-slate-100">
+                    <div className="text-left sm:text-right">
+                      <p className="text-[10px] uppercase font-bold text-slate-400">Total Pembayaran</p>
+                      <p className="text-xl font-extrabold text-slate-900">
                         {formatRupiah(t.total ?? (t.jumlah + (t.denda || 0)))}
                       </p>
                     </div>
-                    
+
                     {t.status !== "lunas" && (
-                      <div className="flex flex-col sm:flex-row gap-3 pt-2 w-full sm:w-auto">
+                      <div className="flex items-center gap-2">
                         {t.noInvoice && (
                           <Link
                             href={`/bayar-tagihan?invoice=${encodeURIComponent(t.noInvoice)}`}
-                            className="hm-btn-green px-5 py-2.5 text-xs font-black flex items-center justify-center gap-1.5 shadow-[3px_3px_0_0_rgba(0,0,0,1)] hover:shadow-[5px_5px_0_0_rgba(0,0,0,1)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[1px_1px_0_0_rgba(0,0,0,1)] transition-all"
+                            className="flex-1 sm:flex-none px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-xs active:scale-98 transition-all flex items-center justify-center gap-1.5"
                           >
                             <span>⚡</span>
-                            <span>BAYAR INSTAN</span>
+                            <span>Bayar Instan</span>
                           </Link>
                         )}
                         <button
+                          type="button"
                           onClick={() => setPilih(t.id)}
-                          className="hm-btn px-5 py-2.5 text-xs font-black flex items-center justify-center gap-1.5 shadow-[3px_3px_0_0_rgba(0,0,0,1)] hover:shadow-[5px_5px_0_0_rgba(0,0,0,1)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[1px_1px_0_0_rgba(0,0,0,1)] transition-all"
+                          className="flex-1 sm:flex-none px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold active:scale-98 transition-all flex items-center justify-center gap-1.5"
                         >
                           <span>📤</span>
-                          <span>UPLOAD BUKTI</span>
+                          <span>Upload Bukti</span>
                         </button>
                       </div>
                     )}
@@ -276,12 +318,14 @@ export default function BayarPage() {
         </div>
       )}
 
-      {/* Step 3: Kirim bukti */}
+      {/* Step 3: Konfirmasi Transfer & Upload Bukti */}
       {hasil && pilih && (
-        <form onSubmit={kirimBukti} className="hm-card space-y-8 max-w-2xl mx-auto bg-[#f4f4f0] animate-in fade-in slide-in-from-bottom-4">
-          
-          <div className="flex items-center justify-between border-b-2 border-black pb-4">
-            <h2 className="font-black uppercase text-xl sm:text-2xl">UPLOAD BUKTI PEMBAYARAN</h2>
+        <form onSubmit={kirimBukti} className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-sm space-y-5 max-w-xl mx-auto">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div>
+              <h2 className="text-base font-extrabold text-slate-900">Konfirmasi Bukti Transfer</h2>
+              <p className="text-xs text-slate-500">Kirimkan foto atau screenshot bukti transfer bank Anda</p>
+            </div>
             <button
               type="button"
               onClick={() => {
@@ -290,77 +334,73 @@ export default function BayarPage() {
                 setKirimError("");
                 setForm({ metode: "transfer", catatan: "" });
               }}
-              className="hm-btn px-3.5 py-1.5 text-xs font-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] hover:-translate-y-0.5"
+              className="text-xs font-bold text-slate-400 hover:text-slate-600 px-2.5 py-1 rounded-lg hover:bg-slate-100"
             >
-              ✕ BATAL
+              Batal ✕
             </button>
           </div>
 
-          <div className="space-y-3">
-            <label className="block text-xs font-bold uppercase tracking-widest">METODE TRANSAKSI</label>
-            <div className="relative">
-              <select
-                value={form.metode}
-                onChange={(e) => setForm({ ...form, metode: e.target.value })}
-                className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 appearance-none uppercase"
-                required
-              >
-                {METODE.map((m) => (
-                  <option key={m.value} value={m.value}>{m.label}</option>
-                ))}
-              </select>
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none font-bold text-lg">▼</div>
-            </div>
+          <div className="space-y-1.5">
+            <label className="block text-xs font-bold text-slate-700">Metode Pembayaran</label>
+            <select
+              value={form.metode}
+              onChange={(e) => setForm({ ...form, metode: e.target.value })}
+              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20"
+              required
+            >
+              {METODE.map((m) => (
+                <option key={m.value} value={m.value}>{m.label}</option>
+              ))}
+            </select>
           </div>
 
-          <div className="space-y-3">
-            <label className="block text-xs font-bold uppercase tracking-widest">
-              FILE GAMBAR BUKTI
-            </label>
-            <div className="border-4 border-dashed border-black bg-white p-6 text-center hover:bg-gray-50 transition-colors">
+          <div className="space-y-1.5">
+            <label className="block text-xs font-bold text-slate-700">Foto / Screenshot Bukti Transfer</label>
+            <div className="border-2 border-dashed border-slate-300 rounded-2xl p-4 text-center hover:bg-slate-50 transition-colors">
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleFile}
-                className="w-full text-xs font-bold file:mr-4 file:py-2 file:px-4 file:border-2 file:border-black file:text-xs file:font-bold file:bg-white file:text-black hover:file:bg-black hover:file:text-white cursor-pointer transition-colors"
+                className="w-full text-xs text-slate-600 font-medium file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-100 file:text-emerald-800 hover:file:bg-emerald-200 cursor-pointer"
               />
             </div>
             {bukti && (
-              <div className="mt-4 hm-border p-2 inline-block bg-white">
-                <Image src={bukti} alt="Bukti" width={320} height={160} unoptimized className="object-cover max-h-48" />
-                <p className="text-xs font-bold text-center mt-2 uppercase">GAMBAR DIMUAT</p>
+              <div className="mt-2 p-2 rounded-2xl border border-slate-200 bg-slate-50 inline-block">
+                <Image src={bukti} alt="Bukti Pembayaran" width={320} height={160} unoptimized className="rounded-xl object-cover max-h-40" />
+                <p className="text-[10px] font-bold text-center text-emerald-700 mt-1">✓ Bukti siap dikirim</p>
               </div>
             )}
           </div>
 
-          <div className="space-y-3">
-            <label className="block text-xs font-bold uppercase tracking-widest">CATATAN TAMBAHAN (OPSIONAL)</label>
+          <div className="space-y-1.5">
+            <label className="block text-xs font-bold text-slate-700">Catatan Tambahan (Opsional)</label>
             <input
               type="text"
               value={form.catatan}
               onChange={(e) => setForm({ ...form, catatan: e.target.value })}
-              className="w-full bg-white hm-border px-4 py-3 text-black text-sm font-bold outline-none focus:ring-4 focus:ring-red-500/20 uppercase"
-              placeholder="CONTOH: TRANSFER DARI BCA"
+              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20"
+              placeholder="Contoh: Transfer via m-BCA a.n Bpk. Bambang"
             />
           </div>
 
-          {kirimError && <p className="text-sm font-bold text-red-600 uppercase">{kirimError}</p>}
+          {kirimError && (
+            <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-medium">
+              {kirimError}
+            </div>
+          )}
 
           <button
             type="submit"
             disabled={mengirim}
-            className="hm-btn-red w-full py-4 text-base font-black flex items-center justify-center gap-2 shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[2px_2px_0_0_rgba(0,0,0,1)] disabled:opacity-50 transition-all"
+            className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl text-xs font-bold shadow-md active:scale-98 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {mengirim ? (
               <>
-                <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin" />
-                <span>MENGIRIM BUKTI...</span>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Mengirim Konfirmasi...</span>
               </>
             ) : (
-              <>
-                <span>KIRIM BUKTI SEKARANG</span>
-                <span>→</span>
-              </>
+              <span>Kirim Bukti Pembayaran 🚀</span>
             )}
           </button>
         </form>

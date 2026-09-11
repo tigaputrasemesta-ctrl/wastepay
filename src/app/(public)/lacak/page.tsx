@@ -1,77 +1,100 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowRight, Info, MapPin, Smartphone, Clock } from "lucide-react";
 import LacakJemputan from "@/components/LacakJemputan";
 
 export const metadata: Metadata = {
-  title: "Lacak Jemputan | UPS HERU Depok",
-  description: "Pantau posisi armada angkut sampah UPS HERU secara real-time seperti ojek online",
+  title: "Pelacakan Armada | WastePay Depok",
+  description: "Pantau posisi armada penjemputan sampah WastePay secara real-time dengan estimasi waktu tiba (ETA).",
 };
 
 const PANDUAN = [
   {
     no: "01",
-    judul: "MASUKKAN NOMOR WHATSAPP",
-    desc: "Gunakan nomor WhatsApp yang didaftarkan sebagai kode pelanggan.",
+    icon: Smartphone,
+    judul: "Masukkan Nomor Pelanggan",
+    desc: "Gunakan nomor WhatsApp atau ID pelanggan Anda yang terdaftar pada sistem WastePay.",
   },
   {
     no: "02",
-    judul: "LIHAT PETA",
-    desc: "Titik rumah Anda dan posisi armada tampil di peta live.",
+    icon: MapPin,
+    judul: "Pantau di Peta Interaktif",
+    desc: "Lihat posisi truk sampah serta titik lokasi rumah Anda secara langsung dan akurat.",
   },
   {
     no: "03",
-    judul: "PANTAU ETA",
-    desc: "Perkiraan waktu tiba & jarak dihitung otomatis.",
+    icon: Clock,
+    judul: "Estimasi Waktu Tiba (ETA)",
+    desc: "Sistem otomatis menghitung jarak armada dan estimasi menit ketibaan di lokasi Anda.",
   },
 ];
 
 export default function LacakPage() {
   return (
-    <div className="py-12 space-y-12">
-      <div className="text-center md:text-left">
-        <div className="inline-block px-4 py-1 hm-border font-bold uppercase text-xs mb-2 bg-[#f4f4f0] shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
-          UPS HERU / LACAK JEMPUTAN
+    <div className="py-8 md:py-12 space-y-8 md:space-y-10">
+      {/* Header Section */}
+      <div className="max-w-2xl">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold mb-3">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span>Live Tracking GPS Armada</span>
         </div>
-        <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">
-          ARMADA DI <span className="text-green-600">PETA.</span>
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
+          Lacak Armada Sampah <span className="text-emerald-600">Real-Time.</span>
         </h1>
-        <p className="font-bold uppercase tracking-widest text-sm max-w-2xl mt-4">
-          POSISI TRUK ANGKUT SAMPAH TAMPAK REAL-TIME. TIDAK ADA LAGI DRAMA NUNGGU TRUK TAK KUNJUNG DATANG — SEPERTI OJEK ONLINE.
+        <p className="text-sm md:text-base text-slate-600 mt-3 leading-relaxed">
+          Ketahui posisi truk penjemput sampah lingkungan Anda secara transparan. Tidak perlu khawatir terlewat jadwal pengangkutan.
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-5 gap-12 items-start">
-        {/* Panduan */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="hm-card bg-[#f4f4f0] p-0 divide-y-2 divide-black">
-            <div className="p-6 bg-white">
-              <h2 className="font-black text-2xl uppercase">CARA MELACAK</h2>
+      <div className="grid lg:grid-cols-12 gap-8 items-start">
+        {/* Panduan & Bantuan (5 cols) */}
+        <div className="lg:col-span-5 space-y-4">
+          <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs">
+            <h2 className="font-extrabold text-base text-slate-900 mb-5">
+              Cara Melacak Penjemputan
+            </h2>
+            <div className="space-y-5">
+              {PANDUAN.map((p) => {
+                const Icon = p.icon;
+                return (
+                  <div key={p.no} className="flex gap-4 items-start">
+                    <div className="w-10 h-10 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-700 shrink-0 font-black text-xs">
+                      {p.no}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-sm text-slate-900">{p.judul}</h3>
+                      <p className="text-xs text-slate-500 mt-1 leading-relaxed">{p.desc}</p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-            {PANDUAN.map((p) => (
-              <div key={p.no} className="flex gap-6 p-6 items-start hover:bg-gray-50 transition-colors">
-                <span className="font-black text-4xl text-black">{p.no}</span>
-                <div>
-                  <h3 className="font-black uppercase text-lg mb-1">{p.judul}</h3>
-                  <p className="text-xs font-bold uppercase">{p.desc}</p>
-                </div>
-              </div>
-            ))}
           </div>
 
-          <div className="hm-card bg-yellow-50">
-            <p className="text-xs font-black text-black uppercase mb-2">CATATAN</p>
-            <p className="text-xs font-bold uppercase">
-              POSISI ARMADA HANYA TAMPIL JIKA PETUGAS SEDANG MENGIRIMKAN GPS (MULAI LACAK DI APLIKASI LAPANGAN). TANPA SINYAL GPS, STATUS TETAP MENAMPILKAN JADWAL.
-            </p>
+          <div className="p-5 rounded-3xl bg-amber-50/80 border border-amber-200/80 flex gap-3 text-amber-900 text-xs leading-relaxed">
+            <Info className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-bold mb-1">Informasi Pembaruan Sinyal GPS</p>
+              <p className="text-amber-800/90 text-[11px]">
+                Posisi live hanya tampil ketika petugas armada sedang beroperasi dan mengaktifkan pelacak tugas. Jika armada belum jalan, sistem akan menampilkan jadwal resmi pengangkutan.
+              </p>
+            </div>
           </div>
 
-          <Link href="/bayar" className="hm-btn w-full block text-center bg-[#f4f4f0]">
-            CEK TAGIHAN
+          <Link
+            href="/bayar"
+            className="flex items-center justify-between p-4 bg-white hover:bg-slate-50 border border-slate-200/80 rounded-2xl transition-all shadow-xs group"
+          >
+            <div>
+              <p className="text-xs font-bold text-slate-900">Ingin Bayar Iuran Retribusi?</p>
+              <p className="text-[11px] text-slate-500">Cek tagihan bulanan dan bayar instan via QRIS</p>
+            </div>
+            <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all" />
           </Link>
         </div>
 
-        {/* Widget pelacakan */}
-        <div className="lg:col-span-3">
+        {/* Widget pelacakan (7 cols) */}
+        <div className="lg:col-span-7">
           <LacakJemputan />
         </div>
       </div>
