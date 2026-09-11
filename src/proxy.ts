@@ -175,6 +175,7 @@ const API_ROLE_MAP: Record<string, number> = {
   "DELETE:/api/pengumuman/": 50,
 
   // Notifikasi
+  "GET:/api/notifikasi/summary": 10,
   "GET:/api/notifikasi": 20,
   "POST:/api/notifikasi": 20,
   "DELETE:/api/notifikasi/": 50,

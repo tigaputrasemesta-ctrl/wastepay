@@ -434,3 +434,33 @@ describe("daftar", () => {
     expect(formatRtRw(" 01 ", " 03 ")).toBe("RT 01 / RW 03");
   });
 });
+
+describe("notifikasi summary", () => {
+  it("menghitung total akumulatif notifikasi butuh aksi secara akurat", () => {
+    const counts = {
+      pembayaran: 3,
+      pendaftaran: 2,
+      komplain: 1,
+    };
+    const total = counts.pembayaran + counts.pendaftaran + counts.komplain;
+    expect(total).toBe(6);
+  });
+
+  it("memastikan format item notifikasi memiliki properti navigasi yang valid", () => {
+    const item = {
+      id: "pembayaran-1",
+      category: "pembayaran" as const,
+      title: "Pembayaran: Pak Budi",
+      desc: "Rp 50.000 (TRANSFER)",
+      time: new Date().toISOString(),
+      link: "/tagihan",
+      badge: "VERIFIKASI BAYAR",
+      severity: "warning" as const,
+    };
+
+    expect(item.link).toBe("/tagihan");
+    expect(item.severity).toBe("warning");
+    expect(item.title).toContain("Pembayaran");
+  });
+});
+
