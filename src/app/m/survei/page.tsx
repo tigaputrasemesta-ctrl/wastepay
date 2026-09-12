@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import CameraGps from "@/components/mobile/CameraGps";
+import { useUser } from "@/hooks/useUser";
 
 
 type Calon = {
@@ -22,6 +23,7 @@ type Calon = {
 };
 
 export default function MobileSurvei() {
+  const { user } = useUser();
   const [calon, setCalon] = useState<Calon[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -217,10 +219,12 @@ export default function MobileSurvei() {
                       <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Penanggung Jawab</label>
                       <input value={form.penanggungjawab} onChange={(e) => setForm({ ...form, penanggungjawab: e.target.value })} className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 text-xs font-medium outline-none bg-slate-50/50 focus:bg-white focus:border-emerald-500" />
                     </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Referal</label>
-                      <input value={form.referal} onChange={(e) => setForm({ ...form, referal: e.target.value })} className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 text-xs font-medium outline-none bg-slate-50/50 focus:bg-white focus:border-emerald-500" />
-                    </div>
+                    {(user?.role === "superadmin" || user?.role === "admin" || !form.referal || (user?.nama && form.referal.toLowerCase() === user.nama.toLowerCase())) && (
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Referal</label>
+                        <input value={form.referal} onChange={(e) => setForm({ ...form, referal: e.target.value })} className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 text-xs font-medium outline-none bg-slate-50/50 focus:bg-white focus:border-emerald-500" />
+                      </div>
+                    )}
                   </div>
 
                   <div>
