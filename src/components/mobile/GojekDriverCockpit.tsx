@@ -12,6 +12,7 @@ import {
   useMap,
 } from "react-leaflet";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import SlideToConfirm from "./SlideToConfirm";
 import { getMapTileConfig, type MapTileType } from "@/lib/map-tile";
 import { formatRupiah } from "@/lib/utils";
@@ -403,7 +404,7 @@ export default function GojekDriverCockpit({
       </div>
 
       {/* ── 2. FULLSCREEN LEAFLET MAP CANVAS ── */}
-      <div className="relative flex-1 w-full min-h-0">
+      <div className="absolute inset-0 z-0">
         <MapContainer
           center={driverCoords ?? (validTasks[0] ? [validTasks[0].latitude, validTasks[0].longitude] : PUSAT_DEPOK)}
           zoom={16}
@@ -592,19 +593,30 @@ export default function GojekDriverCockpit({
       </div>
 
       {/* ── 4. THE AUTHENTIC GOJEK DRIVER BOTTOM SHEET ── */}
-      <div className="bg-slate-950 border-t border-slate-800 p-4 pb-5 shadow-2xl z-10 shrink-0 space-y-3">
+      <motion.div
+        layout
+        onPanEnd={(e, { offset, velocity }) => {
+          if (offset.y < -20 || velocity.y < -300) {
+            setShowQueueSheet(true);
+          } else if (offset.y > 20 || velocity.y > 300) {
+            setShowQueueSheet(false);
+          }
+        }}
+        className="absolute bottom-0 left-0 right-0 z-[500] bg-slate-950 border-t border-slate-800 p-4 shadow-[0_-12px_40px_rgba(0,0,0,0.6)] space-y-3 rounded-t-3xl"
+        style={{ paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))" }}
+      >
         {/* Gojek Pull Handle Indicator */}
         <div
           onClick={() => setShowQueueSheet(!showQueueSheet)}
-          className="cursor-pointer py-0.5"
+          className="cursor-pointer py-3 -mt-3 -mx-4 mb-1 flex justify-center w-[calc(100%+2rem)]"
         >
-          <div className="w-10 h-1 bg-slate-600 rounded-full mx-auto" />
+          <div className="w-12 h-1.5 bg-slate-600/80 rounded-full" />
         </div>
 
         {currentTask ? (
           <>
             {/* Row 1: Trip Status & Multi-Drop Counter */}
-            <div className="flex items-center justify-between text-xs">
+            <motion.div layout className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
                 <span
                   className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
@@ -643,12 +655,17 @@ export default function GojekDriverCockpit({
                 <span>
                   Stop #{totalCompleted + 1}/{validTasks.length}
                 </span>
-                <span>{showQueueSheet ? "▼" : "▲"}</span>
+                <motion.span
+                  animate={{ rotate: showQueueSheet ? 180 : 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  ▲
+                </motion.span>
               </button>
-            </div>
+            </motion.div>
 
             {/* Row 2: Customer Identity & Gojek Round Action Buttons */}
-            <div className="flex items-start justify-between gap-3">
+            <motion.div layout className="flex items-start justify-between gap-3">
               <div className="space-y-0.5 min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <h3 className="text-base font-black text-white truncate">
@@ -719,10 +736,10 @@ export default function GojekDriverCockpit({
                   </a>
                 )}
               </div>
-            </div>
+            </motion.div>
 
             {/* Row 3: THE ICONIC GOJEK SWIPE SLIDER */}
-            <div className="pt-1">
+            <motion.div layout className="pt-1">
               {currentIsMenunggak ? (
                 <SlideToConfirm
                   variant="danger"
@@ -745,85 +762,95 @@ export default function GojekDriverCockpit({
                   }}
                 />
               )}
-            </div>
+            </motion.div>
           </>
         ) : (
-          <div className="py-2 text-center text-xs text-slate-400 space-y-1">
+          <motion.div layout className="py-2 text-center text-xs text-slate-400 space-y-1">
             <p className="font-bold text-white">Semua Penjemputan Selesai! 🎉</p>
             <p className="text-[11px]">
               Tidak ada lagi rumah yang menunggu pengangkutan pada jadwal ini.
             </p>
-          </div>
+          </motion.div>
         )}
 
         {/* ── 5. EXPANDABLE MULTI-STOP QUEUE DRAWER (ALA GOSEND SAMEDAY) ── */}
-        {showQueueSheet && pendingTasks.length > 0 && (
-          <div className="pt-3 border-t border-slate-800 space-y-2 max-h-56 overflow-y-auto">
-            <div className="text-[11px] font-black text-slate-400 uppercase tracking-wider flex items-center justify-between">
-              <span>Urutan Antrean Pengangkutan ({pendingTasks.length} Titik)</span>
-              <span className="text-emerald-400 font-bold">{progressPercent}% Selesai</span>
-            </div>
+        <AnimatePresence initial={false}>
+          {showQueueSheet && pendingTasks.length > 0 && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="overflow-hidden"
+            >
+              <div className="pt-3 border-t border-slate-800 space-y-2 max-h-[40vh] overflow-y-auto overscroll-contain">
+                <div className="text-[11px] font-black text-slate-400 uppercase tracking-wider flex items-center justify-between pb-1">
+                  <span>Urutan Antrean Pengangkutan ({pendingTasks.length} Titik)</span>
+                  <span className="text-emerald-400 font-bold">{progressPercent}% Selesai</span>
+                </div>
 
-            <div className="space-y-1.5">
-              {pendingTasks.map((t, i) => {
-                const isSelected = currentTask?.id === t.id;
-                const d =
-                  driverCoords && t.latitude && t.longitude
-                    ? jarakMeter(driverCoords, [t.latitude, t.longitude])
-                    : null;
+                <div className="space-y-1.5 pb-2">
+                  {pendingTasks.map((t, i) => {
+                    const isSelected = currentTask?.id === t.id;
+                    const d =
+                      driverCoords && t.latitude && t.longitude
+                        ? jarakMeter(driverCoords, [t.latitude, t.longitude])
+                        : null;
 
-                return (
-                  <div
-                    key={`queue-${t.id}`}
-                    onClick={() => {
-                      setFocusPos([t.latitude, t.longitude]);
-                      onSelectTarget?.(t.id);
-                    }}
-                    className={`p-2.5 rounded-2xl transition-all cursor-pointer flex items-center justify-between gap-2 border ${
-                      isSelected
-                        ? "bg-slate-900 border-emerald-500/60 ring-1 ring-emerald-500/20"
-                        : "bg-slate-900/60 hover:bg-slate-900 border-slate-800"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <span
-                        className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 ${
-                          t.tunggakan?.isMenunggak
-                            ? "bg-rose-600 text-white"
-                            : "bg-emerald-600 text-white"
+                    return (
+                      <div
+                        key={`queue-${t.id}`}
+                        onClick={() => {
+                          setFocusPos([t.latitude, t.longitude]);
+                          onSelectTarget?.(t.id);
+                        }}
+                        className={`p-2.5 rounded-2xl transition-all cursor-pointer flex items-center justify-between gap-2 border ${
+                          isSelected
+                            ? "bg-slate-900 border-emerald-500/60 ring-1 ring-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
+                            : "bg-slate-900/60 hover:bg-slate-900 border-slate-800"
                         }`}
                       >
-                        {i + 1}
-                      </span>
-                      <div className="min-w-0">
-                        <p className="text-xs font-bold text-white truncate">
-                          {t.nama}
-                        </p>
-                        <p className="text-[10px] text-slate-400 truncate">
-                          {t.alamat}
-                        </p>
-                      </div>
-                    </div>
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <span
+                            className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 ${
+                              t.tunggakan?.isMenunggak
+                                ? "bg-rose-600 text-white shadow-[0_0_10px_rgba(225,29,72,0.3)]"
+                                : "bg-emerald-600 text-white shadow-[0_0_10px_rgba(5,150,105,0.3)]"
+                            }`}
+                          >
+                            {i + 1}
+                          </span>
+                          <div className="min-w-0">
+                            <p className="text-xs font-bold text-white truncate">
+                              {t.nama}
+                            </p>
+                            <p className="text-[10px] text-slate-400 truncate">
+                              {t.alamat}
+                            </p>
+                          </div>
+                        </div>
 
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      {d !== null && (
-                        <span className="text-[10px] font-semibold text-slate-300 bg-slate-800 px-2 py-0.5 rounded-lg">
-                          {d}m
-                        </span>
-                      )}
-                      {t.tunggakan?.isMenunggak && (
-                        <span className="text-[9px] font-black text-rose-300 bg-rose-950 px-1.5 py-0.5 rounded">
-                          ⛔
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-      </div>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {d !== null && (
+                            <span className="text-[10px] font-semibold text-slate-300 bg-slate-800 px-2 py-0.5 rounded-lg border border-slate-700">
+                              {d}m
+                            </span>
+                          )}
+                          {t.tunggakan?.isMenunggak && (
+                            <span className="text-[10px] font-black text-rose-300 bg-rose-950 px-1.5 py-0.5 rounded-lg border border-rose-900">
+                              ⛔
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 }
