@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { Truck, MapPin, Smartphone, ArrowRight, Megaphone, ShieldCheck, Sparkles, Navigation, CheckCircle2 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import AnimatedDumpTruck from "@/components/AnimatedDumpTruck";
@@ -19,6 +21,9 @@ export const metadata: Metadata = {
 };
 
 export default async function LandingPage() {
+  // Langsung arahkan semua pengunjung ke halaman login
+  redirect("/login");
+  
   type PengumumanRingkas = {
     id: number;
     judul: string;
