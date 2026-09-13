@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Component, useCallback, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { RT_RTRW_DEPOK } from "@/lib/zona-depok";
 import { cariRtTerdekat, deteksiZona, formatJarak, jarakMeter, urutkanRute } from "@/lib/geo";
@@ -16,6 +16,39 @@ const MapView = dynamic(() => import("@/components/MapView"), {
     </div>
   ),
 });
+
+class MapErrorBoundary extends Component<
+  { children: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error: unknown) {
+    console.error("Peta rendering error:", error);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="h-full w-full flex flex-col items-center justify-center bg-slate-900 text-white p-6 space-y-3">
+          <p className="text-sm font-bold text-rose-400">⚠️ Terjadi kendala saat memuat peta.</p>
+          <button
+            type="button"
+            onClick={() => this.setState({ hasError: false })}
+            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-xs font-bold transition shadow-lg"
+          >
+            Muat Ulang Peta
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 export type PelangganPeta = {
   id: number;
@@ -370,10 +403,21 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
   const kendaraanOnline = kendaraan.filter((k) => isOnline(k.updatedAt)).length;
   const totalOnline = petugasOnline + kendaraanOnline;
 
-  const pilihPelanggan = useCallback((id: number) => {
-    setSelectedId(id);
-    setSelectedKomplainId(null);
-  }, []);
+  const pilihPelanggan = useCallback(
+    (id: number) => {
+      setSelectedId(id);
+      setSelectedKomplainId(null);
+      // Jika pelanggan yang dipilih tidak ada di peta karena filter aktif, reset filter agar pin muncul
+      const adaDiPeta = peta.some((x) => x.id === id);
+      if (!adaDiPeta) {
+        setFilterWilayah("semua");
+        setFilterStatus("semua");
+        setFilterTagihan("semua");
+        setCari("");
+      }
+    },
+    [peta]
+  );
   const pilihKomplain = useCallback((id: number) => {
     setSelectedKomplainId(id);
     setSelectedId(null);
@@ -525,25 +569,27 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
             )}
           </div>
 
-          <MapView
-            pelanggan={peta}
-            komplain={komplainFilter}
-            petugas={petugas}
-            kendaraan={tampilkanArmada ? kendaraan : []}
-            transit={transit}
-            pusatPetugas={pusatPetugas}
-            selectedId={selectedId}
-            setSelectedId={pilihPelanggan}
-            selectedKomplainId={selectedKomplainId}
-            setSelectedKomplainId={pilihKomplain}
-            tampilkanCakupan={tampilkanCakupan}
-            tampilkanBatas={tampilkanBatas}
-            tampilkanBatasKelurahan={tampilkanBatasKelurahan}
-            tampilkanRt={tampilkanRt}
-            ruteTerpilih={ruteTerpilih}
-            invalidateKey={invalidateKey}
-            warnaStatus={WARNA_STATUS}
-          />
+          <MapErrorBoundary>
+            <MapView
+              pelanggan={peta}
+              komplain={komplainFilter}
+              petugas={petugas}
+              kendaraan={tampilkanArmada ? kendaraan : []}
+              transit={transit}
+              pusatPetugas={pusatPetugas}
+              selectedId={selectedId}
+              setSelectedId={pilihPelanggan}
+              selectedKomplainId={selectedKomplainId}
+              setSelectedKomplainId={pilihKomplain}
+              tampilkanCakupan={tampilkanCakupan}
+              tampilkanBatas={tampilkanBatas}
+              tampilkanBatasKelurahan={tampilkanBatasKelurahan}
+              tampilkanRt={tampilkanRt}
+              ruteTerpilih={ruteTerpilih}
+              invalidateKey={invalidateKey}
+              warnaStatus={WARNA_STATUS}
+            />
+          </MapErrorBoundary>
         </div>
       </div>
 

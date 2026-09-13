@@ -195,8 +195,9 @@ function computeKelurahanGeom(): KelurahanGeomItem[] {
 
 const KELURAHAN_GEOM: KelurahanGeomItem[] = computeKelurahanGeom();
 
-function esc(s: string): string {
-  return s
+function esc(s: unknown): string {
+  if (s == null) return "";
+  return String(s)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -242,46 +243,67 @@ function buatIconKomplain(warna: string, aktif: boolean) {
 }
 
 function popupHtml(p: PelangganPeta): string {
-  const zona =
-    p.latitude != null && p.longitude != null ? deteksiZona([p.latitude, p.longitude]) : null;
-  const statusTxt = TAGIHAN_LABEL[p.statusTagihan ?? ""] ?? "—";
-  const warnaTxt = p.statusTagihan === "tunggakan" ? "#f87171" : "#4ade80";
-  const wa = p.noTelepon
-    ? `<a href="https://wa.me/${String(p.noTelepon).replace(/^0/, "62")}" target="_blank" rel="noreferrer" style="display:inline-block;margin-top:6px;color:#131517;background:#b7e13c;font-family:ui-monospace,monospace;font-size:10px;font-weight:700;padding:4px 8px;border-radius:2px;text-decoration:none;letter-spacing:0.06em">WA ${esc(p.noTelepon)}</a>`
-    : "";
-  return `<div style="font-family:ui-monospace,monospace;font-size:11px;color:#f0eee6;min-width:190px">
-    <div style="font-weight:700;font-size:13px;color:#ffffff">${esc(p.nama)}</div>
-    <div style="color:#b7e13c;font-size:10px;font-weight:700;margin:2px 0 6px">${esc(p.kodePelanggan)}</div>
-    <div style="color:#c5c8bc;line-height:1.5">${esc(p.alamat)}${p.rtRw ? " · RT/RW " + esc(p.rtRw) : ""}</div>
-    ${p.wilayah ? `<div style="color:#c5c8bc">Wilayah: ${esc(p.wilayah.nama)}</div>` : ""}
-    <div style="color:#c5c8bc">Kategori: ${KATEGORI_LABEL[p.kategori] ?? p.kategori}</div>
-    ${
-      zona
-        ? `<div style="color:#b7e13c;margin-top:6px;line-height:1.5;font-weight:600">ZONA: ${esc(
-            zona.kelurahan.toUpperCase()
-          )} · KEC. ${esc(zona.kecamatan.toUpperCase())}<br/>RT RTRW #${zona.rtId} (±${zona.jarakRtM} m)</div>`
-        : ""
-    }
-    <div style="color:${warnaTxt};margin-top:6px;font-weight:700">TAGIHAN: ${statusTxt}</div>
-    ${wa}
-  </div>`;
+  try {
+    const zona =
+      p.latitude != null && p.longitude != null ? deteksiZona([p.latitude, p.longitude]) : null;
+    const statusTxt = TAGIHAN_LABEL[p.statusTagihan ?? ""] ?? "—";
+    const warnaTxt = p.statusTagihan === "tunggakan" ? "#f87171" : "#4ade80";
+    const telClean = p.noTelepon ? String(p.noTelepon).replace(/\D/g, "") : "";
+    const waUrl = telClean ? `https://wa.me/${telClean.replace(/^0/, "62")}` : null;
+    const wa = waUrl
+      ? `<a href="${waUrl}" target="_blank" rel="noreferrer" style="display:inline-block;margin-top:6px;color:#131517;background:#b7e13c;font-family:ui-monospace,monospace;font-size:10px;font-weight:700;padding:4px 8px;border-radius:2px;text-decoration:none;letter-spacing:0.06em">WA ${esc(p.noTelepon)}</a>`
+      : "";
+    return `<div style="font-family:ui-monospace,monospace;font-size:11px;color:#f0eee6;min-width:190px">
+      <div style="font-weight:700;font-size:13px;color:#ffffff">${esc(p.nama)}</div>
+      <div style="color:#b7e13c;font-size:10px;font-weight:700;margin:2px 0 6px">${esc(p.kodePelanggan)}</div>
+      <div style="color:#c5c8bc;line-height:1.5">${esc(p.alamat || "Alamat tidak tersedia")}${p.rtRw ? " · RT/RW " + esc(p.rtRw) : ""}</div>
+      ${p.wilayah?.nama ? `<div style="color:#c5c8bc">Wilayah: ${esc(p.wilayah.nama)}</div>` : ""}
+      <div style="color:#c5c8bc">Kategori: ${esc(KATEGORI_LABEL[p.kategori] ?? p.kategori)}</div>
+      ${
+        zona
+          ? `<div style="color:#b7e13c;margin-top:6px;line-height:1.5;font-weight:600">ZONA: ${esc(
+              (zona.kelurahan || "").toUpperCase()
+            )} · KEC. ${esc((zona.kecamatan || "").toUpperCase())}<br/>RT RTRW #${esc(zona.rtId)} (±${zona.jarakRtM ?? 0} m)</div>`
+          : ""
+      }
+      <div style="color:${warnaTxt};margin-top:6px;font-weight:700">TAGIHAN: ${esc(statusTxt)}</div>
+      ${wa}
+    </div>`;
+  } catch (err) {
+    console.error("Gagal membuat popup pelanggan:", err);
+    return `<div style="font-family:ui-monospace,monospace;font-size:11px;color:#ffffff;min-width:160px">
+      <div style="font-weight:700">${esc(p.nama)}</div>
+      <div style="color:#b7e13c">${esc(p.kodePelanggan)}</div>
+      <div style="color:#c5c8bc">${esc(p.alamat)}</div>
+    </div>`;
+  }
 }
 
 function popupKomplainHtml(k: KomplainPeta): string {
-  const wa = k.pelanggan.noTelepon
-    ? `<a href="https://wa.me/${String(k.pelanggan.noTelepon).replace(/^0/, "62")}" target="_blank" rel="noreferrer" style="display:inline-block;margin-top:6px;color:#131517;background:#f87171;font-family:ui-monospace,monospace;font-size:10px;font-weight:700;padding:4px 8px;border-radius:2px;text-decoration:none;letter-spacing:0.06em">HUBUNGI WA</a>`
-    : "";
-  return `<div style="font-family:ui-monospace,monospace;font-size:11px;color:#f0eee6;min-width:200px">
-    <div style="display:flex;align-items:center;gap:6px">
-      <span style="width:8px;height:8px;border-radius:50%;background:${KOMPLAIN_WARNA[k.status] ?? "#ff5c5c"}"></span>
-      <span style="font-weight:700;font-size:12px;color:#ffffff;text-transform:uppercase">${esc(KOMPLAIN_LABEL[k.jenis] ?? k.jenis)}</span>
-    </div>
-    <div style="color:#c5c8bc;font-size:10px;margin:3px 0 8px">${esc(k.pelanggan.nama)} · ${esc(k.pelanggan.kodePelanggan)} · ${formatWaktuRelatif(k.createdAt)}</div>
-    <div style="color:#f0eee6;line-height:1.5;border-left:2px solid ${KOMPLAIN_WARNA[k.status] ?? "#ff5c5c"};padding-left:8px">${esc(k.deskripsi)}</div>
-    ${k.tanggapan ? `<div style="color:#b7e13c;margin-top:6px;font-weight:600">RESPON: ${esc(k.tanggapan)}</div>` : ""}
-    <div style="color:#c5c8bc;margin-top:6px;text-transform:uppercase;font-weight:600">STATUS: ${esc(k.status)}</div>
-    ${wa}
-  </div>`;
+  try {
+    const telClean = k.pelanggan?.noTelepon ? String(k.pelanggan.noTelepon).replace(/\D/g, "") : "";
+    const waUrl = telClean ? `https://wa.me/${telClean.replace(/^0/, "62")}` : null;
+    const wa = waUrl
+      ? `<a href="${waUrl}" target="_blank" rel="noreferrer" style="display:inline-block;margin-top:6px;color:#131517;background:#f87171;font-family:ui-monospace,monospace;font-size:10px;font-weight:700;padding:4px 8px;border-radius:2px;text-decoration:none;letter-spacing:0.06em">HUBUNGI WA</a>`
+      : "";
+    return `<div style="font-family:ui-monospace,monospace;font-size:11px;color:#f0eee6;min-width:200px">
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="width:8px;height:8px;border-radius:50%;background:${KOMPLAIN_WARNA[k.status] ?? "#ff5c5c"}"></span>
+        <span style="font-weight:700;font-size:12px;color:#ffffff;text-transform:uppercase">${esc(KOMPLAIN_LABEL[k.jenis] ?? k.jenis)}</span>
+      </div>
+      <div style="color:#c5c8bc;font-size:10px;margin:3px 0 8px">${esc(k.pelanggan?.nama)} · ${esc(k.pelanggan?.kodePelanggan)} · ${formatWaktuRelatif(k.createdAt)}</div>
+      <div style="color:#f0eee6;line-height:1.5;border-left:2px solid ${KOMPLAIN_WARNA[k.status] ?? "#ff5c5c"};padding-left:8px">${esc(k.deskripsi)}</div>
+      ${k.tanggapan ? `<div style="color:#b7e13c;margin-top:6px;font-weight:600">RESPON: ${esc(k.tanggapan)}</div>` : ""}
+      <div style="color:#c5c8bc;margin-top:6px;text-transform:uppercase;font-weight:600">STATUS: ${esc(k.status)}</div>
+      ${wa}
+    </div>`;
+  } catch (err) {
+    console.error("Gagal membuat popup komplain:", err);
+    return `<div style="font-family:ui-monospace,monospace;font-size:11px;color:#ffffff;min-width:160px">
+      <div style="font-weight:700">${esc(k.pelanggan?.nama)}</div>
+      <div style="color:#c5c8bc">${esc(k.deskripsi)}</div>
+    </div>`;
+  }
 }
 
 function clusterHtml(c: L.MarkerCluster): string {
@@ -396,13 +418,19 @@ function PinsPetugas({ petugas }: { petugas: PetugasPeta[] }) {
 function ClusterPins({
   pelanggan,
   warnaStatus,
+  selectedId,
   onPilih,
 }: {
   pelanggan: PelangganPeta[];
   warnaStatus: Record<string, string>;
+  selectedId: number | null;
   onPilih: (id: number) => void;
 }) {
   const map = useMap();
+  const groupRef = useRef<L.MarkerClusterGroup | null>(null);
+  const markersRef = useRef<Map<number, L.Marker>>(new Map());
+  const clickedFromMapRef = useRef(false);
+
   useEffect(() => {
     const group = L.markerClusterGroup({
       maxClusterRadius: 60,
@@ -410,20 +438,64 @@ function ClusterPins({
       spiderfyOnMaxZoom: true,
       iconCreateFunction: clusterIcon,
     });
+    groupRef.current = group;
+    markersRef.current.clear();
+
     for (const p of pelanggan) {
-      if (p.latitude == null || p.longitude == null) continue;
+      if (
+        p.latitude == null ||
+        p.longitude == null ||
+        isNaN(p.latitude) ||
+        isNaN(p.longitude)
+      ) {
+        continue;
+      }
       const m = L.marker([p.latitude, p.longitude], {
         icon: buatIcon(warnaStatus[p.status] ?? "#8b8f98"),
       });
       m.bindPopup(popupHtml(p));
-      m.on("click", () => onPilih(p.id));
+      m.on("click", () => {
+        clickedFromMapRef.current = true;
+        onPilih(p.id);
+      });
       group.addLayer(m);
+      markersRef.current.set(p.id, m);
     }
     map.addLayer(group);
     return () => {
       map.removeLayer(group);
+      groupRef.current = null;
+      markersRef.current.clear();
     };
   }, [pelanggan, map, warnaStatus, onPilih]);
+
+  // Handle selectedId dari luar (misalnya dari daftar bawah atau dropdown pencarian)
+  useEffect(() => {
+    if (!selectedId || !groupRef.current) return;
+
+    // Jika pemilihan dipicu langsung dari klik marker pada peta, lewati zoomToShowLayer
+    if (clickedFromMapRef.current) {
+      clickedFromMapRef.current = false;
+      return;
+    }
+
+    const marker = markersRef.current.get(selectedId);
+    if (!marker) return;
+
+    try {
+      groupRef.current.zoomToShowLayer(marker, () => {
+        try {
+          marker.openPopup();
+        } catch {}
+      });
+    } catch (err) {
+      console.warn("zoomToShowLayer error:", err);
+      try {
+        marker.openPopup();
+      } catch {}
+    }
+  }, [selectedId]);
+
   return null;
 }
 
@@ -484,12 +556,21 @@ function ZoomTracker({ onZoom }: { onZoom: (z: number) => void }) {
   return null;
 }
 
-// Terbang ke titik saat dipilih dari panel.
+// Terbang ke titik saat dipilih dari panel (petugas / kendaraan / transit / pengaduan).
 function FlyTo({ center }: { center: [number, number] | null }) {
   const map = useMap();
+  const lastTargetRef = useRef<string | null>(null);
+
   useEffect(() => {
-    if (center) {
+    if (!center) return;
+    const key = `${center[0].toFixed(6)},${center[1].toFixed(6)}`;
+    if (lastTargetRef.current === key) return;
+    lastTargetRef.current = key;
+
+    try {
       map.flyTo(center, Math.max(map.getZoom(), 16), { duration: 0.7 });
+    } catch (err) {
+      console.warn("FlyTo error:", err);
     }
   }, [center, map]);
   return null;
@@ -568,14 +649,11 @@ export default function MapView({
   // Titik tengah (centroid) dan batas polygon kelurahan (static geometry)
   const kelurahanGeom = KELURAHAN_GEOM;
 
-  const sel = pelanggan.find((p) => p.id === selectedId);
-  const pusat =
-    sel?.latitude != null ? ([sel.latitude, sel.longitude] as [number, number]) : null;
-
   const komplainSel = komplain.find((k) => k.id === selectedKomplainId);
   const pusatKomplain = komplainSel ? (komplainSel.posisi as [number, number]) : null;
-  // Prioritas terbang: petugas (direktori online) → komplain → pelanggan
-  const pusatFly = pusatPetugas ?? (komplainSel ? pusatKomplain : pusat);
+  // Prioritas terbang: petugas (direktori online) → komplain.
+  // Seleksi pelanggan ditangani langsung secara aman oleh zoomToShowLayer di ClusterPins agar tidak bentrok popup & cluster.
+  const pusatFly = pusatPetugas ?? (komplainSel ? pusatKomplain : null);
   const [tileMode, setTileMode] = useState<MapTileType>("google-streets");
   const tileConfig = useMemo(() => getMapTileConfig(tileMode), [tileMode]);
 
@@ -801,7 +879,12 @@ export default function MapView({
       {/* Titik transit (lapak) */}
       <PinsTransit transit={transit} />
 
-      <ClusterPins pelanggan={pelanggan} warnaStatus={warnaStatus} onPilih={setSelectedId} />
+      <ClusterPins
+        pelanggan={pelanggan}
+        warnaStatus={warnaStatus}
+        selectedId={selectedId}
+        onPilih={setSelectedId}
+      />
 
       <FlyTo center={pusatFly} />
       <FitBounds rutePoints={ruteUrut} points={titik} />
