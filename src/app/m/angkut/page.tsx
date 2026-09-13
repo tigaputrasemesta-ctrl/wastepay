@@ -383,309 +383,10 @@ export default function MobileAngkut() {
   });
 
   return (
-    <div className="space-y-4">
-      {/* ── TOP SHIFT TOOLBAR & TRIP TIMER (Starting & Completing + Timer) ── */}
-      <div className="bg-slate-900 text-white rounded-3xl p-3 sm:p-3.5 border border-slate-800 shadow-md flex items-center justify-between gap-2.5">
-        <div className="flex items-center gap-2 min-w-0">
-          <div className="relative flex h-3 w-3 shrink-0">
-            <span
-              aria-hidden="true"
-              className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                tripState === "running" ? "bg-emerald-400" : tripState === "paused" ? "bg-amber-400" : "bg-slate-400"
-              }`}
-            />
-            <span
-              aria-hidden="true"
-              className={`relative inline-flex rounded-full h-3 w-3 ${
-                tripState === "running" ? "bg-emerald-500" : tripState === "paused" ? "bg-amber-500" : "bg-slate-500"
-              }`}
-            />
-          </div>
-          <div className="min-w-0">
-            <div className="flex items-center gap-1.5">
-              <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider truncate">
-                {tripState === "running" ? "Rute Berlangsung" : tripState === "paused" ? "Rute Dijeda" : "Rute Belum Mulai"}
-              </span>
-            </div>
-            <p className="text-[10px] font-mono text-emerald-400 font-bold">
-              ⏱️ {formatTripDuration(tripSeconds)}
-            </p>
-          </div>
-        </div>
-
-        {/* Action buttons */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          {tripState === "idle" && (
-            <button
-              type="button"
-              onClick={handleStartTrip}
-              className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white text-xs font-black rounded-xl shadow-md transition-all flex items-center gap-1"
-            >
-              <span aria-hidden="true">▶️</span>
-              <span>Mulai Rute</span>
-            </button>
-          )}
-
-          {tripState === "running" && (
-            <>
-              <button
-                type="button"
-                onClick={handlePauseTrip}
-                className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-amber-300 text-xs font-bold rounded-xl border border-slate-700 transition-all"
-                title="Jeda Sementara"
-              >
-                ⏸️ Jeda
-              </button>
-              <button
-                type="button"
-                onClick={handleCompleteTrip}
-                className="px-2.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white text-xs font-black rounded-xl shadow-md transition-all"
-                title="Selesaikan Rute"
-              >
-                <span aria-hidden="true">🏁</span> Selesai
-              </button>
-            </>
-          )}
-
-          {tripState === "paused" && (
-            <>
-              <button
-                type="button"
-                onClick={handleResumeTrip}
-                className="px-2.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white text-xs font-black rounded-xl shadow-md transition-all"
-              >
-                <span aria-hidden="true">▶️</span> Lanjut
-              </button>
-              <button
-                type="button"
-                onClick={handleCompleteTrip}
-                className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-white text-xs font-bold rounded-xl border border-slate-700 transition-all"
-              >
-                <span aria-hidden="true">🏁</span> Selesai
-              </button>
-            </>
-          )}
-
-          {tripState === "completed" && (
-            <button
-              type="button"
-              onClick={() => {
-                setTripState("idle");
-                setTripSeconds(0);
-              }}
-              className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl border border-slate-700"
-            >
-              <span aria-hidden="true">🔄</span> Reset
-            </button>
-          )}
-
-          <button
-            type="button"
-            onClick={() => setIsGlobalScannerOpen(true)}
-            aria-label="Scan QR / barcode pelanggan"
-            className="p-2 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded-xl border border-slate-700 active:scale-95 text-sm"
-            title="Scan QR Barcode Pelanggan"
-          >
-            <span aria-hidden="true">📷</span>
-          </button>
-        </div>
-      </div>
-      {/* Top Header with Date & Progress */}
-      <div className="bg-white rounded-3xl p-3.5 sm:p-4 border border-slate-200/80 shadow-sm space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-          <div className="min-w-0">
-            <h1 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">Rute Pengangkutan</h1>
-            <p className="text-xs text-slate-500 font-medium truncate">
-              {format(new Date(tanggal), "EEEE, d MMMM yyyy", { locale: id })}
-            </p>
-          </div>
-          <input
-            type="date"
-            value={tanggal}
-            onChange={(e) => setTanggal(e.target.value)}
-            aria-label="Tanggal jadwal"
-            className="w-full sm:w-auto border border-slate-200 bg-slate-50 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20"
-          />
-        </div>
-
-        {/* Progress Bar (GoPartner Fleet Progress) */}
-        <div>
-          <div className="flex items-center justify-between text-xs font-bold mb-1.5">
-            <span className="text-slate-600">Progres Pengangkutan</span>
-            <span className="text-emerald-700 font-bold tabular-nums">{selesaiCount} / {totalCount} Selesai ({percentComplete}%)</span>
-          </div>
-          <div
-            className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden"
-            role="progressbar"
-            aria-label="Progres pengangkutan"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={percentComplete}
-          >
-            <div
-              className="h-full bg-emerald-600 rounded-full transition-all duration-500 ease-out"
-              style={{ width: `${percentComplete}%` }}
-            />
-          </div>
-        </div>
-
-        {/* ── Radar & Proximity Toolbar (Hands-Free Mode) ── */}
-        <div className="bg-slate-900 text-white rounded-2xl p-2.5 sm:p-3 shadow-md space-y-2.5">
-          <div className="flex items-center justify-between gap-2 flex-wrap">
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="relative flex h-2.5 w-2.5 shrink-0">
-                <span
-                  aria-hidden="true"
-                  className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                    driverPos ? "bg-emerald-400" : "bg-amber-400"
-                  }`}
-                />
-                <span
-                  aria-hidden="true"
-                  className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
-                    driverPos ? "bg-emerald-500" : "bg-amber-500"
-                  }`}
-                />
-              </span>
-              <span className="text-xs font-bold text-slate-100 truncate">
-                {driverPos
-                  ? `Radar Aktif (±${driverPos.akurasi || 5}m)`
-                  : "Mencari GPS..."}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-1.5 shrink-0 ml-auto">
-              {/* Toggle Radius 10m vs 20m */}
-              <div
-                className="inline-flex bg-slate-800 rounded-xl p-0.5 text-[11px] font-bold border border-slate-700"
-                role="group"
-                aria-label="Radius deteksi"
-              >
-                <button
-                  type="button"
-                  onClick={() => setRadiusMeter(10)}
-                  aria-pressed={radiusMeter === 10}
-                  className={`px-2.5 py-1.5 rounded-lg transition-all ${
-                    radiusMeter === 10
-                      ? "bg-emerald-700 text-white shadow-sm"
-                      : "text-slate-400 hover:text-white"
-                  }`}
-                >
-                  10m
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setRadiusMeter(20)}
-                  aria-pressed={radiusMeter === 20}
-                  className={`px-2.5 py-1.5 rounded-lg transition-all ${
-                    radiusMeter === 20
-                      ? "bg-emerald-700 text-white shadow-sm"
-                      : "text-slate-400 hover:text-white"
-                  }`}
-                >
-                  20m
-                </button>
-              </div>
-
-              {/* Toggle Audio & Voice */}
-              <button
-                type="button"
-                onClick={() => {
-                  const next = !soundEnabled;
-                  setSoundEnabled(next);
-                  setVoiceEnabled(next);
-                }}
-                aria-pressed={soundEnabled}
-                aria-label="Suara peringatan"
-                className={`px-2.5 py-1 rounded-xl text-xs font-bold border transition-colors ${
-                  soundEnabled
-                    ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
-                    : "bg-slate-800 text-slate-400 border-slate-700"
-                }`}
-              >
-                {soundEnabled ? "🔊 On" : "🔇 Mute"}
-              </button>
-            </div>
-          </div>
-
-          {/* Closest Target Hint */}
-          {closestTask && closestDistance !== null && (
-            <div className="flex items-center justify-between bg-white/10 rounded-xl px-2.5 py-1.5 text-xs gap-2">
-              <div className="flex items-center gap-1.5 truncate min-w-0">
-                <span className="text-xs shrink-0">🎯</span>
-                <span className="font-extrabold text-white truncate">
-                  {closestTask.pelanggan.nama}
-                </span>
-                <span className="text-[10px] text-slate-300 shrink-0">
-                  ({closestDistance}m)
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5 shrink-0">
-                {closestTask.tunggakan?.isMenunggak ? (
-                  <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-rose-500/30 text-rose-200 border border-rose-400/40">
-                    <span aria-hidden="true">⛔</span> Menunggak
-                  </span>
-                ) : (
-                  <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-emerald-500/30 text-emerald-200">
-                    <span aria-hidden="true">✓</span> Lunas
-                  </span>
-                )}
-                <button
-                  type="button"
-                  onClick={() => forceOpenTask(closestTask.id)}
-                  className="px-2.5 py-1.5 bg-white text-slate-900 rounded-lg text-[10px] font-black active:scale-95 transition-transform"
-                >
-                  <span aria-hidden="true">⚡</span> Pop-up
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* ── VIEW MODE SWITCHER: PETA LIVE vs DAFTAR ANTREAN ── */}
-      <div
-        className="grid grid-cols-2 gap-1.5 p-1 bg-slate-900 rounded-2xl border border-slate-800 shadow-lg"
-        role="group"
-        aria-label="Mode tampilan"
-      >
-        <button
-          type="button"
-          onClick={() => setViewMode("map")}
-          aria-pressed={viewMode === "map"}
-          className={`py-2 px-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all ${
-            viewMode === "map"
-              ? "bg-gradient-to-r from-emerald-700 to-teal-700 text-white shadow-md shadow-emerald-500/30"
-              : "text-slate-400 hover:text-white"
-          }`}
-        >
-          <span aria-hidden="true">🗺️</span>
-          <span>Peta Live</span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-black/40">
-            {data.filter((t) => t.pelanggan.latitude && t.pelanggan.longitude).length}
-          </span>
-        </button>
-        <button
-          type="button"
-          onClick={() => setViewMode("list")}
-          aria-pressed={viewMode === "list"}
-          className={`py-2 px-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all ${
-            viewMode === "list"
-              ? "bg-gradient-to-r from-emerald-700 to-teal-700 text-white shadow-md shadow-emerald-500/30"
-              : "text-slate-400 hover:text-white"
-          }`}
-        >
-          <span aria-hidden="true">📋</span>
-          <span>Daftar Rute</span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-black/40">
-            {filteredData.length}
-          </span>
-        </button>
-      </div>
-
-      {/* ── MODE PETA LIVE (GOJEK DRIVER ON-TRIP COCKPIT) ── */}
+    <div className="flex-1 w-full h-full flex flex-col overflow-hidden relative">
+      {/* ── MODE PETA LIVE (GOJEK DRIVER ON-TRIP COCKPIT - FULLSCREEN ZERO SCROLL) ── */}
       {viewMode === "map" && (
-        <div className="space-y-3">
+        <div className="flex-1 w-full h-full flex flex-col overflow-hidden relative">
           <GojekDriverCockpit
             tugas={data
               .filter((t) => t.pelanggan.latitude && t.pelanggan.longitude)
@@ -705,6 +406,7 @@ export default function MobileAngkut() {
             activeTarget={activeTask || closestTask}
             posSaya={driverPos}
             radiusMeter={radiusMeter}
+            onRadiusChange={setRadiusMeter}
             muatanTruk={muatanTruk}
             onMuatanChange={setMuatanTruk}
             onQuickPickup={handleQuickPickup}
@@ -726,24 +428,323 @@ export default function MobileAngkut() {
             onPauseTrip={handlePauseTrip}
             onResumeTrip={handleResumeTrip}
             onCompleteTrip={handleCompleteTrip}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            tanggal={format(new Date(tanggal), "d MMM yyyy", { locale: id })}
+            onTanggalChange={setTanggal}
+            selesaiCount={selesaiCount}
+            totalCount={totalCount}
+            percentComplete={percentComplete}
           />
 
           {data.length === 0 && (
-            <div className="bg-slate-900/90 backdrop-blur-md rounded-2xl p-4 border border-slate-800 text-center text-slate-300 text-xs space-y-1">
+            <div className="absolute top-24 inset-x-4 z-[400] bg-slate-900/90 backdrop-blur-md rounded-2xl p-4 border border-slate-800 text-center text-slate-300 text-xs space-y-1 pointer-events-auto shadow-xl">
               <p className="font-bold text-white">
                 ℹ️ Tidak ada jadwal antrean untuk tanggal ini ({format(new Date(tanggal), "EEEE, d MMMM yyyy", { locale: id })})
               </p>
               <p className="text-[11px] text-slate-400">
-                Peta tetap aktif memantau pergerakan armada Anda. Ganti tanggal jadwal di bagian atas jika ingin memeriksa antrean hari lain.
+                Peta tetap aktif memantau pergerakan armada Anda. Beralih ke tab Rute jika ingin memeriksa antrean hari lain.
               </p>
             </div>
           )}
         </div>
       )}
 
-      {/* ── MODE DAFTAR RUTE ── */}
+      {/* ── MODE DAFTAR RUTE (SCROLLABLE LIST) ── */}
       {viewMode === "list" && (
-        <div className="space-y-3">
+        <div className="flex-1 w-full h-full overflow-y-auto p-3 sm:p-4 space-y-3 pb-28">
+          {/* VIEW MODE SWITCHER */}
+          <div
+            className="grid grid-cols-2 gap-1.5 p-1 bg-slate-900 rounded-2xl border border-slate-800 shadow-lg shrink-0"
+            role="group"
+            aria-label="Mode tampilan"
+          >
+            <button
+              type="button"
+              onClick={() => setViewMode("map")}
+              aria-pressed={false}
+              className="py-2 px-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all text-slate-400 hover:text-white"
+            >
+              <span aria-hidden="true">🗺️</span>
+              <span>Peta Live</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-black/40">
+                {data.filter((t) => t.pelanggan.latitude && t.pelanggan.longitude).length}
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("list")}
+              aria-pressed={true}
+              className="py-2 px-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all bg-gradient-to-r from-emerald-700 to-teal-700 text-white shadow-md shadow-emerald-500/30"
+            >
+              <span aria-hidden="true">📋</span>
+              <span>Daftar Rute</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-black/40">
+                {filteredData.length}
+              </span>
+            </button>
+          </div>
+
+          {/* ── TOP SHIFT TOOLBAR & TRIP TIMER (Starting & Completing + Timer) ── */}
+          <div className="bg-slate-900 text-white rounded-3xl p-3 sm:p-3.5 border border-slate-800 shadow-md flex items-center justify-between gap-2.5">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="relative flex h-3 w-3 shrink-0">
+                <span
+                  aria-hidden="true"
+                  className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                    tripState === "running" ? "bg-emerald-400" : tripState === "paused" ? "bg-amber-400" : "bg-slate-400"
+                  }`}
+                />
+                <span
+                  aria-hidden="true"
+                  className={`relative inline-flex rounded-full h-3 w-3 ${
+                    tripState === "running" ? "bg-emerald-500" : tripState === "paused" ? "bg-amber-500" : "bg-slate-500"
+                  }`}
+                />
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider truncate">
+                    {tripState === "running" ? "Rute Berlangsung" : tripState === "paused" ? "Rute Dijeda" : "Rute Belum Mulai"}
+                  </span>
+                </div>
+                <p className="text-[10px] font-mono text-emerald-400 font-bold">
+                  ⏱️ {formatTripDuration(tripSeconds)}
+                </p>
+              </div>
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex items-center gap-1.5 shrink-0">
+              {tripState === "idle" && (
+                <button
+                  type="button"
+                  onClick={handleStartTrip}
+                  className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white text-xs font-black rounded-xl shadow-md transition-all flex items-center gap-1"
+                >
+                  <span aria-hidden="true">▶️</span>
+                  <span>Mulai Rute</span>
+                </button>
+              )}
+
+              {tripState === "running" && (
+                <>
+                  <button
+                    type="button"
+                    onClick={handlePauseTrip}
+                    className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-amber-300 text-xs font-bold rounded-xl border border-slate-700 transition-all"
+                    title="Jeda Sementara"
+                  >
+                    ⏸️ Jeda
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCompleteTrip}
+                    className="px-2.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white text-xs font-black rounded-xl shadow-md transition-all"
+                    title="Selesaikan Rute"
+                  >
+                    <span aria-hidden="true">🏁</span> Selesai
+                  </button>
+                </>
+              )}
+
+              {tripState === "paused" && (
+                <>
+                  <button
+                    type="button"
+                    onClick={handleResumeTrip}
+                    className="px-2.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white text-xs font-black rounded-xl shadow-md transition-all"
+                  >
+                    <span aria-hidden="true">▶️</span> Lanjut
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCompleteTrip}
+                    className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-white text-xs font-bold rounded-xl border border-slate-700 transition-all"
+                  >
+                    <span aria-hidden="true">🏁</span> Selesai
+                  </button>
+                </>
+              )}
+
+              {tripState === "completed" && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTripState("idle");
+                    setTripSeconds(0);
+                  }}
+                  className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl border border-slate-700"
+                >
+                  <span aria-hidden="true">🔄</span> Reset
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={() => setIsGlobalScannerOpen(true)}
+                aria-label="Scan QR / barcode pelanggan"
+                className="p-2 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded-xl border border-slate-700 active:scale-95 text-sm"
+                title="Scan QR Barcode Pelanggan"
+              >
+                <span aria-hidden="true">📷</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Top Header with Date & Progress */}
+          <div className="bg-white rounded-3xl p-3.5 sm:p-4 border border-slate-200/80 shadow-sm space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+              <div className="min-w-0">
+                <h1 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">Rute Pengangkutan</h1>
+                <p className="text-xs text-slate-500 font-medium truncate">
+                  {format(new Date(tanggal), "EEEE, d MMMM yyyy", { locale: id })}
+                </p>
+              </div>
+              <input
+                type="date"
+                value={tanggal}
+                onChange={(e) => setTanggal(e.target.value)}
+                aria-label="Tanggal jadwal"
+                className="w-full sm:w-auto border border-slate-200 bg-slate-50 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20"
+              />
+            </div>
+
+            {/* Progress Bar (GoPartner Fleet Progress) */}
+            <div>
+              <div className="flex items-center justify-between text-xs font-bold mb-1.5">
+                <span className="text-slate-600">Progres Pengangkutan</span>
+                <span className="text-emerald-700 font-bold tabular-nums">{selesaiCount} / {totalCount} Selesai ({percentComplete}%)</span>
+              </div>
+              <div
+                className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden"
+                role="progressbar"
+                aria-label="Progres pengangkutan"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={percentComplete}
+              >
+                <div
+                  className="h-full bg-emerald-600 rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${percentComplete}%` }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* ── Radar & Proximity Toolbar (Hands-Free Mode) ── */}
+          <div className="bg-slate-900 text-white rounded-2xl p-2.5 sm:p-3 shadow-md space-y-2.5">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="relative flex h-2.5 w-2.5 shrink-0">
+                  <span
+                    aria-hidden="true"
+                    className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                      driverPos ? "bg-emerald-400" : "bg-amber-400"
+                    }`}
+                  />
+                  <span
+                    aria-hidden="true"
+                    className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
+                      driverPos ? "bg-emerald-500" : "bg-amber-500"
+                    }`}
+                  />
+                </span>
+                <span className="text-xs font-bold text-slate-100 truncate">
+                  {driverPos
+                    ? `Radar Aktif (±${driverPos.akurasi || 5}m)`
+                    : "Mencari GPS..."}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1.5 shrink-0 ml-auto">
+                {/* Toggle Radius 10m vs 20m */}
+                <div
+                  className="inline-flex bg-slate-800 rounded-xl p-0.5 text-[11px] font-bold border border-slate-700"
+                  role="group"
+                  aria-label="Radius deteksi"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setRadiusMeter(10)}
+                    aria-pressed={radiusMeter === 10}
+                    className={`px-2.5 py-1.5 rounded-lg transition-all ${
+                      radiusMeter === 10
+                        ? "bg-emerald-700 text-white shadow-sm"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    10m
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setRadiusMeter(20)}
+                    aria-pressed={radiusMeter === 20}
+                    className={`px-2.5 py-1.5 rounded-lg transition-all ${
+                      radiusMeter === 20
+                        ? "bg-emerald-700 text-white shadow-sm"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    20m
+                  </button>
+                </div>
+
+                {/* Toggle Audio & Voice */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const next = !soundEnabled;
+                    setSoundEnabled(next);
+                    setVoiceEnabled(next);
+                  }}
+                  aria-pressed={soundEnabled}
+                  aria-label="Suara peringatan"
+                  className={`px-2.5 py-1 rounded-xl text-xs font-bold border transition-colors ${
+                    soundEnabled
+                      ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                      : "bg-slate-800 text-slate-400 border-slate-700"
+                  }`}
+                >
+                  {soundEnabled ? "🔊 On" : "🔇 Mute"}
+                </button>
+              </div>
+            </div>
+
+            {/* Closest Target Hint */}
+            {closestTask && closestDistance !== null && (
+              <div className="flex items-center justify-between bg-white/10 rounded-xl px-2.5 py-1.5 text-xs gap-2">
+                <div className="flex items-center gap-1.5 truncate min-w-0">
+                  <span className="text-xs shrink-0">🎯</span>
+                  <span className="font-extrabold text-white truncate">
+                    {closestTask.pelanggan.nama}
+                  </span>
+                  <span className="text-[10px] text-slate-300 shrink-0">
+                    ({closestDistance}m)
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  {closestTask.tunggakan?.isMenunggak ? (
+                    <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-rose-500/30 text-rose-200 border border-rose-400/40">
+                      <span aria-hidden="true">⛔</span> Menunggak
+                    </span>
+                  ) : (
+                    <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-emerald-500/30 text-emerald-200">
+                      <span aria-hidden="true">✓</span> Lunas
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => forceOpenTask(closestTask.id)}
+                    className="px-2.5 py-1.5 bg-white text-slate-900 rounded-lg text-[10px] font-black active:scale-95 transition-transform"
+                  >
+                    <span aria-hidden="true">⚡</span> Pop-up
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Searching & Finding in List View */}
           <div className="relative">
             <input

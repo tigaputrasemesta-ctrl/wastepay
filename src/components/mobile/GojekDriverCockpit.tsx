@@ -68,6 +68,15 @@ type GojekDriverCockpitProps = {
   onPauseTrip?: () => void;
   onResumeTrip?: () => void;
   onCompleteTrip?: () => void;
+  // Cockpit top HUD & navigation
+  viewMode?: "map" | "list";
+  onViewModeChange?: (mode: "map" | "list") => void;
+  tanggal?: string;
+  onTanggalChange?: (tgl: string) => void;
+  selesaiCount?: number;
+  totalCount?: number;
+  percentComplete?: number;
+  onRadiusChange?: (radius: number) => void;
 };
 
 const PUSAT_DEPOK: [number, number] = [-6.424838, 106.832667];
@@ -286,6 +295,14 @@ export default function GojekDriverCockpit({
   onPauseTrip,
   onResumeTrip,
   onCompleteTrip,
+  viewMode = "map",
+  onViewModeChange,
+  tanggal,
+  onTanggalChange,
+  selesaiCount,
+  totalCount,
+  percentComplete,
+  onRadiusChange,
 }: GojekDriverCockpitProps) {
   const [tileMode, setTileMode] = useState<MapTileType>("google-streets");
   const [centerTrigger, setCenterTrigger] = useState(0);
@@ -408,12 +425,136 @@ export default function GojekDriverCockpit({
     <div
       className={`relative w-full overflow-hidden transition-all duration-300 select-none ${
         isFullscreen
-          ? "fixed inset-0 z-50 bg-slate-950 flex flex-col pt-safe pb-safe"
-          : "h-[68vh] sm:h-[75vh] min-h-[460px] max-h-[640px] rounded-3xl border border-slate-800 shadow-2xl bg-slate-950 flex flex-col"
+          ? "fixed inset-0 z-[60] bg-slate-950 flex flex-col pt-safe pb-safe"
+          : "h-full flex-1 w-full bg-slate-950 flex flex-col pb-[58px] sm:pb-16"
       }`}
     >
       {/* ── 1. GOJEK FLOATING TOP TOOLBAR & TRIP STATUS BANNER ── */}
-      <div className="absolute top-2.5 sm:top-3 inset-x-2.5 sm:inset-x-3 z-[400] pointer-events-none space-y-1.5">
+      <div className="absolute top-2 sm:top-2.5 inset-x-2 sm:inset-x-2.5 z-[400] pointer-events-none space-y-1.5">
+        {/* Row A: Quick Navigation & Shift Controls */}
+        <div className="pointer-events-auto bg-slate-950/95 backdrop-blur-md rounded-2xl p-1.5 sm:p-2 border border-slate-800 shadow-xl flex items-center justify-between gap-1.5">
+          {/* Switcher Map / List */}
+          {onViewModeChange && (
+            <div className="inline-flex bg-slate-900 rounded-xl p-0.5 border border-slate-800 text-xs font-black shrink-0">
+              <button
+                type="button"
+                onClick={() => onViewModeChange("map")}
+                className={`px-2 py-1 rounded-lg transition-all flex items-center gap-1 ${
+                  viewMode === "map"
+                    ? "bg-emerald-700 text-white shadow-sm"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                <span>🗺️</span>
+                <span className="text-[11px]">Peta</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onViewModeChange("list")}
+                className={`px-2 py-1 rounded-lg transition-all flex items-center gap-1 ${
+                  viewMode === "list"
+                    ? "bg-emerald-700 text-white shadow-sm"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                <span>📋</span>
+                <span className="text-[11px]">Rute</span>
+                {totalCount !== undefined && (
+                  <span className="text-[9px] px-1 rounded-full bg-black/40">
+                    {totalCount}
+                  </span>
+                )}
+              </button>
+            </div>
+          )}
+
+          {/* Date & Progress indicator */}
+          <div className="flex items-center gap-1 min-w-0 px-1">
+            <span className="text-[10px] sm:text-xs font-bold text-slate-200 truncate">
+              {selesaiCount !== undefined && totalCount !== undefined
+                ? `${selesaiCount}/${totalCount} Selesai (${percentComplete ?? 0}%)`
+                : tanggal || "Rute Hari Ini"}
+            </span>
+          </div>
+
+          {/* Trip Actions */}
+          <div className="flex items-center gap-1 shrink-0">
+            {tripState === "idle" && onStartTrip && (
+              <button
+                type="button"
+                onClick={onStartTrip}
+                className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white text-[11px] font-black rounded-xl shadow-md transition-all flex items-center gap-1"
+              >
+                <span aria-hidden="true">▶️</span>
+                <span>Mulai</span>
+              </button>
+            )}
+
+            {tripState === "running" && (
+              <>
+                {onPauseTrip && (
+                  <button
+                    type="button"
+                    onClick={onPauseTrip}
+                    className="px-2 py-1 bg-slate-900 hover:bg-slate-800 text-amber-300 text-[10px] font-bold rounded-lg border border-slate-700"
+                    title="Jeda Rute"
+                  >
+                    ⏸️
+                  </button>
+                )}
+                {onCompleteTrip && (
+                  <button
+                    type="button"
+                    onClick={onCompleteTrip}
+                    className="px-2 py-1 bg-emerald-700 hover:bg-emerald-800 text-white text-[10px] font-black rounded-lg"
+                    title="Selesai Rute"
+                  >
+                    🏁
+                  </button>
+                )}
+              </>
+            )}
+
+            {tripState === "paused" && (
+              <>
+                {onResumeTrip && (
+                  <button
+                    type="button"
+                    onClick={onResumeTrip}
+                    className="px-2 py-1 bg-emerald-700 hover:bg-emerald-800 text-white text-[10px] font-black rounded-lg"
+                    title="Lanjut Rute"
+                  >
+                    ▶️
+                  </button>
+                )}
+                {onCompleteTrip && (
+                  <button
+                    type="button"
+                    onClick={onCompleteTrip}
+                    className="px-2 py-1 bg-slate-800 text-white text-[10px] font-bold rounded-lg border border-slate-700"
+                    title="Selesai Rute"
+                  >
+                    🏁
+                  </button>
+                )}
+              </>
+            )}
+
+            {/* Radius toggle */}
+            {onRadiusChange && radiusMeter && (
+              <button
+                type="button"
+                onClick={() => onRadiusChange(radiusMeter === 10 ? 20 : 10)}
+                className="px-1.5 py-1 bg-slate-900 text-slate-300 border border-slate-700 rounded-lg text-[10px] font-bold"
+                title={`Radius Radar: ${radiusMeter}m (Ketuk untuk ganti 10m/20m)`}
+              >
+                {radiusMeter}m
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Row B: Destination Guidance Banner */}
         <div className="pointer-events-auto bg-slate-950/95 backdrop-blur-md rounded-2xl p-2.5 sm:p-3 border border-slate-800 shadow-2xl flex items-center justify-between gap-2">
           {/* Direction Icon & Next Step Guidance */}
           <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">

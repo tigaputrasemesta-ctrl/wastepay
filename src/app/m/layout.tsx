@@ -148,9 +148,9 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
   return (
     <ToastProvider>
       <MobileSessionGuard />
-      <div className="min-h-dvh bg-slate-50 text-slate-900 flex flex-col pb-24">
+      <div className={cn("min-h-dvh bg-slate-50 text-slate-900 flex flex-col", isAngkut ? "h-dvh overflow-hidden pb-0" : "pb-24")}>
         {/* Top bar (GoPartner Style) */}
-        <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 px-4 py-2.5 flex items-center justify-between gap-3 shadow-sm">
+        <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 px-4 py-2.5 flex items-center justify-between gap-3 shadow-sm shrink-0">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="relative shrink-0">
               <div className="w-9 h-9 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-sm shadow-sm">
@@ -183,7 +183,14 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
           </button>
         </header>
 
-        <main className="flex-1 w-full max-w-lg mx-auto px-3 sm:px-3.5 py-3.5 sm:py-4 space-y-4 overflow-x-hidden">
+        <main
+          className={cn(
+            "flex-1 w-full mx-auto",
+            isAngkut
+              ? "max-w-full p-0 overflow-hidden flex flex-col"
+              : "max-w-lg px-3 sm:px-3.5 py-3.5 sm:py-4 space-y-4 overflow-x-hidden"
+          )}
+        >
           <MobileTracker hideUi={isAngkut} />
           <BackgroundTracker hideUi={isAngkut} />
           {children}
