@@ -3,7 +3,15 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { todayLocalISO } from "@/lib/utils";
-
+import { 
+  MapPin, 
+  ClipboardList, 
+  Clock, 
+  Receipt,
+  CheckCircle2,
+  ChevronRight,
+  UserCircle
+} from "lucide-react";
 
 type Profil = {
   id: number;
@@ -55,180 +63,149 @@ export default function MobileHome() {
   const sudahMasuk = Boolean(absen?.waktuMasuk);
   const sudahSelesai = Boolean(absen?.waktuSelesai);
 
-
-
   return (
-    <div className="space-y-4">
-      {/* Hero Partner Card (GoPartner Style) */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 text-white p-5 shadow-lg">
-        {/* Subtle background glow circle */}
-        <div className="absolute -right-8 -bottom-8 w-36 h-36 bg-white/10 rounded-full blur-2xl pointer-events-none" />
-
-        <div className="flex items-center justify-between gap-3 relative z-10">
-          <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/30 border border-emerald-300/40 text-[10px] font-bold text-emerald-100 mb-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
-              <span>SIAP OPERASIONAL</span>
+    <div className="bg-slate-50 min-h-screen">
+      {/* Header Profile Section */}
+      <div className="bg-emerald-700 text-white px-5 pt-8 pb-6 shadow-sm">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center border border-white/20">
+              <UserCircle className="w-7 h-7 text-white" strokeWidth={1.5} />
             </div>
-            <h1 className="text-xl font-extrabold tracking-tight">
-              {profil?.nama || "Petugas Lapangan"}
-            </h1>
-            <p className="text-xs text-emerald-100/80 mt-0.5">
-              {profil?.kelurahan ? `Kel. ${profil.kelurahan}` : "Depok"} • {jabatan.join(", ") || "Operasional"}
+            <div>
+              <h1 className="text-lg font-semibold tracking-tight">
+                {profil?.nama || "Memuat..."}
+              </h1>
+              <p className="text-sm text-emerald-100/90 font-medium">
+                {profil?.kelurahan ? `Kel. ${profil.kelurahan}` : "Depok"} • {jabatan.join(", ") || "Petugas"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Button & Status */}
+        <div className="bg-white/10 rounded-xl p-4 border border-white/15 flex items-center justify-between">
+          <div>
+            <p className="text-xs text-emerald-100 mb-1 font-medium">Status Kehadiran</p>
+            <div className="flex items-center gap-2">
+              <div className={`w-2 h-2 rounded-full ${sudahMasuk ? 'bg-emerald-300' : 'bg-amber-300'}`} />
+              <span className="text-sm font-semibold">
+                {sudahMasuk ? "Aktif Bertugas" : "Belum Absen"}
+              </span>
+            </div>
+          </div>
+          <Link
+            href="/m/absen"
+            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 ${
+              sudahMasuk 
+                ? "bg-emerald-600/50 text-white border border-emerald-500/50 hover:bg-emerald-600" 
+                : "bg-white text-emerald-800 hover:bg-emerald-50"
+            }`}
+          >
+            {sudahMasuk ? (
+              <>
+                <CheckCircle2 className="w-4 h-4" />
+                Terdata
+              </>
+            ) : (
+              "Mulai Shift"
+            )}
+          </Link>
+        </div>
+      </div>
+
+      <div className="px-5 py-6 space-y-6">
+        {/* Metric Summary */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
+            <p className="text-xs text-slate-500 font-medium mb-1">Tugas Angkut</p>
+            <p className="text-2xl font-bold text-slate-900">
+              {jumlahTugas !== null ? jumlahTugas : "-"}
             </p>
           </div>
+          <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
+            <p className="text-xs text-slate-500 font-medium mb-1">Survei Warga</p>
+            <p className="text-2xl font-bold text-slate-900">
+              {jumlahCalon !== null ? jumlahCalon : "-"}
+            </p>
+          </div>
+        </div>
 
-          <div className="text-right shrink-0">
+        {/* Menu Section */}
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3 px-1">
+            Menu Operasional
+          </p>
+          <div className="space-y-3">
+            {isAngkut && (
+              <Link
+                href="/m/angkut"
+                className="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-slate-300 transition-colors"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                    <MapPin className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-sm font-semibold text-slate-900">Tugas Angkut</h2>
+                    <p className="text-xs text-slate-500 mt-0.5">Daftar pickup & rute harian</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-slate-400" />
+              </Link>
+            )}
+
+            {isSurvei && (
+              <Link
+                href="/m/survei"
+                className="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-slate-300 transition-colors"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center">
+                    <ClipboardList className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-sm font-semibold text-slate-900">Survei Warga</h2>
+                    <p className="text-xs text-slate-500 mt-0.5">Verifikasi & penetapan paket</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-slate-400" />
+              </Link>
+            )}
+
             <Link
               href="/m/absen"
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-1 shadow-sm transition-transform active:scale-95 ${
-                sudahMasuk ? "bg-white text-emerald-800" : "bg-amber-400 text-amber-950 animate-bounce"
-              }`}
+              className="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-slate-300 transition-colors"
             >
-              {sudahMasuk ? "✓ Hadir" : "👉 Absen"}
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-lg bg-sky-50 text-sky-700 flex items-center justify-center">
+                  <Clock className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-sm font-semibold text-slate-900">Presensi</h2>
+                  <p className="text-xs text-slate-500 mt-0.5">Riwayat kehadiran & GPS</p>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-slate-400" />
+            </Link>
+
+            <Link
+              href="/m/klaim"
+              className="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-slate-300 transition-colors"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center">
+                  <Receipt className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-sm font-semibold text-slate-900">Klaim Biaya</h2>
+                  <p className="text-xs text-slate-500 mt-0.5">BBM, tol, & perawatan</p>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-slate-400" />
             </Link>
           </div>
         </div>
-
-        {/* Metric Quick Strip */}
-        <div className="grid grid-cols-3 gap-2 mt-4 pt-3.5 border-t border-white/15 text-center">
-          <div className="bg-white/10 rounded-2xl py-2 px-1">
-            <p className="text-[10px] text-emerald-100 font-medium">Tugas Angkut</p>
-            <p className="text-lg font-bold tabular-nums mt-0.5">{jumlahTugas !== null ? jumlahTugas : "—"}</p>
-          </div>
-          <div className="bg-white/10 rounded-2xl py-2 px-1">
-            <p className="text-[10px] text-emerald-100 font-medium">Calon Warga</p>
-            <p className="text-lg font-bold tabular-nums mt-0.5">{jumlahCalon !== null ? jumlahCalon : "—"}</p>
-          </div>
-          <div className="bg-white/10 rounded-2xl py-2 px-1">
-            <p className="text-[10px] text-emerald-100 font-medium">Presensi</p>
-            <p className="text-xs font-bold mt-1 truncate">{sudahMasuk ? "Sudah Absen" : "Belum"}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Action Cards Grid */}
-      <div className="space-y-2.5">
-        <p className="text-xs font-bold uppercase tracking-wider text-slate-500 px-1">
-          Menu Utama Petugas
-        </p>
-
-        {isAngkut && (
-          <Link
-            href="/m/angkut"
-            className="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-emerald-300 active:scale-[0.99] transition-all group"
-          >
-            <div className="flex items-center gap-3.5 min-w-0">
-              <div className="w-11 h-11 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 17a2 2 0 100 4 2 2 0 000-4zm10 0a2 2 0 100 4 2 2 0 000-4zM3 4h3l2.5 7h9l3-6H7M5 13h13a2 2 0 002-2V7a2 2 0 00-2-2H8" />
-                </svg>
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <h2 className="text-sm font-bold text-slate-900 truncate">Tugas Angkut Sampah</h2>
-                  {jumlahTugas != null && jumlahTugas > 0 && (
-                    <span className="px-2 py-0.5 text-[10px] font-bold bg-emerald-100 text-emerald-800 rounded-full">
-                      {jumlahTugas} Warga
-                    </span>
-                  )}
-                </div>
-                <p className="text-xs text-slate-500 mt-0.5 truncate">
-                  Daftar pickup pelanggan, rute maps & bukti foto
-                </p>
-              </div>
-            </div>
-            <svg className="w-5 h-5 text-slate-400 group-hover:text-emerald-600 transition-colors shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
-        )}
-
-        {isSurvei && (
-          <Link
-            href="/m/survei"
-            className="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-amber-300 active:scale-[0.99] transition-all group"
-          >
-            <div className="flex items-center gap-3.5 min-w-0">
-              <div className="w-11 h-11 rounded-2xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                </svg>
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <h2 className="text-sm font-bold text-slate-900 truncate">Survei Calon Pelanggan</h2>
-                  {jumlahCalon != null && jumlahCalon > 0 && (
-                    <span className="px-2 py-0.5 text-[10px] font-bold bg-amber-100 text-amber-800 rounded-full">
-                      {jumlahCalon} Calon
-                    </span>
-                  )}
-                </div>
-                <p className="text-xs text-slate-500 mt-0.5 truncate">
-                  Verifikasi lokasi rumah, geotag & penetapan paket
-                </p>
-              </div>
-            </div>
-            <svg className="w-5 h-5 text-slate-400 group-hover:text-amber-600 transition-colors shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
-        )}
-
-        <Link
-          href="/m/absen"
-          className="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-slate-300 active:scale-[0.99] transition-all group"
-        >
-          <div className="flex items-center gap-3.5 min-w-0">
-            <div className="w-11 h-11 rounded-2xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <h2 className="text-sm font-bold text-slate-900 truncate">Absensi GPS Harian</h2>
-                <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${sudahMasuk ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-700"}`}>
-                  {sudahMasuk ? "Sudah Masuk" : "Belum Masuk"}
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 mt-0.5 truncate">
-                {sudahMasuk ? (sudahSelesai ? "Tugas hari ini telah selesai" : "Masuk tercatat, absen pulang saat selesai") : "Kirim presensi & radius GPS tugas"}
-              </p>
-            </div>
-          </div>
-          <svg className="w-5 h-5 text-slate-400 group-hover:text-blue-600 transition-colors shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </Link>
-
-        <Link
-          href="/m/klaim"
-          className="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-slate-300 active:scale-[0.99] transition-all group"
-        >
-          <div className="flex items-center gap-3.5 min-w-0">
-            <div className="w-11 h-11 rounded-2xl bg-purple-600 text-white flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div className="min-w-0">
-              <h2 className="text-sm font-bold text-slate-900 truncate">Klaim BBM & Operasional</h2>
-              <p className="text-xs text-slate-500 mt-0.5 truncate">
-                Catat pengeluaran bensin, tol, perawatan armada
-              </p>
-            </div>
-          </div>
-          <svg className="w-5 h-5 text-slate-400 group-hover:text-purple-600 transition-colors shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </Link>
-      </div>
-
-      <div className="text-center pt-2">
-        <p className="text-[11px] font-medium text-slate-400">
-          UPS HERU Partner v2.0 • Kota Depok
-        </p>
       </div>
     </div>
   );

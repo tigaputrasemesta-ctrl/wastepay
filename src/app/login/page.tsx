@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Truck, LogIn, Smartphone, ShieldCheck, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -34,11 +35,11 @@ export default function LoginPage() {
             localStorage.setItem("wp_mobile_user", JSON.stringify(data.user));
           } catch {}
         }
-        // Honor ?next= tujuan awal (mis. dari APK → /m), dengan batas hanya
-        // path internal yang diawali "/" (anti open-redirect).
+        
         const params = new URLSearchParams(window.location.search);
         const next = params.get("next");
         const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? next : null;
+        
         if (safeNext) {
           router.push(safeNext);
         } else if (data.user?.role === "petugas") {
@@ -49,37 +50,32 @@ export default function LoginPage() {
         router.refresh();
       }
     } catch {
-      setError("TERJADI KESALAHAN, COBA LAGI");
+      setError("Terjadi kesalahan sistem. Silakan coba lagi.");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center space-y-3">
-        <div className="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-800 border border-emerald-200/80 flex items-center justify-center mx-auto text-2xl shadow-xs">
-          🚛
-        </div>
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
-            Portal Petugas & Admin
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-12 h-12 bg-emerald-600 text-white rounded-lg flex items-center justify-center mb-4 shadow-sm">
+            <Truck strokeWidth={2.5} className="w-6 h-6" />
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+            WastePay Portal
           </h1>
-          <p className="text-xs text-slate-500 font-medium mt-1">
-            Sistem Informasi Pengelolaan & Retribusi Sampah Kota Depok
+          <p className="text-sm text-slate-500 mt-1">
+            Sistem Informasi Pengelolaan & Retribusi
           </p>
         </div>
-      </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-7 sm:p-9 shadow-sm">
-          <form className="space-y-5" onSubmit={handleSubmit}>
-            <div className="space-y-1.5">
-              <label
-                htmlFor="email"
-                className="block text-xs font-bold text-slate-700"
-              >
-                Alamat Email Petugas / Admin <span className="text-rose-500">*</span>
+        <div className="bg-white px-6 sm:px-10 py-10 shadow-sm border border-slate-200/60 rounded-2xl">
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div>
+              <label htmlFor="email" className="block text-sm font-semibold text-slate-700 mb-2">
+                Alamat Email
               </label>
               <input
                 id="email"
@@ -89,17 +85,14 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400 placeholder:font-normal"
+                className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-slate-900 text-sm outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 transition-all placeholder:text-slate-400"
                 placeholder="nama@upsheru.com"
               />
             </div>
 
-            <div className="space-y-1.5">
-              <label
-                htmlFor="password"
-                className="block text-xs font-bold text-slate-700"
-              >
-                Kata Sandi <span className="text-rose-500">*</span>
+            <div>
+              <label htmlFor="password" className="block text-sm font-semibold text-slate-700 mb-2">
+                Kata Sandi
               </label>
               <input
                 id="password"
@@ -109,50 +102,46 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400 placeholder:font-normal"
-                placeholder="Masukkan kata sandi"
+                className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-slate-900 text-sm outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 transition-all placeholder:text-slate-400"
+                placeholder="••••••••"
               />
             </div>
 
             {error && (
-              <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium text-center">
-                {error}
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50 border border-red-100 text-red-600 text-sm">
+                <ShieldCheck className="w-4 h-4 shrink-0" />
+                <span className="font-medium">{error}</span>
               </div>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm shadow-md active:scale-98 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg text-sm transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Memverifikasi Akun...</span>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Memverifikasi...</span>
                 </>
               ) : (
-                <span>Masuk ke Sistem 🔐</span>
+                <>
+                  <span>Masuk Sistem</span>
+                  <LogIn className="w-4 h-4" />
+                </>
               )}
             </button>
           </form>
         </div>
 
-        <div className="mt-6 text-center">
+        <div className="mt-6 flex justify-center">
           <Link
             href="/unduh"
-            className="inline-flex items-center gap-2 bg-white border border-slate-200/80 rounded-full px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all shadow-2xs"
+            className="group flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 hover:text-emerald-700 transition-colors"
           >
-            <span>📱</span>
-            <span>Unduh Aplikasi Android Petugas</span>
+            <Smartphone className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 transition-colors" />
+            <span>Unduh Aplikasi Mobile</span>
           </Link>
-        </div>
-
-        <div className="mt-8 text-center text-[11px] text-slate-400 font-medium">
-          <p>© {new Date().getFullYear()} WastePay • UPS HERU Kota Depok</p>
-          <div className="mt-1.5 flex items-center justify-center gap-1.5 text-emerald-600 font-semibold text-[10px]">
-            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-            <span>SISTEM OPERASIONAL AKTIF</span>
-          </div>
         </div>
       </div>
     </div>
