@@ -144,21 +144,23 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
   const jabatan = (profil?.jabatan || "").split(",").filter(Boolean);
 
   const isAngkut = Boolean(pathname && (pathname === "/m/angkut" || pathname.startsWith("/m/angkut/")));
+  const isChat = pathname === "/m/chat";
 
   return (
     <ToastProvider>
       <MobileSessionGuard />
-      <div className={cn("min-h-dvh bg-slate-50 text-slate-900 flex flex-col", isAngkut ? "h-dvh overflow-hidden pb-0" : "pb-24")}>
+      <div className="h-dvh bg-slate-50 text-slate-900 flex flex-col overflow-hidden">
         {/* Top bar (GoPartner Style) */}
-        <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 px-4 py-2.5 flex items-center justify-between gap-3 shadow-sm shrink-0">
+        <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-3.5 py-2 flex items-center justify-between gap-3 shadow-xs shrink-0">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="relative shrink-0">
-              <div className="w-9 h-9 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-sm shadow-sm">
+              <div className="w-8 h-8 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-xs shadow-xs">
                 {(profil?.nama || user.nama || "P").charAt(0).toUpperCase()}
               </div>
               <span
                 aria-hidden="true"
-                className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-600 ring-2 ring-white rounded-full"
+                className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 ring-2 ring-white rounded-full animate-pulse"
+                title="GPS Lapangan Aktif"
               />
             </div>
             <div className="min-w-0">
@@ -166,7 +168,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
                 <span className="text-xs font-bold text-slate-900 truncate">
                   {profil ? profil.nama : user.nama}
                 </span>
-                <span className="px-1.5 py-0.5 text-[9px] font-bold bg-emerald-100 text-emerald-800 rounded-full">
+                <span className="px-1.5 py-0.5 text-[8px] font-bold bg-emerald-100 text-emerald-800 rounded-full">
                   Partner
                 </span>
               </div>
@@ -177,7 +179,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
           </div>
           <button
             onClick={logout}
-            className="shrink-0 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl active:scale-95 transition-all"
+            className="shrink-0 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl active:scale-95 transition-all"
           >
             Keluar
           </button>
@@ -185,14 +187,16 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
 
         <main
           className={cn(
-            "flex-1 w-full mx-auto",
+            "flex-1 w-full mx-auto min-h-0",
             isAngkut
               ? "max-w-full p-0 overflow-hidden flex flex-col"
-              : "max-w-lg px-3 sm:px-3.5 py-3.5 sm:py-4 space-y-4 overflow-x-hidden"
+              : isChat
+              ? "max-w-lg px-3 py-2 pb-16 overflow-hidden flex flex-col"
+              : "max-w-lg px-3 sm:px-4 py-3 pb-20 overflow-y-auto"
           )}
         >
-          <MobileTracker hideUi={isAngkut} />
-          <BackgroundTracker hideUi={isAngkut} />
+          <MobileTracker hideUi />
+          <BackgroundTracker hideUi />
           {children}
         </main>
 

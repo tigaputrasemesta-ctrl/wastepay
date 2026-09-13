@@ -7,10 +7,12 @@ import {
   MapPin, 
   ClipboardList, 
   Clock, 
-  Receipt,
-  CheckCircle2,
+  Receipt, 
+  CheckCircle2, 
   ChevronRight,
-  UserCircle
+  AlertTriangle,
+  MessageSquare,
+  Truck
 } from "lucide-react";
 
 type Profil = {
@@ -64,148 +66,236 @@ export default function MobileHome() {
   const sudahSelesai = Boolean(absen?.waktuSelesai);
 
   return (
-    <div className="bg-slate-50 min-h-dvh">
-      {/* Header Profile Section */}
-      <div className="bg-emerald-700 text-white px-5 pt-8 pb-6 shadow-sm">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center border border-white/20">
-              <UserCircle className="w-7 h-7 text-white" strokeWidth={1.5} />
-            </div>
-            <div>
-              <h1 className="text-lg font-semibold tracking-tight">
-                {profil?.nama || "Memuat..."}
-              </h1>
-              <p className="text-sm text-emerald-100/90 font-medium">
-                {profil?.kelurahan ? `Kel. ${profil.kelurahan}` : "Depok"} • {jabatan.join(", ") || "Petugas"}
+    <div className="space-y-3">
+      {/* Attendance & Shift Card */}
+      <div className="bg-gradient-to-br from-emerald-800 to-emerald-950 text-white rounded-2xl p-3.5 shadow-sm border border-emerald-700/50">
+        <div className="flex items-center justify-between gap-2">
+          <div className="min-w-0">
+            <span className="text-[10px] font-semibold text-emerald-200 uppercase tracking-wider block">
+              Status Operasional
+            </span>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <span
+                className={`w-2 h-2 rounded-full shrink-0 ${
+                  sudahSelesai ? "bg-sky-400" : sudahMasuk ? "bg-emerald-400 animate-pulse" : "bg-amber-400"
+                }`}
+              />
+              <p className="text-sm font-bold text-white truncate">
+                {sudahSelesai ? "Shift Selesai" : sudahMasuk ? "Sedang Bertugas" : "Belum Absen Masuk"}
               </p>
             </div>
+            <p className="text-[10px] text-emerald-200/80 mt-0.5 truncate">
+              {profil?.kelurahan ? `Wilayah Kel. ${profil.kelurahan}` : "Armada Kota Depok"}
+            </p>
           </div>
-        </div>
 
-        {/* Action Button & Status */}
-        <div className="bg-white/10 rounded-xl p-4 border border-white/15 flex items-center justify-between">
-          <div>
-            <p className="text-xs text-emerald-100 mb-1 font-medium">Status Kehadiran</p>
-            <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${sudahMasuk ? 'bg-emerald-300' : 'bg-amber-300'}`} />
-              <span className="text-sm font-semibold">
-                {sudahMasuk ? "Aktif Bertugas" : "Belum Absen"}
-              </span>
-            </div>
-          </div>
           <Link
             href="/m/absen"
-            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 ${
-              sudahMasuk 
-                ? "bg-emerald-700 text-white border border-emerald-600 hover:bg-emerald-800" 
-                : "bg-white text-emerald-800 hover:bg-emerald-50"
+            className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 ${
+              sudahSelesai
+                ? "bg-white/20 text-white hover:bg-white/30"
+                : sudahMasuk
+                ? "bg-amber-500 hover:bg-amber-600 text-slate-900"
+                : "bg-white text-emerald-900 hover:bg-emerald-50 active:scale-95"
             }`}
           >
-            {sudahMasuk ? (
+            {sudahSelesai ? (
               <>
-                <CheckCircle2 className="w-4 h-4" />
-                Terdata
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
+                <span>Rekap</span>
+              </>
+            ) : sudahMasuk ? (
+              <>
+                <Clock className="w-3.5 h-3.5" />
+                <span>Akhiri Shift</span>
               </>
             ) : (
-              "Mulai Shift"
+              <>
+                <Clock className="w-3.5 h-3.5 text-emerald-700" />
+                <span>Mulai Shift</span>
+              </>
             )}
           </Link>
         </div>
       </div>
 
-      <div className="px-5 py-6 space-y-6">
-        {/* Metric Summary */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
-            <p className="text-xs text-slate-500 font-medium mb-1">Tugas Angkut</p>
-            <p className="text-2xl font-bold text-slate-900">
-              {jumlahTugas !== null ? jumlahTugas : "-"}
-            </p>
-          </div>
-          <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
-            <p className="text-xs text-slate-500 font-medium mb-1">Survei Warga</p>
-            <p className="text-2xl font-bold text-slate-900">
-              {jumlahCalon !== null ? jumlahCalon : "-"}
-            </p>
-          </div>
-        </div>
+      {/* Metrics Bar */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        {isAngkut && (
+          <Link
+            href="/m/angkut"
+            className="bg-white border border-slate-200/80 rounded-xl p-2.5 shadow-2xs hover:border-emerald-300 transition-all flex items-center gap-2.5"
+          >
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+              <Truck className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <span className="text-[10px] font-medium text-slate-500 block truncate">Tugas Angkut</span>
+              <span className="text-base font-extrabold text-slate-900 tabular-nums">
+                {jumlahTugas !== null ? jumlahTugas : "-"}
+              </span>
+            </div>
+          </Link>
+        )}
 
-        {/* Menu Section */}
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3 px-1">
-            Menu Operasional
+        {isSurvei && (
+          <Link
+            href="/m/survei"
+            className="bg-white border border-slate-200/80 rounded-xl p-2.5 shadow-2xs hover:border-indigo-300 transition-all flex items-center gap-2.5"
+          >
+            <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center shrink-0">
+              <ClipboardList className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <span className="text-[10px] font-medium text-slate-500 block truncate">Survei Calon</span>
+              <span className="text-base font-extrabold text-slate-900 tabular-nums">
+                {jumlahCalon !== null ? jumlahCalon : "-"}
+              </span>
+            </div>
+          </Link>
+        )}
+
+        <Link
+          href="/m/absen"
+          className="bg-white border border-slate-200/80 rounded-xl p-2.5 shadow-2xs hover:border-sky-300 transition-all flex items-center gap-2.5"
+        >
+          <div className="w-8 h-8 rounded-lg bg-sky-50 text-sky-700 flex items-center justify-center shrink-0">
+            <Clock className="w-4 h-4" />
+          </div>
+          <div className="min-w-0">
+            <span className="text-[10px] font-medium text-slate-500 block truncate">Jam Masuk</span>
+            <span className="text-base font-extrabold text-slate-900 tabular-nums">
+              {sudahMasuk && absen?.waktuMasuk ? absen.waktuMasuk.slice(11, 16) : "--:--"}
+            </span>
+          </div>
+        </Link>
+      </div>
+
+      {/* Main Apps Menu (Grid 2 Columns) */}
+      <div className="space-y-1.5">
+        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-1">
+          Menu Lapangan
+        </p>
+
+        <div className="grid grid-cols-2 gap-2">
+          {isAngkut && (
+            <Link
+              href="/m/angkut"
+              className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-2xs hover:border-emerald-400 hover:shadow-xs active:scale-[0.98] transition-all flex flex-col justify-between h-[84px]"
+            >
+              <div className="flex items-center justify-between">
+                <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+                  <MapPin className="w-4 h-4" />
+                </div>
+                <ChevronRight className="w-4 h-4 text-slate-300" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-900 leading-tight">Tugas Angkut</p>
+                <p className="text-[10px] text-slate-500 truncate">Rute jemputan & radar</p>
+              </div>
+            </Link>
+          )}
+
+          {isAngkut && (
+            <Link
+              href="/m/lapor"
+              className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-2xs hover:border-amber-400 hover:shadow-xs active:scale-[0.98] transition-all flex flex-col justify-between h-[84px]"
+            >
+              <div className="flex items-center justify-between">
+                <div className="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-xs">
+                  <AlertTriangle className="w-4 h-4" />
+                </div>
+                <ChevronRight className="w-4 h-4 text-slate-300" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-900 leading-tight">Lapor Cepat</p>
+                <p className="text-[10px] text-slate-500 truncate">Catat jemputan & kendala</p>
+              </div>
+            </Link>
+          )}
+
+          {isSurvei && (
+            <Link
+              href="/m/survei"
+              className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-2xs hover:border-indigo-400 hover:shadow-xs active:scale-[0.98] transition-all flex flex-col justify-between h-[84px]"
+            >
+              <div className="flex items-center justify-between">
+                <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs">
+                  <ClipboardList className="w-4 h-4" />
+                </div>
+                <ChevronRight className="w-4 h-4 text-slate-300" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-900 leading-tight">Survei Warga</p>
+                <p className="text-[10px] text-slate-500 truncate">Verifikasi calon pelanggan</p>
+              </div>
+            </Link>
+          )}
+
+          <Link
+            href="/m/absen"
+            className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-2xs hover:border-sky-400 hover:shadow-xs active:scale-[0.98] transition-all flex flex-col justify-between h-[84px]"
+          >
+            <div className="flex items-center justify-between">
+              <div className="w-8 h-8 rounded-xl bg-sky-600 text-white flex items-center justify-center shadow-xs">
+                <Clock className="w-4 h-4" />
+              </div>
+              <ChevronRight className="w-4 h-4 text-slate-300" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-900 leading-tight">Presensi GPS</p>
+              <p className="text-[10px] text-slate-500 truncate">Jam masuk & pulang</p>
+            </div>
+          </Link>
+
+          <Link
+            href="/m/klaim"
+            className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-2xs hover:border-rose-400 hover:shadow-xs active:scale-[0.98] transition-all flex flex-col justify-between h-[84px]"
+          >
+            <div className="flex items-center justify-between">
+              <div className="w-8 h-8 rounded-xl bg-rose-600 text-white flex items-center justify-center shadow-xs">
+                <Receipt className="w-4 h-4" />
+              </div>
+              <ChevronRight className="w-4 h-4 text-slate-300" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-900 leading-tight">Klaim Biaya</p>
+              <p className="text-[10px] text-slate-500 truncate">BBM, servis, & kas</p>
+            </div>
+          </Link>
+
+          <Link
+            href="/m/chat"
+            className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-2xs hover:border-violet-400 hover:shadow-xs active:scale-[0.98] transition-all flex flex-col justify-between h-[84px]"
+          >
+            <div className="flex items-center justify-between">
+              <div className="w-8 h-8 rounded-xl bg-violet-600 text-white flex items-center justify-center shadow-xs">
+                <MessageSquare className="w-4 h-4" />
+              </div>
+              <ChevronRight className="w-4 h-4 text-slate-300" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-900 leading-tight">Chat Admin</p>
+              <p className="text-[10px] text-slate-500 truncate">Koordinasi & bantuan</p>
+            </div>
+          </Link>
+        </div>
+      </div>
+
+      {/* Fast Helpdesk Banner */}
+      <div className="bg-slate-100 border border-slate-200/80 rounded-xl px-3 py-2 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping shrink-0" />
+          <p className="text-[10px] font-semibold text-slate-600 truncate">
+            GPS armada aktif terhubung ke Command Center
           </p>
-          <div className="space-y-3">
-            {isAngkut && (
-              <Link
-                href="/m/angkut"
-                className="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-slate-300 transition-colors"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
-                    <MapPin className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h2 className="text-sm font-semibold text-slate-900">Tugas Angkut</h2>
-                    <p className="text-xs text-slate-500 mt-0.5">Daftar pickup & rute harian</p>
-                  </div>
-                </div>
-                <ChevronRight className="w-5 h-5 text-slate-400" />
-              </Link>
-            )}
-
-            {isSurvei && (
-              <Link
-                href="/m/survei"
-                className="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-slate-300 transition-colors"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center">
-                    <ClipboardList className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h2 className="text-sm font-semibold text-slate-900">Survei Warga</h2>
-                    <p className="text-xs text-slate-500 mt-0.5">Verifikasi & penetapan paket</p>
-                  </div>
-                </div>
-                <ChevronRight className="w-5 h-5 text-slate-400" />
-              </Link>
-            )}
-
-            <Link
-              href="/m/absen"
-              className="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-slate-300 transition-colors"
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-lg bg-sky-50 text-sky-700 flex items-center justify-center">
-                  <Clock className="w-5 h-5" />
-                </div>
-                <div>
-                  <h2 className="text-sm font-semibold text-slate-900">Presensi</h2>
-                  <p className="text-xs text-slate-500 mt-0.5">Riwayat kehadiran & GPS</p>
-                </div>
-              </div>
-              <ChevronRight className="w-5 h-5 text-slate-400" />
-            </Link>
-
-            <Link
-              href="/m/klaim"
-              className="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-slate-300 transition-colors"
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center">
-                  <Receipt className="w-5 h-5" />
-                </div>
-                <div>
-                  <h2 className="text-sm font-semibold text-slate-900">Klaim Biaya</h2>
-                  <p className="text-xs text-slate-500 mt-0.5">BBM, tol, & perawatan</p>
-                </div>
-              </div>
-              <ChevronRight className="w-5 h-5 text-slate-400" />
-            </Link>
-          </div>
         </div>
+        <Link
+          href="/m/chat"
+          className="text-[10px] font-bold text-emerald-700 hover:text-emerald-800 shrink-0"
+        >
+          Hubungi Admin →
+        </Link>
       </div>
     </div>
   );

@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 
-
 type Pesan = {
   id: number;
   petugasId: number;
@@ -48,8 +47,6 @@ export default function MobileChat() {
   }, []);
 
   useEffect(() => {
-    // initial load + poll: setState terjadi setelah await (async), bukan sinkron
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     void muat(true);
     const t = setInterval(() => muat(true), 5000);
     return () => clearInterval(t);
@@ -88,44 +85,65 @@ export default function MobileChat() {
   }
 
   return (
-    <div className="flex flex-col space-y-3" style={{ height: "calc(100vh - 130px)" }}>
-      <div>
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 mb-1">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          Komunikasi Langsung Lapangan
+    <div className="flex-1 flex flex-col min-h-0 h-full">
+      {/* Compact Top Header */}
+      <div className="flex items-center justify-between pb-2 border-b border-slate-200/80 shrink-0">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs shrink-0">
+            💬
+          </div>
+          <div className="min-w-0">
+            <h1 className="text-xs font-bold text-slate-900 leading-tight truncate">
+              Pesan ke Admin Dinas
+            </h1>
+            <div className="flex items-center gap-1 text-[10px] text-slate-500">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Koordinasi armada & kendala</span>
+            </div>
+          </div>
         </div>
-        <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Pesan ke Admin</h1>
-        <p className="text-xs font-medium text-slate-500">Koordinasi rute, kendala armada & bantuan operasional</p>
+        <span className="text-[9px] font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
+          Live
+        </span>
       </div>
 
       {error && (
-        <p className="text-center text-xs font-semibold p-2.5 rounded-xl border border-rose-200 text-rose-700 bg-rose-50">{error}</p>
+        <p className="mt-1 text-center text-[10px] font-semibold p-1.5 rounded-lg border border-rose-200 text-rose-700 bg-rose-50 shrink-0">
+          {error}
+        </p>
       )}
 
-      <div className="flex-1 overflow-y-auto bg-slate-50/70 rounded-3xl border border-slate-200/90 p-4 space-y-3 shadow-inner">
+      {/* Messages Stream */}
+      <div className="flex-1 overflow-y-auto min-h-0 py-2.5 space-y-2 pr-0.5">
         {loading ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="w-6 h-6 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+          <div className="flex items-center justify-center py-12">
+            <div className="w-5 h-5 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : pesan.length === 0 ? (
-          <div className="text-center py-16">
-            <span className="text-2xl block mb-2">💬</span>
-            <p className="font-bold text-sm text-slate-700">Belum Ada Riwayat Pesan</p>
-            <p className="text-xs text-slate-400 mt-1">Ketik pesan pertama Anda untuk menghubungi admin dinas.</p>
+          <div className="text-center py-12 px-4">
+            <span className="text-2xl block mb-1">💬</span>
+            <p className="font-bold text-xs text-slate-700">Belum Ada Pesan</p>
+            <p className="text-[11px] text-slate-400 mt-0.5">
+              Kirim pesan untuk menghubungi dispatcher atau admin dinas.
+            </p>
           </div>
         ) : (
           pesan.map((m) => (
             <div key={m.id} className={`flex ${m.dariPetugas ? "justify-end" : "justify-start"}`}>
               <div
-                className={`max-w-[82%] px-4 py-2.5 text-sm shadow-sm ${
+                className={`max-w-[85%] px-3.5 py-2 text-xs shadow-2xs ${
                   m.dariPetugas
                     ? "bg-emerald-700 text-white rounded-2xl rounded-tr-xs"
-                    : "bg-white border border-slate-200/80 text-slate-900 rounded-2xl rounded-tl-xs"
+                    : "bg-white border border-slate-200/90 text-slate-900 rounded-2xl rounded-tl-xs"
                 }`}
               >
-                <div className={`text-[10px] font-medium mb-1 flex items-center gap-1.5 ${m.dariPetugas ? "text-emerald-100" : "text-slate-400"}`}>
-                  <span className="font-bold">{m.dariPetugas ? "Anda" : "Admin Dinas"}</span>
-                  <span>·</span>
+                <div
+                  className={`text-[9px] font-semibold mb-0.5 flex items-center gap-1.5 ${
+                    m.dariPetugas ? "text-emerald-200" : "text-slate-400"
+                  }`}
+                >
+                  <span className="font-bold">{m.dariPetugas ? "Anda" : "Admin"}</span>
+                  <span>•</span>
                   <span>{format(new Date(m.createdAt), "HH:mm", { locale: id })}</span>
                 </div>
                 <p className="leading-relaxed whitespace-pre-wrap break-words">{m.isi}</p>
@@ -136,21 +154,29 @@ export default function MobileChat() {
         <div ref={bottomRef} />
       </div>
 
-      <div className="flex gap-2 pt-1">
-        <input
-          value={isi}
-          onChange={(e) => setIsi(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && kirim()}
-          placeholder="Tulis pesan ke admin…"
-          className="flex-1 px-4 py-3 rounded-2xl border border-slate-200 text-sm font-medium outline-none bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 shadow-sm"
-        />
-        <button
-          onClick={kirim}
-          disabled={sending || !isi.trim()}
-          className="px-5 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white rounded-2xl text-sm font-bold shadow-sm transition-all disabled:opacity-40"
+      {/* Pinned Input Bar */}
+      <div className="pt-2 border-t border-slate-200/80 shrink-0">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            kirim();
+          }}
+          className="flex items-center gap-2"
         >
-          {sending ? "…" : "Kirim"}
-        </button>
+          <input
+            value={isi}
+            onChange={(e) => setIsi(e.target.value)}
+            placeholder="Tulis pesan ke admin…"
+            className="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-medium outline-none bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 shadow-2xs"
+          />
+          <button
+            type="submit"
+            disabled={sending || !isi.trim()}
+            className="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white rounded-xl text-xs font-bold shadow-2xs transition-all disabled:opacity-40 shrink-0"
+          >
+            {sending ? "…" : "Kirim"}
+          </button>
+        </form>
       </div>
     </div>
   );
