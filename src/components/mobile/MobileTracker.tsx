@@ -22,7 +22,11 @@ type KendaraanOpt = {
  * Posisi dikirim tiap 10 detik ke /api/petugas/lokasi (+ /api/kendaraan/lokasi
  * bila ada kendaraan terpilih) sehingga selalu terlihat di peta admin.
  */
-export default function MobileTracker() {
+type MobileTrackerProps = {
+  hideUi?: boolean;
+};
+
+export default function MobileTracker({ hideUi = false }: MobileTrackerProps = {}) {
   const [kendaraan, setKendaraan] = useState<KendaraanOpt[]>([]);
   const [kendaraanId, setKendaraanId] = useState("");
   const [titik, setTitik] = useState<{ lat: number; lng: number; akurasi: number } | null>(null);
@@ -148,6 +152,10 @@ export default function MobileTracker() {
   }, [kirimLokasi]);
 
   const kendaraanTerpilih = kendaraan.find((k) => k.id.toString() === kendaraanId);
+
+  if (hideUi) {
+    return null;
+  }
 
   return (
     <div className="bg-slate-900 text-white rounded-2xl border border-slate-800 shadow-sm mx-3 my-2 overflow-hidden">

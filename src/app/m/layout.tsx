@@ -143,6 +143,8 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
 
   const jabatan = (profil?.jabatan || "").split(",").filter(Boolean);
 
+  const isAngkut = Boolean(pathname && (pathname === "/m/angkut" || pathname.startsWith("/m/angkut/")));
+
   return (
     <ToastProvider>
       <MobileSessionGuard />
@@ -182,8 +184,8 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
         </header>
 
         <main className="flex-1 w-full max-w-lg mx-auto px-3 sm:px-3.5 py-3.5 sm:py-4 space-y-4 overflow-x-hidden">
-          <MobileTracker />
-          <BackgroundTracker />
+          <MobileTracker hideUi={isAngkut} />
+          <BackgroundTracker hideUi={isAngkut} />
           {children}
         </main>
 

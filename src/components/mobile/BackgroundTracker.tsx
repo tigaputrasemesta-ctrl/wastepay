@@ -19,7 +19,11 @@ const BackgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>(
  * - Untuk hasil terbaik, izin lokasi harus "Sepanjang waktu" (Allow all the
  *   time). Kalau belum, tampilkan tombol buka pengaturan.
  */
-export default function BackgroundTracker() {
+type BackgroundTrackerProps = {
+  hideUi?: boolean;
+};
+
+export default function BackgroundTracker({ hideUi = false }: BackgroundTrackerProps = {}) {
   const [status, setStatus] = useState("Menyiapkan background GPS…");
   const [perluIzin, setPerluIzin] = useState(false);
   const watcherIdRef = useRef<string | null>(null);
@@ -113,6 +117,10 @@ export default function BackgroundTracker() {
       }
     };
   }, [kirim]);
+
+  if (hideUi) {
+    return null;
+  }
 
   return (
     <div className="bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2 flex items-center justify-between gap-2 mx-3 my-1 shadow-sm">
