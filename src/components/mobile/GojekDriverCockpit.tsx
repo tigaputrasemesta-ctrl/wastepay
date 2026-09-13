@@ -341,34 +341,34 @@ export default function GojekDriverCockpit({
     <div
       className={`relative w-full overflow-hidden transition-all duration-300 select-none ${
         isFullscreen
-          ? "fixed inset-0 z-50 bg-slate-950 flex flex-col"
-          : "h-[75vh] sm:h-[80vh] min-h-[520px] rounded-3xl border border-slate-800 shadow-2xl bg-slate-950 flex flex-col"
+          ? "fixed inset-0 z-50 bg-slate-950 flex flex-col pt-safe pb-safe"
+          : "h-[68vh] sm:h-[75vh] min-h-[460px] max-h-[640px] rounded-3xl border border-slate-800 shadow-2xl bg-slate-950 flex flex-col"
       }`}
     >
       {/* ── 1. GOJEK FLOATING TOP NAVIGATION INSTRUCTION BANNER ── */}
-      <div className="absolute top-3 inset-x-3 z-[400] pointer-events-none">
-        <div className="pointer-events-auto bg-slate-950/95 backdrop-blur-md rounded-2xl p-3 border border-slate-800 shadow-2xl flex items-center justify-between gap-2.5">
+      <div className="absolute top-2.5 sm:top-3 inset-x-2.5 sm:inset-x-3 z-[400] pointer-events-none">
+        <div className="pointer-events-auto bg-slate-950/95 backdrop-blur-md rounded-2xl p-2.5 sm:p-3 border border-slate-800 shadow-2xl flex items-center justify-between gap-2">
           {/* Direction Icon & Next Step Guidance */}
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white text-xl shadow-lg shadow-emerald-600/40 shrink-0 font-black">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white text-lg sm:text-xl shadow-lg shadow-emerald-600/40 shrink-0 font-black">
               {isWithinRadius ? "🎯" : "⬆️"}
             </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-black text-white tracking-tight">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="text-xs sm:text-sm font-black text-white tracking-tight truncate">
                   {distanceToCurrent !== null
                     ? isWithinRadius
-                      ? "Tiba di Lokasi! (Siap Angkut)"
+                      ? "Tiba di Lokasi! (Siap)"
                       : `${distanceToCurrent}m lagi`
                     : "Memantau Rute..."}
                 </span>
                 {currentIsMenunggak && (
-                  <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-rose-600 text-white animate-pulse">
+                  <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-rose-600 text-white animate-pulse shrink-0">
                     ⛔ MENUNGGAK
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-300 font-medium truncate">
+              <p className="text-[11px] sm:text-xs text-slate-300 font-medium truncate">
                 {currentTask
                   ? `${currentTask.nama} • ${currentTask.alamat}`
                   : "Belum ada antrean tugas"}
@@ -489,52 +489,26 @@ export default function GojekDriverCockpit({
         </MapContainer>
 
         {/* ── 3. GOJEK FLOATING RIGHT ACTION BUTTONS (FABS) ── */}
-        <div className="absolute right-3 top-20 z-[400] flex flex-col gap-2">
-          {/* Layer Selector */}
-          <div className="bg-slate-900/90 backdrop-blur-md rounded-2xl p-1 border border-slate-700 shadow-xl flex flex-col gap-1">
-            <button
-              type="button"
-              onClick={() => setTileMode("google-streets")}
-              className={`p-2 rounded-xl text-xs font-bold transition-all ${
-                tileMode === "google-streets"
-                  ? "bg-emerald-500 text-white shadow-xs"
-                  : "text-slate-400 hover:text-white"
-              }`}
-              title="Mode Peta Jalan"
-            >
-              🗺️
-            </button>
-            <button
-              type="button"
-              onClick={() => setTileMode("google-hybrid")}
-              className={`p-2 rounded-xl text-xs font-bold transition-all ${
-                tileMode === "google-hybrid"
-                  ? "bg-emerald-500 text-white shadow-xs"
-                  : "text-slate-400 hover:text-white"
-              }`}
-              title="Mode Satelit Udara"
-            >
-              🛰️
-            </button>
-            <button
-              type="button"
-              onClick={() => setTileMode("dark")}
-              className={`p-2 rounded-xl text-xs font-bold transition-all ${
-                tileMode === "dark"
-                  ? "bg-emerald-500 text-white shadow-xs"
-                  : "text-slate-400 hover:text-white"
-              }`}
-              title="Mode Malam"
-            >
-              🌙
-            </button>
-          </div>
+        <div className="absolute right-2.5 sm:right-3 top-16 sm:top-20 z-[400] flex flex-col gap-1.5 sm:gap-2">
+          {/* Layer Mode Cycle Button */}
+          <button
+            type="button"
+            onClick={() => {
+              setTileMode((m) =>
+                m === "google-streets" ? "google-hybrid" : m === "google-hybrid" ? "dark" : "google-streets"
+              );
+            }}
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-slate-900/95 hover:bg-slate-800 active:scale-95 text-white border border-slate-700 shadow-xl flex items-center justify-center text-sm font-black transition-all"
+            title={`Mode Peta: ${tileMode === "google-streets" ? "Jalan" : tileMode === "google-hybrid" ? "Satelit" : "Gelap"} (Ketuk untuk ganti)`}
+          >
+            {tileMode === "google-streets" ? "🗺️" : tileMode === "google-hybrid" ? "🛰️" : "🌙"}
+          </button>
 
           {/* Center on Me */}
           <button
             type="button"
             onClick={() => setCenterTrigger((c) => c + 1)}
-            className="w-11 h-11 rounded-2xl bg-slate-900/95 hover:bg-slate-800 active:scale-95 text-white border border-slate-700 shadow-2xl flex items-center justify-center text-lg transition-all"
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-slate-900/95 hover:bg-slate-800 active:scale-95 text-white border border-slate-700 shadow-xl flex items-center justify-center text-base sm:text-lg transition-all"
             title="Pusatkan Lokasi Saya"
           >
             🎯
@@ -544,7 +518,7 @@ export default function GojekDriverCockpit({
           <button
             type="button"
             onClick={() => setFitTrigger((f) => f + 1)}
-            className="w-11 h-11 rounded-2xl bg-slate-900/95 hover:bg-slate-800 active:scale-95 text-white border border-slate-700 shadow-2xl flex items-center justify-center text-sm font-black transition-all"
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-slate-900/95 hover:bg-slate-800 active:scale-95 text-white border border-slate-700 shadow-xl flex items-center justify-center text-xs sm:text-sm font-black transition-all"
             title="Tampilkan Seluruh Rute"
           >
             📍
@@ -555,7 +529,7 @@ export default function GojekDriverCockpit({
             <button
               type="button"
               onClick={() => setShowCapacityPicker(!showCapacityPicker)}
-              className={`w-11 h-11 rounded-2xl border flex flex-col items-center justify-center shadow-xl transition-all ${
+              className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl border flex flex-col items-center justify-center shadow-xl transition-all active:scale-95 ${
                 muatanTruk >= 100
                   ? "bg-rose-600 border-rose-400 text-white animate-pulse"
                   : "bg-slate-900/95 border-slate-700 text-slate-200"
@@ -567,7 +541,7 @@ export default function GojekDriverCockpit({
             </button>
 
             {showCapacityPicker && (
-              <div className="absolute right-full mr-2 top-0 bg-slate-900 border border-slate-700 rounded-2xl p-1.5 shadow-2xl w-32 space-y-1">
+              <div className="absolute right-full mr-2 top-0 bg-slate-900 border border-slate-700 rounded-2xl p-1.5 shadow-2xl w-28 space-y-1 z-[450]">
                 {[25, 50, 75, 100].map((persen) => (
                   <button
                     key={persen}
@@ -602,13 +576,12 @@ export default function GojekDriverCockpit({
             setShowQueueSheet(false);
           }
         }}
-        className="absolute bottom-0 left-0 right-0 z-[500] bg-slate-950 border-t border-slate-800 p-4 shadow-[0_-12px_40px_rgba(0,0,0,0.6)] space-y-3 rounded-t-3xl"
-        style={{ paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))" }}
+        className="absolute bottom-0 left-0 right-0 z-[500] bg-slate-950 border-t border-slate-800 p-3 sm:p-4 shadow-[0_-12px_40px_rgba(0,0,0,0.6)] space-y-2.5 rounded-t-3xl pb-safe"
       >
         {/* Gojek Pull Handle Indicator */}
         <div
           onClick={() => setShowQueueSheet(!showQueueSheet)}
-          className="cursor-pointer py-3 -mt-3 -mx-4 mb-1 flex justify-center w-[calc(100%+2rem)]"
+          className="cursor-pointer py-2 -mt-2 -mx-4 mb-1 flex justify-center w-[calc(100%+2rem)]"
         >
           <div className="w-12 h-1.5 bg-slate-600/80 rounded-full" />
         </div>
@@ -617,9 +590,9 @@ export default function GojekDriverCockpit({
           <>
             {/* Row 1: Trip Status & Multi-Drop Counter */}
             <motion.div layout className="flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 min-w-0">
                 <span
-                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                  className={`inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider truncate ${
                     currentIsMenunggak
                       ? "bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse"
                       : isWithinRadius
@@ -628,7 +601,7 @@ export default function GojekDriverCockpit({
                   }`}
                 >
                   <span
-                    className={`w-1.5 h-1.5 rounded-full ${
+                    className={`w-1.5 h-1.5 rounded-full shrink-0 ${
                       currentIsMenunggak
                         ? "bg-rose-500"
                         : isWithinRadius
@@ -636,11 +609,11 @@ export default function GojekDriverCockpit({
                         : "bg-sky-400"
                     }`}
                   />
-                  <span>
+                  <span className="truncate">
                     {currentIsMenunggak
                       ? "⛔ JANGAN ANGKUT (MENUNGGAK)"
                       : isWithinRadius
-                      ? "🎯 SIAP PICKUP DI LOKASI"
+                      ? "🎯 SIAP PICKUP"
                       : "TUJUAN PENJEMPUTAN"}
                   </span>
                 </span>
@@ -650,7 +623,7 @@ export default function GojekDriverCockpit({
               <button
                 type="button"
                 onClick={() => setShowQueueSheet(!showQueueSheet)}
-                className="text-slate-400 hover:text-white text-[11px] font-bold flex items-center gap-1"
+                className="text-slate-400 hover:text-white text-[11px] font-bold flex items-center gap-1 shrink-0"
               >
                 <span>
                   Stop #{totalCompleted + 1}/{validTasks.length}
@@ -665,47 +638,46 @@ export default function GojekDriverCockpit({
             </motion.div>
 
             {/* Row 2: Customer Identity & Gojek Round Action Buttons */}
-            <motion.div layout className="flex items-start justify-between gap-3">
+            <motion.div layout className="flex items-start justify-between gap-2.5">
               <div className="space-y-0.5 min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-base font-black text-white truncate">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <h3 className="text-sm sm:text-base font-black text-white truncate max-w-[150px] sm:max-w-xs">
                     {currentTask.nama}
                   </h3>
-                  <span className="text-[10px] font-mono font-bold text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800 shrink-0">
+                  <span className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800 shrink-0">
                     {currentTask.kodePelanggan}
                   </span>
                 </div>
 
-                <p className="text-xs text-slate-300 line-clamp-1 leading-relaxed">
+                <p className="text-[11px] sm:text-xs text-slate-300 line-clamp-1 leading-relaxed">
                   {currentTask.alamat}
                 </p>
 
                 {currentTask.patokanLokasi && (
-                  <p className="text-[11px] text-amber-300 font-semibold truncate">
+                  <p className="text-[10px] sm:text-[11px] text-amber-300 font-semibold truncate">
                     📍 Patokan: {currentTask.patokanLokasi}
                   </p>
                 )}
 
                 {/* Tunggakan Tag if Overdue */}
                 {currentIsMenunggak && (
-                  <div className="pt-1">
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-rose-950/80 text-rose-300 border border-rose-800 text-[10px] font-bold">
-                      ⚠️ Menunggak {currentTask.tunggakan?.jumlahBulan} Bulan (
-                      {formatRupiah(currentTask.tunggakan?.totalNominal || 0)})
+                  <div className="pt-0.5">
+                    <span className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-lg bg-rose-950/80 text-rose-300 border border-rose-800 text-[9px] sm:text-[10px] font-bold">
+                      ⚠️ Menunggak {currentTask.tunggakan?.jumlahBulan} Bln ({formatRupiah(currentTask.tunggakan?.totalNominal || 0)})
                     </span>
                   </div>
                 )}
               </div>
 
               {/* Gojek Round Circular Action Buttons */}
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 {/* Google Maps Navigation */}
                 {navUrl && (
                   <a
                     href={navUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-10 h-10 rounded-full bg-slate-900 hover:bg-slate-800 active:scale-90 text-slate-100 border border-slate-700 flex items-center justify-center text-base transition-all shadow-md"
+                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-900 hover:bg-slate-800 active:scale-90 text-slate-100 border border-slate-700 flex items-center justify-center text-sm sm:text-base transition-all shadow-md"
                     title="Navigasi Google Maps"
                   >
                     🧭
@@ -718,7 +690,7 @@ export default function GojekDriverCockpit({
                     href={waUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-10 h-10 rounded-full bg-[#00AA13] hover:bg-[#00880C] active:scale-90 text-white flex items-center justify-center text-lg transition-all shadow-lg shadow-[#00AA13]/40"
+                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#00AA13] hover:bg-[#00880C] active:scale-90 text-white flex items-center justify-center text-base sm:text-lg transition-all shadow-lg shadow-[#00AA13]/40"
                     title="Chat WhatsApp Warga"
                   >
                     💬
@@ -729,7 +701,7 @@ export default function GojekDriverCockpit({
                 {telUrl && (
                   <a
                     href={telUrl}
-                    className="w-10 h-10 rounded-full bg-sky-600 hover:bg-sky-500 active:scale-90 text-white flex items-center justify-center text-base transition-all shadow-lg shadow-sky-600/40"
+                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-sky-600 hover:bg-sky-500 active:scale-90 text-white flex items-center justify-center text-sm sm:text-base transition-all shadow-lg shadow-sky-600/40"
                     title="Telepon Langsung"
                   >
                     📞
@@ -783,7 +755,7 @@ export default function GojekDriverCockpit({
               transition={{ duration: 0.3, ease: "easeInOut" }}
               className="overflow-hidden"
             >
-              <div className="pt-3 border-t border-slate-800 space-y-2 max-h-[40vh] overflow-y-auto overscroll-contain">
+              <div className="pt-3 border-t border-slate-800 space-y-2 max-h-[38vh] sm:max-h-[45vh] overflow-y-auto overscroll-contain">
                 <div className="text-[11px] font-black text-slate-400 uppercase tracking-wider flex items-center justify-between pb-1">
                   <span>Urutan Antrean Pengangkutan ({pendingTasks.length} Titik)</span>
                   <span className="text-emerald-400 font-bold">{progressPercent}% Selesai</span>

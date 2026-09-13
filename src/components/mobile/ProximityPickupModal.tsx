@@ -83,9 +83,9 @@ export default function ProximityPickupModal({
   }
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 p-4 sm:p-6 bg-slate-950/75 backdrop-blur-xs flex items-end justify-center animate-in fade-in duration-200">
+    <div className="fixed inset-x-0 bottom-0 z-50 p-3 sm:p-6 pb-safe bg-slate-950/75 backdrop-blur-xs flex items-end justify-center animate-in fade-in duration-200">
       <div
-        className={`w-full max-w-lg rounded-3xl p-5 shadow-2xl transition-all border ${
+        className={`w-full max-w-lg max-h-[88dvh] overflow-y-auto rounded-3xl p-4 sm:p-5 shadow-2xl transition-all border ${
           isMenunggak
             ? "bg-slate-900 border-rose-500/60 ring-4 ring-rose-500/20 text-white"
             : "bg-slate-900 border-emerald-500/60 ring-4 ring-emerald-500/20 text-white"
@@ -93,30 +93,35 @@ export default function ProximityPickupModal({
       >
         {/* Header Strip */}
         <div className="flex items-center justify-between gap-2 pb-3 border-b border-slate-800">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 min-w-0">
             <span
-              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider ${
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-black uppercase tracking-wider truncate ${
                 isMenunggak
                   ? "bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse"
                   : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
               }`}
             >
               <span
-                className={`w-2 h-2 rounded-full ${
+                className={`w-2 h-2 rounded-full shrink-0 ${
                   isMenunggak ? "bg-rose-500" : "bg-emerald-400 animate-ping"
                 }`}
               />
-              <span>{isMenunggak ? "⛔ JANGAN ANGKUT (MENUNGGAK)" : "✓ LUNAS - SIAP ANGKUT"}</span>
+              <span className="hidden sm:inline">
+                {isMenunggak ? "⛔ JANGAN ANGKUT (MENUNGGAK)" : "✓ LUNAS - SIAP ANGKUT"}
+              </span>
+              <span className="sm:hidden">
+                {isMenunggak ? "⛔ MENUNGGAK" : "✓ LUNAS SIAP ANGKUT"}
+              </span>
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-black text-slate-300 bg-slate-800 px-2.5 py-1 rounded-full border border-slate-700">
+          <div className="flex items-center gap-1.5 shrink-0">
+            <span className="text-[11px] sm:text-xs font-black text-slate-300 bg-slate-800 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full border border-slate-700">
               📍 {jarakMeter}m
             </span>
             <button
               onClick={onDismiss}
-              className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center font-bold text-sm transition-colors"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center font-bold text-xs sm:text-sm transition-colors"
               title="Tutup sementara"
             >
               ✕
@@ -126,17 +131,17 @@ export default function ProximityPickupModal({
 
         {/* Customer Info Card */}
         <div className="py-3 flex items-start justify-between gap-3">
-          <div className="space-y-1 min-w-0">
-            <div className="flex items-baseline gap-2">
-              <h2 className="text-xl font-black text-white tracking-tight leading-tight truncate">
+          <div className="space-y-1 min-w-0 flex-1">
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <h2 className="text-lg sm:text-xl font-black text-white tracking-tight leading-tight truncate">
                 {tugas.pelanggan.nama}
               </h2>
-              <span className="text-[11px] font-mono font-bold text-slate-400 bg-slate-800 px-2 py-0.5 rounded-md shrink-0 border border-slate-700">
+              <span className="text-[10px] sm:text-[11px] font-mono font-bold text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded shrink-0 border border-slate-700">
                 {tugas.pelanggan.kodePelanggan}
               </span>
             </div>
 
-            <p className="text-xs text-slate-300 font-medium leading-relaxed">
+            <p className="text-xs text-slate-300 font-medium leading-relaxed line-clamp-2">
               {tugas.pelanggan.alamat}
             </p>
 

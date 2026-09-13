@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -18,6 +18,14 @@ const jetbrains = JetBrains_Mono({
 });
 
 import { getSiteUrl, SITE_CONFIG } from "@/lib/seo";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover",
+  themeColor: "#059669",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),

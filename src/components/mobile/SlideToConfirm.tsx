@@ -32,8 +32,8 @@ export default function SlideToConfirm({
   const updateMaxDrag = useCallback(() => {
     if (trackRef.current) {
       const trackWidth = trackRef.current.clientWidth;
-      const thumbWidth = 56; // Lebar tombol pegangan
-      maxDragRef.current = Math.max(0, trackWidth - thumbWidth - 8); // 8px total margin padding
+      const thumbWidth = 48; // Lebar tombol pegangan (w-12 = 48px)
+      maxDragRef.current = Math.max(0, trackWidth - thumbWidth - 8); // 8px total padding kiri-kanan
     }
   }, []);
 
@@ -171,14 +171,14 @@ export default function SlideToConfirm({
     <div className={`relative select-none ${className}`}>
       <div
         ref={trackRef}
-        className={`relative h-15 rounded-2xl p-1 flex items-center overflow-hidden border transition-all ${theme.trackBg} ${
+        className={`relative h-14 rounded-2xl p-1 flex items-center overflow-hidden border transition-all ${theme.trackBg} ${
           disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
         }`}
       >
         {/* Active Fill Behind Thumb */}
         <div
           className={`absolute left-0 top-0 bottom-0 ${theme.fillBg} transition-all duration-75`}
-          style={{ width: `${dragX + 28}px` }}
+          style={{ width: `${dragX + 24}px` }}
         />
 
         {/* Center Prompt Text */}
@@ -198,7 +198,7 @@ export default function SlideToConfirm({
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
           onMouseDown={handleMouseDown}
-          className={`relative z-10 w-13 h-13 rounded-xl flex items-center justify-center font-black text-xl shadow-lg transition-transform active:scale-95 ${
+          className={`relative z-10 w-12 h-12 rounded-xl flex items-center justify-center font-black text-xl shadow-lg transition-transform active:scale-95 touch-none select-none ${
             theme.thumbBg
           } ${isDragging ? "transition-none" : "transition-transform duration-250 ease-out"}`}
           style={{

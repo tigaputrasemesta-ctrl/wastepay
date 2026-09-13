@@ -67,27 +67,29 @@ function BottomNav({ pathname, jabatan }: { pathname: string; jabatan: string[] 
   ].filter((i) => i.show);
 
   return (
-    <nav className="fixed bottom-0 inset-x-0 z-50 glass-bottom-nav pb-safe pt-1.5 px-2 flex justify-around items-center">
-      {items.map((it) => {
-        const active = pathname === it.href;
-        return (
-          <Link
-            key={it.href}
-            href={it.href}
-            className={cn(
-              "flex-1 flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-[10px] font-bold transition-all",
-              active
-                ? "text-emerald-600 bg-emerald-50 scale-105"
-                : "text-slate-500 hover:text-slate-900 active:scale-95"
-            )}
-          >
-            <div className={cn("transition-transform", active && "scale-110")}>
-              {it.icon}
-            </div>
-            <span className="mt-0.5 tracking-tight">{it.label}</span>
-          </Link>
-        );
-      })}
+    <nav className="fixed bottom-0 inset-x-0 z-50 glass-bottom-nav pb-safe pt-1.5 px-2">
+      <div className="w-full max-w-lg mx-auto flex justify-around items-center">
+        {items.map((it) => {
+          const active = pathname === it.href;
+          return (
+            <Link
+              key={it.href}
+              href={it.href}
+              className={cn(
+                "flex-1 flex flex-col items-center justify-center py-1.5 px-0.5 sm:px-1 rounded-xl text-[9px] sm:text-[10px] font-bold transition-all min-w-0",
+                active
+                  ? "text-emerald-600 bg-emerald-50/80 font-black"
+                  : "text-slate-500 hover:text-slate-900 active:scale-95"
+              )}
+            >
+              <div className={cn("transition-transform", active && "scale-105")}>
+                {it.icon}
+              </div>
+              <span className="mt-0.5 tracking-tight truncate max-w-full">{it.label}</span>
+            </Link>
+          );
+        })}
+      </div>
     </nav>
   );
 }
@@ -171,7 +173,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
           </button>
         </header>
 
-        <main className="flex-1 w-full max-w-lg mx-auto px-3.5 py-4 space-y-4">
+        <main className="flex-1 w-full max-w-lg mx-auto px-3 sm:px-3.5 py-3.5 sm:py-4 space-y-4 overflow-x-hidden">
           <MobileTracker />
           <BackgroundTracker />
           {children}

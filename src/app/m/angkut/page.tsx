@@ -4,9 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import CameraGps from "@/components/mobile/CameraGps";
-import MapAngkut from "@/components/mobile/MapAngkut";
 import ProximityPickupModal from "@/components/mobile/ProximityPickupModal";
-import DriverTaskHUD from "@/components/mobile/DriverTaskHUD";
 import GojekDriverCockpit from "@/components/mobile/GojekDriverCockpit";
 import { useProximityPickup, type ProximityTugas } from "@/hooks/useProximityPickup";
 import { useWakeLock } from "@/hooks/useWakeLock";
@@ -286,11 +284,11 @@ export default function MobileAngkut() {
   return (
     <div className="space-y-4">
       {/* Top Header with Date & Progress */}
-      <div className="bg-white rounded-3xl p-4 border border-slate-200/80 shadow-xs space-y-3">
-        <div className="flex items-center justify-between gap-2">
-          <div>
-            <h1 className="text-lg font-bold text-slate-900 tracking-tight">Rute Pengangkutan</h1>
-            <p className="text-xs text-slate-500 font-medium">
+      <div className="bg-white rounded-3xl p-3.5 sm:p-4 border border-slate-200/80 shadow-xs space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <div className="min-w-0">
+            <h1 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">Rute Pengangkutan</h1>
+            <p className="text-xs text-slate-500 font-medium truncate">
               {format(new Date(tanggal), "EEEE, d MMMM yyyy", { locale: id })}
             </p>
           </div>
@@ -298,7 +296,7 @@ export default function MobileAngkut() {
             type="date"
             value={tanggal}
             onChange={(e) => setTanggal(e.target.value)}
-            className="border border-slate-200 bg-slate-50 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20"
+            className="w-full sm:w-auto border border-slate-200 bg-slate-50 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20"
           />
         </div>
 
@@ -317,10 +315,10 @@ export default function MobileAngkut() {
         </div>
 
         {/* ── Radar & Proximity Toolbar (Hands-Free Mode) ── */}
-        <div className="bg-slate-900 text-white rounded-2xl p-3 shadow-md space-y-2.5">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <span className="relative flex h-2.5 w-2.5">
+        <div className="bg-slate-900 text-white rounded-2xl p-2.5 sm:p-3 shadow-md space-y-2.5">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="relative flex h-2.5 w-2.5 shrink-0">
                 <span
                   className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
                     driverPos ? "bg-emerald-400" : "bg-amber-400"
@@ -332,14 +330,14 @@ export default function MobileAngkut() {
                   }`}
                 />
               </span>
-              <span className="text-xs font-bold text-slate-100">
+              <span className="text-xs font-bold text-slate-100 truncate">
                 {driverPos
                   ? `Radar Aktif (±${driverPos.akurasi || 5}m)`
-                  : "Mencari GPS Petugas..."}
+                  : "Mencari GPS..."}
               </span>
             </div>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 shrink-0 ml-auto">
               {/* Toggle Radius 10m vs 20m */}
               <div className="inline-flex bg-slate-800 rounded-xl p-0.5 text-[11px] font-bold border border-slate-700">
                 <button
@@ -380,21 +378,21 @@ export default function MobileAngkut() {
                     : "bg-slate-800 text-slate-400 border-slate-700"
                 }`}
               >
-                {soundEnabled ? "🔊 Suara On" : "🔇 Mute"}
+                {soundEnabled ? "🔊 On" : "🔇 Mute"}
               </button>
             </div>
           </div>
 
           {/* Closest Target Hint */}
           {closestTask && closestDistance !== null && (
-            <div className="flex items-center justify-between bg-white/10 rounded-xl px-2.5 py-1.5 text-xs">
-              <div className="flex items-center gap-1.5 truncate">
-                <span className="text-xs">🎯</span>
+            <div className="flex items-center justify-between bg-white/10 rounded-xl px-2.5 py-1.5 text-xs gap-2">
+              <div className="flex items-center gap-1.5 truncate min-w-0">
+                <span className="text-xs shrink-0">🎯</span>
                 <span className="font-extrabold text-white truncate">
                   {closestTask.pelanggan.nama}
                 </span>
-                <span className="text-[10px] text-slate-300">
-                  ({closestDistance}m lagi)
+                <span className="text-[10px] text-slate-300 shrink-0">
+                  ({closestDistance}m)
                 </span>
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
@@ -425,14 +423,14 @@ export default function MobileAngkut() {
         <button
           type="button"
           onClick={() => setViewMode("map")}
-          className={`py-2 px-3 rounded-xl text-xs font-black flex items-center justify-center gap-2 transition-all ${
+          className={`py-2 px-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all ${
             viewMode === "map"
               ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/30"
               : "text-slate-400 hover:text-white"
           }`}
         >
           <span>🗺️</span>
-          <span>Peta Navigasi Live</span>
+          <span>Peta Live</span>
           <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-black/40">
             {data.filter((t) => t.pelanggan.latitude && t.pelanggan.longitude).length}
           </span>
@@ -440,7 +438,7 @@ export default function MobileAngkut() {
         <button
           type="button"
           onClick={() => setViewMode("list")}
-          className={`py-2 px-3 rounded-xl text-xs font-black flex items-center justify-center gap-2 transition-all ${
+          className={`py-2 px-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all ${
             viewMode === "list"
               ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/30"
               : "text-slate-400 hover:text-white"
@@ -652,50 +650,88 @@ export default function MobileAngkut() {
               </div>
 
               {!isEditing ? (
-                <div className="flex gap-2 pt-1 flex-wrap">
-                  {!isDone && (
-                    <button
-                      type="button"
-                      onClick={() => forceOpenTask(t.id)}
-                      className={`px-3 py-3 rounded-2xl text-xs font-black shadow-xs active:scale-98 transition-all flex items-center justify-center gap-1.5 ${
-                        t.tunggakan?.isMenunggak
-                          ? "bg-rose-600 hover:bg-rose-500 text-white"
-                          : "bg-emerald-600 hover:bg-emerald-500 text-white"
-                      }`}
-                    >
-                      <span>⚡</span>
-                      <span>{t.tunggakan?.isMenunggak ? "Cek Menunggak" : "1-Tap Ceklis"}</span>
-                    </button>
-                  )}
+                <div className="space-y-2 pt-1">
+                  {!isDone ? (
+                    <>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => forceOpenTask(t.id)}
+                          className={`py-2.5 px-3 rounded-2xl text-xs font-black shadow-xs active:scale-98 transition-all flex items-center justify-center gap-1.5 ${
+                            t.tunggakan?.isMenunggak
+                              ? "bg-rose-600 hover:bg-rose-500 text-white"
+                              : "bg-emerald-600 hover:bg-emerald-500 text-white"
+                          }`}
+                        >
+                          <span>⚡</span>
+                          <span className="truncate">{t.tunggakan?.isMenunggak ? "Cek Tunggakan" : "1-Tap Ceklis"}</span>
+                        </button>
 
-                  <button
-                    onClick={() => {
-                      bukaForm(t);
-                      setForm((f) => ({ ...f, status: "diambil" }));
-                    }}
-                    className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-2xl text-xs font-bold active:scale-98 transition-all flex items-center justify-center gap-1.5"
-                  >
-                    <span>📸</span>
-                    <span>Detail / Foto</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      bukaForm(t);
-                      setForm((f) => ({ ...f, status: "kosong" }));
-                    }}
-                    className="px-3.5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-xs font-bold active:scale-98 transition-all"
-                  >
-                    Kosong
-                  </button>
-                  <button
-                    onClick={() => {
-                      bukaForm(t);
-                      setForm((f) => ({ ...f, status: "tidak_diangkut" }));
-                    }}
-                    className="px-3.5 py-3 bg-slate-100 hover:bg-rose-100 text-rose-700 rounded-2xl text-xs font-bold active:scale-98 transition-all"
-                  >
-                    Kendala
-                  </button>
+                        <button
+                          onClick={() => {
+                            bukaForm(t);
+                            setForm((f) => ({ ...f, status: "diambil" }));
+                          }}
+                          className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-2xl text-xs font-bold active:scale-98 transition-all flex items-center justify-center gap-1.5"
+                        >
+                          <span>📸</span>
+                          <span>Detail / Foto</span>
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          onClick={() => {
+                            bukaForm(t);
+                            setForm((f) => ({ ...f, status: "kosong" }));
+                          }}
+                          className="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-xs font-bold active:scale-98 transition-all"
+                        >
+                          Kosong
+                        </button>
+                        <button
+                          onClick={() => {
+                            bukaForm(t);
+                            setForm((f) => ({ ...f, status: "tidak_diangkut" }));
+                          }}
+                          className="py-2 px-3 bg-slate-100 hover:bg-rose-100 text-rose-700 rounded-2xl text-xs font-bold active:scale-98 transition-all"
+                        >
+                          Kendala
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="grid grid-cols-3 gap-2">
+                      <button
+                        onClick={() => {
+                          bukaForm(t);
+                          setForm((f) => ({ ...f, status: "diambil" }));
+                        }}
+                        className="py-2.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-2xl text-xs font-bold active:scale-98 transition-all flex items-center justify-center gap-1"
+                      >
+                        <span>📸</span>
+                        <span>Ubah</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          bukaForm(t);
+                          setForm((f) => ({ ...f, status: "kosong" }));
+                        }}
+                        className="py-2.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-xs font-bold active:scale-98 transition-all"
+                      >
+                        Kosong
+                      </button>
+                      <button
+                        onClick={() => {
+                          bukaForm(t);
+                          setForm((f) => ({ ...f, status: "tidak_diangkut" }));
+                        }}
+                        className="py-2.5 px-2 bg-slate-100 hover:bg-rose-100 text-rose-700 rounded-2xl text-xs font-bold active:scale-98 transition-all"
+                      >
+                        Kendala
+                      </button>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="border-t border-slate-200/80 pt-3 space-y-3">
@@ -711,7 +747,7 @@ export default function MobileAngkut() {
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2.5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     <div>
                       <label className="block text-[11px] font-bold text-slate-600 mb-1">Jenis Sampah</label>
                       <select
@@ -730,7 +766,7 @@ export default function MobileAngkut() {
                       <select
                         value={form.kendaraanId}
                         onChange={(e) => setForm({ ...form, kendaraanId: e.target.value })}
-                        className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-bold bg-white outline-none focus:ring-2 focus:ring-emerald-500/20"
+                        className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-bold bg-white outline-none focus:ring-2 focus:ring-emerald-500/20 truncate"
                       >
                         <option value="">— Pilih Truk —</option>
                         {kendaraanSaya.map((k) => (
