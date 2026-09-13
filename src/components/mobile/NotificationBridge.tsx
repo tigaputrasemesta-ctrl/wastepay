@@ -238,32 +238,48 @@ export default function NotificationBridge() {
       const plugin = await native();
       if (!plugin || !alive) return;
 
-      const aksi = await plugin.addListener("localNotificationActionPerformed", (event) => {
-        const page = (event?.notification?.extra as { page?: unknown } | undefined)?.page;
-        if (typeof page === "string" && page.startsWith("/m")) routerRef.current.push(page);
-      });
-      cleanups.push(() => void aksi.remove());
+      // Dibungkus try/catch: kegagalan registrasi listener TIDAK boleh
+      // membatalkan pemasangan pengingat (bagian yang justru paling penting).
+      try {
+        const aksi = await plugin.addListener("localNotificationActionPerformed", (event) => {
+          const page = (event?.notification?.extra as { page?: unknown } | undefined)?.page;
+          if (typeof page === "string" && page.startsWith("/m")) routerRef.current.push(page);
+        });
+        cleanups.push(() => void aksi.remove().catch(() => {}));
+      } catch {
+        // Tanpa listener ini notifikasi tetap muncul, hanya tidak membuka halaman.
+      }
 
-      const appState = await App.addListener("appStateChange", ({ isActive }) => {
-        // Saat kembali aktif: ambil data terbaru + pasang ulang pengingat.
-        // Penting karena alarm eksak dihapus sistem bila pengguna mengubah
-        // setelan "alarm & pengingat" sementara aplikasi tidak berjalan.
-        if (isActive) void sinkron();
-      });
-      cleanups.push(() => void appState.remove());
+      try {
+        const appState = await App.addListener("appStateChange", ({ isActive }) => {
+          // Saat kembali aktif: ambil data terbaru + pasang ulang pengingat.
+          // Penting karena alarm eksak dihapus sistem bila pengguna mengubah
+          // setelan "alarm & pengingat" sementara aplikasi tidak berjalan.
+          if (isActive) void sinkron();
+        });
+        cleanups.push(() => void appState.remove().catch(() => {}));
+      } catch {
+        // Tanpa listener ini pengingat hanya dipasang ulang saat aplikasi dibuka.
+      }
     };
 
     const onPrefsBerubah = () => void pasangPengingat();
     window.addEventListener(NOTIF_PREFS_EVENT, onPrefsBerubah);
 
     void (async () => {
-      await daftarkanListener();
-      if (!alive) return;
-      await sinkron();
-      if (!alive) return;
-      interval = setInterval(() => {
-        if (document.visibilityState === "visible") void cekPengumuman();
-      }, INTERVAL_PENGUMUMAN_MS);
+      // Seluruh inisialisasi dibungkus: kode ini berjalan di layout /m untuk
+      // semua pengguna, jadi kegagalan notifikasi tidak boleh merusak aplikasi.
+      try {
+        await daftarkanListener();
+        if (!alive) return;
+        await sinkron();
+        if (!alive) return;
+        interval = setInterval(() => {
+          if (document.visibilityState === "visible") void cekPengumuman().catch(() => {});
+        }, INTERVAL_PENGUMUMAN_MS);
+      } catch {
+        // Diabaikan dengan sengaja: notifikasi adalah fitur tambahan.
+      }
     })();
 
     return () => {
