@@ -266,7 +266,7 @@ export default function DriverTaskHUD({
 
                 {/* Thumbnail foto rumah jika ada */}
                 {activeTask.pelanggan.fotoRumah && (
-                  <div className="w-13 h-13 rounded-xl overflow-hidden border border-slate-700 shrink-0 bg-slate-800 relative">
+                  <div className="w-[3.25rem] h-[3.25rem] rounded-xl overflow-hidden border border-slate-700 shrink-0 bg-slate-800 relative">
                     <Image
                       src={activeTask.pelanggan.fotoRumah}
                       alt="Foto Rumah"

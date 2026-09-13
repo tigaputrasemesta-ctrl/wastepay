@@ -129,7 +129,7 @@ export default function AdminChat() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 h-[calc(100vh-230px)] min-h-[520px]">
         {/* Daftar thread */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden flex flex-col">
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col">
           <div className="px-4 py-3.5 border-b border-slate-200 bg-slate-50/70 flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-600">
               Daftar Petugas
@@ -170,7 +170,7 @@ export default function AdminChat() {
                     )}
                   </div>
                   {t.unread > 0 && (
-                    <span className="shrink-0 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs">
+                    <span className="shrink-0 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
                       {t.unread}
                     </span>
                   )}
@@ -181,11 +181,11 @@ export default function AdminChat() {
         </div>
 
         {/* Area chat */}
-        <div className="md:col-span-2 flex flex-col bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div className="md:col-span-2 flex flex-col bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
           {petugasId == null ? (
             <div className="flex-1 flex items-center justify-center p-8 text-center bg-slate-50/30">
               <div className="max-w-xs">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl mx-auto mb-3 shadow-xs">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl mx-auto mb-3 shadow-sm">
                   💬
                 </div>
                 <p className="font-bold text-slate-800 text-base">Pilih Petugas</p>
@@ -204,7 +204,7 @@ export default function AdminChat() {
                   pesan.map((m) => (
                     <div key={m.id} className={`flex ${m.dariPetugas ? "justify-start" : "justify-end"}`}>
                       <div
-                        className={`max-w-[75%] px-4 py-2.5 text-sm whitespace-pre-wrap break-words shadow-xs ${
+                        className={`max-w-[75%] px-4 py-2.5 text-sm whitespace-pre-wrap break-words shadow-sm ${
                           m.dariPetugas
                             ? "bg-white border border-slate-200/80 text-slate-800 rounded-2xl rounded-tl-xs"
                             : "bg-emerald-600 text-white rounded-2xl rounded-tr-xs"
@@ -231,7 +231,7 @@ export default function AdminChat() {
                 <button
                   onClick={kirim}
                   disabled={sending || !isi.trim()}
-                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm rounded-xl shadow-xs hover:shadow active:scale-[0.98] transition-all disabled:opacity-40"
+                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all disabled:opacity-40"
                 >
                   {sending ? "Mengirim…" : "Kirim"}
                 </button>

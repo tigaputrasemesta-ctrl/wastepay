@@ -424,7 +424,7 @@ function BayarTagihanContent() {
                   onClick={() => setPilihMetode(m.value)}
                   className={`relative flex items-center gap-3 p-3.5 rounded-2xl border text-left transition-all ${
                     isSelected
-                      ? "border-emerald-500 bg-emerald-50/40 ring-1 ring-emerald-500 shadow-xs"
+                      ? "border-emerald-500 bg-emerald-50/40 ring-1 ring-emerald-500 shadow-sm"
                       : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/60"
                   }`}
                 >

@@ -174,7 +174,7 @@ export default function PetugasPage() {
       </div>
 
       {/* Desktop Table */}
-      <div className="hidden md:block bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+      <div className="hidden md:block bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -274,7 +274,7 @@ export default function PetugasPage() {
       {/* Mobile Card View */}
       <div className="md:hidden space-y-3 mt-4">
         {petugas.map((p) => (
-          <div key={p.id} className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-4">
+          <div key={p.id} className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 flex items-center justify-center font-semibold text-xs">
@@ -311,7 +311,7 @@ export default function PetugasPage() {
 
       {/* Form Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
           <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-md max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
               <h2 className="font-semibold text-slate-900 text-base">{editing ? "Edit Petugas" : "Tambah Petugas"}</h2>
@@ -427,7 +427,7 @@ export default function PetugasPage() {
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-700 font-medium hover:bg-slate-50 transition">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-xs hover:shadow-sm active:scale-95 transition-all">{editing ? "Simpan" : "Tambah"}</button>
+                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all">{editing ? "Simpan" : "Tambah"}</button>
               </div>
             </form>
           </div>

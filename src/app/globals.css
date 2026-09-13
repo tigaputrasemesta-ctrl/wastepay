@@ -347,3 +347,49 @@ button.rounded-none {
 [class*="shadow-[4px_4px_0_0_#000000]"] {
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05) !important;
 }
+
+/* ===== Animasi masuk (kompatibel tailwindcss-animate, tanpa plugin) =====
+   Kelas animate-in / fade-in / zoom-in-95 / slide-in-from-bottom-5 sebelumnya
+   tidak menghasilkan CSS sama sekali karena plugin tailwindcss-animate tidak
+   terpasang (plugins: [] di tailwind.config). Diimplementasikan ulang di sini
+   supaya tidak menambah dependency. Pola variabel --tw-enter-* sengaja
+   dipertahankan agar kombinasi kelas tetap bisa dikomposisi. */
+@keyframes o2w-enter {
+  from {
+    opacity: var(--tw-enter-opacity, 1);
+    transform: translate3d(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0), 0)
+      scale3d(var(--tw-enter-scale, 1), var(--tw-enter-scale, 1), 1);
+  }
+}
+
+.animate-in {
+  animation-name: o2w-enter;
+  animation-duration: 200ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  animation-fill-mode: both;
+}
+
+/* Durasi mengikuti kelas duration-* yang dipakai bersama animate-in.
+   Tailwind hanya memetakan duration-* ke transition-duration, bukan
+   animation-duration, jadi pemetaannya ditambahkan manual di sini. */
+.animate-in.duration-150 { animation-duration: 150ms; }
+.animate-in.duration-200 { animation-duration: 200ms; }
+
+.fade-in { --tw-enter-opacity: 0; }
+.zoom-in-95 { --tw-enter-scale: 0.95; }
+.slide-in-from-bottom-5 { --tw-enter-translate-y: 1.25rem; }
+
+/* ===== Hormati preferensi pengurangan gerak (WCAG 2.3.3) =====
+   Sebelumnya tidak ada satu pun aturan prefers-reduced-motion sementara ada
+   28 pemakaian animate-* (ping/pulse/spin). Nilai 0.01ms dipakai (bukan 0)
+   agar event transitionend/animationend tetap dipicu. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

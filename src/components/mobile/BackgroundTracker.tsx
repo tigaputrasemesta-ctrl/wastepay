@@ -115,7 +115,7 @@ export default function BackgroundTracker() {
   }, [kirim]);
 
   return (
-    <div className="bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2 flex items-center justify-between gap-2 mx-3 my-1 shadow-2xs">
+    <div className="bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2 flex items-center justify-between gap-2 mx-3 my-1 shadow-sm">
       <div className="flex items-center gap-2 min-w-0">
         <span
           className={`w-2 h-2 rounded-full shrink-0 ${

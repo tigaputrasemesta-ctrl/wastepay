@@ -46,7 +46,7 @@ export default async function LandingPage() {
       <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-6 py-3.5 transition-all">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-xl shadow-2xs group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition-transform">
               🚛
             </div>
             <div>
@@ -76,7 +76,7 @@ export default async function LandingPage() {
             </Link>
             <Link
               href="/daftar"
-              className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl font-bold shadow-xs active:scale-95 transition-all flex items-center gap-1.5"
+              className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl font-bold shadow-sm active:scale-95 transition-all flex items-center gap-1.5"
             >
               <span>Daftar Layanan</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -105,7 +105,7 @@ export default async function LandingPage() {
             </p>
 
             {/* Badge Rekam Jejak */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-2 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-medium text-slate-700 shadow-2xs">
+            <div className="inline-flex items-center gap-2 px-3.5 py-2 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-medium text-slate-700 shadow-sm">
               <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
               <span>Melayani Depok sejak 2014 • Dipercaya lebih dari 2.000+ pelanggan</span>
             </div>
@@ -113,13 +113,13 @@ export default async function LandingPage() {
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <Link
                 href="/daftar"
-                className="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-bold text-sm shadow-md hover:shadow-lg active:scale-98 transition-all flex items-center justify-center gap-2"
+                className="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-bold text-sm shadow-md hover:shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2"
               >
                 <span>Mulai Berlangganan 🚛</span>
               </Link>
               <Link
                 href="/lacak"
-                className="px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-2xl font-bold text-sm active:scale-98 transition-all flex items-center justify-center gap-2"
+                className="px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-2xl font-bold text-sm active:scale-95 transition-all flex items-center justify-center gap-2"
               >
                 <Navigation className="w-4 h-4 text-emerald-600" />
                 <span>Lacak Armada di Peta</span>
@@ -200,7 +200,7 @@ export default async function LandingPage() {
 
           <div className="grid md:grid-cols-3 gap-6">
             {/* Feature 1 */}
-            <div className="bg-white rounded-3xl border border-slate-200/80 p-8 shadow-xs hover:shadow-md hover:border-emerald-200 transition-all flex flex-col justify-between">
+            <div className="bg-white rounded-3xl border border-slate-200/80 p-8 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all flex flex-col justify-between">
               <div>
                 <div className="w-14 h-14 rounded-2xl bg-sky-50 border border-sky-100 flex items-center justify-center text-sky-600 mb-6">
                   <MapPin className="w-7 h-7" />
@@ -220,7 +220,7 @@ export default async function LandingPage() {
             </div>
 
             {/* Feature 2 */}
-            <div className="bg-white rounded-3xl border border-slate-200/80 p-8 shadow-xs hover:shadow-md hover:border-emerald-200 transition-all flex flex-col justify-between">
+            <div className="bg-white rounded-3xl border border-slate-200/80 p-8 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all flex flex-col justify-between">
               <div>
                 <div className="w-14 h-14 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 mb-6">
                   <Truck className="w-7 h-7" />
@@ -240,7 +240,7 @@ export default async function LandingPage() {
             </div>
 
             {/* Feature 3 */}
-            <div className="bg-white rounded-3xl border border-slate-200/80 p-8 shadow-xs hover:shadow-md hover:border-emerald-200 transition-all flex flex-col justify-between">
+            <div className="bg-white rounded-3xl border border-slate-200/80 p-8 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all flex flex-col justify-between">
               <div>
                 <div className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 mb-6">
                   <Smartphone className="w-7 h-7" />
@@ -280,7 +280,7 @@ export default async function LandingPage() {
                     p.penting
                       ? "bg-rose-50 border-rose-200 text-rose-950"
                       : "bg-white border-slate-200/80 text-slate-900"
-                  } shadow-xs`}
+                  } shadow-sm`}
                 >
                   {p.penting && (
                     <div className="inline-block px-2.5 py-0.5 bg-rose-600 text-white text-[10px] font-bold uppercase rounded-full mb-3">

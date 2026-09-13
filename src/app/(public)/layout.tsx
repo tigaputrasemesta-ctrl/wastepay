@@ -25,7 +25,7 @@ export default function PublicLayout({
       </div>
 
       {/* Modern Clean Navbar */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-3 group">
             <div className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
@@ -36,7 +36,7 @@ export default function PublicLayout({
                 <span className="text-lg font-extrabold text-slate-900 tracking-tight">
                   UPS HERU<span className="text-emerald-600">.</span>
                 </span>
-                <span className="px-1.5 py-0.2 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                <span className="px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-bold">
                   Depok
                 </span>
               </div>
@@ -54,7 +54,7 @@ export default function PublicLayout({
           <div className="flex items-center gap-3">
             <Link
               href="/daftar"
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow-md active:scale-98 transition-all"
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-sm hover:shadow-md active:scale-95 transition-all"
             >
               Daftar Warga Baru
             </Link>
@@ -77,7 +77,7 @@ export default function PublicLayout({
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start gap-10">
           <div className="flex-1 max-w-sm space-y-3">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+              <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-sm">
                 <AnimatedDumpTruck size="xs" theme="white" />
               </div>
               <span className="text-xl font-extrabold text-slate-900 tracking-tight">

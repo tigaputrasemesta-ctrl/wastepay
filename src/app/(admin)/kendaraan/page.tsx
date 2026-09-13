@@ -120,19 +120,19 @@ export default function KendaraanPage() {
 
       {/* Ringkasan */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
           <p className="text-2xl font-extrabold tracking-tight text-slate-900">{kendaraan.filter((k) => k.aktif).length}</p>
           <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-1">KENDARAAN AKTIF</p>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
           <p className="text-2xl font-extrabold tracking-tight text-amber-600">{totalDump}</p>
           <p className="text-[11px] font-bold text-amber-600/80 uppercase tracking-wider mt-1">DUMP TRUCK</p>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
           <p className="text-2xl font-extrabold tracking-tight text-emerald-600">{totalPickup}</p>
           <p className="text-[11px] font-bold text-emerald-600/80 uppercase tracking-wider mt-1">PICKUP</p>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
           <p className="text-2xl font-extrabold tracking-tight text-slate-900">
             {kendaraan.reduce((s, k) => s + (k._count?.pengangkutan ?? 0), 0)}
           </p>
@@ -141,7 +141,7 @@ export default function KendaraanPage() {
       </div>
 
       {/* Filter */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-4 mb-5 flex flex-wrap items-center gap-3 shadow-xs">
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-4 mb-5 flex flex-wrap items-center gap-3 shadow-sm">
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
@@ -160,7 +160,7 @@ export default function KendaraanPage() {
       {loading ? (
         <div className="bg-white rounded-2xl border border-slate-200/80 p-8 text-center text-slate-400 font-medium">MEMUAT…</div>
       ) : (
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-slate-50/70 text-slate-600 font-semibold border-b border-slate-200/80 text-xs uppercase tracking-wider">
@@ -218,7 +218,7 @@ export default function KendaraanPage() {
 
       {/* Modal */}
       {show && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
           <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-md">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/70">
               <div>
@@ -257,7 +257,7 @@ export default function KendaraanPage() {
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => setShow(false)} className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-700 font-semibold hover:bg-slate-50 transition-all">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-sm font-semibold shadow-xs hover:shadow active:scale-[0.98] transition-all">{edit ? "Simpan" : "Tambah"}</button>
+                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all">{edit ? "Simpan" : "Tambah"}</button>
               </div>
             </form>
           </div>

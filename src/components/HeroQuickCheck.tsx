@@ -44,7 +44,7 @@ export default function HeroQuickCheck() {
             />
             <button
               type="submit"
-              className="absolute right-1.5 top-1.5 bottom-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 rounded-xl transition-all shadow-xs active:scale-98"
+              className="absolute right-1.5 top-1.5 bottom-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 rounded-xl transition-all shadow-sm active:scale-95"
             >
               Cek Tagihan
             </button>
@@ -72,7 +72,7 @@ export default function HeroQuickCheck() {
 
       {/* Card Info Mockup */}
       <div className="pt-2">
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs">
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-sm">

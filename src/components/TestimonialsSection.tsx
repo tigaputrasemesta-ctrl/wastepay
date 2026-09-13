@@ -72,7 +72,7 @@ export default function TestimonialsSection() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3 text-xs font-bold bg-slate-50 border border-slate-200/80 px-4 py-2.5 rounded-2xl shadow-xs self-start md:self-auto">
+          <div className="flex items-center gap-3 text-xs font-bold bg-slate-50 border border-slate-200/80 px-4 py-2.5 rounded-2xl shadow-sm self-start md:self-auto">
             <span className="text-amber-500 text-sm">★★★★★</span>
             <span className="text-slate-800">Rating 4.9 / 5.0 dari 2.000+ Pelanggan</span>
           </div>
@@ -83,7 +83,7 @@ export default function TestimonialsSection() {
           {TESTIMONIALS.map((t) => (
             <div
               key={t.name}
-              className="rounded-3xl bg-slate-50/70 hover:bg-white border border-slate-200/80 hover:border-emerald-300 p-6 sm:p-8 flex flex-col justify-between shadow-xs hover:shadow-md transition-all duration-200"
+              className="rounded-3xl bg-slate-50/70 hover:bg-white border border-slate-200/80 hover:border-emerald-300 p-6 sm:p-8 flex flex-col justify-between shadow-sm hover:shadow-md transition-all duration-200"
             >
               <div>
                 {/* Stars & Badge */}
@@ -91,7 +91,7 @@ export default function TestimonialsSection() {
                   <div className="flex gap-1 text-amber-500 text-sm">
                     {"★".repeat(5)}
                   </div>
-                  <span className="inline-block px-2.5 py-1 bg-white border border-slate-200 text-[11px] font-bold text-slate-700 rounded-full shadow-2xs">
+                  <span className="inline-block px-2.5 py-1 bg-white border border-slate-200 text-[11px] font-bold text-slate-700 rounded-full shadow-sm">
                     {t.badge}
                   </span>
                 </div>
@@ -106,7 +106,7 @@ export default function TestimonialsSection() {
               <div className="pt-4 border-t border-slate-200/60 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-11 h-11 rounded-2xl flex items-center justify-center font-extrabold text-sm shadow-xs ${t.color}`}
+                    className={`w-11 h-11 rounded-2xl flex items-center justify-center font-extrabold text-sm shadow-sm ${t.color}`}
                   >
                     {t.initials}
                   </div>

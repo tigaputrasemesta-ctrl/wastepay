@@ -83,8 +83,11 @@ export default function ProximityPickupModal({
   }
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 p-3 sm:p-6 pb-safe bg-slate-950/75 backdrop-blur-xs flex items-end justify-center animate-in fade-in duration-200">
+    <div className="fixed inset-x-0 bottom-0 z-50 p-3 sm:p-6 pb-safe bg-slate-950/75 backdrop-blur-sm flex items-end justify-center animate-in fade-in duration-200">
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Konfirmasi jemput pelanggan terdekat"
         className={`w-full max-w-lg max-h-[88dvh] overflow-y-auto rounded-3xl p-4 sm:p-5 shadow-2xl transition-all border ${
           isMenunggak
             ? "bg-slate-900 border-rose-500/60 ring-4 ring-rose-500/20 text-white"
@@ -102,6 +105,7 @@ export default function ProximityPickupModal({
               }`}
             >
               <span
+                aria-hidden="true"
                 className={`w-2 h-2 rounded-full shrink-0 ${
                   isMenunggak ? "bg-rose-500" : "bg-emerald-400 animate-ping"
                 }`}
@@ -121,10 +125,11 @@ export default function ProximityPickupModal({
             </span>
             <button
               onClick={onDismiss}
+              aria-label="Tutup sementara"
               className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center font-bold text-xs sm:text-sm transition-colors"
               title="Tutup sementara"
             >
-              ✕
+              <span aria-hidden="true">✕</span>
             </button>
           </div>
         </div>
@@ -281,7 +286,7 @@ export default function ProximityPickupModal({
                       type="button"
                       onClick={handleOverridePickup}
                       disabled={loading}
-                      className="flex-1 py-2.5 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-black"
+                      className="flex-1 py-2.5 bg-amber-700 hover:bg-amber-800 text-white rounded-xl text-xs font-black"
                     >
                       {loading ? "Menyimpan..." : "Ya, Dispensasi"}
                     </button>
@@ -330,7 +335,7 @@ export default function ProximityPickupModal({
                 <button
                   type="button"
                   onClick={onDismiss}
-                  className="text-slate-500 hover:text-slate-300 font-bold"
+                  className="text-slate-400 hover:text-slate-200 font-bold"
                 >
                   Tutup Sementara ✕
                 </button>

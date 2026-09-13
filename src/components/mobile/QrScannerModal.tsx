@@ -170,11 +170,19 @@ export default function QrScannerModal({
 
   return (
     <div className="fixed inset-0 z-[1100] flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-slate-900 border border-slate-700 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl flex flex-col max-h-[92dvh]">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        className="bg-slate-900 border border-slate-700 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl flex flex-col max-h-[92dvh]"
+      >
         {/* Header */}
         <div className="p-4 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-base">
+            <span
+              aria-hidden="true"
+              className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-base"
+            >
               📷
             </span>
             <div>
@@ -185,9 +193,10 @@ export default function QrScannerModal({
           <button
             type="button"
             onClick={onClose}
+            aria-label="Tutup pemindai"
             className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-sm font-bold transition-all"
           >
-            ✕
+            <span aria-hidden="true">✕</span>
           </button>
         </div>
 
@@ -247,12 +256,12 @@ export default function QrScannerModal({
               value={manualCode}
               onChange={(e) => setManualCode(e.target.value)}
               placeholder="Ketik kode pelanggan / no invoice..."
-              className="flex-1 px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs font-bold text-white placeholder-slate-500 outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
+              className="flex-1 px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs font-bold text-white placeholder-slate-400 outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
             />
             <button
               type="submit"
               disabled={!manualCode.trim()}
-              className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white rounded-xl text-xs font-black transition-all shadow-md active:scale-95"
+              className="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-40 text-white rounded-xl text-xs font-black transition-all shadow-md active:scale-95"
             >
               Cari 🚀
             </button>

@@ -191,7 +191,7 @@ export default function TarifPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Kategori Tarif */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between p-4 px-6 border-b border-slate-200 bg-slate-50/70">
             <div>
               <h2 className="font-bold text-slate-900 text-base">Kategori Dasar</h2>
@@ -199,7 +199,7 @@ export default function TarifPage() {
             </div>
             <button
               onClick={() => openKat(null)}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl px-3.5 py-2 text-xs font-semibold shadow-xs hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5"
+              className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl px-3.5 py-2 text-xs font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5"
             >
               + Tambah
             </button>
@@ -240,7 +240,7 @@ export default function TarifPage() {
         </div>
 
         {/* Paket Langganan */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between p-4 px-6 border-b border-slate-200 bg-slate-50/70">
             <div>
               <h2 className="font-bold text-slate-900 text-base">Paket Khusus</h2>
@@ -248,7 +248,7 @@ export default function TarifPage() {
             </div>
             <button
               onClick={() => openPaket(null)}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl px-3.5 py-2 text-xs font-semibold shadow-xs hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5"
+              className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl px-3.5 py-2 text-xs font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5"
             >
               + Tambah
             </button>
@@ -293,7 +293,7 @@ export default function TarifPage() {
 
       {/* Modal Kategori */}
       {showKatForm && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
           <div className="bg-white w-full max-w-md rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden">
             <div className="p-5 border-b border-slate-200 bg-slate-50/70 flex justify-between items-center">
               <div>
@@ -330,7 +330,7 @@ export default function TarifPage() {
 
       {/* Modal Paket */}
       {showPaketForm && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
           <div className="bg-white w-full max-w-md rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden">
             <div className="p-5 border-b border-slate-200 bg-slate-50/70 flex justify-between items-center">
               <div>

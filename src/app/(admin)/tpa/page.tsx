@@ -110,7 +110,7 @@ export default function TpaPage() {
       </div>
 
       {/* Desktop Table */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -173,7 +173,7 @@ export default function TpaPage() {
       {/* Mobile Card View */}
       <div className="md:hidden space-y-3 mt-4">
         {data.map((t) => (
-          <div key={t.id} className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
+          <div key={t.id} className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm">
             <div className="flex items-center justify-between mb-2">
               <h3 className="font-semibold text-slate-900">{t.nama}</h3>
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${t.aktif ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-slate-100 text-slate-600 border border-slate-200"}`}>
@@ -195,7 +195,7 @@ export default function TpaPage() {
 
       {/* Form Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
           <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-md">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/70">
               <h2 className="font-bold text-slate-900 text-base">{editing ? "Edit TPA" : "Tambah TPA"}</h2>
@@ -226,7 +226,7 @@ export default function TpaPage() {
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-700 font-semibold hover:bg-slate-50 transition-all">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-xs hover:shadow active:scale-[0.98] transition-all text-sm font-semibold">{editing ? "Simpan" : "Tambah"}</button>
+                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all text-sm font-semibold">{editing ? "Simpan" : "Tambah"}</button>
               </div>
             </form>
           </div>

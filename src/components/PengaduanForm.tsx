@@ -128,7 +128,7 @@ export default function PengaduanForm() {
       <button
         type="submit"
         disabled={status === "kirim"}
-        className="w-full py-3.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-2xl text-xs sm:text-sm shadow-md active:scale-98 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+        className="w-full py-3.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-2xl text-xs sm:text-sm shadow-md active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
       >
         {status === "kirim" ? (
           <>

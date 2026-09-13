@@ -434,14 +434,14 @@ export default function MapAngkut({
       </div>
 
       {/* ── FILTER CHIPS STRIP ── */}
-      <div className="bg-slate-900/80 backdrop-blur-xs border-b border-slate-800/80 px-3 py-1.5 flex items-center justify-between text-xs font-bold shrink-0 z-10 overflow-x-auto gap-1">
+      <div className="bg-slate-900/80 backdrop-blur-sm border-b border-slate-800/80 px-3 py-1.5 flex items-center justify-between text-xs font-bold shrink-0 z-10 overflow-x-auto gap-1">
         <div className="flex items-center gap-1">
           <button
             type="button"
             onClick={() => setFilterMode("semua")}
             className={`px-2.5 py-1 rounded-lg text-[11px] transition-all shrink-0 ${
               filterMode === "semua"
-                ? "bg-white text-slate-950 font-black shadow-xs"
+                ? "bg-white text-slate-950 font-black shadow-sm"
                 : "text-slate-400 hover:text-white"
             }`}
           >
@@ -452,7 +452,7 @@ export default function MapAngkut({
             onClick={() => setFilterMode("antrean")}
             className={`px-2.5 py-1 rounded-lg text-[11px] transition-all shrink-0 ${
               filterMode === "antrean"
-                ? "bg-emerald-500 text-slate-950 font-black shadow-xs"
+                ? "bg-emerald-500 text-slate-950 font-black shadow-sm"
                 : "text-slate-400 hover:text-white"
             }`}
           >
@@ -464,7 +464,7 @@ export default function MapAngkut({
               onClick={() => setFilterMode("menunggak")}
               className={`px-2.5 py-1 rounded-lg text-[11px] transition-all shrink-0 ${
                 filterMode === "menunggak"
-                  ? "bg-rose-500 text-white font-black shadow-xs animate-pulse"
+                  ? "bg-rose-500 text-white font-black shadow-sm animate-pulse"
                   : "text-rose-400 hover:text-rose-300"
               }`}
             >
@@ -476,7 +476,7 @@ export default function MapAngkut({
             onClick={() => setFilterMode("selesai")}
             className={`px-2.5 py-1 rounded-lg text-[11px] transition-all shrink-0 ${
               filterMode === "selesai"
-                ? "bg-teal-500 text-slate-950 font-black shadow-xs"
+                ? "bg-teal-500 text-slate-950 font-black shadow-sm"
                 : "text-slate-400 hover:text-white"
             }`}
           >
@@ -669,7 +669,7 @@ export default function MapAngkut({
                     <h4 className="text-sm font-black text-white truncate">
                       {selectedTask.nama}
                     </h4>
-                    <span className="text-[10px] font-mono font-bold text-slate-400 bg-slate-800 px-1.5 py-0.2 rounded shrink-0">
+                    <span className="text-[10px] font-mono font-bold text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded shrink-0">
                       {selectedTask.kodePelanggan}
                     </span>
                   </div>

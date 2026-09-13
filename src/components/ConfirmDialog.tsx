@@ -76,7 +76,7 @@ export default function ConfirmDialog({
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-xs transition-all disabled:opacity-50"
+            className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-sm transition-all disabled:opacity-50"
           >
             {cancelText}
           </button>
@@ -85,7 +85,7 @@ export default function ConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={loading}
-            className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 ${
+            className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 ${
               variant === "danger"
                 ? "bg-rose-600 hover:bg-rose-700 text-white"
                 : "bg-emerald-600 hover:bg-emerald-700 text-white"

@@ -180,12 +180,12 @@ export default function PengangkutanPage() {
           type="date"
           value={tanggal}
           onChange={(e) => setTanggal(e.target.value)}
-          className="px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-medium text-slate-800 flex-1 min-w-[140px] shadow-2xs outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+          className="px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-medium text-slate-800 flex-1 min-w-[140px] shadow-sm outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
         />
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-medium text-slate-800 flex-1 min-w-[120px] shadow-2xs outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+          className="px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-medium text-slate-800 flex-1 min-w-[120px] shadow-sm outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
         >
           <option value="">Semua Status</option>
           {STATUS_OPTIONS.map((s) => (
@@ -195,7 +195,7 @@ export default function PengangkutanPage() {
         <Link
           href={`/surat-jalan?tanggal=${tanggal}`}
           target="_blank"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition shadow-2xs"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition shadow-sm"
         >
           🖨 Surat Jalan
         </Link>
@@ -253,7 +253,7 @@ export default function PengangkutanPage() {
                       <td className="px-4 py-3.5 text-center whitespace-nowrap">
                         <button
                           onClick={() => startEdit(d)}
-                          className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-xl font-bold transition shadow-2xs"
+                          className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-xl font-bold transition shadow-sm"
                         >
                           Update
                         </button>
@@ -302,7 +302,7 @@ export default function PengangkutanPage() {
               {(user?.role === "admin" || user?.role === "superadmin" || user?.role === "petugas") && (
                 <button
                   onClick={() => startEdit(d)}
-                  className="mt-3 w-full text-center text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl transition shadow-2xs"
+                  className="mt-3 w-full text-center text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl transition shadow-sm"
                 >
                   Update Status
                 </button>
@@ -314,7 +314,7 @@ export default function PengangkutanPage() {
 
       {/* Update Modal */}
       {updating && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
           <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-md">
             <div className="flex items-center justify-between px-6 py-4.5 bg-slate-900 text-white">
               <h2 className="font-bold text-base tracking-wide">Update Pengangkutan</h2>
@@ -415,7 +415,7 @@ export default function PengangkutanPage() {
                 <button
                   type="button"
                   onClick={() => handleUpdate(updating)}
-                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md active:scale-98 transition-all"
+                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md active:scale-95 transition-all"
                 >
                   Simpan Status
                 </button>

@@ -40,7 +40,7 @@ function ChipCheck({ checked }: { checked: boolean }) {
 
 function chipCls(checked: boolean) {
   return checked
-    ? "flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-emerald-300 bg-emerald-50 text-emerald-800 font-semibold shadow-xs"
+    ? "flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-emerald-300 bg-emerald-50 text-emerald-800 font-semibold shadow-sm"
     : "flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-600 font-medium hover:bg-slate-50";
 }
 
@@ -235,7 +235,7 @@ export default function RutePage() {
       </div>
 
       {/* Desktop Table */}
-      <div className="hidden md:block bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+      <div className="hidden md:block bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -338,7 +338,7 @@ export default function RutePage() {
       {/* Mobile Card View */}
       <div className="md:hidden space-y-3 mt-4">
         {rute.map((r) => (
-          <div key={r.id} className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-4">
+          <div key={r.id} className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4">
             <div className="flex items-center justify-between mb-2">
               <h3 className="font-semibold text-slate-900">{r.nama}</h3>
               <button
@@ -377,7 +377,7 @@ export default function RutePage() {
 
       {/* Form Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
           <div className="w-full max-w-md max-h-[85vh] overflow-y-auto bg-white rounded-3xl border border-slate-200/80 shadow-2xl">
             <div className="sticky top-0 flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/80 backdrop-blur-sm z-10">
               <h2 className="text-base font-semibold text-slate-900">{editing ? "Edit Rute" : "Tambah Rute"}</h2>
@@ -507,7 +507,7 @@ export default function RutePage() {
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 transition">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-xs hover:shadow-sm active:scale-95 transition-all">{editing ? "Simpan" : "Tambah"}</button>
+                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all">{editing ? "Simpan" : "Tambah"}</button>
               </div>
             </form>
           </div>

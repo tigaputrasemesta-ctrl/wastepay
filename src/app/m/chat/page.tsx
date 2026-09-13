@@ -117,9 +117,9 @@ export default function MobileChat() {
           pesan.map((m) => (
             <div key={m.id} className={`flex ${m.dariPetugas ? "justify-end" : "justify-start"}`}>
               <div
-                className={`max-w-[82%] px-4 py-2.5 text-sm shadow-xs ${
+                className={`max-w-[82%] px-4 py-2.5 text-sm shadow-sm ${
                   m.dariPetugas
-                    ? "bg-emerald-600 text-white rounded-2xl rounded-tr-xs"
+                    ? "bg-emerald-700 text-white rounded-2xl rounded-tr-xs"
                     : "bg-white border border-slate-200/80 text-slate-900 rounded-2xl rounded-tl-xs"
                 }`}
               >
@@ -142,12 +142,12 @@ export default function MobileChat() {
           onChange={(e) => setIsi(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && kirim()}
           placeholder="Tulis pesan ke admin…"
-          className="flex-1 px-4 py-3 rounded-2xl border border-slate-200 text-sm font-medium outline-none bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 shadow-xs"
+          className="flex-1 px-4 py-3 rounded-2xl border border-slate-200 text-sm font-medium outline-none bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 shadow-sm"
         />
         <button
           onClick={kirim}
           disabled={sending || !isi.trim()}
-          className="px-5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-2xl text-sm font-bold shadow-xs transition-all disabled:opacity-40"
+          className="px-5 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white rounded-2xl text-sm font-bold shadow-sm transition-all disabled:opacity-40"
         >
           {sending ? "…" : "Kirim"}
         </button>

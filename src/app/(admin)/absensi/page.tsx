@@ -102,7 +102,7 @@ export default function AbsensiPage() {
         <Link
           href={`/absensi-cetak?bulan=${new Date().getMonth() + 1}&tahun=${new Date().getFullYear()}`}
           target="_blank"
-          className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-xs hover:shadow active:scale-[0.98] transition-all flex items-center gap-2"
+          className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-2"
         >
           <span>🖨</span>
           <span>Rekap Absensi</span>
@@ -116,7 +116,7 @@ export default function AbsensiPage() {
       )}
 
       {/* Panel Clock In/Out */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs">
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-base font-bold text-slate-900">Status Kehadiran Hari Ini</h2>
           {hasMasuk && (
@@ -163,7 +163,7 @@ export default function AbsensiPage() {
       </div>
 
       {/* Riwayat Absensi */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/70 flex items-center justify-between">
           <div>
             <h2 className="font-bold text-slate-900 text-base">Riwayat Absensi</h2>

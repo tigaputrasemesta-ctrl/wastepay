@@ -108,7 +108,7 @@ export default function MobileKlaim() {
         </div>
         <button
           onClick={() => setBukaForm((v) => !v)}
-          className="px-4 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold shadow-xs transition-all shrink-0"
+          className="px-4 py-2.5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white text-xs font-bold shadow-sm transition-all shrink-0"
         >
           {bukaForm ? "Tutup Form" : "+ Buat Klaim"}
         </button>
@@ -180,7 +180,7 @@ export default function MobileKlaim() {
           <button
             onClick={submit}
             disabled={submitting}
-            className="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-2xl text-sm font-bold shadow-xs transition-all disabled:opacity-50"
+            className="w-full py-3.5 px-4 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white rounded-2xl text-sm font-bold shadow-sm transition-all disabled:opacity-50"
           >
             {submitting ? "Mengirim Pengajuan…" : "Kirim Pengajuan Klaim"}
           </button>
@@ -192,7 +192,7 @@ export default function MobileKlaim() {
           <div className="w-6 h-6 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : klaim.length === 0 ? (
-        <div className="rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-xs">
+        <div className="rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-sm">
           <span className="text-3xl block mb-2">🧾</span>
           <p className="text-sm font-bold text-slate-700">Belum Ada Riwayat Klaim</p>
           <p className="text-xs text-slate-400 mt-1">Tekan tombol "+ Buat Klaim" untuk mencatat pengeluaran operasional.</p>

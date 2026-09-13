@@ -245,7 +245,7 @@ export default function PelangganPage() {
         </div>
         <button
           onClick={openCreate}
-          className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-2 active:scale-98"
+          className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-2 active:scale-95"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -266,7 +266,7 @@ export default function PelangganPage() {
               placeholder="Cari nama, alamat, atau no telepon..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-800 placeholder:text-slate-400 transition-all shadow-2xs"
+              className="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-800 placeholder:text-slate-400 transition-all shadow-sm"
             />
             {searchInput && (
               <button
@@ -281,7 +281,7 @@ export default function PelangganPage() {
           </div>
           <button
             onClick={() => setShowFilter((v) => !v)}
-            className={`flex items-center gap-2 px-4 py-2.5 border rounded-xl font-semibold text-xs transition-all shadow-2xs ${
+            className={`flex items-center gap-2 px-4 py-2.5 border rounded-xl font-semibold text-xs transition-all shadow-sm ${
               showFilter || [filterKelurahan, filterStatus, filterKategori].filter(Boolean).length > 0
                 ? "bg-slate-900 border-slate-900 text-white"
                 : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
@@ -398,7 +398,7 @@ export default function PelangganPage() {
                           unoptimized
                           width={36}
                           height={36}
-                          className="w-9 h-9 object-cover rounded-xl border border-slate-200 shrink-0 shadow-2xs"
+                          className="w-9 h-9 object-cover rounded-xl border border-slate-200 shrink-0 shadow-sm"
                         />
                       ) : (
                         <div className="w-9 h-9 border border-slate-200 bg-slate-100 rounded-xl shrink-0 flex items-center justify-center text-slate-400 text-xs font-bold">
@@ -460,7 +460,7 @@ export default function PelangganPage() {
                     <div className="flex items-center justify-center gap-1.5">
                       <Link
                         href={`/pelanggan/${p.id}`}
-                        className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 text-slate-600 transition-colors shadow-2xs"
+                        className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 text-slate-600 transition-colors shadow-sm"
                         title="Detail"
                       >
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -470,7 +470,7 @@ export default function PelangganPage() {
                       </Link>
                       <button
                         onClick={() => openEdit(p)}
-                        className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-amber-50 hover:text-amber-600 hover:border-amber-200 text-slate-600 transition-colors shadow-2xs"
+                        className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-amber-50 hover:text-amber-600 hover:border-amber-200 text-slate-600 transition-colors shadow-sm"
                         title="Edit"
                       >
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -479,7 +479,7 @@ export default function PelangganPage() {
                       </button>
                       <button
                         onClick={() => setDeleteTarget(p)}
-                        className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 text-slate-600 transition-colors shadow-2xs"
+                        className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 text-slate-600 transition-colors shadow-sm"
                         title="Hapus"
                       >
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -504,14 +504,14 @@ export default function PelangganPage() {
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 disabled:opacity-40 hover:bg-slate-100 transition-colors shadow-2xs"
+                className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 disabled:opacity-40 hover:bg-slate-100 transition-colors shadow-sm"
               >
                 Prev
               </button>
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 disabled:opacity-40 hover:bg-slate-100 transition-colors shadow-2xs"
+                className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 disabled:opacity-40 hover:bg-slate-100 transition-colors shadow-sm"
               >
                 Next
               </button>
@@ -522,7 +522,7 @@ export default function PelangganPage() {
 
       {/* Modal Form */}
       {showForm && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
           <div className="bg-white w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl border border-slate-200/80 shadow-2xl">
             <div className="flex items-center justify-between px-6 py-4.5 bg-slate-900 text-white">
               <h2 className="font-bold text-base tracking-wide">
@@ -695,7 +695,7 @@ export default function PelangganPage() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md active:scale-98 transition-all"
+                  className="flex-1 px-4 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md active:scale-95 transition-all"
                 >
                   {editing ? "Simpan Perubahan" : "Tambah Pelanggan"}
                 </button>

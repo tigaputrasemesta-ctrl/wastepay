@@ -365,12 +365,12 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="flex items-center justify-between px-4 h-16 border-b border-slate-100 bg-white">
         {collapsed ? (
-          <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center shrink-0 shadow-xs">
+          <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center shrink-0 shadow-sm">
             <span className="text-xs font-extrabold text-white leading-none">WP</span>
           </div>
         ) : (
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-sm shadow-2xs">
+            <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-sm shadow-sm">
               🚛
             </div>
             <span className="font-extrabold text-base tracking-tight text-slate-900">
@@ -427,7 +427,7 @@ export default function Sidebar() {
                       "flex items-center gap-3 px-3 py-2 text-xs font-bold rounded-xl transition-all relative group",
                       collapsed && "justify-center px-0",
                       isActive
-                        ? "bg-emerald-50 text-emerald-700 font-extrabold shadow-2xs"
+                        ? "bg-emerald-50 text-emerald-700 font-extrabold shadow-sm"
                         : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                     )}
                     title={collapsed ? item.label : undefined}

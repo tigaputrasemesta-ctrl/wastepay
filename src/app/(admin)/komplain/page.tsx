@@ -100,7 +100,7 @@ export default function KomplainPage() {
                       {k.status !== "selesai" && (
                         <button
                           onClick={() => setShowResolve(k)}
-                          className="text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-xl font-bold transition-all shadow-2xs"
+                          className="text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-xl font-bold transition-all shadow-sm"
                         >
                           Proses
                         </button>
@@ -115,7 +115,7 @@ export default function KomplainPage() {
       </div>
 
       {showResolve && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
           <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-lg">
             <div className="flex items-center justify-between px-6 py-4.5 bg-slate-900 text-white">
               <h2 className="font-bold text-base tracking-wide">Proses Laporan Komplain</h2>
@@ -162,7 +162,7 @@ export default function KomplainPage() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md active:scale-98 transition-all"
+                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md active:scale-95 transition-all"
                 >
                   Simpan Status
                 </button>

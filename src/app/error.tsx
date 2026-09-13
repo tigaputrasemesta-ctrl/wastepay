@@ -28,7 +28,7 @@ export default function Error({
       <div className="max-w-xl w-full bg-white rounded-3xl border border-slate-200/90 p-8 sm:p-10 shadow-sm">
         {/* Header Badge */}
         <div className="flex items-center gap-3.5 mb-6">
-          <div className="w-12 h-12 bg-rose-50 text-rose-600 border border-rose-100 rounded-2xl flex items-center justify-center font-bold shadow-xs shrink-0">
+          <div className="w-12 h-12 bg-rose-50 text-rose-600 border border-rose-100 rounded-2xl flex items-center justify-center font-bold shadow-sm shrink-0">
             <AlertTriangle className="w-6 h-6" />
           </div>
           <div>

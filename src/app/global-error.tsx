@@ -48,7 +48,7 @@ export default function GlobalError({
 
           <button
             onClick={() => reset()}
-            className="w-full py-3.5 bg-rose-600 hover:bg-rose-500 text-white rounded-2xl font-bold text-sm shadow-md active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full py-3.5 bg-rose-600 hover:bg-rose-500 text-white rounded-2xl font-bold text-sm shadow-md active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             <RefreshCw className="w-4 h-4 inline-block mr-1" /> Muat Ulang Aplikasi
           </button>

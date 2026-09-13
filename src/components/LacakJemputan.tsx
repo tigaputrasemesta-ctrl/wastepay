@@ -208,7 +208,7 @@ export default function LacakJemputan() {
         <button
           type="submit"
           disabled={loading}
-          className="px-5 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl text-xs font-bold shadow-xs active:scale-98 transition-all disabled:opacity-50 flex items-center justify-center gap-1.5"
+          className="px-5 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl text-xs font-bold shadow-sm active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-1.5"
         >
           {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <span>Lacak 🔍</span>}
         </button>
@@ -221,8 +221,8 @@ export default function LacakJemputan() {
       )}
 
       {!data && !loading && !error && (
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-8 sm:p-12 text-center shadow-xs space-y-3">
-          <div className="w-14 h-14 mx-auto bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center shadow-xs">
+        <div className="bg-white rounded-3xl border border-slate-200/80 p-8 sm:p-12 text-center shadow-sm space-y-3">
+          <div className="w-14 h-14 mx-auto bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center shadow-sm">
             <Truck className="w-7 h-7" />
           </div>
           <h2 className="font-extrabold text-lg text-slate-900">Lacak Armada Sampah Real-Time</h2>
@@ -234,7 +234,7 @@ export default function LacakJemputan() {
 
       {loading && !data && (
         <div className="h-[48vh] rounded-3xl border border-slate-200 bg-slate-50 flex flex-col items-center justify-center gap-2">
-          <div className="w-8 h-8 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-[3px] border-emerald-500 border-t-transparent rounded-full animate-spin" />
           <p className="text-xs font-bold text-slate-500">Mencari Posisi Armada di Peta...</p>
         </div>
       )}
@@ -242,7 +242,7 @@ export default function LacakJemputan() {
       {data && (
         <>
           {/* Peta */}
-          <div className="relative h-[48vh] md:h-[54vh] rounded-3xl border border-slate-200 overflow-hidden shadow-xs">
+          <div className="relative h-[48vh] md:h-[54vh] rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
             <MapJemput
               pickup={data.pickup}
               truk={liveFresh}
@@ -320,7 +320,7 @@ export default function LacakJemputan() {
             {/* Armada */}
             {data.kendaraan && (
               <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
-                <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-lg shrink-0 shadow-2xs">
+                <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-lg shrink-0 shadow-sm">
                   🚛
                 </div>
                 <div className="min-w-0 flex-1">
@@ -358,7 +358,7 @@ export default function LacakJemputan() {
               </button>
               <a
                 href="/bayar"
-                className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] rounded-xl py-2.5 px-2 text-center flex items-center justify-center gap-1.5 shadow-xs transition-colors"
+                className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] rounded-xl py-2.5 px-2 text-center flex items-center justify-center gap-1.5 shadow-sm transition-colors"
               >
                 <PackageOpen className="w-3.5 h-3.5" /> Bayar
               </a>

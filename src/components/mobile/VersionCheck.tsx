@@ -51,7 +51,7 @@ export default function VersionCheck() {
   const wajib = currentCode != null && currentCode < terbaru.minVersionCode;
 
   return (
-    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-[100] p-4 animate-in fade-in duration-150">
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 animate-in fade-in duration-150">
       <div className="bg-white w-full max-w-sm rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden">
         <div className={`px-6 py-4.5 ${wajib ? "bg-rose-600" : "bg-emerald-600"}`}>
           <h2 className="font-bold text-sm tracking-wide text-white flex items-center gap-2">
@@ -88,7 +88,7 @@ export default function VersionCheck() {
                 href={terbaru.apkUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-xs font-bold rounded-2xl text-white text-center shadow-md active:scale-98 transition-all"
+                className="flex-1 py-3 bg-emerald-700 hover:bg-emerald-800 text-xs font-bold rounded-2xl text-white text-center shadow-md active:scale-95 transition-all"
               >
                 Unduh APK
               </a>
@@ -96,7 +96,7 @@ export default function VersionCheck() {
               <button
                 type="button"
                 disabled
-                className="flex-1 py-3 bg-emerald-600 text-xs font-bold rounded-2xl text-white opacity-60"
+                className="flex-1 py-3 bg-emerald-700 text-xs font-bold rounded-2xl text-white opacity-60"
               >
                 Hubungi Admin
               </button>

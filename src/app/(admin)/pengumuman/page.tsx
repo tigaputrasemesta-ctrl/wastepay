@@ -79,7 +79,7 @@ export default function PengumumanPage() {
           <div className="text-center text-gray-400 font-bold py-8">Belum ada pengumuman</div>
         ) : (
           pengumuman.map((p) => (
-            <div key={p.id} className={`${p.penting ? "bg-rose-50/40 border border-rose-200 shadow-xs" : "bg-white border border-slate-200/80 shadow-xs"} rounded-2xl overflow-hidden`}>
+            <div key={p.id} className={`${p.penting ? "bg-rose-50/40 border border-rose-200 shadow-sm" : "bg-white border border-slate-200/80 shadow-sm"} rounded-2xl overflow-hidden`}>
               <div className="p-5">
                 <div className="flex items-start gap-3.5">
                   {p.penting && (
@@ -124,7 +124,7 @@ export default function PengumumanPage() {
       </div>
 
       {showForm && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
           <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-lg">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
               <h2 className="font-semibold text-slate-900 text-base">Buat Pengumuman</h2>
@@ -154,7 +154,7 @@ export default function PengumumanPage() {
               </label>
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => setShowForm(false)} className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-700 font-medium hover:bg-slate-50 transition">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-xs hover:shadow-sm active:scale-95 transition-all">Publikasikan</button>
+                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all">Publikasikan</button>
               </div>
             </form>
           </div>

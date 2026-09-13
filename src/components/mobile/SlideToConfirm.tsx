@@ -145,7 +145,7 @@ export default function SlideToConfirm({
     success: {
       trackBg: "bg-emerald-950/80 border-emerald-500/40",
       fillBg: "bg-emerald-600/60",
-      thumbBg: "bg-gradient-to-r from-emerald-500 to-teal-400 text-white shadow-emerald-500/50",
+      thumbBg: "bg-gradient-to-r from-emerald-700 to-teal-700 text-white shadow-emerald-900/50",
       text: "text-emerald-300",
       icon: "✓",
     },
@@ -159,7 +159,7 @@ export default function SlideToConfirm({
     warning: {
       trackBg: "bg-amber-950/80 border-amber-500/40",
       fillBg: "bg-amber-600/60",
-      thumbBg: "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-amber-500/50",
+      thumbBg: "bg-gradient-to-r from-amber-700 to-orange-700 text-white shadow-amber-900/50",
       text: "text-amber-300",
       icon: "⚠️",
     },
@@ -206,7 +206,7 @@ export default function SlideToConfirm({
           }}
         >
           {loading ? (
-            <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin" />
+            <div className="w-5 h-5 border-[3px] border-white border-t-transparent rounded-full animate-spin" />
           ) : (
             <span>{theme.icon}</span>
           )}

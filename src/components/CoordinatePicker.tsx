@@ -71,7 +71,7 @@ export default function CoordinatePicker({ latitude, longitude, onChange }: Prop
             type="button"
             onClick={getCurrentLocation}
             disabled={locLoading}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-2xs transition disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-sm transition disabled:opacity-50"
           >
             {locLoading ? (
               <>

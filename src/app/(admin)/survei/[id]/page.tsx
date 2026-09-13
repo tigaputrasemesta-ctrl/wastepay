@@ -84,7 +84,7 @@ export default function SurveiDetailPage() {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-10 text-center text-slate-400 font-medium">
+      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm p-10 text-center text-slate-400 font-medium">
         Memuat data survei…
       </div>
     );
@@ -92,7 +92,7 @@ export default function SurveiDetailPage() {
 
   if (error || !data) {
     return (
-      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-10 text-center">
+      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm p-10 text-center">
         <p className="font-semibold text-xl text-rose-600">{error || "Tidak ditemukan"}</p>
         <Link href="/survei" className="inline-block mt-4 text-sm text-emerald-600 hover:text-emerald-700 font-semibold underline">
           ← Kembali ke Survei
@@ -126,7 +126,7 @@ export default function SurveiDetailPage() {
 
       {/* Foto + Peta */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5">
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
           <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wider mb-3">Foto Rumah</p>
           {data.fotoRumah ? (
             <div className="relative h-64 w-full rounded-xl border border-slate-200/80 bg-slate-100 overflow-hidden">
@@ -139,7 +139,7 @@ export default function SurveiDetailPage() {
           )}
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5">
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
           <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wider mb-3">Titik Lokasi (GPS)</p>
           {data.latitude != null && data.longitude != null ? (
             <div className="space-y-3">
@@ -178,7 +178,7 @@ export default function SurveiDetailPage() {
       </div>
 
       {/* Informasi pendaftar */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
         <h2 className="font-bold text-slate-900 text-base mb-4">Informasi Pendaftar</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
           <Info label="No. WhatsApp" value={data.noTelepon} />

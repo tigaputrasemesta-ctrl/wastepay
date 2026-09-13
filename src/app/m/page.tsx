@@ -64,7 +64,7 @@ export default function MobileHome() {
   const sudahSelesai = Boolean(absen?.waktuSelesai);
 
   return (
-    <div className="bg-slate-50 min-h-screen">
+    <div className="bg-slate-50 min-h-dvh">
       {/* Header Profile Section */}
       <div className="bg-emerald-700 text-white px-5 pt-8 pb-6 shadow-sm">
         <div className="flex items-center justify-between mb-6">
@@ -98,7 +98,7 @@ export default function MobileHome() {
             href="/m/absen"
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 ${
               sudahMasuk 
-                ? "bg-emerald-600/50 text-white border border-emerald-500/50 hover:bg-emerald-600" 
+                ? "bg-emerald-700 text-white border border-emerald-600 hover:bg-emerald-800" 
                 : "bg-white text-emerald-800 hover:bg-emerald-50"
             }`}
           >

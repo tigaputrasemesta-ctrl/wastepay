@@ -57,7 +57,7 @@ export default function RekonsiliasiPage() {
       </div>
 
       {/* Form Rekonsiliasi */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 mb-6">
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 mb-6">
         <h2 className="font-semibold text-slate-900 mb-4">Rekonsiliasi Hari Ini</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -112,14 +112,14 @@ export default function RekonsiliasiPage() {
             </div>
           )}
 
-          <button type="submit" className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-xs hover:shadow-sm active:scale-95 transition-all">
+          <button type="submit" className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all">
             Buat Rekonsiliasi
           </button>
         </form>
       </div>
 
       {/* Riwayat */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50">
           <h2 className="font-semibold text-slate-900 text-base">Riwayat Rekonsiliasi</h2>
         </div>

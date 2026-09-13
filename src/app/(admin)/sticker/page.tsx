@@ -177,7 +177,7 @@ export default function StickerPage() {
       </div>
 
       {/* filter */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-4 mb-6 flex flex-wrap items-end gap-3 shadow-xs">
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-4 mb-6 flex flex-wrap items-end gap-3 shadow-sm">
         <div className="w-48">
           <label className="block text-xs text-slate-600 font-semibold mb-1">Wilayah</label>
           <select value={filterWilayah} onChange={(e) => setFilterWilayah(e.target.value)} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
@@ -198,7 +198,7 @@ export default function StickerPage() {
       </div>
 
       {loading ? (
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-8 text-center text-slate-400 font-medium shadow-xs">Memuat stiker…</div>
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-8 text-center text-slate-400 font-medium shadow-sm">Memuat stiker…</div>
       ) : (
         <div className="flex flex-wrap gap-3">
           {tersaring.map((p, i) => (
@@ -209,7 +209,7 @@ export default function StickerPage() {
               )}
             </button>
           ))}
-          {tersaring.length === 0 && <div className="bg-white rounded-2xl border border-slate-200/80 w-full p-8 text-center text-slate-400 font-medium shadow-xs">Tidak ada pelanggan</div>}
+          {tersaring.length === 0 && <div className="bg-white rounded-2xl border border-slate-200/80 w-full p-8 text-center text-slate-400 font-medium shadow-sm">Tidak ada pelanggan</div>}
         </div>
       )}
     </div>

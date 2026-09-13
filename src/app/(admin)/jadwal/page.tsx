@@ -144,7 +144,7 @@ export default function JadwalPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -254,7 +254,7 @@ export default function JadwalPage() {
 
       {/* Modal Form */}
       {showForm && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
           <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-md">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50/70">
               <div>
@@ -306,7 +306,7 @@ export default function JadwalPage() {
                         key={h}
                         className={`flex items-center justify-center px-2 py-2 border rounded-xl text-xs font-semibold cursor-pointer transition-all ${
                           checked
-                            ? "bg-emerald-50 border-emerald-300 text-emerald-700 shadow-xs"
+                            ? "bg-emerald-50 border-emerald-300 text-emerald-700 shadow-sm"
                             : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
                         }`}
                       >
@@ -343,7 +343,7 @@ export default function JadwalPage() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-xs hover:shadow active:scale-[0.98] transition-all text-sm font-semibold"
+                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all text-sm font-semibold"
                 >
                   {editing ? "Simpan" : "Tambah"}
                 </button>

@@ -81,7 +81,7 @@ export default async function DaftarPage() {
       <div className="grid lg:grid-cols-12 gap-8 items-start">
         {/* Panduan Alur (5 cols) */}
         <div className="lg:col-span-5 space-y-4">
-          <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs">
+          <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm">
             <h2 className="font-extrabold text-base text-slate-900 mb-5">
               Alur Pendaftaran Layanan
             </h2>
@@ -111,7 +111,7 @@ export default async function DaftarPage() {
 
           <Link
             href="/bayar"
-            className="flex items-center justify-between p-4 bg-white hover:bg-slate-50 border border-slate-200/80 rounded-2xl transition-all shadow-xs group"
+            className="flex items-center justify-between p-4 bg-white hover:bg-slate-50 border border-slate-200/80 rounded-2xl transition-all shadow-sm group"
           >
             <div>
               <p className="text-xs font-bold text-slate-900">Sudah Terdaftar Sebelumnya?</p>

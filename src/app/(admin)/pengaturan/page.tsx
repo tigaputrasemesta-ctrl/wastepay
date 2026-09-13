@@ -143,7 +143,7 @@ export default function PengaturanPage() {
       </div>
 
       {/* Pembayaran Online (Duitku) */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 mb-6">
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold text-slate-900">💳 Pembayaran Online (Duitku)</h2>
           {duitkuStatus && (
@@ -200,10 +200,10 @@ export default function PengaturanPage() {
       </div>
 
       {/* Manajemen Wilayah */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 mb-6">
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold text-slate-900">Wilayah / RT / RW</h2>
-          <button onClick={() => setShowWilayahForm(true)} className="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 rounded-xl text-xs font-semibold shadow-xs hover:shadow-sm active:scale-95 transition-all">
+          <button onClick={() => setShowWilayahForm(true)} className="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 rounded-xl text-xs font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all">
             + Tambah Wilayah
           </button>
         </div>
@@ -212,7 +212,7 @@ export default function PengaturanPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {wilayahList.map((w) => (
-              <div key={w.id} className="relative bg-white rounded-xl p-4 border border-slate-200/80 shadow-xs group hover:border-slate-300 transition-all">
+              <div key={w.id} className="relative bg-white rounded-xl p-4 border border-slate-200/80 shadow-sm group hover:border-slate-300 transition-all">
                 <p className="font-semibold text-slate-900 pr-8">{w.nama}</p>
                 <p className="text-xs text-slate-500 mt-1">
                   {[w.rt && `RT ${w.rt}`, w.rw && `RW ${w.rw}`, w.kelurahanRef?.nama].filter(Boolean).join(", ") || "-"}
@@ -233,7 +233,7 @@ export default function PengaturanPage() {
       </div>
 
       {/* Keamanan Akun */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 mb-6">
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 mb-6">
         <h2 className="font-semibold text-slate-900 mb-1">Keamanan Akun</h2>
         <p className="text-sm text-slate-500 mb-4">Ganti password akun Anda</p>
         <form onSubmit={handleGantiPassword} className="space-y-3.5 max-w-md">
@@ -274,7 +274,7 @@ export default function PengaturanPage() {
           <button
             type="submit"
             disabled={pwLoading}
-            className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-xl text-sm font-semibold shadow-xs hover:shadow-sm active:scale-95 transition-all"
+            className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all"
           >
             {pwLoading ? "Menyimpan..." : "Ganti Password"}
           </button>
@@ -282,7 +282,7 @@ export default function PengaturanPage() {
       </div>
 
       {/* Informasi default */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6">
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
         <h2 className="font-semibold text-slate-900 mb-4">Informasi Sistem</h2>
         <div className="space-y-2 text-sm text-slate-600">
           <p>Dashboard ini adalah aplikasi manajemen operasional & iuran sampah mandiri (WastePay).</p>
@@ -301,7 +301,7 @@ export default function PengaturanPage() {
       </div>
 
       {showWilayahForm && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
           <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-md">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
               <h2 className="font-semibold text-slate-900 text-base">Tambah Wilayah</h2>
@@ -353,7 +353,7 @@ export default function PengaturanPage() {
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => setShowWilayahForm(false)} className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-700 font-medium hover:bg-slate-50 transition">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-xs hover:shadow-sm active:scale-95 transition-all">Simpan</button>
+                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all">Simpan</button>
               </div>
             </form>
           </div>

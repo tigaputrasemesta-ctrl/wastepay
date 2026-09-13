@@ -111,7 +111,7 @@ export default function NotifikasiPage() {
             setForm({ tipe: "tagihan_jatuh_tempo", judul: "Pengingat Tagihan", pesan: "Yth. Pelanggan UPS HERU,\n\nTagihan bulan ini sudah tersedia. Mohon segera melakukan pembayaran sebelum tanggal 15.\n\nTerima kasih.", pelangganId: "", semuaPelanggan: true });
             setShowForm(true);
           }}
-          className="bg-white border border-slate-200/80 rounded-2xl p-5 text-left hover:border-emerald-500/40 hover:shadow-sm transition-all text-sm shadow-xs"
+          className="bg-white border border-slate-200/80 rounded-2xl p-5 text-left hover:border-emerald-500/40 hover:shadow-sm transition-all text-sm shadow-sm"
         >
           <p className="font-bold text-slate-900 text-sm">📋 Pengingat Tagihan</p>
           <p className="text-slate-500 text-xs mt-1">Kirim pengingat pembayaran ke semua pelanggan</p>
@@ -121,7 +121,7 @@ export default function NotifikasiPage() {
             setForm({ tipe: "jadwal_pengangkutan", judul: "Jadwal Pengangkutan", pesan: "Yth. Pelanggan UPS HERU,\n\nPengangkutan sampah akan dilakukan besok sesuai jadwal. Mohon siapkan sampah di depan rumah.\n\nTerima kasih.", pelangganId: "", semuaPelanggan: true });
             setShowForm(true);
           }}
-          className="bg-white border border-slate-200/80 rounded-2xl p-5 text-left hover:border-emerald-500/40 hover:shadow-sm transition-all text-sm shadow-xs"
+          className="bg-white border border-slate-200/80 rounded-2xl p-5 text-left hover:border-emerald-500/40 hover:shadow-sm transition-all text-sm shadow-sm"
         >
           <p className="font-bold text-slate-900 text-sm">🗑️ Pengingat Jadwal</p>
           <p className="text-slate-500 text-xs mt-1">Info jadwal pengangkutan besok</p>
@@ -131,7 +131,7 @@ export default function NotifikasiPage() {
             setForm({ tipe: "pengumuman", judul: "Pengumuman Libur", pesan: "Yth. Pelanggan UPS HERU,\n\nDiberitahukan bahwa layanan pengangkutan sampah libur pada hari besar nasional. Jadwal akan kembali normal pada hari berikutnya.\n\nTerima kasih.", pelangganId: "", semuaPelanggan: true });
             setShowForm(true);
           }}
-          className="bg-white border border-slate-200/80 rounded-2xl p-5 text-left hover:border-emerald-500/40 hover:shadow-sm transition-all text-sm shadow-xs"
+          className="bg-white border border-slate-200/80 rounded-2xl p-5 text-left hover:border-emerald-500/40 hover:shadow-sm transition-all text-sm shadow-sm"
         >
           <p className="font-bold text-slate-900 text-sm">📢 Pengumuman Libur</p>
           <p className="text-slate-500 text-xs mt-1">Info libur & perubahan jadwal</p>
@@ -140,7 +140,7 @@ export default function NotifikasiPage() {
           onClick={() => {
             setShowForm(true);
           }}
-          className="bg-white border border-slate-200/80 rounded-2xl p-5 text-left hover:border-emerald-500/40 hover:shadow-sm transition-all text-sm shadow-xs"
+          className="bg-white border border-slate-200/80 rounded-2xl p-5 text-left hover:border-emerald-500/40 hover:shadow-sm transition-all text-sm shadow-sm"
         >
           <p className="font-bold text-slate-900 text-sm">✏️ Kustom</p>
           <p className="text-slate-500 text-xs mt-1">Buat pesan notifikasi mandiri</p>
@@ -148,7 +148,7 @@ export default function NotifikasiPage() {
       </div>
 
       {/* Riwayat */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
         <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/70">
           <h2 className="font-bold text-slate-900 text-sm">Riwayat Notifikasi</h2>
         </div>
@@ -193,7 +193,7 @@ export default function NotifikasiPage() {
 
       {/* Form Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
           <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl p-0 overflow-hidden w-full max-w-lg">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
               <h2 className="font-semibold text-slate-900 text-base">Kirim Notifikasi WhatsApp</h2>
@@ -301,7 +301,7 @@ export default function NotifikasiPage() {
                 <button
                   type="submit"
                   disabled={sending}
-                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-xs hover:shadow-sm active:scale-95 transition-all disabled:opacity-50"
+                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all disabled:opacity-50"
                 >
                   {sending ? "Mengirim..." : "Kirim via WA"}
                 </button>

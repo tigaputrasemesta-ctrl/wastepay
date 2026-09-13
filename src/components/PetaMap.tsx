@@ -738,13 +738,13 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                     onClick={() => setTab(t.key)}
                     className={`text-xs py-2 px-3 rounded-lg transition-all relative font-semibold ${
                       tab === t.key
-                        ? "bg-white text-slate-900 shadow-xs"
+                        ? "bg-white text-slate-900 shadow-sm"
                         : "text-slate-600 hover:text-slate-900"
                     }`}
                   >
                     {t.label}
                     {t.key === "pengaduan" && hitungBaru > 0 && (
-                      <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-rose-500 text-[10px] font-bold text-white flex items-center justify-center shadow-xs">
+                      <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-rose-500 text-[10px] font-bold text-white flex items-center justify-center shadow-sm">
                         {hitungBaru}
                       </span>
                     )}
@@ -778,7 +778,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                           <button
                             key={`dir-t-top-${t.id}`}
                             onClick={() => setPusatPetugas([t.latitude, t.longitude])}
-                            className="w-full flex items-center gap-3 text-left bg-white hover:bg-amber-50/50 border border-amber-200 rounded-xl px-3 py-2 transition group shadow-2xs"
+                            className="w-full flex items-center gap-3 text-left bg-white hover:bg-amber-50/50 border border-amber-200 rounded-xl px-3 py-2 transition group shadow-sm"
                           >
                             <span className="text-sm text-amber-600 font-bold shrink-0">▲</span>
                             <div className="min-w-0 flex-1">
@@ -828,7 +828,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                       >
                         <div className="flex items-center gap-3 min-w-0">
                           <span
-                            className="w-2.5 h-2.5 rounded-full shrink-0 shadow-2xs"
+                            className="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm"
                             style={{ background: warna }}
                           />
                           <div className="min-w-0">
@@ -894,7 +894,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                         onClick={() => setKomplainTab(t.key)}
                         className={`text-xs px-3 py-1 rounded-xl transition-all font-semibold ${
                           komplainTab === t.key
-                            ? "bg-rose-600 text-white shadow-xs"
+                            ? "bg-rose-600 text-white shadow-sm"
                             : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                         }`}
                       >
@@ -1025,7 +1025,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
         <div className="lg:col-span-4 space-y-4 flex flex-col h-full">
           
           {/* NO-GEO PANEL */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs relative overflow-hidden flex flex-col flex-1 max-h-[300px]">
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm relative overflow-hidden flex flex-col flex-1 max-h-[300px]">
             <div className="px-4 py-3 bg-rose-50/60 border-b border-rose-100 flex items-center justify-between flex-shrink-0">
               <span className="text-xs font-bold text-rose-800 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
@@ -1061,7 +1061,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
           </div>
 
           {/* ARMADA ONLINE PANEL */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs relative overflow-hidden flex flex-col flex-1 max-h-[300px]">
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm relative overflow-hidden flex flex-col flex-1 max-h-[300px]">
             <div className="px-4 py-3 bg-amber-50/60 border-b border-amber-100 flex items-center justify-between flex-shrink-0">
               <span className="text-xs font-bold text-amber-900 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
@@ -1088,7 +1088,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                       <button
                         key={`dir-${p.petugasId}`}
                         onClick={() => setPusatPetugas([p.latitude, p.longitude])}
-                        className="w-full flex items-center gap-2 text-left bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 rounded-xl px-3 py-2 transition group shadow-2xs"
+                        className="w-full flex items-center gap-2 text-left bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 rounded-xl px-3 py-2 transition group shadow-sm"
                       >
                         <span
                           className={`w-2 h-2 rounded-full shrink-0 ${
@@ -1122,7 +1122,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                       <button
                         key={`dir-k-${k.kendaraanId}`}
                         onClick={() => setPusatPetugas([k.latitude, k.longitude])}
-                        className="w-full flex items-center gap-2 text-left bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 rounded-xl px-3 py-2 transition group shadow-2xs"
+                        className="w-full flex items-center gap-2 text-left bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 rounded-xl px-3 py-2 transition group shadow-sm"
                       >
                         <span className="text-sm shrink-0">{k.jenis === "dump_truck" ? "🚛" : "🛺"}</span>
                         <span className="text-xs font-semibold text-slate-900 truncate flex-1">

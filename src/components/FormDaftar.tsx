@@ -164,7 +164,7 @@ export default function FormDaftar() {
   if (status === "ok" && hasil) {
     return (
       <div className="bg-white rounded-3xl border border-emerald-200/80 p-8 sm:p-10 text-center shadow-sm space-y-5">
-        <div className="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-3xl flex items-center justify-center mx-auto shadow-xs">
+        <div className="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-3xl flex items-center justify-center mx-auto shadow-sm">
           <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
           </svg>
@@ -242,7 +242,7 @@ export default function FormDaftar() {
         </label>
         
         <div className="flex flex-col sm:flex-row gap-4 mb-4">
-          <label className={`flex-1 flex items-center gap-3 p-4 rounded-2xl border cursor-pointer transition-all ${jenisLayanan === 'kategori' ? 'border-emerald-500 bg-emerald-50/50 shadow-xs' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
+          <label className={`flex-1 flex items-center gap-3 p-4 rounded-2xl border cursor-pointer transition-all ${jenisLayanan === 'kategori' ? 'border-emerald-500 bg-emerald-50/50 shadow-sm' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
             <input 
               type="radio" 
               name="jenis_layanan" 
@@ -260,7 +260,7 @@ export default function FormDaftar() {
           </label>
           
           {(opsi?.paket ?? []).length > 0 && (
-            <label className={`flex-1 flex items-center gap-3 p-4 rounded-2xl border cursor-pointer transition-all ${jenisLayanan === 'paket' ? 'border-emerald-500 bg-emerald-50/50 shadow-xs' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
+            <label className={`flex-1 flex items-center gap-3 p-4 rounded-2xl border cursor-pointer transition-all ${jenisLayanan === 'paket' ? 'border-emerald-500 bg-emerald-50/50 shadow-sm' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
               <input 
                 type="radio" 
                 name="jenis_layanan" 
@@ -487,7 +487,7 @@ export default function FormDaftar() {
               type="button"
               onClick={() => kameraRef.current?.click()}
               disabled={fotoLoading}
-              className="w-full py-3.5 border border-slate-200 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 shadow-2xs transition-all disabled:opacity-50"
+              className="w-full py-3.5 border border-slate-200 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 shadow-sm transition-all disabled:opacity-50"
             >
               <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -499,7 +499,7 @@ export default function FormDaftar() {
               type="button"
               onClick={() => galeriRef.current?.click()}
               disabled={fotoLoading}
-              className="w-full py-3.5 border border-slate-200 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 shadow-2xs transition-all disabled:opacity-50"
+              className="w-full py-3.5 border border-slate-200 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 shadow-sm transition-all disabled:opacity-50"
             >
               <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -543,8 +543,8 @@ export default function FormDaftar() {
               type="button"
               onClick={getGps}
               disabled={gpsLoading}
-              className={`w-full py-3.5 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-98 ${
-                gpsLoading ? "bg-slate-100 text-slate-400" : "bg-slate-100 hover:bg-slate-200 text-slate-800 shadow-2xs"
+              className={`w-full py-3.5 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-95 ${
+                gpsLoading ? "bg-slate-100 text-slate-400" : "bg-slate-100 hover:bg-slate-200 text-slate-800 shadow-sm"
               }`}
             >
               <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -582,7 +582,7 @@ export default function FormDaftar() {
       <button
         type="submit"
         disabled={status === "kirim"}
-        className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-extrabold text-sm shadow-md active:scale-98 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+        className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-extrabold text-sm shadow-md active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
       >
         {status === "kirim" ? (
           <>

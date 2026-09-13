@@ -191,7 +191,7 @@ export default function BayarPage() {
               <button
                 type="submit"
                 disabled={mencari}
-                className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl text-sm shadow-sm active:scale-98 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl text-sm shadow-sm active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {mencari ? (
                   <>
@@ -216,7 +216,7 @@ export default function BayarPage() {
       {hasil && !pilih && (
         <div className="space-y-6">
           {/* Kartu Profil Pelanggan */}
-          <div className="bg-white rounded-3xl border border-slate-200/80 p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="bg-white rounded-3xl border border-slate-200/80 p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3.5 min-w-0">
               <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-extrabold text-lg shrink-0">
                 {hasil.pelanggan.nama.charAt(0).toUpperCase()}
@@ -248,7 +248,7 @@ export default function BayarPage() {
           </div>
 
           {hasil.tagihan.length === 0 ? (
-            <div className="bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-2 shadow-xs">
+            <div className="bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-2 shadow-sm">
               <div className="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto text-xl">
                 ✨
               </div>
@@ -262,7 +262,7 @@ export default function BayarPage() {
               {hasil.tagihan.map((t) => (
                 <div
                   key={t.id}
-                  className="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+                  className="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
                 >
                   <div className="space-y-1 min-w-0">
                     <div className="flex items-center gap-2">
@@ -294,7 +294,7 @@ export default function BayarPage() {
                         {t.noInvoice && (
                           <Link
                             href={`/bayar-tagihan?invoice=${encodeURIComponent(t.noInvoice)}`}
-                            className="flex-1 sm:flex-none px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-xs active:scale-98 transition-all flex items-center justify-center gap-1.5"
+                            className="flex-1 sm:flex-none px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center justify-center gap-1.5"
                           >
                             <span>⚡</span>
                             <span>Bayar Instan</span>
@@ -303,7 +303,7 @@ export default function BayarPage() {
                         <button
                           type="button"
                           onClick={() => setPilih(t.id)}
-                          className="flex-1 sm:flex-none px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold active:scale-98 transition-all flex items-center justify-center gap-1.5"
+                          className="flex-1 sm:flex-none px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold active:scale-95 transition-all flex items-center justify-center gap-1.5"
                         >
                           <span>📤</span>
                           <span>Upload Bukti</span>
@@ -392,7 +392,7 @@ export default function BayarPage() {
           <button
             type="submit"
             disabled={mengirim}
-            className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl text-xs font-bold shadow-md active:scale-98 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl text-xs font-bold shadow-md active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {mengirim ? (
               <>

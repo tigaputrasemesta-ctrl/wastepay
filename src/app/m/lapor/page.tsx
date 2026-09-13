@@ -16,9 +16,9 @@ type Pelanggan = {
 type Laporan = { id: number; status: string; createdAt: string; petugas: { nama: string } | null };
 
 const STATUS_META: Record<string, { label: string; cls: string }> = {
-  diambil: { label: "Berhasil Diangkut", cls: "bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs" },
-  kosong: { label: "Rumah Kosong / Nihil", cls: "bg-amber-500 hover:bg-amber-600 text-white shadow-xs" },
-  tidak_diangkut: { label: "Tidak Dapat Diangkut", cls: "bg-rose-600 hover:bg-rose-700 text-white shadow-xs" },
+  diambil: { label: "Berhasil Diangkut", cls: "bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm" },
+  kosong: { label: "Rumah Kosong / Nihil", cls: "bg-amber-700 hover:bg-amber-800 text-white shadow-sm" },
+  tidak_diangkut: { label: "Tidak Dapat Diangkut", cls: "bg-rose-600 hover:bg-rose-700 text-white shadow-sm" },
 };
 
 export default function MobileLapor() {
@@ -131,7 +131,7 @@ export default function MobileLapor() {
           <button
             onClick={cek}
             disabled={checking || !kode.trim()}
-            className="px-6 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-2xl text-sm font-bold shadow-xs transition-all disabled:opacity-40"
+            className="px-6 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white rounded-2xl text-sm font-bold shadow-sm transition-all disabled:opacity-40"
           >
             {checking ? "Cek…" : "Cari"}
           </button>

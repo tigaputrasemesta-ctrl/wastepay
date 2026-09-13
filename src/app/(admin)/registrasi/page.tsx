@@ -235,7 +235,7 @@ export default function DaftarPelangganPage() {
           <div className="flex items-center justify-center gap-3">
             <button
               onClick={() => router.push("/pelanggan")}
-              className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-xs hover:shadow-sm active:scale-95 transition-all"
+              className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all"
             >
               Lihat Data Pelanggan
             </button>
@@ -310,7 +310,7 @@ export default function DaftarPelangganPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-6 md:p-8">
+      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm p-6 md:p-8">
         {/* ═══ STEP 1: DATA DIRI ═══ */}
         {step === 1 && (
           <div className="space-y-6">
@@ -349,7 +349,7 @@ export default function DaftarPelangganPage() {
                     key={k.value}
                     className={`rounded-2xl flex flex-col items-center gap-1.5 px-3 py-3.5 border cursor-pointer transition-all ${
                       form.kategori === k.value
-                        ? "border-emerald-500 bg-emerald-50/50 shadow-xs"
+                        ? "border-emerald-500 bg-emerald-50/50 shadow-sm"
                         : "border-slate-200 hover:border-slate-300 bg-white"
                     }`}
                   >
@@ -501,7 +501,7 @@ export default function DaftarPelangganPage() {
             />
 
             {/* Tarif default kategori */}
-            <div className="bg-emerald-50/60 border border-emerald-200 rounded-2xl p-4 shadow-xs">
+            <div className="bg-emerald-50/60 border border-emerald-200 rounded-2xl p-4 shadow-sm">
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="text-xs font-bold text-emerald-800 uppercase tracking-wider !mb-1">TARIF DEFAULT — {kategoriTarifTerpilih?.label ?? form.kategori}</p>
@@ -526,7 +526,7 @@ export default function DaftarPelangganPage() {
                         key={p.id}
                         className={`rounded-2xl relative border p-4 cursor-pointer transition-all ${
                           dipilih
-                            ? "border-emerald-500 bg-emerald-50/40 shadow-xs"
+                            ? "border-emerald-500 bg-emerald-50/40 shadow-sm"
                             : "border-slate-200 bg-white hover:border-slate-300"
                         }`}
                       >
@@ -552,7 +552,7 @@ export default function DaftarPelangganPage() {
                           </div>
                         </div>
                         {dipilih && (
-                          <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+                          <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-sm">
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                             </svg>
@@ -575,7 +575,7 @@ export default function DaftarPelangganPage() {
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Atau Tarif Kustom</span>
               <div className="flex-1 h-px bg-slate-200" />
             </div>
-            <label className="rounded-2xl border border-slate-200/80 bg-white p-4 flex items-start gap-3 cursor-pointer hover:border-slate-300 transition-all shadow-xs">
+            <label className="rounded-2xl border border-slate-200/80 bg-white p-4 flex items-start gap-3 cursor-pointer hover:border-slate-300 transition-all shadow-sm">
               <input
                 type="checkbox"
                 checked={useCustomTarif}
@@ -607,7 +607,7 @@ export default function DaftarPelangganPage() {
             </label>
 
             {/* Ringkasan tarif */}
-            <div className="bg-slate-50 rounded-2xl border border-slate-200/80 p-4 flex items-center justify-between shadow-xs">
+            <div className="bg-slate-50 rounded-2xl border border-slate-200/80 p-4 flex items-center justify-between shadow-sm">
               <div>
                 <p className="text-xs font-bold text-slate-500 uppercase tracking-wider !mb-1">TARIF AKHIR</p>
                 <p className="text-xs text-slate-600 font-medium">
@@ -633,7 +633,7 @@ export default function DaftarPelangganPage() {
                     key={s.value}
                     className={`rounded-2xl flex items-start gap-3 p-3.5 border cursor-pointer transition-all ${
                       form.status === s.value
-                        ? "border-emerald-500 bg-emerald-50/60 ring-2 ring-emerald-500/10 shadow-xs"
+                        ? "border-emerald-500 bg-emerald-50/60 ring-2 ring-emerald-500/10 shadow-sm"
                         : "border-slate-200 bg-white hover:border-slate-300"
                     }`}
                   >
@@ -788,7 +788,7 @@ export default function DaftarPelangganPage() {
             <button
               type="button"
               onClick={nextStep}
-              className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm shadow-xs hover:shadow active:scale-98 transition-all"
+              className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm shadow-sm hover:shadow active:scale-95 transition-all"
             >
               Lanjut →
             </button>
@@ -797,7 +797,7 @@ export default function DaftarPelangganPage() {
               type="button"
               onClick={handleSubmit}
               disabled={submitting}
-              className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm shadow-xs hover:shadow active:scale-98 transition-all disabled:opacity-50 flex items-center gap-2"
+              className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm shadow-sm hover:shadow active:scale-95 transition-all disabled:opacity-50 flex items-center gap-2"
             >
               {submitting ? (
                 <>

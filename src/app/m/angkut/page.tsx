@@ -389,11 +389,13 @@ export default function MobileAngkut() {
         <div className="flex items-center gap-2 min-w-0">
           <div className="relative flex h-3 w-3 shrink-0">
             <span
+              aria-hidden="true"
               className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
                 tripState === "running" ? "bg-emerald-400" : tripState === "paused" ? "bg-amber-400" : "bg-slate-400"
               }`}
             />
             <span
+              aria-hidden="true"
               className={`relative inline-flex rounded-full h-3 w-3 ${
                 tripState === "running" ? "bg-emerald-500" : tripState === "paused" ? "bg-amber-500" : "bg-slate-500"
               }`}
@@ -417,9 +419,9 @@ export default function MobileAngkut() {
             <button
               type="button"
               onClick={handleStartTrip}
-              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-black rounded-xl shadow-md transition-all flex items-center gap-1"
+              className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white text-xs font-black rounded-xl shadow-md transition-all flex items-center gap-1"
             >
-              <span>▶️</span>
+              <span aria-hidden="true">▶️</span>
               <span>Mulai Rute</span>
             </button>
           )}
@@ -437,10 +439,10 @@ export default function MobileAngkut() {
               <button
                 type="button"
                 onClick={handleCompleteTrip}
-                className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-black rounded-xl shadow-md transition-all"
+                className="px-2.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white text-xs font-black rounded-xl shadow-md transition-all"
                 title="Selesaikan Rute"
               >
-                🏁 Selesai
+                <span aria-hidden="true">🏁</span> Selesai
               </button>
             </>
           )}
@@ -450,16 +452,16 @@ export default function MobileAngkut() {
               <button
                 type="button"
                 onClick={handleResumeTrip}
-                className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-black rounded-xl shadow-md transition-all"
+                className="px-2.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white text-xs font-black rounded-xl shadow-md transition-all"
               >
-                ▶️ Lanjut
+                <span aria-hidden="true">▶️</span> Lanjut
               </button>
               <button
                 type="button"
                 onClick={handleCompleteTrip}
                 className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-white text-xs font-bold rounded-xl border border-slate-700 transition-all"
               >
-                🏁 Selesai
+                <span aria-hidden="true">🏁</span> Selesai
               </button>
             </>
           )}
@@ -473,22 +475,23 @@ export default function MobileAngkut() {
               }}
               className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl border border-slate-700"
             >
-              🔄 Reset
+              <span aria-hidden="true">🔄</span> Reset
             </button>
           )}
 
           <button
             type="button"
             onClick={() => setIsGlobalScannerOpen(true)}
-            className="p-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded-xl border border-slate-700 active:scale-95 text-sm"
+            aria-label="Scan QR / barcode pelanggan"
+            className="p-2 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded-xl border border-slate-700 active:scale-95 text-sm"
             title="Scan QR Barcode Pelanggan"
           >
-            📷
+            <span aria-hidden="true">📷</span>
           </button>
         </div>
       </div>
       {/* Top Header with Date & Progress */}
-      <div className="bg-white rounded-3xl p-3.5 sm:p-4 border border-slate-200/80 shadow-xs space-y-3">
+      <div className="bg-white rounded-3xl p-3.5 sm:p-4 border border-slate-200/80 shadow-sm space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div className="min-w-0">
             <h1 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">Rute Pengangkutan</h1>
@@ -500,6 +503,7 @@ export default function MobileAngkut() {
             type="date"
             value={tanggal}
             onChange={(e) => setTanggal(e.target.value)}
+            aria-label="Tanggal jadwal"
             className="w-full sm:w-auto border border-slate-200 bg-slate-50 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20"
           />
         </div>
@@ -510,9 +514,16 @@ export default function MobileAngkut() {
             <span className="text-slate-600">Progres Pengangkutan</span>
             <span className="text-emerald-700 font-bold tabular-nums">{selesaiCount} / {totalCount} Selesai ({percentComplete}%)</span>
           </div>
-          <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+          <div
+            className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden"
+            role="progressbar"
+            aria-label="Progres pengangkutan"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={percentComplete}
+          >
             <div
-              className="h-full bg-emerald-500 rounded-full transition-all duration-500 ease-out"
+              className="h-full bg-emerald-600 rounded-full transition-all duration-500 ease-out"
               style={{ width: `${percentComplete}%` }}
             />
           </div>
@@ -524,11 +535,13 @@ export default function MobileAngkut() {
             <div className="flex items-center gap-2 min-w-0">
               <span className="relative flex h-2.5 w-2.5 shrink-0">
                 <span
+                  aria-hidden="true"
                   className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
                     driverPos ? "bg-emerald-400" : "bg-amber-400"
                   }`}
                 />
                 <span
+                  aria-hidden="true"
                   className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
                     driverPos ? "bg-emerald-500" : "bg-amber-500"
                   }`}
@@ -543,13 +556,18 @@ export default function MobileAngkut() {
 
             <div className="flex items-center gap-1.5 shrink-0 ml-auto">
               {/* Toggle Radius 10m vs 20m */}
-              <div className="inline-flex bg-slate-800 rounded-xl p-0.5 text-[11px] font-bold border border-slate-700">
+              <div
+                className="inline-flex bg-slate-800 rounded-xl p-0.5 text-[11px] font-bold border border-slate-700"
+                role="group"
+                aria-label="Radius deteksi"
+              >
                 <button
                   type="button"
                   onClick={() => setRadiusMeter(10)}
-                  className={`px-2 py-0.5 rounded-lg transition-all ${
+                  aria-pressed={radiusMeter === 10}
+                  className={`px-2.5 py-1.5 rounded-lg transition-all ${
                     radiusMeter === 10
-                      ? "bg-emerald-500 text-white shadow-xs"
+                      ? "bg-emerald-700 text-white shadow-sm"
                       : "text-slate-400 hover:text-white"
                   }`}
                 >
@@ -558,9 +576,10 @@ export default function MobileAngkut() {
                 <button
                   type="button"
                   onClick={() => setRadiusMeter(20)}
-                  className={`px-2 py-0.5 rounded-lg transition-all ${
+                  aria-pressed={radiusMeter === 20}
+                  className={`px-2.5 py-1.5 rounded-lg transition-all ${
                     radiusMeter === 20
-                      ? "bg-emerald-500 text-white shadow-xs"
+                      ? "bg-emerald-700 text-white shadow-sm"
                       : "text-slate-400 hover:text-white"
                   }`}
                 >
@@ -576,6 +595,8 @@ export default function MobileAngkut() {
                   setSoundEnabled(next);
                   setVoiceEnabled(next);
                 }}
+                aria-pressed={soundEnabled}
+                aria-label="Suara peringatan"
                 className={`px-2.5 py-1 rounded-xl text-xs font-bold border transition-colors ${
                   soundEnabled
                     ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
@@ -602,19 +623,19 @@ export default function MobileAngkut() {
               <div className="flex items-center gap-1.5 shrink-0">
                 {closestTask.tunggakan?.isMenunggak ? (
                   <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-rose-500/30 text-rose-200 border border-rose-400/40">
-                    ⛔ Menunggak
+                    <span aria-hidden="true">⛔</span> Menunggak
                   </span>
                 ) : (
                   <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-emerald-500/30 text-emerald-200">
-                    ✓ Lunas
+                    <span aria-hidden="true">✓</span> Lunas
                   </span>
                 )}
                 <button
                   type="button"
                   onClick={() => forceOpenTask(closestTask.id)}
-                  className="px-2 py-0.5 bg-white text-slate-900 rounded-lg text-[10px] font-black active:scale-95 transition-transform"
+                  className="px-2.5 py-1.5 bg-white text-slate-900 rounded-lg text-[10px] font-black active:scale-95 transition-transform"
                 >
-                  ⚡ Pop-up
+                  <span aria-hidden="true">⚡</span> Pop-up
                 </button>
               </div>
             </div>
@@ -623,17 +644,22 @@ export default function MobileAngkut() {
       </div>
 
       {/* ── VIEW MODE SWITCHER: PETA LIVE vs DAFTAR ANTREAN ── */}
-      <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-900 rounded-2xl border border-slate-800 shadow-lg">
+      <div
+        className="grid grid-cols-2 gap-1.5 p-1 bg-slate-900 rounded-2xl border border-slate-800 shadow-lg"
+        role="group"
+        aria-label="Mode tampilan"
+      >
         <button
           type="button"
           onClick={() => setViewMode("map")}
+          aria-pressed={viewMode === "map"}
           className={`py-2 px-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all ${
             viewMode === "map"
-              ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/30"
+              ? "bg-gradient-to-r from-emerald-700 to-teal-700 text-white shadow-md shadow-emerald-500/30"
               : "text-slate-400 hover:text-white"
           }`}
         >
-          <span>🗺️</span>
+          <span aria-hidden="true">🗺️</span>
           <span>Peta Live</span>
           <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-black/40">
             {data.filter((t) => t.pelanggan.latitude && t.pelanggan.longitude).length}
@@ -642,13 +668,14 @@ export default function MobileAngkut() {
         <button
           type="button"
           onClick={() => setViewMode("list")}
+          aria-pressed={viewMode === "list"}
           className={`py-2 px-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all ${
             viewMode === "list"
-              ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/30"
+              ? "bg-gradient-to-r from-emerald-700 to-teal-700 text-white shadow-md shadow-emerald-500/30"
               : "text-slate-400 hover:text-white"
           }`}
         >
-          <span>📋</span>
+          <span aria-hidden="true">📋</span>
           <span>Daftar Rute</span>
           <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-black/40">
             {filteredData.length}
@@ -723,27 +750,34 @@ export default function MobileAngkut() {
               type="text"
               value={searchQueryList}
               onChange={(e) => setSearchQueryList(e.target.value)}
-              placeholder="🔍 Cari nama pelanggan, kode (mis. 0101-0001), atau alamat..."
-              className="w-full px-3.5 py-2.5 bg-white border border-slate-200/90 rounded-2xl text-xs font-bold text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-emerald-500/20 shadow-xs"
+              aria-label="Cari pelanggan"
+              placeholder="Cari nama pelanggan, kode (mis. 0101-0001), atau alamat..."
+              className="w-full px-3.5 py-2.5 bg-white border border-slate-200/90 rounded-2xl text-xs font-bold text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-emerald-500/20 shadow-sm"
             />
             {searchQueryList && (
               <button
                 type="button"
                 onClick={() => setSearchQueryList("")}
-                className="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-700 font-bold"
+                aria-label="Bersihkan pencarian"
+                className="absolute right-2 top-1.5 flex h-6 w-6 items-center justify-center rounded-lg text-xs text-slate-400 hover:text-slate-700 font-bold"
               >
-                ✕
+                <span aria-hidden="true">✕</span>
               </button>
             )}
           </div>
 
           {/* Filter Tabs */}
-          <div className="flex gap-1.5 p-1 bg-slate-100 rounded-2xl text-xs font-bold">
+          <div
+            className="flex gap-1.5 p-1 bg-slate-100 rounded-2xl text-xs font-bold"
+            role="group"
+            aria-label="Filter daftar"
+          >
             <button
               onClick={() => setFilterTab("belum")}
+              aria-pressed={filterTab === "belum"}
               className={`flex-1 py-1.5 rounded-xl transition-all ${
                 filterTab === "belum"
-                  ? "bg-white text-slate-900 shadow-xs"
+                  ? "bg-white text-slate-900 shadow-sm"
                   : "text-slate-500 hover:text-slate-800"
               }`}
             >
@@ -751,9 +785,10 @@ export default function MobileAngkut() {
             </button>
             <button
               onClick={() => setFilterTab("selesai")}
+              aria-pressed={filterTab === "selesai"}
               className={`flex-1 py-1.5 rounded-xl transition-all ${
                 filterTab === "selesai"
-                  ? "bg-white text-slate-900 shadow-xs"
+                  ? "bg-white text-slate-900 shadow-sm"
                   : "text-slate-500 hover:text-slate-800"
               }`}
             >
@@ -761,9 +796,10 @@ export default function MobileAngkut() {
             </button>
             <button
               onClick={() => setFilterTab("semua")}
+              aria-pressed={filterTab === "semua"}
               className={`flex-1 py-1.5 rounded-xl transition-all ${
                 filterTab === "semua"
-                  ? "bg-white text-slate-900 shadow-xs"
+                  ? "bg-white text-slate-900 shadow-sm"
                   : "text-slate-500 hover:text-slate-800"
               }`}
             >
@@ -773,13 +809,13 @@ export default function MobileAngkut() {
 
           {loading ? (
             <div className="py-12 flex flex-col items-center justify-center gap-2">
-              <div className="w-8 h-8 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+              <div className="w-8 h-8 border-[3px] border-emerald-500 border-t-transparent rounded-full animate-spin" />
               <p className="text-xs font-semibold text-slate-400">Memuat rute tugas...</p>
             </div>
           ) : filteredData.length === 0 ? (
             <div className="bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-2">
               <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto text-xl">
-                🎉
+                <span aria-hidden="true">🎉</span>
               </div>
               <p className="text-sm font-bold text-slate-900">
                 {filterTab === "belum" ? "Semua Pengangkutan Selesai!" : "Tidak Ada Data"}
@@ -802,7 +838,7 @@ export default function MobileAngkut() {
                   ? "border-emerald-500 ring-2 ring-emerald-500/10 shadow-md"
                   : isDone
                   ? "border-slate-200/60 bg-slate-50/50"
-                  : "border-slate-200/80 shadow-xs hover:shadow-sm"
+                  : "border-slate-200/80 shadow-sm hover:shadow-sm"
               }`}
             >
               {/* Header Stop Card */}
@@ -812,7 +848,7 @@ export default function MobileAngkut() {
                     <span className="font-extrabold text-sm text-slate-900 truncate">
                       {t.pelanggan.nama}
                     </span>
-                    <span className="px-1.5 py-0.2 rounded-md bg-slate-100 text-[10px] font-mono font-medium text-slate-600">
+                    <span className="px-1.5 py-0.5 rounded-md bg-slate-100 text-[10px] font-mono font-medium text-slate-600">
                       {t.pelanggan.kodePelanggan}
                     </span>
                   </div>
@@ -864,17 +900,17 @@ export default function MobileAngkut() {
                     setViewMode("map");
                     forceOpenTask(t.id);
                   }}
-                  className="py-2.5 px-3 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 active:scale-98 transition-all shadow-xs"
+                  className="py-2.5 px-3 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm"
                 >
-                  <span>🗺️</span>
+                  <span aria-hidden="true">🗺️</span>
                   <span>Lihat di Peta</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => window.open(mapsUrl(t), "_system")}
-                  className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 active:scale-98 transition-all"
+                  className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all"
                 >
-                  <span>🧭</span>
+                  <span aria-hidden="true">🧭</span>
                   <span>Google Maps</span>
                 </button>
               </div>
@@ -887,13 +923,13 @@ export default function MobileAngkut() {
                         <button
                           type="button"
                           onClick={() => forceOpenTask(t.id)}
-                          className={`py-2.5 px-3 rounded-2xl text-xs font-black shadow-xs active:scale-98 transition-all flex items-center justify-center gap-1.5 ${
+                          className={`py-2.5 px-3 rounded-2xl text-xs font-black shadow-sm active:scale-95 transition-all flex items-center justify-center gap-1.5 ${
                             t.tunggakan?.isMenunggak
-                              ? "bg-rose-600 hover:bg-rose-500 text-white"
-                              : "bg-emerald-600 hover:bg-emerald-500 text-white"
+                              ? "bg-rose-600 hover:bg-rose-700 text-white"
+                              : "bg-emerald-700 hover:bg-emerald-800 text-white"
                           }`}
                         >
-                          <span>⚡</span>
+                          <span aria-hidden="true">⚡</span>
                           <span className="truncate">{t.tunggakan?.isMenunggak ? "Cek Tunggakan" : "1-Tap Ceklis"}</span>
                         </button>
 
@@ -902,9 +938,9 @@ export default function MobileAngkut() {
                             bukaForm(t);
                             setForm((f) => ({ ...f, status: "diambil" }));
                           }}
-                          className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-2xl text-xs font-bold active:scale-98 transition-all flex items-center justify-center gap-1.5"
+                          className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-2xl text-xs font-bold active:scale-95 transition-all flex items-center justify-center gap-1.5"
                         >
-                          <span>📸</span>
+                          <span aria-hidden="true">📸</span>
                           <span>Detail / Foto</span>
                         </button>
                       </div>
@@ -915,7 +951,7 @@ export default function MobileAngkut() {
                             bukaForm(t);
                             setForm((f) => ({ ...f, status: "kosong" }));
                           }}
-                          className="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-xs font-bold active:scale-98 transition-all"
+                          className="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-xs font-bold active:scale-95 transition-all"
                         >
                           Kosong
                         </button>
@@ -924,7 +960,7 @@ export default function MobileAngkut() {
                             bukaForm(t);
                             setForm((f) => ({ ...f, status: "tidak_diangkut" }));
                           }}
-                          className="py-2 px-3 bg-slate-100 hover:bg-rose-100 text-rose-700 rounded-2xl text-xs font-bold active:scale-98 transition-all"
+                          className="py-2 px-3 bg-slate-100 hover:bg-rose-100 text-rose-700 rounded-2xl text-xs font-bold active:scale-95 transition-all"
                         >
                           Kendala
                         </button>
@@ -937,9 +973,9 @@ export default function MobileAngkut() {
                           bukaForm(t);
                           setForm((f) => ({ ...f, status: "diambil" }));
                         }}
-                        className="py-2.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-2xl text-xs font-bold active:scale-98 transition-all flex items-center justify-center gap-1"
+                        className="py-2.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-2xl text-xs font-bold active:scale-95 transition-all flex items-center justify-center gap-1"
                       >
-                        <span>📸</span>
+                        <span aria-hidden="true">📸</span>
                         <span>Ubah</span>
                       </button>
                       <button
@@ -947,7 +983,7 @@ export default function MobileAngkut() {
                           bukaForm(t);
                           setForm((f) => ({ ...f, status: "kosong" }));
                         }}
-                        className="py-2.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-xs font-bold active:scale-98 transition-all"
+                        className="py-2.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-xs font-bold active:scale-95 transition-all"
                       >
                         Kosong
                       </button>
@@ -956,7 +992,7 @@ export default function MobileAngkut() {
                           bukaForm(t);
                           setForm((f) => ({ ...f, status: "tidak_diangkut" }));
                         }}
-                        className="py-2.5 px-2 bg-slate-100 hover:bg-rose-100 text-rose-700 rounded-2xl text-xs font-bold active:scale-98 transition-all"
+                        className="py-2.5 px-2 bg-slate-100 hover:bg-rose-100 text-rose-700 rounded-2xl text-xs font-bold active:scale-95 transition-all"
                       >
                         Kendala
                       </button>
@@ -971,7 +1007,8 @@ export default function MobileAngkut() {
                     </span>
                     <button
                       onClick={() => setEditingId(null)}
-                      className="text-xs font-bold text-slate-400 hover:text-slate-600"
+                      aria-label="Batalkan konfirmasi pickup"
+                      className="px-2 py-1.5 text-xs font-bold text-slate-400 hover:text-slate-600 rounded-lg"
                     >
                       Batal ✕
                     </button>
@@ -983,6 +1020,7 @@ export default function MobileAngkut() {
                       <select
                         value={form.jenisSampah}
                         onChange={(e) => setForm({ ...form, jenisSampah: e.target.value })}
+                        aria-label="Jenis sampah"
                         className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-bold bg-white outline-none focus:ring-2 focus:ring-emerald-500/20"
                       >
                         {JENIS_SAMPAH.map((j) => (
@@ -996,6 +1034,7 @@ export default function MobileAngkut() {
                       <select
                         value={form.kendaraanId}
                         onChange={(e) => setForm({ ...form, kendaraanId: e.target.value })}
+                        aria-label="Armada truk"
                         className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-bold bg-white outline-none focus:ring-2 focus:ring-emerald-500/20 truncate"
                       >
                         <option value="">— Pilih Truk —</option>
@@ -1012,6 +1051,7 @@ export default function MobileAngkut() {
                         step="any"
                         inputMode="decimal"
                         value={form.volume}
+                        aria-label="Volume (m³)"
                         onChange={(e) => setForm({ ...form, volume: e.target.value })}
                         placeholder="0.5"
                         className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-emerald-500/20"
@@ -1025,6 +1065,7 @@ export default function MobileAngkut() {
                         step="any"
                         inputMode="decimal"
                         value={form.berat}
+                        aria-label="Berat (kg)"
                         onChange={(e) => setForm({ ...form, berat: e.target.value })}
                         placeholder="10"
                         className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-emerald-500/20"
@@ -1036,6 +1077,7 @@ export default function MobileAngkut() {
                     <label className="block text-[11px] font-bold text-slate-600 mb-1">Catatan Tambahan</label>
                     <textarea
                       value={form.catatan}
+                      aria-label="Catatan tambahan"
                       onChange={(e) => setForm({ ...form, catatan: e.target.value })}
                       placeholder="Contoh: Sampah sudah dipilah rapi di depan pagar"
                       rows={2}
@@ -1060,7 +1102,7 @@ export default function MobileAngkut() {
                     <button
                       type="button"
                       onClick={() => setEditingId(null)}
-                      className="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-xs font-bold active:scale-98 transition-all"
+                      className="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-xs font-bold active:scale-95 transition-all"
                     >
                       Batal
                     </button>
@@ -1068,7 +1110,7 @@ export default function MobileAngkut() {
                       type="button"
                       onClick={simpan}
                       disabled={saving}
-                      className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl text-xs font-bold shadow-md active:scale-98 transition-all disabled:opacity-50"
+                      className="flex-1 py-3 bg-emerald-700 hover:bg-emerald-800 text-white rounded-2xl text-xs font-bold shadow-md active:scale-95 transition-all disabled:opacity-50"
                     >
                       {saving ? "Menyimpan Catatan..." : "Simpan & Lanjutkan 🚀"}
                     </button>
@@ -1107,10 +1149,15 @@ export default function MobileAngkut() {
 
       {/* ── Modal Ringkasan Rute (Starting & Completing) ── */}
       {showTripSummary && (
-        <div className="fixed inset-0 z-[1200] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+        <div
+          className="fixed inset-0 z-[1200] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Ringkasan rute pengangkutan"
+        >
           <div className="bg-slate-900 border border-slate-700 rounded-3xl p-5 w-full max-w-sm text-center text-white space-y-4 shadow-2xl animate-in zoom-in-95 duration-200">
             <div className="w-14 h-14 bg-emerald-500/20 text-emerald-400 rounded-2xl flex items-center justify-center mx-auto text-2xl border border-emerald-500/30">
-              🏆
+              <span aria-hidden="true">🏆</span>
             </div>
             <div className="space-y-1">
               <h3 className="text-base font-black">Rute Pengangkutan Selesai!</h3>
@@ -1151,7 +1198,7 @@ export default function MobileAngkut() {
                 setTripSeconds(0);
                 setTripState("idle");
               }}
-              className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-black text-xs rounded-2xl shadow-lg transition-transform"
+              className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white font-black text-xs rounded-2xl shadow-lg transition-transform"
             >
               Tutup Ringkasan 🚀
             </button>

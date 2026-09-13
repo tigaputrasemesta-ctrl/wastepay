@@ -25,7 +25,7 @@ export default function AdminLayout({
         <Sidebar />
         <div className="flex-1 flex flex-col min-w-0">
           {/* Topbar */}
-          <header className="h-16 flex items-center justify-between px-6 bg-white border-b border-slate-200/80 shadow-2xs">
+          <header className="h-16 flex items-center justify-between px-6 bg-white border-b border-slate-200/80 shadow-sm">
             <div className="flex items-center gap-3">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />

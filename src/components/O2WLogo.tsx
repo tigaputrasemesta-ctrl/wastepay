@@ -25,7 +25,7 @@ export default function O2WLogo({
 
   const logoContent = (
     <div className={`inline-flex items-center gap-2 select-none ${className}`}>
-      <span className={`bg-emerald-600 text-white font-bold tracking-wider rounded-lg ${badgeSize} shadow-2xs`}>
+      <span className={`bg-emerald-600 text-white font-bold tracking-wider rounded-lg ${badgeSize} shadow-sm`}>
         UPS
       </span>
       <span className={`font-extrabold tracking-tight text-slate-900 ${textSize}`}>

@@ -45,7 +45,7 @@ export default async function LaporanPage({
               </select>
               <button
                 type="submit"
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-xs hover:shadow active:scale-[0.98] transition-all"
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all"
               >
                 Tampilkan
               </button>
@@ -53,14 +53,14 @@ export default async function LaporanPage({
             <a
               href={`/laporan-cetak?bulan=${bulan}&tahun=${tahun}`}
               target="_blank"
-              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold shadow-xs hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5"
+              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5"
             >
               <span>🖨</span>
               <span>Cetak PDF</span>
             </a>
             <a
               href={`/api/laporan/export?bulan=${bulan}&tahun=${tahun}`}
-              className="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl text-xs font-semibold shadow-xs hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5"
+              className="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl text-xs font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5"
             >
               <span>⬇</span>
               <span>Ekspor CSV</span>
@@ -71,21 +71,21 @@ export default async function LaporanPage({
 
       {/* Ringkasan Keuangan */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
           <p className="text-xs font-semibold text-slate-500 mb-1">Pemasukan</p>
           <p className="text-2xl font-bold text-emerald-600">{formatRupiah(data.totalPemasukan)}</p>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
           <p className="text-xs font-semibold text-slate-500 mb-1">Pengeluaran</p>
           <p className="text-2xl font-bold text-rose-600">{formatRupiah(data.totalPengeluaran)}</p>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
           <p className="text-xs font-semibold text-slate-500 mb-1">Saldo Bersih</p>
           <p className={`text-2xl font-bold ${data.saldo >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
             {formatRupiah(data.saldo)}
           </p>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
           <p className="text-xs font-semibold text-slate-500 mb-1">Efektivitas Tagihan</p>
           <p className="text-2xl font-bold text-emerald-600">
             {data.totalTagihan > 0
@@ -97,7 +97,7 @@ export default async function LaporanPage({
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Tagihan */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
           <h2 className="font-bold text-slate-900 text-base mb-4">Tagihan Bulan Ini</h2>
           <div className="space-y-3">
             <div className="flex justify-between items-center text-sm">
@@ -124,7 +124,7 @@ export default async function LaporanPage({
         </div>
 
         {/* Pengeluaran */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
           <h2 className="font-bold text-slate-900 text-base mb-4">Pengeluaran per Kategori</h2>
           {data.pengeluaranByKategori.length === 0 ? (
             <p className="text-sm text-slate-400 font-medium">Belum ada pengeluaran bulan ini</p>
@@ -154,19 +154,19 @@ export default async function LaporanPage({
       <div className="mb-8">
         <h2 className="text-xl font-bold text-slate-900 tracking-tight mb-4">🌱 Data Lingkungan</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
             <p className="text-xs font-semibold text-slate-500 mb-1">Total Volume Sampah</p>
             <p className="text-2xl font-bold text-slate-900 tracking-tight">{data.totalVolume.toFixed(1)} m³</p>
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
             <p className="text-xs font-semibold text-slate-500 mb-1">Total Berat Sampah</p>
             <p className="text-2xl font-bold text-slate-900 tracking-tight">{data.totalBerat.toFixed(1)} kg</p>
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
             <p className="text-xs font-semibold text-slate-500 mb-1">Total Pengangkutan</p>
             <p className="text-2xl font-bold text-slate-900 tracking-tight">{data.totalPengangkutan}</p>
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
             <p className="text-xs font-semibold text-slate-500 mb-1">Berhasil Diangkut</p>
             <p className="text-2xl font-bold text-emerald-600">{data.totalDiambil}</p>
           </div>
@@ -174,7 +174,7 @@ export default async function LaporanPage({
 
         {/* Sampah per Jenis */}
         {data.sampahByJenis.length > 0 && (
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 mb-6 shadow-xs">
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 mb-6 shadow-sm">
             <h3 className="font-bold text-slate-900 text-base mb-3">Sampah per Jenis</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
               {data.sampahByJenis.map((j) => (
@@ -192,7 +192,7 @@ export default async function LaporanPage({
 
         {/* Sampah per TPA */}
         {data.sampahByTpa.length > 0 && (
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
             <h3 className="font-bold text-slate-900 text-base mb-3">Pembuangan per TPA</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -221,7 +221,7 @@ export default async function LaporanPage({
       </div>
 
       {/* Tagihan Menunggak */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
         <h2 className="font-bold text-slate-900 text-base mb-4">Tagihan Menunggak</h2>
         {data.tagihanMenunggak.length === 0 ? (
           <p className="text-sm text-slate-400 font-medium">Tidak ada tagihan menunggak</p>

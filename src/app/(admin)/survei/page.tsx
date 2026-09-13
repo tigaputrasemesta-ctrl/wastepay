@@ -149,11 +149,11 @@ export default function SurveiPage() {
       </div>
 
       {loading ? (
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-8 text-center text-slate-400 font-medium shadow-xs">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-8 text-center text-slate-400 font-medium shadow-sm">
           Memuat data calon pelanggan…
         </div>
       ) : calon.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-10 text-center shadow-xs">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-10 text-center shadow-sm">
           <p className="font-bold text-xl text-slate-900">Semua Calon Sudah Disurvei</p>
           <p className="text-sm text-slate-500 mt-2 max-w-md mx-auto">
             Calon pelanggan baru akan otomatis muncul di sini setelah warga melakukan registrasi pendaftaran online.
@@ -162,7 +162,7 @@ export default function SurveiPage() {
       ) : (
         <div className="grid gap-3">
           {calon.map((c) => (
-            <div key={c.id} className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 flex flex-wrap items-center justify-between gap-3">
+            <div key={c.id} className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 flex flex-wrap items-center justify-between gap-3">
               <div className="min-w-0">
                 <p className="font-semibold text-slate-900">
                   {c.nama}
@@ -201,7 +201,7 @@ export default function SurveiPage() {
                 </Link>
                 <button
                   onClick={() => bukaSurvei(c)}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-xs hover:shadow-sm active:scale-95 transition-all"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all"
                 >
                   Survei & Aktifkan
                 </button>
@@ -213,7 +213,7 @@ export default function SurveiPage() {
 
       {/* ── Modal survei ── */}
       {survei && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
           <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50 sticky top-0 z-10">
               <div>
@@ -341,7 +341,7 @@ export default function SurveiPage() {
                 <button
                   onClick={simpan}
                   disabled={saving}
-                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-xs hover:shadow-sm active:scale-95 transition-all disabled:opacity-60"
+                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all disabled:opacity-60"
                 >
                   {saving ? "Menyimpan…" : "Simpan & Aktifkan Pelanggan"}
                 </button>

@@ -178,7 +178,7 @@ export default function DetailPelangganPage() {
         <div className="lg:col-span-1 space-y-6">
           {/* Kode Pelanggan & Barcode */}
           {data.kodePelanggan && (
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 text-center">
+            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 text-center">
               <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide mb-2">Kode Pelanggan</p>
               <p className="text-2xl font-extrabold text-slate-900 tracking-tight tracking-widest mb-3 font-mono">{data.kodePelanggan}</p>
               {/* Barcode visual */}
@@ -202,7 +202,7 @@ export default function DetailPelangganPage() {
 
           {/* Foto Depan Rumah (Geotag) */}
           {(data.fotoRumah || (data.latitude && data.longitude)) && (
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5">
+            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
               <h2 className="font-bold text-slate-900 text-base mb-3 flex items-center gap-2">
                 <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -217,7 +217,7 @@ export default function DetailPelangganPage() {
                   unoptimized
                   width={800}
                   height={400}
-                  className="w-full h-52 object-cover rounded-2xl border border-slate-200/80 shadow-xs"
+                  className="w-full h-52 object-cover rounded-2xl border border-slate-200/80 shadow-sm"
                 />
               ) : (
                 <div className="w-full h-52 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/50 flex flex-col items-center justify-center text-slate-400">
@@ -277,7 +277,7 @@ export default function DetailPelangganPage() {
             </div>
           )}
 
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5">
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
             <h2 className="font-bold text-slate-900 text-base mb-4">Informasi</h2>
             <div className="space-y-3 text-sm">
               <div>
@@ -372,7 +372,7 @@ export default function DetailPelangganPage() {
           </div>
 
           {/* Ringkasan Keuangan */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5">
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
             <h2 className="font-bold text-slate-900 text-base mb-4">Ringkasan Keuangan</h2>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
@@ -397,7 +397,7 @@ export default function DetailPelangganPage() {
           </div>
 
           {/* Jadwal */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5">
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
             <h2 className="font-bold text-slate-900 text-base mb-4">Jadwal Pengangkutan</h2>
             {data.jadwal.length === 0 ? (
               <p className="text-sm text-slate-400 font-medium">Belum ada jadwal</p>
@@ -419,7 +419,7 @@ export default function DetailPelangganPage() {
 
         {/* Tagihan */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5">
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
             <h2 className="font-bold text-slate-900 text-base mb-4">Tagihan</h2>
             {data.tagihan.length === 0 ? (
               <p className="text-sm text-slate-400 font-medium">Belum ada tagihan</p>
@@ -460,7 +460,7 @@ export default function DetailPelangganPage() {
           </div>
 
           {/* Pembayaran */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5">
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
             <h2 className="font-bold text-slate-900 text-base mb-4">Riwayat Pembayaran</h2>
             {data.pembayaran.length === 0 ? (
               <p className="text-sm text-slate-400 font-medium">Belum ada pembayaran</p>
@@ -515,7 +515,7 @@ export default function DetailPelangganPage() {
           </div>
 
           {/* Pengangkutan */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5">
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
             <h2 className="font-bold text-slate-900 text-base mb-4">Riwayat Pengangkutan</h2>
             {data.pengangkutan.length === 0 ? (
               <p className="text-sm text-slate-400 font-medium">Belum ada pengangkutan</p>
@@ -554,7 +554,7 @@ export default function DetailPelangganPage() {
           </div>
 
           {/* Komplain */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5">
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
             <h2 className="font-bold text-slate-900 text-base mb-4">Komplain</h2>
             {data.komplain.length === 0 ? (
               <p className="text-sm text-slate-400 font-medium">Belum ada komplain</p>

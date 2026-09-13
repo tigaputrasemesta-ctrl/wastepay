@@ -178,7 +178,7 @@ export default function LacakLokasi({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs flex flex-wrap items-center gap-4">
+    <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm flex flex-wrap items-center gap-4">
       <div className="flex items-center gap-3 min-w-0">
         <span className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-800 font-bold text-xs shrink-0">
           {profil.nama.charAt(0).toUpperCase()}
@@ -219,10 +219,10 @@ export default function LacakLokasi({
           )}
           <button
             onClick={lacak ? hentikan : mulai}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-2 ${
+            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-2 ${
               lacak
-                ? "bg-rose-600 hover:bg-rose-500 text-white active:scale-98"
-                : "bg-emerald-600 hover:bg-emerald-500 text-white active:scale-98"
+                ? "bg-rose-600 hover:bg-rose-500 text-white active:scale-95"
+                : "bg-emerald-600 hover:bg-emerald-500 text-white active:scale-95"
             }`}
           >
             <span className={`w-2 h-2 rounded-full ${lacak ? "bg-white animate-pulse" : "bg-white/80"}`} />

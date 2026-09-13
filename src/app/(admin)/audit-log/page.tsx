@@ -90,14 +90,14 @@ export default function AuditLogPage() {
         </select>
         <button
           onClick={() => fetchData()}
-          className="px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 shadow-xs hover:shadow active:scale-[0.98] transition-all"
+          className="px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 shadow-sm hover:shadow active:scale-[0.98] transition-all"
         >
           Muat Ulang
         </button>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

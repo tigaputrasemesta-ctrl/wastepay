@@ -76,7 +76,7 @@ export default function TimelineSection() {
         </div>
 
         {/* Timeline Nav / Tab Buttons (Desktop & Tablet) */}
-        <div className="hidden md:flex items-center justify-between bg-white rounded-2xl p-1.5 mb-8 border border-slate-200/80 shadow-xs">
+        <div className="hidden md:flex items-center justify-between bg-white rounded-2xl p-1.5 mb-8 border border-slate-200/80 shadow-sm">
           {MILESTONES.map((m, idx) => {
             const isActive = activeIdx === idx;
             return (
@@ -86,7 +86,7 @@ export default function TimelineSection() {
                 onClick={() => setActiveIdx(idx)}
                 className={`flex-1 py-3 px-4 text-center font-bold transition-all duration-150 rounded-xl ${
                   isActive
-                    ? "bg-emerald-600 text-white shadow-xs"
+                    ? "bg-emerald-600 text-white shadow-sm"
                     : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                 }`}
               >
@@ -98,7 +98,7 @@ export default function TimelineSection() {
         </div>
 
         {/* Highlight Card for Desktop Selected Milestone */}
-        <div className="hidden md:block bg-white rounded-3xl border border-slate-200/80 p-8 mb-8 shadow-xs">
+        <div className="hidden md:block bg-white rounded-3xl border border-slate-200/80 p-8 mb-8 shadow-sm">
           <div className="flex items-start justify-between gap-6">
             <div className="flex-1">
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold rounded-full mb-4">
@@ -133,7 +133,7 @@ export default function TimelineSection() {
                 className={`p-4 rounded-2xl cursor-pointer transition-all duration-200 flex flex-col justify-between border ${
                   isActive
                     ? "bg-emerald-50/80 border-emerald-500 shadow-sm ring-2 ring-emerald-500/20"
-                    : "bg-white border-slate-200/80 hover:border-slate-300 shadow-xs"
+                    : "bg-white border-slate-200/80 hover:border-slate-300 shadow-sm"
                 }`}
               >
                 <div>

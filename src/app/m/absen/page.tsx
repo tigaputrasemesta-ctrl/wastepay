@@ -127,7 +127,7 @@ export default function MobileAbsen() {
         <button
           onClick={() => handleAbsen("masuk")}
           disabled={actionLoading}
-          className="w-full py-4 px-6 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white rounded-2xl font-bold text-base shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full py-4 px-6 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.99] text-white rounded-2xl font-bold text-base shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50"
         >
           {actionLoading ? (
             <>

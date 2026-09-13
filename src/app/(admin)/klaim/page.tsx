@@ -130,7 +130,7 @@ export default function KlaimPage() {
 
       {/* Form Pengajuan Klaim (Hanya untuk Petugas) */}
       {!isAdmin && (
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs">
+        <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
           <div className="border-b border-slate-200 pb-3 mb-5">
             <h2 className="text-base font-bold text-slate-900">Buat Pengajuan Baru</h2>
             <p className="text-xs text-slate-500">Lengkapi data klaim operasional armada</p>
@@ -172,7 +172,7 @@ export default function KlaimPage() {
 
             <button
               type="submit" disabled={submitting}
-              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-xl shadow-xs hover:shadow active:scale-[0.98] transition-all disabled:opacity-50"
+              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all disabled:opacity-50"
             >
               {submitting ? "Mengirim pengajuan..." : "Kirim Pengajuan Sekarang"}
             </button>
@@ -181,7 +181,7 @@ export default function KlaimPage() {
       )}
 
       {/* Daftar Klaim */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden mt-8">
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden mt-8">
         <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/70 flex items-center justify-between">
           <div>
             <h2 className="font-bold text-slate-900 text-base">
@@ -250,7 +250,7 @@ export default function KlaimPage() {
                               <button 
                                 onClick={() => handleProses(row.id, "disetujui")}
                                 disabled={processingId === row.id}
-                                className="px-2.5 py-1 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-500 shadow-xs transition-all text-xs"
+                                className="px-2.5 py-1 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-500 shadow-sm transition-all text-xs"
                               >
                                 Terima
                               </button>

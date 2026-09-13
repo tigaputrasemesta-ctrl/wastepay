@@ -138,7 +138,7 @@ export default function MobileSurvei() {
           <div className="w-6 h-6 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : calon.length === 0 ? (
-        <div className="rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-xs">
+        <div className="rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-sm">
           <span className="text-3xl block mb-2">🏡</span>
           <p className="text-sm font-bold text-slate-700">Semua Calon Sudah Disurvei</p>
           <p className="text-xs text-slate-400 mt-1">Tidak ada antrean calon pelanggan baru saat ini.</p>
@@ -177,7 +177,7 @@ export default function MobileSurvei() {
               {!isEditing ? (
                 <button
                   onClick={() => bukaForm(c)}
-                  className="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white rounded-2xl text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3.5 px-4 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.99] text-white rounded-2xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2"
                 >
                   📍 Mulai Survei & Aktifkan Warga
                 </button>
@@ -250,7 +250,7 @@ export default function MobileSurvei() {
                     <button
                       onClick={simpan}
                       disabled={saving}
-                      className="flex-1 py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-2xl text-xs font-bold shadow-xs transition-all disabled:opacity-50"
+                      className="flex-1 py-3.5 px-4 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white rounded-2xl text-xs font-bold shadow-sm transition-all disabled:opacity-50"
                     >
                       {saving ? "Menyimpan Data…" : "✓ Aktifkan Pelanggan"}
                     </button>

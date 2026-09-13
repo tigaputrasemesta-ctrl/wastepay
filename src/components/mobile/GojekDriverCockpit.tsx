@@ -417,8 +417,8 @@ export default function GojekDriverCockpit({
         <div className="pointer-events-auto bg-slate-950/95 backdrop-blur-md rounded-2xl p-2.5 sm:p-3 border border-slate-800 shadow-2xl flex items-center justify-between gap-2">
           {/* Direction Icon & Next Step Guidance */}
           <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white text-lg sm:text-xl shadow-lg shadow-emerald-600/40 shrink-0 font-black">
-              {isWithinRadius ? "🎯" : "⬆️"}
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-emerald-700 to-teal-700 flex items-center justify-center text-white text-lg sm:text-xl shadow-lg shadow-emerald-900/40 shrink-0 font-black">
+              <span aria-hidden="true">{isWithinRadius ? "🎯" : "⬆️"}</span>
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5 sm:gap-2">
@@ -432,11 +432,11 @@ export default function GojekDriverCockpit({
 
                 {/* Pricing / Tunggakan Tag */}
                 {currentIsMenunggak ? (
-                  <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-rose-600 text-white animate-pulse shrink-0">
+                  <span className="px-1.5 py-0.5 rounded text-[9px] font-black bg-rose-600 text-white animate-pulse shrink-0">
                     ⛔ MENUNGGAK
                   </span>
                 ) : (
-                  <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-emerald-600/80 text-white shrink-0">
+                  <span className="px-1.5 py-0.5 rounded text-[9px] font-black bg-emerald-600/80 text-white shrink-0">
                     ✓ LUNAS
                   </span>
                 )}
@@ -462,6 +462,8 @@ export default function GojekDriverCockpit({
             <button
               type="button"
               onClick={onToggleSound}
+              aria-label="Suara peringatan radius"
+              aria-pressed={soundEnabled}
               className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold border transition-colors ${
                 soundEnabled
                   ? "bg-emerald-950 text-emerald-400 border-emerald-700"
@@ -469,16 +471,17 @@ export default function GojekDriverCockpit({
               }`}
               title={soundEnabled ? "Suara Aktif" : "Mute"}
             >
-              {soundEnabled ? "🔊" : "🔇"}
+              <span aria-hidden="true">{soundEnabled ? "🔊" : "🔇"}</span>
             </button>
 
             <button
               type="button"
               onClick={() => setIsFullscreen(!isFullscreen)}
+              aria-label={isFullscreen ? "Keluar dari layar penuh" : "Tampilkan layar penuh"}
               className="w-8 h-8 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 flex items-center justify-center text-xs font-bold transition-all active:scale-95"
               title="Layar Penuh"
             >
-              {isFullscreen ? "✕" : "⤢"}
+              <span aria-hidden="true">{isFullscreen ? "✕" : "⤢"}</span>
             </button>
           </div>
         </div>
@@ -492,7 +495,7 @@ export default function GojekDriverCockpit({
         )}
 
         {currentIsMenunggak && (
-          <div className="pointer-events-auto bg-rose-600/95 backdrop-blur-md text-white px-3 py-1.5 rounded-xl text-[11px] font-extrabold flex items-center justify-between shadow-lg animate-pulse">
+          <div className="pointer-events-auto bg-rose-700 backdrop-blur-md text-white px-3 py-1.5 rounded-xl text-[11px] font-extrabold flex items-center justify-between shadow-lg animate-pulse">
             <span>
               ⛔ Konsumen ini menunggak {currentTask?.tunggakan?.jumlahBulan} bln ({formatRupiah(currentTask?.tunggakan?.totalNominal || 0)}). Jangan angkut!
             </span>
@@ -598,9 +601,10 @@ export default function GojekDriverCockpit({
               );
             }}
             className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-slate-900/95 hover:bg-slate-800 active:scale-95 text-white border border-slate-700 shadow-xl flex items-center justify-center text-sm font-black transition-all"
+            aria-label={`Ganti mode peta (sekarang: ${tileMode === "google-streets" ? "Jalan" : tileMode === "google-hybrid" ? "Satelit" : "Gelap"})`}
             title={`Mode Peta: ${tileMode === "google-streets" ? "Jalan" : tileMode === "google-hybrid" ? "Satelit" : "Gelap"} (Ketuk untuk ganti)`}
           >
-            {tileMode === "google-streets" ? "🗺️" : tileMode === "google-hybrid" ? "🛰️" : "🌙"}
+            <span aria-hidden="true">{tileMode === "google-streets" ? "🗺️" : tileMode === "google-hybrid" ? "🛰️" : "🌙"}</span>
           </button>
 
           {/* Center on Me */}
@@ -608,9 +612,10 @@ export default function GojekDriverCockpit({
             type="button"
             onClick={() => setCenterTrigger((c) => c + 1)}
             className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-slate-900/95 hover:bg-slate-800 active:scale-95 text-white border border-slate-700 shadow-xl flex items-center justify-center text-base sm:text-lg transition-all"
+            aria-label="Pusatkan ke lokasi saya"
             title="Pusatkan Lokasi Saya"
           >
-            🎯
+            <span aria-hidden="true">🎯</span>
           </button>
 
           {/* Fit Route */}
@@ -618,19 +623,21 @@ export default function GojekDriverCockpit({
             type="button"
             onClick={() => setFitTrigger((f) => f + 1)}
             className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-slate-900/95 hover:bg-slate-800 active:scale-95 text-white border border-slate-700 shadow-xl flex items-center justify-center text-xs sm:text-sm font-black transition-all"
+            aria-label="Tampilkan seluruh rute"
             title="Tampilkan Seluruh Rute"
           >
-            📍
+            <span aria-hidden="true">📍</span>
           </button>
 
           {/* Scanning: Scan QR / Barcode Stiker Pelanggan */}
           <button
             type="button"
             onClick={() => setIsScannerOpen(true)}
-            className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 active:scale-95 text-white border border-emerald-400 shadow-xl flex items-center justify-center text-base font-black transition-all"
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-br from-emerald-700 to-teal-700 active:scale-95 text-white border border-emerald-600 shadow-xl flex items-center justify-center text-base font-black transition-all"
+            aria-label="Pindai QR atau barcode stiker pelanggan"
             title="Scan QR / Barcode Stiker Pelanggan"
           >
-            📷
+            <span aria-hidden="true">📷</span>
           </button>
 
           {/* Capacity Truck Badge Toggle */}
@@ -643,9 +650,11 @@ export default function GojekDriverCockpit({
                   ? "bg-rose-600 border-rose-400 text-white animate-pulse"
                   : "bg-slate-900/95 border-slate-700 text-slate-200"
               }`}
+              aria-label={`Kapasitas muatan bak truk ${muatanTruk} persen`}
+              aria-expanded={showCapacityPicker}
               title="Kapasitas Muatan Bak Truk"
             >
-              <span className="text-[10px]">🚛</span>
+              <span aria-hidden="true" className="text-[10px]">🚛</span>
               <span className="text-[9px] font-black">{muatanTruk}%</span>
             </button>
 
@@ -661,7 +670,7 @@ export default function GojekDriverCockpit({
                     }}
                     className={`w-full py-1 px-2 rounded-xl text-xs font-bold text-left transition-colors flex items-center justify-between ${
                       muatanTruk === persen
-                        ? "bg-emerald-600 text-white"
+                        ? "bg-emerald-700 text-white"
                         : "hover:bg-slate-800 text-slate-300"
                     }`}
                   >
@@ -680,9 +689,10 @@ export default function GojekDriverCockpit({
               setSheetMode((prev) => (prev === "hidden" ? "compact" : "hidden"));
             }}
             className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-slate-900/95 hover:bg-slate-800 active:scale-95 text-slate-300 border border-slate-700 shadow-xl flex items-center justify-center text-sm font-bold transition-all"
+            aria-label={sheetMode === "hidden" ? "Tampilkan panel bawah" : "Sembunyikan panel bawah"}
             title={sheetMode === "hidden" ? "Tampilkan Panel Bawah" : "Sembunyikan Panel Bawah"}
           >
-            {sheetMode === "hidden" ? "👁️" : "🙈"}
+            <span aria-hidden="true">{sheetMode === "hidden" ? "👁️" : "🙈"}</span>
           </button>
         </div>
       </div>
@@ -693,7 +703,7 @@ export default function GojekDriverCockpit({
           <button
             type="button"
             onClick={() => setSheetMode("compact")}
-            className="w-full bg-slate-950/95 backdrop-blur-md border border-slate-700 p-2.5 rounded-2xl text-white shadow-2xl flex items-center justify-between gap-2 active:scale-98 transition-transform"
+            className="w-full bg-slate-950/95 backdrop-blur-md border border-slate-700 p-2.5 rounded-2xl text-white shadow-2xl flex items-center justify-between gap-2 active:scale-95 transition-transform"
           >
             <div className="flex items-center gap-2 min-w-0">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shrink-0 animate-ping" />
@@ -733,7 +743,7 @@ export default function GojekDriverCockpit({
             onClick={() => {
               setSheetMode(sheetMode === "expanded" ? "compact" : "expanded");
             }}
-            className="cursor-pointer py-2 -mt-2 -mx-4 mb-1 flex justify-center w-[calc(100%+2rem)]"
+            className="cursor-pointer py-2 -mt-2 -mx-4 mb-1 flex justify-center w-[calc(100%_+_2rem)]"
           >
             <div className="w-12 h-1.5 bg-slate-600/80 rounded-full" />
           </div>
@@ -777,12 +787,14 @@ export default function GojekDriverCockpit({
                   onClick={() => {
                     setSheetMode(sheetMode === "expanded" ? "compact" : "expanded");
                   }}
+                  aria-expanded={sheetMode === "expanded"}
                   className="text-slate-400 hover:text-white text-[11px] font-bold flex items-center gap-1 shrink-0"
                 >
                   <span>
                     Stop #{totalCompleted + 1}/{validTasks.length}
                   </span>
                   <motion.span
+                    aria-hidden="true"
                     animate={{ rotate: sheetMode === "expanded" ? 180 : 0 }}
                     transition={{ duration: 0.3 }}
                   >
@@ -931,16 +943,18 @@ export default function GojekDriverCockpit({
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="🔍 Cari nama pelanggan, kode, atau alamat..."
-                      className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs font-bold text-white placeholder-slate-500 outline-none focus:ring-2 focus:ring-emerald-500/20"
+                      placeholder="Cari nama pelanggan, kode, atau alamat..."
+                      aria-label="Cari antrean tugas"
+                      className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs font-bold text-white placeholder-slate-400 outline-none focus:ring-2 focus:ring-emerald-500/20"
                     />
                     {searchQuery && (
                       <button
                         type="button"
                         onClick={() => setSearchQuery("")}
-                        className="absolute right-2.5 top-2 text-xs text-slate-400 hover:text-white"
+                        aria-label="Bersihkan pencarian"
+                        className="absolute right-2 top-1.5 h-6 w-6 flex items-center justify-center rounded-lg text-xs text-slate-400 hover:text-white"
                       >
-                        ✕
+                        <span aria-hidden="true">✕</span>
                       </button>
                     )}
                   </div>
@@ -972,7 +986,7 @@ export default function GojekDriverCockpit({
                               className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 ${
                                 t.tunggakan?.isMenunggak
                                   ? "bg-rose-600 text-white shadow-[0_0_10px_rgba(225,29,72,0.3)]"
-                                  : "bg-emerald-600 text-white shadow-[0_0_10px_rgba(5,150,105,0.3)]"
+                                  : "bg-emerald-700 text-white shadow-[0_0_10px_rgba(4,120,87,0.3)]"
                               }`}
                             >
                               {i + 1}
@@ -1022,6 +1036,9 @@ export default function GojekDriverCockpit({
         <div
           onClick={() => setPreviewFoto(null)}
           className="fixed inset-0 z-[1200] bg-black/90 flex items-center justify-center p-4 backdrop-blur-md"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Pratinjau foto rumah pelanggan"
         >
           <div className="relative max-w-sm w-full bg-slate-900 rounded-3xl overflow-hidden border border-slate-700 shadow-2xl p-3 space-y-3">
             <div className="flex items-center justify-between">
