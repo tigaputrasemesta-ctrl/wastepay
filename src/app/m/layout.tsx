@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import MobileTracker from "@/components/mobile/MobileTracker";
 import BackgroundTracker from "@/components/mobile/BackgroundTracker";
 import VersionCheck from "@/components/mobile/VersionCheck";
+import NotificationBridge from "@/components/mobile/NotificationBridge";
 import MobileSessionGuard, { clearMobileSession } from "@/components/mobile/MobileSessionGuard";
 
 type Profil = {
@@ -253,6 +254,8 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
         </div>
       </div>
       <VersionCheck />
+      {/* Pengingat perangkat (absen/jadwal/pengumuman) — hanya aktif di APK Android. */}
+      <NotificationBridge />
     </ToastProvider>
   );
 }

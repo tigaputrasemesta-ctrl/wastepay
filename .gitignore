@@ -73,3 +73,11 @@ next-env.d.ts
 /potrace.zip
 .vercel
 /pi-dev/
+
+# AI IDE & tools
+.cursor/
+.gemini/
+.agents/
+.mcp.json
+MCP-SETUP.md
+scripts/mcp-probe.mjs

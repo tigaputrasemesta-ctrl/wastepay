@@ -28,6 +28,14 @@ const config: CapacitorConfig = {
     // setelah ~5 menit di background (lihat plugin background-geolocation).
     useLegacyBridge: true,
   },
+  plugins: {
+    LocalNotifications: {
+      // Warna aksen ikon notifikasi kecil (hijau O2W).
+      // `smallIcon` sengaja TIDAK diisi: drawable-nya belum ada, dan mengarahkan
+      // ke resource yang tidak ada membuat notifikasi gagal tampil.
+      iconColor: "#047857",
+    },
+  },
 };
 
 export default config;

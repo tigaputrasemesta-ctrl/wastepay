@@ -429,98 +429,76 @@ export default function GojekDriverCockpit({
           : "h-full flex-1 w-full bg-slate-950 flex flex-col"
       }`}
     >
-      {/* ── 1. GOJEK FLOATING TOP TOOLBAR & TRIP STATUS BANNER ── */}
-      <div className="absolute top-2.5 sm:top-3 inset-x-2.5 sm:inset-x-3 z-[400] pointer-events-none space-y-1.5">
-        {/* Destination Guidance Banner */}
-        <div className="pointer-events-auto bg-slate-950/95 backdrop-blur-md rounded-2xl p-2.5 sm:p-3 border border-slate-800 shadow-2xl flex items-center justify-between gap-2">
-          {/* Direction Icon & Next Step Guidance */}
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-emerald-700 to-teal-700 flex items-center justify-center text-white text-lg sm:text-xl shadow-lg shadow-emerald-900/40 shrink-0 font-black">
-              <span aria-hidden="true">{isWithinRadius ? "🎯" : "⬆️"}</span>
+      {/* ── 1. GOJEK FLOATING DESTINATION GUIDANCE PILL ── */}
+      {currentTask && (
+        <div className="absolute top-2 left-2.5 right-12 sm:right-14 z-[400] pointer-events-none space-y-1">
+          {/* Destination Guidance Pill */}
+          <div className="pointer-events-auto bg-slate-950/90 backdrop-blur-md rounded-xl px-2.5 py-1.5 border border-slate-800 shadow-xl flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-700 to-teal-700 flex items-center justify-center text-white text-xs shadow-md shrink-0 font-black">
+                <span aria-hidden="true">{isWithinRadius ? "🎯" : "⬆️"}</span>
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-black text-white tracking-tight truncate max-w-[130px] sm:max-w-xs">
+                    {currentTask.nama}
+                  </span>
+                  <span className="text-[10px] font-bold text-emerald-400 font-mono shrink-0">
+                    {distanceToCurrent !== null
+                      ? isWithinRadius
+                        ? "Tiba!"
+                        : `${distanceToCurrent}m`
+                      : ""}
+                  </span>
+                </div>
+                <p className="text-[10px] text-slate-400 font-medium truncate">
+                  {currentTask.patokanLokasi ? `📍 ${currentTask.patokanLokasi}` : currentTask.alamat}
+                </p>
+              </div>
             </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <span className="text-xs sm:text-sm font-black text-white tracking-tight truncate">
-                  {distanceToCurrent !== null
-                    ? isWithinRadius
-                      ? "Tiba di Lokasi! (Siap)"
-                      : `${distanceToCurrent}m lagi`
-                    : "Memantau Rute..."}
+
+            <div className="flex items-center gap-1.5 shrink-0">
+              {currentIsMenunggak ? (
+                <span className="px-1.5 py-0.5 rounded text-[8px] font-black bg-rose-600 text-white animate-pulse">
+                  MENUNGGAK
                 </span>
-
-                {/* Pricing / Tunggakan Tag */}
-                {currentIsMenunggak ? (
-                  <span className="px-1.5 py-0.5 rounded text-[9px] font-black bg-rose-600 text-white animate-pulse shrink-0">
-                    ⛔ MENUNGGAK
-                  </span>
-                ) : (
-                  <span className="px-1.5 py-0.5 rounded text-[9px] font-black bg-emerald-600/80 text-white shrink-0">
-                    ✓ LUNAS
-                  </span>
-                )}
-              </div>
-              <p className="text-[11px] sm:text-xs text-slate-300 font-medium truncate">
-                {currentTask
-                  ? `${currentTask.nama} • ${currentTask.alamat}`
-                  : "Belum ada antrean tugas"}
-              </p>
+              ) : (
+                <span className="px-1.5 py-0.5 rounded text-[8px] font-black bg-emerald-600/80 text-white">
+                  LUNAS
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  setFocusPos([currentTask.latitude, currentTask.longitude]);
+                  if (sheetMode === "hidden") setSheetMode("compact");
+                }}
+                className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-white text-[10px] font-bold rounded-lg border border-slate-700 active:scale-95 transition-transform"
+                title="Fokus ke Rumah Pelanggan"
+              >
+                Fokus
+              </button>
             </div>
           </div>
 
-          {/* Controls: Timer & Fullscreen */}
-          <div className="flex items-center gap-1.5 shrink-0">
-            {/* Timer Badge */}
-            {tripState !== "idle" && (
-              <div className="px-2 py-1 bg-slate-900 border border-slate-700 rounded-xl text-[10px] sm:text-xs font-mono font-bold text-emerald-400 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                <span>{formatTripDuration(tripSeconds)}</span>
-              </div>
-            )}
+          {/* Contextual Warning Banner: Kapasitas Truk & Tunggakan */}
+          {muatanTruk >= 75 && (
+            <div className="pointer-events-auto bg-amber-500/95 backdrop-blur-md text-slate-950 px-2.5 py-1 rounded-lg text-[10px] font-extrabold flex items-center justify-between shadow-md">
+              <span>⚠️ Truk {muatanTruk}% — Segera ke Titik Transit bila penuh!</span>
+              <span className="text-xs">🚛</span>
+            </div>
+          )}
 
-            <button
-              type="button"
-              onClick={onToggleSound}
-              aria-label="Suara peringatan radius"
-              aria-pressed={soundEnabled}
-              className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold border transition-colors ${
-                soundEnabled
-                  ? "bg-emerald-950 text-emerald-400 border-emerald-700"
-                  : "bg-slate-900 text-slate-500 border-slate-800"
-              }`}
-              title={soundEnabled ? "Suara Aktif" : "Mute"}
-            >
-              <span aria-hidden="true">{soundEnabled ? "🔊" : "🔇"}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setIsFullscreen(!isFullscreen)}
-              aria-label={isFullscreen ? "Keluar dari layar penuh" : "Tampilkan layar penuh"}
-              className="w-8 h-8 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 flex items-center justify-center text-xs font-bold transition-all active:scale-95"
-              title="Layar Penuh"
-            >
-              <span aria-hidden="true">{isFullscreen ? "✕" : "⤢"}</span>
-            </button>
-          </div>
+          {currentIsMenunggak && (
+            <div className="pointer-events-auto bg-rose-700/95 backdrop-blur-md text-white px-2.5 py-1 rounded-lg text-[10px] font-extrabold flex items-center justify-between shadow-md animate-pulse">
+              <span>
+                ⛔ Menunggak {currentTask.tunggakan?.jumlahBulan} bln ({formatRupiah(currentTask.tunggakan?.totalNominal || 0)}). Jangan angkut!
+              </span>
+              <span className="text-xs">⚠️</span>
+            </div>
+          )}
         </div>
-
-        {/* ── Contextual Warning Banner: Kapasitas Truk & Tunggakan ── */}
-        {muatanTruk >= 75 && (
-          <div className="pointer-events-auto bg-amber-500/90 backdrop-blur-md text-slate-950 px-3 py-1.5 rounded-xl text-[11px] font-extrabold flex items-center justify-between shadow-lg">
-            <span>⚠️ Kapasitas Truk {muatanTruk}% — Segera menuju Titik Transit bila bak penuh!</span>
-            <span className="text-xs">🚛</span>
-          </div>
-        )}
-
-        {currentIsMenunggak && (
-          <div className="pointer-events-auto bg-rose-700 backdrop-blur-md text-white px-3 py-1.5 rounded-xl text-[11px] font-extrabold flex items-center justify-between shadow-lg animate-pulse">
-            <span>
-              ⛔ Konsumen ini menunggak {currentTask?.tunggakan?.jumlahBulan} bln ({formatRupiah(currentTask?.tunggakan?.totalNominal || 0)}). Jangan angkut!
-            </span>
-            <span className="text-xs">⚠️</span>
-          </div>
-        )}
-      </div>
+      )}
 
       {/* ── 2. FULLSCREEN LEAFLET MAP CANVAS ── */}
       <div className="absolute inset-0 z-0">
@@ -609,7 +587,7 @@ export default function GojekDriverCockpit({
         </MapContainer>
 
         {/* ── 3. FLOATING ACTION BUTTONS (FABS) ── */}
-        <div className="absolute right-2.5 sm:right-3 top-20 sm:top-24 z-[400] flex flex-col gap-1.5 sm:gap-2">
+        <div className="absolute right-2 top-2 z-[400] flex flex-col gap-1.5">
           {/* Layer Mode Cycle Button */}
           <button
             type="button"
@@ -618,9 +596,9 @@ export default function GojekDriverCockpit({
                 m === "google-streets" ? "google-hybrid" : m === "google-hybrid" ? "dark" : "google-streets"
               );
             }}
-            className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-slate-900/95 hover:bg-slate-800 active:scale-95 text-white border border-slate-700 shadow-xl flex items-center justify-center text-sm font-black transition-all"
-            aria-label={`Ganti mode peta (sekarang: ${tileMode === "google-streets" ? "Jalan" : tileMode === "google-hybrid" ? "Satelit" : "Gelap"})`}
-            title={`Mode Peta: ${tileMode === "google-streets" ? "Jalan" : tileMode === "google-hybrid" ? "Satelit" : "Gelap"} (Ketuk untuk ganti)`}
+            className="w-8.5 h-8.5 rounded-xl bg-slate-900/90 backdrop-blur-md hover:bg-slate-800 active:scale-95 text-white border border-slate-700 shadow-md flex items-center justify-center text-xs font-bold transition-all"
+            aria-label="Ganti mode peta"
+            title={`Mode Peta: ${tileMode === "google-streets" ? "Jalan" : tileMode === "google-hybrid" ? "Satelit" : "Gelap"}`}
           >
             <span aria-hidden="true">{tileMode === "google-streets" ? "🗺️" : tileMode === "google-hybrid" ? "🛰️" : "🌙"}</span>
           </button>
@@ -629,7 +607,7 @@ export default function GojekDriverCockpit({
           <button
             type="button"
             onClick={() => setCenterTrigger((c) => c + 1)}
-            className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-slate-900/95 hover:bg-slate-800 active:scale-95 text-white border border-slate-700 shadow-xl flex items-center justify-center text-base sm:text-lg transition-all"
+            className="w-8.5 h-8.5 rounded-xl bg-slate-900/90 backdrop-blur-md hover:bg-slate-800 active:scale-95 text-white border border-slate-700 shadow-md flex items-center justify-center text-xs transition-all"
             aria-label="Pusatkan ke lokasi saya"
             title="Pusatkan Lokasi Saya"
           >
@@ -640,22 +618,11 @@ export default function GojekDriverCockpit({
           <button
             type="button"
             onClick={() => setFitTrigger((f) => f + 1)}
-            className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-slate-900/95 hover:bg-slate-800 active:scale-95 text-white border border-slate-700 shadow-xl flex items-center justify-center text-xs sm:text-sm font-black transition-all"
+            className="w-8.5 h-8.5 rounded-xl bg-slate-900/90 backdrop-blur-md hover:bg-slate-800 active:scale-95 text-white border border-slate-700 shadow-md flex items-center justify-center text-xs transition-all"
             aria-label="Tampilkan seluruh rute"
             title="Tampilkan Seluruh Rute"
           >
             <span aria-hidden="true">📍</span>
-          </button>
-
-          {/* Scanning: Scan QR / Barcode Stiker Pelanggan */}
-          <button
-            type="button"
-            onClick={() => setIsScannerOpen(true)}
-            className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-br from-emerald-700 to-teal-700 active:scale-95 text-white border border-emerald-600 shadow-xl flex items-center justify-center text-base font-black transition-all"
-            aria-label="Pindai QR atau barcode stiker pelanggan"
-            title="Scan QR / Barcode Stiker Pelanggan"
-          >
-            <span aria-hidden="true">📷</span>
           </button>
 
           {/* Capacity Truck Badge Toggle */}
@@ -663,21 +630,21 @@ export default function GojekDriverCockpit({
             <button
               type="button"
               onClick={() => setShowCapacityPicker(!showCapacityPicker)}
-              className={`w-10 h-10 sm:w-11 sm:h-11 rounded-2xl border flex flex-col items-center justify-center shadow-xl transition-all active:scale-95 ${
+              className={`w-8.5 h-8.5 rounded-xl border flex flex-col items-center justify-center shadow-md transition-all active:scale-95 ${
                 muatanTruk >= 100
                   ? "bg-rose-600 border-rose-400 text-white animate-pulse"
-                  : "bg-slate-900/95 border-slate-700 text-slate-200"
+                  : "bg-slate-900/90 backdrop-blur-md border-slate-700 text-slate-200"
               }`}
               aria-label={`Kapasitas muatan bak truk ${muatanTruk} persen`}
               aria-expanded={showCapacityPicker}
               title="Kapasitas Muatan Bak Truk"
             >
-              <span aria-hidden="true" className="text-[10px]">🚛</span>
-              <span className="text-[9px] font-black">{muatanTruk}%</span>
+              <span aria-hidden="true" className="text-[9px]">🚛</span>
+              <span className="text-[8px] font-black leading-none">{muatanTruk}%</span>
             </button>
 
             {showCapacityPicker && (
-              <div className="absolute right-full mr-2 top-0 bg-slate-900 border border-slate-700 rounded-2xl p-1.5 shadow-2xl w-28 space-y-1 z-[450]">
+              <div className="absolute right-full mr-1.5 top-0 bg-slate-900 border border-slate-700 rounded-xl p-1 shadow-2xl w-24 space-y-0.5 z-[450]">
                 {[25, 50, 75, 100].map((persen) => (
                   <button
                     key={persen}
@@ -686,7 +653,7 @@ export default function GojekDriverCockpit({
                       onMuatanChange(persen);
                       setShowCapacityPicker(false);
                     }}
-                    className={`w-full py-1 px-2 rounded-xl text-xs font-bold text-left transition-colors flex items-center justify-between ${
+                    className={`w-full py-0.5 px-1.5 rounded-lg text-[11px] font-bold text-left transition-colors flex items-center justify-between ${
                       muatanTruk === persen
                         ? "bg-emerald-700 text-white"
                         : "hover:bg-slate-800 text-slate-300"
@@ -706,7 +673,7 @@ export default function GojekDriverCockpit({
             onClick={() => {
               setSheetMode((prev) => (prev === "hidden" ? "compact" : "hidden"));
             }}
-            className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-slate-900/95 hover:bg-slate-800 active:scale-95 text-slate-300 border border-slate-700 shadow-xl flex items-center justify-center text-sm font-bold transition-all"
+            className="w-8.5 h-8.5 rounded-xl bg-slate-900/90 backdrop-blur-md hover:bg-slate-800 active:scale-95 text-slate-300 border border-slate-700 shadow-md flex items-center justify-center text-xs font-bold transition-all"
             aria-label={sheetMode === "hidden" ? "Tampilkan panel bawah" : "Sembunyikan panel bawah"}
             title={sheetMode === "hidden" ? "Tampilkan Panel Bawah" : "Sembunyikan Panel Bawah"}
           >

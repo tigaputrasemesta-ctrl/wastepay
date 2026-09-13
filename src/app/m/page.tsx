@@ -12,7 +12,8 @@ import {
   ChevronRight,
   AlertTriangle,
   MessageSquare,
-  Truck
+  Truck,
+  Bell
 } from "lucide-react";
 
 type Profil = {
@@ -277,6 +278,22 @@ export default function MobileHome() {
             <div>
               <p className="text-xs font-bold text-slate-900 leading-tight">Chat Admin</p>
               <p className="text-[10px] text-slate-500 truncate">Koordinasi & bantuan</p>
+            </div>
+          </Link>
+
+          <Link
+            href="/m/notifikasi"
+            className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-sm hover:border-amber-400 hover:shadow-md active:scale-[0.98] transition-all flex flex-col justify-between h-[84px]"
+          >
+            <div className="flex items-center justify-between">
+              <div className="w-8 h-8 rounded-xl bg-amber-600 text-white flex items-center justify-center shadow-sm">
+                <Bell className="w-4 h-4" />
+              </div>
+              <ChevronRight className="w-4 h-4 text-slate-300" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-900 leading-tight">Notifikasi</p>
+              <p className="text-[10px] text-slate-500 truncate">Pengingat absen & tugas</p>
             </div>
           </Link>
         </div>

@@ -39,4 +39,14 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <!-- Background location (Android 11+) — GPS tetap jalan saat aplikasi di background -->
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <!--
+      Notifikasi lokal (pengingat absen, ringkasan tugas, pengumuman).
+      Hanya SCHEDULE_EXACT_ALARM yang dideklarasikan — bukan USE_EXACT_ALARM.
+      Pengguna tetap bisa menolak; plugin otomatis turun ke alarm tidak-eksak
+      (waktu bisa bergeser beberapa menit) tanpa error. Waktu tepat ke detik
+      tidak krusial untuk pengingat absen/tugas.
+      POST_NOTIFICATIONS, RECEIVE_BOOT_COMPLETED, dan WAKE_LOCK tidak ditulis di
+      sini karena sudah dideklarasikan plugin dan otomatis digabung saat build.
+    -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 </manifest>
