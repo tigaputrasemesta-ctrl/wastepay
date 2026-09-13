@@ -82,7 +82,10 @@ function readSeen(): string[] | null {
 export default function NotificationBridge() {
   const router = useRouter();
   const routerRef = useRef(router);
-  routerRef.current = router;
+  // Disinkronkan lewat effect (bukan saat render) agar patuh aturan react-hooks/refs.
+  useEffect(() => {
+    routerRef.current = router;
+  }, [router]);
 
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;

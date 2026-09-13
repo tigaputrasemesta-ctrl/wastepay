@@ -118,27 +118,36 @@ function JamField({
   );
 }
 
+function bacaPrefs(): NotifPrefs {
+  try {
+    return parsePrefs(window.localStorage.getItem(NOTIF_PREFS_KEY));
+  } catch {
+    return DEFAULT_PREFS;
+  }
+}
+
 export default function NotifikasiMobilePage() {
-  const [prefs, setPrefs] = useState<NotifPrefs>(DEFAULT_PREFS);
+  // Satu objek untuk nilai yang berasal dari perangkat (localStorage & Capacitor).
+  const [muat, setMuat] = useState<{ prefs: NotifPrefs; native: boolean; siap: boolean }>({
+    prefs: DEFAULT_PREFS,
+    native: false,
+    siap: false,
+  });
   const [izin, setIzin] = useState<string | null>(null);
-  const [native, setNative] = useState(false);
-  const [siap, setSiap] = useState(false);
   const [pesan, setPesan] = useState<string | null>(null);
   const [mengirim, setMengirim] = useState(false);
+  const { prefs, native, siap } = muat;
 
   useEffect(() => {
-    setNative(isNative());
-    try {
-      setPrefs(parsePrefs(window.localStorage.getItem(NOTIF_PREFS_KEY)));
-    } catch {
-      setPrefs(DEFAULT_PREFS);
-    }
-    setSiap(true);
+    // Dibaca setelah mount, bukan di initializer useState: localStorage tidak ada
+    // saat render di server, dan membacanya di initializer memicu hydration mismatch.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sinkronisasi sekali dengan penyimpanan perangkat
+    setMuat({ prefs: bacaPrefs(), native: isNative(), siap: true });
     void cekStatusIzin().then(setIzin);
   }, []);
 
   const simpan = useCallback((next: NotifPrefs) => {
-    setPrefs(next);
+    setMuat((sebelum) => ({ ...sebelum, prefs: next }));
     try {
       window.localStorage.setItem(NOTIF_PREFS_KEY, serializePrefs(next));
     } catch {
