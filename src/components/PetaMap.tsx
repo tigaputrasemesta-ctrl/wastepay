@@ -118,6 +118,7 @@ function isOnline(iso: string): boolean {
 export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], kendaraanAwal = [], transitAwal = [] }: Props) {
   const [filterWilayah, setFilterWilayah] = useState("semua");
   const [filterStatus, setFilterStatus] = useState("semua");
+  const [filterTagihan, setFilterTagihan] = useState<"semua" | "lunas" | "tunggakan">("semua");
   const [cari, setCari] = useState("");
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [ruteId, setRuteId] = useState<string>("semua");
@@ -129,6 +130,14 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
   const [tab, setTab] = useState<TabKey>("pelanggan");
   const [bukaLapakList, setBukaLapakList] = useState(true);
   const [urutkan, setUrutkan] = useState<"nama" | "kode">("kode");
+
+  // Mode Layar Penuh GIS (Showing & Hiding)
+  const [panelBawahTerbuka, setPanelBawahTerbuka] = useState(true);
+  const [invalidateKey, setInvalidateKey] = useState(1);
+
+  // Searching & Finding langsung di Peta
+  const [pencarianPeta, setPencarianPeta] = useState("");
+  const [bukaSaranPeta, setBukaSaranPeta] = useState(false);
 
   // ── Pengaduan live (polling) ──
   const [komplain, setKomplain] = useState<KomplainPeta[]>([]);
@@ -257,10 +266,57 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
     });
   }, [tanpaKoordinat, urutkan]);
 
-  const peta = useMemo(
-    () => pelanggan.filter((p) => p.latitude != null && p.longitude != null),
+  const lunasCount = useMemo(
+    () => pelanggan.filter((p) => p.statusTagihan === "lunas").length,
     [pelanggan]
   );
+  const menunggakCount = useMemo(
+    () =>
+      pelanggan.filter(
+        (p) => p.statusTagihan === "tunggakan" || p.statusTagihan === "belum_bayar"
+      ).length,
+    [pelanggan]
+  );
+  const aktifCount = useMemo(
+    () => pelanggan.filter((p) => p.status === "aktif").length,
+    [pelanggan]
+  );
+
+  const saranPeta = useMemo(() => {
+    const q = pencarianPeta.trim().toLowerCase();
+    if (!q || q.length < 2) return [];
+    return pelanggan
+      .filter(
+        (p) =>
+          p.latitude != null &&
+          p.longitude != null &&
+          (p.nama.toLowerCase().includes(q) ||
+            p.kodePelanggan.toLowerCase().includes(q) ||
+            p.alamat.toLowerCase().includes(q) ||
+            (p.rtRw && p.rtRw.toLowerCase().includes(q)))
+      )
+      .slice(0, 6);
+  }, [pelanggan, pencarianPeta]);
+
+  const peta = useMemo(() => {
+    return pelanggan.filter((p) => {
+      if (p.latitude == null || p.longitude == null) return false;
+      if (filterWilayah !== "semua" && p.wilayah?.id !== Number(filterWilayah)) return false;
+      if (filterStatus !== "semua" && p.status !== filterStatus) return false;
+      if (filterTagihan === "lunas" && p.statusTagihan !== "lunas") return false;
+      if (
+        filterTagihan === "tunggakan" &&
+        p.statusTagihan !== "tunggakan" &&
+        p.statusTagihan !== "belum_bayar"
+      )
+        return false;
+      if (cari.trim()) {
+        const q = cari.trim().toLowerCase();
+        if (!`${p.nama} ${p.kodePelanggan} ${p.alamat}`.toLowerCase().includes(q)) return false;
+      }
+      return true;
+    });
+  }, [pelanggan, filterWilayah, filterStatus, filterTagihan, cari]);
 
   const ruteTerpilih = ruteId !== "semua" ? rute.find((r) => String(r.id) === ruteId) ?? null : null;
   const ruteAktif = rute.filter((r) => r.anggota.length >= 2);
@@ -325,31 +381,150 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
 
   return (
     <div className="space-y-4 pb-12">
-      {/* ── BAGIAN ATAS: PETA OPERASIONAL DENGAN TOP STATUS BAR ── */}
+      {/* ── BAGIAN ATAS: PETA OPERASIONAL DENGAN BANNER, DASHBOARD & PENCARIAN ── */}
       <div className="rounded-2xl border border-slate-200/80 shadow-sm bg-white overflow-hidden">
-        {/* Top Status & Filter Header Bar */}
-        <div className="bg-slate-900 text-white px-4 py-3 flex flex-wrap items-center justify-between gap-3 border-b border-slate-800">
-          <div className="flex items-center gap-2.5">
+        {/* Banner Pemantauan Realtime */}
+        <div className="bg-slate-900 text-white px-4 py-2 border-b border-slate-800 flex items-center justify-between text-[11px] font-bold flex-wrap gap-2">
+          <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse ring-4 ring-emerald-400/20" />
-            <span className="font-bold text-xs uppercase tracking-wider text-white">
-              🗺️ PETA OPERASIONAL DEPOK
+            <span className="tracking-wide uppercase">🟢 MONITORING REALTIME ARMADA & CAKUPAN SAMPAH KOTA DEPOK</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setPanelBawahTerbuka((p) => !p);
+              setInvalidateKey((k) => k + 1);
+            }}
+            className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 font-bold text-xs transition-colors flex items-center gap-1.5"
+          >
+            <span>{panelBawahTerbuka ? "⛶" : "👁️"}</span>
+            <span>{panelBawahTerbuka ? "Layar Penuh (Sembunyikan Panel)" : "Buka Panel Bawah"}</span>
+          </button>
+        </div>
+
+        {/* GIS Floating Dashboard & Filter Bar */}
+        <div className="bg-slate-950 text-white px-4 py-3 flex flex-wrap items-center justify-between gap-3 border-b border-slate-800">
+          <div className="flex items-center gap-2 text-xs font-semibold flex-wrap">
+            <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-xl font-bold">
+              👥 {pelanggan.length} Warga ({aktifCount} Aktif)
+            </span>
+            <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-xl font-bold">
+              💳 {lunasCount} Lunas
+            </span>
+            {menunggakCount > 0 && (
+              <span className="bg-rose-500/20 text-rose-300 border border-rose-500/30 px-2.5 py-1 rounded-xl font-bold animate-pulse">
+                ⛔ {menunggakCount} Menunggak
+              </span>
+            )}
+            <span className="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-xl font-bold">
+              🚛 {kendaraanOnline} Truk Online
+            </span>
+            <span className="bg-sky-500/20 text-sky-300 border border-sky-500/30 px-2.5 py-1 rounded-xl font-bold">
+              👮 {petugasOnline} Petugas Online
+            </span>
+            <span className="bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-1 rounded-xl font-bold">
+              📍 {transit.filter((t) => t.aktif).length} Lapak/TPS
             </span>
           </div>
-          <div className="flex items-center gap-2 text-[11px] font-semibold flex-wrap">
-            <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-full font-medium">
-              📍 {ruteTerpilih ? `RUTE: ${ruteTerpilih.nama}` : "SEMUA PELANGGAN"}
-            </span>
-            <span className="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-full font-medium">
-              🚛 {ruteAktif.length} RUTE AKTIF
-            </span>
-            <span className="bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-1 rounded-full font-medium">
-              📌 {RT_RTRW_DEPOK.length} TITIK RT
-            </span>
+
+          {/* Pricing Filter Buttons */}
+          <div className="flex items-center gap-1.5 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-bold">
+            <span className="text-[10px] text-slate-400 px-1.5 uppercase">Tagihan:</span>
+            <button
+              type="button"
+              onClick={() => setFilterTagihan("semua")}
+              className={`px-2 py-0.5 rounded-lg transition-colors ${
+                filterTagihan === "semua" ? "bg-emerald-600 text-white" : "text-slate-400 hover:text-white"
+              }`}
+            >
+              Semua
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterTagihan("lunas")}
+              className={`px-2 py-0.5 rounded-lg transition-colors ${
+                filterTagihan === "lunas" ? "bg-emerald-600 text-white" : "text-slate-400 hover:text-white"
+              }`}
+            >
+              ✓ Lunas
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterTagihan("tunggakan")}
+              className={`px-2 py-0.5 rounded-lg transition-colors ${
+                filterTagihan === "tunggakan" ? "bg-rose-600 text-white" : "text-slate-400 hover:text-white"
+              }`}
+            >
+              ⛔ Menunggak
+            </button>
           </div>
         </div>
 
-        {/* Map Canvas - Bersih dari floating badge yang menghalangi */}
-        <div className="relative h-[65vh] min-h-[500px]">
+        {/* Map Canvas - dengan Pencarian Cerdas Mengambang (Searching & Finding) */}
+        <div className={`relative transition-all duration-300 ${panelBawahTerbuka ? "h-[65vh] min-h-[500px]" : "h-[85vh] min-h-[620px]"}`}>
+          {/* Searching & Finding Floating Input on Map */}
+          <div className="absolute top-3 left-3 z-[1000] w-72 sm:w-80">
+            <div className="relative">
+              <input
+                type="text"
+                value={pencarianPeta}
+                onChange={(e) => {
+                  setPencarianPeta(e.target.value);
+                  setBukaSaranPeta(true);
+                }}
+                onFocus={() => setBukaSaranPeta(true)}
+                placeholder="🔍 Cari cepat warga di peta..."
+                className="w-full bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl px-3.5 py-2 text-xs font-bold text-slate-800 placeholder-slate-400 shadow-lg outline-none focus:ring-2 focus:ring-emerald-500/30"
+              />
+              {pencarianPeta && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPencarianPeta("");
+                    setBukaSaranPeta(false);
+                  }}
+                  className="absolute right-3 top-2 text-xs text-slate-400 hover:text-slate-700 font-bold"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+
+            {/* Dropdown Suggestions */}
+            {bukaSaranPeta && saranPeta.length > 0 && (
+              <div className="mt-1 bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden divide-y divide-slate-100 max-h-60 overflow-y-auto">
+                {saranPeta.map((p) => (
+                  <button
+                    key={`suggest-${p.id}`}
+                    type="button"
+                    onClick={() => {
+                      pilihPelanggan(p.id);
+                      setPencarianPeta(p.nama);
+                      setBukaSaranPeta(false);
+                    }}
+                    className="w-full text-left px-3.5 py-2 hover:bg-emerald-50 flex items-center justify-between gap-2 transition-colors"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-slate-900 truncate">{p.nama}</p>
+                      <p className="text-[10px] text-slate-500 truncate">{p.alamat}</p>
+                    </div>
+                    <span
+                      className={`text-[9px] font-black px-1.5 py-0.5 rounded shrink-0 ${
+                        p.statusTagihan === "lunas"
+                          ? "bg-emerald-100 text-emerald-800"
+                          : p.statusTagihan === "tunggakan"
+                          ? "bg-rose-100 text-rose-800"
+                          : "bg-slate-100 text-slate-700"
+                      }`}
+                    >
+                      {p.statusTagihan === "lunas" ? "LUNAS" : p.statusTagihan === "tunggakan" ? "MENUNGGAK" : p.kodePelanggan}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           <MapView
             pelanggan={peta}
             komplain={komplainFilter}
@@ -366,14 +541,15 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
             tampilkanBatasKelurahan={tampilkanBatasKelurahan}
             tampilkanRt={tampilkanRt}
             ruteTerpilih={ruteTerpilih}
-            invalidateKey={1}
+            invalidateKey={invalidateKey}
             warnaStatus={WARNA_STATUS}
           />
         </div>
       </div>
 
       {/* ── BAGIAN BAWAH: DASHBOARD ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-auto lg:h-[550px]">
+      {panelBawahTerbuka && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-auto lg:h-[550px]">
         
         {/* KOLOM KIRI (3): HEADER & LAYER */}
         <div className="lg:col-span-3 space-y-4 flex flex-col h-full">
@@ -973,6 +1149,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
         </div>
 
       </div>
+      )}
     </div>
   );
 }

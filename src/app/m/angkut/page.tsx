@@ -5,7 +5,8 @@ import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import CameraGps from "@/components/mobile/CameraGps";
 import ProximityPickupModal from "@/components/mobile/ProximityPickupModal";
-import GojekDriverCockpit from "@/components/mobile/GojekDriverCockpit";
+import GojekDriverCockpit, { formatTripDuration, type TripState } from "@/components/mobile/GojekDriverCockpit";
+import QrScannerModal from "@/components/mobile/QrScannerModal";
 import { useProximityPickup, type ProximityTugas } from "@/hooks/useProximityPickup";
 import { useWakeLock } from "@/hooks/useWakeLock";
 import { playSound, speakText, vibrate } from "@/lib/mobile-feedback";
@@ -73,6 +74,13 @@ export default function MobileAngkut() {
   const [voiceEnabled, setVoiceEnabled] = useState<boolean>(true);
   const [muatanTruk, setMuatanTruk] = useState<number>(25);
   const [viewMode, setViewMode] = useState<"map" | "list">("map");
+
+  // Trip & Shift State (Starting & Completing + Timer + Scanner)
+  const [tripState, setTripState] = useState<TripState>("idle");
+  const [tripSeconds, setTripSeconds] = useState<number>(0);
+  const [showTripSummary, setShowTripSummary] = useState(false);
+  const [isGlobalScannerOpen, setIsGlobalScannerOpen] = useState(false);
+  const [searchQueryList, setSearchQueryList] = useState("");
 
   // Screen Wake Lock API: layar tetap aktif saat patroli rute
   useWakeLock(true);
@@ -211,6 +219,91 @@ export default function MobileAngkut() {
     fetchData();
   }, [fetchData]);
 
+  // Restore trip state dari localStorage
+  useEffect(() => {
+    try {
+      const saved = typeof window !== "undefined" ? localStorage.getItem("wp_driver_trip_state") : null;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.status === "running") {
+          const now = Date.now();
+          const diff = Math.floor((now - parsed.startTime) / 1000);
+          setTripSeconds(Math.max(0, (parsed.elapsedOffset || 0) + diff));
+          setTripState("running");
+        } else if (parsed.status === "paused") {
+          setTripSeconds(parsed.elapsedOffset || 0);
+          setTripState("paused");
+        }
+      }
+    } catch {}
+  }, []);
+
+  // Timer interval
+  useEffect(() => {
+    if (tripState !== "running") return;
+    const t = setInterval(() => {
+      setTripSeconds((s) => s + 1);
+    }, 1000);
+    return () => clearInterval(t);
+  }, [tripState]);
+
+  function handleStartTrip() {
+    const now = Date.now();
+    setTripState("running");
+    if (typeof window !== "undefined") {
+      localStorage.setItem(
+        "wp_driver_trip_state",
+        JSON.stringify({ status: "running", startTime: now, elapsedOffset: tripSeconds })
+      );
+    }
+    playSound("success");
+    vibrate("success");
+    speakText("Rute pengangkutan dimulai. Selamat bertugas!");
+  }
+
+  function handlePauseTrip() {
+    setTripState("paused");
+    if (typeof window !== "undefined") {
+      localStorage.setItem(
+        "wp_driver_trip_state",
+        JSON.stringify({ status: "paused", startTime: Date.now(), elapsedOffset: tripSeconds })
+      );
+    }
+    speakText("Rute dijeda.");
+  }
+
+  function handleResumeTrip() {
+    handleStartTrip();
+  }
+
+  function handleCompleteTrip() {
+    setTripState("completed");
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("wp_driver_trip_state");
+    }
+    setShowTripSummary(true);
+    playSound("success");
+    vibrate("success");
+    speakText("Luar biasa! Rute pengangkutan selesai.");
+  }
+
+  function handleGlobalScan(code: string) {
+    const clean = code.trim().toLowerCase();
+    const found = data.find(
+      (t) =>
+        t.pelanggan.kodePelanggan.toLowerCase() === clean ||
+        String(t.id) === clean
+    );
+    if (found) {
+      playSound("success");
+      vibrate("success");
+      speakText(`Target ditemukan: ${found.pelanggan.nama}`);
+      forceOpenTask(found.id);
+    } else {
+      alert(`Kode pelanggan "${code}" tidak ditemukan dalam jadwal rute hari ini.`);
+    }
+  }
+
   const [filterTab, setFilterTab] = useState<"belum" | "selesai" | "semua">("belum");
 
   function bukaForm(t: Tugas) {
@@ -276,13 +369,124 @@ export default function MobileAngkut() {
   const percentComplete = totalCount > 0 ? Math.round((selesaiCount / totalCount) * 100) : 0;
 
   const filteredData = data.filter((t) => {
-    if (filterTab === "belum") return t.status === "terjadwal";
-    if (filterTab === "selesai") return t.status !== "terjadwal";
+    if (filterTab === "belum" && t.status !== "terjadwal") return false;
+    if (filterTab === "selesai" && t.status === "terjadwal") return false;
+    if (searchQueryList.trim()) {
+      const q = searchQueryList.trim().toLowerCase();
+      const match =
+        t.pelanggan.nama.toLowerCase().includes(q) ||
+        t.pelanggan.kodePelanggan.toLowerCase().includes(q) ||
+        t.pelanggan.alamat.toLowerCase().includes(q);
+      if (!match) return false;
+    }
     return true;
   });
 
   return (
     <div className="space-y-4">
+      {/* ── TOP SHIFT TOOLBAR & TRIP TIMER (Starting & Completing + Timer) ── */}
+      <div className="bg-slate-900 text-white rounded-3xl p-3 sm:p-3.5 border border-slate-800 shadow-md flex items-center justify-between gap-2.5">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="relative flex h-3 w-3 shrink-0">
+            <span
+              className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                tripState === "running" ? "bg-emerald-400" : tripState === "paused" ? "bg-amber-400" : "bg-slate-400"
+              }`}
+            />
+            <span
+              className={`relative inline-flex rounded-full h-3 w-3 ${
+                tripState === "running" ? "bg-emerald-500" : tripState === "paused" ? "bg-amber-500" : "bg-slate-500"
+              }`}
+            />
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider truncate">
+                {tripState === "running" ? "Rute Berlangsung" : tripState === "paused" ? "Rute Dijeda" : "Rute Belum Mulai"}
+              </span>
+            </div>
+            <p className="text-[10px] font-mono text-emerald-400 font-bold">
+              ⏱️ {formatTripDuration(tripSeconds)}
+            </p>
+          </div>
+        </div>
+
+        {/* Action buttons */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          {tripState === "idle" && (
+            <button
+              type="button"
+              onClick={handleStartTrip}
+              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-black rounded-xl shadow-md transition-all flex items-center gap-1"
+            >
+              <span>▶️</span>
+              <span>Mulai Rute</span>
+            </button>
+          )}
+
+          {tripState === "running" && (
+            <>
+              <button
+                type="button"
+                onClick={handlePauseTrip}
+                className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-amber-300 text-xs font-bold rounded-xl border border-slate-700 transition-all"
+                title="Jeda Sementara"
+              >
+                ⏸️ Jeda
+              </button>
+              <button
+                type="button"
+                onClick={handleCompleteTrip}
+                className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-black rounded-xl shadow-md transition-all"
+                title="Selesaikan Rute"
+              >
+                🏁 Selesai
+              </button>
+            </>
+          )}
+
+          {tripState === "paused" && (
+            <>
+              <button
+                type="button"
+                onClick={handleResumeTrip}
+                className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-black rounded-xl shadow-md transition-all"
+              >
+                ▶️ Lanjut
+              </button>
+              <button
+                type="button"
+                onClick={handleCompleteTrip}
+                className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-white text-xs font-bold rounded-xl border border-slate-700 transition-all"
+              >
+                🏁 Selesai
+              </button>
+            </>
+          )}
+
+          {tripState === "completed" && (
+            <button
+              type="button"
+              onClick={() => {
+                setTripState("idle");
+                setTripSeconds(0);
+              }}
+              className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl border border-slate-700"
+            >
+              🔄 Reset
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={() => setIsGlobalScannerOpen(true)}
+            className="p-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded-xl border border-slate-700 active:scale-95 text-sm"
+            title="Scan QR Barcode Pelanggan"
+          >
+            📷
+          </button>
+        </div>
+      </div>
       {/* Top Header with Date & Progress */}
       <div className="bg-white rounded-3xl p-3.5 sm:p-4 border border-slate-200/80 shadow-xs space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
@@ -489,6 +693,12 @@ export default function MobileAngkut() {
               setSoundEnabled(next);
               setVoiceEnabled(next);
             }}
+            tripState={tripState}
+            tripSeconds={tripSeconds}
+            onStartTrip={handleStartTrip}
+            onPauseTrip={handlePauseTrip}
+            onResumeTrip={handleResumeTrip}
+            onCompleteTrip={handleCompleteTrip}
           />
 
           {data.length === 0 && (
@@ -507,6 +717,26 @@ export default function MobileAngkut() {
       {/* ── MODE DAFTAR RUTE ── */}
       {viewMode === "list" && (
         <div className="space-y-3">
+          {/* Searching & Finding in List View */}
+          <div className="relative">
+            <input
+              type="text"
+              value={searchQueryList}
+              onChange={(e) => setSearchQueryList(e.target.value)}
+              placeholder="🔍 Cari nama pelanggan, kode (mis. 0101-0001), atau alamat..."
+              className="w-full px-3.5 py-2.5 bg-white border border-slate-200/90 rounded-2xl text-xs font-bold text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-emerald-500/20 shadow-xs"
+            />
+            {searchQueryList && (
+              <button
+                type="button"
+                onClick={() => setSearchQueryList("")}
+                className="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-700 font-bold"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
           {/* Filter Tabs */}
           <div className="flex gap-1.5 p-1 bg-slate-100 rounded-2xl text-xs font-bold">
             <button
@@ -866,6 +1096,67 @@ export default function MobileAngkut() {
           }}
           onDismiss={dismissActiveTask}
         />
+      )}
+
+      {/* ── Global QR & Barcode Scanner Modal (Scanning) ── */}
+      <QrScannerModal
+        isOpen={isGlobalScannerOpen}
+        onClose={() => setIsGlobalScannerOpen(false)}
+        onScan={handleGlobalScan}
+      />
+
+      {/* ── Modal Ringkasan Rute (Starting & Completing) ── */}
+      {showTripSummary && (
+        <div className="fixed inset-0 z-[1200] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-slate-900 border border-slate-700 rounded-3xl p-5 w-full max-w-sm text-center text-white space-y-4 shadow-2xl animate-in zoom-in-95 duration-200">
+            <div className="w-14 h-14 bg-emerald-500/20 text-emerald-400 rounded-2xl flex items-center justify-center mx-auto text-2xl border border-emerald-500/30">
+              🏆
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-base font-black">Rute Pengangkutan Selesai!</h3>
+              <p className="text-xs text-slate-400">
+                Laporan bertugas telah dirangkum otomatis.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 text-left bg-slate-950 p-3 rounded-2xl border border-slate-800 text-xs">
+              <div>
+                <span className="text-slate-500 block text-[10px] font-bold">Waktu Bertugas</span>
+                <span className="font-mono font-black text-emerald-400 text-sm">
+                  {formatTripDuration(tripSeconds)}
+                </span>
+              </div>
+              <div>
+                <span className="text-slate-500 block text-[10px] font-bold">Selesai Diangkut</span>
+                <span className="font-black text-white text-sm">
+                  {selesaiCount} / {totalCount} Rumah
+                </span>
+              </div>
+              <div className="pt-2 border-t border-slate-800">
+                <span className="text-slate-500 block text-[10px] font-bold">Muatan Truk</span>
+                <span className="font-black text-amber-400 text-sm">{muatanTruk}%</span>
+              </div>
+              <div className="pt-2 border-t border-slate-800">
+                <span className="text-slate-500 block text-[10px] font-bold">Dilewati / Kendala</span>
+                <span className="font-black text-rose-400 text-sm">
+                  {data.filter((t) => t.status === "tidak_diangkut" || t.status === "kosong").length}
+                </span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setShowTripSummary(false);
+                setTripSeconds(0);
+                setTripState("idle");
+              }}
+              className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-black text-xs rounded-2xl shadow-lg transition-transform"
+            >
+              Tutup Ringkasan 🚀
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
