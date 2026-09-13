@@ -22,10 +22,10 @@ export const MOBILE_VERSION = {
 };
 
 export function getApkUrl(): string {
-  // Default: APK di-serve publik oleh Vercel dari folder public/apk/ (hasil CI).
-  // Bisa di-override lewat env MOBILE_APK_URL bila APK di-hosting di tempat lain.
+  // Default: APK di-serve publik dari folder public/apk/
+  // Gunakan relative path agar jalan di localhost maupun production.
   return (
     process.env.MOBILE_APK_URL ||
-    "https://upsheru.vercel.app/apk/UPS-HERU-Lapangan.apk"
+    "/apk/O2W-Lapangan.apk"
   );
 }
