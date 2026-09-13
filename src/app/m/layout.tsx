@@ -55,6 +55,7 @@ const ICON_CHAT = (
   </svg>
 );
 
+
 function BottomNav({ pathname, jabatan }: { pathname: string; jabatan: string[] }) {
   const items = [
     { href: "/m", label: "Beranda", icon: ICON_HOME, show: true },
@@ -67,8 +68,8 @@ function BottomNav({ pathname, jabatan }: { pathname: string; jabatan: string[] 
   ].filter((i) => i.show);
 
   return (
-    <nav aria-label="Navigasi utama" className="fixed bottom-0 inset-x-0 z-50 glass-bottom-nav pb-safe pt-1.5 px-2">
-      <div className="w-full max-w-lg mx-auto flex justify-around items-center">
+    <nav aria-label="Navigasi utama" className="absolute bottom-0 inset-x-0 z-50 glass-bottom-nav pb-safe pt-1.5 px-1 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-lg">
+      <div className="w-full flex justify-around items-center">
         {items.map((it) => {
           const active = pathname === it.href;
           return (
@@ -77,7 +78,7 @@ function BottomNav({ pathname, jabatan }: { pathname: string; jabatan: string[] 
               href={it.href}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex-1 flex flex-col items-center justify-center py-1.5 px-0.5 sm:px-1 rounded-xl text-[9px] sm:text-[10px] font-bold transition-all min-w-0",
+                "flex-1 flex flex-col items-center justify-center py-1 px-0.5 rounded-xl text-[9px] font-bold transition-all min-w-0",
                 active
                   ? "text-emerald-700 bg-emerald-50 font-black"
                   : "text-slate-500 hover:text-slate-900 active:scale-95"
@@ -86,7 +87,9 @@ function BottomNav({ pathname, jabatan }: { pathname: string; jabatan: string[] 
               <div className={cn("transition-transform", active && "scale-105")}>
                 {it.icon}
               </div>
-              <span className="mt-0.5 tracking-tight truncate max-w-full">{it.label}</span>
+              <span className="mt-0.5 tracking-tight truncate max-w-full text-center leading-none">
+                {it.label}
+              </span>
             </Link>
           );
         })}
@@ -105,17 +108,26 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
     if (loading) return;
     if (!user) {
       router.replace(`/login?next=${encodeURIComponent(pathname)}`);
-    } else if (user.role !== "petugas") {
+    } else if (user.role !== "petugas" && user.role !== "admin" && user.role !== "superadmin") {
       router.replace("/dashboard");
     }
   }, [loading, user, pathname, router]);
 
   useEffect(() => {
-    if (!user || user.role !== "petugas") return;
-    fetch("/api/petugas/me")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => setProfil(d))
-      .catch(() => setProfil(null));
+    if (!user) return;
+    if (user.role === "petugas") {
+      fetch("/api/petugas/me")
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => setProfil(d))
+        .catch(() => setProfil(null));
+    } else {
+      setProfil({
+        id: user.id,
+        nama: user.nama || (user.role === "superadmin" ? "Super Admin" : "Admin"),
+        jabatan: "angkut,survei",
+        aktif: true,
+      });
+    }
   }, [user]);
 
   async function logout() {
@@ -125,23 +137,21 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
   }
 
   const loadingShell = (
-    <div className="min-h-dvh bg-slate-50 flex items-center justify-center" role="status">
-      <div className="flex flex-col items-center gap-2">
+    <div className="min-h-dvh bg-slate-900 flex items-center justify-center" role="status">
+      <div className="flex flex-col items-center gap-2 bg-white/10 backdrop-blur-md p-6 rounded-3xl border border-white/20">
         <div
           aria-hidden="true"
-          className="w-8 h-8 border-[3px] border-emerald-500 border-t-transparent rounded-full animate-spin"
+          className="w-8 h-8 border-[3px] border-emerald-400 border-t-transparent rounded-full animate-spin"
         />
-        <p className="font-semibold text-xs text-slate-500">Memuat UPS HERU Partner...</p>
+        <p className="font-semibold text-xs text-white">Memuat Layar Handphone APK...</p>
       </div>
     </div>
   );
 
   if (loading) return loadingShell;
-
-  // Sebelumnya `return null` -> pengguna melihat layar kosong selama redirect.
   if (!user) return loadingShell;
 
-  const jabatan = (profil?.jabatan || "").split(",").filter(Boolean);
+  const jabatan = (profil?.jabatan || (user.role !== "petugas" ? "angkut,survei" : "")).split(",").filter(Boolean);
 
   const isAngkut = Boolean(pathname && (pathname === "/m/angkut" || pathname.startsWith("/m/angkut/")));
   const isChat = pathname === "/m/chat";
@@ -149,58 +159,98 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
   return (
     <ToastProvider>
       <MobileSessionGuard />
-      <div className="h-dvh bg-slate-50 text-slate-900 flex flex-col overflow-hidden">
-        {/* Top bar (GoPartner Style) */}
-        <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-3.5 py-2 flex items-center justify-between gap-3 shadow-xs shrink-0">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="relative shrink-0">
-              <div className="w-8 h-8 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-xs shadow-xs">
-                {(profil?.nama || user.nama || "P").charAt(0).toUpperCase()}
-              </div>
-              <span
-                aria-hidden="true"
-                className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 ring-2 ring-white rounded-full animate-pulse"
-                title="GPS Lapangan Aktif"
-              />
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-bold text-slate-900 truncate">
-                  {profil ? profil.nama : user.nama}
-                </span>
-                <span className="px-1.5 py-0.5 text-[8px] font-bold bg-emerald-100 text-emerald-800 rounded-full">
-                  Partner
-                </span>
-              </div>
-              <p className="text-[10px] font-medium text-slate-500 truncate">
-                {jabatan.join(" • ") || "Petugas Lapangan"}
-              </p>
+      {/* Outer Shell: Authentic Smartphone Center Canvas on Desktop, Fullscreen on Mobile */}
+      <div className="min-h-dvh bg-slate-900/95 flex flex-col items-center justify-center sm:py-3 sm:px-4">
+        {/* Desktop Helper Bar */}
+        <div className="hidden sm:flex items-center justify-between w-full max-w-[430px] px-2 mb-1.5 text-xs text-slate-400">
+          <span className="flex items-center gap-1.5 font-semibold text-slate-300">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            Tampilan Handphone APK Lapangan
+          </span>
+          {user.role !== "petugas" && (
+            <Link
+              href="/dashboard"
+              className="text-emerald-400 hover:text-emerald-300 font-bold transition-colors"
+            >
+              Dashboard Web ↗
+            </Link>
+          )}
+        </div>
+
+        {/* Smartphone Frame */}
+        <div className="w-full max-w-[430px] h-dvh sm:h-[880px] sm:max-h-[96dvh] bg-slate-50 text-slate-900 flex flex-col overflow-hidden relative sm:rounded-[38px] sm:shadow-[0_25px_70px_rgba(0,0,0,0.8)] sm:border-[7px] sm:border-slate-800">
+          {/* Simulated Speaker / Camera Notch on Desktop view */}
+          <div className="hidden sm:flex justify-center pt-2 pb-0.5 bg-white shrink-0">
+            <div className="w-24 h-4 bg-slate-900 rounded-full flex items-center justify-center gap-2">
+              <div className="w-2.5 h-2.5 rounded-full bg-slate-800" />
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/80 animate-pulse" />
             </div>
           </div>
-          <button
-            onClick={logout}
-            className="shrink-0 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl active:scale-95 transition-all"
+
+          {/* Top bar (GoPartner Style) */}
+          <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-3.5 py-2 flex items-center justify-between gap-2 shadow-2xs shrink-0">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="relative shrink-0">
+                <div className="w-8 h-8 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                  {(profil?.nama || user.nama || "P").charAt(0).toUpperCase()}
+                </div>
+                <span
+                  aria-hidden="true"
+                  className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 ring-2 ring-white rounded-full animate-pulse"
+                  title="GPS Lapangan Aktif"
+                />
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-slate-900 truncate">
+                    {profil ? profil.nama : user.nama}
+                  </span>
+                  <span className="px-1.5 py-0.2 text-[8px] font-extrabold bg-emerald-100 text-emerald-800 rounded-full shrink-0">
+                    {user.role === "petugas" ? "Partner" : "Admin"}
+                  </span>
+                </div>
+                <p className="text-[10px] font-medium text-slate-500 truncate">
+                  {jabatan.join(" • ") || "Petugas Lapangan"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1.5 shrink-0">
+              {user.role !== "petugas" && (
+                <Link
+                  href="/dashboard"
+                  className="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] font-bold rounded-lg transition-all"
+                  title="Kembali ke Dashboard Web"
+                >
+                  Web ↗
+                </Link>
+              )}
+              <button
+                onClick={logout}
+                className="shrink-0 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl active:scale-95 transition-all"
+              >
+                Keluar
+              </button>
+            </div>
+          </header>
+
+          <main
+            className={cn(
+              "flex-1 w-full min-h-0",
+              isAngkut
+                ? "p-0 overflow-hidden flex flex-col"
+                : isChat
+                ? "px-3 py-2 pb-16 overflow-hidden flex flex-col"
+                : "px-3.5 py-2.5 pb-20 overflow-y-auto"
+            )}
           >
-            Keluar
-          </button>
-        </header>
+            <MobileTracker hideUi />
+            <BackgroundTracker hideUi />
+            {children}
+          </main>
 
-        <main
-          className={cn(
-            "flex-1 w-full mx-auto min-h-0",
-            isAngkut
-              ? "max-w-full p-0 overflow-hidden flex flex-col"
-              : isChat
-              ? "max-w-lg px-3 py-2 pb-16 overflow-hidden flex flex-col"
-              : "max-w-lg px-3 sm:px-4 py-3 pb-20 overflow-y-auto"
-          )}
-        >
-          <MobileTracker hideUi />
-          <BackgroundTracker hideUi />
-          {children}
-        </main>
-
-        <BottomNav pathname={pathname} jabatan={jabatan} />
+          <BottomNav pathname={pathname} jabatan={jabatan} />
+        </div>
       </div>
       <VersionCheck />
     </ToastProvider>

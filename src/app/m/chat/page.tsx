@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
+import { useUser } from "@/hooks/useUser";
 
 type Pesan = {
   id: number;
@@ -14,8 +15,21 @@ type Pesan = {
   pengirim: { nama: string; role: string };
 };
 
+type ThreadItem = {
+  petugasId: number;
+  nama: string;
+  jabatan: string | null;
+  wilayah: string | null;
+  pesanTerakhir: string;
+  waktuTerakhir: string;
+  unread: number;
+};
+
 export default function MobileChat() {
+  const { user } = useUser();
   const [pesan, setPesan] = useState<Pesan[]>([]);
+  const [threads, setThreads] = useState<ThreadItem[]>([]);
+  const [targetPetugasId, setTargetPetugasId] = useState<number | null>(null);
   const [isi, setIsi] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
@@ -23,28 +37,52 @@ export default function MobileChat() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const lastCountRef = useRef(0);
 
-  const muat = useCallback(async (tandaiBaca: boolean) => {
-    try {
-      const res = await fetch("/api/chat");
-      const d = await res.json();
-      if (res.ok) {
-        setPesan(d.pesan ?? []);
-        if (tandaiBaca && (d.pesan ?? []).some((m: Pesan) => !m.dariPetugas && !m.dibaca)) {
-          fetch("/api/chat/read", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({}),
-          }).catch(() => {});
+  const isAdmin = user && user.role !== "petugas";
+
+  const muat = useCallback(
+    async (tandaiBaca: boolean, overridePid?: number | null) => {
+      try {
+        const pid = overridePid !== undefined ? overridePid : targetPetugasId;
+        const query = pid ? `?petugasId=${pid}` : "";
+        const res = await fetch(`/api/chat${query}`);
+        const d = await res.json();
+        if (res.ok) {
+          if (Array.isArray(d)) {
+            // Response adalah daftar thread (Admin view tanpa query petugasId)
+            setThreads(d);
+            if (d.length > 0 && !pid) {
+              const firstPid = d[0].petugasId;
+              setTargetPetugasId(firstPid);
+              // Muat pesan untuk petugas pertama
+              const res2 = await fetch(`/api/chat?petugasId=${firstPid}`);
+              const d2 = await res2.json();
+              if (res2.ok) setPesan(d2.pesan ?? []);
+            }
+          } else {
+            // Response berisi pesan array
+            setPesan(d.pesan ?? []);
+            if (d.petugasId && !targetPetugasId) {
+              setTargetPetugasId(d.petugasId);
+            }
+            if (tandaiBaca && (d.pesan ?? []).some((m: Pesan) => !m.dariPetugas && !m.dibaca)) {
+              fetch("/api/chat/read", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({}),
+              }).catch(() => {});
+            }
+          }
+        } else {
+          setError(d.error || "Gagal memuat chat");
         }
-      } else {
-        setError(d.error || "Gagal memuat chat");
+      } catch {
+        setError("Jaringan bermasalah");
+      } finally {
+        setLoading(false);
       }
-    } catch {
-      setError("Jaringan bermasalah");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    [targetPetugasId]
+  );
 
   useEffect(() => {
     void muat(true);
@@ -65,10 +103,14 @@ export default function MobileChat() {
     setSending(true);
     setError("");
     try {
+      const payload: { isi: string; petugasId?: number } = { isi: t };
+      if (isAdmin && targetPetugasId) {
+        payload.petugasId = targetPetugasId;
+      }
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isi: t }),
+        body: JSON.stringify(payload),
       });
       const d = await res.json();
       if (res.ok) {
@@ -84,6 +126,8 @@ export default function MobileChat() {
     }
   }
 
+  const selectedThread = threads.find((t) => t.petugasId === targetPetugasId);
+
   return (
     <div className="flex-1 flex flex-col min-h-0 h-full">
       {/* Compact Top Header */}
@@ -93,17 +137,42 @@ export default function MobileChat() {
             💬
           </div>
           <div className="min-w-0">
-            <h1 className="text-xs font-bold text-slate-900 leading-tight truncate">
-              Pesan ke Admin Dinas
-            </h1>
-            <div className="flex items-center gap-1 text-[10px] text-slate-500">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Koordinasi armada & kendala</span>
-            </div>
+            {isAdmin && threads.length > 0 ? (
+              <div className="flex items-center gap-1.5">
+                <select
+                  value={targetPetugasId ?? ""}
+                  onChange={(e) => {
+                    const pid = Number(e.target.value);
+                    setTargetPetugasId(pid);
+                    void muat(true, pid);
+                  }}
+                  className="text-xs font-bold text-slate-900 bg-slate-100 border border-slate-300 rounded-lg px-2 py-0.5 outline-none max-w-[170px] truncate"
+                >
+                  {threads.map((t) => (
+                    <option key={t.petugasId} value={t.petugasId}>
+                      {t.nama}
+                    </option>
+                  ))}
+                </select>
+                <span className="text-[9px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
+                  Admin View
+                </span>
+              </div>
+            ) : (
+              <>
+                <h1 className="text-xs font-bold text-slate-900 leading-tight truncate">
+                  Pesan ke Admin Dinas
+                </h1>
+                <div className="flex items-center gap-1 text-[10px] text-slate-500">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>Koordinasi armada & kendala</span>
+                </div>
+              </>
+            )}
           </div>
         </div>
-        <span className="text-[9px] font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
-          Live
+        <span className="text-[9px] font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full shrink-0">
+          Live 5s
         </span>
       </div>
 
@@ -124,32 +193,39 @@ export default function MobileChat() {
             <span className="text-2xl block mb-1">💬</span>
             <p className="font-bold text-xs text-slate-700">Belum Ada Pesan</p>
             <p className="text-[11px] text-slate-400 mt-0.5">
-              Kirim pesan untuk menghubungi dispatcher atau admin dinas.
+              {isAdmin
+                ? `Ketik pesan pertama Anda kepada petugas ${selectedThread?.nama || ""}.`
+                : "Kirim pesan untuk menghubungi dispatcher atau admin dinas."}
             </p>
           </div>
         ) : (
-          pesan.map((m) => (
-            <div key={m.id} className={`flex ${m.dariPetugas ? "justify-end" : "justify-start"}`}>
-              <div
-                className={`max-w-[85%] px-3.5 py-2 text-xs shadow-2xs ${
-                  m.dariPetugas
-                    ? "bg-emerald-700 text-white rounded-2xl rounded-tr-xs"
-                    : "bg-white border border-slate-200/90 text-slate-900 rounded-2xl rounded-tl-xs"
-                }`}
-              >
+          pesan.map((m) => {
+            const isMe = isAdmin ? !m.dariPetugas : m.dariPetugas;
+            return (
+              <div key={m.id} className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
                 <div
-                  className={`text-[9px] font-semibold mb-0.5 flex items-center gap-1.5 ${
-                    m.dariPetugas ? "text-emerald-200" : "text-slate-400"
+                  className={`max-w-[85%] px-3.5 py-2 text-xs shadow-2xs ${
+                    isMe
+                      ? "bg-emerald-700 text-white rounded-2xl rounded-tr-xs"
+                      : "bg-white border border-slate-200/90 text-slate-900 rounded-2xl rounded-tl-xs"
                   }`}
                 >
-                  <span className="font-bold">{m.dariPetugas ? "Anda" : "Admin"}</span>
-                  <span>•</span>
-                  <span>{format(new Date(m.createdAt), "HH:mm", { locale: id })}</span>
+                  <div
+                    className={`text-[9px] font-semibold mb-0.5 flex items-center gap-1.5 ${
+                      isMe ? "text-emerald-200" : "text-slate-400"
+                    }`}
+                  >
+                    <span className="font-bold">
+                      {isMe ? "Anda" : m.dariPetugas ? m.pengirim.nama : "Admin Dinas"}
+                    </span>
+                    <span>•</span>
+                    <span>{format(new Date(m.createdAt), "HH:mm", { locale: id })}</span>
+                  </div>
+                  <p className="leading-relaxed whitespace-pre-wrap break-words">{m.isi}</p>
                 </div>
-                <p className="leading-relaxed whitespace-pre-wrap break-words">{m.isi}</p>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
         <div ref={bottomRef} />
       </div>
@@ -166,7 +242,11 @@ export default function MobileChat() {
           <input
             value={isi}
             onChange={(e) => setIsi(e.target.value)}
-            placeholder="Tulis pesan ke admin…"
+            placeholder={
+              isAdmin && selectedThread
+                ? `Pesan ke ${selectedThread.nama}…`
+                : "Tulis pesan ke admin…"
+            }
             className="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-medium outline-none bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 shadow-2xs"
           />
           <button
