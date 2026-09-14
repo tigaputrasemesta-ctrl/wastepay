@@ -33,13 +33,9 @@ export type TugasMap = {
   noTelepon?: string | null;
   fotoRumah?: string | null;
   urutan?: number;
-  tunggakan?: {
-    isMenunggak: boolean;
-    jumlahBulan: number;
-    totalNominal: number;
-    daftarBulan: string[];
-    bolehPickup: boolean;
-  };
+  estimasiVolume?: string;
+  catatanKhusus?: string;
+  jenisSampah?: string;
 };
 
 export type MapAngkutProps = {
@@ -47,7 +43,7 @@ export type MapAngkutProps = {
   posSaya?: { lat: number; lng: number; akurasi?: number } | null;
   radiusMeter?: number; // 10 atau 20 meter
   onQuickPickup?: (taskId: number) => Promise<void>;
-  onSkipOverdue?: (taskId: number, catatan: string) => Promise<void>;
+  onLaporKendala?: (taskId: number, catatan: string) => Promise<void>;
   onSelectTask?: (taskId: number) => void;
   className?: string;
 };
@@ -61,7 +57,7 @@ const PUSAT_DEPOK: [number, number] = [-6.424838, 106.832667];
  * - Gelombang halo berdenyut untuk rumah yang menunggak
  */
 function buatPinTugas(t: TugasMap, urutan?: number, isSelected?: boolean) {
-  const isMenunggak = Boolean(t.tunggakan?.isMenunggak);
+  const isMenunggak = false; // Diubah: Tidak ada harga/tunggakan
   const isSelesai = t.status === "diambil";
   const isKendala = t.status === "tidak_diangkut";
 
@@ -334,7 +330,7 @@ export default function MapAngkut({
     return jarakMeter(activeDriverPos, [selectedTask.latitude, selectedTask.longitude]);
   }, [selectedTask, activeDriverPos]);
 
-  const selectedIsMenunggak = Boolean(selectedTask?.tunggakan?.isMenunggak);
+  const selectedIsMenunggak = false; // Fitur tunggakan dihapus
   const selectedWaUrl = selectedTask
     ? buildWhatsAppDriverUrl({
         phone: selectedTask.noTelepon,
@@ -631,19 +627,15 @@ export default function MapAngkut({
                 <div className="flex items-center gap-2">
                   <span
                     className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                      selectedIsMenunggak
-                        ? "bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse"
-                        : selectedTask.status === "diambil"
+                      selectedTask.status === "diambil"
                         ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
-                        : "bg-sky-500/20 text-sky-300 border border-sky-500/40"
+                        : "bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse"
                     }`}
                   >
                     <span>
-                      {selectedIsMenunggak
-                        ? "⛔ MENUNGGAK (JANGAN ANGKUT)"
-                        : selectedTask.status === "diambil"
+                      {selectedTask.status === "diambil"
                         ? "✓ SUDAH DIAMBIL"
-                        : "SIAP PICKUP"}
+                        : `URUTAN #${selectedTask.urutan || '-'}`}
                     </span>
                   </span>
                   {selectedDistance !== null && (
@@ -664,133 +656,94 @@ export default function MapAngkut({
 
               {/* Customer Body */}
               <div className="py-2.5 flex items-start justify-between gap-3">
-                <div className="space-y-0.5 min-w-0">
+                <div className="space-y-1.5 min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <h4 className="text-sm font-black text-white truncate">
                       {selectedTask.nama}
                     </h4>
-                    <span className="text-[10px] font-mono font-bold text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded shrink-0">
+                    <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-950/50 px-1.5 py-0.5 rounded border border-emerald-800/50 shrink-0">
                       {selectedTask.kodePelanggan}
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-300 line-clamp-1">
+                  <p className="text-xs text-slate-300 line-clamp-2">
                     {selectedTask.alamat}
                   </p>
 
-                  {selectedTask.patokanLokasi && (
-                    <p className="text-[11px] text-amber-300 font-medium">
-                      📍 Patokan: {selectedTask.patokanLokasi}
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    {selectedTask.estimasiVolume && (
+                      <span className="text-[10px] bg-slate-800 text-slate-300 px-2 py-1 rounded-md flex items-center gap-1">
+                        📦 {selectedTask.estimasiVolume}
+                      </span>
+                    )}
+                    {selectedTask.jenisSampah && (
+                      <span className="text-[10px] bg-slate-800 text-slate-300 px-2 py-1 rounded-md flex items-center gap-1">
+                        ♻️ {selectedTask.jenisSampah}
+                      </span>
+                    )}
+                  </div>
+
+                  {selectedTask.catatanKhusus && (
+                    <p className="text-[11px] text-amber-300 font-medium mt-1 bg-amber-950/30 p-1.5 rounded-md border border-amber-900/50">
+                      📝 {selectedTask.catatanKhusus}
                     </p>
                   )}
                 </div>
 
                 {selectedTask.fotoRumah && (
-                  <div className="w-12 h-12 rounded-xl overflow-hidden border border-slate-700 shrink-0 bg-slate-800 relative">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden border border-slate-700 shrink-0 bg-slate-800 relative shadow-md">
                     <Image
                       src={selectedTask.fotoRumah}
-                      alt="Foto Rumah"
+                      alt="Foto Titik Jemput"
                       fill
                       className="object-cover"
-                      sizes="48px"
+                      sizes="64px"
                     />
                   </div>
                 )}
               </div>
 
-              {/* Tunggakan Info if Applicable */}
-              {selectedIsMenunggak && (
-                <div className="mb-2 p-2 rounded-xl bg-rose-950/70 border border-rose-800 text-[11px] text-rose-200 flex items-center justify-between">
-                  <span>
-                    ⚠️ Tunggakan: {selectedTask.tunggakan?.jumlahBulan} Bulan
-                  </span>
-                  <span className="font-black text-rose-400">
-                    {formatRupiah(selectedTask.tunggakan?.totalNominal || 0)}
-                  </span>
-                </div>
-              )}
-
               {/* Action Buttons Row */}
-              <div className="grid grid-cols-3 gap-2 pt-1">
-                {/* 1. Turn-by-Turn Google Maps Navigation */}
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800/50 mt-1">
+                {/* Navigasi */}
                 {selectedNavUrl ? (
                   <a
                     href={selectedNavUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="py-2 px-2 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-100 font-bold text-xs flex items-center justify-center gap-1.5 transition-all border border-slate-700"
+                    className="py-2.5 px-2 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-100 font-bold text-xs flex items-center justify-center gap-1.5 transition-all border border-slate-700 shadow-sm"
                   >
-                    <span>🧭</span>
+                    <span className="text-sm">🧭</span>
                     <span>Navigasi</span>
                   </a>
                 ) : (
-                  <div className="py-2 text-center text-xs text-slate-500 bg-slate-900 rounded-xl">
-                    No GPS
+                  <div className="py-2.5 text-center text-xs text-slate-500 bg-slate-900 rounded-xl">
+                    Tanpa GPS
                   </div>
                 )}
 
-                {/* 2. WhatsApp Warga */}
-                {selectedWaUrl ? (
-                  <a
-                    href={selectedWaUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="py-2 px-2 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 active:scale-95 text-emerald-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all border border-emerald-700/60"
-                  >
-                    <span>💬</span>
-                    <span>WA Warga</span>
-                  </a>
-                ) : (
-                  <div className="py-2 text-center text-xs text-slate-500 bg-slate-900 rounded-xl">
-                    No WA
-                  </div>
-                )}
-
-                {/* 3. Action Pickup or Skip */}
+                {/* Action Pickup */}
                 {selectedTask.status === "terjadwal" ? (
-                  selectedIsMenunggak ? (
-                    <button
-                      type="button"
-                      disabled={actionLoading}
-                      onClick={async () => {
-                        setActionLoading(true);
-                        try {
-                          await onSkipOverdue?.(
-                            selectedTask.id,
-                            `Dilewati via Peta: Menunggak ${selectedTask.tunggakan?.jumlahBulan} bulan`
-                          );
-                          setSelectedTask(null);
-                        } finally {
-                          setActionLoading(false);
-                        }
-                      }}
-                      className="py-2 px-2 rounded-xl bg-rose-600 hover:bg-rose-500 active:scale-95 text-white font-black text-xs flex items-center justify-center gap-1 transition-all shadow-md shadow-rose-600/30"
-                    >
-                      <span>🚫</span>
-                      <span>Lewati</span>
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      disabled={actionLoading}
-                      onClick={async () => {
-                        setActionLoading(true);
-                        try {
-                          await onQuickPickup?.(selectedTask.id);
-                          setSelectedTask(null);
-                        } finally {
-                          setActionLoading(false);
-                        }
-                      }}
-                      className="py-2 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-black text-xs flex items-center justify-center gap-1 transition-all shadow-md shadow-emerald-600/30"
-                    >
-                      <span>✓</span>
-                      <span>Pickup</span>
-                    </button>
-                  )
+                  <button
+                    type="button"
+                    disabled={actionLoading}
+                    onClick={async () => {
+                      setActionLoading(true);
+                      try {
+                        await onQuickPickup?.(selectedTask.id);
+                        setSelectedTask(null);
+                      } finally {
+                        setActionLoading(false);
+                      }
+                    }}
+                    className="py-2.5 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-black text-xs flex items-center justify-center gap-1 transition-all shadow-lg shadow-emerald-600/20"
+                  >
+                    <span className="text-sm">✓</span>
+                    <span>Angkut Sekarang</span>
+                  </button>
                 ) : (
-                  <div className="py-2 text-center text-xs text-emerald-400 font-bold bg-emerald-950/60 rounded-xl border border-emerald-800/40">
-                    ✓ Selesai
+                  <div className="py-2.5 text-center text-xs text-emerald-400 font-bold bg-emerald-950/60 rounded-xl border border-emerald-800/40">
+                    ✓ Sudah Diangkut
                   </div>
                 )}
               </div>
