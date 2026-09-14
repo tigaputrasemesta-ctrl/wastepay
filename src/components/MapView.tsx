@@ -87,6 +87,11 @@ const KATEGORI_LABEL: Record<string, string> = {
   level_10: "Level 10 — Volume Korporat",
 };
 
+const TAGIHAN_LABEL: Record<string, string> = {
+  belum_bayar: "Belum bayar",
+  lunas: "Lunas",
+  tunggakan: "Tunggakan",
+};
 
 type KelurahanGeomItem = {
   nama: string;
@@ -241,7 +246,9 @@ function popupHtml(p: PelangganPeta): string {
   try {
     const zona =
       p.latitude != null && p.longitude != null ? deteksiZona([p.latitude, p.longitude]) : null;
-            const telClean = p.noTelepon ? String(p.noTelepon).replace(/\D/g, "") : "";
+    const statusTxt = TAGIHAN_LABEL[p.statusTagihan ?? ""] ?? "—";
+    const warnaTxt = p.statusTagihan === "tunggakan" ? "#f87171" : "#4ade80";
+    const telClean = p.noTelepon ? String(p.noTelepon).replace(/\D/g, "") : "";
     const waUrl = telClean ? `https://wa.me/${telClean.replace(/^0/, "62")}` : null;
     const wa = waUrl
       ? `<a href="${waUrl}" target="_blank" rel="noreferrer" style="display:inline-block;margin-top:6px;color:#131517;background:#b7e13c;font-family:ui-monospace,monospace;font-size:10px;font-weight:700;padding:4px 8px;border-radius:2px;text-decoration:none;letter-spacing:0.06em">WA ${esc(p.noTelepon)}</a>`
@@ -259,9 +266,7 @@ function popupHtml(p: PelangganPeta): string {
             )} · KEC. ${esc((zona.kecamatan || "").toUpperCase())}<br/>RT RTRW #${esc(zona.rtId)} (±${zona.jarakRtM ?? 0} m)</div>`
           : ""
       }
-      ${p.estimasiVolume ? `<div style="color:#a1a1aa;font-size:10px;margin-top:4px;">📦 Vol: ${esc(p.estimasiVolume)}</div>` : ''}
-    ${p.jenisSampah ? `<div style="color:#a1a1aa;font-size:10px;">♻️ Jenis: ${esc(p.jenisSampah)}</div>` : ''}
-    ${p.catatanKhusus ? `<div style="color:#fbbf24;font-size:10px;margin-top:4px;">📝 ${esc(p.catatanKhusus)}</div>` : ''}
+      <div style="color:${warnaTxt};margin-top:6px;font-weight:700">TAGIHAN: ${esc(statusTxt)}</div>
       ${wa}
     </div>`;
   } catch (err) {
