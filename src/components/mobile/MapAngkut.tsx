@@ -623,7 +623,7 @@ export default function MapAngkut({
               className={`rounded-3xl p-4 shadow-2xl backdrop-blur-md border transition-all ${
                 selectedIsMenunggak
                   ? "bg-slate-950/95 border-rose-500/60 ring-2 ring-rose-500/20 text-white"
-                  : "bg-slate-950/95 border-emerald-500/50 ring-2 ring-emerald-500/20 text-white"
+                  : "bg-slate-900/85 border-emerald-500/50 ring-2 ring-emerald-500/30 text-white"
               }`}
             >
               {/* Header Drawer */}
@@ -632,10 +632,10 @@ export default function MapAngkut({
                   <span
                     className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
                       selectedIsMenunggak
-                        ? "bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse"
+                        ? "bg-gradient-to-r from-rose-600 to-rose-500 text-white border-0 shadow-lg shadow-rose-500/40 animate-pulse"
                         : selectedTask.status === "diambil"
-                        ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
-                        : "bg-sky-500/20 text-sky-300 border border-sky-500/40"
+                        ? "bg-gradient-to-r from-emerald-600 to-teal-500 text-white border-0 shadow-lg shadow-emerald-500/30"
+                        : "bg-gradient-to-r from-sky-600 to-blue-500 text-white border-0 shadow-lg shadow-blue-500/30"
                     }`}
                   >
                     <span>
@@ -700,7 +700,7 @@ export default function MapAngkut({
 
               {/* Tunggakan Info if Applicable */}
               {selectedIsMenunggak && (
-                <div className="mb-2 p-2 rounded-xl bg-rose-950/70 border border-rose-800 text-[11px] text-rose-200 flex items-center justify-between">
+                <div className="mb-2 p-2 rounded-xl bg-rose-950/40 backdrop-blur-md border border-rose-500/30 text-xs text-rose-100 shadow-inner flex items-center justify-between">
                   <span>
                     ⚠️ Tunggakan: {selectedTask.tunggakan?.jumlahBulan} Bulan
                   </span>
@@ -718,7 +718,7 @@ export default function MapAngkut({
                     href={selectedNavUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="py-2 px-2 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-100 font-bold text-xs flex items-center justify-center gap-1.5 transition-all border border-slate-700"
+                    className="py-2.5 px-2 rounded-2xl bg-gradient-to-b from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 active:scale-95 text-slate-100 font-bold text-xs flex items-center justify-center gap-1.5 transition-all border border-slate-700"
                   >
                     <span>🧭</span>
                     <span>Navigasi</span>
@@ -735,7 +735,7 @@ export default function MapAngkut({
                     href={selectedWaUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="py-2 px-2 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 active:scale-95 text-emerald-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all border border-emerald-700/60"
+                    className="py-2.5 px-2 rounded-2xl bg-gradient-to-b from-emerald-800 to-emerald-900 border-none active:scale-95 text-emerald-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all border border-emerald-700/60"
                   >
                     <span>💬</span>
                     <span>WA Warga</span>
@@ -764,7 +764,7 @@ export default function MapAngkut({
                           setActionLoading(false);
                         }
                       }}
-                      className="py-2 px-2 rounded-xl bg-rose-600 hover:bg-rose-500 active:scale-95 text-white font-black text-xs flex items-center justify-center gap-1 transition-all shadow-md shadow-rose-600/30"
+                      className="py-2.5 px-2 rounded-2xl bg-gradient-to-b from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 active:scale-95 text-white font-black text-xs flex items-center justify-center gap-1 transition-all shadow-md shadow-rose-600/30"
                     >
                       <span>🚫</span>
                       <span>Lewati</span>
@@ -782,7 +782,7 @@ export default function MapAngkut({
                           setActionLoading(false);
                         }
                       }}
-                      className="py-2 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-black text-xs flex items-center justify-center gap-1 transition-all shadow-md shadow-emerald-600/30"
+                      className="py-2.5 px-2 rounded-2xl bg-gradient-to-b from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 active:scale-95 text-white font-black text-xs flex items-center justify-center gap-1 transition-all shadow-md shadow-emerald-600/30"
                     >
                       <span>✓</span>
                       <span>Pickup</span>
