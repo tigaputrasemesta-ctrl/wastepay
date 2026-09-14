@@ -837,7 +837,7 @@ export default function GojekDriverCockpit({
                       href={navUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-900 hover:bg-slate-800 active:scale-90 text-slate-100 border border-slate-700 flex items-center justify-center text-sm sm:text-base transition-all shadow-md"
+                      className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-900 hover:bg-slate-800 active:scale-90 text-slate-100 border border-slate-700 flex items-center justify-center text-sm sm:text-base transition-all shadow-md"
                       title="Navigasi Google Maps"
                     >
                       🧭
@@ -850,7 +850,7 @@ export default function GojekDriverCockpit({
                       href={waUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#00AA13] hover:bg-[#00880C] active:scale-90 text-white flex items-center justify-center text-base sm:text-lg transition-all shadow-lg shadow-[#00AA13]/40"
+                      className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#00AA13] hover:bg-[#00880C] active:scale-90 text-white flex items-center justify-center text-base sm:text-lg transition-all shadow-lg shadow-[#00AA13]/40"
                       title="Chat WhatsApp Warga"
                     >
                       💬
@@ -861,7 +861,7 @@ export default function GojekDriverCockpit({
                   {telUrl && (
                     <a
                       href={telUrl}
-                      className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-sky-600 hover:bg-sky-500 active:scale-90 text-white flex items-center justify-center text-sm sm:text-base transition-all shadow-lg shadow-sky-600/40"
+                      className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-sky-600 hover:bg-sky-500 active:scale-90 text-white flex items-center justify-center text-sm sm:text-base transition-all shadow-lg shadow-sky-600/40"
                       title="Telepon Langsung"
                     >
                       📞

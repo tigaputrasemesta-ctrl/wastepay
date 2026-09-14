@@ -489,7 +489,7 @@ export default function MobileAngkut() {
               type="button"
               onClick={() => setViewMode("map")}
               aria-pressed={viewMode === "map"}
-              className={`px-2 py-0.5 rounded-lg transition-all flex items-center gap-1 ${
+              className={`px-3 py-1.5 rounded-lg text-sm transition-all flex items-center gap-1 ${
                 viewMode === "map"
                   ? "bg-gradient-to-r from-emerald-700 to-teal-700 text-white shadow-2xs"
                   : "text-slate-400 hover:text-white"
@@ -504,7 +504,7 @@ export default function MobileAngkut() {
               type="button"
               onClick={() => setViewMode("list")}
               aria-pressed={viewMode === "list"}
-              className={`px-2 py-0.5 rounded-lg transition-all flex items-center gap-1 ${
+              className={`px-3 py-1.5 rounded-lg text-sm transition-all flex items-center gap-1 ${
                 viewMode === "list"
                   ? "bg-gradient-to-r from-emerald-700 to-teal-700 text-white shadow-2xs"
                   : "text-slate-400 hover:text-white"
@@ -808,7 +808,7 @@ export default function MobileAngkut() {
                     setViewMode("map");
                     forceOpenTask(t.id);
                   }}
-                  className="py-2.5 px-3 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm"
+                  className="py-3.5 px-4 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-sm font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm"
                 >
                   <span aria-hidden="true">🗺️</span>
                   <span>Lihat di Peta</span>
@@ -816,7 +816,7 @@ export default function MobileAngkut() {
                 <button
                   type="button"
                   onClick={() => window.open(mapsUrl(t), "_system")}
-                  className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all"
+                  className="py-3.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-2xl text-sm font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all"
                 >
                   <span aria-hidden="true">🧭</span>
                   <span>Google Maps</span>
@@ -831,7 +831,7 @@ export default function MobileAngkut() {
                         <button
                           type="button"
                           onClick={() => forceOpenTask(t.id)}
-                          className={`py-2.5 px-3 rounded-2xl text-xs font-black shadow-sm active:scale-95 transition-all flex items-center justify-center gap-1.5 ${
+                          className={`py-3.5 px-4 rounded-2xl text-sm font-black w-full mb-1 shadow-sm active:scale-95 transition-all flex items-center justify-center gap-1.5 ${
                             t.tunggakan?.isMenunggak
                               ? "bg-rose-600 hover:bg-rose-700 text-white"
                               : "bg-emerald-700 hover:bg-emerald-800 text-white"
@@ -846,7 +846,7 @@ export default function MobileAngkut() {
                             bukaForm(t);
                             setForm((f) => ({ ...f, status: "diambil" }));
                           }}
-                          className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-2xl text-xs font-bold active:scale-95 transition-all flex items-center justify-center gap-1.5"
+                          className="py-3.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-2xl text-sm font-bold active:scale-95 transition-all flex items-center justify-center gap-1.5"
                         >
                           <span aria-hidden="true">📸</span>
                           <span>Detail / Foto</span>
@@ -859,7 +859,7 @@ export default function MobileAngkut() {
                             bukaForm(t);
                             setForm((f) => ({ ...f, status: "kosong" }));
                           }}
-                          className="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-xs font-bold active:scale-95 transition-all"
+                          className="py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-sm font-bold active:scale-95 transition-all"
                         >
                           Kosong
                         </button>
@@ -868,7 +868,7 @@ export default function MobileAngkut() {
                             bukaForm(t);
                             setForm((f) => ({ ...f, status: "tidak_diangkut" }));
                           }}
-                          className="py-2 px-3 bg-slate-100 hover:bg-rose-100 text-rose-700 rounded-2xl text-xs font-bold active:scale-95 transition-all"
+                          className="py-3 px-4 bg-slate-100 hover:bg-rose-100 text-rose-700 rounded-2xl text-sm font-bold active:scale-95 transition-all"
                         >
                           Kendala
                         </button>
@@ -891,7 +891,7 @@ export default function MobileAngkut() {
                           bukaForm(t);
                           setForm((f) => ({ ...f, status: "kosong" }));
                         }}
-                        className="py-2.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-xs font-bold active:scale-95 transition-all"
+                        className="py-2.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-sm font-bold active:scale-95 transition-all"
                       >
                         Kosong
                       </button>
@@ -900,7 +900,7 @@ export default function MobileAngkut() {
                           bukaForm(t);
                           setForm((f) => ({ ...f, status: "tidak_diangkut" }));
                         }}
-                        className="py-2.5 px-2 bg-slate-100 hover:bg-rose-100 text-rose-700 rounded-2xl text-xs font-bold active:scale-95 transition-all"
+                        className="py-2.5 px-2 bg-slate-100 hover:bg-rose-100 text-rose-700 rounded-2xl text-sm font-bold active:scale-95 transition-all"
                       >
                         Kendala
                       </button>
@@ -1010,7 +1010,7 @@ export default function MobileAngkut() {
                     <button
                       type="button"
                       onClick={() => setEditingId(null)}
-                      className="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-xs font-bold active:scale-95 transition-all"
+                      className="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl text-sm font-bold active:scale-95 transition-all"
                     >
                       Batal
                     </button>
