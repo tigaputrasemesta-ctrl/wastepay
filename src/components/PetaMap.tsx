@@ -62,7 +62,9 @@ export type PelangganPeta = {
   latitude: number | null;
   longitude: number | null;
   patokanLokasi: string | null;
-  statusTagihan: string | null;
+  estimasiVolume?: string;
+  catatanKhusus?: string;
+  jenisSampah?: string;
   wilayah: {
     id: number;
     nama: string;
@@ -151,8 +153,7 @@ function isOnline(iso: string): boolean {
 export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], kendaraanAwal = [], transitAwal = [] }: Props) {
   const [filterWilayah, setFilterWilayah] = useState("semua");
   const [filterStatus, setFilterStatus] = useState("semua");
-  const [filterTagihan, setFilterTagihan] = useState<"semua" | "lunas" | "tunggakan">("semua");
-  const [cari, setCari] = useState("");
+    const [cari, setCari] = useState("");
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [ruteId, setRuteId] = useState<string>("semua");
   const [tampilkanCakupan, setTampilkanCakupan] = useState(false);
@@ -299,18 +300,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
     });
   }, [tanpaKoordinat, urutkan]);
 
-  const lunasCount = useMemo(
-    () => pelanggan.filter((p) => p.statusTagihan === "lunas").length,
-    [pelanggan]
-  );
-  const menunggakCount = useMemo(
-    () =>
-      pelanggan.filter(
-        (p) => p.statusTagihan === "tunggakan" || p.statusTagihan === "belum_bayar"
-      ).length,
-    [pelanggan]
-  );
-  const aktifCount = useMemo(
+      const aktifCount = useMemo(
     () => pelanggan.filter((p) => p.status === "aktif").length,
     [pelanggan]
   );
@@ -336,20 +326,13 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
       if (p.latitude == null || p.longitude == null) return false;
       if (filterWilayah !== "semua" && p.wilayah?.id !== Number(filterWilayah)) return false;
       if (filterStatus !== "semua" && p.status !== filterStatus) return false;
-      if (filterTagihan === "lunas" && p.statusTagihan !== "lunas") return false;
-      if (
-        filterTagihan === "tunggakan" &&
-        p.statusTagihan !== "tunggakan" &&
-        p.statusTagihan !== "belum_bayar"
-      )
-        return false;
-      if (cari.trim()) {
+                  if (cari.trim()) {
         const q = cari.trim().toLowerCase();
         if (!`${p.nama} ${p.kodePelanggan} ${p.alamat}`.toLowerCase().includes(q)) return false;
       }
       return true;
     });
-  }, [pelanggan, filterWilayah, filterStatus, filterTagihan, cari]);
+  }, [pelanggan, filterWilayah, filterStatus, cari]);
 
   const ruteTerpilih = ruteId !== "semua" ? rute.find((r) => String(r.id) === ruteId) ?? null : null;
   const ruteAktif = rute.filter((r) => r.anggota.length >= 2);
@@ -412,7 +395,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
       if (!adaDiPeta) {
         setFilterWilayah("semua");
         setFilterStatus("semua");
-        setFilterTagihan("semua");
+        
         setCari("");
       }
     },
@@ -453,13 +436,9 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
               👥 {pelanggan.length} Warga ({aktifCount} Aktif)
             </span>
             <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-xl font-bold">
-              💳 {lunasCount} Lunas
+              
             </span>
-            {menunggakCount > 0 && (
-              <span className="bg-rose-500/20 text-rose-300 border border-rose-500/30 px-2.5 py-1 rounded-xl font-bold animate-pulse">
-                ⛔ {menunggakCount} Menunggak
-              </span>
-            )}
+            
             <span className="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-xl font-bold">
               🚛 {kendaraanOnline} Truk Online
             </span>
@@ -473,35 +452,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
 
           {/* Pricing Filter Buttons */}
           <div className="flex items-center gap-1.5 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-bold">
-            <span className="text-[10px] text-slate-400 px-1.5 uppercase">Tagihan:</span>
-            <button
-              type="button"
-              onClick={() => setFilterTagihan("semua")}
-              className={`px-2 py-0.5 rounded-lg transition-colors ${
-                filterTagihan === "semua" ? "bg-emerald-600 text-white" : "text-slate-400 hover:text-white"
-              }`}
-            >
-              Semua
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilterTagihan("lunas")}
-              className={`px-2 py-0.5 rounded-lg transition-colors ${
-                filterTagihan === "lunas" ? "bg-emerald-600 text-white" : "text-slate-400 hover:text-white"
-              }`}
-            >
-              ✓ Lunas
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilterTagihan("tunggakan")}
-              className={`px-2 py-0.5 rounded-lg transition-colors ${
-                filterTagihan === "tunggakan" ? "bg-rose-600 text-white" : "text-slate-400 hover:text-white"
-              }`}
-            >
-              ⛔ Menunggak
-            </button>
-          </div>
+            
         </div>
 
         {/* Map Canvas - dengan Pencarian Cerdas Mengambang (Searching & Finding) */}
@@ -554,14 +505,12 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                     </div>
                     <span
                       className={`text-[9px] font-black px-1.5 py-0.5 rounded shrink-0 ${
-                        p.statusTagihan === "lunas"
+                        p.status === "diambil"
                           ? "bg-emerald-100 text-emerald-800"
-                          : p.statusTagihan === "tunggakan"
-                          ? "bg-rose-100 text-rose-800"
                           : "bg-slate-100 text-slate-700"
                       }`}
                     >
-                      {p.statusTagihan === "lunas" ? "LUNAS" : p.statusTagihan === "tunggakan" ? "MENUNGGAK" : p.kodePelanggan}
+                      {p.kodePelanggan}
                     </span>
                   </button>
                 ))}
