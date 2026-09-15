@@ -57,6 +57,10 @@ export async function GET(request: Request) {
   if (kategori) {
     where.kategori = kategori;
   }
+  const zonaIdParam = searchParams.get("zonaId");
+  if (zonaIdParam) {
+    where.wilayah = { zonaId: parseInt(zonaIdParam) };
+  }
 
   // Parameter paginasi opsional (backward compatible)
   const pageParam = searchParams.get("page");
@@ -81,7 +85,11 @@ export async function GET(request: Request) {
       skip,
       take,
       include: {
-        wilayah: true,
+        wilayah: {
+          include: {
+            zona: { select: { id: true, nama: true, warna: true } },
+          },
+        },
         kelurahan: true,
         paket: true,
         _count: {
@@ -116,13 +124,55 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { nama, noTelepon, kategori, alamat, rtRw, fotoRumah, patokanLokasi, latitude, longitude, koordinatSumber, koordinatAkurasi, penanggungjawab, referal, customTarif, kelurahanId, paketId, status, catatan } = body;
+    const {
+      nama,
+      noTelepon,
+      kategori,
+      alamat,
+      rtRw,
+      fotoRumah,
+      patokanLokasi,
+      latitude,
+      longitude,
+      koordinatSumber,
+      koordinatAkurasi,
+      penanggungjawab,
+      referal,
+      customTarif,
+      kelurahanId,
+      paketId,
+      status,
+      catatan,
+      zonaId,
+      wilayahId,
+    } = body;
 
     if (!nama || !noTelepon || !alamat || !kelurahanId) {
       return NextResponse.json(
         { error: "Nama, no telepon, alamat, dan kelurahan harus diisi" },
         { status: 400 }
       );
+    }
+
+    // Resolusi wilayah & zona area pickup
+    let finalWilayahId = wilayahId ? parseInt(wilayahId) : null;
+    if (zonaId && !finalWilayahId && kelurahanId) {
+      const zid = parseInt(zonaId);
+      const kid = parseInt(kelurahanId);
+      let w = await prisma.wilayah.findFirst({
+        where: { kelurahanId: kid, zonaId: zid },
+      });
+      if (!w) {
+        const zona = await prisma.zona.findUnique({ where: { id: zid }, select: { nama: true } });
+        w = await prisma.wilayah.create({
+          data: {
+            nama: rtRw ? `RT/RW ${rtRw}` : (zona?.nama || `Zona ${zid}`),
+            kelurahanId: kid,
+            zonaId: zid,
+          },
+        });
+      }
+      finalWilayahId = w.id;
     }
 
     // Kode pelanggan kini menggunakan nomor WhatsApp (noTelepon)
@@ -148,11 +198,18 @@ export async function POST(request: Request) {
           referal,
           customTarif: customTarif ? parseFloat(customTarif) : null,
           kelurahanId: parseInt(kelurahanId),
+          wilayahId: finalWilayahId,
           paketId: paketId ? parseInt(paketId) : null,
           status: status || "aktif",
           catatan: catatan || null,
         },
-        include: { kelurahan: true, paket: true },
+        include: {
+          kelurahan: true,
+          paket: true,
+          wilayah: {
+            include: { zona: true },
+          },
+        },
       });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {

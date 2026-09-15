@@ -41,6 +41,12 @@ type PelangganDetail = {
   status: string;
   catatan?: string;
   kelurahan?: Kelurahan | null;
+  wilayah?: {
+    id: number;
+    nama: string;
+    zonaId?: number | null;
+    zona?: { id: number; nama: string; warna?: string | null; keterangan?: string | null } | null;
+  } | null;
   paket?: Paket | null;
   createdAt: string;
   jadwal: {
@@ -330,9 +336,50 @@ export default function DetailPelangganPage() {
                 </div>
               )}
               <div>
-                <p className="text-xs text-slate-500 font-medium">Kelurahan</p>
-                <p className="font-semibold text-slate-900 text-sm">{data.kelurahan?.nama ?? "—"}</p>
+                <p className="text-xs text-slate-500 font-medium">Kelurahan &amp; Kecamatan</p>
+                <p className="font-semibold text-slate-900 text-sm">
+                  {data.kelurahan?.nama ?? "—"}
+                  {data.kelurahan?.kecamatan ? ` (Kec. ${data.kelurahan.kecamatan})` : ""}
+                </p>
               </div>
+              <div>
+                <p className="text-xs text-slate-500 font-medium">Zona Area Pickup</p>
+                {data.wilayah?.zona ? (
+                  <div className="flex items-center justify-between mt-0.5">
+                    <div className="flex items-center gap-1.5">
+                      <span
+                        className="w-2.5 h-2.5 rounded-full shrink-0"
+                        style={{ backgroundColor: data.wilayah.zona.warna || "#10b981" }}
+                      />
+                      <span className="font-bold text-slate-900 text-sm">
+                        {data.wilayah.zona.nama}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => setShowApprovalModal(true)}
+                      className="text-[11px] font-semibold text-emerald-700 hover:text-emerald-800 underline"
+                    >
+                      Ubah Zona
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between mt-0.5">
+                    <span className="text-xs text-amber-600 font-medium">Belum ditentukan</span>
+                    <button
+                      onClick={() => setShowApprovalModal(true)}
+                      className="text-[11px] font-semibold text-emerald-700 hover:text-emerald-800 underline"
+                    >
+                      + Tentukan Zona
+                    </button>
+                  </div>
+                )}
+              </div>
+              {data.wilayah && (
+                <div>
+                  <p className="text-xs text-slate-500 font-medium">Wilayah / RT</p>
+                  <p className="font-semibold text-slate-900 text-sm">{data.wilayah.nama}</p>
+                </div>
+              )}
               {data.patokanLokasi && (
                 <div>
                   <p className="text-xs text-slate-500 font-medium">Patokan Lokasi</p>

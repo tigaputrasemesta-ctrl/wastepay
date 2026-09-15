@@ -54,19 +54,23 @@ type Pelanggan = {
   wilayahId?: number | null;
   paketId?: number | null;
   kelurahan?: Kelurahan | null;
-  wilayah?: { id: number; nama: string; zonaId?: number | null; zona?: { id: number; nama: string } | null } | null;
+  wilayah?: { id: number; nama: string; zonaId?: number | null; zona?: { id: number; nama: string; warna?: string | null } | null } | null;
   paket?: Paket | null;
   createdAt: string;
 };
+
+type ZonaOption = { id: number; nama: string; warna?: string | null; kelurahanId: number };
 
 export default function PelangganPage() {
   const { showToast } = useToast();
   const [pelanggan, setPelanggan] = useState<Pelanggan[]>([]);
   const [kelurahanList, setKelurahanList] = useState<Kelurahan[]>([]);
+  const [zonaList, setZonaList] = useState<ZonaOption[]>([]);
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [showFilter, setShowFilter] = useState(false);
   const [filterKelurahan, setFilterKelurahan] = useState("");
+  const [filterZona, setFilterZona] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [filterKategori, setFilterKategori] = useState("");
   const [loading, setLoading] = useState(true);
@@ -88,6 +92,7 @@ export default function PelangganPage() {
     penanggungjawab: "",
     referal: "",
     kelurahanId: "",
+    zonaId: "",
     fotoRumah: "",
     latitude: "",
     longitude: "",
@@ -101,25 +106,29 @@ export default function PelangganPage() {
       const params = new URLSearchParams();
       if (search) params.set("search", search);
       if (filterKelurahan) params.set("kelurahanId", filterKelurahan);
+      if (filterZona) params.set("zonaId", filterZona);
       if (filterStatus) params.set("status", filterStatus);
       if (filterKategori) params.set("kategori", filterKategori);
       const qs = params.toString();
 
-      const [pelangganRes, kelurahanRes] = await Promise.all([
+      const [pelangganRes, kelurahanRes, zonaRes] = await Promise.all([
         fetch(`/api/pelanggan${qs ? `?${qs}` : ""}`),
         fetch("/api/kelurahan"),
+        fetch("/api/zona"),
       ]);
       const pelangganData = await pelangganRes.json();
       const kelurahanData = await kelurahanRes.json();
-      setPelanggan(pelangganData);
-      setKelurahanList(kelurahanData);
+      const zonaData = await zonaRes.json();
+      setPelanggan(Array.isArray(pelangganData) ? pelangganData : []);
+      setKelurahanList(Array.isArray(kelurahanData) ? kelurahanData : []);
+      setZonaList(Array.isArray(zonaData) ? zonaData : []);
     } catch (error) {
       showToast("Gagal memuat data", "error");
       console.error(error);
     } finally {
       setLoading(false);
     }
-  }, [search, filterKelurahan, filterStatus, filterKategori, showToast]);
+  }, [search, filterKelurahan, filterZona, filterStatus, filterKategori, showToast]);
 
   // Debounced search
   useEffect(() => {
@@ -147,6 +156,7 @@ export default function PelangganPage() {
       penanggungjawab: "",
       referal: "",
       kelurahanId: "",
+      zonaId: "",
       fotoRumah: "",
       latitude: "",
       longitude: "",
@@ -169,7 +179,8 @@ export default function PelangganPage() {
       patokanLokasi: p.patokanLokasi || "",
       penanggungjawab: p.penanggungjawab || "",
       referal: p.referal || "",
-      kelurahanId: p.kelurahan?.id ? p.kelurahan.id.toString() : "",
+      kelurahanId: p.kelurahan?.id ? p.kelurahan.id.toString() : (p.kelurahanId ? p.kelurahanId.toString() : ""),
+      zonaId: p.wilayah?.zonaId ? p.wilayah.zonaId.toString() : (p.wilayah?.zona?.id ? p.wilayah.zona.id.toString() : ""),
       fotoRumah: p.fotoRumah || "",
       latitude: p.latitude ? p.latitude.toString() : "",
       longitude: p.longitude ? p.longitude.toString() : "",
@@ -217,6 +228,7 @@ export default function PelangganPage() {
 
   function resetFilters() {
     setFilterKelurahan("");
+    setFilterZona("");
     setFilterStatus("");
     setFilterKategori("");
     setPage(1);
@@ -378,9 +390,9 @@ export default function PelangganPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
             </svg>
             Filter
-            {[filterKelurahan, filterStatus, filterKategori].filter(Boolean).length > 0 && (
+            {[filterKelurahan, filterZona, filterStatus, filterKategori].filter(Boolean).length > 0 && (
               <span className="bg-emerald-700 text-white px-1.5 py-0.5 rounded-full text-[10px] font-bold">
-                {[filterKelurahan, filterStatus, filterKategori].filter(Boolean).length}
+                {[filterKelurahan, filterZona, filterStatus, filterKategori].filter(Boolean).length}
               </span>
             )}
           </button>
@@ -389,18 +401,33 @@ export default function PelangganPage() {
         {/* Filter panel */}
         {showFilter && (
           <div className="mt-3 p-4 bg-slate-50 border border-slate-200/80 rounded-2xl shadow-sm">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1.5">Kelurahan</label>
                 <select
                   value={filterKelurahan}
-                  onChange={(e) => { setFilterKelurahan(e.target.value); setPage(1); }}
+                  onChange={(e) => { setFilterKelurahan(e.target.value); setFilterZona(""); setPage(1); }}
                   className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-medium text-slate-800"
                 >
                   <option value="">Semua Kelurahan</option>
                   {kelurahanList.map((k) => (
                     <option key={k.id} value={k.id}>{k.nama}</option>
                   ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">Zona Area Pickup</label>
+                <select
+                  value={filterZona}
+                  onChange={(e) => { setFilterZona(e.target.value); setPage(1); }}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-medium text-slate-800"
+                >
+                  <option value="">Semua Zona</option>
+                  {zonaList
+                    .filter((z) => !filterKelurahan || z.kelurahanId === Number(filterKelurahan))
+                    .map((z) => (
+                      <option key={z.id} value={z.id}>{z.nama}</option>
+                    ))}
                 </select>
               </div>
               <div>
@@ -436,7 +463,7 @@ export default function PelangganPage() {
               </span>
               <button
                 onClick={resetFilters}
-                disabled={[filterKelurahan, filterStatus, filterKategori].filter(Boolean).length === 0}
+                disabled={[filterKelurahan, filterZona, filterStatus, filterKategori].filter(Boolean).length === 0}
                 className="px-3.5 py-1.5 bg-white border border-slate-200 rounded-xl font-semibold text-xs text-slate-600 hover:text-rose-600 hover:border-rose-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Reset Filter
@@ -519,8 +546,23 @@ export default function PelangganPage() {
                   <td className="px-4 py-3 text-slate-700 font-medium text-xs whitespace-nowrap">{p.noTelepon}</td>
                   <td className="px-4 py-3 text-slate-700 max-w-[240px]">
                     <div className="text-xs truncate font-medium text-slate-800" title={p.alamat}>{p.alamat}</div>
-                    <div className="inline-flex items-center mt-1 px-2 py-0.5 bg-slate-100 rounded-md text-[10px] font-semibold text-slate-600">
-                      {p.kelurahan?.nama ?? "—"}
+                    <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                      <div className="inline-flex items-center px-2 py-0.5 bg-slate-100 rounded-md text-[10px] font-semibold text-slate-600">
+                        {p.kelurahan?.nama ?? "—"}
+                      </div>
+                      {p.wilayah?.zona ? (
+                        <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 border border-emerald-200/80 rounded-md text-[10px] font-bold text-emerald-800">
+                          <span
+                            className="w-2 h-2 rounded-full shrink-0"
+                            style={{ backgroundColor: p.wilayah.zona.warna || "#10b981" }}
+                          />
+                          <span className="truncate max-w-[120px]">{p.wilayah.zona.nama}</span>
+                        </div>
+                      ) : (
+                        <span className="text-[10px] text-amber-600 font-semibold">
+                          Belum ada zona
+                        </span>
+                      )}
                     </div>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
@@ -715,7 +757,7 @@ export default function PelangganPage() {
                   <label className="block text-xs font-bold text-slate-700 mb-1.5">Kelurahan *</label>
                   <select
                     value={form.kelurahanId}
-                    onChange={(e) => setForm({ ...form, kelurahanId: e.target.value })}
+                    onChange={(e) => setForm({ ...form, kelurahanId: e.target.value, zonaId: "" })}
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900"
                     required
                   >
@@ -726,6 +768,27 @@ export default function PelangganPage() {
                       </option>
                     ))}
                   </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Zona Area Pickup</label>
+                  <select
+                    value={form.zonaId}
+                    onChange={(e) => setForm({ ...form, zonaId: e.target.value })}
+                    disabled={!form.kelurahanId}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900 disabled:opacity-50"
+                  >
+                    <option value="">{form.kelurahanId ? "-- Pilih Zona Pickup --" : "Pilih Kelurahan Terlebih Dahulu"}</option>
+                    {zonaList
+                      .filter((z) => z.kelurahanId === Number(form.kelurahanId))
+                      .map((z) => (
+                        <option key={z.id} value={z.id}>
+                          {z.nama}
+                        </option>
+                      ))}
+                  </select>
+                  <span className="text-[10px] text-slate-400">
+                    Otomatis menampilkan zona di kelurahan terpilih
+                  </span>
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1.5">Status Pelanggan</label>

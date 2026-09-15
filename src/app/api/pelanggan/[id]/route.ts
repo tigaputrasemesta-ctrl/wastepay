@@ -14,7 +14,11 @@ export async function GET(
   const pelanggan = await prisma.pelanggan.findUnique({
     where: { id },
     include: {
-      wilayah: true,
+      wilayah: {
+        include: {
+          zona: { select: { id: true, nama: true, warna: true, keterangan: true } },
+        },
+      },
       kelurahan: true,
       paket: true,
       jadwal: { include: { rute: true } },
