@@ -11,7 +11,7 @@ export async function GET(
     const zona = await prisma.zona.findUnique({
       where: { id },
       include: {
-        kelurahan: { select: { id: true, nama: true } },
+        kelurahan: { select: { id: true, nama: true, kecamatan: true, kode: true } },
         wilayah: {
           select: { id: true, nama: true, rt: true, rw: true },
           orderBy: { nama: "asc" },
@@ -41,8 +41,8 @@ export async function PUT(
     const body = await request.json();
 
     const data: Record<string, unknown> = {};
-    if (body.nama !== undefined) data.nama = body.nama;
-    if (body.keterangan !== undefined) data.keterangan = body.keterangan || null;
+    if (body.nama !== undefined) data.nama = body.nama.trim();
+    if (body.keterangan !== undefined) data.keterangan = body.keterangan?.trim() || null;
     if (body.warna !== undefined) data.warna = body.warna || null;
     if (body.kelurahanId !== undefined) data.kelurahanId = parseInt(body.kelurahanId);
 
@@ -62,13 +62,31 @@ export async function PUT(
           });
         }
       }
+
+      // Ganti relasi wilayah/RT bila wilayahIds dikirim
+      if (Array.isArray(body.wilayahIds)) {
+        // Lepas RT lama dari zona ini
+        await tx.wilayah.updateMany({
+          where: { zonaId: id },
+          data: { zonaId: null },
+        });
+        // Hubungkan RT baru yang dipilih
+        if (body.wilayahIds.length > 0) {
+          await tx.wilayah.updateMany({
+            where: { id: { in: body.wilayahIds.map(Number) } },
+            data: { zonaId: id },
+          });
+        }
+      }
+
       return updated;
     });
 
     await logAudit("update", "Zona", id, { id }, { nama: zona.nama, kelurahanId: zona.kelurahanId });
     return NextResponse.json(zona);
-  } catch {
-    return NextResponse.json({ error: "Gagal mengupdate zona" }, { status: 500 });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Gagal mengupdate zona";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
