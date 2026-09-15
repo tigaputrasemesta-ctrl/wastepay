@@ -6,6 +6,9 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useParams, useRouter } from "next/navigation";
 import { formatRupiah, formatDate } from "@/lib/utils";
+import ModalApprovalPelanggan from "@/components/ModalApprovalPelanggan";
+import { useToast } from "@/components/Toast";
+import { ShieldCheck } from "lucide-react";
 
 const PetaLokasi = dynamic(() => import("@/components/PetaLokasi"), {
   ssr: false,
@@ -82,8 +85,10 @@ type PelangganDetail = {
 export default function DetailPelangganPage() {
   const params = useParams();
   const router = useRouter();
+  const { showToast } = useToast();
   const [data, setData] = useState<PelangganDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showApprovalModal, setShowApprovalModal] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -150,28 +155,41 @@ export default function DetailPelangganPage() {
         </span>
         {data.status === "calon" && (
           <button
-            onClick={async () => {
-              const res = await fetch(`/api/pelanggan/${data.id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: "aktif" }),
-              });
-              if (res.ok) {
-                setData({ ...data, status: "aktif" });
-              } else {
-                const d = await res.json().catch(() => ({}));
-                alert(d.error || "Gagal menyetujui pendaftaran");
-              }
-            }}
-            className="ml-2 inline-flex items-center gap-1.5 px-4 py-1.5 shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all transition"
+            onClick={() => setShowApprovalModal(true)}
+            className="ml-2 inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-xs active:scale-95"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-            </svg>
-            Setujui & Aktifkan
+            <ShieldCheck className="w-4 h-4" />
+            <span>Approval &amp; Tentukan Zona Pickup</span>
           </button>
         )}
       </div>
+
+      {/* Banner Menunggu Approval & Penentuan Zona */}
+      {data.status === "calon" && (
+        <div className="mb-6 p-4 bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-teal-500/10 border border-amber-500/30 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-start sm:items-center gap-3">
+            <span className="text-2xl">⏳</span>
+            <div>
+              <p className="text-sm font-bold text-slate-800">
+                Calon Pelanggan Baru — Menunggu Approval &amp; Penentuan Zona Admin Pusat
+              </p>
+              <p className="text-xs text-slate-600">
+                {data.fotoRumah || (data.latitude && data.longitude)
+                  ? "Survei lapangan telah dilakukan. Tentukan zona area pickup dan rute armada untuk mengaktifkan pelanggan."
+                  : "Menunggu kelengkapan survei lapangan atau lengkapi zona langsung untuk mengaktifkan."}
+                {data.referal && ` • Surveyor/Reff: ${data.referal}`}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowApprovalModal(true)}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-xs whitespace-nowrap active:scale-95"
+          >
+            <ShieldCheck className="w-4 h-4" />
+            <span>Approval &amp; Tentukan Zona</span>
+          </button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Informasi Pelanggan */}
@@ -580,6 +598,23 @@ export default function DetailPelangganPage() {
           </div>
         </div>
       </div>
+
+      {/* Modal Approval & Zona Pickup */}
+      <ModalApprovalPelanggan
+        pelanggan={data}
+        isOpen={showApprovalModal}
+        onClose={() => setShowApprovalModal(false)}
+        onSuccess={() => {
+          setShowApprovalModal(false);
+          // Refetch data
+          fetch(`/api/pelanggan/${data.id}`)
+            .then((r) => (r.ok ? r.json() : null))
+            .then((updated) => {
+              if (updated) setData(updated);
+            });
+        }}
+        showToast={showToast}
+      />
     </div>
   );
 }

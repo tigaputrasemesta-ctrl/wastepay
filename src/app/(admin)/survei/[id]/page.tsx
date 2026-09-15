@@ -6,6 +6,9 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import { formatDate, formatRupiah } from "@/lib/utils";
+import ModalApprovalPelanggan from "@/components/ModalApprovalPelanggan";
+import { useToast } from "@/components/Toast";
+import { ShieldCheck } from "lucide-react";
 
 const PetaLokasi = dynamic(() => import("@/components/PetaLokasi"), {
   ssr: false,
@@ -64,11 +67,13 @@ function Info({ label, value }: { label: string; value: string | null | undefine
 
 export default function SurveiDetailPage() {
   const params = useParams<{ id: string }>();
+  const { showToast } = useToast();
   const [data, setData] = useState<Detail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showApprovalModal, setShowApprovalModal] = useState(false);
 
-  useEffect(() => {
+  const fetchDetail = () => {
     fetch(`/api/survei/${params.id}`)
       .then(async (r) => {
         if (!r.ok) {
@@ -80,6 +85,10 @@ export default function SurveiDetailPage() {
       .then((d) => setData(d))
       .catch((e) => setError(e.message || "Gagal memuat detail"))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchDetail();
   }, [params.id]);
 
   if (loading) {
@@ -117,12 +126,48 @@ export default function SurveiDetailPage() {
             <span className="font-mono text-slate-400">{data.kodePelanggan}</span> · daftar {formatDate(data.createdAt)}
           </p>
         </div>
-        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
-          data.status === "aktif" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-amber-50 text-amber-700 border border-amber-200"
-        }`}>
-          {status}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
+            data.status === "aktif" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-amber-50 text-amber-700 border border-amber-200"
+          }`}>
+            {status}
+          </span>
+          {data.status === "calon" && (
+            <button
+              onClick={() => setShowApprovalModal(true)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-xs active:scale-95"
+            >
+              <ShieldCheck className="w-4 h-4" />
+              <span>Approval &amp; Tentukan Zona</span>
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Banner Approval & Zona */}
+      {data.status === "calon" && (
+        <div className="p-4 bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-teal-500/10 border border-amber-500/30 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-start sm:items-center gap-3">
+            <span className="text-2xl">⏳</span>
+            <div>
+              <p className="text-sm font-bold text-slate-800">
+                Calon Pelanggan — Menunggu Approval &amp; Penentuan Zona Pickup Admin Pusat
+              </p>
+              <p className="text-xs text-slate-600">
+                Data hasil survei lapangan telah tercatat. Tentukan Zona Area Pickup dan Rute Armada untuk mengaktifkan pelanggan ini.
+                {data.referal && ` (Surveyor/Reff: ${data.referal})`}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowApprovalModal(true)}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-xs whitespace-nowrap active:scale-95"
+          >
+            <ShieldCheck className="w-4 h-4" />
+            <span>Approval &amp; Tentukan Zona</span>
+          </button>
+        </div>
+      )}
 
       {/* Foto + Peta */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -201,6 +246,18 @@ export default function SurveiDetailPage() {
           <Info label="Catatan Survei" value={data.catatan} />
         </div>
       </div>
+
+      {/* Modal Approval & Penentuan Zona Admin Pusat */}
+      <ModalApprovalPelanggan
+        pelanggan={data}
+        isOpen={showApprovalModal}
+        onClose={() => setShowApprovalModal(false)}
+        onSuccess={() => {
+          setShowApprovalModal(false);
+          fetchDetail();
+        }}
+        showToast={showToast}
+      />
     </div>
   );
 }

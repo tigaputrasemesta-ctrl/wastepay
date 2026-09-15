@@ -5,25 +5,12 @@ import Link from "next/link";
 import { useToast } from "@/components/Toast";
 import GeotagPhoto from "@/components/GeotagPhoto";
 import { formatDate } from "@/lib/utils";
+import ModalApprovalPelanggan, { ApprovalPelangganTarget } from "@/components/ModalApprovalPelanggan";
+import { ShieldCheck } from "lucide-react";
 
-type Calon = {
-  id: number;
-  nama: string;
-  kodePelanggan: string;
-  noTelepon: string;
-  alamat: string;
-  rtRw: string | null;
-  patokanLokasi: string | null;
-  fotoRumah: string | null;
-  latitude: number | null;
-  longitude: number | null;
-  koordinatSumber: string | null;
-  koordinatAkurasi: number | null;
-  penanggungjawab: string | null;
-  referal: string | null;
-  catatan: string | null;
-  createdAt: string;
-  wilayah: { id: number; nama: string } | null;
+type Calon = ApprovalPelangganTarget & {
+  kodePelanggan?: string;
+  createdAt?: string;
 };
 
 type FormSurvei = {
@@ -46,6 +33,7 @@ export default function SurveiPage() {
   const [calon, setCalon] = useState<Calon[]>([]);
   const [loading, setLoading] = useState(true);
   const [survei, setSurvei] = useState<Calon | null>(null);
+  const [approvalTarget, setApprovalTarget] = useState<ApprovalPelangganTarget | null>(null);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState<FormSurvei>({
     alamat: "",
@@ -96,7 +84,7 @@ export default function SurveiPage() {
     });
   }
 
-  async function simpan() {
+  async function simpanSurvei(bukaApproval = false) {
     if (!survei) return;
     setSaving(true);
     const body = {
@@ -107,11 +95,10 @@ export default function SurveiPage() {
       referal: form.referal || null,
       catatan: form.catatan || null,
       fotoRumah: form.fotoRumah || null,
-      latitude: form.latitude || null,
-      longitude: form.longitude || null,
+      latitude: form.latitude ? parseFloat(form.latitude) : null,
+      longitude: form.longitude ? parseFloat(form.longitude) : null,
       koordinatSumber: form.koordinatSumber || null,
-      koordinatAkurasi: form.koordinatAkurasi || null,
-      status: "aktif",
+      koordinatAkurasi: form.koordinatAkurasi ? parseFloat(form.koordinatAkurasi) : null,
     };
     try {
       const res = await fetch(`/api/pelanggan/${survei.id}`, {
@@ -120,9 +107,14 @@ export default function SurveiPage() {
         body: JSON.stringify(body),
       });
       if (res.ok) {
-        showToast(`${survei.nama} diaktifkan — foto & titik tersimpan`);
+        const updated = await res.json();
+        showToast("Data survei berhasil disimpan");
+        const targetToApprove = { ...survei, ...updated };
         setSurvei(null);
-        fetchCalon();
+        await fetchCalon();
+        if (bukaApproval) {
+          setApprovalTarget(targetToApprove);
+        }
       } else {
         const d = await res.json();
         showToast(d.error || "Gagal menyimpan", "error");
@@ -170,11 +162,16 @@ export default function SurveiPage() {
                 </p>
                 <p className="text-xs text-slate-500 mt-1">
                   {c.noTelepon} • {c.wilayah?.nama || "belum ada wilayah"} • daftar{" "}
-                  {formatDate(c.createdAt)}
+                  {c.createdAt ? formatDate(c.createdAt) : "—"}
                 </p>
                 <p className="text-xs text-slate-400 mt-0.5 truncate max-w-xl">{c.alamat}</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                {c.referal && (
+                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200">
+                    Reff: {c.referal}
+                  </span>
+                )}
                 {c.latitude && c.longitude ? (
                   <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
                     ● Geotag
@@ -195,15 +192,22 @@ export default function SurveiPage() {
                 )}
                 <Link
                   href={`/survei/${c.id}`}
-                  className="px-4 py-2 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 transition-all"
+                  className="px-3 py-1.5 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 hover:bg-slate-50 transition-all"
                 >
                   Detail
                 </Link>
                 <button
                   onClick={() => bukaSurvei(c)}
-                  className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all"
+                  className="px-3 py-1.5 border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-semibold shadow-2xs active:scale-95 transition-all"
                 >
-                  Survei & Aktifkan
+                  Input / Edit Survei
+                </button>
+                <button
+                  onClick={() => setApprovalTarget(c)}
+                  className="inline-flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-xs active:scale-95 transition-all"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>Approval &amp; Zona</span>
                 </button>
               </div>
             </div>
@@ -330,26 +334,48 @@ export default function SurveiPage() {
                 />
               </div>
 
-              <div className="flex gap-3 pt-2">
+              <div className="flex flex-wrap gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setSurvei(null)}
-                  className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
+                  className="px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
                 >
                   Batal
                 </button>
                 <button
-                  onClick={simpan}
+                  type="button"
+                  onClick={() => simpanSurvei(false)}
                   disabled={saving}
-                  className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all disabled:opacity-60"
+                  className="flex-1 px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-sm font-semibold shadow-sm transition disabled:opacity-60"
                 >
-                  {saving ? "Menyimpan…" : "Simpan & Aktifkan Pelanggan"}
+                  {saving ? "Menyimpan…" : "Simpan Data Survei"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => simpanSurvei(true)}
+                  disabled={saving}
+                  className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-semibold shadow-sm active:scale-95 transition-all disabled:opacity-60 flex items-center justify-center gap-1.5"
+                >
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>{saving ? "Menyimpan…" : "Lanjut Approval & Zona"}</span>
                 </button>
               </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* Modal Approval & Penentuan Zona Admin Pusat */}
+      <ModalApprovalPelanggan
+        pelanggan={approvalTarget}
+        isOpen={Boolean(approvalTarget)}
+        onClose={() => setApprovalTarget(null)}
+        onSuccess={() => {
+          setApprovalTarget(null);
+          fetchCalon();
+        }}
+        showToast={showToast}
+      />
     </div>
   );
 }

@@ -91,7 +91,6 @@ export default function MobileSurvei() {
       longitude: form.longitude || null,
       koordinatSumber: form.koordinatSumber || null,
       koordinatAkurasi: form.koordinatAkurasi || null,
-      status: "aktif",
     };
     try {
       const res = await fetch(`/api/pelanggan/${editingId}`, {
@@ -101,7 +100,7 @@ export default function MobileSurvei() {
       });
       const d = await res.json();
       if (res.ok) {
-        setPesan("Pelanggan diaktifkan — foto & titik tersimpan ✓");
+        setPesan("Hasil survei tersimpan ✓ Menunggu approval & penentuan zona oleh Admin Pusat");
         setEditingId(null);
         fetchCalon();
       } else {
@@ -275,22 +274,27 @@ export default function MobileSurvei() {
             }
           />
 
-          <div className="flex gap-2 pt-1">
-            <button
-              onClick={simpan}
-              disabled={saving}
-              className="flex-1 py-3 px-4 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white rounded-xl text-xs font-bold shadow-sm transition-all disabled:opacity-50 flex items-center justify-center gap-1.5"
-            >
-              <UserCheck className="w-4 h-4" />
-              <span>{saving ? "Menyimpan…" : "✓ Aktifkan Pelanggan"}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setEditingId(null)}
-              className="px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 text-xs font-semibold hover:bg-slate-100"
-            >
-              Batal
-            </button>
+          <div className="space-y-1.5 pt-1">
+            <div className="flex gap-2">
+              <button
+                onClick={simpan}
+                disabled={saving}
+                className="flex-1 py-3 px-4 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white rounded-xl text-xs font-bold shadow-sm transition-all disabled:opacity-50 flex items-center justify-center gap-1.5"
+              >
+                <UserCheck className="w-4 h-4" />
+                <span>{saving ? "Menyimpan…" : "💾 Simpan Survei (Kirim ke Admin)"}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditingId(null)}
+                className="px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 text-xs font-semibold hover:bg-slate-100"
+              >
+                Batal
+              </button>
+            </div>
+            <p className="text-[10px] text-slate-500 text-center font-medium">
+              Hasil survei akan diteruskan ke Admin Pusat untuk penentuan zona pickup &amp; persetujuan final.
+            </p>
           </div>
         </div>
       ) : (

@@ -7,6 +7,7 @@ import { formatDate } from "@/lib/utils";
 import { useToast } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import GeotagPhoto from "@/components/GeotagPhoto";
+import ModalApprovalPelanggan from "@/components/ModalApprovalPelanggan";
 
 type Kelurahan = { id: number; nama: string; kecamatan?: string | null };
 type Paket = { id: number; nama: string; harga: number | null };
@@ -48,7 +49,12 @@ type Pelanggan = {
   koordinatAkurasi?: number | null;
   customTarif?: number | null;
   status: string;
+  catatan?: string | null;
+  kelurahanId?: number | null;
+  wilayahId?: number | null;
+  paketId?: number | null;
   kelurahan?: Kelurahan | null;
+  wilayah?: { id: number; nama: string; zonaId?: number | null; zona?: { id: number; nama: string } | null } | null;
   paket?: Paket | null;
   createdAt: string;
 };
@@ -68,6 +74,7 @@ export default function PelangganPage() {
   const [editing, setEditing] = useState<Pelanggan | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Pelanggan | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [approvalTarget, setApprovalTarget] = useState<Pelanggan | null>(null);
   const [page, setPage] = useState(1);
   const ITEMS_PER_PAGE = 20;
   const [form, setForm] = useState({
@@ -229,12 +236,14 @@ export default function PelangganPage() {
     );
   }
 
+  const calonList = pelanggan.filter((p) => p.status === "calon");
+  const aktifList = pelanggan.filter((p) => p.status === "aktif");
   const paginatedPelanggan = pelanggan.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
   const totalPages = Math.ceil(pelanggan.length / ITEMS_PER_PAGE);
 
   return (
     <div className="p-6">
-      <div className="flex items-center justify-between mb-8 border-b border-slate-200 pb-4">
+      <div className="flex items-center justify-between mb-6 border-b border-slate-200 pb-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">
             Pelanggan
@@ -251,6 +260,84 @@ export default function PelangganPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
           Tambah Pelanggan
+        </button>
+      </div>
+
+      {/* Alert Banner Approval Pelanggan Baru */}
+      {calonList.length > 0 && (
+        <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300/80 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-in fade-in">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-lg font-black shrink-0 shadow-xs">
+              🔔
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-extrabold text-slate-900 text-sm">
+                  {calonList.length} Pendaftar Baru Menunggu Approval Admin Pusat
+                </h3>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-200 text-amber-900">
+                  Perlu Ditinjau
+                </span>
+              </div>
+              <p className="text-xs text-slate-600 mt-0.5">
+                Periksa hasil survei lapangan, tetapkan <strong>Zona Area Pickup</strong>, dan aktifkan layanan pengangkutan warga.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+            <button
+              type="button"
+              onClick={() => {
+                setFilterStatus(filterStatus === "calon" ? "" : "calon");
+                setPage(1);
+              }}
+              className="w-full sm:w-auto px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 active:scale-95 text-white text-xs font-bold transition shadow-xs flex items-center justify-center gap-1.5"
+            >
+              <span>{filterStatus === "calon" ? "Lihat Semua Pelanggan" : "Tampilkan Menunggu Approval"}</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Status Tabs */}
+      <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-1 text-xs">
+        <button
+          type="button"
+          onClick={() => { setFilterStatus(""); setPage(1); }}
+          className={`px-3 py-1.5 rounded-xl font-bold transition shrink-0 ${
+            filterStatus === ""
+              ? "bg-slate-900 text-white shadow-xs"
+              : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
+          }`}
+        >
+          Semua ({pelanggan.length})
+        </button>
+        <button
+          type="button"
+          onClick={() => { setFilterStatus("calon"); setPage(1); }}
+          className={`px-3 py-1.5 rounded-xl font-bold transition shrink-0 flex items-center gap-1.5 ${
+            filterStatus === "calon"
+              ? "bg-amber-600 text-white shadow-xs"
+              : "bg-amber-50 border border-amber-200 text-amber-800 hover:bg-amber-100"
+          }`}
+        >
+          <span>Menunggu Approval</span>
+          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold ${
+            filterStatus === "calon" ? "bg-amber-800 text-amber-100" : "bg-amber-200 text-amber-900"
+          }`}>
+            {calonList.length}
+          </span>
+        </button>
+        <button
+          type="button"
+          onClick={() => { setFilterStatus("aktif"); setPage(1); }}
+          className={`px-3 py-1.5 rounded-xl font-bold transition shrink-0 ${
+            filterStatus === "aktif"
+              ? "bg-emerald-700 text-white shadow-xs"
+              : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
+          }`}
+        >
+          Aktif ({aktifList.length})
         </button>
       </div>
 
@@ -452,20 +539,46 @@ export default function PelangganPage() {
                     )}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                      p.status === "aktif" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
-                      p.status === "calon" ? "bg-amber-50 text-amber-700 border border-amber-200" :
-                      p.status === "libur" ? "bg-rose-50 text-rose-700 border border-rose-200" :
-                      "bg-slate-100 text-slate-700 border border-slate-200"
-                    }`}>
-                      {p.status}
-                    </span>
+                    {p.status === "calon" ? (
+                      <div className="flex flex-col gap-1 items-start">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                          Menunggu Approval
+                        </span>
+                        {p.fotoRumah && p.latitude ? (
+                          <span className="text-[10px] text-emerald-700 font-semibold flex items-center gap-0.5">
+                            <span>✓</span> Disurvei
+                          </span>
+                        ) : (
+                          <span className="text-[10px] text-slate-400 font-medium">
+                            ⏳ Belum Survei
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                        p.status === "aktif" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
+                        p.status === "libur" ? "bg-rose-50 text-rose-700 border border-rose-200" :
+                        "bg-slate-100 text-slate-700 border border-slate-200"
+                      }`}>
+                        {p.status}
+                      </span>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-slate-500 text-xs font-medium whitespace-nowrap">
                     {formatDate(p.createdAt)}
                   </td>
-                  <td className="px-4 py-3 text-center">
+                  <td className="px-4 py-3 text-center whitespace-nowrap">
                     <div className="flex items-center justify-center gap-1.5">
+                      {p.status === "calon" && (
+                        <button
+                          type="button"
+                          onClick={() => setApprovalTarget(p)}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white text-xs font-bold shadow-xs transition"
+                          title="Approval Admin Pusat &amp; Tetapkan Zona Pickup"
+                        >
+                          <span>🛡️ Approval &amp; Zona</span>
+                        </button>
+                      )}
                       <Link
                         href={`/pelanggan/${p.id}`}
                         className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 text-slate-600 transition-colors shadow-sm"
@@ -712,6 +825,17 @@ export default function PelangganPage() {
           </div>
         </div>
       )}
+
+      {/* Modal Approval Pelanggan oleh Admin Pusat */}
+      <ModalApprovalPelanggan
+        pelanggan={approvalTarget}
+        isOpen={Boolean(approvalTarget)}
+        onClose={() => setApprovalTarget(null)}
+        onSuccess={() => {
+          fetchData();
+        }}
+        showToast={showToast}
+      />
 
       {/* Confirm Delete */}
       <ConfirmDialog
