@@ -18,7 +18,7 @@ type WilayahKec = { kecamatan: string; kelurahan: string[] };
 type Paket = { id: number; nama: string; harga: number; deskripsi: string | null };
 type KategoriTarif = { kategori: string; label: string; tarif: number; deskripsi: string | null };
 
-export default function FormDaftar() {
+export default function FormDaftar({ initialReferal = "" }: { initialReferal?: string }) {
   const [nama, setNama] = useState("");
   const [noTelepon, setNoTelepon] = useState("");
   const [kategori, setKategori] = useState("");
@@ -30,11 +30,21 @@ export default function FormDaftar() {
   const [patokanLokasi, setPatokanLokasi] = useState("");
   const [jenisLayanan, setJenisLayanan] = useState<"kategori" | "paket">("kategori");
   const [paketId, setPaketId] = useState("");
-  // Nilai penanggungjawab & referal dipakai di payload, tetapi tidak pernah
-  // diubah setelah mount — setter sengaja tidak dibuat.
   const [penanggungjawab] = useState("");
-  const [referal] = useState("");
+  const [referal, setReferal] = useState(initialReferal);
+  const [referalFromUrl, setReferalFromUrl] = useState(Boolean(initialReferal));
   const [website, setWebsite] = useState("");
+  
+  useEffect(() => {
+    if (!referal && typeof window !== "undefined") {
+      const sp = new URLSearchParams(window.location.search);
+      const qRef = sp.get("ref") || sp.get("referal");
+      if (qRef && qRef.trim()) {
+        setReferal(qRef.trim());
+        setReferalFromUrl(true);
+      }
+    }
+  }, [referal]);
   
   const [gpsLoading, setGpsLoading] = useState(false);
   const [gpsData, setGpsData] = useState<{lat: number; lng: number; acc: number} | null>(null);
@@ -138,7 +148,7 @@ export default function FormDaftar() {
           patokanLokasi,
           paketId,
           penanggungjawab,
-          referal,
+          referal: referal.trim() || undefined,
           website,
           fotoRumah: fotoRumah || undefined,
           latitude: gpsData?.lat,
@@ -202,6 +212,26 @@ export default function FormDaftar() {
           REG-2026
         </span>
       </div>
+
+      {/* Referral Notification Banner if present */}
+      {referal && (
+        <div className="p-3.5 bg-emerald-50/90 border border-emerald-200/90 rounded-2xl flex items-center justify-between gap-2.5 shadow-xs animate-in fade-in duration-200">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="text-xl shrink-0" aria-hidden="true">🤝</span>
+            <div className="min-w-0">
+              <span className="text-[10px] font-extrabold text-emerald-800 uppercase tracking-wider block">
+                Kode Referral Terhubung
+              </span>
+              <p className="text-xs font-bold text-emerald-950 truncate">
+                Direferensikan oleh: <span className="font-extrabold underline underline-offset-2">{referal}</span>
+              </p>
+            </div>
+          </div>
+          <span className="px-2 py-0.5 rounded-full bg-emerald-700 text-white text-[10px] font-black shrink-0 shadow-xs">
+            Terhubung ✓
+          </span>
+        </div>
+      )}
 
       <div>
         <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-nama">
@@ -510,6 +540,25 @@ export default function FormDaftar() {
         )}
         <p className="text-[11px] text-slate-500 mt-2">
           Foto membantu petugas mengenali rumah Anda saat survei & jemput sampah. Foto diperkecil otomatis.
+        </p>
+      </div>
+
+      <div>
+        <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-referal">
+          Kode / Petugas Referral (Opsional)
+        </label>
+        <input
+          id="d-referal"
+          value={referal}
+          onChange={(e) => {
+            setReferal(e.target.value);
+            setReferalFromUrl(false);
+          }}
+          placeholder="Contoh: Nama atau ID Petugas yang mengajak Anda"
+          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
+        />
+        <p className="text-[11px] text-slate-500 mt-1">
+          Bila Anda diajak atau didaftarkan oleh petugas lapangan kami, pastikan nama petugas terisi agar tercatat secara akurat.
         </p>
       </div>
 

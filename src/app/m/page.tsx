@@ -13,7 +13,11 @@ import {
   AlertTriangle,
   MessageSquare,
   Truck,
-  Bell
+  Bell,
+  Share2,
+  Copy,
+  Check,
+  Users
 } from "lucide-react";
 
 type Profil = {
@@ -26,11 +30,20 @@ type Profil = {
 
 type StatusAbsen = { id: number; waktuMasuk: string | null; waktuSelesai: string | null; status: string } | null;
 
+type ReferralData = {
+  nama: string;
+  referralUrl: string;
+  stats: { totalSemua: number; totalAktif: number; totalCalon: number };
+  daftarTerbaru: { id: number; nama: string; alamat: string; status: string; createdAt: string }[];
+} | null;
+
 export default function MobileHome() {
   const [profil, setProfil] = useState<Profil | null>(null);
   const [absen, setAbsen] = useState<StatusAbsen>(null);
   const [jumlahTugas, setJumlahTugas] = useState<number | null>(null);
   const [jumlahCalon, setJumlahCalon] = useState<number | null>(null);
+  const [referralData, setReferralData] = useState<ReferralData>(null);
+  const [copiedRef, setCopiedRef] = useState(false);
 
   useEffect(() => {
     fetch("/api/petugas/me")
@@ -40,6 +53,10 @@ export default function MobileHome() {
     fetch("/api/absensi")
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => setAbsen(d?.statusHariIni ?? null))
+      .catch(() => {});
+    fetch("/api/petugas/referral")
+      .then((r) => (r.ok ? r.json() : null))
+      .then(setReferralData)
       .catch(() => {});
   }, []);
 
@@ -65,6 +82,19 @@ export default function MobileHome() {
 
   const sudahMasuk = Boolean(absen?.waktuMasuk);
   const sudahSelesai = Boolean(absen?.waktuSelesai);
+
+  function handleCopyReferral() {
+    if (!referralData?.referralUrl) return;
+    navigator.clipboard.writeText(referralData.referralUrl);
+    setCopiedRef(true);
+    setTimeout(() => setCopiedRef(false), 2500);
+  }
+
+  function handleShareWhatsApp() {
+    if (!referralData?.referralUrl) return;
+    const text = `Halo Bapak/Ibu! Yuk daftar layanan angkut & pengelolaan sampah resmi WastePay Kota Depok. Terjadwal, bersih, dan bisa pantau posisi armada langsung dari HP.\n\nKlik link pendaftaran resmi di sini:\n${referralData.referralUrl}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+  }
 
   return (
     <div className="space-y-3">
@@ -298,6 +328,82 @@ export default function MobileHome() {
           </Link>
         </div>
       </div>
+
+      {/* Referral Program Card for Officers */}
+      {referralData && (
+        <div className="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 text-white rounded-2xl p-3.5 shadow-md space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-sm font-bold shrink-0">
+                🤝
+              </div>
+              <div className="min-w-0">
+                <h4 className="text-xs font-black text-white">Link Referral Saya</h4>
+                <p className="text-[10px] text-slate-400 truncate">
+                  Ajak warga baru mendaftar dengan akun Anda
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1.5 shrink-0 bg-slate-800/90 px-2.5 py-1 rounded-xl border border-slate-700/80">
+              <Users className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="text-[11px] font-mono font-black text-emerald-300">
+                {referralData.stats.totalSemua} Warga
+              </span>
+            </div>
+          </div>
+
+          <div className="bg-slate-950/80 rounded-xl p-2 border border-slate-800/80 flex items-center justify-between gap-2">
+            <span className="text-[10px] font-mono text-slate-300 truncate max-w-[200px] sm:max-w-xs">
+              {referralData.referralUrl}
+            </span>
+            <button
+              type="button"
+              onClick={handleCopyReferral}
+              className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1 shrink-0 ${
+                copiedRef
+                  ? "bg-emerald-600 text-white shadow-xs"
+                  : "bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700"
+              }`}
+              title="Salin tautan referral"
+            >
+              {copiedRef ? <Check className="w-3 h-3 text-white" /> : <Copy className="w-3 h-3 text-slate-300" />}
+              <span>{copiedRef ? "Tersalin!" : "Salin"}</span>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2 pt-0.5">
+            <button
+              type="button"
+              onClick={handleShareWhatsApp}
+              className="w-full py-2 px-3 bg-[#00AA13] hover:bg-[#00880C] active:scale-95 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-1.5"
+            >
+              <Share2 className="w-3.5 h-3.5" />
+              <span>Bagikan Link via WhatsApp</span>
+            </button>
+          </div>
+
+          {referralData.daftarTerbaru.length > 0 && (
+            <div className="pt-2 border-t border-slate-800/80 space-y-1">
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
+                Terakhir Mendaftar via Anda:
+              </span>
+              <div className="space-y-1 max-h-24 overflow-y-auto">
+                {referralData.daftarTerbaru.slice(0, 3).map((w) => (
+                  <div key={w.id} className="text-[10px] flex items-center justify-between py-0.5 px-1.5 rounded-lg bg-slate-900/60 border border-slate-800/60">
+                    <span className="font-bold text-slate-200 truncate max-w-[150px]">{w.nama}</span>
+                    <span className={`px-1.5 py-0.2 rounded text-[8px] font-extrabold ${
+                      w.status === "aktif" ? "bg-emerald-500/20 text-emerald-300" : "bg-amber-500/20 text-amber-300"
+                    }`}>
+                      {w.status === "aktif" ? "Aktif" : "Calon"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Fast Helpdesk Banner */}
       <div className="bg-slate-100 border border-slate-200/80 rounded-xl px-3 py-2 flex items-center justify-between gap-2">

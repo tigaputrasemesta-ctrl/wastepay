@@ -250,6 +250,61 @@ export default async function LaporanPage({
           </div>
         )}
       </div>
+
+      {/* Rekapitulasi Referral Petugas / Mitra */}
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm mt-6">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+          <div>
+            <h2 className="font-bold text-slate-900 text-base">Rekapitulasi Referral Pelanggan</h2>
+            <p className="text-xs text-slate-500 font-medium">
+              Jumlah pelanggan yang didaftarkan melalui kode referral petugas & mitra
+            </p>
+          </div>
+          <span className="px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-xs">
+            <span>🤝</span>
+            <span>{data.rekapReferral.reduce((acc, curr) => acc + curr.total, 0)} Pelanggan Tereferensikan</span>
+          </span>
+        </div>
+
+        {data.rekapReferral.length === 0 ? (
+          <p className="text-sm text-slate-400 font-medium">Belum ada pelanggan yang terdaftar melalui referral</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
+                  <th className="text-left px-3 py-2 font-semibold">Nama Petugas / Kode Referral</th>
+                  <th className="text-right px-3 py-2 font-semibold">Jumlah Pelanggan</th>
+                  <th className="text-center px-3 py-2 font-semibold">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.rekapReferral.map((r) => (
+                  <tr key={r.referal} className="border-b border-slate-100 hover:bg-slate-50/50">
+                    <td className="px-3 py-2.5 font-bold text-slate-900 flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-black shrink-0">
+                        🤝
+                      </span>
+                      <span>{r.referal}</span>
+                    </td>
+                    <td className="px-3 py-2.5 text-right font-mono font-bold text-emerald-700 text-sm">
+                      {r.total} Orang
+                    </td>
+                    <td className="px-3 py-2.5 text-center">
+                      <a
+                        href={`/pelanggan?search=${encodeURIComponent(r.referal)}`}
+                        className="text-xs font-bold text-emerald-700 hover:text-emerald-800 hover:underline inline-flex items-center gap-1"
+                      >
+                        Lihat Pelanggan →
+                      </a>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

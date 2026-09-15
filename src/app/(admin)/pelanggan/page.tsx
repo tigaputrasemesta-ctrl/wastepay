@@ -409,6 +409,14 @@ export default function PelangganPage() {
                         <div className="font-bold text-slate-900 text-sm">
                           {p.nama}
                         </div>
+                        {p.referal && (
+                          <div className="mt-0.5">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-200" title={`Referral: ${p.referal}`}>
+                              <span aria-hidden="true">🤝</span>
+                              <span className="truncate max-w-[130px]">{p.referal}</span>
+                            </span>
+                          </div>
+                        )}
                         {p.latitude && p.longitude && (
                           <a
                             href={`https://www.google.com/maps?q=${p.latitude},${p.longitude}`}

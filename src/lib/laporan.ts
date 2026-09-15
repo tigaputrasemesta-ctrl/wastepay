@@ -126,6 +126,23 @@ export async function getLaporan(bulanIni: number, tahunIni: number) {
   const totalPemasukan = pemasukanBulanIni._sum.jumlah || 0;
   const totalPengeluaran = pengeluaranBulanIni._sum.jumlah || 0;
 
+  // Rekapitulasi Pelanggan per Referal
+  const referalAgg = await prisma.pelanggan.groupBy({
+    by: ["referal"],
+    where: {
+      referal: { not: null },
+    },
+    _count: true,
+  });
+
+  const rekapReferral = referalAgg
+    .filter((r) => r.referal && r.referal.trim())
+    .map((r) => ({
+      referal: r.referal as string,
+      total: r._count,
+    }))
+    .sort((a, b) => b.total - a.total);
+
   return {
     bulanIni,
     tahunIni,
@@ -151,6 +168,7 @@ export async function getLaporan(bulanIni: number, tahunIni: number) {
     })),
     totalPengangkutan,
     totalDiambil,
+    rekapReferral,
   };
 }
 

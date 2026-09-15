@@ -43,7 +43,14 @@ const ALUR_DAFTAR = [
 
 export const dynamic = "force-dynamic";
 
-export default async function DaftarPage() {
+export default async function DaftarPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ ref?: string; referal?: string }>;
+}) {
+  const sp = searchParams ? await searchParams : undefined;
+  const initialReferal = (sp?.ref || sp?.referal || "").trim();
+
   let tarifMin = 0;
   try {
     const k = await prisma.kategoriTarif.findMany({
@@ -123,7 +130,7 @@ export default async function DaftarPage() {
 
         {/* Form Pendaftaran (7 cols) */}
         <div className="lg:col-span-7">
-          <FormDaftar />
+          <FormDaftar initialReferal={initialReferal} />
         </div>
       </div>
     </div>

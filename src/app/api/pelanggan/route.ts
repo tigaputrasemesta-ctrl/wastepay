@@ -37,12 +37,18 @@ export async function GET(request: Request) {
     where.wilayahId = parseInt(wilayahId);
   }
 
+  const referalParam = searchParams.get("referal");
+  if (referalParam) {
+    where.referal = { contains: referalParam.trim(), mode: "insensitive" };
+  }
+
   if (search) {
     where.OR = [
       { nama: { contains: search, mode: "insensitive" } },
       { alamat: { contains: search, mode: "insensitive" } },
       { noTelepon: { contains: search, mode: "insensitive" } },
       { kodePelanggan: { contains: search, mode: "insensitive" } },
+      { referal: { contains: search, mode: "insensitive" } },
     ];
   }
   if (status) {
