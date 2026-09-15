@@ -787,34 +787,54 @@ export default function GojekDriverCockpit({
         </div>
       </div>
 
-      {/* ── 4. FLOATING MINI-PILL KETIKA PANEL DI-HIDE (Showing & Hiding) ── */}
-      {sheetMode === "hidden" && currentTask && (
+      {/* ── 4. FLOATING MINI-PILL KETIKA PANEL DI-HIDE (Showing & Hiding: Target & Standby) ── */}
+      {sheetMode === "hidden" && (
         <div className="absolute bottom-2 inset-x-3 z-[500] pointer-events-auto animate-in slide-in-from-bottom-2 duration-200">
           <button
             type="button"
             onClick={() => setSheetMode("compact")}
             className="w-full bg-slate-950/95 backdrop-blur-md border border-slate-700 hover:border-emerald-500/60 p-2.5 rounded-2xl text-white shadow-2xl flex items-center justify-between gap-2 active:scale-95 transition-all"
-            title="Buka panel penjemputan"
+            title={currentTask ? "Buka panel penjemputan" : "Buka panel armada standby"}
           >
             <div className="flex items-center gap-2 min-w-0">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shrink-0 animate-pulse" />
+              <span
+                className={`w-2.5 h-2.5 rounded-full shrink-0 animate-pulse ${
+                  currentTask ? "bg-emerald-400" : "bg-amber-400"
+                }`}
+              />
               <div className="min-w-0 text-left">
-                <div className="flex items-center gap-1.5">
-                  <p className="text-xs font-black truncate">{currentTask.nama}</p>
-                  {distanceToCurrent !== null && (
-                    <span className="text-[10px] font-bold text-emerald-400 font-mono shrink-0">
-                      {isWithinRadius ? "🎯 Tiba!" : `${distanceToCurrent}m`}
-                    </span>
-                  )}
-                  {currentIsMenunggak && (
-                    <span className="px-1 py-0.2 rounded text-[8px] font-black bg-rose-600 text-white shrink-0">
-                      MENUNGGAK
-                    </span>
-                  )}
-                </div>
-                <p className="text-[10px] text-slate-400 truncate">
-                  {currentTask.patokanLokasi ? `📍 ${currentTask.patokanLokasi}` : currentTask.alamat}
-                </p>
+                {currentTask ? (
+                  <>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-xs font-black truncate">{currentTask.nama}</p>
+                      {distanceToCurrent !== null && (
+                        <span className="text-[10px] font-bold text-emerald-400 font-mono shrink-0">
+                          {isWithinRadius ? "🎯 Tiba!" : `${distanceToCurrent}m`}
+                        </span>
+                      )}
+                      {currentIsMenunggak && (
+                        <span className="px-1 py-0.2 rounded text-[8px] font-black bg-rose-600 text-white shrink-0">
+                          MENUNGGAK
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[10px] text-slate-400 truncate">
+                      {currentTask.patokanLokasi ? `📍 ${currentTask.patokanLokasi}` : currentTask.alamat}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-xs font-black text-white">Armada Standby</p>
+                      <span className="px-1.5 py-0.2 rounded text-[8px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                        Standby
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-slate-400 truncate">
+                      Tidak ada antrean rute • Peta & GPS aktif
+                    </p>
+                  </>
+                )}
               </div>
             </div>
             <span className="text-[11px] font-bold text-emerald-300 bg-emerald-950/90 px-3 py-1.5 rounded-xl border border-emerald-800/80 shrink-0 flex items-center gap-1 shadow-sm">
@@ -1026,23 +1046,81 @@ export default function GojekDriverCockpit({
               </motion.div>
             </>
           ) : validTasks.length === 0 ? (
-            <motion.div layout className="py-2.5 text-center text-xs space-y-1.5">
-              <div className="w-8 h-8 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center mx-auto text-sm">
-                🚛
+            <motion.div layout className="space-y-2.5">
+              {/* Header: Badge & Explicit Sembunyikan button */}
+              <div className="flex items-center justify-between text-xs pb-1 border-b border-slate-800/80">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse shrink-0" />
+                  <span>ARMADA STANDBY</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSheetMode("hidden")}
+                  className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 active:scale-95 transition-all flex items-center gap-1"
+                  title="Sembunyikan panel (tampilkan peta penuh)"
+                >
+                  <span>Sembunyikan</span>
+                  <span aria-hidden="true">✕</span>
+                </button>
               </div>
-              <div>
-                <p className="font-black text-white">Armada Standby</p>
-                <p className="text-[11px] text-slate-400">
-                  Tidak ada jadwal penjemputan pada tanggal ini.
+
+              <div className="py-1.5 text-center space-y-1">
+                <div className="w-9 h-9 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300 flex items-center justify-center mx-auto text-base shadow-inner">
+                  🚛
+                </div>
+                <p className="font-black text-white text-sm">Armada Standby</p>
+                <p className="text-[11px] text-slate-400 max-w-xs mx-auto">
+                  Tidak ada jadwal rute penjemputan pada tanggal ini. Peta tetap aktif memantau pergerakan GPS armada Anda.
                 </p>
+              </div>
+
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setSheetMode("hidden")}
+                  className="w-full py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white rounded-xl text-xs font-bold border border-slate-800 active:scale-95 transition-all flex items-center justify-center gap-1.5"
+                >
+                  <span>Sembunyikan Panel & Buka Peta Penuh</span>
+                  <span aria-hidden="true">✕</span>
+                </button>
               </div>
             </motion.div>
           ) : (
-            <motion.div layout className="py-2 text-center text-xs text-slate-400 space-y-1">
-              <p className="font-bold text-white">Semua Penjemputan Selesai! 🎉</p>
-              <p className="text-[11px]">
-                Tidak ada lagi rumah yang menunggu pengangkutan pada jadwal ini.
-              </p>
+            <motion.div layout className="space-y-2.5">
+              {/* Header: Badge & Explicit Sembunyikan button */}
+              <div className="flex items-center justify-between text-xs pb-1 border-b border-slate-800/80">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                  <span>RUTE SELESAI</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSheetMode("hidden")}
+                  className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 active:scale-95 transition-all flex items-center gap-1"
+                  title="Sembunyikan panel (tampilkan peta penuh)"
+                >
+                  <span>Sembunyikan</span>
+                  <span aria-hidden="true">✕</span>
+                </button>
+              </div>
+
+              <div className="py-1.5 text-center space-y-1">
+                <p className="font-bold text-white text-sm">Semua Penjemputan Selesai! 🎉</p>
+                <p className="text-[11px] text-slate-400">
+                  Tidak ada lagi rumah yang menunggu pengangkutan pada jadwal ini.
+                </p>
+              </div>
+
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setSheetMode("hidden")}
+                  className="w-full py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white rounded-xl text-xs font-bold border border-slate-800 active:scale-95 transition-all flex items-center justify-center gap-1.5"
+                >
+                  <span>Sembunyikan Panel & Buka Peta Penuh</span>
+                  <span aria-hidden="true">✕</span>
+                </button>
+              </div>
             </motion.div>
           )}
 
