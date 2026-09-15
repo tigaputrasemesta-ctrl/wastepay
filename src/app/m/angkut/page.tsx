@@ -389,7 +389,7 @@ export default function MobileAngkut() {
   });
 
   return (
-    <div className="flex-1 w-full h-full flex flex-col overflow-hidden relative pb-[58px]">
+    <div className="flex-1 w-full h-full flex flex-col overflow-hidden relative pb-[calc(58px+env(safe-area-inset-bottom,0px))]">
       {/* ── UNIFIED COMPACT DRIVER DASHBOARD (Persistent & Visible across Map & List) ── */}
       <div className="shrink-0 bg-slate-900 border-b border-slate-800 p-2 sm:p-2.5 space-y-2 shadow-md z-30">
         {/* Tier 1: System Date + Operational Trip Controls + Options Toggle */}
@@ -481,6 +481,13 @@ export default function MobileAngkut() {
             <div className="px-2 py-1 bg-slate-950/80 rounded-xl border border-slate-800 text-xs font-mono font-bold text-emerald-400 tabular-nums flex items-center gap-1 whitespace-nowrap">
               <span className="text-[11px]" aria-hidden="true">⏱️</span>
               <span>{formatTripDuration(tripSeconds)}</span>
+            </div>
+
+            {/* Quick Progress Badge (Always visible: e.g. 0/0) */}
+            <div className="px-2 py-1 bg-slate-800/90 text-slate-300 rounded-xl border border-slate-700/80 text-xs font-mono font-bold tabular-nums flex items-center gap-0.5 whitespace-nowrap shadow-xs" title="Progres pengangkutan">
+              <span className="text-emerald-400">{selesaiCount}</span>
+              <span className="text-slate-500">/</span>
+              <span>{totalCount}</span>
             </div>
 
             {/* Secondary Tools Hide/Open Toggle Button */}
@@ -642,7 +649,7 @@ export default function MobileAngkut() {
 
       {/* ── VIEWPORT: MODE PETA LIVE (ZERO-SCROLL VIEWPORT) ── */}
       {viewMode === "map" && (
-        <div className="flex-1 w-full h-full min-h-0 relative overflow-hidden">
+        <div className="flex-1 w-full min-h-0 relative overflow-hidden">
           <GojekDriverCockpit
             tugas={data
               .filter((t) => t.pelanggan.latitude && t.pelanggan.longitude)
@@ -689,7 +696,7 @@ export default function MobileAngkut() {
           {data.length === 0 && (
             <>
               {!hideEmptyScheduleAlert ? (
-                <div className="absolute top-2 inset-x-3 sm:inset-x-6 z-[400] max-w-md mx-auto pointer-events-auto animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="absolute top-2 left-2 right-14 sm:right-16 z-[400] max-w-md pointer-events-auto animate-in fade-in slide-in-from-top-2 duration-200">
                   <div className="bg-slate-950/95 backdrop-blur-md rounded-2xl p-3 sm:p-3.5 border border-slate-800 shadow-2xl space-y-2.5">
                     {/* Header: Icon, Title, Date & Close Button */}
                     <div className="flex items-start justify-between gap-2">
@@ -734,7 +741,7 @@ export default function MobileAngkut() {
                           onClick={() => setTanggal(todayLocalISO())}
                           className="flex-1 py-1.5 px-2.5 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white text-[11px] font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-1"
                         >
-                          <span>📅 Kembali ke Hari Ini</span>
+                          <span>📅 Hari Ini</span>
                         </button>
                       )}
                       <button
@@ -742,8 +749,7 @@ export default function MobileAngkut() {
                         onClick={() => setHideEmptyScheduleAlert(true)}
                         className="flex-1 py-1.5 px-2.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-[11px] font-bold rounded-xl border border-slate-700 transition-all flex items-center justify-center gap-1"
                       >
-                        <span>Tutup & Lihat Peta</span>
-                        <span aria-hidden="true">✕</span>
+                        <span>Tutup ✕</span>
                       </button>
                     </div>
                   </div>
@@ -770,7 +776,7 @@ export default function MobileAngkut() {
 
       {/* ── VIEWPORT: MODE DAFTAR RUTE (SCROLLABLE LIST) ── */}
       {viewMode === "list" && (
-        <div className="flex-1 w-full h-full min-h-0 overflow-y-auto p-3 sm:p-4 space-y-3 pb-24">
+        <div className="flex-1 w-full min-h-0 overflow-y-auto p-3 sm:p-4 space-y-3 pb-24">
 
           {/* Searching & Finding in List View */}
           <div className="relative">
