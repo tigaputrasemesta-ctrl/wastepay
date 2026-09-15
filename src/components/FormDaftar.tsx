@@ -461,7 +461,7 @@ export default function FormDaftar() {
               className="w-28 h-28 object-cover rounded-xl border border-slate-200 shrink-0"
             />
             <div className="flex-1 space-y-2">
-              <p className="text-xs font-bold text-emerald-600">✓ Foto Tersimpan</p>
+              <p className="text-xs font-bold text-emerald-700">✓ Foto Tersimpan</p>
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
@@ -489,7 +489,7 @@ export default function FormDaftar() {
               disabled={fotoLoading}
               className="w-full py-3.5 border border-slate-200 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 shadow-sm transition-all disabled:opacity-50"
             >
-              <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
@@ -547,7 +547,7 @@ export default function FormDaftar() {
                 gpsLoading ? "bg-slate-100 text-slate-400" : "bg-slate-100 hover:bg-slate-200 text-slate-800 shadow-sm"
               }`}
             >
-              <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
@@ -582,7 +582,7 @@ export default function FormDaftar() {
       <button
         type="submit"
         disabled={status === "kirim"}
-        className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-extrabold text-sm shadow-md active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+        className="w-full py-4 bg-emerald-700 hover:bg-emerald-800 text-white rounded-2xl font-extrabold text-sm shadow-md active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
       >
         {status === "kirim" ? (
           <>

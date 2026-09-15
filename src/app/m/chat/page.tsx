@@ -171,7 +171,7 @@ export default function MobileChat() {
             )}
           </div>
         </div>
-        <span className="text-[9px] font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full shrink-0">
+        <span className="text-[9px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full shrink-0">
           Live 5s
         </span>
       </div>
@@ -192,7 +192,7 @@ export default function MobileChat() {
           <div className="text-center py-12 px-4">
             <span className="text-2xl block mb-1">💬</span>
             <p className="font-bold text-xs text-slate-700">Belum Ada Pesan</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">
+            <p className="text-[11px] text-slate-600 mt-0.5">
               {isAdmin
                 ? `Ketik pesan pertama Anda kepada petugas ${selectedThread?.nama || ""}.`
                 : "Kirim pesan untuk menghubungi dispatcher atau admin dinas."}
@@ -204,7 +204,7 @@ export default function MobileChat() {
             return (
               <div key={m.id} className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
                 <div
-                  className={`max-w-[85%] px-3.5 py-2 text-xs shadow-2xs ${
+                  className={`max-w-[85%] px-3.5 py-2 text-xs shadow-sm ${
                     isMe
                       ? "bg-emerald-700 text-white rounded-2xl rounded-tr-xs"
                       : "bg-white border border-slate-200/90 text-slate-900 rounded-2xl rounded-tl-xs"
@@ -212,7 +212,7 @@ export default function MobileChat() {
                 >
                   <div
                     className={`text-[9px] font-semibold mb-0.5 flex items-center gap-1.5 ${
-                      isMe ? "text-emerald-200" : "text-slate-400"
+                      isMe ? "text-emerald-200" : "text-slate-600"
                     }`}
                   >
                     <span className="font-bold">
@@ -247,12 +247,12 @@ export default function MobileChat() {
                 ? `Pesan ke ${selectedThread.nama}…`
                 : "Tulis pesan ke admin…"
             }
-            className="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-medium outline-none bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 shadow-2xs"
+            className="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-medium outline-none bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 shadow-sm"
           />
           <button
             type="submit"
             disabled={sending || !isi.trim()}
-            className="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white rounded-xl text-xs font-bold shadow-2xs transition-all disabled:opacity-40 shrink-0"
+            className="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white rounded-xl text-xs font-bold shadow-sm transition-all disabled:opacity-40 shrink-0"
           >
             {sending ? "…" : "Kirim"}
           </button>

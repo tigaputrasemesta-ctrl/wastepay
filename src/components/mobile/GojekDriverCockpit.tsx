@@ -311,6 +311,7 @@ export default function GojekDriverCockpit({
 
   // Showing & Hiding: 3 mode ("compact", "expanded", "hidden")
   const [sheetMode, setSheetMode] = useState<"compact" | "expanded" | "hidden">("compact");
+  const [guidanceMode, setGuidanceMode] = useState<"compact" | "expanded" | "hidden">("compact");
   const [showCapacityPicker, setShowCapacityPicker] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
@@ -429,75 +430,175 @@ export default function GojekDriverCockpit({
           : "h-full flex-1 w-full bg-slate-950 flex flex-col"
       }`}
     >
-      {/* ── 1. GOJEK FLOATING DESTINATION GUIDANCE PILL ── */}
-      {currentTask && (
-        <div className="absolute top-2 left-2.5 right-12 sm:right-14 z-[400] pointer-events-none space-y-1">
-          {/* Destination Guidance Pill */}
-          <div className="pointer-events-auto bg-slate-950/90 backdrop-blur-md rounded-xl px-2.5 py-1.5 border border-slate-800 shadow-xl flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2 min-w-0 flex-1">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-700 to-teal-700 flex items-center justify-center text-white text-xs shadow-md shrink-0 font-black">
-                <span aria-hidden="true">{isWithinRadius ? "🎯" : "⬆️"}</span>
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-black text-white tracking-tight truncate max-w-[130px] sm:max-w-xs">
-                    {currentTask.nama}
-                  </span>
-                  <span className="text-[10px] font-bold text-emerald-400 font-mono shrink-0">
-                    {distanceToCurrent !== null
-                      ? isWithinRadius
-                        ? "Tiba!"
-                        : `${distanceToCurrent}m`
-                      : ""}
-                  </span>
-                </div>
-                <p className="text-[10px] text-slate-400 font-medium truncate">
-                  {currentTask.patokanLokasi ? `📍 ${currentTask.patokanLokasi}` : currentTask.alamat}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-1.5 shrink-0">
-              {currentIsMenunggak ? (
-                <span className="px-1.5 py-0.5 rounded text-[8px] font-black bg-rose-600 text-white animate-pulse">
-                  MENUNGGAK
-                </span>
-              ) : (
-                <span className="px-1.5 py-0.5 rounded text-[8px] font-black bg-emerald-600/80 text-white">
-                  LUNAS
-                </span>
-              )}
+      {/* ── 1. GOJEK FLOATING DESTINATION GUIDANCE PILL (Hide / Open & Compact Toggle) ── */}
+      {currentTask && sheetMode !== "expanded" && (
+        <>
+          {/* Mode 1: Hidden Mini-Button (Restorable with 1 tap) */}
+          {guidanceMode === "hidden" && (
+            <div className="absolute top-2 left-2 z-[400] pointer-events-auto animate-in fade-in duration-150">
               <button
                 type="button"
-                onClick={() => {
-                  setFocusPos([currentTask.latitude, currentTask.longitude]);
-                  if (sheetMode === "hidden") setSheetMode("compact");
-                }}
-                className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-white text-[10px] font-bold rounded-lg border border-slate-700 active:scale-95 transition-transform"
-                title="Fokus ke Rumah Pelanggan"
+                onClick={() => setGuidanceMode("compact")}
+                className="px-2.5 py-1 bg-slate-950/90 hover:bg-slate-900 backdrop-blur-md text-white border border-slate-700 rounded-xl text-[10px] font-bold shadow-lg flex items-center gap-1.5 active:scale-95 transition-all"
+                title="Tampilkan info target pelanggan"
               >
-                Fokus
+                <span>🎯 Target: {currentTask.nama.split(" ")[0]}</span>
+                {distanceToCurrent !== null && (
+                  <span className="text-emerald-400 font-mono text-[9px]">{distanceToCurrent}m</span>
+                )}
+                <span className="text-slate-400">▾</span>
               </button>
             </div>
-          </div>
+          )}
 
-          {/* Contextual Warning Banner: Kapasitas Truk & Tunggakan */}
-          {muatanTruk >= 75 && (
-            <div className="pointer-events-auto bg-amber-500/95 backdrop-blur-md text-slate-950 px-2.5 py-1 rounded-lg text-[10px] font-extrabold flex items-center justify-between shadow-md">
-              <span>⚠️ Truk {muatanTruk}% — Segera ke Titik Transit bila penuh!</span>
-              <span className="text-xs">🚛</span>
+          {/* Mode 2: Compact Single-Line Pill (Zero Obtrusion & Clean Margin) */}
+          {guidanceMode === "compact" && (
+            <div className="absolute top-2 left-2 right-14 sm:right-16 z-[400] pointer-events-none animate-in fade-in duration-150">
+              <div className="pointer-events-auto bg-slate-950/90 backdrop-blur-md rounded-xl px-2.5 py-1.5 border border-slate-800 shadow-xl flex items-center justify-between gap-1.5">
+                <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                  <div className="w-5.5 h-5.5 rounded-lg bg-gradient-to-br from-emerald-700 to-teal-700 flex items-center justify-center text-white text-[10px] shadow-sm shrink-0 font-black">
+                    <span aria-hidden="true">{isWithinRadius ? "🎯" : "⬆️"}</span>
+                  </div>
+                  <div className="min-w-0 flex-1 flex items-center gap-1.5 truncate">
+                    <span className="text-xs font-black text-white truncate max-w-[120px] sm:max-w-xs">
+                      {currentTask.nama}
+                    </span>
+                    {distanceToCurrent !== null && (
+                      <span className="text-[10px] font-bold text-emerald-400 font-mono shrink-0">
+                        {isWithinRadius ? "Tiba!" : `${distanceToCurrent}m`}
+                      </span>
+                    )}
+                    {currentIsMenunggak && (
+                      <span className="px-1.5 py-0.2 rounded text-[8px] font-black bg-rose-600 text-white animate-pulse shrink-0">
+                        MENUNGGAK
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFocusPos([currentTask.latitude, currentTask.longitude]);
+                      if (sheetMode === "hidden") setSheetMode("compact");
+                    }}
+                    className="px-1.5 py-0.5 bg-slate-800 hover:bg-slate-700 text-white text-[9px] font-bold rounded-lg border border-slate-700 active:scale-95"
+                    title="Fokus ke Rumah Pelanggan"
+                  >
+                    Fokus
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setGuidanceMode("expanded")}
+                    className="px-1.5 py-0.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-[9px] font-bold rounded-lg border border-slate-700"
+                    title="Buka Detail Alamat"
+                  >
+                    Detail ▾
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setGuidanceMode("hidden")}
+                    className="p-1 hover:bg-slate-800 text-slate-400 hover:text-white text-[10px] rounded-lg transition-colors"
+                    title="Sembunyikan Target"
+                    aria-label="Sembunyikan target"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
             </div>
           )}
 
-          {currentIsMenunggak && (
-            <div className="pointer-events-auto bg-rose-700/95 backdrop-blur-md text-white px-2.5 py-1 rounded-lg text-[10px] font-extrabold flex items-center justify-between shadow-md animate-pulse">
-              <span>
-                ⛔ Menunggak {currentTask.tunggakan?.jumlahBulan} bln ({formatRupiah(currentTask.tunggakan?.totalNominal || 0)}). Jangan angkut!
-              </span>
-              <span className="text-xs">⚠️</span>
+          {/* Mode 3: Expanded Full Guidance Card (Detailed Info & Alerts) */}
+          {guidanceMode === "expanded" && (
+            <div className="absolute top-2 left-2 right-14 sm:right-16 z-[400] pointer-events-none space-y-1 animate-in fade-in duration-150">
+              <div className="pointer-events-auto bg-slate-950/95 backdrop-blur-md rounded-xl p-2.5 border border-slate-800 shadow-xl space-y-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-700 to-teal-700 flex items-center justify-center text-white text-xs shadow-md shrink-0 font-black">
+                      <span aria-hidden="true">{isWithinRadius ? "🎯" : "⬆️"}</span>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-xs font-black text-white tracking-tight truncate max-w-[130px] sm:max-w-xs">
+                          {currentTask.nama}
+                        </span>
+                        <span className="text-[10px] font-bold text-emerald-400 font-mono shrink-0">
+                          {distanceToCurrent !== null
+                            ? isWithinRadius
+                              ? "Tiba!"
+                              : `${distanceToCurrent}m`
+                            : ""}
+                        </span>
+                        {currentIsMenunggak ? (
+                          <span className="px-1.5 py-0.2 rounded text-[8px] font-black bg-rose-600 text-white animate-pulse">
+                            MENUNGGAK
+                          </span>
+                        ) : (
+                          <span className="px-1.5 py-0.2 rounded text-[8px] font-black bg-emerald-700/80 text-white">
+                            LUNAS
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[10px] text-slate-400 font-medium truncate mt-0.5">
+                        {currentTask.patokanLokasi ? `📍 ${currentTask.patokanLokasi}` : currentTask.alamat}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFocusPos([currentTask.latitude, currentTask.longitude]);
+                        if (sheetMode === "hidden") setSheetMode("compact");
+                      }}
+                      className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-white text-[10px] font-bold rounded-lg border border-slate-700 active:scale-95 transition-transform"
+                      title="Fokus ke Rumah Pelanggan"
+                    >
+                      Fokus
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setGuidanceMode("compact")}
+                      className="px-1.5 py-0.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-[10px] font-bold rounded-lg border border-slate-700"
+                      title="Ciutkan Panel"
+                    >
+                      Ciutkan ▲
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setGuidanceMode("hidden")}
+                      className="p-1 hover:bg-slate-800 text-slate-400 hover:text-white text-[10px] rounded-lg"
+                      title="Sembunyikan Target"
+                      aria-label="Sembunyikan target"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+
+                {/* Warning Alert inside Expanded Card */}
+                {muatanTruk >= 75 && (
+                  <div className="bg-amber-500/90 text-slate-950 px-2 py-0.5 rounded-lg text-[10px] font-extrabold flex items-center justify-between">
+                    <span>⚠️ Truk {muatanTruk}% — Segera ke Titik Transit bila penuh!</span>
+                    <span className="text-xs">🚛</span>
+                  </div>
+                )}
+
+                {currentIsMenunggak && (
+                  <div className="bg-rose-700/90 text-white px-2 py-0.5 rounded-lg text-[10px] font-extrabold flex items-center justify-between animate-pulse">
+                    <span>
+                      ⛔ Menunggak {currentTask.tunggakan?.jumlahBulan} bln ({formatRupiah(currentTask.tunggakan?.totalNominal || 0)}). Jangan angkut!
+                    </span>
+                    <span className="text-xs">⚠️</span>
+                  </div>
+                )}
+              </div>
             </div>
           )}
-        </div>
+        </>
       )}
 
       {/* ── 2. FULLSCREEN LEAFLET MAP CANVAS ── */}
@@ -673,34 +774,52 @@ export default function GojekDriverCockpit({
             onClick={() => {
               setSheetMode((prev) => (prev === "hidden" ? "compact" : "hidden"));
             }}
-            className="w-8.5 h-8.5 rounded-xl bg-slate-900/90 backdrop-blur-md hover:bg-slate-800 active:scale-95 text-slate-300 border border-slate-700 shadow-md flex items-center justify-center text-xs font-bold transition-all"
-            aria-label={sheetMode === "hidden" ? "Tampilkan panel bawah" : "Sembunyikan panel bawah"}
-            title={sheetMode === "hidden" ? "Tampilkan Panel Bawah" : "Sembunyikan Panel Bawah"}
+            className={`w-8.5 h-8.5 rounded-xl backdrop-blur-md active:scale-95 border shadow-md flex items-center justify-center text-xs font-bold transition-all ${
+              sheetMode === "hidden"
+                ? "bg-emerald-700/90 hover:bg-emerald-800 text-white border-emerald-600 ring-2 ring-emerald-500/40 animate-pulse"
+                : "bg-slate-900/90 hover:bg-slate-800 text-slate-300 border-slate-700"
+            }`}
+            aria-label={sheetMode === "hidden" ? "Buka panel penjemputan" : "Sembunyikan panel penjemputan"}
+            title={sheetMode === "hidden" ? "Buka Panel Penjemputan (▲)" : "Sembunyikan Panel Penjemputan (✕)"}
           >
-            <span aria-hidden="true">{sheetMode === "hidden" ? "👁️" : "🙈"}</span>
+            <span aria-hidden="true">{sheetMode === "hidden" ? "📋" : "✕"}</span>
           </button>
         </div>
       </div>
 
       {/* ── 4. FLOATING MINI-PILL KETIKA PANEL DI-HIDE (Showing & Hiding) ── */}
       {sheetMode === "hidden" && currentTask && (
-        <div className="absolute bottom-3 inset-x-4 z-[500] pointer-events-auto">
+        <div className="absolute bottom-2 inset-x-3 z-[500] pointer-events-auto animate-in slide-in-from-bottom-2 duration-200">
           <button
             type="button"
             onClick={() => setSheetMode("compact")}
-            className="w-full bg-slate-950/95 backdrop-blur-md border border-slate-700 p-2.5 rounded-2xl text-white shadow-2xl flex items-center justify-between gap-2 active:scale-95 transition-transform"
+            className="w-full bg-slate-950/95 backdrop-blur-md border border-slate-700 hover:border-emerald-500/60 p-2.5 rounded-2xl text-white shadow-2xl flex items-center justify-between gap-2 active:scale-95 transition-all"
+            title="Buka panel penjemputan"
           >
             <div className="flex items-center gap-2 min-w-0">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shrink-0 animate-ping" />
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shrink-0 animate-pulse" />
               <div className="min-w-0 text-left">
-                <p className="text-xs font-black truncate">{currentTask.nama}</p>
+                <div className="flex items-center gap-1.5">
+                  <p className="text-xs font-black truncate">{currentTask.nama}</p>
+                  {distanceToCurrent !== null && (
+                    <span className="text-[10px] font-bold text-emerald-400 font-mono shrink-0">
+                      {isWithinRadius ? "🎯 Tiba!" : `${distanceToCurrent}m`}
+                    </span>
+                  )}
+                  {currentIsMenunggak && (
+                    <span className="px-1 py-0.2 rounded text-[8px] font-black bg-rose-600 text-white shrink-0">
+                      MENUNGGAK
+                    </span>
+                  )}
+                </div>
                 <p className="text-[10px] text-slate-400 truncate">
-                  {distanceToCurrent !== null ? `${distanceToCurrent}m lagi` : currentTask.alamat}
+                  {currentTask.patokanLokasi ? `📍 ${currentTask.patokanLokasi}` : currentTask.alamat}
                 </p>
               </div>
             </div>
-            <span className="text-[11px] font-bold text-emerald-400 bg-emerald-950/80 px-2.5 py-1 rounded-xl border border-emerald-800 shrink-0">
-              Buka Detail ▲
+            <span className="text-[11px] font-bold text-emerald-300 bg-emerald-950/90 px-3 py-1.5 rounded-xl border border-emerald-800/80 shrink-0 flex items-center gap-1 shadow-sm">
+              <span>Buka Panel</span>
+              <span aria-hidden="true">▲</span>
             </span>
           </button>
         </div>
@@ -728,18 +847,19 @@ export default function GojekDriverCockpit({
             onClick={() => {
               setSheetMode(sheetMode === "expanded" ? "compact" : "expanded");
             }}
-            className="cursor-pointer py-2 -mt-2 -mx-4 mb-1 flex justify-center w-[calc(100%_+_2rem)]"
+            className="cursor-pointer py-1.5 -mt-2 -mx-4 mb-0.5 flex justify-center w-[calc(100%_+_2rem)]"
+            title={sheetMode === "expanded" ? "Tutup Antrean" : "Buka Antrean"}
           >
-            <div className="w-12 h-1.5 bg-slate-600/80 rounded-full" />
+            <div className="w-12 h-1.5 bg-slate-600/80 rounded-full hover:bg-slate-500 transition-colors" />
           </div>
 
           {currentTask ? (
             <>
-              {/* Row 1: Trip Status & Multi-Drop Counter */}
-              <motion.div layout className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2 min-w-0">
+              {/* Row 1: Trip Status & Multi-Drop Counter + Explicit Hide / Open Buttons */}
+              <motion.div layout className="flex items-center justify-between text-xs gap-2">
+                <div className="flex items-center gap-1.5 min-w-0">
                   <span
-                    className={`inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider truncate ${
+                    className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider truncate ${
                       currentIsMenunggak
                         ? "bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse"
                         : isWithinRadius
@@ -758,63 +878,72 @@ export default function GojekDriverCockpit({
                     />
                     <span className="truncate">
                       {currentIsMenunggak
-                        ? "⛔ JANGAN ANGKUT (MENUNGGAK)"
+                        ? "⛔ MENUNGGAK"
                         : isWithinRadius
                         ? "🎯 SIAP PICKUP"
-                        : "TUJUAN PENJEMPUTAN"}
+                        : "TUJUAN JEMPUT"}
                     </span>
                   </span>
                 </div>
 
-                {/* Progress Count & Expand Toggle */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSheetMode(sheetMode === "expanded" ? "compact" : "expanded");
-                  }}
-                  aria-expanded={sheetMode === "expanded"}
-                  className="text-slate-400 hover:text-white text-[11px] font-bold flex items-center gap-1 shrink-0"
-                >
-                  <span>
-                    Stop #{totalCompleted + 1}/{validTasks.length}
-                  </span>
-                  <motion.span
-                    aria-hidden="true"
-                    animate={{ rotate: sheetMode === "expanded" ? 180 : 0 }}
-                    transition={{ duration: 0.3 }}
+                {/* Explicit Action Controls: Toggle Queue Drawer + Hide Panel */}
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSheetMode(sheetMode === "expanded" ? "compact" : "expanded");
+                    }}
+                    aria-expanded={sheetMode === "expanded"}
+                    className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border transition-all flex items-center gap-1 ${
+                      sheetMode === "expanded"
+                        ? "bg-emerald-700 text-white border-emerald-600 shadow-sm"
+                        : "bg-slate-900 hover:bg-slate-800 text-slate-300 border-slate-700"
+                    }`}
+                    title={sheetMode === "expanded" ? "Tutup Antrean Rute" : "Buka Antrean Rute"}
                   >
-                    ▲
-                  </motion.span>
-                </button>
+                    <span>Stop #{totalCompleted + 1}/{validTasks.length}</span>
+                    <span aria-hidden="true">{sheetMode === "expanded" ? "▼" : "▲"}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSheetMode("hidden")}
+                    className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 active:scale-95 transition-all flex items-center gap-1"
+                    title="Sembunyikan panel (tampilkan peta penuh)"
+                  >
+                    <span>Sembunyikan</span>
+                    <span aria-hidden="true">✕</span>
+                  </button>
+                </div>
               </motion.div>
 
               {/* Row 2: Customer Identity & Contact Action Buttons */}
-              <motion.div layout className="flex items-start justify-between gap-2.5">
+              <motion.div layout className="flex items-start justify-between gap-2">
                 <div className="space-y-0.5 min-w-0 flex-1">
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <h3 className="text-sm sm:text-base font-black text-white truncate max-w-[150px] sm:max-w-xs">
+                    <h3 className="text-sm font-black text-white truncate max-w-[140px] sm:max-w-xs">
                       {currentTask.nama}
                     </h3>
-                    <span className="text-[9px] sm:text-[10px] font-mono font-bold text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800 shrink-0">
+                    <span className="text-[9px] font-mono font-bold text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800 shrink-0">
                       {currentTask.kodePelanggan}
                     </span>
                     {currentTask.fotoRumah && (
                       <button
                         type="button"
                         onClick={() => setPreviewFoto(currentTask.fotoRumah!)}
-                        className="text-[10px] text-emerald-400 underline font-bold"
+                        className="text-[10px] text-emerald-400 underline font-bold shrink-0"
                       >
-                        [Foto Rumah]
+                        [Foto]
                       </button>
                     )}
                   </div>
 
-                  <p className="text-[11px] sm:text-xs text-slate-300 line-clamp-1 leading-relaxed">
+                  <p className="text-[11px] text-slate-300 line-clamp-1 leading-relaxed">
                     {currentTask.alamat}
                   </p>
 
                   {currentTask.patokanLokasi && (
-                    <p className="text-[10px] sm:text-[11px] text-amber-300 font-semibold truncate">
+                    <p className="text-[10px] text-amber-300 font-semibold truncate">
                       📍 Patokan: {currentTask.patokanLokasi}
                     </p>
                   )}
@@ -822,7 +951,7 @@ export default function GojekDriverCockpit({
                   {/* Pricing / Tunggakan Tag if Overdue */}
                   {currentIsMenunggak && (
                     <div className="pt-0.5">
-                      <span className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-lg bg-rose-950/80 text-rose-300 border border-rose-800 text-[9px] sm:text-[10px] font-bold">
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-rose-950/80 text-rose-300 border border-rose-800 text-[9px] font-bold">
                         ⚠️ Menunggak {currentTask.tunggakan?.jumlahBulan} Bln ({formatRupiah(currentTask.tunggakan?.totalNominal || 0)})
                       </span>
                     </div>
@@ -830,14 +959,14 @@ export default function GojekDriverCockpit({
                 </div>
 
                 {/* Circular Action Buttons */}
-                <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                <div className="flex items-center gap-1.5 shrink-0">
                   {/* Google Maps Navigation */}
                   {navUrl && (
                     <a
                       href={navUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-900 hover:bg-slate-800 active:scale-90 text-slate-100 border border-slate-700 flex items-center justify-center text-sm sm:text-base transition-all shadow-md"
+                      className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-900 hover:bg-slate-800 active:scale-90 text-slate-100 border border-slate-700 flex items-center justify-center text-sm transition-all shadow-md"
                       title="Navigasi Google Maps"
                     >
                       🧭
@@ -850,7 +979,7 @@ export default function GojekDriverCockpit({
                       href={waUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#00AA13] hover:bg-[#00880C] active:scale-90 text-white flex items-center justify-center text-base sm:text-lg transition-all shadow-lg shadow-[#00AA13]/40"
+                      className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#00AA13] hover:bg-[#00880C] active:scale-90 text-white flex items-center justify-center text-sm transition-all shadow-lg shadow-[#00AA13]/40"
                       title="Chat WhatsApp Warga"
                     >
                       💬
@@ -861,7 +990,7 @@ export default function GojekDriverCockpit({
                   {telUrl && (
                     <a
                       href={telUrl}
-                      className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-sky-600 hover:bg-sky-500 active:scale-90 text-white flex items-center justify-center text-sm sm:text-base transition-all shadow-lg shadow-sky-600/40"
+                      className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-sky-600 hover:bg-sky-500 active:scale-90 text-white flex items-center justify-center text-xs transition-all shadow-lg shadow-sky-600/40"
                       title="Telepon Langsung"
                     >
                       📞
@@ -896,6 +1025,18 @@ export default function GojekDriverCockpit({
                 )}
               </motion.div>
             </>
+          ) : validTasks.length === 0 ? (
+            <motion.div layout className="py-2.5 text-center text-xs space-y-1.5">
+              <div className="w-8 h-8 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center mx-auto text-sm">
+                🚛
+              </div>
+              <div>
+                <p className="font-black text-white">Armada Standby</p>
+                <p className="text-[11px] text-slate-400">
+                  Tidak ada jadwal penjemputan pada tanggal ini.
+                </p>
+              </div>
+            </motion.div>
           ) : (
             <motion.div layout className="py-2 text-center text-xs text-slate-400 space-y-1">
               <p className="font-bold text-white">Semua Penjemputan Selesai! 🎉</p>
@@ -915,11 +1056,19 @@ export default function GojekDriverCockpit({
                 transition={{ duration: 0.3, ease: "easeInOut" }}
                 className="overflow-hidden"
               >
-                <div className="pt-3 border-t border-slate-800 space-y-2.5 max-h-[38vh] sm:max-h-[45vh] overflow-y-auto overscroll-contain">
+                <div className="pt-3 border-t border-slate-800 space-y-2.5 max-h-[34vh] sm:max-h-[40vh] overflow-y-auto overscroll-contain">
                   {/* Header Drawer */}
                   <div className="text-[11px] font-black text-slate-400 uppercase tracking-wider flex items-center justify-between pb-1">
-                    <span>Urutan Antrean Pengangkutan ({pendingTasks.length} Titik)</span>
-                    <span className="text-emerald-400 font-bold">{progressPercent}% Selesai</span>
+                    <span>Urutan Antrean ({pendingTasks.length} Titik) • {progressPercent}% Selesai</span>
+                    <button
+                      type="button"
+                      onClick={() => setSheetMode("compact")}
+                      className="px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-[10px] font-bold border border-slate-700 flex items-center gap-1 active:scale-95 transition-all"
+                      title="Tutup Antrean (kembali ke panel ringkas)"
+                    >
+                      <span>Tutup Antrean</span>
+                      <span aria-hidden="true">✕</span>
+                    </button>
                   </div>
 
                   {/* Search Bar inside Drawer (Searching & Finding) */}

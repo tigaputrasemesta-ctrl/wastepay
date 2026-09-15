@@ -71,7 +71,7 @@ export default function CoordinatePicker({ latitude, longitude, onChange }: Prop
             type="button"
             onClick={getCurrentLocation}
             disabled={locLoading}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-sm transition disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-semibold shadow-sm transition disabled:opacity-50"
           >
             {locLoading ? (
               <>
@@ -140,7 +140,7 @@ export default function CoordinatePicker({ latitude, longitude, onChange }: Prop
       {latitude && longitude && (
         <div className="bg-emerald-50 rounded-xl p-3 text-xs text-emerald-800 border border-emerald-200">
           <div className="flex items-center gap-1.5 mb-1">
-            <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3.5 h-3.5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>

@@ -144,7 +144,7 @@ export default function SlideToConfirm({
   const theme = {
     success: {
       trackBg: "bg-emerald-950/80 border-emerald-500/40",
-      fillBg: "bg-emerald-600/60",
+      fillBg: "bg-emerald-700/60",
       thumbBg: "bg-gradient-to-r from-emerald-700 to-teal-700 text-white shadow-emerald-900/50",
       text: "text-emerald-300",
       icon: "✓",

@@ -118,7 +118,7 @@ export default function MobileKlaim() {
             onClick={() => setTab("riwayat")}
             className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${
               tab === "riwayat"
-                ? "bg-white text-slate-900 shadow-2xs"
+                ? "bg-white text-slate-900 shadow-sm"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -130,7 +130,7 @@ export default function MobileKlaim() {
             onClick={() => setTab("baru")}
             className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${
               tab === "baru"
-                ? "bg-emerald-700 text-white shadow-2xs"
+                ? "bg-emerald-700 text-white shadow-sm"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -149,7 +149,7 @@ export default function MobileKlaim() {
           }`}
         >
           {pesan.includes("✓") ? (
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
           ) : (
             <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
           )}
@@ -159,15 +159,15 @@ export default function MobileKlaim() {
 
       {/* Tab 1: Form Buat Klaim Baru */}
       {tab === "baru" && (
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-3.5 space-y-3">
+        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-3.5 space-y-3">
           <div className="pb-2 border-b border-slate-100 flex items-center justify-between">
             <span className="text-xs font-bold text-slate-800">Form Pengajuan Biaya</span>
-            <span className="text-[10px] text-slate-400">Sertakan foto struk sah</span>
+            <span className="text-[10px] text-slate-600">Sertakan foto struk sah</span>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+              <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
                 Kategori
               </label>
               <select
@@ -183,7 +183,7 @@ export default function MobileKlaim() {
               </select>
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+              <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
                 Nominal (Rp) *
               </label>
               <input
@@ -198,7 +198,7 @@ export default function MobileKlaim() {
           </div>
 
           <div>
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+            <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
               Keterangan Pengeluaran *
             </label>
             <textarea
@@ -227,7 +227,7 @@ export default function MobileKlaim() {
             <button
               onClick={submit}
               disabled={submitting}
-              className="flex-1 py-3 px-4 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white rounded-xl text-xs font-bold shadow-xs transition-all disabled:opacity-50"
+              className="flex-1 py-3 px-4 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white rounded-xl text-xs font-bold shadow-sm transition-all disabled:opacity-50"
             >
               {submitting ? "Mengirim Data…" : "Kirim Pengajuan Klaim"}
             </button>
@@ -250,10 +250,10 @@ export default function MobileKlaim() {
               <div className="w-5 h-5 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
             </div>
           ) : klaim.length === 0 ? (
-            <div className="rounded-2xl border border-slate-200/90 bg-white p-6 text-center shadow-2xs space-y-2">
+            <div className="rounded-2xl border border-slate-200/90 bg-white p-6 text-center shadow-sm space-y-2">
               <span className="text-2xl block">🧾</span>
               <p className="text-xs font-bold text-slate-800">Belum Ada Pengajuan Klaim</p>
-              <p className="text-[10px] text-slate-400">
+              <p className="text-[10px] text-slate-600">
                 Tekan tombol "+ Klaim" di atas untuk mengajukan reimbursement biaya operasional.
               </p>
               <button
@@ -271,7 +271,7 @@ export default function MobileKlaim() {
               return (
                 <div
                   key={k.id}
-                  className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-3 space-y-2"
+                  className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-3 space-y-2"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
@@ -279,7 +279,7 @@ export default function MobileKlaim() {
                         <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md">
                           {KATEGORI.find((x) => x.value === k.kategori)?.label || k.kategori}
                         </span>
-                        <span className="text-[10px] text-slate-400">
+                        <span className="text-[10px] text-slate-600">
                           {format(new Date(k.tanggal), "d MMM yyyy", { locale: id })}
                         </span>
                       </div>

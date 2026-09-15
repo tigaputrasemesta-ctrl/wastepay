@@ -210,7 +210,7 @@ function BayarTagihanContent() {
           <div className="mt-8 pt-6 border-t border-slate-100">
             <Link
               href="/bayar"
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-sm transition-all"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm shadow-sm transition-all"
             >
               ← Cek Tagihan via Kode Pelanggan
             </Link>
@@ -350,7 +350,7 @@ function BayarTagihanContent() {
             )}
             <div className="flex justify-between items-baseline pt-4 border-t border-slate-200">
               <span className="font-bold text-slate-900 text-sm sm:text-base">Total Tagihan</span>
-              <span className="font-extrabold text-2xl sm:text-3xl text-emerald-600">
+              <span className="font-extrabold text-2xl sm:text-3xl text-emerald-700">
                 {formatRupiahSkylite(detail.total)}
               </span>
             </div>
@@ -388,7 +388,7 @@ function BayarTagihanContent() {
           <div className="pt-2 flex flex-wrap justify-center gap-3">
             <Link
               href={invoiceUrl}
-              className="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-sm transition-all"
+              className="px-6 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm shadow-sm transition-all"
             >
               Lihat Kwitansi / Bukti Bayar
             </Link>
@@ -437,7 +437,7 @@ function BayarTagihanContent() {
                   <div
                     className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
                       isSelected
-                        ? "border-emerald-600 bg-emerald-600 text-white"
+                        ? "border-emerald-600 bg-emerald-700 text-white"
                         : "border-slate-300 bg-white"
                     }`}
                   >
@@ -458,7 +458,7 @@ function BayarTagihanContent() {
                 ? "bg-slate-200 text-slate-500 cursor-wait"
                 : !detail.duitkuAktif
                 ? "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
-                : "bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white"
+                : "bg-emerald-700 hover:bg-emerald-800 active:scale-[0.99] text-white"
             }`}
           >
             {bayarLoading ? (
@@ -490,7 +490,7 @@ function BayarTagihanContent() {
           )}
 
           <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-center gap-2 text-[11px] font-medium text-slate-400">
-            <svg className="w-4 h-4 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="w-4 h-4 text-emerald-700 shrink-0" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z" clipRule="evenodd" />
             </svg>
             <span>Transaksi Terenkripsi & Dijamin Aman oleh Gateway Berizin Resmi BI</span>

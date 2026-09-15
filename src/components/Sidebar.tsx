@@ -5,7 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { ROLE_LABELS, getAllowedMenus } from "@/lib/rbac";
-import O2WLogo from "./O2WLogo";
 
 type User = {
   id: number;
@@ -324,11 +323,22 @@ const MENU_GROUPS = [
   { key: "sistem", label: "SISTEM" },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({
+  className,
+  isMobileDrawer = false,
+  onClose,
+}: {
+  className?: string;
+  isMobileDrawer?: boolean;
+  onClose?: () => void;
+} = {}) {
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+
+  // If inside mobile drawer, never show collapsed icon-only mode
+  const isCollapsedEffective = isMobileDrawer ? false : collapsed;
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -346,6 +356,15 @@ export default function Sidebar() {
     router.refresh();
   }
 
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+
+  function toggleGroup(groupKey: string) {
+    setCollapsedGroups((prev) => ({
+      ...prev,
+      [groupKey]: !prev[groupKey],
+    }));
+  }
+
   const allowedMenus = user ? getAllowedMenus(user.role) : [];
   const groupedMenus = MENU_GROUPS.map((g) => ({
     ...g,
@@ -359,13 +378,14 @@ export default function Sidebar() {
     <aside
       className={cn(
         "bg-white text-slate-800 flex flex-col transition-all duration-200 border-r border-slate-200/80 select-none",
-        collapsed ? "w-16" : "w-64"
+        isMobileDrawer ? "w-full h-full border-r-0" : isCollapsedEffective ? "w-16" : "w-64",
+        className
       )}
     >
       {/* Logo */}
-      <div className="flex items-center justify-between px-4 h-16 border-b border-slate-100 bg-white">
-        {collapsed ? (
-          <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center shrink-0 shadow-sm">
+      <div className="flex items-center justify-between px-4 h-16 border-b border-slate-100 bg-white shrink-0">
+        {isCollapsedEffective ? (
+          <div className="w-9 h-9 rounded-xl bg-emerald-700 flex items-center justify-center shrink-0 shadow-sm">
             <span className="text-xs font-extrabold text-white leading-none">WP</span>
           </div>
         ) : (
@@ -374,24 +394,38 @@ export default function Sidebar() {
               🚛
             </div>
             <span className="font-extrabold text-base tracking-tight text-slate-900">
-              WastePay <span className="text-emerald-600 text-xs font-bold uppercase ml-1 px-1.5 py-0.5 rounded-full bg-emerald-50">Admin</span>
+              WastePay <span className="text-emerald-700 text-xs font-bold uppercase ml-1 px-1.5 py-0.5 rounded-full bg-emerald-50">Admin</span>
             </span>
           </div>
         )}
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          aria-label={collapsed ? "Perluas menu" : "Ciutkan menu"}
-          className="text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg p-1.5 transition-colors"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d={collapsed ? "M13 5l7 7-7 7M5 5l7 7-7 7" : "M11 19l-7-7 7-7m8 14l-7-7 7-7"} />
-          </svg>
-        </button>
+        {isMobileDrawer ? (
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Tutup navigasi"
+            className="text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg p-1.5 transition-colors active:bg-slate-200"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setCollapsed(!collapsed)}
+            aria-label={isCollapsedEffective ? "Perluas menu" : "Ciutkan menu"}
+            className="text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg p-1.5 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d={isCollapsedEffective ? "M13 5l7 7-7 7M5 5l7 7-7 7" : "M11 19l-7-7 7-7m8 14l-7-7 7-7"} />
+            </svg>
+          </button>
+        )}
       </div>
 
       {/* User info */}
-      {user && !collapsed && (
-        <div className="px-3.5 py-2.5 mx-3 my-2.5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center gap-3">
+      {user && !isCollapsedEffective && (
+        <div className="px-3.5 py-2.5 mx-3 my-2.5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center gap-3 shrink-0">
           <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 font-extrabold flex items-center justify-center text-xs shrink-0">
             {user.nama.charAt(0).toUpperCase()}
           </div>
@@ -406,62 +440,97 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-3 px-3 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
-        {groupedMenus.map((group) => (
-          <div key={group.key} className="mb-5">
-            {!collapsed && (
-              <p className="text-[10px] font-extrabold tracking-wider text-slate-400 px-3 mb-1.5 uppercase">
-                {group.label}
-              </p>
-            )}
-            <div className="space-y-0.5">
-              {group.items.map((item) => {
-                const isActive =
-                  pathname === item.href ||
-                  pathname.startsWith(item.href + "/");
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    aria-current={isActive ? "page" : undefined}
+        {groupedMenus.map((group) => {
+          const hasActiveChild = group.items.some(
+            (item) => pathname === item.href || pathname.startsWith(item.href + "/")
+          );
+          const isGroupCollapsed = collapsedGroups[group.key] && !hasActiveChild;
+
+          return (
+            <div key={group.key} className="mb-4">
+              {!isCollapsedEffective && (
+                <button
+                  type="button"
+                  onClick={() => toggleGroup(group.key)}
+                  className="w-full flex items-center justify-between text-[10px] font-extrabold tracking-wider text-slate-600 hover:text-slate-900 px-3 py-1 mb-1 uppercase rounded-lg hover:bg-slate-50 transition-colors"
+                >
+                  <span>{group.label}</span>
+                  <svg
                     className={cn(
-                      "flex items-center gap-3 px-3 py-2 text-xs font-bold rounded-xl transition-all relative group",
-                      collapsed && "justify-center px-0",
-                      isActive
-                        ? "bg-emerald-50 text-emerald-700 font-extrabold shadow-sm"
-                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                      "w-3 h-3 transition-transform duration-200",
+                      isGroupCollapsed ? "-rotate-90 text-slate-300" : "text-slate-400"
                     )}
-                    title={collapsed ? item.label : undefined}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    viewBox="0 0 24 24"
                   >
-                    <span className="flex-shrink-0">
-                      {item.icon}
-                    </span>
-                    {!collapsed && (
-                      <span className="flex items-center justify-between flex-1">
-                        <span>{item.label}</span>
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+              )}
+              {(!isGroupCollapsed || isCollapsedEffective) && (
+                <div className="space-y-0.5">
+                  {group.items.map((item) => {
+                    const isActive =
+                      pathname === item.href ||
+                      pathname.startsWith(item.href + "/");
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => {
+                          if (isMobileDrawer && onClose) {
+                            onClose();
+                          }
+                        }}
+                        aria-current={isActive ? "page" : undefined}
+                        className={cn(
+                          "flex items-center gap-3 px-3 py-2 text-xs font-bold rounded-xl transition-all relative group",
+                          isCollapsedEffective && "justify-center px-0",
+                          isActive
+                            ? "bg-emerald-50 text-emerald-700 font-extrabold shadow-sm"
+                            : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                        )}
+                        title={isCollapsedEffective ? item.label : undefined}
+                      >
+                        <span className="flex-shrink-0">
+                          {item.icon}
+                        </span>
+                        {!isCollapsedEffective && (
+                          <span className="flex items-center justify-between flex-1">
+                            <span>{item.label}</span>
+                          </span>
+                        )}
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </nav>
 
       {/* Footer / Logout */}
-      <div className="border-t border-slate-100 p-3 bg-white">
+      <div className="border-t border-slate-100 p-3 bg-white shrink-0">
         <button
-          onClick={handleLogout}
+          onClick={async () => {
+            if (isMobileDrawer && onClose) {
+              onClose();
+            }
+            await handleLogout();
+          }}
           aria-label="Keluar dari sistem"
           className={cn(
             "flex items-center gap-2.5 px-3 py-2 rounded-xl text-rose-600 hover:bg-rose-50 transition-colors w-full text-xs font-bold",
-            collapsed && "justify-center px-0"
+            isCollapsedEffective && "justify-center px-0"
           )}
         >
           <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
-          {!collapsed && <span>Keluar Sistem</span>}
+          {!isCollapsedEffective && <span>Keluar Sistem</span>}
         </button>
       </div>
     </aside>

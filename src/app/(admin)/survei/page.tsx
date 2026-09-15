@@ -201,7 +201,7 @@ export default function SurveiPage() {
                 </Link>
                 <button
                   onClick={() => bukaSurvei(c)}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all"
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all"
                 >
                   Survei & Aktifkan
                 </button>
@@ -316,7 +316,7 @@ export default function SurveiPage() {
 
               {/* Foto rumah + geo tag */}
               <div className="border-t border-slate-200 pt-4">
-                <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wider mb-3">Foto Rumah & Geo Tag</p>
+                <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wider mb-3">Foto Rumah & Geo Tag</p>
                 <GeotagPhoto
                   foto={form.fotoRumah}
                   latitude={form.latitude}
@@ -341,7 +341,7 @@ export default function SurveiPage() {
                 <button
                   onClick={simpan}
                   disabled={saving}
-                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all disabled:opacity-60"
+                  className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all disabled:opacity-60"
                 >
                   {saving ? "Menyimpan…" : "Simpan & Aktifkan Pelanggan"}
                 </button>

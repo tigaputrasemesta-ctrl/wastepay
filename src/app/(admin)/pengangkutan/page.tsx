@@ -177,6 +177,7 @@ export default function PengangkutanPage() {
       {/* Filter - compact for mobile */}
       <div className="flex gap-2.5 mb-4 flex-wrap items-center">
         <input
+          aria-label="Filter tanggal"
           type="date"
           value={tanggal}
           onChange={(e) => setTanggal(e.target.value)}
@@ -222,9 +223,9 @@ export default function PengangkutanPage() {
             </thead>
             <tbody className="text-slate-800 divide-y divide-slate-100">
               {loading ? (
-                <tr><td colSpan={9} className="px-4 py-8 text-center text-slate-400 text-xs font-medium">Memuat data...</td></tr>
+                <tr><td colSpan={9} className="px-4 py-8 text-center text-slate-600 text-xs font-medium">Memuat data...</td></tr>
               ) : data.length === 0 ? (
-                <tr><td colSpan={9} className="px-4 py-8 text-center text-slate-400 text-xs font-medium">Belum ada data pengangkutan</td></tr>
+                <tr><td colSpan={9} className="px-4 py-8 text-center text-slate-600 text-xs font-medium">Belum ada data pengangkutan</td></tr>
               ) : (
                 data.map((d) => (
                   <tr key={d.id} className="hover:bg-slate-50/70 transition-colors">
@@ -270,15 +271,15 @@ export default function PengangkutanPage() {
       {/* Mobile Card View */}
       <div className="md:hidden space-y-3">
         {loading ? (
-          <div className="text-center text-slate-400 font-medium py-8 text-xs">Memuat data...</div>
+          <div className="text-center text-slate-600 font-medium py-8 text-xs">Memuat data...</div>
         ) : data.length === 0 ? (
-          <div className="text-center text-slate-400 font-medium py-8 text-xs">Belum ada data pengangkutan</div>
+          <div className="text-center text-slate-600 font-medium py-8 text-xs">Belum ada data pengangkutan</div>
         ) : (
           data.map((d) => (
             <div key={d.id} className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm space-y-2">
               <div className="flex items-start justify-between mb-2">
                 <div>
-                  <span className="font-mono text-xs text-slate-400">{d.pelanggan.kodePelanggan}</span>
+                  <span className="font-mono text-xs text-slate-600">{d.pelanggan.kodePelanggan}</span>
                   <h3 className="font-bold text-slate-900 text-sm">{d.pelanggan.nama}</h3>
                   <p className="text-xs text-slate-500">{d.pelanggan.alamat}</p>
                   {d.zona?.nama && <p className="text-[11px] text-purple-600 font-semibold mt-0.5">🗺️ {d.zona.nama}</p>}
@@ -415,7 +416,7 @@ export default function PengangkutanPage() {
                 <button
                   type="button"
                   onClick={() => handleUpdate(updating)}
-                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md active:scale-95 transition-all"
+                  className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-md active:scale-95 transition-all"
                 >
                   Simpan Status
                 </button>

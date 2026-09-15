@@ -52,20 +52,59 @@ export async function GET(request: Request) {
     where.kategori = kategori;
   }
 
-  const pelanggan = await prisma.pelanggan.findMany({
-    where,
-    include: {
-      wilayah: true,
-      kelurahan: true,
-      paket: true,
-      _count: {
-        select: { tagihan: true, pembayaran: true },
-      },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  // Parameter paginasi opsional (backward compatible)
+  const pageParam = searchParams.get("page");
+  const limitParam = searchParams.get("limit");
+  const isPaginated = Boolean(pageParam || limitParam);
 
-  return NextResponse.json(pelanggan);
+  let skip: number | undefined;
+  let take: number | undefined;
+  let page = 1;
+  let limit = 50;
+
+  if (isPaginated) {
+    page = Math.max(1, parseInt(pageParam || "1") || 1);
+    limit = Math.min(200, Math.max(1, parseInt(limitParam || "50") || 50));
+    skip = (page - 1) * limit;
+    take = limit;
+  }
+
+  const [pelanggan, total] = await Promise.all([
+    prisma.pelanggan.findMany({
+      where,
+      skip,
+      take,
+      include: {
+        wilayah: true,
+        kelurahan: true,
+        paket: true,
+        _count: {
+          select: { tagihan: true, pembayaran: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    }),
+    isPaginated ? prisma.pelanggan.count({ where }) : Promise.resolve(0),
+  ]);
+
+  if (isPaginated) {
+    return NextResponse.json(
+      {
+        data: pelanggan,
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+      {
+        headers: { "X-Total-Count": String(total) },
+      }
+    );
+  }
+
+  return NextResponse.json(pelanggan, {
+    headers: { "X-Total-Count": String(pelanggan.length) },
+  });
 }
 
 export async function POST(request: Request) {

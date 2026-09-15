@@ -70,9 +70,9 @@ export default function KomplainPage() {
             </thead>
             <tbody className="text-slate-800 divide-y divide-slate-100">
               {loading ? (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-400 text-xs font-medium">Memuat komplain...</td></tr>
+                <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-600 text-xs font-medium">Memuat komplain...</td></tr>
               ) : komplain.length === 0 ? (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-400 text-xs font-medium">Belum ada komplain</td></tr>
+                <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-600 text-xs font-medium">Belum ada komplain</td></tr>
               ) : (
                 komplain.map((k) => (
                   <tr key={k.id} className="hover:bg-slate-50/70 transition-colors">
@@ -162,7 +162,7 @@ export default function KomplainPage() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md active:scale-95 transition-all"
+                  className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-md active:scale-95 transition-all"
                 >
                   Simpan Status
                 </button>

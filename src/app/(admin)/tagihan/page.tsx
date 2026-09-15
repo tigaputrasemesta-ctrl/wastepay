@@ -164,6 +164,8 @@ export default function TagihanPage() {
   const isPetugas = user?.role === "petugas";
   const { showToast } = useToast();
   const [tagihan, setTagihan] = useState<Tagihan[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
   const [pending, setPending] = useState<PembayaranPending[]>([]);
   const [loading, setLoading] = useState(true);
   const [bulan, setBulan] = useState((new Date().getMonth() + 1).toString());
@@ -220,7 +222,8 @@ export default function TagihanPage() {
 
       const res = await fetch(`/api/tagihan?${params}`);
       const data = await res.json();
-      setTagihan(Array.isArray(data) ? data : []);
+      setTagihan(Array.isArray(data) ? data : data.data || []);
+      setCurrentPage(1);
 
       const pendingParams = new URLSearchParams();
       pendingParams.set("status", "pending");
@@ -578,7 +581,7 @@ export default function TagihanPage() {
         <>
         <button
           onClick={handleOpenBlastModal}
-          className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-sm active:scale-95 transition flex items-center gap-1.5"
+          className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-sm active:scale-95 transition flex items-center gap-1.5"
           title="Kirim pesan WhatsApp massal ke seluruh warga yang belum bayar di RT tertentu"
         >
           <span className="text-sm">📢</span>
@@ -630,13 +633,13 @@ export default function TagihanPage() {
                     <span className="text-xs text-slate-500 font-mono font-normal">({p.pelanggan.kodePelanggan})</span>
                   </div>
                   <div className="text-xs text-slate-600 mt-0.5">
-                    <span className="font-semibold text-emerald-600">{formatRupiah(p.jumlah)}</span> • {labelMetode(p.metode)} •{" "}
+                    <span className="font-semibold text-emerald-700">{formatRupiah(p.jumlah)}</span> • {labelMetode(p.metode)} •{" "}
                     {bulanList.find((b) => b.value === p.tagihan.bulan.toString())?.label} {p.tagihan.tahun}
                   </div>
                   {p.buktiBayar && (
                     <div className="mt-2">
                       <details className="text-xs">
-                        <summary className="cursor-pointer text-emerald-600 hover:text-emerald-700 font-medium">Lihat bukti transfer</summary>
+                        <summary className="cursor-pointer text-emerald-700 hover:text-emerald-700 font-medium">Lihat bukti transfer</summary>
                         <Image src={p.buktiBayar} alt="Bukti pembayaran" width={240} height={180} unoptimized className="mt-2 max-h-40 rounded-xl border border-slate-200 object-cover" />
                       </details>
                     </div>
@@ -653,13 +656,13 @@ export default function TagihanPage() {
                         {cekLoading === p.id ? "Mengecek…" : "⟳ Cek Status Live"}
                       </button>
                     ) : (
-                      <span className="text-xs text-slate-400 font-medium italic">Transaksi gateway tanpa orderId</span>
+                      <span className="text-xs text-slate-600 font-medium italic">Transaksi gateway tanpa orderId</span>
                     )
                   ) : (
                     <>
                       <button
                         onClick={() => verifikasiPembayaran(p.id, "terverifikasi")}
-                        className="text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-3.5 py-2 rounded-xl transition-all shadow-sm hover:shadow active:scale-[0.98]"
+                        className="text-xs bg-emerald-700 hover:bg-emerald-800 text-white font-semibold px-3.5 py-2 rounded-xl transition-all shadow-sm hover:shadow active:scale-[0.98]"
                       >
                         Verifikasi
                       </button>
@@ -767,7 +770,7 @@ export default function TagihanPage() {
           {rtFilter && (
             <button
               onClick={() => setRtFilter("")}
-              className="absolute right-2 text-xs font-bold text-slate-400 hover:text-slate-700"
+              className="absolute right-2 text-xs font-bold text-slate-600 hover:text-slate-700"
               title="Hapus filter RT"
             >
               ✕
@@ -821,28 +824,35 @@ export default function TagihanPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
-                <th className="text-left px-4 py-3 font-semibold">Kode</th>
-                <th className="text-left px-4 py-3 font-semibold">No. Invoice</th>
-                <th className="text-left px-4 py-3 font-semibold">Pelanggan</th>
-                <th className="text-left px-4 py-3 font-semibold">Periode</th>
-                <th className="text-right px-4 py-3 font-semibold">Jumlah</th>
-                <th className="text-left px-4 py-3 font-semibold">Jatuh Tempo</th>
-                <th className="text-center px-4 py-3 font-semibold">Status</th>
-                <th className="text-center px-4 py-3 font-semibold">Pembayaran</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr><td colSpan={8} className="px-4 py-8 text-center text-slate-400 font-medium">Memuat...</td></tr>
-              ) : tagihan.length === 0 ? (
-                <tr><td colSpan={8} className="px-4 py-8 text-center text-slate-400 font-medium">Belum ada tagihan</td></tr>
-              ) : (
-                tagihan.map((t) => (
+      {(() => {
+        const totalItems = tagihan.length;
+        const totalPages = Math.ceil(totalItems / pageSize) || 1;
+        const safePage = Math.min(currentPage, totalPages);
+        const displayedTagihan = tagihan.slice((safePage - 1) * pageSize, safePage * pageSize);
+
+        return (
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
+                    <th className="text-left px-4 py-3 font-semibold">Kode</th>
+                    <th className="text-left px-4 py-3 font-semibold">No. Invoice</th>
+                    <th className="text-left px-4 py-3 font-semibold">Pelanggan</th>
+                    <th className="text-left px-4 py-3 font-semibold">Periode</th>
+                    <th className="text-right px-4 py-3 font-semibold">Jumlah</th>
+                    <th className="text-left px-4 py-3 font-semibold">Jatuh Tempo</th>
+                    <th className="text-center px-4 py-3 font-semibold">Status</th>
+                    <th className="text-center px-4 py-3 font-semibold">Pembayaran</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading ? (
+                    <tr><td colSpan={8} className="px-4 py-8 text-center text-slate-600 font-medium">Memuat...</td></tr>
+                  ) : tagihan.length === 0 ? (
+                    <tr><td colSpan={8} className="px-4 py-8 text-center text-slate-600 font-medium">Belum ada tagihan</td></tr>
+                  ) : (
+                    displayedTagihan.map((t) => (
                   <tr key={t.id} className="border-b border-slate-100 hover:bg-slate-50/60 transition">
                     <td className="px-4 py-3">
                       <code className="text-xs font-mono font-medium text-slate-700 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-md">
@@ -854,13 +864,13 @@ export default function TagihanPage() {
                         <Link
                           href={`/invoice-tagihan?invoice=${encodeURIComponent(t.noInvoice)}`}
                           target="_blank"
-                          className="text-xs font-mono text-emerald-600 hover:text-emerald-700 hover:underline font-semibold"
+                          className="text-xs font-mono text-emerald-700 hover:text-emerald-700 hover:underline font-semibold"
                           title="Buka invoice"
                         >
                           {t.noInvoice}
                         </Link>
                       ) : (
-                        <span className="text-xs text-slate-400 font-medium">—</span>
+                        <span className="text-xs text-slate-600 font-medium">—</span>
                       )}
                     </td>
                     <td className="px-4 py-3">
@@ -898,7 +908,7 @@ export default function TagihanPage() {
                     </td>
                     <td className="px-4 py-3 text-slate-600 font-medium text-xs">
                       <div>{formatDate(t.jatuhTempo)}</div>
-                      <div className="text-[10px] text-slate-400 font-normal">
+                      <div className="text-[10px] text-slate-600 font-normal">
                         Siklus tgl {new Date(t.jatuhTempo).getDate()}
                       </div>
                     </td>
@@ -915,14 +925,14 @@ export default function TagihanPage() {
                       {t.status !== "lunas" ? (
                         <button
                           onClick={() => { setFormBayar({ metode: isPetugas ? "tunai" : "transfer", catatan: isPetugas ? "Bayar tunai via petugas tagih" : "" }); setShowBayar({ tagihanId: t.id, pelangganId: t.pelanggan.id, jumlah: hitungRincian(t.jumlah, t.denda).total }); }}
-                          className="text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg shadow-sm hover:shadow-sm active:scale-95 transition-all inline-flex items-center gap-1.5"
+                          className="text-xs font-semibold bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-lg shadow-sm hover:shadow-sm active:scale-95 transition-all inline-flex items-center gap-1.5"
                         >
                           <span>💳</span>
                           <span>Bayar</span>
                         </button>
                       ) : (
                         <div className="flex flex-col items-center gap-1">
-                          <span className="text-xs text-gray-400 font-bold">
+                          <span className="text-xs text-slate-600 font-bold">
                             {t.tanggalLunas ? formatDate(t.tanggalLunas) : "-"}
                           </span>
                           {t.pembayaran
@@ -932,7 +942,7 @@ export default function TagihanPage() {
                                 key={pb.id}
                                 href={`/kwitansi/${pb.id}`}
                                 target="_blank"
-                                className="text-xs text-emerald-600 underline hover:text-emerald-700 font-semibold"
+                                className="text-xs text-emerald-700 underline hover:text-emerald-700 font-semibold"
                               >
                                 Kwitansi
                               </Link>
@@ -946,7 +956,57 @@ export default function TagihanPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        {tagihan.length > 0 && (
+          <div className="px-4 py-3.5 bg-slate-50 border-t border-slate-200/80 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600">
+            <div className="flex items-center gap-2">
+              <span>Tampilkan</span>
+              <select
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+                className="px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 outline-none focus:ring-1 focus:ring-emerald-500"
+              >
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+              <span>per halaman</span>
+              <span className="text-slate-600 mx-1">|</span>
+              <span>
+                Menampilkan <b>{(safePage - 1) * pageSize + 1}</b> - <b>{Math.min(safePage * pageSize, totalItems)}</b> dari <b>{totalItems}</b> tagihan
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={safePage <= 1}
+                className="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed font-semibold text-slate-700 transition"
+              >
+                &larr; Sebelumnya
+              </button>
+              <span className="px-3 py-1 font-bold text-slate-800">
+                Halaman {safePage} dari {totalPages}
+              </span>
+              <button
+                type="button"
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={safePage >= totalPages}
+                className="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed font-semibold text-slate-700 transition"
+              >
+                Berikutnya &rarr;
+              </button>
+            </div>
+          </div>
+        )}
       </div>
+    );
+  })()}
 
       {/* Modal Auto Generate */}
       {showAutoGenerate && (
@@ -957,7 +1017,7 @@ export default function TagihanPage() {
                 <h2 className="font-bold text-slate-900 text-base">Auto-Generate Tagihan</h2>
                 <p className="text-xs text-slate-500">Buat tagihan massal secara otomatis berdasarkan tarif pelanggan</p>
               </div>
-              <button onClick={() => { setShowAutoGenerate(false); setAutoResult(null); setPreview(null); }} className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-lg leading-none">&times;</button>
+              <button onClick={() => { setShowAutoGenerate(false); setAutoResult(null); setPreview(null); }} className="text-slate-600 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-lg leading-none">&times;</button>
             </div>
             <form onSubmit={handleAutoGenerate} className="p-6 space-y-4">
               <div className="bg-sky-50/70 border border-sky-200/60 rounded-xl p-3.5 text-xs text-sky-900">
@@ -1020,7 +1080,7 @@ export default function TagihanPage() {
                   </div>
                   <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700">
                     <span>{preview.length} tagihan</span>
-                    <span className="text-emerald-600 font-bold">Total: {formatRupiah(preview.reduce((s, p) => s + (p.jumlah || 0), 0))}</span>
+                    <span className="text-emerald-700 font-bold">Total: {formatRupiah(preview.reduce((s, p) => s + (p.jumlah || 0), 0))}</span>
                   </div>
                 </div>
               )}
@@ -1034,7 +1094,7 @@ export default function TagihanPage() {
 
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => { setShowAutoGenerate(false); setAutoResult(null); setPreview(null); }} className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-all">Batal</button>
-                <button type="submit" disabled={generating || (preview !== null && preview.length === 0)} className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm hover:shadow active:scale-[0.98] transition-all text-sm font-semibold rounded-xl disabled:opacity-50">
+                <button type="submit" disabled={generating || (preview !== null && preview.length === 0)} className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm hover:shadow active:scale-[0.98] transition-all text-sm font-semibold rounded-xl disabled:opacity-50">
                   {generating ? "Memproses..." : preview ? `Generate (${preview.length})` : "Generate Semua"}
                 </button>
               </div>
@@ -1052,7 +1112,7 @@ export default function TagihanPage() {
                 <h2 className="font-bold text-slate-900 text-base">Generate Tagihan Manual</h2>
                 <p className="text-xs text-slate-500">Buat tagihan seragam untuk periode tertentu</p>
               </div>
-              <button onClick={() => setShowGenerate(false)} className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-lg leading-none">&times;</button>
+              <button onClick={() => setShowGenerate(false)} className="text-slate-600 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-lg leading-none">&times;</button>
             </div>
             <form onSubmit={handleGenerate} className="p-6 space-y-4">
               <div>
@@ -1076,7 +1136,7 @@ export default function TagihanPage() {
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => setShowGenerate(false)} className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-sm text-slate-700 font-semibold transition-all">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all text-sm font-semibold">Generate</button>
+                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all text-sm font-semibold">Generate</button>
               </div>
             </form>
           </div>
@@ -1092,12 +1152,12 @@ export default function TagihanPage() {
                 <h2 className="font-bold text-slate-900 text-base">Catat Pembayaran</h2>
                 <p className="text-xs text-slate-500">Konfirmasi pelunasan tagihan pelanggan</p>
               </div>
-              <button onClick={() => setShowBayar(null)} className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-lg leading-none">&times;</button>
+              <button onClick={() => setShowBayar(null)} className="text-slate-600 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-lg leading-none">&times;</button>
             </div>
             <form onSubmit={handleBayar} className="p-6 space-y-4">
               <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                 <p className="text-xs text-slate-500 font-medium">Jumlah Tagihan</p>
-                <p className="text-2xl font-extrabold text-emerald-600 tracking-tight mt-0.5 tabular-nums">{formatRupiah(showBayar.jumlah)}</p>
+                <p className="text-2xl font-extrabold text-emerald-700 tracking-tight mt-0.5 tabular-nums">{formatRupiah(showBayar.jumlah)}</p>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1.5">Metode Pembayaran</label>
@@ -1145,7 +1205,7 @@ export default function TagihanPage() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-sm active:scale-95 transition-all"
+                  className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-sm active:scale-95 transition-all"
                 >
                   Konfirmasi Bayar
                 </button>
@@ -1162,7 +1222,7 @@ export default function TagihanPage() {
             {/* Modal Header */}
             <div className="flex items-center justify-between px-6 py-5 border-b border-slate-200 bg-slate-50/70">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shadow-sm">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-xl shadow-sm">
                   📢
                 </div>
                 <div>
@@ -1172,7 +1232,7 @@ export default function TagihanPage() {
               </div>
               <button
                 onClick={() => { setShowBlastModal(false); setBlastResult(null); }}
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors text-lg leading-none"
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 hover:text-slate-600 hover:bg-slate-100 transition-colors text-lg leading-none"
               >
                 &times;
               </button>
@@ -1397,7 +1457,7 @@ export default function TagihanPage() {
                   </div>
                   <div className="border border-slate-200/80 rounded-2xl p-4 bg-white shadow-sm">
                     <p className="text-xs font-semibold text-slate-500">Total Nominal Tagihan</p>
-                    <p className="text-xl font-extrabold text-emerald-600 mt-1 tabular-nums">{formatRupiah(blastPreview.totalNominal)}</p>
+                    <p className="text-xl font-extrabold text-emerald-700 mt-1 tabular-nums">{formatRupiah(blastPreview.totalNominal)}</p>
                   </div>
                   <div className="border border-slate-200/80 rounded-2xl p-4 bg-white shadow-sm col-span-2 sm:col-span-1">
                     <p className="text-xs font-semibold text-slate-500">Filter Zona & RT</p>
@@ -1446,7 +1506,7 @@ export default function TagihanPage() {
                     {blastPreview.recipients.map((r, idx) => (
                       <div key={r.tagihanId} className="p-3 flex items-center justify-between hover:bg-slate-50/60 transition-colors gap-2">
                         <div className="flex items-center gap-2.5">
-                          <span className="tabular-nums text-slate-400 font-medium w-5 text-right">{idx + 1}.</span>
+                          <span className="tabular-nums text-slate-600 font-medium w-5 text-right">{idx + 1}.</span>
                           <div>
                             <p className="font-semibold text-slate-900">{r.nama}</p>
                             <div className="text-[11px] text-slate-500 flex items-center gap-1.5 flex-wrap mt-0.5">
@@ -1531,7 +1591,7 @@ export default function TagihanPage() {
                               href={lnk.link}
                               target="_blank"
                               rel="noreferrer"
-                              className="font-semibold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg px-2.5 py-1 text-xs shadow-sm transition-all"
+                              className="font-semibold bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg px-2.5 py-1 text-xs shadow-sm transition-all"
                             >
                               Buka WA ↗
                             </a>
@@ -1556,7 +1616,7 @@ export default function TagihanPage() {
                   type="button"
                   onClick={handleSendBlast}
                   disabled={blastSending || blastLoading || !blastPreview || blastPreview.totalWarga === 0}
-                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {blastSending ? (
                     <>

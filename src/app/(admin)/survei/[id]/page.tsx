@@ -94,7 +94,7 @@ export default function SurveiDetailPage() {
     return (
       <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm p-10 text-center">
         <p className="font-semibold text-xl text-rose-600">{error || "Tidak ditemukan"}</p>
-        <Link href="/survei" className="inline-block mt-4 text-sm text-emerald-600 hover:text-emerald-700 font-semibold underline">
+        <Link href="/survei" className="inline-block mt-4 text-sm text-emerald-700 hover:text-emerald-700 font-semibold underline">
           ← Kembali ke Survei
         </Link>
       </div>
@@ -109,7 +109,7 @@ export default function SurveiDetailPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <Link href="/survei" className="text-xs text-emerald-600 hover:text-emerald-700 font-semibold underline">
+          <Link href="/survei" className="text-xs text-emerald-700 hover:text-emerald-700 font-semibold underline">
             ← Kembali ke Survei
           </Link>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 mt-2 leading-none">{data.nama}</h1>
@@ -127,7 +127,7 @@ export default function SurveiDetailPage() {
       {/* Foto + Peta */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-          <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wider mb-3">Foto Rumah</p>
+          <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wider mb-3">Foto Rumah</p>
           {data.fotoRumah ? (
             <div className="relative h-64 w-full rounded-xl border border-slate-200/80 bg-slate-100 overflow-hidden">
               <Image src={data.fotoRumah} alt={`Foto rumah ${data.nama}`} fill className="object-cover" />
@@ -140,7 +140,7 @@ export default function SurveiDetailPage() {
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-          <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wider mb-3">Titik Lokasi (GPS)</p>
+          <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wider mb-3">Titik Lokasi (GPS)</p>
           {data.latitude != null && data.longitude != null ? (
             <div className="space-y-3">
               <div className="flex items-center justify-between flex-wrap gap-2">
@@ -151,13 +151,13 @@ export default function SurveiDetailPage() {
                     {koordinatSumber}
                   </span>
                   {data.koordinatAkurasi ? (
-                    <span className="ml-2 text-xs text-emerald-600 font-medium">± {Math.round(data.koordinatAkurasi)} m</span>
+                    <span className="ml-2 text-xs text-emerald-700 font-medium">± {Math.round(data.koordinatAkurasi)} m</span>
                   ) : null}
                 </div>
                 <a
                   href={`https://www.google.com/maps?q=${data.latitude},${data.longitude}`}
                   target="_blank"
-                  className="inline-flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 font-medium underline"
+                  className="inline-flex items-center gap-1 text-xs text-emerald-700 hover:text-emerald-700 font-medium underline"
                 >
                   Buka Google Maps ↗
                 </a>

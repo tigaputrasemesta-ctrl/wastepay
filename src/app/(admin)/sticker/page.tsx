@@ -170,7 +170,7 @@ export default function StickerPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => window.print()} disabled={daftarCetak.length === 0} className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] disabled:opacity-40 transition-all flex items-center gap-2">
+          <button onClick={() => window.print()} disabled={daftarCetak.length === 0} className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] disabled:opacity-40 transition-all flex items-center gap-2">
             🖨️ Cetak {daftarCetak.length > 0 ? `(${daftarCetak.length})` : ""}
           </button>
         </div>
@@ -198,18 +198,18 @@ export default function StickerPage() {
       </div>
 
       {loading ? (
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-8 text-center text-slate-400 font-medium shadow-sm">Memuat stiker…</div>
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-8 text-center text-slate-600 font-medium shadow-sm">Memuat stiker…</div>
       ) : (
         <div className="flex flex-wrap gap-3">
           {tersaring.map((p, i) => (
             <button key={p.id} onClick={() => toggleSatu(p.id)} className={`relative rounded-xl overflow-hidden transition shadow-sm ${dipilih.has(p.id) ? "ring-2 ring-emerald-500 shadow-md" : "ring-1 ring-slate-200 opacity-90 hover:opacity-100 hover:ring-slate-300"}`}>
               <Sticker p={p} idx={i} />
               {dipilih.has(p.id) && (
-                <span className="absolute top-1.5 left-1.5 w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-bold shadow-sm z-10">✓</span>
+                <span className="absolute top-1.5 left-1.5 w-5 h-5 rounded-full bg-emerald-700 text-white flex items-center justify-center text-[10px] font-bold shadow-sm z-10">✓</span>
               )}
             </button>
           ))}
-          {tersaring.length === 0 && <div className="bg-white rounded-2xl border border-slate-200/80 w-full p-8 text-center text-slate-400 font-medium shadow-sm">Tidak ada pelanggan</div>}
+          {tersaring.length === 0 && <div className="bg-white rounded-2xl border border-slate-200/80 w-full p-8 text-center text-slate-600 font-medium shadow-sm">Tidak ada pelanggan</div>}
         </div>
       )}
     </div>

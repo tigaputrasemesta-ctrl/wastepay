@@ -222,7 +222,7 @@ export default function LacakLokasi({
             className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-2 ${
               lacak
                 ? "bg-rose-600 hover:bg-rose-500 text-white active:scale-95"
-                : "bg-emerald-600 hover:bg-emerald-500 text-white active:scale-95"
+                : "bg-emerald-700 hover:bg-emerald-800 text-white active:scale-95"
             }`}
           >
             <span className={`w-2 h-2 rounded-full ${lacak ? "bg-white animate-pulse" : "bg-white/80"}`} />
@@ -231,7 +231,7 @@ export default function LacakLokasi({
           <div className="text-xs text-slate-500 font-medium">
             {lacak ? (
               <>
-                <span className="text-emerald-600 font-bold">● LIVE {fmtDurasi()}</span>
+                <span className="text-emerald-700 font-bold">● LIVE {fmtDurasi()}</span>
                 {titik && (
                   <span className="ml-2 block sm:inline font-mono text-[11px]">
                     {titik.lat.toFixed(5)}, {titik.lng.toFixed(5)} · ±{Math.round(titik.akurasi)}m

@@ -147,7 +147,7 @@ export default function MobileSurvei() {
           }`}
         >
           {pesan.includes("✓") ? (
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
           ) : (
             <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
           )}
@@ -157,13 +157,13 @@ export default function MobileSurvei() {
 
       {/* Mode 1: Edit Form Survei */}
       {editingId && activeCalon ? (
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-3.5 space-y-3">
+        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-3.5 space-y-3">
           <div className="pb-2 border-b border-slate-100">
             <div className="flex items-center justify-between gap-2">
               <span className="font-mono text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">
                 {activeCalon.kodePelanggan}
               </span>
-              <span className="text-[10px] text-slate-400">
+              <span className="text-[10px] text-slate-600">
                 {activeCalon.kelurahan?.nama || "Pusat"}
               </span>
             </div>
@@ -175,7 +175,7 @@ export default function MobileSurvei() {
           </div>
 
           <div>
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+            <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
               Alamat Lengkap *
             </label>
             <textarea
@@ -188,7 +188,7 @@ export default function MobileSurvei() {
 
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+              <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
                 RT
               </label>
               <input
@@ -198,7 +198,7 @@ export default function MobileSurvei() {
               />
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+              <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
                 RW
               </label>
               <input
@@ -210,7 +210,7 @@ export default function MobileSurvei() {
           </div>
 
           <div>
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+            <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
               Patokan Lokasi
             </label>
             <input
@@ -223,7 +223,7 @@ export default function MobileSurvei() {
 
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+              <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
                 Penanggung Jawab
               </label>
               <input
@@ -237,7 +237,7 @@ export default function MobileSurvei() {
               !form.referal ||
               (user?.nama && form.referal.toLowerCase() === user.nama.toLowerCase())) && (
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
                   Referal
                 </label>
                 <input
@@ -250,7 +250,7 @@ export default function MobileSurvei() {
           </div>
 
           <div>
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+            <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
               Catatan Lapangan
             </label>
             <input
@@ -279,7 +279,7 @@ export default function MobileSurvei() {
             <button
               onClick={simpan}
               disabled={saving}
-              className="flex-1 py-3 px-4 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white rounded-xl text-xs font-bold shadow-xs transition-all disabled:opacity-50 flex items-center justify-center gap-1.5"
+              className="flex-1 py-3 px-4 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white rounded-xl text-xs font-bold shadow-sm transition-all disabled:opacity-50 flex items-center justify-center gap-1.5"
             >
               <UserCheck className="w-4 h-4" />
               <span>{saving ? "Menyimpan…" : "✓ Aktifkan Pelanggan"}</span>
@@ -301,10 +301,10 @@ export default function MobileSurvei() {
               <div className="w-5 h-5 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
             </div>
           ) : calon.length === 0 ? (
-            <div className="rounded-2xl border border-slate-200/90 bg-white p-6 text-center shadow-2xs space-y-1">
+            <div className="rounded-2xl border border-slate-200/90 bg-white p-6 text-center shadow-sm space-y-1">
               <span className="text-2xl block mb-1">🏡</span>
               <p className="text-xs font-bold text-slate-800">Semua Calon Sudah Disurvei</p>
-              <p className="text-[10px] text-slate-400">
+              <p className="text-[10px] text-slate-600">
                 Tidak ada antrean calon pelanggan baru saat ini.
               </p>
             </div>
@@ -315,7 +315,7 @@ export default function MobileSurvei() {
               return (
                 <div
                   key={c.id}
-                  className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-3 space-y-2.5"
+                  className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-3 space-y-2.5"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
@@ -323,7 +323,7 @@ export default function MobileSurvei() {
                         <span className="font-mono text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">
                           {c.kodePelanggan}
                         </span>
-                        <span className="text-[10px] text-slate-400">
+                        <span className="text-[10px] text-slate-600">
                           • {c.kelurahan?.nama || "Depok"}
                         </span>
                       </div>
@@ -364,7 +364,7 @@ export default function MobileSurvei() {
 
                   <button
                     onClick={() => bukaForm(c)}
-                    className="w-full py-2.5 px-3 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white rounded-xl text-xs font-bold shadow-2xs transition-all flex items-center justify-center gap-1.5"
+                    className="w-full py-2.5 px-3 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white rounded-xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-1.5"
                   >
                     <MapPin className="w-3.5 h-3.5" />
                     <span>Mulai Survei & Validasi</span>

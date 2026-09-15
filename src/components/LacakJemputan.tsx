@@ -20,7 +20,7 @@ const MapJemput = dynamic(() => import("@/components/MapJemput"), {
   ssr: false,
   loading: () => (
     <div className="h-full w-full flex items-center justify-center bg-slate-50">
-      <p className="font-bold text-xs uppercase tracking-wider text-emerald-600 animate-pulse">Memuat Peta…</p>
+      <p className="font-bold text-xs uppercase tracking-wider text-emerald-700 animate-pulse">Memuat Peta…</p>
     </div>
   ),
 });
@@ -208,7 +208,7 @@ export default function LacakJemputan() {
         <button
           type="submit"
           disabled={loading}
-          className="px-5 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl text-xs font-bold shadow-sm active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-1.5"
+          className="px-5 py-3 bg-emerald-700 hover:bg-emerald-800 text-white rounded-2xl text-xs font-bold shadow-sm active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-1.5"
         >
           {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <span>Lacak 🔍</span>}
         </button>
@@ -255,7 +255,7 @@ export default function LacakJemputan() {
               disabled={locating}
               className="absolute right-3.5 top-3.5 z-[1000] flex items-center gap-1.5 bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-full px-3.5 py-2 text-xs font-bold text-slate-800 shadow-md active:scale-95 transition-all disabled:opacity-50"
             >
-              <Navigation className="w-3.5 h-3.5 text-emerald-600" />
+              <Navigation className="w-3.5 h-3.5 text-emerald-700" />
               <span>{locating ? "Mencari…" : "Lokasi Saya"}</span>
             </button>
 
@@ -264,7 +264,7 @@ export default function LacakJemputan() {
               <div
                 className={`absolute left-3.5 top-3.5 z-[1000] max-w-[calc(100%-9rem)] px-3 py-1.5 rounded-full text-xs font-bold shadow-md flex items-center gap-1.5 ${
                   meta.tone === "selesai"
-                    ? "bg-emerald-600 text-white"
+                    ? "bg-emerald-700 text-white"
                     : meta.tone === "proses"
                     ? "bg-amber-400 text-amber-950"
                     : "bg-white text-slate-800 border border-slate-200"
@@ -358,7 +358,7 @@ export default function LacakJemputan() {
               </button>
               <a
                 href="/bayar"
-                className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] rounded-xl py-2.5 px-2 text-center flex items-center justify-center gap-1.5 shadow-sm transition-colors"
+                className="flex-1 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-[11px] rounded-xl py-2.5 px-2 text-center flex items-center justify-center gap-1.5 shadow-sm transition-colors"
               >
                 <PackageOpen className="w-3.5 h-3.5" /> Bayar
               </a>

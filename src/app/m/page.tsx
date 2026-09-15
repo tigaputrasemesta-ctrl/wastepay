@@ -92,7 +92,7 @@ export default function MobileHome() {
 
           <Link
             href="/m/absen"
-            className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 ${
+            className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 ${
               sudahSelesai
                 ? "bg-white/20 text-white hover:bg-white/30"
                 : sudahMasuk
@@ -125,7 +125,7 @@ export default function MobileHome() {
         {isAngkut && (
           <Link
             href="/m/angkut"
-            className="bg-white border border-slate-200/80 rounded-xl p-2.5 shadow-2xs hover:border-emerald-300 transition-all flex items-center gap-2.5"
+            className="bg-white border border-slate-200/80 rounded-xl p-2.5 shadow-sm hover:border-emerald-300 transition-all flex items-center gap-2.5"
           >
             <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
               <Truck className="w-4 h-4" />
@@ -142,7 +142,7 @@ export default function MobileHome() {
         {isSurvei && (
           <Link
             href="/m/survei"
-            className="bg-white border border-slate-200/80 rounded-xl p-2.5 shadow-2xs hover:border-indigo-300 transition-all flex items-center gap-2.5"
+            className="bg-white border border-slate-200/80 rounded-xl p-2.5 shadow-sm hover:border-indigo-300 transition-all flex items-center gap-2.5"
           >
             <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center shrink-0">
               <ClipboardList className="w-4 h-4" />
@@ -158,7 +158,7 @@ export default function MobileHome() {
 
         <Link
           href="/m/absen"
-          className="bg-white border border-slate-200/80 rounded-xl p-2.5 shadow-2xs hover:border-sky-300 transition-all flex items-center gap-2.5"
+          className="bg-white border border-slate-200/80 rounded-xl p-2.5 shadow-sm hover:border-sky-300 transition-all flex items-center gap-2.5"
         >
           <div className="w-8 h-8 rounded-lg bg-sky-50 text-sky-700 flex items-center justify-center shrink-0">
             <Clock className="w-4 h-4" />
@@ -174,7 +174,7 @@ export default function MobileHome() {
 
       {/* Main Apps Menu (Grid 2 Columns) */}
       <div className="space-y-1.5">
-        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-1">
+        <p className="text-[11px] font-bold text-slate-600 uppercase tracking-wider px-1">
           Menu Lapangan
         </p>
 
@@ -182,10 +182,10 @@ export default function MobileHome() {
           {isAngkut && (
             <Link
               href="/m/angkut"
-              className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-2xs hover:border-emerald-400 hover:shadow-xs active:scale-[0.98] transition-all flex flex-col justify-between h-[84px]"
+              className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-sm hover:border-emerald-400 hover:shadow-sm active:scale-[0.98] transition-all flex flex-col justify-between h-[84px]"
             >
               <div className="flex items-center justify-between">
-                <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+                <div className="w-8 h-8 rounded-xl bg-emerald-700 text-white flex items-center justify-center shadow-sm">
                   <MapPin className="w-4 h-4" />
                 </div>
                 <ChevronRight className="w-4 h-4 text-slate-300" />
@@ -200,10 +200,10 @@ export default function MobileHome() {
           {isAngkut && (
             <Link
               href="/m/lapor"
-              className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-2xs hover:border-amber-400 hover:shadow-xs active:scale-[0.98] transition-all flex flex-col justify-between h-[84px]"
+              className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-sm hover:border-amber-400 hover:shadow-sm active:scale-[0.98] transition-all flex flex-col justify-between h-[84px]"
             >
               <div className="flex items-center justify-between">
-                <div className="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-xs">
+                <div className="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-sm">
                   <AlertTriangle className="w-4 h-4" />
                 </div>
                 <ChevronRight className="w-4 h-4 text-slate-300" />
@@ -218,10 +218,10 @@ export default function MobileHome() {
           {isSurvei && (
             <Link
               href="/m/survei"
-              className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-2xs hover:border-indigo-400 hover:shadow-xs active:scale-[0.98] transition-all flex flex-col justify-between h-[84px]"
+              className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-sm hover:border-indigo-400 hover:shadow-sm active:scale-[0.98] transition-all flex flex-col justify-between h-[84px]"
             >
               <div className="flex items-center justify-between">
-                <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs">
+                <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-sm">
                   <ClipboardList className="w-4 h-4" />
                 </div>
                 <ChevronRight className="w-4 h-4 text-slate-300" />
@@ -235,10 +235,10 @@ export default function MobileHome() {
 
           <Link
             href="/m/absen"
-            className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-2xs hover:border-sky-400 hover:shadow-xs active:scale-[0.98] transition-all flex flex-col justify-between h-[84px]"
+            className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-sm hover:border-sky-400 hover:shadow-sm active:scale-[0.98] transition-all flex flex-col justify-between h-[84px]"
           >
             <div className="flex items-center justify-between">
-              <div className="w-8 h-8 rounded-xl bg-sky-600 text-white flex items-center justify-center shadow-xs">
+              <div className="w-8 h-8 rounded-xl bg-sky-600 text-white flex items-center justify-center shadow-sm">
                 <Clock className="w-4 h-4" />
               </div>
               <ChevronRight className="w-4 h-4 text-slate-300" />
@@ -251,10 +251,10 @@ export default function MobileHome() {
 
           <Link
             href="/m/klaim"
-            className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-2xs hover:border-rose-400 hover:shadow-xs active:scale-[0.98] transition-all flex flex-col justify-between h-[84px]"
+            className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-sm hover:border-rose-400 hover:shadow-sm active:scale-[0.98] transition-all flex flex-col justify-between h-[84px]"
           >
             <div className="flex items-center justify-between">
-              <div className="w-8 h-8 rounded-xl bg-rose-600 text-white flex items-center justify-center shadow-xs">
+              <div className="w-8 h-8 rounded-xl bg-rose-600 text-white flex items-center justify-center shadow-sm">
                 <Receipt className="w-4 h-4" />
               </div>
               <ChevronRight className="w-4 h-4 text-slate-300" />
@@ -267,10 +267,10 @@ export default function MobileHome() {
 
           <Link
             href="/m/chat"
-            className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-2xs hover:border-violet-400 hover:shadow-xs active:scale-[0.98] transition-all flex flex-col justify-between h-[84px]"
+            className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-sm hover:border-violet-400 hover:shadow-sm active:scale-[0.98] transition-all flex flex-col justify-between h-[84px]"
           >
             <div className="flex items-center justify-between">
-              <div className="w-8 h-8 rounded-xl bg-violet-600 text-white flex items-center justify-center shadow-xs">
+              <div className="w-8 h-8 rounded-xl bg-violet-600 text-white flex items-center justify-center shadow-sm">
                 <MessageSquare className="w-4 h-4" />
               </div>
               <ChevronRight className="w-4 h-4 text-slate-300" />

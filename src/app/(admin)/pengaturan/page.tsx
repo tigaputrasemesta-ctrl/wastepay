@@ -155,7 +155,7 @@ export default function PengaturanPage() {
           )}
         </div>
         {!duitkuStatus ? (
-          <p className="text-sm text-slate-400">Memuat status...</p>
+          <p className="text-sm text-slate-600">Memuat status...</p>
         ) : (
           <div className="space-y-4 text-sm">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -167,13 +167,13 @@ export default function PengaturanPage() {
               </div>
               <div className="bg-slate-50/80 rounded-xl p-3.5 border border-slate-200/70">
                 <p className="text-xs text-slate-500 font-medium mb-1">Merchant Code</p>
-                <p className={`font-semibold ${duitkuStatus.merchantCodeSet ? "text-emerald-600" : "text-rose-600"}`}>
+                <p className={`font-semibold ${duitkuStatus.merchantCodeSet ? "text-emerald-700" : "text-rose-600"}`}>
                   {duitkuStatus.merchantCodeSet ? "✓ Terisi" : "✗ Kosong"}
                 </p>
               </div>
               <div className="bg-slate-50/80 rounded-xl p-3.5 border border-slate-200/70">
                 <p className="text-xs text-slate-500 font-medium mb-1">API Key</p>
-                <p className={`font-semibold ${duitkuStatus.apiKeySet ? "text-emerald-600" : "text-rose-600"}`}>
+                <p className={`font-semibold ${duitkuStatus.apiKeySet ? "text-emerald-700" : "text-rose-600"}`}>
                   {duitkuStatus.apiKeySet ? "✓ Terisi" : "✗ Kosong"}
                 </p>
               </div>
@@ -203,12 +203,12 @@ export default function PengaturanPage() {
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold text-slate-900">Wilayah / RT / RW</h2>
-          <button onClick={() => setShowWilayahForm(true)} className="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 rounded-xl text-xs font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all">
+          <button onClick={() => setShowWilayahForm(true)} className="bg-emerald-700 hover:bg-emerald-800 text-white px-3.5 py-1.5 rounded-xl text-xs font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all">
             + Tambah Wilayah
           </button>
         </div>
         {wilayahList.length === 0 ? (
-          <p className="text-sm text-slate-400">Belum ada wilayah. Tambah wilayah terlebih dahulu.</p>
+          <p className="text-sm text-slate-600">Belum ada wilayah. Tambah wilayah terlebih dahulu.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {wilayahList.map((w) => (
@@ -238,8 +238,9 @@ export default function PengaturanPage() {
         <p className="text-sm text-slate-500 mb-4">Ganti password akun Anda</p>
         <form onSubmit={handleGantiPassword} className="space-y-3.5 max-w-md">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Password Lama</label>
+            <label htmlFor="pw-lama" className="block text-sm font-medium text-slate-700 mb-1.5">Password Lama</label>
             <input
+              id="pw-lama"
               type="password"
               value={pwForm.passwordLama}
               onChange={(e) => setPwForm({ ...pwForm, passwordLama: e.target.value })}
@@ -248,8 +249,9 @@ export default function PengaturanPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Password Baru (min. 8 karakter)</label>
+            <label htmlFor="pw-baru" className="block text-sm font-medium text-slate-700 mb-1.5">Password Baru (min. 8 karakter)</label>
             <input
+              id="pw-baru"
               type="password"
               value={pwForm.passwordBaru}
               onChange={(e) => setPwForm({ ...pwForm, passwordBaru: e.target.value })}
@@ -259,8 +261,9 @@ export default function PengaturanPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Konfirmasi Password Baru</label>
+            <label htmlFor="pw-konfirmasi" className="block text-sm font-medium text-slate-700 mb-1.5">Konfirmasi Password Baru</label>
             <input
+              id="pw-konfirmasi"
               type="password"
               value={pwForm.konfirmasi}
               onChange={(e) => setPwForm({ ...pwForm, konfirmasi: e.target.value })}
@@ -270,11 +273,11 @@ export default function PengaturanPage() {
             />
           </div>
           {pwError && <p className="text-sm text-rose-600">{pwError}</p>}
-          {pwMessage && <p className="text-sm text-emerald-600">✓ {pwMessage}</p>}
+          {pwMessage && <p className="text-sm text-emerald-700">✓ {pwMessage}</p>}
           <button
             type="submit"
             disabled={pwLoading}
-            className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all"
+            className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all"
           >
             {pwLoading ? "Menyimpan..." : "Ganti Password"}
           </button>
@@ -305,7 +308,7 @@ export default function PengaturanPage() {
           <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-md">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
               <h2 className="font-semibold text-slate-900 text-base">Tambah Wilayah</h2>
-              <button onClick={() => setShowWilayahForm(false)} className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors">
+              <button onClick={() => setShowWilayahForm(false)} className="p-1.5 text-slate-600 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
@@ -353,7 +356,7 @@ export default function PengaturanPage() {
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => setShowWilayahForm(false)} className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-700 font-medium hover:bg-slate-50 transition">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all">Simpan</button>
+                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all">Simpan</button>
               </div>
             </form>
           </div>

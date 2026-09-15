@@ -45,7 +45,7 @@ export default async function TarifPage() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-slate-200">
         <div className="max-w-xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 mb-3">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-700" />
             Transparansi Retribusi Resmi Kota Depok
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
@@ -92,7 +92,7 @@ export default async function TarifPage() {
                       <p className="text-xs text-slate-500 mt-0.5 capitalize">{k.kategori.replace(/_/g, " ")}</p>
                     </div>
                     <span className="col-span-3 text-xs text-slate-600">{k.deskripsi ?? "Rutin terkoordinasi"}</span>
-                    <span className="col-span-3 text-right font-bold text-base text-emerald-600">{formatRupiah(k.tarif)}</span>
+                    <span className="col-span-3 text-right font-bold text-base text-emerald-700">{formatRupiah(k.tarif)}</span>
                   </div>
                 ))}
               </div>
@@ -100,7 +100,7 @@ export default async function TarifPage() {
           </div>
 
           <div className="p-4 rounded-xl bg-amber-50/70 border border-amber-200/80 text-xs text-amber-900 flex items-start gap-2.5">
-            <span className="text-amber-600 font-bold shrink-0">💡 Catatan:</span>
+            <span className="text-amber-700 font-bold shrink-0">💡 Catatan:</span>
             <span>
               Untuk pengangkutan limbah khusus (sisa proyek bangunan, puing, batang pohon, atau volume ekstra), silakan koordinasikan dengan petugas rute lapangan atau admin dinas.
             </span>
@@ -126,7 +126,7 @@ export default async function TarifPage() {
                       {p.deskripsi && <p className="text-xs text-slate-500 mt-1">{p.deskripsi}</p>}
                     </div>
                     <div className="text-right border-t border-slate-200/60 pt-2 mt-2">
-                      <p className="font-extrabold text-base text-emerald-600">
+                      <p className="font-extrabold text-base text-emerald-700">
                         {p.harga != null ? formatRupiah(p.harga) : "Negosiasi"}
                       </p>
                       <span className="text-[10px] font-medium text-slate-500 uppercase">{p.harga != null ? "per bulan" : "sesuai volume"}</span>
@@ -140,7 +140,7 @@ export default async function TarifPage() {
           <div className="space-y-3">
             <Link
               href="/daftar"
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-sm transition-all"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm shadow-sm transition-all"
             >
               Daftar Langganan Sekarang
             </Link>

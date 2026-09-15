@@ -285,7 +285,7 @@ export default function CameraGps({
                 {koordinatAkurasi ? ` · ±${koordinatAkurasi}m` : ""}
               </span>
             ) : (
-              <span className="text-amber-600">○ Belum ada koordinat — ambil foto atau tekan GPS</span>
+              <span className="text-amber-700">○ Belum ada koordinat — ambil foto atau tekan GPS</span>
             )}
           </div>
 

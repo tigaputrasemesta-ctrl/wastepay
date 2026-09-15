@@ -245,7 +245,7 @@ export default function PelangganPage() {
         </div>
         <button
           onClick={openCreate}
-          className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-2 active:scale-95"
+          className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-2 active:scale-95"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -258,7 +258,7 @@ export default function PelangganPage() {
       <div className="mb-6">
         <div className="flex items-center gap-3 flex-wrap">
           <div className="relative flex-1 min-w-[240px] max-w-md">
-            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             <input
@@ -271,7 +271,7 @@ export default function PelangganPage() {
             {searchInput && (
               <button
                 onClick={() => { setSearchInput(""); setSearch(""); }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-rose-500 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 hover:text-rose-500 transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -292,7 +292,7 @@ export default function PelangganPage() {
             </svg>
             Filter
             {[filterKelurahan, filterStatus, filterKategori].filter(Boolean).length > 0 && (
-              <span className="bg-emerald-500 text-white px-1.5 py-0.5 rounded-full text-[10px] font-bold">
+              <span className="bg-emerald-700 text-white px-1.5 py-0.5 rounded-full text-[10px] font-bold">
                 {[filterKelurahan, filterStatus, filterKategori].filter(Boolean).length}
               </span>
             )}
@@ -377,7 +377,7 @@ export default function PelangganPage() {
           <tbody className="text-slate-800 divide-y divide-slate-100">
             {paginatedPelanggan.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-4 py-12 text-center text-slate-400 font-medium text-xs">
+                <td colSpan={8} className="px-4 py-12 text-center text-slate-600 font-medium text-xs">
                   Belum ada data pelanggan
                 </td>
               </tr>
@@ -401,7 +401,7 @@ export default function PelangganPage() {
                           className="w-9 h-9 object-cover rounded-xl border border-slate-200 shrink-0 shadow-sm"
                         />
                       ) : (
-                        <div className="w-9 h-9 border border-slate-200 bg-slate-100 rounded-xl shrink-0 flex items-center justify-center text-slate-400 text-xs font-bold">
+                        <div className="w-9 h-9 border border-slate-200 bg-slate-100 rounded-xl shrink-0 flex items-center justify-center text-slate-600 text-xs font-bold">
                           ?
                         </div>
                       )}
@@ -413,7 +413,7 @@ export default function PelangganPage() {
                           <a
                             href={`https://www.google.com/maps?q=${p.latitude},${p.longitude}`}
                             target="_blank"
-                            className="text-[11px] text-emerald-600 font-medium hover:underline flex items-center gap-0.5 mt-0.5"
+                            className="text-[11px] text-emerald-700 font-medium hover:underline flex items-center gap-0.5 mt-0.5"
                           >
                             📍 {p.latitude.toFixed(5)}, {p.longitude.toFixed(5)}
                           </a>
@@ -470,7 +470,7 @@ export default function PelangganPage() {
                       </Link>
                       <button
                         onClick={() => openEdit(p)}
-                        className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-amber-50 hover:text-amber-600 hover:border-amber-200 text-slate-600 transition-colors shadow-sm"
+                        className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200 text-slate-600 transition-colors shadow-sm"
                         title="Edit"
                       >
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -695,7 +695,7 @@ export default function PelangganPage() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md active:scale-95 transition-all"
+                  className="flex-1 px-4 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-md active:scale-95 transition-all"
                 >
                   {editing ? "Simpan Perubahan" : "Tambah Pelanggan"}
                 </button>

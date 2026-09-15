@@ -164,7 +164,7 @@ export default function PetugasPage() {
         </div>
         <button
           onClick={openCreate}
-          className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-2"
+          className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -191,9 +191,9 @@ export default function PetugasPage() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {loading ? (
-                <tr><td colSpan={8} className="px-4 py-8 text-center text-slate-400">Memuat...</td></tr>
+                <tr><td colSpan={8} className="px-4 py-8 text-center text-slate-600">Memuat...</td></tr>
               ) : petugas.length === 0 ? (
-                <tr><td colSpan={8} className="px-4 py-8 text-center text-slate-400">Belum ada petugas</td></tr>
+                <tr><td colSpan={8} className="px-4 py-8 text-center text-slate-600">Belum ada petugas</td></tr>
               ) : (
                 petugas.map((p) => (
                   <tr key={p.id} className="hover:bg-slate-50/60 transition">
@@ -204,9 +204,9 @@ export default function PetugasPage() {
                         </div>
                         <div>
                           <p className="font-semibold text-slate-900">{p.nama}</p>
-                          {p.email && <p className="text-xs text-slate-400">{p.email}</p>}
+                          {p.email && <p className="text-xs text-slate-600">{p.email}</p>}
                           {p.user && (
-                            <p className="text-[10px] text-emerald-600 font-medium">
+                            <p className="text-[10px] text-emerald-700 font-medium">
                               ◉ login: {p.user.nama}
                             </p>
                           )}
@@ -219,13 +219,13 @@ export default function PetugasPage() {
                         {p.kelurahan?.nama ?? "—"}
                       </span>
                       {p.kelurahan?.kecamatan && (
-                        <p className="text-[10px] text-slate-400 font-medium mt-0.5">
+                        <p className="text-[10px] text-slate-600 font-medium mt-0.5">
                           ✓ {p.kelurahan.kecamatan}
                         </p>
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      {badgeJabatan(p.jabatan) ?? <span className="text-xs text-slate-400">—</span>}
+                      {badgeJabatan(p.jabatan) ?? <span className="text-xs text-slate-600">—</span>}
                     </td>
                     <td className="px-4 py-3 text-center">
                       <button
@@ -245,7 +245,7 @@ export default function PetugasPage() {
                       <div className="flex items-center justify-center gap-1">
                         <button
                           onClick={() => openEdit(p)}
-                          className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition"
+                          className="p-1.5 text-slate-600 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition"
                           title="Edit"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -254,7 +254,7 @@ export default function PetugasPage() {
                         </button>
                         <button
                           onClick={() => setDeleteTarget(p)}
-                          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                          className="p-1.5 text-slate-600 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
                           title="Hapus"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -315,7 +315,7 @@ export default function PetugasPage() {
           <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-md max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
               <h2 className="font-semibold text-slate-900 text-base">{editing ? "Edit Petugas" : "Tambah Petugas"}</h2>
-              <button onClick={() => { setShowForm(false); setEditing(null); }} className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors">
+              <button onClick={() => { setShowForm(false); setEditing(null); }} className="p-1.5 text-slate-600 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -340,13 +340,13 @@ export default function PetugasPage() {
                   <option value="">Pilih Kelurahan</option>
                   {kelurahanList.map((k) => <option key={k.id} value={k.id}>{k.nama}{k.kecamatan ? ` · ${k.kecamatan}` : ""}</option>)}
                 </select>
-                <p className="text-[11px] text-slate-400 mt-1">
+                <p className="text-[11px] text-slate-600 mt-1">
                   Area tugas &amp; batas persetujuan petugas — seluruh wilayah/RT di kelurahan ini.
                 </p>
               </div>
               {form.kelurahanId && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Zona Angkut <span className="text-xs text-slate-400 font-normal">(opsional)</span></label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Zona Angkut <span className="text-xs text-slate-600 font-normal">(opsional)</span></label>
                   <div className="grid grid-cols-2 gap-2">
                     {zonaList.filter((z) => z.kelurahanId.toString() === form.kelurahanId).map((z) => {
                       const idStr = z.id.toString();
@@ -377,12 +377,12 @@ export default function PetugasPage() {
                     })}
                   </div>
                   {zonaList.filter((z) => z.kelurahanId.toString() === form.kelurahanId).length === 0 && (
-                    <p className="text-xs text-slate-400 italic">Kelurahan ini belum memiliki zona angkut.</p>
+                    <p className="text-xs text-slate-600 italic">Kelurahan ini belum memiliki zona angkut.</p>
                   )}
                 </div>
               )}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Jabatan <span className="text-xs text-slate-400 font-normal">(bisa lebih dari satu)</span></label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Jabatan <span className="text-xs text-slate-600 font-normal">(bisa lebih dari satu)</span></label>
                 <div className="space-y-2">
                   {JABATAN_OPTIONS.map((j) => {
                     const on = form.jabatan.includes(j.value);
@@ -399,7 +399,7 @@ export default function PetugasPage() {
                                 : form.jabatan.filter((x) => x !== j.value),
                             })
                           }
-                          className="mt-0.5 w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300"
+                          className="mt-0.5 w-4 h-4 rounded text-emerald-700 focus:ring-emerald-500 border-slate-300"
                         />
                         <span>
                           <span className="block text-sm font-semibold text-slate-900">{j.label}</span>
@@ -421,13 +421,13 @@ export default function PetugasPage() {
                     <option key={a.id} value={a.id}>{a.nama} ({a.email})</option>
                   ))}
                 </select>
-                <p className="text-[11px] text-slate-400 mt-1">
+                <p className="text-[11px] text-slate-600 mt-1">
                   Hubungkan dengan akun login petugas agar data lapangannya tersambung (peta realtime, pickup, dll).
                 </p>
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-700 font-medium hover:bg-slate-50 transition">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all">{editing ? "Simpan" : "Tambah"}</button>
+                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all">{editing ? "Simpan" : "Tambah"}</button>
               </div>
             </form>
           </div>

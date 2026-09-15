@@ -52,7 +52,7 @@ export default function ConfirmDialog({
           className={`w-12 h-12 rounded-2xl mx-auto flex items-center justify-center border ${
             variant === "danger"
               ? "bg-rose-50 border-rose-100 text-rose-600"
-              : "bg-emerald-50 border-emerald-100 text-emerald-600"
+              : "bg-emerald-50 border-emerald-100 text-emerald-700"
           }`}
         >
           {variant === "danger" ? (
@@ -88,7 +88,7 @@ export default function ConfirmDialog({
             className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 ${
               variant === "danger"
                 ? "bg-rose-600 hover:bg-rose-700 text-white"
-                : "bg-emerald-600 hover:bg-emerald-700 text-white"
+                : "bg-emerald-700 hover:bg-emerald-800 text-white"
             }`}
           >
             {loading ? (

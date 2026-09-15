@@ -53,7 +53,7 @@ export default function VersionCheck() {
   return (
     <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 animate-in fade-in duration-150">
       <div className="bg-white w-full max-w-sm rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden">
-        <div className={`px-6 py-4.5 ${wajib ? "bg-rose-600" : "bg-emerald-600"}`}>
+        <div className={`px-6 py-4.5 ${wajib ? "bg-rose-600" : "bg-emerald-700"}`}>
           <h2 className="font-bold text-sm tracking-wide text-white flex items-center gap-2">
             <span>🚀</span> {wajib ? "Pembaruan Aplikasi Wajib" : "Versi Baru Tersedia"}
           </h2>
@@ -67,7 +67,7 @@ export default function VersionCheck() {
           <ul className="space-y-1.5">
             {terbaru.changelog.map((c, i) => (
               <li key={i} className="text-xs font-medium text-slate-600 flex gap-2">
-                <span className="text-emerald-600 shrink-0 font-bold">✓</span>
+                <span className="text-emerald-700 shrink-0 font-bold">✓</span>
                 <span>{c}</span>
               </li>
             ))}

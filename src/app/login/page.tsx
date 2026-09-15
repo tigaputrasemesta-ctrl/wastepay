@@ -31,8 +31,19 @@ export default function LoginPage() {
       } else {
         if (data.token && typeof window !== "undefined") {
           try {
-            localStorage.setItem("wp_mobile_token", data.token);
-            localStorage.setItem("wp_mobile_user", JSON.stringify(data.user));
+            const isMobileContext =
+              data.user?.role === "petugas" ||
+              window.location.search.includes("platform=mobile") ||
+              /Android.*wv|MobileApp/i.test(navigator.userAgent);
+
+            if (isMobileContext) {
+              localStorage.setItem("wp_mobile_token", data.token);
+              localStorage.setItem("wp_mobile_user", JSON.stringify(data.user));
+            } else {
+              // Bersihkan token dari localStorage jika login di browser desktop biasa
+              localStorage.removeItem("wp_mobile_token");
+              localStorage.removeItem("wp_mobile_user");
+            }
           } catch {}
         }
         
@@ -57,10 +68,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
+    <main className="min-h-screen bg-[#F8FAFC] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex flex-col items-center mb-8">
-          <div className="w-12 h-12 bg-emerald-600 text-white rounded-lg flex items-center justify-center mb-4 shadow-sm">
+          <div className="w-12 h-12 bg-emerald-700 text-white rounded-lg flex items-center justify-center mb-4 shadow-sm">
             <Truck strokeWidth={2.5} className="w-6 h-6" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">
@@ -117,7 +128,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg text-sm transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+              className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold rounded-lg text-sm transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -139,11 +150,11 @@ export default function LoginPage() {
             href="/unduh"
             className="group flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 hover:text-emerald-700 transition-colors"
           >
-            <Smartphone className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 transition-colors" />
+            <Smartphone className="w-4 h-4 text-slate-400 group-hover:text-emerald-800 transition-colors" />
             <span>Unduh Aplikasi Mobile</span>
           </Link>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

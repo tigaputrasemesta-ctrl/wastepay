@@ -48,7 +48,7 @@ export default function LacakPage() {
           <span>Live Tracking GPS Armada</span>
         </div>
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
-          Lacak Armada Sampah <span className="text-emerald-600">Real-Time.</span>
+          Lacak Armada Sampah <span className="text-emerald-700">Real-Time.</span>
         </h1>
         <p className="text-sm md:text-base text-slate-600 mt-3 leading-relaxed">
           Ketahui posisi truk penjemput sampah lingkungan Anda secara transparan. Tidak perlu khawatir terlewat jadwal pengangkutan.
@@ -81,7 +81,7 @@ export default function LacakPage() {
           </div>
 
           <div className="p-5 rounded-3xl bg-amber-50/80 border border-amber-200/80 flex gap-3 text-amber-900 text-xs leading-relaxed">
-            <Info className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <Info className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
             <div>
               <p className="font-bold mb-1">Informasi Pembaruan Sinyal GPS</p>
               <p className="text-amber-800/90 text-[11px]">
@@ -98,7 +98,7 @@ export default function LacakPage() {
               <p className="text-xs font-bold text-slate-900">Ingin Bayar Iuran Retribusi?</p>
               <p className="text-[11px] text-slate-500">Cek tagihan bulanan dan bayar instan via QRIS</p>
             </div>
-            <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all" />
+            <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-800 group-hover:translate-x-0.5 transition-all" />
           </Link>
         </div>
 

@@ -134,13 +134,13 @@ export default function AdminChat() {
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-600">
               Daftar Petugas
             </span>
-            <span className="text-[11px] text-slate-400 font-medium">{threads.length} Petugas</span>
+            <span className="text-[11px] text-slate-600 font-medium">{threads.length} Petugas</span>
           </div>
           <div className="flex-1 overflow-y-auto divide-y divide-slate-100">
             {loading ? (
-              <div className="p-8 text-center text-slate-400 font-medium text-xs">Memuat daftar petugas…</div>
+              <div className="p-8 text-center text-slate-600 font-medium text-xs">Memuat daftar petugas…</div>
             ) : threads.length === 0 ? (
-              <div className="p-8 text-center text-slate-400 font-medium text-xs">Belum ada petugas aktif.</div>
+              <div className="p-8 text-center text-slate-600 font-medium text-xs">Belum ada petugas aktif.</div>
             ) : (
               threads.map((t) => (
                 <button
@@ -156,7 +156,7 @@ export default function AdminChat() {
                     <div className="flex items-center justify-between gap-1">
                       <p className="text-sm font-bold text-slate-900 truncate">{t.nama}</p>
                       {t.waktuTerakhir && (
-                        <span className="text-[10px] text-slate-400 font-medium shrink-0">
+                        <span className="text-[10px] text-slate-600 font-medium shrink-0">
                           {format(new Date(t.waktuTerakhir), "HH:mm")}
                         </span>
                       )}
@@ -170,7 +170,7 @@ export default function AdminChat() {
                     )}
                   </div>
                   {t.unread > 0 && (
-                    <span className="shrink-0 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                    <span className="shrink-0 bg-emerald-700 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
                       {t.unread}
                     </span>
                   )}
@@ -185,7 +185,7 @@ export default function AdminChat() {
           {petugasId == null ? (
             <div className="flex-1 flex items-center justify-center p-8 text-center bg-slate-50/30">
               <div className="max-w-xs">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl mx-auto mb-3 shadow-sm">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-2xl mx-auto mb-3 shadow-sm">
                   💬
                 </div>
                 <p className="font-bold text-slate-800 text-base">Pilih Petugas</p>
@@ -199,7 +199,7 @@ export default function AdminChat() {
                   <div className="p-3 text-center text-xs font-semibold rounded-xl text-rose-700 bg-rose-50 border border-rose-200">{error}</div>
                 )}
                 {pesan.length === 0 ? (
-                  <div className="text-center text-xs font-medium text-slate-400 py-16">Belum ada pesan. Mulai percakapan sekarang.</div>
+                  <div className="text-center text-xs font-medium text-slate-600 py-16">Belum ada pesan. Mulai percakapan sekarang.</div>
                 ) : (
                   pesan.map((m) => (
                     <div key={m.id} className={`flex ${m.dariPetugas ? "justify-start" : "justify-end"}`}>
@@ -207,10 +207,10 @@ export default function AdminChat() {
                         className={`max-w-[75%] px-4 py-2.5 text-sm whitespace-pre-wrap break-words shadow-sm ${
                           m.dariPetugas
                             ? "bg-white border border-slate-200/80 text-slate-800 rounded-2xl rounded-tl-xs"
-                            : "bg-emerald-600 text-white rounded-2xl rounded-tr-xs"
+                            : "bg-emerald-700 text-white rounded-2xl rounded-tr-xs"
                         }`}
                       >
-                        <p className={`text-[10px] font-medium mb-1 ${m.dariPetugas ? "text-slate-400" : "text-emerald-100"}`}>
+                        <p className={`text-[10px] font-medium mb-1 ${m.dariPetugas ? "text-slate-600" : "text-emerald-100"}`}>
                           {m.pengirim.nama} · {format(new Date(m.createdAt), "d MMM, HH:mm", { locale: id })}
                         </p>
                         <div className="leading-relaxed">{m.isi}</div>
@@ -231,7 +231,7 @@ export default function AdminChat() {
                 <button
                   onClick={kirim}
                   disabled={sending || !isi.trim()}
-                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all disabled:opacity-40"
+                  className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all disabled:opacity-40"
                 >
                   {sending ? "Mengirim…" : "Kirim"}
                 </button>

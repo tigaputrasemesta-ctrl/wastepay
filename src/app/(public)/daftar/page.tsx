@@ -64,7 +64,7 @@ export default async function DaftarPage() {
           <span>Registrasi Pelanggan Baru • Bebas Biaya Daftar</span>
         </div>
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
-          Daftar Layanan <span className="text-emerald-600">WastePay.</span>
+          Daftar Layanan <span className="text-emerald-700">WastePay.</span>
         </h1>
         <p className="text-sm md:text-base text-slate-600 mt-3 leading-relaxed">
           {tarifMin > 0 ? (
@@ -117,7 +117,7 @@ export default async function DaftarPage() {
               <p className="text-xs font-bold text-slate-900">Sudah Terdaftar Sebelumnya?</p>
               <p className="text-[11px] text-slate-500">Cek status tagihan atau konfirmasi bukti pembayaran</p>
             </div>
-            <span className="text-xs font-bold text-emerald-600 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+            <span className="text-xs font-bold text-emerald-700 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
           </Link>
         </div>
 

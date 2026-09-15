@@ -114,7 +114,7 @@ export default function JadwalPage() {
         </div>
         <button
           onClick={openCreate}
-          className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-2"
+          className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -160,9 +160,9 @@ export default function JadwalPage() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {loading ? (
-                <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-400 font-medium text-xs">Memuat jadwal...</td></tr>
+                <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-600 font-medium text-xs">Memuat jadwal...</td></tr>
               ) : jadwal.length === 0 ? (
-                <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-400 font-medium text-xs">Belum ada jadwal</td></tr>
+                <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-600 font-medium text-xs">Belum ada jadwal</td></tr>
               ) : (
                 jadwal.map((j) => (
                   <tr key={j.id} className="hover:bg-slate-50/80 transition-colors text-xs">
@@ -193,7 +193,7 @@ export default function JadwalPage() {
                             <a
                               href={`https://www.google.com/maps?q=${j.pelanggan.latitude},${j.pelanggan.longitude}`}
                               target="_blank"
-                              className="text-xs text-emerald-600 hover:text-emerald-700 font-medium inline-flex items-center gap-0.5"
+                              className="text-xs text-emerald-700 hover:text-emerald-700 font-medium inline-flex items-center gap-0.5"
                             >
                               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -202,7 +202,7 @@ export default function JadwalPage() {
                               {j.pelanggan.latitude.toFixed(5)}, {j.pelanggan.longitude.toFixed(5)}
                             </a>
                           ) : (
-                            <span className="text-xs text-slate-400 font-medium">Tanpa koordinat</span>
+                            <span className="text-xs text-slate-600 font-medium">Tanpa koordinat</span>
                           )}
                         </div>
                       </div>
@@ -226,7 +226,7 @@ export default function JadwalPage() {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => openEdit(j)}
-                          className="text-slate-400 hover:text-sky-600 transition"
+                          className="text-slate-600 hover:text-sky-600 transition"
                           title="Edit"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -261,7 +261,7 @@ export default function JadwalPage() {
                 <h2 className="font-bold text-slate-900 text-base">{editing ? "Edit Jadwal" : "Tambah Jadwal Baru"}</h2>
                 <p className="text-xs text-slate-500">Atur hari dan rute jemputan pelanggan</p>
               </div>
-              <button onClick={() => setShowForm(false)} className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-lg leading-none">&times;</button>
+              <button onClick={() => setShowForm(false)} className="text-slate-600 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-lg leading-none">&times;</button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
@@ -343,7 +343,7 @@ export default function JadwalPage() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all text-sm font-semibold"
+                  className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all text-sm font-semibold"
                 >
                   {editing ? "Simpan" : "Tambah"}
                 </button>

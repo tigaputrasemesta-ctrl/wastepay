@@ -29,17 +29,17 @@ export default function UnduhPage() {
       <header className="border-b border-slate-200/80 px-6 py-4 bg-white/90 backdrop-blur-md sticky top-0 z-30">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
-            <span className="w-9 h-9 rounded-xl bg-emerald-600 text-white font-extrabold flex items-center justify-center text-base shadow-sm">
+            <span className="w-9 h-9 rounded-xl bg-emerald-700 text-white font-extrabold flex items-center justify-center text-base shadow-sm">
               W
             </span>
             <div className="leading-tight">
               <span className="font-extrabold text-slate-900 text-lg tracking-tight">WastePay</span>
-              <span className="block text-[10px] font-semibold text-emerald-600 uppercase tracking-wider">Driver Mobile</span>
+              <span className="block text-[10px] font-semibold text-emerald-700 uppercase tracking-wider">Driver Mobile</span>
             </div>
           </Link>
           <Link
             href="/"
-            className="text-xs font-semibold text-slate-600 hover:text-emerald-600 transition-colors flex items-center gap-1.5"
+            className="text-xs font-semibold text-slate-600 hover:text-emerald-800 transition-colors flex items-center gap-1.5"
           >
             ← Kembali ke Beranda
           </Link>
@@ -53,7 +53,7 @@ export default function UnduhPage() {
             Aplikasi Khusus Petugas & Pengemudi Armada
           </div>
           <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
-            Unduh <span className="text-emerald-600">WastePay Driver</span>
+            Unduh <span className="text-emerald-700">WastePay Driver</span>
           </h1>
           <p className="text-slate-600 text-sm sm:text-base mt-3 max-w-lg mx-auto">
             Aplikasi lapangan resmi petugas UPS HERU Kota Depok untuk pencatatan rute jemputan, verifikasi timbangan, dan manifest TPA.
@@ -64,7 +64,7 @@ export default function UnduhPage() {
         <div className="bg-white rounded-3xl border border-slate-200/90 p-8 shadow-sm">
           <div className="flex items-center justify-between gap-4 pb-6 border-b border-slate-100 mb-6">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center shrink-0">
+              <div className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0">
                 <Smartphone className="w-7 h-7" />
               </div>
               <div>
@@ -101,7 +101,7 @@ export default function UnduhPage() {
             <a
               href={apkUrl}
               download
-              className="w-full flex items-center justify-center gap-2.5 py-4 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold text-base shadow-sm transition-all"
+              className="w-full flex items-center justify-center gap-2.5 py-4 px-6 rounded-2xl bg-emerald-700 hover:bg-emerald-800 active:scale-[0.99] text-white font-bold text-base shadow-sm transition-all"
             >
               <Download className="w-5 h-5" /> Unduh Berkas APK ({versionName})
             </a>

@@ -45,7 +45,7 @@ export default async function LaporanPage({
               </select>
               <button
                 type="submit"
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all"
+                className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all"
               >
                 Tampilkan
               </button>
@@ -73,7 +73,7 @@ export default async function LaporanPage({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
           <p className="text-xs font-semibold text-slate-500 mb-1">Pemasukan</p>
-          <p className="text-2xl font-bold text-emerald-600">{formatRupiah(data.totalPemasukan)}</p>
+          <p className="text-2xl font-bold text-emerald-700">{formatRupiah(data.totalPemasukan)}</p>
         </div>
         <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
           <p className="text-xs font-semibold text-slate-500 mb-1">Pengeluaran</p>
@@ -81,13 +81,13 @@ export default async function LaporanPage({
         </div>
         <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
           <p className="text-xs font-semibold text-slate-500 mb-1">Saldo Bersih</p>
-          <p className={`text-2xl font-bold ${data.saldo >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+          <p className={`text-2xl font-bold ${data.saldo >= 0 ? "text-emerald-700" : "text-rose-600"}`}>
             {formatRupiah(data.saldo)}
           </p>
         </div>
         <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
           <p className="text-xs font-semibold text-slate-500 mb-1">Efektivitas Tagihan</p>
-          <p className="text-2xl font-bold text-emerald-600">
+          <p className="text-2xl font-bold text-emerald-700">
             {data.totalTagihan > 0
               ? Math.round((data.tagihanTerkumpul / data.totalTagihan) * 100)
               : 0}%
@@ -106,7 +106,7 @@ export default async function LaporanPage({
             </div>
             <div className="flex justify-between items-center text-sm">
               <span className="text-slate-500 font-medium">Terkumpul</span>
-              <span className="font-semibold text-emerald-600">{formatRupiah(data.tagihanTerkumpul)}</span>
+              <span className="font-semibold text-emerald-700">{formatRupiah(data.tagihanTerkumpul)}</span>
             </div>
             <div className="flex justify-between items-center text-sm">
               <span className="text-slate-500 font-medium">Sisa Tagihan</span>
@@ -118,7 +118,7 @@ export default async function LaporanPage({
             </div>
             <div className="flex justify-between items-center text-sm">
               <span className="text-slate-500 font-medium">Belum Bayar</span>
-              <span className="font-semibold text-amber-600">{data.totalBelumBayar}</span>
+              <span className="font-semibold text-amber-700">{data.totalBelumBayar}</span>
             </div>
           </div>
         </div>
@@ -168,7 +168,7 @@ export default async function LaporanPage({
           </div>
           <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
             <p className="text-xs font-semibold text-slate-500 mb-1">Berhasil Diangkut</p>
-            <p className="text-2xl font-bold text-emerald-600">{data.totalDiambil}</p>
+            <p className="text-2xl font-bold text-emerald-700">{data.totalDiambil}</p>
           </div>
         </div>
 

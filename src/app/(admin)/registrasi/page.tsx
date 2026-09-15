@@ -42,7 +42,7 @@ const STATUS_OPTIONS = [
 function JudulSection({ kode, judul, desc }: { kode: string; judul: string; desc: string }) {
   return (
     <div className="mb-6">
-      <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wider">
+      <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wider">
         {kode}
       </p>
       <h2 className="text-xl font-bold text-slate-900 mt-1">{judul}</h2>
@@ -204,12 +204,12 @@ export default function DaftarPelangganPage() {
     return (
       <div className="p-6 max-w-2xl mx-auto">
         <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl p-8 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wider mb-1">Pendaftaran Berhasil</p>
+          <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wider mb-1">Pendaftaran Berhasil</p>
           <h2 className="text-2xl font-bold text-slate-900 mb-2">{successData?.nama}</h2>
           <p className="text-sm text-slate-500 mb-6">
             Status: <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">{statusLabel}</span>
@@ -218,7 +218,7 @@ export default function DaftarPelangganPage() {
 
           {successData?.kode && (
             <div className="bg-slate-50 rounded-2xl border border-slate-200/80 p-6 mb-6 inline-block">
-              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Kode Pelanggan</p>
+              <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Kode Pelanggan</p>
               <p className="font-bold text-3xl text-slate-900 tracking-widest mb-3">{successData.kode}</p>
               {/* Barcode SVG */}
               <svg className="mx-auto" width="200" height="50" viewBox="0 0 200 50" aria-hidden>
@@ -228,14 +228,14 @@ export default function DaftarPelangganPage() {
                 <rect x="0" y="0" width="4" height="44" fill="#000" />
                 <rect x="196" y="0" width="4" height="44" fill="#000" />
               </svg>
-              <p className="text-xs text-slate-400 font-mono mt-2">{successData.kode}</p>
+              <p className="text-xs text-slate-600 font-mono mt-2">{successData.kode}</p>
             </div>
           )}
 
           <div className="flex items-center justify-center gap-3">
             <button
               onClick={() => router.push("/pelanggan")}
-              className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all"
+              className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all"
             >
               Lihat Data Pelanggan
             </button>
@@ -258,7 +258,7 @@ export default function DaftarPelangganPage() {
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <div className="mb-8">
-        <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wider">
+        <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wider">
           REGISTRASI
         </p>
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Pendaftaran Pelanggan Baru</h1>
@@ -279,10 +279,10 @@ export default function DaftarPelangganPage() {
                   <div
                     className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
                       selesai
-                        ? "bg-emerald-600 text-white"
+                        ? "bg-emerald-700 text-white"
                         : aktif
                         ? "bg-emerald-100 text-emerald-700 ring-2 ring-emerald-500 ring-offset-2"
-                        : "bg-slate-100 text-slate-400 border border-slate-200"
+                        : "bg-slate-100 text-slate-600 border border-slate-200"
                     }`}
                   >
                     {selesai ? (
@@ -295,7 +295,7 @@ export default function DaftarPelangganPage() {
                   </div>
                   <span
                     className={`text-xs font-medium hidden sm:inline ${
-                      aktif ? "text-slate-900 font-semibold" : selesai ? "text-slate-600" : "text-slate-400"
+                      aktif ? "text-slate-900 font-semibold" : selesai ? "text-slate-600" : "text-slate-600"
                     }`}
                   >
                     {s.label}
@@ -338,7 +338,7 @@ export default function DaftarPelangganPage() {
                 className="input"
                 placeholder="08xxxxxxxxxx"
               />
-              <p className="text-xs text-gray-400 font-bold mt-1">Notifikasi tagihan & pembayaran dikirim ke nomor ini</p>
+              <p className="text-xs text-slate-600 font-bold mt-1">Notifikasi tagihan & pembayaran dikirim ke nomor ini</p>
             </div>
 
             <div>
@@ -369,7 +369,7 @@ export default function DaftarPelangganPage() {
             </div>
 
             <div>
-              <label className="label">Penanggung Jawab <span className="text-gray-400 font-bold normal-case">(opsional)</span></label>
+              <label className="label">Penanggung Jawab <span className="text-slate-600 font-bold normal-case">(opsional)</span></label>
               <input
                 type="text"
                 value={form.penanggungjawab}
@@ -438,7 +438,7 @@ export default function DaftarPelangganPage() {
                 />
               </div>
             </div>
-            <p className="text-xs text-gray-400 font-bold">
+            <p className="text-xs text-slate-600 font-bold">
               Isi RT/RW sesuai data warga (opsional).
             </p>
           </div>
@@ -453,7 +453,7 @@ export default function DaftarPelangganPage() {
               desc="Memudahkan petugas lapangan menemukan lokasi dan merencanakan rute"
             />
             <div>
-              <label className="label">Patokan / Tag Lokasi <span className="text-gray-400 font-bold normal-case">(opsional)</span></label>
+              <label className="label">Patokan / Tag Lokasi <span className="text-slate-600 font-bold normal-case">(opsional)</span></label>
               <input
                 type="text"
                 value={form.patokanLokasi}
@@ -507,7 +507,7 @@ export default function DaftarPelangganPage() {
                   <p className="text-xs font-bold text-emerald-800 uppercase tracking-wider !mb-1">TARIF DEFAULT — {kategoriTarifTerpilih?.label ?? form.kategori}</p>
                   <p className="text-xs text-slate-600 font-medium">{kategoriTarifTerpilih?.deskripsi ?? "Tarif berdasarkan kategori"}</p>
                 </div>
-                <p className="font-bold tracking-tight text-xl text-emerald-700 whitespace-nowrap">{formatRupiah(tarifDefaultKategori)}<span className="text-xs text-slate-400 font-normal">/bln</span></p>
+                <p className="font-bold tracking-tight text-xl text-emerald-700 whitespace-nowrap">{formatRupiah(tarifDefaultKategori)}<span className="text-xs text-slate-600 font-normal">/bln</span></p>
               </div>
             </div>
 
@@ -515,7 +515,7 @@ export default function DaftarPelangganPage() {
             {paketList.length > 0 && (
               <>
                 <div className="flex items-center gap-3">
-                  <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Atau Pilih Paket</span>
+                  <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Atau Pilih Paket</span>
                   <div className="flex-1 h-px bg-slate-200" />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -547,12 +547,12 @@ export default function DaftarPelangganPage() {
                             {p.deskripsi && <p className="text-xs text-slate-500 mt-1">{p.deskripsi}</p>}
                           </div>
                           <div className="text-right whitespace-nowrap">
-                            <p className="font-bold text-lg text-emerald-600">{p.harga != null ? formatRupiah(p.harga) : "Variabel"}</p>
-                            <p className="text-[10px] text-slate-400">{p.harga != null ? "/bulan" : "sesuai kebutuhan"}</p>
+                            <p className="font-bold text-lg text-emerald-700">{p.harga != null ? formatRupiah(p.harga) : "Variabel"}</p>
+                            <p className="text-[10px] text-slate-600">{p.harga != null ? "/bulan" : "sesuai kebutuhan"}</p>
                           </div>
                         </div>
                         {dipilih && (
-                          <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-sm">
+                          <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-emerald-700 text-white flex items-center justify-center shadow-sm">
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                             </svg>
@@ -566,13 +566,13 @@ export default function DaftarPelangganPage() {
             )}
             {paketList.length === 0 && (
               <div className="text-center py-4 bg-slate-50 text-slate-500 rounded-2xl border border-slate-200/80">
-                <p className="text-slate-400 font-medium text-sm">Belum ada paket tersedia — pakai tarif default kategori</p>
+                <p className="text-slate-600 font-medium text-sm">Belum ada paket tersedia — pakai tarif default kategori</p>
               </div>
             )}
 
             {/* Tarif kustom */}
             <div className="flex items-center gap-3">
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Atau Tarif Kustom</span>
+              <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Atau Tarif Kustom</span>
               <div className="flex-1 h-px bg-slate-200" />
             </div>
             <label className="rounded-2xl border border-slate-200/80 bg-white p-4 flex items-start gap-3 cursor-pointer hover:border-slate-300 transition-all shadow-sm">
@@ -599,7 +599,7 @@ export default function DaftarPelangganPage() {
                       placeholder="Contoh: 50000"
                     />
                     {parseFloat(form.customTarif) > 0 && (
-                      <p className="text-xs text-emerald-600 mt-1 font-semibold">= {formatRupiah(parseFloat(form.customTarif))} / bulan</p>
+                      <p className="text-xs text-emerald-700 mt-1 font-semibold">= {formatRupiah(parseFloat(form.customTarif))} / bulan</p>
                     )}
                   </div>
                 )}
@@ -618,9 +618,9 @@ export default function DaftarPelangganPage() {
                     : `Default kategori ${kategoriTarifTerpilih?.label ?? form.kategori}`}
                 </p>
               </div>
-              <p className="font-bold tracking-tight text-2xl text-emerald-600">
+              <p className="font-bold tracking-tight text-2xl text-emerald-700">
                 {formatRupiah(tarifAkhir)}
-                <span className="text-xs text-slate-400 font-normal">/bln</span>
+                <span className="text-xs text-slate-600 font-normal">/bln</span>
               </p>
             </div>
 
@@ -656,7 +656,7 @@ export default function DaftarPelangganPage() {
 
             {/* Catatan */}
             <div>
-              <label className="label">Catatan Internal <span className="text-gray-400 font-bold normal-case">(opsional)</span></label>
+              <label className="label">Catatan Internal <span className="text-slate-600 font-bold normal-case">(opsional)</span></label>
               <textarea
                 value={form.catatan}
                 onChange={(e) => setForm({ ...form, catatan: e.target.value })}
@@ -704,7 +704,7 @@ export default function DaftarPelangganPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <p className="label !mb-1 text-xs font-semibold text-slate-500">TARIF IURAN</p>
-                  <p className="font-bold tracking-tight text-lg text-emerald-600">{formatRupiah(tarifAkhir)}<span className="text-xs text-slate-400 font-normal">/bln</span></p>
+                  <p className="font-bold tracking-tight text-lg text-emerald-700">{formatRupiah(tarifAkhir)}<span className="text-xs text-slate-600 font-normal">/bln</span></p>
                   <p className="text-xs text-slate-500">
                     {useCustomTarif
                       ? "Tarif kustom"
@@ -738,7 +738,7 @@ export default function DaftarPelangganPage() {
                     href={`https://www.google.com/maps?q=${form.latitude},${form.longitude}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-emerald-600 hover:text-emerald-700 font-medium mt-1 inline-flex items-center gap-1"
+                    className="text-xs text-emerald-700 hover:text-emerald-700 font-medium mt-1 inline-flex items-center gap-1"
                   >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -780,7 +780,7 @@ export default function DaftarPelangganPage() {
             {step === 1 ? "Batal" : "← Kembali"}
           </button>
 
-          <div className="text-xs font-semibold text-slate-400 tracking-wider uppercase">
+          <div className="text-xs font-semibold text-slate-600 tracking-wider uppercase">
             Langkah {step} dari {STEPS.length}
           </div>
 
@@ -788,7 +788,7 @@ export default function DaftarPelangganPage() {
             <button
               type="button"
               onClick={nextStep}
-              className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm shadow-sm hover:shadow active:scale-95 transition-all"
+              className="px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm shadow-sm hover:shadow active:scale-95 transition-all"
             >
               Lanjut →
             </button>
@@ -797,7 +797,7 @@ export default function DaftarPelangganPage() {
               type="button"
               onClick={handleSubmit}
               disabled={submitting}
-              className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm shadow-sm hover:shadow active:scale-95 transition-all disabled:opacity-50 flex items-center gap-2"
+              className="px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm shadow-sm hover:shadow active:scale-95 transition-all disabled:opacity-50 flex items-center gap-2"
             >
               {submitting ? (
                 <>

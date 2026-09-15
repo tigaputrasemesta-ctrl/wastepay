@@ -107,15 +107,15 @@ export default function MobileAbsen() {
           </p>
         </div>
         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 font-mono text-xs font-bold tabular-nums">
-          <Clock className="w-3.5 h-3.5 text-emerald-600" />
+          <Clock className="w-3.5 h-3.5 text-emerald-700" />
           <span>{currentTime || "--:--:--"}</span>
         </div>
       </div>
 
       {/* Shift Overview Card */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-3 space-y-2.5">
+      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-3 space-y-2.5">
         <div className="flex items-center justify-between">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+          <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">
             Rekap Shift Hari Ini
           </span>
           <span
@@ -138,20 +138,20 @@ export default function MobileAbsen() {
 
         <div className="grid grid-cols-2 gap-2 text-center">
           <div className="bg-slate-50/80 border border-slate-100 rounded-xl p-2.5">
-            <span className="text-[10px] font-medium text-slate-400 block mb-0.5">Jam Masuk</span>
+            <span className="text-[10px] font-medium text-slate-600 block mb-0.5">Jam Masuk</span>
             <p
               className={`text-base font-extrabold tabular-nums ${
-                sudahMasuk ? "text-emerald-700" : "text-slate-300"
+                sudahMasuk ? "text-emerald-700" : "text-slate-500"
               }`}
             >
               {sudahMasuk ? format(new Date(absen!.waktuMasuk!), "HH:mm", { locale: id }) : "— : —"}
             </p>
           </div>
           <div className="bg-slate-50/80 border border-slate-100 rounded-xl p-2.5">
-            <span className="text-[10px] font-medium text-slate-400 block mb-0.5">Jam Selesai</span>
+            <span className="text-[10px] font-medium text-slate-600 block mb-0.5">Jam Selesai</span>
             <p
               className={`text-base font-extrabold tabular-nums ${
-                sudahSelesai ? "text-sky-700" : "text-slate-300"
+                sudahSelesai ? "text-sky-700" : "text-slate-500"
               }`}
             >
               {sudahSelesai ? format(new Date(absen!.waktuSelesai!), "HH:mm", { locale: id }) : "— : —"}
@@ -165,7 +165,7 @@ export default function MobileAbsen() {
         <button
           onClick={() => handleAbsen("masuk")}
           disabled={actionLoading}
-          className="w-full py-3.5 px-4 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white rounded-2xl font-bold text-sm shadow-xs transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full py-3.5 px-4 bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white rounded-2xl font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50"
         >
           {actionLoading ? (
             <>
@@ -183,7 +183,7 @@ export default function MobileAbsen() {
         <button
           onClick={() => handleAbsen("selesai")}
           disabled={actionLoading}
-          className="w-full py-3.5 px-4 bg-amber-600 hover:bg-amber-700 active:scale-[0.98] text-white rounded-2xl font-bold text-sm shadow-xs transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full py-3.5 px-4 bg-amber-600 hover:bg-amber-700 active:scale-[0.98] text-white rounded-2xl font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50"
         >
           {actionLoading ? (
             <>
@@ -198,7 +198,7 @@ export default function MobileAbsen() {
           )}
         </button>
       ) : (
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50/80 p-3.5 text-center space-y-1 shadow-2xs">
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50/80 p-3.5 text-center space-y-1 shadow-sm">
           <span className="text-xl block">🎉</span>
           <p className="text-xs font-bold text-emerald-900">Operasional Hari Ini Selesai</p>
           <p className="text-[10px] text-emerald-700">
@@ -209,8 +209,8 @@ export default function MobileAbsen() {
 
       {/* GPS Status & Coordinates Pill */}
       {koord && (
-        <div className="flex items-center justify-center gap-1.5 text-[10px] font-medium text-slate-500 bg-white border border-slate-200/80 rounded-xl py-1.5 px-3 shadow-2xs">
-          <MapPin className="w-3 h-3 text-emerald-600 shrink-0" />
+        <div className="flex items-center justify-center gap-1.5 text-[10px] font-medium text-slate-500 bg-white border border-slate-200/80 rounded-xl py-1.5 px-3 shadow-sm">
+          <MapPin className="w-3 h-3 text-emerald-700 shrink-0" />
           <span>Titik Absen:</span>
           <span className="font-mono font-bold text-slate-700 tabular-nums">
             {koord.lat.toFixed(5)}, {koord.lng.toFixed(5)}
@@ -228,7 +228,7 @@ export default function MobileAbsen() {
           }`}
         >
           {pesan.includes("berhasil") ? (
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
           ) : (
             <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
           )}

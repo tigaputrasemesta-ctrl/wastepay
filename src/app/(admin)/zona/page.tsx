@@ -165,7 +165,7 @@ export default function ZonaPage() {
         </div>
         <button
           onClick={openCreate}
-          className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5"
+          className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5"
         >
           <span>+</span>
           <span>Tambah Zona</span>
@@ -215,7 +215,7 @@ export default function ZonaPage() {
                 <span className="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-lg border border-emerald-200/60">{z._count?.petugas ?? 0} Petugas Angkut</span>
               </div>
               <div className="absolute top-4 right-4 flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
-                <button onClick={() => openEdit(z)} className="text-slate-400 hover:text-emerald-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors" title="Edit">
+                <button onClick={() => openEdit(z)} className="text-slate-400 hover:text-emerald-800 p-1.5 rounded-lg hover:bg-slate-100 transition-colors" title="Edit">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                 </button>
                 <button onClick={() => setDeleteTarget(z)} className="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors" title="Hapus">
@@ -316,7 +316,7 @@ export default function ZonaPage() {
                 <button type="button" onClick={() => setShowForm(false)} className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-sm text-slate-700 font-semibold transition-all">
                   Batal
                 </button>
-                <button type="submit" disabled={saving} className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all text-sm font-semibold disabled:opacity-50">
+                <button type="submit" disabled={saving} className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all text-sm font-semibold disabled:opacity-50">
                   {saving ? "Menyimpan..." : "Simpan Zona"}
                 </button>
               </div>

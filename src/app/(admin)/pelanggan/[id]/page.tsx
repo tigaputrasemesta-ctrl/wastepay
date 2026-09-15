@@ -163,7 +163,7 @@ export default function DetailPelangganPage() {
                 alert(d.error || "Gagal menyetujui pendaftaran");
               }
             }}
-            className="ml-2 inline-flex items-center gap-1.5 px-4 py-1.5 shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all transition"
+            className="ml-2 inline-flex items-center gap-1.5 px-4 py-1.5 shadow-sm hover:shadow-md active:scale-[0.98] transition-all bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all transition"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
@@ -204,7 +204,7 @@ export default function DetailPelangganPage() {
           {(data.fotoRumah || (data.latitude && data.longitude)) && (
             <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
               <h2 className="font-bold text-slate-900 text-base mb-3 flex items-center gap-2">
-                <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
@@ -231,7 +231,7 @@ export default function DetailPelangganPage() {
               {data.latitude && data.longitude && (
                 <div className="mt-3 space-y-2 text-sm">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 font-mono">
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 font-mono">
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -252,13 +252,13 @@ export default function DetailPelangganPage() {
                       }[data.koordinatSumber || ""] || "Manual"}
                     </span>
                     {data.koordinatAkurasi ? (
-                      <span className="text-xs text-emerald-600 font-medium">± {Math.round(data.koordinatAkurasi)} m</span>
+                      <span className="text-xs text-emerald-700 font-medium">± {Math.round(data.koordinatAkurasi)} m</span>
                     ) : null}
                   </div>
                   <a
                     href={`https://www.google.com/maps?q=${data.latitude},${data.longitude}`}
                     target="_blank"
-                    className="inline-flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 font-medium"
+                    className="inline-flex items-center gap-1 text-xs text-emerald-700 hover:text-emerald-700 font-medium"
                   >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -330,7 +330,7 @@ export default function DetailPelangganPage() {
                   <a
                     href={`https://www.google.com/maps?q=${data.latitude},${data.longitude}`}
                     target="_blank"
-                    className="text-xs text-emerald-600 hover:text-emerald-700 font-medium inline-flex items-center gap-1 mt-1"
+                    className="text-xs text-emerald-700 hover:text-emerald-700 font-medium inline-flex items-center gap-1 mt-1"
                   >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -355,13 +355,13 @@ export default function DetailPelangganPage() {
                 <div>
                   <p className="text-xs text-slate-500 font-medium">Paket Langganan</p>
                   <p className="font-semibold text-slate-900 text-sm">{data.paket.nama}</p>
-                  <p className="text-xs text-emerald-600 font-semibold">{data.paket.harga != null ? `${formatRupiah(data.paket.harga)}/bln` : "Tarif variabel"}</p>
+                  <p className="text-xs text-emerald-700 font-semibold">{data.paket.harga != null ? `${formatRupiah(data.paket.harga)}/bln` : "Tarif variabel"}</p>
                 </div>
               )}
               {data.customTarif && (
                 <div>
                   <p className="text-xs text-slate-500 font-medium">Tarif Kustom</p>
-                  <p className="font-semibold text-emerald-600 text-sm">{formatRupiah(data.customTarif)}/bln</p>
+                  <p className="font-semibold text-emerald-700 text-sm">{formatRupiah(data.customTarif)}/bln</p>
                 </div>
               )}
               <div>
@@ -381,17 +381,17 @@ export default function DetailPelangganPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500 font-medium">Total Bayar</span>
-                <span className="font-semibold text-emerald-600">{formatRupiah(totalBayar)}</span>
+                <span className="font-semibold text-emerald-700">{formatRupiah(totalBayar)}</span>
               </div>
               <div className="flex justify-between border-t border-slate-100 pt-3">
                 <span className="text-slate-500 font-medium">Sisa</span>
-                <span className={`font-semibold ${totalTagihan - totalBayar > 0 ? "text-rose-600" : "text-emerald-600"}`}>
+                <span className={`font-semibold ${totalTagihan - totalBayar > 0 ? "text-rose-600" : "text-emerald-700"}`}>
                   {formatRupiah(totalTagihan - totalBayar)}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500 font-medium">Tagihan Aktif</span>
-                <span className="font-semibold text-amber-600">{tagihanAktif.length}</span>
+                <span className="font-semibold text-amber-700">{tagihanAktif.length}</span>
               </div>
             </div>
           </div>
@@ -480,7 +480,7 @@ export default function DetailPelangganPage() {
                     {data.pembayaran.map((p) => (
                       <tr key={p.id} className="border-b border-slate-100 hover:bg-slate-50/50">
                         <td className="px-3 py-2.5 text-slate-500 text-xs">{formatDate(p.createdAt)}</td>
-                        <td className="px-3 py-2.5 text-right font-semibold text-emerald-600 tabular-nums">{formatRupiah(p.jumlah)}</td>
+                        <td className="px-3 py-2.5 text-right font-semibold text-emerald-700 tabular-nums">{formatRupiah(p.jumlah)}</td>
                         <td className="px-3 py-2.5 text-slate-600 capitalize">
                           {p.metode === "duitku" ? "Payment Gateway" : p.metode.charAt(0).toUpperCase() + p.metode.slice(1)}
                         </td>
@@ -498,7 +498,7 @@ export default function DetailPelangganPage() {
                             <Link
                               href={`/kwitansi/${p.id}`}
                               target="_blank"
-                              className="text-xs text-emerald-600 underline hover:text-emerald-700 font-semibold"
+                              className="text-xs text-emerald-700 underline hover:text-emerald-700 font-semibold"
                             >
                               Kwitansi
                             </Link>

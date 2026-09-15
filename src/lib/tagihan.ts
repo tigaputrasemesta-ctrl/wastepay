@@ -31,30 +31,33 @@ export async function updateTunggakan(opts?: { force?: boolean }): Promise<numbe
   const MS_PER_BULAN = 30 * 24 * 3600 * 1000;
   const nowDate = new Date();
 
-  // Update paralel ber-chunk (pool DB max 10) — jauh lebih cepat daripada
-  // serial 1-per-1 untuk ribuan tagihan tunggakan.
-  const CHUNK = 20;
-  for (let i = 0; i < overdue.length; i += CHUNK) {
-    await Promise.all(
-      overdue.slice(i, i + CHUNK).map(async (t) => {
-        const bulanTerlambat = Math.max(
-          1,
-          Math.floor((nowDate.getTime() - t.jatuhTempo.getTime()) / MS_PER_BULAN)
-        );
-        const denda = Math.round(t.jumlah * 0.02 * bulanTerlambat);
+  // Pra-hitung dan saring hanya tagihan yang nominal denda atau statusnya berubah
+  const targets = overdue
+    .map((t) => {
+      const bulanTerlambat = Math.max(
+        1,
+        Math.floor((nowDate.getTime() - t.jatuhTempo.getTime()) / MS_PER_BULAN)
+      );
+      const denda = Math.round(t.jumlah * 0.02 * bulanTerlambat);
+      const needUpdate = t.status !== "tunggakan" || t.denda !== denda;
+      return { id: t.id, denda, needUpdate };
+    })
+    .filter((t) => t.needUpdate);
 
-        // Hanya update jika status berubah atau nominal denda bertambah seiring bertambahnya bulan
-        if (t.status !== "tunggakan" || t.denda !== denda) {
-          await prisma.tagihan.update({
-            where: { id: t.id },
-            data: { status: "tunggakan", denda },
-          });
-        }
-      })
+  // Update secara bertahap (chunk kecil) agar ramah connection pooler
+  const CHUNK = 10;
+  for (let i = 0; i < targets.length; i += CHUNK) {
+    await Promise.all(
+      targets.slice(i, i + CHUNK).map((t) =>
+        prisma.tagihan.update({
+          where: { id: t.id },
+          data: { status: "tunggakan", denda: t.denda },
+        })
+      )
     );
   }
 
-  return overdue.length;
+  return targets.length;
 }
 
 /** Total tagihan yang harus dibayar (termasuk denda) */

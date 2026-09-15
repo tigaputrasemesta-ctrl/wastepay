@@ -170,7 +170,7 @@ export default function TarifPage() {
   if (loading) {
     return (
       <div className="p-8 max-w-7xl mx-auto flex items-center justify-center min-h-[400px]">
-        <div className="flex items-center gap-3 text-slate-400 font-medium text-sm">
+        <div className="flex items-center gap-3 text-slate-600 font-medium text-sm">
           <div className="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
           <span>Memuat data tarif...</span>
         </div>
@@ -199,7 +199,7 @@ export default function TarifPage() {
             </div>
             <button
               onClick={() => openKat(null)}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl px-3.5 py-2 text-xs font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5"
+              className="bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl px-3.5 py-2 text-xs font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5"
             >
               + Tambah
             </button>
@@ -217,14 +217,14 @@ export default function TarifPage() {
               <tbody className="divide-y divide-slate-100">
                 {kategoris.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-5 py-8 text-center text-slate-400 font-medium text-xs">Belum ada kategori</td>
+                    <td colSpan={4} className="px-5 py-8 text-center text-slate-600 font-medium text-xs">Belum ada kategori</td>
                   </tr>
                 ) : (
                   kategoris.map(k => (
                     <tr key={k.id} className="hover:bg-slate-50/80 transition-colors">
                       <td className="px-5 py-3.5 font-semibold text-slate-900 text-xs">{k.label}</td>
                       <td className="px-5 py-3.5"><span className="font-mono text-xs text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">{k.kategori}</span></td>
-                      <td className="px-5 py-3.5 font-bold text-emerald-600 text-xs">{k.tarif.toLocaleString("id-ID")}</td>
+                      <td className="px-5 py-3.5 font-bold text-emerald-700 text-xs">{k.tarif.toLocaleString("id-ID")}</td>
                       <td className="px-5 py-3.5 text-center">
                         <div className="flex justify-center gap-1.5">
                           <button onClick={() => openKat(k)} className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition-all">Edit</button>
@@ -248,7 +248,7 @@ export default function TarifPage() {
             </div>
             <button
               onClick={() => openPaket(null)}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl px-3.5 py-2 text-xs font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5"
+              className="bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl px-3.5 py-2 text-xs font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5"
             >
               + Tambah
             </button>
@@ -267,7 +267,7 @@ export default function TarifPage() {
               <tbody className="divide-y divide-slate-100">
                 {pakets.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-5 py-8 text-center text-slate-400 font-medium text-xs">Belum ada paket</td>
+                    <td colSpan={5} className="px-5 py-8 text-center text-slate-600 font-medium text-xs">Belum ada paket</td>
                   </tr>
                 ) : (
                   pakets.map(p => (
@@ -275,7 +275,7 @@ export default function TarifPage() {
                       <td className="px-5 py-3.5 font-semibold text-slate-900 text-xs">{p.nama}</td>
                       <td className="px-5 py-3.5"><span className="font-mono text-xs text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">{p.kode || "—"}</span></td>
                       <td className="px-5 py-3.5 text-xs text-slate-500 truncate max-w-[140px]" title={p.deskripsi || ""}>{p.deskripsi || "-"}</td>
-                      <td className="px-5 py-3.5 font-bold text-emerald-600 text-xs">{p.harga != null ? p.harga.toLocaleString("id-ID") : "Variabel"}</td>
+                      <td className="px-5 py-3.5 font-bold text-emerald-700 text-xs">{p.harga != null ? p.harga.toLocaleString("id-ID") : "Variabel"}</td>
                       <td className="px-5 py-3.5 text-center">
                         <div className="flex justify-center gap-1.5">
                           <button onClick={() => openPaket(p)} className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition-all">Edit</button>
@@ -300,7 +300,7 @@ export default function TarifPage() {
                 <h2 className="font-bold text-slate-900 text-base">{katEditing ? "Edit Kategori" : "Tambah Kategori Baru"}</h2>
                 <p className="text-xs text-slate-500">Sesuaikan kode, nama tampilan, dan nominal tarif</p>
               </div>
-              <button onClick={() => setShowKatForm(false)} className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-lg leading-none">&times;</button>
+              <button onClick={() => setShowKatForm(false)} className="text-slate-600 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-lg leading-none">&times;</button>
             </div>
             <form onSubmit={saveKat} className="p-6 space-y-4">
               <div>
@@ -321,7 +321,7 @@ export default function TarifPage() {
               </div>
               <div className="pt-2 flex gap-3">
                 <button type="button" onClick={() => setShowKatForm(false)} className="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl text-sm font-semibold transition-all">Batal</button>
-                <button type="submit" className="w-2/3 bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow transition-all">Simpan Kategori</button>
+                <button type="submit" className="w-2/3 bg-emerald-700 hover:bg-emerald-800 text-white py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow transition-all">Simpan Kategori</button>
               </div>
             </form>
           </div>
@@ -337,7 +337,7 @@ export default function TarifPage() {
                 <h2 className="font-bold text-slate-900 text-base">{paketEditing ? "Edit Paket Khusus" : "Tambah Paket Khusus"}</h2>
                 <p className="text-xs text-slate-500">Sesuaikan paket berlangganan atau program custom</p>
               </div>
-              <button onClick={() => setShowPaketForm(false)} className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-lg leading-none">&times;</button>
+              <button onClick={() => setShowPaketForm(false)} className="text-slate-600 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-lg leading-none">&times;</button>
             </div>
             <form onSubmit={savePaket} className="p-6 space-y-4">
               <div>
@@ -358,7 +358,7 @@ export default function TarifPage() {
               </div>
               <div className="pt-2 flex gap-3">
                 <button type="button" onClick={() => setShowPaketForm(false)} className="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl text-sm font-semibold transition-all">Batal</button>
-                <button type="submit" className="w-2/3 bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow transition-all">Simpan Paket</button>
+                <button type="submit" className="w-2/3 bg-emerald-700 hover:bg-emerald-800 text-white py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow transition-all">Simpan Paket</button>
               </div>
             </form>
           </div>

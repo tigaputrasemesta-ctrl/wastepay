@@ -12,7 +12,7 @@ const MapView = dynamic(() => import("@/components/MapView"), {
   ssr: false,
   loading: () => (
     <div className="h-full w-full flex items-center justify-center bg-slate-50">
-      <p className="font-bold text-xs uppercase tracking-wider text-emerald-600 animate-pulse">Memuat Peta…</p>
+      <p className="font-bold text-xs uppercase tracking-wider text-emerald-700 animate-pulse">Memuat Peta…</p>
     </div>
   ),
 });
@@ -39,7 +39,7 @@ class MapErrorBoundary extends Component<
           <button
             type="button"
             onClick={() => this.setState({ hasError: false })}
-            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-xs font-bold transition shadow-lg"
+            className="px-4 py-2 bg-emerald-700 hover:bg-emerald-500 rounded-xl text-xs font-bold transition shadow-lg"
           >
             Muat Ulang Peta
           </button>
@@ -478,7 +478,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
               type="button"
               onClick={() => setFilterTagihan("semua")}
               className={`px-2 py-0.5 rounded-lg transition-colors ${
-                filterTagihan === "semua" ? "bg-emerald-600 text-white" : "text-slate-400 hover:text-white"
+                filterTagihan === "semua" ? "bg-emerald-700 text-white" : "text-slate-400 hover:text-white"
               }`}
             >
               Semua
@@ -487,7 +487,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
               type="button"
               onClick={() => setFilterTagihan("lunas")}
               className={`px-2 py-0.5 rounded-lg transition-colors ${
-                filterTagihan === "lunas" ? "bg-emerald-600 text-white" : "text-slate-400 hover:text-white"
+                filterTagihan === "lunas" ? "bg-emerald-700 text-white" : "text-slate-400 hover:text-white"
               }`}
             >
               ✓ Lunas
@@ -602,7 +602,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
           {/* Info Header */}
           <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm relative overflow-hidden flex flex-col flex-shrink-0">
             <h1 className="text-xl font-bold tracking-tight text-slate-900 leading-none flex items-center gap-2">
-              <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
               </svg>
               PETA DEPOK
@@ -826,7 +826,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                             onClick={() => setPusatPetugas([t.latitude, t.longitude])}
                             className="w-full flex items-center gap-3 text-left bg-white hover:bg-amber-50/50 border border-amber-200 rounded-xl px-3 py-2 transition group shadow-sm"
                           >
-                            <span className="text-sm text-amber-600 font-bold shrink-0">▲</span>
+                            <span className="text-sm text-amber-700 font-bold shrink-0">▲</span>
                             <div className="min-w-0 flex-1">
                               <span className="block text-xs text-slate-900 font-semibold truncate">{t.nama}</span>
                               {t.alamat && <span className="block text-[10px] text-slate-500 truncate mt-0.5">{t.alamat}</span>}

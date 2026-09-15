@@ -680,7 +680,7 @@ export default function MapView({
           onClick={() => setTileMode("google-streets")}
           className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
             tileMode === "google-streets"
-              ? "bg-emerald-600 text-white shadow-sm"
+              ? "bg-emerald-700 text-white shadow-sm"
               : "text-slate-600 hover:bg-slate-100"
           }`}
           title="Peta jalan Google Maps lengkap nama gang dan pemukiman Depok"
@@ -692,7 +692,7 @@ export default function MapView({
           onClick={() => setTileMode("google-hybrid")}
           className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
             tileMode === "google-hybrid"
-              ? "bg-emerald-600 text-white shadow-sm"
+              ? "bg-emerald-700 text-white shadow-sm"
               : "text-slate-600 hover:bg-slate-100"
           }`}
           title="Foto udara satelit Google Maps berlabel jalan & gang"
@@ -704,7 +704,7 @@ export default function MapView({
           onClick={() => setTileMode("dark")}
           className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
             tileMode === "dark"
-              ? "bg-emerald-600 text-white shadow-sm"
+              ? "bg-emerald-700 text-white shadow-sm"
               : "text-slate-600 hover:bg-slate-100"
           }`}
           title="Peta mode gelap matte"

@@ -24,7 +24,7 @@ export default function Error({
     Boolean(error.digest?.length);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col items-center justify-center p-6 selection:bg-emerald-600 selection:text-white">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col items-center justify-center p-6 selection:bg-emerald-800 selection:text-white">
       <div className="max-w-xl w-full bg-white rounded-3xl border border-slate-200/90 p-8 sm:p-10 shadow-sm">
         {/* Header Badge */}
         <div className="flex items-center gap-3.5 mb-6">
@@ -77,7 +77,7 @@ export default function Error({
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
           <button
             onClick={() => reset()}
-            className="flex-1 py-3 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
+            className="flex-1 py-3 px-5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             <RefreshCw className="w-4 h-4" /> Coba Muat Ulang
           </button>

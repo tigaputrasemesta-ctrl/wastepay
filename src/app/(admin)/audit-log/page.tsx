@@ -112,9 +112,9 @@ export default function AuditLogPage() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {loading ? (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-400 font-medium text-xs">Memuat log audit...</td></tr>
+                <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-600 font-medium text-xs">Memuat log audit...</td></tr>
               ) : logs.length === 0 ? (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-400 font-medium text-xs">Belum ada log aktivitas</td></tr>
+                <tr><td colSpan={6} className="px-4 py-8 text-center text-slate-600 font-medium text-xs">Belum ada log aktivitas</td></tr>
               ) : (
                 logs.map((log) => {
                   const aksi = AKSI_LABEL[log.aksi] ?? { label: log.aksi, cls: "bg-slate-100 border border-slate-200 text-slate-700" };
@@ -133,7 +133,7 @@ export default function AuditLogPage() {
                       <td className="px-4 py-3 text-slate-500 font-mono">{log.entitasId}</td>
                       <td className="px-4 py-3">
                         <details className="text-xs">
-                          <summary className="cursor-pointer text-emerald-600 hover:text-emerald-700 font-medium">Lihat detail</summary>
+                          <summary className="cursor-pointer text-emerald-700 hover:text-emerald-700 font-medium">Lihat detail</summary>
                           <pre className="mt-2 bg-slate-50 text-slate-700 border border-slate-200 rounded-xl p-3 text-[11px] font-mono overflow-x-auto max-h-40">
                             {detail || "—"}
                           </pre>

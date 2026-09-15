@@ -44,7 +44,7 @@ export default function HeroQuickCheck() {
             />
             <button
               type="submit"
-              className="absolute right-1.5 top-1.5 bottom-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 rounded-xl transition-all shadow-sm active:scale-95"
+              className="absolute right-1.5 top-1.5 bottom-1.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-4 rounded-xl transition-all shadow-sm active:scale-95"
             >
               Cek Tagihan
             </button>

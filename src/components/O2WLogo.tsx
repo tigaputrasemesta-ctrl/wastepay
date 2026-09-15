@@ -25,11 +25,11 @@ export default function O2WLogo({
 
   const logoContent = (
     <div className={`inline-flex items-center gap-2 select-none ${className}`}>
-      <span className={`bg-emerald-600 text-white font-bold tracking-wider rounded-lg ${badgeSize} shadow-sm`}>
+      <span className={`bg-emerald-700 text-white font-bold tracking-wider rounded-lg ${badgeSize} shadow-sm`}>
         UPS
       </span>
       <span className={`font-extrabold tracking-tight text-slate-900 ${textSize}`}>
-        HERU<span className="text-emerald-600">.</span>
+        HERU<span className="text-emerald-700">.</span>
       </span>
     </div>
   );

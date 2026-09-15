@@ -168,6 +168,11 @@ model Pelanggan {
   komplain       Komplain[]
   liburSementara LiburSementara[]
   notifikasi     Notifikasi[]
+
+  @@index([deletedAt])
+  @@index([status])
+  @@index([kelurahanId])
+  @@index([wilayahId])
 }
 
 model Petugas {
@@ -321,6 +326,8 @@ model Tagihan {
   @@unique([pelangganId, bulan, tahun])
   @@index([bulan, tahun, status])
   @@index([status])
+  @@index([deletedAt])
+  @@index([pelangganId, deletedAt])
 }
 
 model Pembayaran {
@@ -378,6 +385,7 @@ model Pengangkutan {
   @@index([pelangganId])
   @@index([petugasId])
   @@index([zonaId])
+  @@index([deletedAt])
 }
 
 model Komplain {

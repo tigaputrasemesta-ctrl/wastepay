@@ -95,7 +95,7 @@ export default function NotifikasiPage() {
         </div>
         <button
           onClick={() => { setShowForm(true); setResult(null); }}
-          className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-2"
+          className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -154,9 +154,9 @@ export default function NotifikasiPage() {
         </div>
         <div className="divide-y divide-slate-100">
           {loading ? (
-            <div className="px-4 py-8 text-center text-slate-400 font-medium">Memuat...</div>
+            <div className="px-4 py-8 text-center text-slate-600 font-medium">Memuat...</div>
           ) : riwayat.length === 0 ? (
-            <div className="px-4 py-8 text-center text-slate-400 font-medium">Belum ada notifikasi</div>
+            <div className="px-4 py-8 text-center text-slate-600 font-medium">Belum ada notifikasi</div>
           ) : (
             riwayat.map((n) => (
               <div key={n.id} className="px-5 py-3.5 hover:bg-slate-50/70 transition">
@@ -173,7 +173,7 @@ export default function NotifikasiPage() {
                       </span>
                     </div>
                     <p className="text-xs text-slate-600 mt-1">{n.pesan.slice(0, 100)}...</p>
-                    <p className="text-xs text-slate-400 mt-1">
+                    <p className="text-xs text-slate-600 mt-1">
                       Ke: {n.pelanggan?.nama || n.penerima} • {formatDate(n.createdAt)}
                     </p>
                   </div>
@@ -197,7 +197,7 @@ export default function NotifikasiPage() {
           <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl p-0 overflow-hidden w-full max-w-lg">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
               <h2 className="font-semibold text-slate-900 text-base">Kirim Notifikasi WhatsApp</h2>
-              <button onClick={() => { setShowForm(false); setResult(null); }} className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors">
+              <button onClick={() => { setShowForm(false); setResult(null); }} className="p-1.5 text-slate-600 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -240,7 +240,7 @@ export default function NotifikasiPage() {
                     type="checkbox"
                     checked={form.semuaPelanggan}
                     onChange={(e) => setForm({ ...form, semuaPelanggan: e.target.checked, pelangganId: "" })}
-                    className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300"
+                    className="w-4 h-4 rounded text-emerald-700 focus:ring-emerald-500 border-slate-300"
                   />
                   <span className="text-sm text-slate-700 font-medium">Kirim ke semua pelanggan aktif</span>
                 </label>
@@ -280,7 +280,7 @@ export default function NotifikasiPage() {
                           href={link}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="block text-xs text-emerald-600 hover:text-emerald-700 hover:underline truncate py-0.5"
+                          className="block text-xs text-emerald-700 hover:text-emerald-700 hover:underline truncate py-0.5"
                         >
                           {link}
                         </a>
@@ -301,7 +301,7 @@ export default function NotifikasiPage() {
                 <button
                   type="submit"
                   disabled={sending}
-                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all disabled:opacity-50"
+                  className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all disabled:opacity-50"
                 >
                   {sending ? "Mengirim..." : "Kirim via WA"}
                 </button>

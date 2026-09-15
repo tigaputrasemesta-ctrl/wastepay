@@ -122,7 +122,7 @@ export default async function TagihanCetakPage({
                     <div className="tc-logo-box">UPS</div>
                     <div className="tc-company">
                       <div className="tc-brand-title">
-                        HERU<span className="text-emerald-500">.</span>
+                        HERU<span className="text-emerald-700">.</span>
                         <span className="tc-brand-unit">PENGELOLAAN SAMPAH</span>
                       </div>
                       <p className="tc-company-addr">{perusahaan.alamat} · WA: {perusahaan.whatsapp}</p>

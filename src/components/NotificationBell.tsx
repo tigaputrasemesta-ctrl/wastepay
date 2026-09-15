@@ -177,7 +177,7 @@ export default function NotificationBell() {
               className="p-2 bg-white rounded-xl border border-slate-200/80 flex flex-col items-center justify-center hover:border-amber-300 hover:bg-amber-50/50 shadow-sm transition-all"
             >
               <span className="text-slate-500 text-[10px] font-medium">BAYAR PENDING</span>
-              <span className="text-base font-bold text-amber-600 mt-0.5">{counts.pembayaran}</span>
+              <span className="text-base font-bold text-amber-700 mt-0.5">{counts.pembayaran}</span>
             </Link>
             <Link
               href="/pelanggan"
@@ -201,12 +201,12 @@ export default function NotificationBell() {
           <div className="overflow-y-auto flex-1 divide-y divide-slate-100">
             {loading ? (
               <div className="p-8 text-center text-xs font-medium text-slate-500 flex flex-col items-center gap-2">
-                <RefreshCw className="w-5 h-5 animate-spin text-emerald-600" />
+                <RefreshCw className="w-5 h-5 animate-spin text-emerald-700" />
                 Memuat notifikasi...
               </div>
             ) : items.length === 0 ? (
               <div className="p-8 text-center flex flex-col items-center gap-3">
-                <div className="w-11 h-11 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600">
+                <div className="w-11 h-11 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
                   <CheckCircle2 className="w-6 h-6" />
                 </div>
                 <div>
@@ -257,7 +257,7 @@ export default function NotificationBell() {
             <Link
               href="/notifikasi"
               onClick={() => setIsOpen(false)}
-              className="hover:text-emerald-700 flex items-center gap-1.5 text-emerald-600 font-semibold transition-colors"
+              className="hover:text-emerald-700 flex items-center gap-1.5 text-emerald-700 font-semibold transition-colors"
             >
               📢 Buka Pusat Pesan &amp; Blast WA →
             </Link>

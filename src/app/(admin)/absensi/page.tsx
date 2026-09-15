@@ -133,13 +133,13 @@ export default function AbsensiPage() {
             disabled={hasMasuk || actionLoading}
             className={`p-6 rounded-2xl border font-bold text-base flex flex-col items-center justify-center gap-2 transition-all ${
               hasMasuk
-                ? "bg-slate-50 border-slate-200 text-slate-400 cursor-not-allowed"
-                : "bg-emerald-600 hover:bg-emerald-500 text-white border-transparent shadow-sm hover:shadow active:scale-[0.98]"
+                ? "bg-slate-50 border-slate-200 text-slate-600 cursor-not-allowed"
+                : "bg-emerald-700 hover:bg-emerald-800 text-white border-transparent shadow-sm hover:shadow active:scale-[0.98]"
             }`}
           >
             <span className="text-xl">▶</span>
             <span>Mulai Kerja (Clock In)</span>
-            {hasMasuk && <span className="text-xs text-emerald-600 font-semibold mt-1">✅ Sudah Tercatat Masuk</span>}
+            {hasMasuk && <span className="text-xs text-emerald-700 font-semibold mt-1">✅ Sudah Tercatat Masuk</span>}
           </button>
           
           <button
@@ -147,7 +147,7 @@ export default function AbsensiPage() {
             disabled={!hasMasuk || hasSelesai || actionLoading}
             className={`p-6 rounded-2xl border font-bold text-base flex flex-col items-center justify-center gap-2 transition-all ${
               !hasMasuk || hasSelesai
-                ? "bg-slate-50 border-slate-200 text-slate-400 cursor-not-allowed"
+                ? "bg-slate-50 border-slate-200 text-slate-600 cursor-not-allowed"
                 : "bg-rose-600 hover:bg-rose-500 text-white border-transparent shadow-sm hover:shadow active:scale-[0.98]"
             }`}
           >
@@ -173,7 +173,7 @@ export default function AbsensiPage() {
         </div>
         
         {loading ? (
-          <div className="p-8 text-center text-slate-400 font-medium text-xs">Memuat data absensi...</div>
+          <div className="p-8 text-center text-slate-600 font-medium text-xs">Memuat data absensi...</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
@@ -188,7 +188,7 @@ export default function AbsensiPage() {
               <tbody className="divide-y divide-slate-100">
                 {data.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-6 py-8 text-center text-xs text-slate-400 font-medium">
+                    <td colSpan={4} className="px-6 py-8 text-center text-xs text-slate-600 font-medium">
                       Belum ada data absensi
                     </td>
                   </tr>
@@ -202,7 +202,7 @@ export default function AbsensiPage() {
                       <td className="px-6 py-3.5 text-slate-600 font-medium">
                         {row.waktuSelesai 
                           ? format(new Date(row.waktuSelesai), "dd MMM yyyy, HH:mm", { locale: id })
-                          : <span className="text-slate-400 italic">Sedang bertugas</span>}
+                          : <span className="text-slate-600 italic">Sedang bertugas</span>}
                       </td>
                       <td className="px-6 py-3.5">
                         <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold inline-block ${

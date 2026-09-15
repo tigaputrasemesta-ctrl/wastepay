@@ -391,7 +391,7 @@ export default function MapAngkut({
               onClick={() => setTileMode("google-streets")}
               className={`px-2 py-1 rounded-lg transition-all ${
                 tileMode === "google-streets"
-                  ? "bg-emerald-500 text-white"
+                  ? "bg-emerald-500 text-slate-950"
                   : "text-slate-400 hover:text-white"
               }`}
             >
@@ -402,7 +402,7 @@ export default function MapAngkut({
               onClick={() => setTileMode("google-hybrid")}
               className={`px-2 py-1 rounded-lg transition-all ${
                 tileMode === "google-hybrid"
-                  ? "bg-emerald-500 text-white"
+                  ? "bg-emerald-500 text-slate-950"
                   : "text-slate-400 hover:text-white"
               }`}
             >
@@ -413,7 +413,7 @@ export default function MapAngkut({
               onClick={() => setTileMode("dark")}
               className={`px-2 py-1 rounded-lg transition-all ${
                 tileMode === "dark"
-                  ? "bg-emerald-500 text-white"
+                  ? "bg-emerald-500 text-slate-950"
                   : "text-slate-400 hover:text-white"
               }`}
             >
@@ -782,7 +782,7 @@ export default function MapAngkut({
                           setActionLoading(false);
                         }
                       }}
-                      className="py-2.5 px-2 rounded-2xl bg-gradient-to-b from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 active:scale-95 text-white font-black text-xs flex items-center justify-center gap-1 transition-all shadow-md shadow-emerald-600/30"
+                      className="py-2.5 px-2 rounded-2xl bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white font-black text-xs flex items-center justify-center gap-1 transition-all shadow-md shadow-emerald-600/30"
                     >
                       <span>✓</span>
                       <span>Pickup</span>

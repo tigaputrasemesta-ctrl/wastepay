@@ -191,7 +191,7 @@ export default function BayarPage() {
               <button
                 type="submit"
                 disabled={mencari}
-                className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl text-sm shadow-sm active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                className="px-6 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-2xl text-sm shadow-sm active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {mencari ? (
                   <>
@@ -294,7 +294,7 @@ export default function BayarPage() {
                         {t.noInvoice && (
                           <Link
                             href={`/bayar-tagihan?invoice=${encodeURIComponent(t.noInvoice)}`}
-                            className="flex-1 sm:flex-none px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center justify-center gap-1.5"
+                            className="flex-1 sm:flex-none px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-sm active:scale-95 transition-all flex items-center justify-center gap-1.5"
                           >
                             <span>⚡</span>
                             <span>Bayar Instan</span>
@@ -392,7 +392,7 @@ export default function BayarPage() {
           <button
             type="submit"
             disabled={mengirim}
-            className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl text-xs font-bold shadow-md active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white rounded-2xl text-xs font-bold shadow-md active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {mengirim ? (
               <>

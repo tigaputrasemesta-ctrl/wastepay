@@ -68,7 +68,7 @@ export default function TimelineSection() {
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
             Dari Gerobak Kayu <br />
-            <span className="text-emerald-600">Menuju Era Geotag & GPS.</span>
+            <span className="text-emerald-700">Menuju Era Geotag & GPS.</span>
           </h2>
           <p className="text-base md:text-lg font-normal text-slate-600 max-w-2xl mt-3 leading-relaxed">
             12 tahun konsisten merawat jalanan Kota Depok jauh sebelum teknologi pengelolaan sampah menjadi tren. Ini perjalanan nyata transformasi layanan kami.
@@ -86,11 +86,17 @@ export default function TimelineSection() {
                 onClick={() => setActiveIdx(idx)}
                 className={`flex-1 py-3 px-4 text-center font-bold transition-all duration-150 rounded-xl ${
                   isActive
-                    ? "bg-emerald-600 text-white shadow-sm"
+                    ? "bg-emerald-700 text-white shadow-sm"
                     : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                 }`}
               >
-                <span className="text-[10px] block tracking-widest uppercase opacity-80">{m.icon} {m.year}</span>
+                <span
+                  className={`text-[10px] block tracking-widest uppercase ${
+                    isActive ? "text-emerald-100" : "text-slate-500"
+                  }`}
+                >
+                  {m.icon} {m.year}
+                </span>
                 <span className="text-sm font-extrabold truncate block mt-0.5">{m.badge}</span>
               </button>
             );
@@ -143,9 +149,9 @@ export default function TimelineSection() {
                     </span>
                     <span className="text-xl">{m.icon}</span>
                   </div>
-                  <h4 className="text-xs font-bold text-slate-900 leading-tight mb-1.5">
+                  <h3 className="text-xs font-bold text-slate-900 leading-tight mb-1.5">
                     {m.title}
-                  </h4>
+                  </h3>
                   <p className="text-[11px] text-slate-500 leading-normal line-clamp-3">
                     {m.desc}
                   </p>

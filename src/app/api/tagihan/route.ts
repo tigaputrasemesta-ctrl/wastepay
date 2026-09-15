@@ -115,41 +115,80 @@ export async function GET(request: Request) {
     }
   }
 
-  const tagihan = await prisma.tagihan.findMany({
-    where,
-    include: {
-      pelanggan: {
-        select: {
-          id: true,
-          nama: true,
-          alamat: true,
-          noTelepon: true,
-          kodePelanggan: true,
-          kategori: true,
-          customTarif: true,
-          rtRw: true,
-          createdAt: true,
-          kelurahanId: true,
-          kelurahan: { select: { id: true, nama: true, kecamatan: true } },
-          wilayahId: true,
-          wilayah: {
-            select: {
-              id: true,
-              nama: true,
-              rt: true,
-              rw: true,
-              zonaId: true,
-              zona: { select: { id: true, nama: true, warna: true } },
+  // Parameter paginasi opsional (backward compatible jika tidak disediakan)
+  const pageParam = searchParams.get("page");
+  const limitParam = searchParams.get("limit");
+  const isPaginated = Boolean(pageParam || limitParam);
+
+  let skip: number | undefined;
+  let take: number | undefined;
+  let page = 1;
+  let limit = 50;
+
+  if (isPaginated) {
+    page = Math.max(1, parseInt(pageParam || "1") || 1);
+    limit = Math.min(200, Math.max(1, parseInt(limitParam || "50") || 50));
+    skip = (page - 1) * limit;
+    take = limit;
+  }
+
+  const [tagihan, total] = await Promise.all([
+    prisma.tagihan.findMany({
+      where,
+      skip,
+      take,
+      include: {
+        pelanggan: {
+          select: {
+            id: true,
+            nama: true,
+            alamat: true,
+            noTelepon: true,
+            kodePelanggan: true,
+            kategori: true,
+            customTarif: true,
+            rtRw: true,
+            createdAt: true,
+            kelurahanId: true,
+            kelurahan: { select: { id: true, nama: true, kecamatan: true } },
+            wilayahId: true,
+            wilayah: {
+              select: {
+                id: true,
+                nama: true,
+                rt: true,
+                rw: true,
+                zonaId: true,
+                zona: { select: { id: true, nama: true, warna: true } },
+              },
             },
           },
         },
+        pembayaran: true,
       },
-      pembayaran: true,
-    },
-    orderBy: [{ tahun: "desc" }, { bulan: "desc" }, { pelanggan: { nama: "asc" } }],
-  });
+      orderBy: [{ tahun: "desc" }, { bulan: "desc" }, { pelanggan: { nama: "asc" } }],
+    }),
+    isPaginated ? prisma.tagihan.count({ where }) : Promise.resolve(0),
+  ]);
 
-  return NextResponse.json(tagihan);
+  if (isPaginated) {
+    return NextResponse.json(
+      {
+        data: tagihan,
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+      {
+        headers: { "X-Total-Count": String(total) },
+      }
+    );
+  }
+
+  return NextResponse.json(tagihan, {
+    headers: { "X-Total-Count": String(tagihan.length) },
+  });
 }
 
 export async function POST(request: Request) {

@@ -193,7 +193,7 @@ export default async function DashboardPage() {
       label: "Tagihan Bulan Ini",
       value: formatRupiah(tagihanBulanIni),
       sub: `${stats.tagihanBulanIni} tagihan tertunda`,
-      iconBg: "bg-amber-50 text-amber-600 border-amber-100",
+      iconBg: "bg-amber-50 text-amber-700 border-amber-100",
       badgeBg: "bg-amber-50 text-amber-700",
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -206,7 +206,7 @@ export default async function DashboardPage() {
       label: "Terkumpul Bulan Ini",
       value: formatRupiah(terkumpul),
       sub: `${persenTerkumpul}% dari target tagihan`,
-      iconBg: "bg-emerald-50 text-emerald-600 border-emerald-100",
+      iconBg: "bg-emerald-50 text-emerald-700 border-emerald-100",
       badgeBg: "bg-emerald-50 text-emerald-700",
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -269,7 +269,7 @@ export default async function DashboardPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 mb-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-700 animate-pulse" />
             Live Operation & Dashboard Dispatch
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
@@ -283,7 +283,7 @@ export default async function DashboardPage() {
         <div className="flex items-center gap-2 self-start sm:self-center">
           <Link
             href="/tagihan"
-            className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5"
+            className="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5"
           >
             + Kelola Tagihan
           </Link>
@@ -338,8 +338,8 @@ export default async function DashboardPage() {
             </p>
           </div>
           <div className="flex items-baseline gap-1.5">
-            <span className="text-2xl font-extrabold text-emerald-600 tabular-nums">{persenTerkumpul}%</span>
-            <span className="text-xs font-semibold text-slate-400">terkumpul</span>
+            <span className="text-2xl font-extrabold text-emerald-700 tabular-nums">{persenTerkumpul}%</span>
+            <span className="text-xs font-semibold text-slate-600">terkumpul</span>
           </div>
         </div>
 
@@ -354,21 +354,21 @@ export default async function DashboardPage() {
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
             <div>
-              <span className="text-slate-400 block text-[11px] font-medium">Dana Terkumpul</span>
+              <span className="text-slate-600 block text-[11px] font-medium">Dana Terkumpul</span>
               <span className="font-bold text-slate-800 text-sm">{formatRupiah(terkumpul)}</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
             <div>
-              <span className="text-slate-400 block text-[11px] font-medium">Sisa Belum Terbayar</span>
+              <span className="text-slate-600 block text-[11px] font-medium">Sisa Belum Terbayar</span>
               <span className="font-bold text-slate-800 text-sm">{formatRupiah(sisa)}</span>
             </div>
           </div>
           <div className="flex items-center gap-2 sm:justify-end">
             <span className="w-2.5 h-2.5 rounded-full bg-slate-400" />
             <div>
-              <span className="text-slate-400 block text-[11px] font-medium">Target Tagihan Terbit</span>
+              <span className="text-slate-600 block text-[11px] font-medium">Target Tagihan Terbit</span>
               <span className="font-bold text-slate-800 text-sm">{formatRupiah(tagihanBulanIni)}</span>
             </div>
           </div>
@@ -432,7 +432,7 @@ export default async function DashboardPage() {
             <span className="flex items-center gap-2">
               <span className="w-3 h-3 rounded bg-rose-400" /> Biaya Operasional
             </span>
-            <span className="ml-auto text-slate-400 text-[11px]">
+            <span className="ml-auto text-slate-600 text-[11px]">
               Skala Max: {formatRupiah(maxTren)}
             </span>
           </div>
@@ -452,8 +452,8 @@ export default async function DashboardPage() {
             {topTunggakan.length === 0 ? (
               <div className="text-center py-10">
                 <span className="text-2xl mb-1 block">🎉</span>
-                <p className="text-xs font-semibold text-emerald-600">Nihil Tunggakan Kritis</p>
-                <p className="text-[11px] text-slate-400 mt-0.5">Semua pelanggan tertib bayar tepat waktu</p>
+                <p className="text-xs font-semibold text-emerald-700">Nihil Tunggakan Kritis</p>
+                <p className="text-[11px] text-slate-600 mt-0.5">Semua pelanggan tertib bayar tepat waktu</p>
               </div>
             ) : (
               topTunggakan.map((t, i) => (
@@ -472,7 +472,7 @@ export default async function DashboardPage() {
                   </div>
                   <div className="text-right shrink-0">
                     <p className="text-xs font-bold text-rose-600">{formatRupiah(t.total)}</p>
-                    <span className="text-[10px] text-slate-400 block font-medium">
+                    <span className="text-[10px] text-slate-600 block font-medium">
                       {t.jumlahTagihan} bulan
                     </span>
                   </div>
@@ -538,7 +538,7 @@ export default async function DashboardPage() {
           <div className="mt-5 pt-4 border-t border-slate-100">
             <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-200">
               <span className="text-xs font-semibold text-slate-700">Piutang Retribusi Belum Masuk</span>
-              <span className={`text-sm font-bold tabular-nums ${sisa > 0 ? "text-rose-600" : "text-emerald-600"}`}>
+              <span className={`text-sm font-bold tabular-nums ${sisa > 0 ? "text-rose-600" : "text-emerald-700"}`}>
                 {formatRupiah(sisa)}
               </span>
             </div>

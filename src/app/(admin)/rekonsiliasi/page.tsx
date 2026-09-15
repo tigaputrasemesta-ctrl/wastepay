@@ -112,7 +112,7 @@ export default function RekonsiliasiPage() {
             </div>
           )}
 
-          <button type="submit" className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all">
+          <button type="submit" className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all">
             Buat Rekonsiliasi
           </button>
         </form>
@@ -139,9 +139,9 @@ export default function RekonsiliasiPage() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {loading ? (
-                <tr><td colSpan={8} className="px-4 py-8 text-center text-slate-400">Memuat...</td></tr>
+                <tr><td colSpan={8} className="px-4 py-8 text-center text-slate-600">Memuat...</td></tr>
               ) : data.length === 0 ? (
-                <tr><td colSpan={8} className="px-4 py-8 text-center text-slate-400">Belum ada rekonsiliasi</td></tr>
+                <tr><td colSpan={8} className="px-4 py-8 text-center text-slate-600">Belum ada rekonsiliasi</td></tr>
               ) : (
                 data.map((r) => (
                   <tr key={r.id} className="hover:bg-slate-50/60 transition">
@@ -150,7 +150,7 @@ export default function RekonsiliasiPage() {
                     <td className="px-4 py-3 text-right font-medium text-rose-600">{formatRupiah(r.totalPengeluaran)}</td>
                     <td className="px-4 py-3 text-right text-slate-600">{formatRupiah(r.totalTunaiSistem)}</td>
                     <td className="px-4 py-3 text-right text-slate-600">{r.totalTunaiFisik !== null ? formatRupiah(r.totalTunaiFisik) : "-"}</td>
-                    <td className={`px-4 py-3 text-right font-semibold ${r.selisih !== null && r.selisih !== 0 ? "text-rose-600" : "text-emerald-600"}`}>
+                    <td className={`px-4 py-3 text-right font-semibold ${r.selisih !== null && r.selisih !== 0 ? "text-rose-600" : "text-emerald-700"}`}>
                       {r.selisih !== null ? formatRupiah(r.selisih) : "-"}
                     </td>
                     <td className="px-4 py-3 text-slate-500 text-xs">{r.user?.nama || "-"}</td>
@@ -158,7 +158,7 @@ export default function RekonsiliasiPage() {
                       <Link
                         href={`/rekonsiliasi-cetak/${r.id}`}
                         target="_blank"
-                        className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 hover:underline"
+                        className="text-xs font-semibold text-emerald-700 hover:text-emerald-700 hover:underline"
                       >
                         Cetak BA
                       </Link>

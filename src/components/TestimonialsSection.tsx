@@ -65,7 +65,7 @@ export default function TestimonialsSection() {
               Suara Warga & Pelanggan
             </span>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
-              Testimoni Warga <span className="text-emerald-600">Kota Depok.</span>
+              Testimoni Warga <span className="text-emerald-700">Kota Depok.</span>
             </h2>
             <p className="text-slate-600 text-base md:text-lg font-normal max-w-xl mt-2">
               Cerita nyata dari warga dan pelaku usaha di Depok yang telah menikmati kepastian jadwal penjemputan sampah harian.
@@ -111,9 +111,9 @@ export default function TestimonialsSection() {
                     {t.initials}
                   </div>
                   <div>
-                    <h4 className="font-extrabold text-sm text-slate-900 leading-tight">
+                    <h3 className="font-extrabold text-sm text-slate-900 leading-tight">
                       {t.name}
-                    </h4>
+                    </h3>
                     <p className="text-xs font-medium text-slate-500 mt-0.5">
                       {t.role}
                     </p>

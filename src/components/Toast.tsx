@@ -52,9 +52,9 @@ const BG_CLASSES: Record<ToastType, string> = {
 };
 
 const ICON_COLOR: Record<ToastType, string> = {
-  success: "text-emerald-600",
+  success: "text-emerald-700",
   error: "text-rose-600",
-  warning: "text-amber-600",
+  warning: "text-amber-700",
   info: "text-sky-600",
 };
 

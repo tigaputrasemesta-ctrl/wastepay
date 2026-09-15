@@ -130,7 +130,7 @@ export default function DriverTaskHUD({
                     }}
                     className={`w-full text-left px-2.5 py-1.5 rounded-xl text-xs font-bold transition-colors flex items-center justify-between ${
                       muatanTruk === p
-                        ? "bg-emerald-600 text-white"
+                        ? "bg-emerald-700 text-white"
                         : "hover:bg-slate-800 text-slate-300"
                     }`}
                   >

@@ -172,7 +172,7 @@ export default function KlaimPage() {
 
             <button
               type="submit" disabled={submitting}
-              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all disabled:opacity-50"
+              className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-3 rounded-xl shadow-sm hover:shadow active:scale-[0.98] transition-all disabled:opacity-50"
             >
               {submitting ? "Mengirim pengajuan..." : "Kirim Pengajuan Sekarang"}
             </button>
@@ -193,7 +193,7 @@ export default function KlaimPage() {
         </div>
         
         {loading ? (
-          <div className="p-8 text-center text-slate-400 font-medium text-xs">Memuat data klaim...</div>
+          <div className="p-8 text-center text-slate-600 font-medium text-xs">Memuat data klaim...</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
@@ -212,7 +212,7 @@ export default function KlaimPage() {
               <tbody className="divide-y divide-slate-100">
                 {data.length === 0 ? (
                   <tr>
-                    <td colSpan={isAdmin ? 8 : 6} className="px-5 py-8 text-center text-xs text-slate-400 font-medium">
+                    <td colSpan={isAdmin ? 8 : 6} className="px-5 py-8 text-center text-xs text-slate-600 font-medium">
                       Belum ada data klaim
                     </td>
                   </tr>
@@ -250,7 +250,7 @@ export default function KlaimPage() {
                               <button 
                                 onClick={() => handleProses(row.id, "disetujui")}
                                 disabled={processingId === row.id}
-                                className="px-2.5 py-1 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-500 shadow-sm transition-all text-xs"
+                                className="px-2.5 py-1 bg-emerald-700 text-white font-semibold rounded-lg hover:bg-emerald-800 shadow-sm transition-all text-xs"
                               >
                                 Terima
                               </button>
@@ -263,7 +263,7 @@ export default function KlaimPage() {
                               </button>
                             </div>
                           ) : (
-                            <span className="text-xs text-slate-400 font-medium">
+                            <span className="text-xs text-slate-600 font-medium">
                               {row.diperiksaBy ? `Oleh: ${row.diperiksaBy.nama}` : "-"}
                             </span>
                           )}
@@ -273,7 +273,7 @@ export default function KlaimPage() {
                         <Link
                           href={`/klaim-cetak/${row.id}`}
                           target="_blank"
-                          className="text-emerald-600 hover:text-emerald-700 font-semibold text-xs transition-colors"
+                          className="text-emerald-700 hover:text-emerald-700 font-semibold text-xs transition-colors"
                         >
                           Cetak ↗
                         </Link>
