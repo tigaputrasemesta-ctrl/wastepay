@@ -19,7 +19,37 @@ export async function GET(request: Request) {
     orderBy: { nama: "asc" },
   });
 
-  if (!includeUser) return NextResponse.json(petugas);
+  // Agregasi jumlah referral dari pelanggan
+  const referralCounts = await prisma.pelanggan.groupBy({
+    by: ["referal"],
+    where: {
+      referal: { not: null },
+      deletedAt: null,
+    },
+    _count: { id: true },
+  });
+
+  const refMap = new Map<string, number>();
+  for (const r of referralCounts) {
+    if (r.referal) {
+      refMap.set(r.referal.trim().toLowerCase(), r._count.id);
+    }
+  }
+
+  const petugasWithReferral = petugas.map((p) => {
+    const countNama = refMap.get(p.nama.trim().toLowerCase()) || 0;
+    const countUser = p.user?.nama ? (refMap.get(p.user.nama.trim().toLowerCase()) || 0) : 0;
+    const referralCount = Math.max(countNama, countUser);
+    return {
+      ...p,
+      _count: {
+        ...p._count,
+        referral: referralCount,
+      },
+    };
+  });
+
+  if (!includeUser) return NextResponse.json(petugasWithReferral);
 
   // Akun login ber-role petugas yang belum ter-link ke profil lapangan mana pun
   const linked = new Set(petugas.map((p) => p.userId).filter((x): x is number => x != null));
@@ -29,7 +59,7 @@ export async function GET(request: Request) {
     orderBy: { nama: "asc" },
   });
   const tersedia = akun.filter((u) => !linked.has(u.id));
-  return NextResponse.json({ petugas, akunTersedia: tersedia });
+  return NextResponse.json({ petugas: petugasWithReferral, akunTersedia: tersedia });
 }
 
 export async function POST(request: Request) {

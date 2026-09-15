@@ -17,7 +17,7 @@ type Petugas = {
   wilayah?: Wilayah | null;
   kelurahan?: Kelurahan | null;
   user?: { id: number; nama: string; email: string } | null;
-  _count: { rute: number; pengangkutan: number };
+  _count: { rute: number; pengangkutan: number; referral?: number };
   createdAt: string;
 };
 
@@ -52,6 +52,7 @@ export default function PetugasPage() {
   const [editing, setEditing] = useState<Petugas | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Petugas | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [copiedId, setCopiedId] = useState<number | null>(null);
   const [form, setForm] = useState({
     nama: "",
     noTelepon: "",
@@ -61,6 +62,38 @@ export default function PetugasPage() {
     jabatan: [] as string[],
     userId: "",
   });
+
+  function copyReferralLink(p: Petugas) {
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://o2whero.com";
+    const url = `${origin}/daftar?ref=${encodeURIComponent(p.nama)}`;
+    const done = () => {
+      setCopiedId(p.id);
+      setTimeout(() => setCopiedId(null), 2000);
+      showToast(`Link referral ${p.nama} berhasil disalin!`);
+    };
+
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(url).then(done).catch(() => {
+        fallbackCopy(url, done);
+      });
+    } else {
+      fallbackCopy(url, done);
+    }
+  }
+
+  function fallbackCopy(url: string, cb: () => void) {
+    try {
+      const el = document.createElement("textarea");
+      el.value = url;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand("copy");
+      document.body.removeChild(el);
+      cb();
+    } catch {
+      showToast(`Gagal menyalin link: ${url}`, "error");
+    }
+  }
 
   const fetchData = useCallback(async () => {
     try {
@@ -160,17 +193,27 @@ export default function PetugasPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Petugas</h1>
-          <p className="text-sm text-slate-500 font-medium">Kelola petugas pengangkut sampah</p>
+          <p className="text-sm text-slate-500 font-medium">Kelola petugas pengangkut sampah & link referral</p>
         </div>
-        <button
-          onClick={openCreate}
-          className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-2"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Tambah Petugas
-        </button>
+        <div className="flex items-center gap-2">
+          <a
+            href="/laporan"
+            className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-emerald-200 text-emerald-700 bg-emerald-50/70 hover:bg-emerald-100/70 text-xs font-semibold transition"
+            title="Lihat rekapitulasi performa referral semua petugas"
+          >
+            <span>📊</span>
+            <span>Rekap Referral</span>
+          </a>
+          <button
+            onClick={openCreate}
+            className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Tambah Petugas
+          </button>
+        </div>
       </div>
 
       {/* Desktop Table */}
@@ -183,6 +226,7 @@ export default function PetugasPage() {
                 <th className="text-left px-4 py-3 font-semibold text-slate-600">No. Telepon</th>
                 <th className="text-left px-4 py-3 font-semibold text-slate-600">Kelurahan</th>
                 <th className="text-left px-4 py-3 font-semibold text-slate-600">Jabatan</th>
+                <th className="text-left px-4 py-3 font-semibold text-slate-600">Kode Reff</th>
                 <th className="text-center px-4 py-3 font-semibold text-slate-600">Status</th>
                 <th className="text-center px-4 py-3 font-semibold text-slate-600">Rute</th>
                 <th className="text-center px-4 py-3 font-semibold text-slate-600">Angkut</th>
@@ -191,9 +235,9 @@ export default function PetugasPage() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {loading ? (
-                <tr><td colSpan={8} className="px-4 py-8 text-center text-slate-600">Memuat...</td></tr>
+                <tr><td colSpan={9} className="px-4 py-8 text-center text-slate-600">Memuat...</td></tr>
               ) : petugas.length === 0 ? (
-                <tr><td colSpan={8} className="px-4 py-8 text-center text-slate-600">Belum ada petugas</td></tr>
+                <tr><td colSpan={9} className="px-4 py-8 text-center text-slate-600">Belum ada petugas</td></tr>
               ) : (
                 petugas.map((p) => (
                   <tr key={p.id} className="hover:bg-slate-50/60 transition">
@@ -226,6 +270,45 @@ export default function PetugasPage() {
                     </td>
                     <td className="px-4 py-3">
                       {badgeJabatan(p.jabatan) ?? <span className="text-xs text-slate-600">—</span>}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md font-mono text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200/80 max-w-[130px] truncate" title={p.nama}>
+                            {p.nama}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => copyReferralLink(p)}
+                            className={`p-1 rounded-md transition flex items-center gap-1 ${
+                              copiedId === p.id
+                                ? "bg-emerald-600 text-white"
+                                : "text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 border border-transparent hover:border-emerald-200"
+                            }`}
+                            title={`Salin link pendaftaran: /daftar?ref=${encodeURIComponent(p.nama)}`}
+                          >
+                            {copiedId === p.id ? (
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                            ) : (
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                              </svg>
+                            )}
+                          </button>
+                        </div>
+                        <div>
+                          <a
+                            href={`/pelanggan?referal=${encodeURIComponent(p.nama)}`}
+                            className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700 hover:text-emerald-800 hover:underline"
+                            title="Klik untuk melihat pelanggan dari referral ini"
+                          >
+                            <span>🤝</span>
+                            <span>{p._count?.referral ?? 0} warga</span>
+                          </a>
+                        </div>
+                      </div>
                     </td>
                     <td className="px-4 py-3 text-center">
                       <button
@@ -301,6 +384,45 @@ export default function PetugasPage() {
               <span>•</span>
               <span>{p._count.pengangkutan} angkut</span>
             </div>
+
+            {/* Referral Info in Mobile */}
+            <div className="mt-2.5 pt-2.5 border-t border-slate-100 flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-500 block">Kode Reff:</span>
+                <span className="font-mono text-xs font-bold text-slate-800 truncate block">{p.nama}</span>
+              </div>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <a
+                  href={`/pelanggan?referal=${encodeURIComponent(p.nama)}`}
+                  className="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-lg hover:bg-emerald-100 transition inline-flex items-center gap-1"
+                  title="Lihat warga terdaftar"
+                >
+                  <span>🤝</span>
+                  <span>{p._count?.referral ?? 0}</span>
+                </a>
+                <button
+                  type="button"
+                  onClick={() => copyReferralLink(p)}
+                  className={`text-xs font-semibold px-2.5 py-1 rounded-lg transition border flex items-center gap-1 ${
+                    copiedId === p.id
+                      ? "bg-emerald-600 text-white border-emerald-600"
+                      : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                  }`}
+                >
+                  {copiedId === p.id ? (
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  ) : (
+                    <svg className="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  )}
+                  <span>{copiedId === p.id ? "Tersalin" : "Salin Link"}</span>
+                </button>
+              </div>
+            </div>
+
             <div className="flex gap-2 mt-3 pt-3 border-t border-slate-100">
               <button onClick={() => openEdit(p)} className="flex-1 text-center text-xs font-semibold bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100 py-2 rounded-xl transition">Edit</button>
               <button onClick={() => setDeleteTarget(p)} className="flex-1 text-center text-xs font-semibold bg-rose-50 border border-rose-200 text-rose-600 py-2 rounded-xl hover:bg-rose-100 transition">Hapus</button>
@@ -425,6 +547,23 @@ export default function PetugasPage() {
                   Hubungkan dengan akun login petugas agar data lapangannya tersambung (peta realtime, pickup, dll).
                 </p>
               </div>
+
+              {/* Referral info in form */}
+              <div className="p-3 bg-emerald-50/70 rounded-2xl border border-emerald-200/60 text-xs">
+                <div className="font-semibold text-emerald-800 flex items-center gap-1.5 mb-1">
+                  <span>🤝</span>
+                  <span>Kode &amp; Tautan Referral</span>
+                </div>
+                <p className="text-[11px] text-slate-600 mb-1.5">
+                  Kode referral warga otomatis mengikuti nama petugas: <strong className="text-slate-800 font-semibold">{form.nama || "(Nama Petugas)"}</strong>
+                </p>
+                {form.nama && (
+                  <div className="bg-white px-2.5 py-1.5 rounded-lg border border-emerald-200 text-[11px] font-mono text-emerald-800 truncate select-all">
+                    {(typeof window !== "undefined" ? window.location.origin : "https://o2whero.com")}/daftar?ref={encodeURIComponent(form.nama)}
+                  </div>
+                )}
+              </div>
+
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-700 font-medium hover:bg-slate-50 transition">Batal</button>
                 <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all">{editing ? "Simpan" : "Tambah"}</button>
