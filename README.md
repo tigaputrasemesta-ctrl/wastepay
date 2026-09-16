@@ -1,6 +1,6 @@
 # UPS HERU - SISTEM MANAJEMEN PENGELOLAAN SAMPAH 🚛♻️
 
-[![Production Status](https://img.shields.io/badge/Production-Live%20on%20Vercel-success.svg)](https://tpsheru.vercel.app)
+[![Production Status](https://img.shields.io/badge/Production-Live%20on%20Vercel-success.svg)](https://o2whero.com)
 [![Framework](https://img.shields.io/badge/Next.js-16.2%20(App%20Router)-black.svg)](https://nextjs.org)
 [![UI Engine](https://img.shields.io/badge/React-19-blue.svg)](https://react.dev)
 [![Database](https://img.shields.io/badge/Prisma%207-PostgreSQL%20(Supabase)-38bdf8.svg)](https://prisma.io)
@@ -18,7 +18,7 @@
 - **Koordinat GIS**: `-6.424838, 106.832667`
 - **WhatsApp Resmi**: [+62 814-0078-2617](https://wa.me/6281400782617)
 - **Email Dukungan**: [cv.herozerowaste@gmail.com](mailto:cv.herozerowaste@gmail.com)
-- **Website Resmi**: [https://tpsheru.vercel.app](https://tpsheru.vercel.app)
+- **Website Resmi**: [https://o2whero.com](https://o2whero.com)
 
 ---
 
@@ -177,7 +177,7 @@ ADMIN_PHONE="081400782617"
 WA_BLAST_DELAY_MS="1200"
 
 # Domain & Identitas Aplikasi
-NEXT_PUBLIC_APP_URL="https://tpsheru.vercel.app"
+NEXT_PUBLIC_APP_URL="https://o2whero.com"
 COMPANY_NAME="UPS HERU"
 COMPANY_EMAIL="cv.herozerowaste@gmail.com"
 COMPANY_WHATSAPP="+62 814-0078-2617"

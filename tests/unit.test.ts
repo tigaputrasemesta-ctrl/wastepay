@@ -478,7 +478,7 @@ describe("seo module", () => {
     delete process.env.VERCEL_URL;
 
     const url = getSiteUrl();
-    expect(url).toBe("https://tpsheru.vercel.app");
+    expect(url).toBe("https://o2whero.com");
 
     if (origEnv) process.env.NEXT_PUBLIC_APP_URL = origEnv;
   });

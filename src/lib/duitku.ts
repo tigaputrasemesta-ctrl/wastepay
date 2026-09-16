@@ -85,7 +85,7 @@ export function getAppBaseUrl(): string {
     return `https://${process.env.VERCEL_URL.replace(/\/$/, "")}`;
   }
   // Fallback domain default production
-  return "https://tpsheru.vercel.app";
+  return "https://o2whero.com";
 }
 
 /** URL callback (webhook) — WAJIB publik HTTPS saat production. */

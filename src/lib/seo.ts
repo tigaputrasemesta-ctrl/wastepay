@@ -17,7 +17,7 @@ export function getSiteUrl(): string {
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL.replace(/\/$/, "")}`;
   }
-  return "https://tpsheru.vercel.app";
+  return "https://o2whero.com";
 }
 
 export const SITE_CONFIG = {
@@ -43,7 +43,7 @@ export const SITE_CONFIG = {
     "zero waste depok",
     "dinas lingkungan hidup depok",
   ],
-  authors: [{ name: "UPS HERU / CV Hero Zero Waste", url: "https://tpsheru.vercel.app" }],
+  authors: [{ name: "UPS HERU / CV Hero Zero Waste", url: "https://o2whero.com" }],
   creator: "UPS HERU Kota Depok",
   publisher: "UPS HERU Kota Depok",
   telephone: "+62 814-0078-2617",

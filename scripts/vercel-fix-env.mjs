@@ -10,7 +10,7 @@
  *   1. Verifikasi token (GET /v2/user).
  *   2. Tulis/patch DATABASE_URL & DIRECT_URL (production + preview + development)
  *      dengan koneksi Supabase yang SUDAH TERVERIFIKASI bekerja.
- *   3. Tambah domain alias otwherozerowaste.vercel.app ke project.
+ *   3. Tambah domain alias o2whero.com ke project.
  *   4. Re-deploy deployment production terbaru.
  *
  * Token valid dibuat di: Vercel Dashboard → Account/Team Settings → Tokens → Create.
@@ -106,7 +106,7 @@ const needed = {
   DUITKU_MERCHANT_CODE: process.env.DUITKU_MERCHANT_CODE,
   DUITKU_API_KEY: process.env.DUITKU_API_KEY,
   DUITKU_IS_PRODUCTION: process.env.DUITKU_IS_PRODUCTION,
-  NEXT_PUBLIC_APP_URL: "https://otwherozerowaste.vercel.app",
+  NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || "https://o2whero.com",
   DATABASE_SSL_REJECT_UNAUTHORIZED: process.env.DATABASE_SSL_REJECT_UNAUTHORIZED || "false",
   COMPANY_NAME: process.env.COMPANY_NAME,
   COMPANY_ADDRESS: process.env.COMPANY_ADDRESS,
@@ -131,7 +131,7 @@ for (const [k, v] of Object.entries(needed)) {
 // 3. Tambah domain alias baru
 const dom = await api(`/v10/projects/${PROJECT_ID}/domains`, {
   method: "POST",
-  body: JSON.stringify({ name: "otwherozerowaste.vercel.app" }),
+  body: JSON.stringify({ name: "o2whero.com" }),
 });
 console.log("Domain add:", dom.status, JSON.stringify(dom.data).slice(0, 200));
 
@@ -148,4 +148,4 @@ if (latest?.uid) {
   console.log("Tidak ada deployment production lama untuk redeploy — push ke git untuk deploy baru.");
 }
 
-console.log("\nSelesai. Verifikasi: https://otwherozerowaste.vercel.app/api/publik/tagihan?kode=KAL-HVM89K");
+console.log("\nSelesai. Verifikasi: https://o2whero.com/api/publik/tagihan?kode=KAL-HVM89K");
