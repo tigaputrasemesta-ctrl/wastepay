@@ -7,8 +7,9 @@ import dynamic from "next/dynamic";
 import { useParams, useRouter } from "next/navigation";
 import { formatRupiah, formatDate } from "@/lib/utils";
 import ModalApprovalPelanggan from "@/components/ModalApprovalPelanggan";
+import ModalStatusPelanggan from "@/components/ModalStatusPelanggan";
 import { useToast } from "@/components/Toast";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, Play, Pause } from "lucide-react";
 
 const PetaLokasi = dynamic(() => import("@/components/PetaLokasi"), {
   ssr: false,
@@ -95,6 +96,7 @@ export default function DetailPelangganPage() {
   const [data, setData] = useState<PelangganDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [showApprovalModal, setShowApprovalModal] = useState(false);
+  const [showStatusModal, setShowStatusModal] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -151,13 +153,13 @@ export default function DetailPelangganPage() {
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">{data.nama}</h1>
           <p className="text-sm text-slate-500 font-medium">Detail pelanggan</p>
         </div>
-        <span className={`ml-auto inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-          data.status === "aktif" ? "bg-emerald-400/10 text-emerald-400 border border-emerald-500/30" :
-          data.status === "calon" ? "bg-sky-400/10 text-sky-400 border border-sky-500/30" :
-          data.status === "libur" ? "bg-amber-400/10 text-amber-400 border border-amber-500/30" :
-          "bg-slate-100 border border-slate-200 text-slate-600 font-medium"
+        <span className={`ml-auto inline-flex items-center px-3 py-1 rounded-full text-xs font-extrabold uppercase ${
+          data.status === "aktif" ? "bg-emerald-100 text-emerald-800 border border-emerald-300" :
+          data.status === "calon" ? "bg-amber-100 text-amber-800 border border-amber-300" :
+          data.status === "libur" ? "bg-amber-100 text-amber-900 border border-amber-300" :
+          "bg-slate-200 border border-slate-300 text-slate-800"
         }`}>
-          {data.status === "calon" ? "Calon" : data.status.charAt(0).toUpperCase() + data.status.slice(1)}
+          {data.status === "calon" ? "Calon" : data.status}
         </span>
         {data.status === "calon" && (
           <button
@@ -166,6 +168,26 @@ export default function DetailPelangganPage() {
           >
             <ShieldCheck className="w-4 h-4" />
             <span>Approval &amp; Tentukan Zona Pickup</span>
+          </button>
+        )}
+        {data.status === "aktif" && (
+          <button
+            onClick={() => setShowStatusModal(true)}
+            className="ml-2 inline-flex items-center gap-1.5 px-3 py-1.5 border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold transition shadow-xs active:scale-95"
+            title="Ubah Status / Nonaktifkan Layanan"
+          >
+            <Pause className="w-3.5 h-3.5 fill-current" />
+            <span>Kelola Status</span>
+          </button>
+        )}
+        {(data.status === "nonaktif" || data.status === "libur") && (
+          <button
+            onClick={() => setShowStatusModal(true)}
+            className="ml-2 inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-xs active:scale-95"
+            title="Aktifkan Kembali Layanan"
+          >
+            <Play className="w-3.5 h-3.5 fill-current" />
+            <span>Aktifkan Kembali</span>
           </button>
         )}
       </div>
@@ -193,6 +215,60 @@ export default function DetailPelangganPage() {
           >
             <ShieldCheck className="w-4 h-4" />
             <span>Approval &amp; Tentukan Zona</span>
+          </button>
+        </div>
+      )}
+
+      {/* Banner Pelanggan Nonaktif */}
+      {data.status === "nonaktif" && (
+        <div className="mb-6 p-4 bg-slate-100 border border-slate-300 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-slate-200 text-slate-700 flex items-center justify-center text-lg font-black shrink-0 shadow-xs">
+              ⏸️
+            </div>
+            <div>
+              <p className="text-sm font-extrabold text-slate-900">
+                Layanan Pelanggan Sedang Nonaktif
+              </p>
+              <p className="text-xs text-slate-600 mt-0.5">
+                Pengangkutan sampah rutin dan tagihan bulanan otomatis dihentikan. Seluruh riwayat transaksi pembayaran terdahulu tetap tersimpan aman di pembukuan.
+                {data.catatan && <span className="block mt-0.5 font-medium text-slate-700">Catatan: {data.catatan}</span>}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowStatusModal(true)}
+            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-xs whitespace-nowrap active:scale-95"
+          >
+            <Play className="w-3.5 h-3.5 fill-current" />
+            <span>Aktifkan Kembali</span>
+          </button>
+        </div>
+      )}
+
+      {/* Banner Pelanggan Libur */}
+      {data.status === "libur" && (
+        <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center text-lg font-black shrink-0 shadow-xs">
+              🏖️
+            </div>
+            <div>
+              <p className="text-sm font-extrabold text-amber-950">
+                Pelanggan Sedang Libur / Cuti Pengangkutan
+              </p>
+              <p className="text-xs text-amber-800 mt-0.5">
+                Penjemputan sampah harian dijeda sementara waktu. Data langganan tetap terdaftar aktif.
+                {data.catatan && <span className="block mt-0.5 font-medium text-amber-900">Catatan: {data.catatan}</span>}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowStatusModal(true)}
+            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-xs whitespace-nowrap active:scale-95"
+          >
+            <Play className="w-3.5 h-3.5 fill-current" />
+            <span>Selesai Libur (Aktifkan)</span>
           </button>
         </div>
       )}
@@ -653,6 +729,23 @@ export default function DetailPelangganPage() {
         onClose={() => setShowApprovalModal(false)}
         onSuccess={() => {
           setShowApprovalModal(false);
+          // Refetch data
+          fetch(`/api/pelanggan/${data.id}`)
+            .then((r) => (r.ok ? r.json() : null))
+            .then((updated) => {
+              if (updated) setData(updated);
+            });
+        }}
+        showToast={showToast}
+      />
+
+      {/* Modal Ubah Status Layanan Pelanggan */}
+      <ModalStatusPelanggan
+        pelanggan={data}
+        isOpen={showStatusModal}
+        onClose={() => setShowStatusModal(false)}
+        onSuccess={() => {
+          setShowStatusModal(false);
           // Refetch data
           fetch(`/api/pelanggan/${data.id}`)
             .then((r) => (r.ok ? r.json() : null))

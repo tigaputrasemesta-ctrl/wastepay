@@ -142,6 +142,7 @@ export async function PUT(
     if (referal !== undefined) data.referal = referal;
     if (body.customTarif !== undefined) data.customTarif = body.customTarif ? parseFloat(body.customTarif) : null;
     if (status !== undefined) data.status = status;
+    if (catatan !== undefined) data.catatan = catatan;
     if (kelurahanId !== undefined) {
       data.kelurahanId = kelurahanId ? parseInt(kelurahanId) : null;
     }

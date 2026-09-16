@@ -80,7 +80,13 @@ export async function GET(request: Request) {
     take = limit;
   }
 
-  const [pelanggan, total] = await Promise.all([
+  // Scope where untuk perhitungan status badge (menghormati scope kelurahan jika ada)
+  const countWhere: Prisma.PelangganWhereInput = { deletedAt: null };
+  if (where.kelurahanId) {
+    countWhere.kelurahanId = where.kelurahanId;
+  }
+
+  const [pelanggan, total, statusGroups] = await Promise.all([
     prisma.pelanggan.findMany({
       where,
       skip,
@@ -113,7 +119,35 @@ export async function GET(request: Request) {
       orderBy: { createdAt: "desc" },
     }),
     isPaginated ? prisma.pelanggan.count({ where }) : Promise.resolve(0),
+    prisma.pelanggan.groupBy({
+      by: ["status"],
+      where: countWhere,
+      _count: { id: true },
+    }),
   ]);
+
+  const countsMap: Record<string, number> = {
+    aktif: 0,
+    calon: 0,
+    nonaktif: 0,
+    libur: 0,
+    total: 0,
+  };
+  for (const g of statusGroups) {
+    if (g.status && g.status in countsMap) {
+      countsMap[g.status] = g._count.id;
+    }
+    countsMap.total += g._count.id;
+  }
+
+  const responseHeaders = {
+    "X-Total-Count": String(isPaginated ? total : pelanggan.length),
+    "X-Count-Total": String(countsMap.total),
+    "X-Count-Aktif": String(countsMap.aktif),
+    "X-Count-Calon": String(countsMap.calon),
+    "X-Count-Nonaktif": String(countsMap.nonaktif),
+    "X-Count-Libur": String(countsMap.libur),
+  };
 
   if (isPaginated) {
     return NextResponse.json(
@@ -125,13 +159,13 @@ export async function GET(request: Request) {
         totalPages: Math.ceil(total / limit),
       },
       {
-        headers: { "X-Total-Count": String(total) },
+        headers: responseHeaders,
       }
     );
   }
 
   return NextResponse.json(pelanggan, {
-    headers: { "X-Total-Count": String(pelanggan.length) },
+    headers: responseHeaders,
   });
 }
 

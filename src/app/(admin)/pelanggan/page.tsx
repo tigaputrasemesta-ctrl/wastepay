@@ -6,9 +6,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { formatDate } from "@/lib/utils";
 import { useToast } from "@/components/Toast";
-import ConfirmDialog from "@/components/ConfirmDialog";
 import GeotagPhoto from "@/components/GeotagPhoto";
 import ModalApprovalPelanggan from "@/components/ModalApprovalPelanggan";
+import ModalStatusPelanggan from "@/components/ModalStatusPelanggan";
+import ModalHapusPelanggan from "@/components/ModalHapusPelanggan";
+import { Play, Pause } from "lucide-react";
 
 type Kelurahan = { id: number; nama: string; kecamatan?: string | null };
 type Paket = { id: number; nama: string; harga: number | null };
@@ -58,6 +60,10 @@ type Pelanggan = {
   wilayah?: { id: number; nama: string; zonaId?: number | null; zona?: { id: number; nama: string; warna?: string | null } | null } | null;
   paket?: Paket | null;
   createdAt: string;
+  _count?: {
+    tagihan?: number;
+    pembayaran?: number;
+  };
 };
 
 type ZonaOption = { id: number; nama: string; warna?: string | null; kelurahanId: number };
@@ -159,7 +165,17 @@ function PelangganContent() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Pelanggan | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Pelanggan | null>(null);
-  const [deleting, setDeleting] = useState(false);
+  const [statusTarget, setStatusTarget] = useState<{
+    pelanggan: Pelanggan;
+    initialTargetStatus?: "aktif" | "nonaktif" | "libur";
+  } | null>(null);
+  const [statusCounts, setStatusCounts] = useState({
+    total: 0,
+    aktif: 0,
+    calon: 0,
+    nonaktif: 0,
+    libur: 0,
+  });
   const [approvalTarget, setApprovalTarget] = useState<Pelanggan | null>(null);
   const [page, setPage] = useState(1);
   const ITEMS_PER_PAGE = 20;
@@ -181,6 +197,7 @@ function PelangganContent() {
     koordinatSumber: "",
     koordinatAkurasi: "",
     status: "aktif",
+    catatan: "",
   });
 
   const fetchData = useCallback(async () => {
@@ -201,6 +218,31 @@ function PelangganContent() {
       const pelangganData = await pelangganRes.json();
       const kelurahanData = await kelurahanRes.json();
       const zonaData = await zonaRes.json();
+
+      const cTotal = parseInt(pelangganRes.headers.get("X-Count-Total") || "0");
+      const cAktif = parseInt(pelangganRes.headers.get("X-Count-Aktif") || "0");
+      const cCalon = parseInt(pelangganRes.headers.get("X-Count-Calon") || "0");
+      const cNonaktif = parseInt(pelangganRes.headers.get("X-Count-Nonaktif") || "0");
+      const cLibur = parseInt(pelangganRes.headers.get("X-Count-Libur") || "0");
+
+      if (cTotal > 0 || cAktif > 0 || cCalon > 0 || cNonaktif > 0 || cLibur > 0) {
+        setStatusCounts({
+          total: cTotal,
+          aktif: cAktif,
+          calon: cCalon,
+          nonaktif: cNonaktif,
+          libur: cLibur,
+        });
+      } else if (Array.isArray(pelangganData)) {
+        setStatusCounts({
+          total: pelangganData.length,
+          aktif: pelangganData.filter((p: Pelanggan) => p.status === "aktif").length,
+          calon: pelangganData.filter((p: Pelanggan) => p.status === "calon").length,
+          nonaktif: pelangganData.filter((p: Pelanggan) => p.status === "nonaktif").length,
+          libur: pelangganData.filter((p: Pelanggan) => p.status === "libur").length,
+        });
+      }
+
       setPelanggan(Array.isArray(pelangganData) ? pelangganData : []);
       setKelurahanList(Array.isArray(kelurahanData) ? kelurahanData : []);
       setZonaList(Array.isArray(zonaData) ? zonaData : []);
@@ -245,6 +287,7 @@ function PelangganContent() {
       koordinatSumber: "",
       koordinatAkurasi: "",
       status: "aktif",
+      catatan: "",
     });
     setShowForm(true);
   }
@@ -269,6 +312,7 @@ function PelangganContent() {
       koordinatSumber: p.koordinatSumber || "",
       koordinatAkurasi: p.koordinatAkurasi ? String(p.koordinatAkurasi) : "",
       status: p.status,
+      catatan: p.catatan || "",
     });
     setShowForm(true);
   }
@@ -294,19 +338,7 @@ function PelangganContent() {
     }
   }
 
-  async function confirmDelete() {
-    if (!deleteTarget) return;
-    setDeleting(true);
-    const res = await fetch(`/api/pelanggan/${deleteTarget.id}`, { method: "DELETE" });
-    setDeleting(false);
-    if (res.ok) {
-      showToast("Pelanggan berhasil dihapus");
-      setDeleteTarget(null);
-      fetchData();
-    } else {
-      showToast("Gagal menghapus pelanggan", "error");
-    }
-  }
+
 
   function resetFilters() {
     setFilterKelurahan("");
@@ -332,6 +364,15 @@ function PelangganContent() {
 
   const calonList = pelanggan.filter((p) => p.status === "calon");
   const aktifList = pelanggan.filter((p) => p.status === "aktif");
+  const nonaktifList = pelanggan.filter((p) => p.status === "nonaktif");
+  const liburList = pelanggan.filter((p) => p.status === "libur");
+
+  const calonCount = statusCounts.calon || calonList.length;
+  const aktifCount = statusCounts.aktif || aktifList.length;
+  const nonaktifCount = statusCounts.nonaktif || nonaktifList.length;
+  const liburCount = statusCounts.libur || liburList.length;
+  const totalCount = statusCounts.total || pelanggan.length;
+
   const paginatedPelanggan = pelanggan.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
   const totalPages = Math.ceil(pelanggan.length / ITEMS_PER_PAGE);
 
@@ -537,7 +578,7 @@ function PelangganContent() {
               : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
           }`}
         >
-          Semua ({pelanggan.length})
+          Semua ({totalCount})
         </button>
         <button
           type="button"
@@ -552,20 +593,59 @@ function PelangganContent() {
           <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold ${
             filterStatus === "calon" ? "bg-amber-800 text-amber-100" : "bg-amber-200 text-amber-900"
           }`}>
-            {calonList.length}
+            {calonCount}
           </span>
         </button>
         <button
           type="button"
           onClick={() => { setFilterStatus("aktif"); setPage(1); }}
-          className={`px-3 py-1.5 rounded-xl font-bold transition shrink-0 ${
+          className={`px-3 py-1.5 rounded-xl font-bold transition shrink-0 flex items-center gap-1.5 ${
             filterStatus === "aktif"
               ? "bg-emerald-700 text-white shadow-xs"
               : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
           }`}
         >
-          Aktif ({aktifList.length})
+          <span>Aktif</span>
+          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold ${
+            filterStatus === "aktif" ? "bg-emerald-800 text-white" : "bg-slate-100 text-slate-700"
+          }`}>
+            {aktifCount}
+          </span>
         </button>
+        <button
+          type="button"
+          onClick={() => { setFilterStatus("nonaktif"); setPage(1); }}
+          className={`px-3 py-1.5 rounded-xl font-bold transition shrink-0 flex items-center gap-1.5 ${
+            filterStatus === "nonaktif"
+              ? "bg-slate-800 text-white shadow-xs"
+              : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
+          }`}
+        >
+          <span>Nonaktif</span>
+          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold ${
+            filterStatus === "nonaktif" ? "bg-slate-950 text-white" : "bg-slate-100 text-slate-700"
+          }`}>
+            {nonaktifCount}
+          </span>
+        </button>
+        {liburCount > 0 && (
+          <button
+            type="button"
+            onClick={() => { setFilterStatus("libur"); setPage(1); }}
+            className={`px-3 py-1.5 rounded-xl font-bold transition shrink-0 flex items-center gap-1.5 ${
+              filterStatus === "libur"
+                ? "bg-amber-600 text-white shadow-xs"
+                : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
+            }`}
+          >
+            <span>Libur</span>
+            <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold ${
+              filterStatus === "libur" ? "bg-amber-800 text-white" : "bg-amber-100 text-amber-900"
+            }`}>
+              {liburCount}
+            </span>
+          </button>
+        )}
       </div>
 
       {/* Search + Filter mode */}
@@ -812,13 +892,20 @@ function PelangganContent() {
                         )}
                       </div>
                     ) : (
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                        p.status === "aktif" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
-                        p.status === "libur" ? "bg-rose-50 text-rose-700 border border-rose-200" :
-                        "bg-slate-100 text-slate-700 border border-slate-200"
-                      }`}>
-                        {p.status}
-                      </span>
+                      <div className="flex flex-col gap-0.5 items-start">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                          p.status === "aktif" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
+                          p.status === "libur" ? "bg-amber-50 text-amber-700 border border-amber-200" :
+                          "bg-slate-100 text-slate-700 border border-slate-300"
+                        }`}>
+                          {p.status === "aktif" ? "Aktif" : p.status === "nonaktif" ? "Nonaktif" : p.status === "libur" ? "Libur" : p.status}
+                        </span>
+                        {p.status === "nonaktif" && (
+                          <span className="text-[9px] text-slate-400 font-medium">
+                            Tagihan/pickup jeda
+                          </span>
+                        )}
+                      </div>
                     )}
                   </td>
                   <td className="px-4 py-3 text-slate-500 text-xs font-medium whitespace-nowrap">
@@ -826,7 +913,7 @@ function PelangganContent() {
                   </td>
                   <td className="px-4 py-3 text-center whitespace-nowrap">
                     <div className="flex items-center justify-center gap-1.5">
-                      {p.status === "calon" && (
+                      {p.status === "calon" ? (
                         <button
                           type="button"
                           onClick={() => setApprovalTarget(p)}
@@ -835,10 +922,29 @@ function PelangganContent() {
                         >
                           <span>🛡️ Approval &amp; Zona</span>
                         </button>
+                      ) : p.status === "aktif" ? (
+                        <button
+                          type="button"
+                          onClick={() => setStatusTarget({ pelanggan: p, initialTargetStatus: "nonaktif" })}
+                          className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-800 text-slate-500 transition-colors shadow-xs"
+                          title="Nonaktifkan Layanan (Disarankan jika berhenti langganan)"
+                        >
+                          <Pause className="w-3.5 h-3.5 fill-current" />
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setStatusTarget({ pelanggan: p, initialTargetStatus: "aktif" })}
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-bold transition-colors shadow-xs"
+                          title="Aktifkan Kembali Layanan"
+                        >
+                          <Play className="w-3 h-3 fill-current" />
+                          <span>Aktifkan</span>
+                        </button>
                       )}
                       <Link
                         href={`/pelanggan/${p.id}`}
-                        className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 text-slate-600 transition-colors shadow-sm"
+                        className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 text-slate-600 transition-colors shadow-xs"
                         title="Detail"
                       >
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -847,18 +953,20 @@ function PelangganContent() {
                         </svg>
                       </Link>
                       <button
+                        type="button"
                         onClick={() => openEdit(p)}
-                        className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200 text-slate-600 transition-colors shadow-sm"
-                        title="Edit"
+                        className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200 text-slate-600 transition-colors shadow-xs"
+                        title="Edit Data"
                       >
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
                       </button>
                       <button
+                        type="button"
                         onClick={() => setDeleteTarget(p)}
-                        className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 text-slate-600 transition-colors shadow-sm"
-                        title="Hapus"
+                        className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 text-slate-600 transition-colors shadow-xs"
+                        title="Hapus atau Nonaktifkan"
                       >
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -1117,14 +1225,27 @@ function PelangganContent() {
         showToast={showToast}
       />
 
-      {/* Confirm Delete */}
-      <ConfirmDialog
-        open={!!deleteTarget}
-        title="Hapus Pelanggan"
-        message={`Yakin ingin menghapus ${deleteTarget?.nama}? Semua data tagihan dan riwayat akan ikut terhapus.`}
-        onConfirm={confirmDelete}
-        onCancel={() => setDeleteTarget(null)}
-        loading={deleting}
+      {/* Modal Ubah Status (Aktif / Nonaktif / Libur) */}
+      <ModalStatusPelanggan
+        pelanggan={statusTarget?.pelanggan ?? null}
+        initialTargetStatus={statusTarget?.initialTargetStatus}
+        isOpen={Boolean(statusTarget)}
+        onClose={() => setStatusTarget(null)}
+        onSuccess={() => {
+          fetchData();
+        }}
+        showToast={showToast}
+      />
+
+      {/* Modal Hapus atau Nonaktifkan */}
+      <ModalHapusPelanggan
+        pelanggan={deleteTarget}
+        isOpen={Boolean(deleteTarget)}
+        onClose={() => setDeleteTarget(null)}
+        onSuccess={() => {
+          fetchData();
+        }}
+        showToast={showToast}
       />
     </div>
   );
