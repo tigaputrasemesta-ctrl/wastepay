@@ -8,16 +8,21 @@ import CoordinatePicker from "@/components/CoordinatePicker";
 import GeotagPhoto from "@/components/GeotagPhoto";
 
 type Kelurahan = { id: number; nama: string; kecamatan?: string | null; kota?: string | null };
+type Zona = { id: number; nama: string; warna?: string | null; kelurahanId: number };
+type Petugas = { id: number; nama: string; jabatan?: string | null; aktif?: boolean };
+type Rute = { id: number; nama: string; hari: string; jam?: string | null; kelurahanId?: number | null; zonaId?: number | null; petugasId?: number | null };
 type Paket = { id: number; nama: string; harga: number | null; deskripsi?: string };
 type KategoriTarif = { id: number; kategori: string; label: string; tarif: number; deskripsi?: string };
 
 const STEPS = [
   { id: 1, label: "DATA DIRI" },
-  { id: 2, label: "WILAYAH" },
+  { id: 2, label: "WILAYAH & ZONASI" },
   { id: 3, label: "LOKASI & FOTO" },
-  { id: 4, label: "TARIF & STATUS" },
+  { id: 4, label: "JADWAL, PETUGAS & TARIF" },
   { id: 5, label: "KONFIRMASI" },
 ];
+
+const DAFTAR_HARI = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
 
 const KATEGORI_OPTIONS = [
   { value: "level_1", label: "Level 1 — Volume Sangat Kecil", icon: "🏠" },
@@ -59,6 +64,9 @@ export default function DaftarPelangganPage() {
   const [success, setSuccess] = useState(false);
   const [successData, setSuccessData] = useState<{ nama: string; kode: string } | null>(null);
   const [kelurahanList, setKelurahanList] = useState<Kelurahan[]>([]);
+  const [zonaList, setZonaList] = useState<Zona[]>([]);
+  const [petugasList, setPetugasList] = useState<Petugas[]>([]);
+  const [ruteList, setRuteList] = useState<Rute[]>([]);
   const [paketList, setPaketList] = useState<Paket[]>([]);
   const [kategoriTarifList, setKategoriTarifList] = useState<KategoriTarif[]>([]);
   const [useCustomTarif, setUseCustomTarif] = useState(false);
@@ -69,8 +77,9 @@ export default function DaftarPelangganPage() {
     noTelepon: "",
     kategori: "level_1",
     penanggungjawab: "",
-    // Wilayah & Alamat
+    // Wilayah, Zonasi & Alamat
     kelurahanId: "",
+    zonaId: "",
     alamat: "",
     rt: "",
     rw: "",
@@ -81,6 +90,11 @@ export default function DaftarPelangganPage() {
     koordinatSumber: "",
     koordinatAkurasi: "",
     fotoRumah: "",
+    // Jadwal, Petugas & Operasional
+    petugasId: "",
+    ruteId: "",
+    hari: ["Senin", "Kamis"] as string[],
+    jam: "08:00",
     // Tarif & Status
     paketId: "",
     customTarif: "",
@@ -90,9 +104,21 @@ export default function DaftarPelangganPage() {
 
   // ── Data turunan ──
   const kelurahanTerpilih = kelurahanList.find((k) => k.id.toString() === form.kelurahanId);
+  const zonaTerpilih = zonaList.find((z) => z.id.toString() === form.zonaId);
+  const petugasTerpilih = petugasList.find((p) => p.id.toString() === form.petugasId);
+  const ruteTerpilih = ruteList.find((r) => r.id.toString() === form.ruteId);
   const kategoriTarifTerpilih = kategoriTarifList.find((k) => k.kategori === form.kategori);
   const tarifDefaultKategori = kategoriTarifTerpilih?.tarif ?? 0;
   const paketTerpilih = paketList.find((p) => p.id.toString() === form.paketId);
+
+  const availableZonas = zonaList.filter(
+    (z) => !form.kelurahanId || z.kelurahanId === parseInt(form.kelurahanId)
+  );
+  const availableRutes = ruteList.filter((r) => {
+    if (form.zonaId && r.zonaId) return r.zonaId === parseInt(form.zonaId);
+    if (form.kelurahanId && r.kelurahanId) return r.kelurahanId === parseInt(form.kelurahanId);
+    return true;
+  });
 
   const tarifAkhir =
     useCustomTarif && form.customTarif
@@ -102,12 +128,19 @@ export default function DaftarPelangganPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [kelurahanRes, paketRes, tarifRes] = await Promise.all([
+        const [kelurahanRes, zonaRes, petugasRes, ruteRes, paketRes, tarifRes] = await Promise.all([
           fetch("/api/kelurahan"),
+          fetch("/api/zona"),
+          fetch("/api/petugas"),
+          fetch("/api/rute"),
           fetch("/api/paket"),
           fetch("/api/kategori-tarif"),
         ]);
         setKelurahanList(await kelurahanRes.json());
+        setZonaList(await zonaRes.json());
+        const rawPetugas = await petugasRes.json();
+        setPetugasList(Array.isArray(rawPetugas) ? rawPetugas : []);
+        setRuteList(await ruteRes.json());
         setPaketList(await paketRes.json());
         setKategoriTarifList(await tarifRes.json());
       } catch {
@@ -116,6 +149,33 @@ export default function DaftarPelangganPage() {
     }
     fetchData();
   }, []);
+
+  const toggleHari = (h: string) => {
+    setForm((f) => ({
+      ...f,
+      hari: f.hari.includes(h) ? f.hari.filter((d) => d !== h) : [...f.hari, h],
+    }));
+  };
+
+  const handleRuteChange = (rid: string) => {
+    setForm((f) => {
+      const updated = { ...f, ruteId: rid };
+      if (!rid) return updated;
+      const r = ruteList.find((item) => item.id.toString() === rid);
+      if (r) {
+        if (r.petugasId) updated.petugasId = r.petugasId.toString();
+        if (r.hari) {
+          const days = r.hari
+            .split(",")
+            .map((s) => s.trim())
+            .filter((s) => DAFTAR_HARI.includes(s));
+          if (days.length > 0) updated.hari = days;
+        }
+        if (r.jam) updated.jam = r.jam;
+      }
+      return updated;
+    });
+  };
 
   function nextStep() {
     setError("");
@@ -127,8 +187,14 @@ export default function DaftarPelangganPage() {
     if (step === 2) {
       if (!form.alamat.trim()) return setError("Alamat wajib diisi");
       if (!form.kelurahanId) return setError("Pilih kelurahan");
+      if (availableZonas.length > 0 && !form.zonaId) {
+        return setError("Pilih Zona Area Pickup");
+      }
     }
     if (step === 4) {
+      if (form.hari.length === 0) {
+        return setError("Pilih minimal satu hari penjemputan sampah");
+      }
       const punyaTarif = paketTerpilih || (useCustomTarif && parseFloat(form.customTarif) > 0) || tarifDefaultKategori > 0;
       if (!punyaTarif) return setError("Tentukan tarif: pilih paket, isi tarif kustom, atau pastikan tarif kategori tersedia");
       if (useCustomTarif && !(parseFloat(form.customTarif) > 0)) return setError("Isi nominal tarif kustom");
@@ -161,6 +227,11 @@ export default function DaftarPelangganPage() {
         koordinatAkurasi: form.koordinatAkurasi,
         fotoRumah: form.fotoRumah,
         kelurahanId: form.kelurahanId,
+        zonaId: form.zonaId,
+        petugasId: form.petugasId,
+        ruteId: form.ruteId,
+        hari: form.hari,
+        jam: form.jam,
         paketId: form.paketId,
         customTarif: useCustomTarif ? form.customTarif : "",
         status: form.status,
@@ -191,8 +262,9 @@ export default function DaftarPelangganPage() {
   function resetForm() {
     setForm({
       nama: "", noTelepon: "", kategori: "level_1", penanggungjawab: "",
-      kelurahanId: "", alamat: "", rt: "", rw: "",
+      kelurahanId: "", zonaId: "", alamat: "", rt: "", rw: "",
       patokanLokasi: "", latitude: "", longitude: "", koordinatSumber: "", koordinatAkurasi: "", fotoRumah: "",
+      petugasId: "", ruteId: "", hari: ["Senin", "Kamis"], jam: "08:00",
       paketId: "", customTarif: "", status: "aktif", catatan: "",
     });
     setUseCustomTarif(false);
@@ -381,30 +453,71 @@ export default function DaftarPelangganPage() {
           </div>
         )}
 
-        {/* ═══ STEP 2: WILAYAH & ALAMAT ═══ */}
+        {/* ═══ STEP 2: WILAYAH & ZONASI ═══ */}
         {step === 2 && (
           <div className="space-y-6">
             <JudulSection
-              kode="02 / KELURAHAN"
-              judul="Kelurahan & Alamat"
-              desc="Kelurahan menentukan area layanan & kode pelanggan"
+              kode="02 / WILAYAH & ZONASI"
+              judul="Kelurahan, Zonasi & Alamat"
+              desc="Kelurahan dan Zona Area Pickup menentukan plotting wilayah penjemputan armada"
             />
-            <div>
-              <label className="label">Kelurahan <span className="text-red-600">*</span></label>
-              <select value={form.kelurahanId} onChange={(e) => setForm({ ...form, kelurahanId: e.target.value })} className="input">
-                <option value="">— Pilih Kelurahan —</option>
-                {kelurahanList.map((k) => (
-                  <option key={k.id} value={k.id}>
-                    {k.nama}{k.kecamatan ? ` · ${k.kecamatan}` : ""}
-                  </option>
-                ))}
-              </select>
-              {kelurahanTerpilih && (
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">{kelurahanTerpilih.kecamatan || "Kec. —"}</span>
-                  <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">{kelurahanTerpilih.nama || "Kel. —"}</span>
-                </div>
-              )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="label">Kelurahan <span className="text-red-600">*</span></label>
+                <select
+                  value={form.kelurahanId}
+                  onChange={(e) => setForm({ ...form, kelurahanId: e.target.value, zonaId: "", ruteId: "" })}
+                  className="input"
+                >
+                  <option value="">— Pilih Kelurahan —</option>
+                  {kelurahanList.map((k) => (
+                    <option key={k.id} value={k.id}>
+                      {k.nama}{k.kecamatan ? ` · ${k.kecamatan}` : ""}
+                    </option>
+                  ))}
+                </select>
+                {kelurahanTerpilih && (
+                  <div className="mt-2.5 flex flex-wrap gap-2">
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">{kelurahanTerpilih.kecamatan || "Kec. —"}</span>
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">{kelurahanTerpilih.nama || "Kel. —"}</span>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="label flex items-center justify-between">
+                  <span className="text-emerald-800 font-bold">📍 Zona Area Pickup <span className="text-red-600">*</span></span>
+                  <span className="text-[10px] text-slate-500 font-normal">Sesuai Kelurahan</span>
+                </label>
+                <select
+                  value={form.zonaId}
+                  onChange={(e) => setForm({ ...form, zonaId: e.target.value, ruteId: "" })}
+                  className="input border-2 border-emerald-500 font-bold text-emerald-950 shadow-xs"
+                >
+                  <option value="">— Pilih Zona Area Pickup —</option>
+                  {availableZonas.map((z) => (
+                    <option key={z.id} value={z.id}>
+                      {z.nama}
+                    </option>
+                  ))}
+                </select>
+                {availableZonas.length === 0 && form.kelurahanId && (
+                  <p className="text-xs text-amber-700 font-medium mt-1">
+                    Kelurahan ini belum memiliki zona. Anda dapat mengaturnya di menu Zona Angkut.
+                  </p>
+                )}
+                {zonaTerpilih && (
+                  <div className="mt-2.5 flex items-center gap-1.5">
+                    <span
+                      className="w-2.5 h-2.5 rounded-full shrink-0"
+                      style={{ backgroundColor: zonaTerpilih.warna || "#10b981" }}
+                    />
+                    <span className="text-xs font-bold text-emerald-800">
+                      Terpilih: {zonaTerpilih.nama}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
             <div>
               <label className="label">Alamat Lengkap <span className="text-red-600">*</span></label>
@@ -491,14 +604,158 @@ export default function DaftarPelangganPage() {
           </div>
         )}
 
-        {/* ═══ STEP 4: TARIF & STATUS ═══ */}
+        {/* ═══ STEP 4: JADWAL, PETUGAS & TARIF ═══ */}
         {step === 4 && (
           <div className="space-y-6">
             <JudulSection
-              kode="04 / TARIF & STATUS"
-              judul="Tarif Iuran & Status Langganan"
-              desc="Prioritas tarif: paket terpilih → tarif kustom → tarif default kategori"
+              kode="04 / JADWAL & TARIF"
+              judul="Jadwal Pickup, Petugas & Tarif Iuran"
+              desc="Tentukan petugas armada, hari penjemputan (bisa lebih dari satu hari), dan skema tarif"
             />
+
+            {/* Bagian Operasional & Jadwal Multi-Hari */}
+            <div className="p-4 sm:p-5 rounded-2xl border-2 border-emerald-600/20 bg-emerald-50/20 space-y-4">
+              <div className="flex items-center gap-2 border-b border-emerald-900/10 pb-3">
+                <span className="w-7 h-7 rounded-xl bg-emerald-700 text-white text-sm flex items-center justify-center font-black shadow-xs">
+                  🚚
+                </span>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">Operasional Penjemputan Sampah</h3>
+                  <p className="text-xs text-slate-500">Pilih petugas pickup armada dan jadwal penjemputan warga (bisa multi-hari)</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                {/* Petugas Pickup */}
+                <div>
+                  <label className="label">Petugas Pickup / Supir</label>
+                  <select
+                    value={form.petugasId}
+                    onChange={(e) => setForm({ ...form, petugasId: e.target.value })}
+                    className="input bg-white font-semibold text-slate-800"
+                  >
+                    <option value="">— Pilih Petugas —</option>
+                    {petugasList.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.nama} {p.jabatan ? `(${p.jabatan})` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Rute Armada */}
+                <div>
+                  <label className="label">Rute Armada (Opsional)</label>
+                  <select
+                    value={form.ruteId}
+                    onChange={(e) => handleRuteChange(e.target.value)}
+                    className="input bg-white"
+                  >
+                    <option value="">— Hubungkan ke Rute —</option>
+                    {availableRutes.map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.nama} ({r.hari})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Jam Estimasi */}
+                <div>
+                  <label className="label">Jam Penjemputan</label>
+                  <input
+                    type="time"
+                    value={form.jam}
+                    onChange={(e) => setForm({ ...form, jam: e.target.value })}
+                    className="input bg-white"
+                  />
+                </div>
+              </div>
+
+              {/* Multi-Select Hari Pengangkutan */}
+              <div className="pt-2 border-t border-emerald-200/60 space-y-2">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <label className="text-xs font-bold text-slate-800">
+                    Pilih Hari Penjemputan <span className="text-slate-500 font-normal">(Bisa memilih lebih dari satu hari)</span>
+                  </label>
+
+                  {/* Preset Buttons */}
+                  <div className="flex items-center gap-1 flex-wrap text-[10px]">
+                    <button
+                      type="button"
+                      onClick={() => setForm((f) => ({ ...f, hari: ["Senin", "Kamis"] }))}
+                      className="px-2 py-0.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium transition"
+                    >
+                      Senin &amp; Kamis
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setForm((f) => ({ ...f, hari: ["Senin", "Rabu", "Jumat"] }))}
+                      className="px-2 py-0.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium transition"
+                    >
+                      Senin, Rabu, Jumat
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setForm((f) => ({ ...f, hari: ["Selasa", "Kamis", "Sabtu"] }))}
+                      className="px-2 py-0.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium transition"
+                    >
+                      Selasa, Kamis, Sabtu
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setForm((f) => ({ ...f, hari: [...DAFTAR_HARI] }))}
+                      className="px-2 py-0.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium transition"
+                    >
+                      Semua Hari
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setForm((f) => ({ ...f, hari: [] }))}
+                      className="px-2 py-0.5 rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 font-medium transition"
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </div>
+
+                {/* Day Chips */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-1.5">
+                  {DAFTAR_HARI.map((h) => {
+                    const isSelected = form.hari.includes(h);
+                    return (
+                      <button
+                        key={h}
+                        type="button"
+                        onClick={() => toggleHari(h)}
+                        className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                          isSelected
+                            ? "bg-emerald-700 text-white shadow-xs scale-[1.02]"
+                            : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200"
+                        }`}
+                      >
+                        <span>{isSelected ? "✓" : "+"}</span>
+                        <span>{h}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Selection status */}
+                <div className="text-[11px] font-medium pt-0.5">
+                  {form.hari.length > 0 ? (
+                    <span className="text-emerald-700 font-semibold flex items-center gap-1">
+                      <span>✓</span>
+                      <span>{form.hari.length} hari penjemputan dipilih: <strong>{form.hari.join(", ")}</strong></span>
+                    </span>
+                  ) : (
+                    <span className="text-amber-700 font-medium">
+                      ⚠️ Belum ada hari penjemputan yang dipilih. Silakan pilih minimal 1 hari.
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
 
             {/* Tarif default kategori */}
             <div className="bg-emerald-50/60 border border-emerald-200 rounded-2xl p-4 shadow-sm">
@@ -690,7 +947,7 @@ export default function DaftarPelangganPage() {
                   )}
                 </div>
                 <div>
-                  <p className="label !mb-1 text-xs font-semibold text-slate-500">ALAMAT & WILAYAH</p>
+                  <p className="label !mb-1 text-xs font-semibold text-slate-500">ALAMAT &amp; ZONASI</p>
                   <p className="font-semibold text-slate-900 text-base">{form.alamat}</p>
                   {form.rt && form.rw && <p className="text-sm text-slate-600">RT {form.rt} / RW {form.rw}</p>}
                   <p className="text-sm text-slate-600">
@@ -698,6 +955,37 @@ export default function DaftarPelangganPage() {
                     {kelurahanTerpilih?.kecamatan && ` · ${kelurahanTerpilih.kecamatan}`}
                     {kelurahanTerpilih?.kota && ` · ${kelurahanTerpilih.kota}`}
                   </p>
+                  {zonaTerpilih && (
+                    <div className="mt-1.5 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-800">
+                      <span>📍 Zona:</span>
+                      <span>{zonaTerpilih.nama}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Konfirmasi Operasional Penjemputan */}
+              <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 shadow-xs">
+                <p className="label !mb-2 text-xs font-semibold text-slate-500">OPERASIONAL &amp; PENJEMPUTAN</p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                  <div>
+                    <span className="text-slate-600 font-bold block text-[11px]">Petugas Pickup:</span>
+                    <span className="font-bold text-slate-800">
+                      {petugasTerpilih ? `${petugasTerpilih.nama} ${petugasTerpilih.jabatan ? `(${petugasTerpilih.jabatan})` : ""}` : "—"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-slate-600 font-bold block text-[11px]">Hari Penjemputan:</span>
+                    <span className="font-bold text-emerald-700">
+                      {form.hari.length > 0 ? form.hari.join(", ") : "—"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-slate-600 font-bold block text-[11px]">Jam Estimasi / Rute:</span>
+                    <span className="font-medium text-slate-800">
+                      {form.jam} {ruteTerpilih ? `· ${ruteTerpilih.nama}` : ""}
+                    </span>
+                  </div>
                 </div>
               </div>
 

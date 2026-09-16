@@ -54,7 +54,7 @@ type PelangganDetail = {
     hari: string;
     jam?: string;
     aktif: boolean;
-    rute: { id: number; nama: string; jam?: string };
+    rute: { id: number; nama: string; jam?: string; petugasId?: number | null };
   }[];
   tagihan: {
     id: number;

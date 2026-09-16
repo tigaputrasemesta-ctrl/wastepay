@@ -20,7 +20,8 @@ import { formatRupiah } from "@/lib/utils";
 type Kelurahan = { id: number; nama: string; kecamatan?: string | null };
 type Zona = { id: number; nama: string; warna?: string | null; kelurahanId: number };
 type Wilayah = { id: number; nama: string; rt?: string | null; rw?: string | null; kelurahanId?: number | null; zonaId?: number | null };
-type Rute = { id: number; nama: string; hari: string; kelurahanId?: number | null; zonaId?: number | null };
+type Petugas = { id: number; nama: string; jabatan?: string | null; aktif?: boolean };
+type Rute = { id: number; nama: string; hari: string; jam?: string | null; kelurahanId?: number | null; zonaId?: number | null; petugasId?: number | null; petugas?: { id: number; nama: string } | null };
 type Paket = { id: number; nama: string; harga: number | null };
 
 export type ApprovalPelangganTarget = {
@@ -47,6 +48,7 @@ export type ApprovalPelangganTarget = {
   kelurahan?: { id: number; nama: string; kecamatan?: string | null } | null;
   wilayah?: { id: number; nama: string; zonaId?: number | null; zona?: { id: number; nama: string } | null } | null;
   paket?: { id: number; nama: string; harga: number | null } | null;
+  jadwal?: Array<{ id: number; hari: string; jam?: string | null; ruteId?: number; rute?: { id: number; nama: string; petugasId?: number | null } | null }> | null;
 };
 
 type Props = {
@@ -56,6 +58,8 @@ type Props = {
   onSuccess: () => void;
   showToast: (msg: string, type?: "success" | "error") => void;
 };
+
+const DAFTAR_HARI = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
 
 const KATEGORI_OPTIONS = [
   { value: "level_1", label: "🏠 Level 1 — Rumah Tangga Kecil" },
@@ -78,6 +82,7 @@ export default function ModalApprovalPelanggan({
   const [wilayahList, setWilayahList] = useState<Wilayah[]>([]);
   const [ruteList, setRuteList] = useState<Rute[]>([]);
   const [paketList, setPaketList] = useState<Paket[]>([]);
+  const [petugasList, setPetugasList] = useState<Petugas[]>([]);
   const [loadingData, setLoadingData] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [rejecting, setRejecting] = useState(false);
@@ -86,7 +91,10 @@ export default function ModalApprovalPelanggan({
   const [selectedKelurahan, setSelectedKelurahan] = useState("");
   const [selectedZona, setSelectedZona] = useState("");
   const [selectedWilayah, setSelectedWilayah] = useState("");
+  const [selectedPetugas, setSelectedPetugas] = useState("");
   const [selectedRute, setSelectedRute] = useState("");
+  const [selectedHari, setSelectedHari] = useState<string[]>([]);
+  const [selectedJam, setSelectedJam] = useState("08:00");
   const [selectedKategori, setSelectedKategori] = useState("level_1");
   const [selectedPaket, setSelectedPaket] = useState("");
   const [customTarif, setCustomTarif] = useState("");
@@ -99,12 +107,13 @@ export default function ModalApprovalPelanggan({
     async function loadResources() {
       setLoadingData(true);
       try {
-        const [kelRes, zonaRes, wilRes, ruteRes, pakRes] = await Promise.all([
+        const [kelRes, zonaRes, wilRes, ruteRes, pakRes, petRes] = await Promise.all([
           fetch("/api/kelurahan"),
           fetch("/api/zona"),
           fetch("/api/wilayah"),
           fetch("/api/rute"),
           fetch("/api/paket"),
+          fetch("/api/petugas"),
         ]);
         if (cancelled) return;
         setKelurahanList(await kelRes.json());
@@ -112,6 +121,8 @@ export default function ModalApprovalPelanggan({
         setWilayahList(await wilRes.json());
         setRuteList(await ruteRes.json());
         setPaketList(await pakRes.json());
+        const rawPet = await petRes.json();
+        setPetugasList(Array.isArray(rawPet) ? rawPet : []);
       } catch (err) {
         console.error("Gagal memuat master data approval:", err);
       } finally {
@@ -153,14 +164,48 @@ export default function ModalApprovalPelanggan({
       ? pelanggan.paketId.toString()
       : "";
 
+    const initialJadwal = pelanggan.jadwal && pelanggan.jadwal.length > 0 ? pelanggan.jadwal : null;
+    const initialHari = initialJadwal ? initialJadwal.map((j) => j.hari) : ["Senin", "Kamis"];
+    const initialJam = initialJadwal?.[0]?.jam || "08:00";
+    const initialRuteId = initialJadwal?.[0]?.ruteId ? initialJadwal[0].ruteId.toString() : "";
+    const initialPetugasId = initialJadwal?.[0]?.rute?.petugasId ? initialJadwal[0].rute.petugasId.toString() : "";
+
     setSelectedKelurahan(initialKelId);
     setSelectedZona(initialZonaId);
     setSelectedWilayah(initialWilId);
-    setSelectedRute("");
+    setSelectedRute(initialRuteId);
+    setSelectedPetugas(initialPetugasId);
+    setSelectedHari(initialHari);
+    setSelectedJam(initialJam);
     setSelectedKategori(pelanggan.kategori || "level_1");
     setSelectedPaket(initialPaketId);
     setCustomTarif(pelanggan.customTarif ? pelanggan.customTarif.toString() : "");
   }, [pelanggan]);
+
+  // Handle Rute selection change
+  const handleRuteChange = (rid: string) => {
+    setSelectedRute(rid);
+    if (!rid) return;
+    const r = ruteList.find((item) => item.id.toString() === rid);
+    if (r) {
+      if (r.petugasId) setSelectedPetugas(r.petugasId.toString());
+      if (r.hari) {
+        const days = r.hari
+          .split(",")
+          .map((s) => s.trim())
+          .filter((s) => DAFTAR_HARI.includes(s));
+        if (days.length > 0) setSelectedHari(days);
+      }
+      if (r.jam) setSelectedJam(r.jam);
+    }
+  };
+
+  // Toggle multi-day selection
+  const toggleHari = (h: string) => {
+    setSelectedHari((prev) =>
+      prev.includes(h) ? prev.filter((d) => d !== h) : [...prev, h]
+    );
+  };
 
   // Filter options based on selected Kelurahan
   const availableZonas = zonaList.filter(
@@ -190,7 +235,10 @@ export default function ModalApprovalPelanggan({
         kelurahanId: selectedKelurahan ? parseInt(selectedKelurahan) : null,
         zonaId: selectedZona ? parseInt(selectedZona) : null,
         wilayahId: selectedWilayah ? parseInt(selectedWilayah) : null,
+        petugasId: selectedPetugas ? parseInt(selectedPetugas) : null,
         ruteId: selectedRute ? parseInt(selectedRute) : null,
+        hari: selectedHari,
+        jam: selectedJam,
         kategori: selectedKategori,
         paketId: selectedPaket ? parseInt(selectedPaket) : null,
         customTarif: customTarif ? parseFloat(customTarif) : null,
@@ -414,140 +462,287 @@ export default function ModalApprovalPelanggan({
           </div>
 
           {/* Form Konfigurasi Admin Pusat */}
-          <div className="p-4 rounded-2xl border-2 border-emerald-600/20 bg-emerald-50/20 space-y-4">
-            <div className="flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-emerald-700 text-white text-xs flex items-center justify-center font-black">
-                ⚙️
-              </span>
-              <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">
-                Pengaturan Operasional oleh Admin Pusat
-              </h4>
+          <div className="p-4 sm:p-5 rounded-2xl border-2 border-emerald-600/20 bg-emerald-50/20 space-y-4">
+            <div className="flex items-center justify-between gap-2 border-b border-emerald-900/10 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-emerald-700 text-white text-xs flex items-center justify-center font-black">
+                  ⚙️
+                </span>
+                <div>
+                  <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">
+                    Pengaturan Operasional oleh Admin Pusat
+                  </h4>
+                  <p className="text-[11px] text-slate-500 font-medium">
+                    Penetapan zonasi, petugas pickup, jadwal multi-hari, dan paket iuran
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              {/* Kelurahan */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Kelurahan *
-                </label>
-                <select
-                  value={selectedKelurahan}
-                  onChange={(e) => {
-                    setSelectedKelurahan(e.target.value);
-                    setSelectedZona("");
-                    setSelectedWilayah("");
-                    setSelectedRute("");
-                  }}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                >
-                  <option value="">Pilih Kelurahan</option>
-                  {kelurahanList.map((k) => (
-                    <option key={k.id} value={k.id}>
-                      {k.nama} {k.kecamatan ? `· ${k.kecamatan}` : ""}
-                    </option>
-                  ))}
-                </select>
+            {/* Bagian 1: Zonasi & Wilayah */}
+            <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 shadow-xs space-y-3">
+              <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">
+                1. Wilayah &amp; Penetapan Zona Pickup
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {/* Kelurahan */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Kelurahan *
+                  </label>
+                  <select
+                    value={selectedKelurahan}
+                    onChange={(e) => {
+                      setSelectedKelurahan(e.target.value);
+                      setSelectedZona("");
+                      setSelectedWilayah("");
+                      setSelectedRute("");
+                    }}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  >
+                    <option value="">Pilih Kelurahan</option>
+                    {kelurahanList.map((k) => (
+                      <option key={k.id} value={k.id}>
+                        {k.nama} {k.kecamatan ? `· ${k.kecamatan}` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Zona Area Pickup */}
+                <div>
+                  <label className="block text-xs font-bold text-emerald-800 mb-1 flex items-center gap-1">
+                    <span>📍 Zona Area Pickup *</span>
+                    <span className="text-[10px] text-emerald-600 font-normal">(Wajib)</span>
+                  </label>
+                  <select
+                    value={selectedZona}
+                    onChange={(e) => setSelectedZona(e.target.value)}
+                    className="w-full px-3 py-2 border-2 border-emerald-500 rounded-xl text-xs font-bold bg-white text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-xs"
+                  >
+                    <option value="">— Pilih Zona Angkut Pelanggan —</option>
+                    {availableZonas.map((z) => (
+                      <option key={z.id} value={z.id}>
+                        {z.nama}
+                      </option>
+                    ))}
+                  </select>
+                  {availableZonas.length === 0 && selectedKelurahan && (
+                    <p className="text-[10px] text-amber-700 mt-1">
+                      Belum ada zona di kelurahan ini.
+                    </p>
+                  )}
+                </div>
+
+                {/* Wilayah / RT */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Wilayah / RT (Opsional)
+                  </label>
+                  <select
+                    value={selectedWilayah}
+                    onChange={(e) => setSelectedWilayah(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  >
+                    <option value="">— Hubungkan ke RT Wilayah —</option>
+                    {availableWilayahs.map((w) => (
+                      <option key={w.id} value={w.id}>
+                        {w.nama} {w.rt ? `(RT ${w.rt})` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Bagian 2: Petugas Pickup & Jadwal Multi-Hari */}
+            <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 shadow-xs space-y-3.5">
+              <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">
+                2. Petugas Pickup &amp; Jadwal Penjemputan (Bisa &gt; 1 Hari)
+              </span>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {/* Petugas Pickup */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+                    <User className="w-3 h-3 text-emerald-700" />
+                    <span>Petugas Pickup / Supir</span>
+                  </label>
+                  <select
+                    value={selectedPetugas}
+                    onChange={(e) => setSelectedPetugas(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  >
+                    <option value="">— Pilih Petugas Pengangkut —</option>
+                    {petugasList.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.nama} {p.jabatan ? `(${p.jabatan})` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Rute Armada */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+                    <Truck className="w-3 h-3 text-slate-500" />
+                    <span>Rute Armada (Opsional)</span>
+                  </label>
+                  <select
+                    value={selectedRute}
+                    onChange={(e) => handleRuteChange(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  >
+                    <option value="">— Hubungkan ke Rute Armada —</option>
+                    {availableRutes.map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.nama} ({r.hari})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Jam Estimasi */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Jam Estimasi Penjemputan
+                  </label>
+                  <input
+                    type="time"
+                    value={selectedJam}
+                    onChange={(e) => setSelectedJam(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                </div>
               </div>
 
-              {/* Zona Area Pickup */}
-              <div>
-                <label className="block text-xs font-bold text-emerald-800 mb-1 flex items-center gap-1">
-                  <span>📍 Zona Area Pickup *</span>
-                  <span className="text-[10px] text-emerald-600 font-normal">(Wajib)</span>
-                </label>
-                <select
-                  value={selectedZona}
-                  onChange={(e) => setSelectedZona(e.target.value)}
-                  className="w-full px-3 py-2 border-2 border-emerald-500 rounded-xl text-xs font-bold bg-white text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-xs"
-                >
-                  <option value="">— Pilih Zona Angkut Pelanggan —</option>
-                  {availableZonas.map((z) => (
-                    <option key={z.id} value={z.id}>
-                      {z.nama}
-                    </option>
-                  ))}
-                </select>
-                {availableZonas.length === 0 && selectedKelurahan && (
-                  <p className="text-[10px] text-amber-700 mt-1">
-                    Kelurahan ini belum memiliki zona. Atur di menu Zona Angkut.
-                  </p>
-                )}
-              </div>
+              {/* Multi-Select Hari Pengangkutan */}
+              <div className="pt-2 border-t border-slate-100 space-y-2">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <label className="text-xs font-bold text-slate-800">
+                    Pilih Hari Penjemputan <span className="text-slate-500 font-medium">(Bisa memilih lebih dari satu hari)</span>
+                  </label>
 
-              {/* Wilayah / RT */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Wilayah / RT (Opsional)
-                </label>
-                <select
-                  value={selectedWilayah}
-                  onChange={(e) => setSelectedWilayah(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                >
-                  <option value="">— Hubungkan ke RT Wilayah —</option>
-                  {availableWilayahs.map((w) => (
-                    <option key={w.id} value={w.id}>
-                      {w.nama} {w.rt ? `(RT ${w.rt})` : ""}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                  {/* Preset Buttons */}
+                  <div className="flex items-center gap-1 flex-wrap text-[10px]">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedHari(["Senin", "Kamis"])}
+                      className="px-2 py-0.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium transition"
+                    >
+                      Senin &amp; Kamis
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedHari(["Senin", "Rabu", "Jumat"])}
+                      className="px-2 py-0.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium transition"
+                    >
+                      Senin, Rabu, Jumat
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedHari(["Selasa", "Kamis", "Sabtu"])}
+                      className="px-2 py-0.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium transition"
+                    >
+                      Selasa, Kamis, Sabtu
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedHari([...DAFTAR_HARI])}
+                      className="px-2 py-0.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium transition"
+                    >
+                      Semua Hari
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedHari([])}
+                      className="px-2 py-0.5 rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 font-medium transition"
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </div>
 
-              {/* Rute Armada Penjemputan */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
-                  <Truck className="w-3 h-3 text-slate-500" />
-                  <span>Jadwalkan ke Rute Armada</span>
-                </label>
-                <select
-                  value={selectedRute}
-                  onChange={(e) => setSelectedRute(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                >
-                  <option value="">— Hubungkan ke Rute Armada —</option>
-                  {availableRutes.map((r) => (
-                    <option key={r.id} value={r.id}>
-                      {r.nama} ({r.hari})
-                    </option>
-                  ))}
-                </select>
-              </div>
+                {/* Day Chips */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-1.5">
+                  {DAFTAR_HARI.map((h) => {
+                    const isSelected = selectedHari.includes(h);
+                    return (
+                      <button
+                        key={h}
+                        type="button"
+                        onClick={() => toggleHari(h)}
+                        className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                          isSelected
+                            ? "bg-emerald-700 text-white shadow-xs scale-[1.02]"
+                            : "bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200"
+                        }`}
+                      >
+                        <span>{isSelected ? "✓" : "+"}</span>
+                        <span>{h}</span>
+                      </button>
+                    );
+                  })}
+                </div>
 
-              {/* Kategori Tarif */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Kategori Pelanggan
-                </label>
-                <select
-                  value={selectedKategori}
-                  onChange={(e) => setSelectedKategori(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                >
-                  {KATEGORI_OPTIONS.map((k) => (
-                    <option key={k.value} value={k.value}>
-                      {k.label}
-                    </option>
-                  ))}
-                </select>
+                {/* Selection status */}
+                <div className="text-[11px] font-medium pt-0.5">
+                  {selectedHari.length > 0 ? (
+                    <span className="text-emerald-700 font-semibold flex items-center gap-1">
+                      <span>✓</span>
+                      <span>{selectedHari.length} hari dipilih: <strong>{selectedHari.join(", ")}</strong></span>
+                    </span>
+                  ) : (
+                    <span className="text-amber-700 font-medium">
+                      ⚠️ Belum ada hari penjemputan yang dipilih. Silakan klik hari di atas (bisa lebih dari satu).
+                    </span>
+                  )}
+                </div>
               </div>
+            </div>
 
-              {/* Paket Layanan */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Paket Layanan
-                </label>
-                <select
-                  value={selectedPaket}
-                  onChange={(e) => setSelectedPaket(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                >
-                  <option value="">Default Kategori</option>
-                  {paketList.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.nama} {p.harga ? `· ${formatRupiah(p.harga)}/bln` : ""}
-                    </option>
-                  ))}
-                </select>
+            {/* Bagian 3: Tarif & Kategori */}
+            <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 shadow-xs space-y-3">
+              <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">
+                3. Kategori Tarif &amp; Paket Layanan
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Kategori Tarif */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Kategori Pelanggan
+                  </label>
+                  <select
+                    value={selectedKategori}
+                    onChange={(e) => setSelectedKategori(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  >
+                    {KATEGORI_OPTIONS.map((k) => (
+                      <option key={k.value} value={k.value}>
+                        {k.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Paket Layanan */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Paket Layanan
+                  </label>
+                  <select
+                    value={selectedPaket}
+                    onChange={(e) => setSelectedPaket(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  >
+                    <option value="">Default Kategori</option>
+                    {paketList.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.nama} {p.harga ? `· ${formatRupiah(p.harga)}/bln` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
           </div>

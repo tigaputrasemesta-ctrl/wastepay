@@ -5,6 +5,7 @@ import { getSession } from "@/lib/auth";
 import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 import { generateNoInvoice } from "@/lib/invoice";
 import { hitungJatuhTempoKonsumen } from "@/lib/tagihan";
+import { tetapkanJadwalDanPetugasPelanggan } from "@/lib/penugasan-jadwal";
 
 export async function GET(
   request: Request,
@@ -21,7 +22,10 @@ export async function GET(
       },
       kelurahan: true,
       paket: true,
-      jadwal: { include: { rute: true } },
+      jadwal: {
+        where: { aktif: true },
+        include: { rute: { include: { petugas: true } } },
+      },
       tagihan: { orderBy: [{ tahun: "desc" }, { bulan: "desc" }], take: 12 },
       pembayaran: { orderBy: { createdAt: "desc" }, take: 12 },
       pengangkutan: { orderBy: { tanggal: "desc" }, take: 20 },
@@ -183,26 +187,31 @@ export async function PUT(
       }
     }
 
-    // Jika admin juga memilih Rute Armada penjemputan:
-    if (body.ruteId) {
-      const rid = parseInt(body.ruteId);
-      const rute = await prisma.rute.findUnique({ where: { id: rid } });
-      if (rute) {
-        const days = rute.hari.split(",").map((s) => s.trim()).filter(Boolean);
-        for (const h of (days.length > 0 ? days : ["Senin"])) {
-          await prisma.jadwal.upsert({
-            where: { pelangganId_ruteId_hari: { pelangganId: id, ruteId: rid, hari: h } },
-            create: { pelangganId: id, ruteId: rid, hari: h, jam: rute.jam || "08:00" },
-            update: { aktif: true },
-          });
-        }
-      }
+    // Penugasan Petugas Pickup, Rute Armada, dan Jadwal Pengangkutan (bisa memilih lebih dari 1 hari)
+    if (body.ruteId || body.petugasId || body.hari || body.jadwalHari) {
+      await tetapkanJadwalDanPetugasPelanggan({
+        pelangganId: id,
+        kelurahanId: data.kelurahanId !== undefined ? (data.kelurahanId as number | null) : null,
+        zonaId: body.zonaId ? parseInt(body.zonaId) : null,
+        petugasId: body.petugasId ? parseInt(body.petugasId) : null,
+        ruteId: body.ruteId ? parseInt(body.ruteId) : null,
+        hari: body.hari || body.jadwalHari,
+        jam: body.jam,
+      });
     }
 
     const pelanggan = await prisma.pelanggan.update({
       where: { id },
       data,
-      include: { wilayah: { include: { zona: true } }, kelurahan: true, paket: true, jadwal: { include: { rute: true } } },
+      include: {
+        wilayah: { include: { zona: true } },
+        kelurahan: true,
+        paket: true,
+        jadwal: {
+          where: { aktif: true },
+          include: { rute: { include: { petugas: true } } },
+        },
+      },
     });
 
     // Jika status diubah menjadi aktif (approval oleh admin pusat), auto-generate tagihan perdana

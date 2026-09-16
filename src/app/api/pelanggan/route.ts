@@ -7,6 +7,7 @@ import { generateKodePelanggan } from "@/lib/kode-pelanggan";
 import { generateNoInvoice } from "@/lib/invoice";
 import { hitungJatuhTempoKonsumen } from "@/lib/tagihan";
 import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
+import { tetapkanJadwalDanPetugasPelanggan } from "@/lib/penugasan-jadwal";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -92,6 +93,19 @@ export async function GET(request: Request) {
         },
         kelurahan: true,
         paket: true,
+        jadwal: {
+          where: { aktif: true },
+          include: {
+            rute: {
+              select: {
+                id: true,
+                nama: true,
+                petugasId: true,
+                petugas: { select: { id: true, nama: true } },
+              },
+            },
+          },
+        },
         _count: {
           select: { tagihan: true, pembayaran: true },
         },
@@ -219,6 +233,19 @@ export async function POST(request: Request) {
         );
       }
       throw e;
+    }
+
+    // Penugasan Petugas Pickup, Rute Armada, dan Jadwal Pengangkutan (bisa multi-hari)
+    if (body.ruteId || body.petugasId || body.hari || body.jadwalHari) {
+      await tetapkanJadwalDanPetugasPelanggan({
+        pelangganId: pelanggan.id,
+        kelurahanId: pelanggan.kelurahanId,
+        zonaId: zonaId ? parseInt(zonaId) : null,
+        petugasId: body.petugasId ? parseInt(body.petugasId) : null,
+        ruteId: body.ruteId ? parseInt(body.ruteId) : null,
+        hari: body.hari || body.jadwalHari,
+        jam: body.jam,
+      });
     }
 
     // Auto-generate tagihan bulan ini — hanya untuk pelanggan aktif
