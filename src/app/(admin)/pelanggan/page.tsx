@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { formatDate } from "@/lib/utils";
@@ -61,8 +62,89 @@ type Pelanggan = {
 
 type ZonaOption = { id: number; nama: string; warna?: string | null; kelurahanId: number };
 
+function StickerBarcodeItem({ p, idx }: { p: Pelanggan; idx: number }) {
+  const ref = useRef<SVGSVGElement | null>(null);
+  const [err, setErr] = useState(false);
+
+  useEffect(() => {
+    if (!ref.current || err || !p.kodePelanggan) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const mod = await import("jsbarcode");
+        if (!cancelled && ref.current) {
+          mod.default(ref.current, p.kodePelanggan!.replace(/-/g, ""), {
+            format: "CODE128",
+            width: 1.6,
+            height: 34,
+            displayValue: false,
+            margin: 0,
+            background: "#ffffff",
+            lineColor: "#111111",
+          });
+        }
+      } catch {
+        if (!cancelled) setErr(true);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [p.kodePelanggan, err]);
+
+  return (
+    <div
+      className="relative w-[92mm] h-[54mm] bg-white text-black p-2.5 flex flex-col overflow-hidden border border-slate-300 rounded-xl shadow-xs print:shadow-none print:border-black print:rounded-none select-none"
+      style={{ breakInside: "avoid" }}
+    >
+      <div className="flex items-center justify-between border-b-2 border-black pb-1">
+        <span className="font-extrabold uppercase text-[9px] tracking-wider">UPS HERU DEPOK</span>
+        <span className="font-mono font-bold text-[8px] border border-black px-1">
+          {p.kategori.replace("level_", "LVL ")}
+        </span>
+      </div>
+      <div className="text-center mt-1.5">
+        <span className="font-mono font-bold text-[22px] leading-none tracking-[0.15em]">
+          {p.kodePelanggan}
+        </span>
+      </div>
+      <div className="flex justify-center mt-1">
+        {err ? (
+          <span className="font-mono text-[12px] font-bold tracking-[0.35em]">{p.kodePelanggan}</span>
+        ) : (
+          <svg ref={ref} className="h-9 w-full max-w-[70mm]" />
+        )}
+      </div>
+      <div className="mt-1 border-t border-black pt-1">
+        <p className="font-bold text-[11px] leading-tight uppercase truncate">{p.nama}</p>
+        <p className="font-mono text-[8px] leading-tight text-black/80 line-clamp-2">{p.alamat}</p>
+        <p className="font-mono text-[8px] mt-0.5">
+          {p.rtRw ? `${p.rtRw} · ` : ""}{p.kelurahan?.nama ?? ""}{p.noTelepon ? ` · ${p.noTelepon}` : ""}
+        </p>
+      </div>
+      <span className="absolute bottom-1 right-2 font-mono text-[6px] text-black/40">#{idx + 1}</span>
+    </div>
+  );
+}
+
 export default function PelangganPage() {
+  return (
+    <Suspense fallback={<div className="p-6 text-sm text-slate-500 font-medium">Memuat Data Pelanggan...</div>}>
+      <PelangganContent />
+    </Suspense>
+  );
+}
+
+function PelangganContent() {
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const statusParam = searchParams.get("status");
+  const initialMainTab = tabParam === "sticker" ? "sticker" : (statusParam === "calon" || tabParam === "approval") ? "approval" : "data";
+
   const { showToast } = useToast();
+  const [mainTab, setMainTab] = useState<"data" | "approval" | "sticker">(initialMainTab);
+  const [selectedStickers, setSelectedStickers] = useState<Set<number>>(new Set());
+
   const [pelanggan, setPelanggan] = useState<Pelanggan[]>([]);
   const [kelurahanList, setKelurahanList] = useState<Kelurahan[]>([]);
   const [zonaList, setZonaList] = useState<ZonaOption[]>([]);
@@ -71,7 +153,7 @@ export default function PelangganPage() {
   const [showFilter, setShowFilter] = useState(false);
   const [filterKelurahan, setFilterKelurahan] = useState("");
   const [filterZona, setFilterZona] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
+  const [filterStatus, setFilterStatus] = useState(initialMainTab === "approval" ? "calon" : "");
   const [filterKategori, setFilterKategori] = useState("");
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -255,27 +337,160 @@ export default function PelangganPage() {
 
   return (
     <div className="p-6">
-      <div className="flex items-center justify-between mb-6 border-b border-slate-200 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 border-b border-slate-200 pb-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">
-            Pelanggan
+            Pusat Pengelolaan Pelanggan
           </h1>
           <p className="text-xs font-medium text-slate-500 mt-1">
-            Kelola data dan status warga pelanggan
+            Kelola data pelanggan aktif, verifikasi survei calon pendaftar, dan cetak stiker barcode
           </p>
         </div>
+        <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
+          <Link
+            href="/registrasi"
+            className="px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
+          >
+            <span>📝 Formulir Lengkap</span>
+          </Link>
+          <button
+            onClick={openCreate}
+            className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-2 active:scale-95"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Tambah Pelanggan
+          </button>
+        </div>
+      </div>
+
+      {/* Main Module Tabs */}
+      <div className="flex items-center gap-2 mb-6 border-b border-slate-200 pb-2 overflow-x-auto">
         <button
-          onClick={openCreate}
-          className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-2 active:scale-95"
+          onClick={() => { setMainTab("data"); setFilterStatus(""); setPage(1); }}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all shrink-0 ${
+            mainTab === "data"
+              ? "bg-emerald-700 text-white shadow-sm"
+              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+          }`}
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Tambah Pelanggan
+          <span>👥 Data Pelanggan</span>
+          <span className={`text-xs px-2 py-0.5 rounded-full font-mono ${mainTab === "data" ? "bg-emerald-800 text-white" : "bg-slate-200 text-slate-700"}`}>
+            {pelanggan.length}
+          </span>
+        </button>
+
+        <button
+          onClick={() => { setMainTab("approval"); setFilterStatus("calon"); setPage(1); }}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all shrink-0 ${
+            mainTab === "approval"
+              ? "bg-amber-600 text-white shadow-sm"
+              : "text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200"
+          }`}
+        >
+          <span>📋 Survei & Approval Calon</span>
+          <span className={`text-xs px-2 py-0.5 rounded-full font-mono ${mainTab === "approval" ? "bg-amber-800 text-white" : "bg-amber-200 text-amber-900"}`}>
+            {calonList.length}
+          </span>
+        </button>
+
+        <button
+          onClick={() => { setMainTab("sticker"); setPage(1); }}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all shrink-0 ${
+            mainTab === "sticker"
+              ? "bg-emerald-700 text-white shadow-sm"
+              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+          }`}
+        >
+          <span>🏷️ Cetak Stiker Barcode</span>
+          <span className={`text-xs px-2 py-0.5 rounded-full font-mono ${mainTab === "sticker" ? "bg-emerald-800 text-white" : "bg-slate-200 text-slate-700"}`}>
+            {selectedStickers.size > 0 ? `${selectedStickers.size} dipilih` : "Cetak"}
+          </span>
         </button>
       </div>
 
-      {/* Alert Banner Approval Pelanggan Baru */}
+      {mainTab === "sticker" ? (
+        <div className="space-y-6">
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2 flex-wrap text-xs">
+              <button
+                type="button"
+                onClick={() => {
+                  const allIds = new Set(pelanggan.map((p) => p.id));
+                  setSelectedStickers(allIds);
+                }}
+                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl transition"
+              >
+                Pilih Semua ({pelanggan.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedStickers(new Set())}
+                className="px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold rounded-xl transition"
+              >
+                Bersihkan Pilihan
+              </button>
+              <span className="text-slate-500 font-medium">
+                {selectedStickers.size} dari {pelanggan.length} pelanggan dipilih untuk dicetak
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (selectedStickers.size === 0) {
+                  showToast("Pilih minimal satu pelanggan untuk dicetak", "warning");
+                  return;
+                }
+                window.print();
+              }}
+              disabled={selectedStickers.size === 0}
+              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5 self-stretch sm:self-auto justify-center"
+            >
+              <span>🖨️ Cetak Stiker ({selectedStickers.size})</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 print:grid-cols-2 print:gap-2">
+            {pelanggan.map((p, idx) => {
+              const isChecked = selectedStickers.has(p.id);
+              return (
+                <div
+                  key={p.id}
+                  onClick={() => {
+                    const next = new Set(selectedStickers);
+                    if (next.has(p.id)) next.delete(p.id);
+                    else next.add(p.id);
+                    setSelectedStickers(next);
+                  }}
+                  className={`p-3 rounded-2xl border-2 transition-all cursor-pointer select-none print:border-0 print:p-0 ${
+                    isChecked
+                      ? "border-emerald-600 bg-emerald-50/20 shadow-xs"
+                      : "border-slate-200 bg-white hover:border-slate-300 opacity-60 print:hidden"
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2 print:hidden">
+                    <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-800">
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => {}}
+                        className="rounded text-emerald-700 focus:ring-emerald-500"
+                      />
+                      <span>Pilih untuk Cetak</span>
+                    </label>
+                    <span className="text-[10px] font-mono text-slate-400">#{idx + 1}</span>
+                  </div>
+                  <StickerBarcodeItem p={p} idx={idx} />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Alert Banner Approval Pelanggan Baru */}
       {calonList.length > 0 && (
         <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300/80 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-in fade-in">
           <div className="flex items-center gap-3">
@@ -682,6 +897,8 @@ export default function PelangganPage() {
           </div>
         )}
       </div>
+        </>
+      )}
 
       {/* Modal Form */}
       {showForm && (

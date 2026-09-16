@@ -54,7 +54,7 @@ const menuConfig: Record<
     ),
   },
   pelanggan: {
-    label: "Pelanggan",
+    label: "Pusat Pelanggan",
     href: "/pelanggan",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -144,7 +144,7 @@ const menuConfig: Record<
     ),
   },
   kendaraan: {
-    label: "Kendaraan",
+    label: "Armada & Fasilitas",
     href: "/kendaraan",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -198,7 +198,7 @@ const menuConfig: Record<
     ),
   },
   notifikasi: {
-    label: "Notifikasi",
+    label: "Notifikasi & Info",
     href: "/notifikasi",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -284,17 +284,13 @@ const menuConfig: Record<
 const MENU_GROUP: Record<string, string> = {
   dashboard: "utama",
   "live-report": "utama",
-  registrasi: "pelanggan",
-  survei: "pelanggan",
   pelanggan: "pelanggan",
-  sticker: "pelanggan",
+  daftar: "pelanggan",
   peta: "operasional",
   zona: "operasional",
   pengangkutan: "operasional",
   rute: "operasional",
-  jadwal: "operasional",
   kendaraan: "operasional",
-  transit: "operasional",
   tagihan: "keuangan",
   tarif: "keuangan",
   pengeluaran: "keuangan",
@@ -302,10 +298,8 @@ const MENU_GROUP: Record<string, string> = {
   rekonsiliasi: "keuangan",
   komplain: "komunikasi",
   chat: "komunikasi",
-  pengumuman: "komunikasi",
   notifikasi: "komunikasi",
   petugas: "sistem",
-  tpa: "sistem",
   users: "sistem",
   "audit-log": "sistem",
   pengaturan: "sistem",
