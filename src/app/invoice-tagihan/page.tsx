@@ -233,7 +233,7 @@ export default async function InvoiceTagihanPage({
                     <th className="th-desc">Uraian Komponen Retribusi</th>
                     <th className="th-period">Periode</th>
                     <th className="th-base text-right">Tarif Dasar</th>
-                    <th className="th-ppn text-right">PPN (11%)</th>
+                    {pajakRate > 0 && <th className="th-ppn text-right">Pajak Daerah ({pajakRate}%)</th>}
                     <th className="th-total text-right">Subtotal</th>
                   </tr>
                 </thead>
@@ -250,7 +250,7 @@ export default async function InvoiceTagihanPage({
                     </td>
                     <td className="td-period font-medium">{namaPeriode}</td>
                     <td className="td-base text-right tabular-nums">{formatRupiahSkylite(rincian.base)}</td>
-                    <td className="td-ppn text-right tabular-nums">{formatRupiahSkylite(rincian.ppn)}</td>
+                    {pajakRate > 0 && <td className="td-ppn text-right tabular-nums">{formatRupiahSkylite(rincian.ppn)}</td>}
                     <td className="td-total text-right tabular-nums font-bold">
                       {formatRupiahSkylite(rincian.subTotalPpn)}
                     </td>

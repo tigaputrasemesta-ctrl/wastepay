@@ -163,10 +163,12 @@ export default async function KwitansiPage({
               <div>Iuran {periode}</div>
               <div>{formatRupiahSkylite(rincian.base)}</div>
             </div>
-            <div className="kwitansi-item">
-              <div>PPN (11%)</div>
-              <div>{formatRupiahSkylite(rincian.ppn)}</div>
-            </div>
+            {rincian.ppn > 0 && (
+              <div className="kwitansi-item">
+                <div>Pajak Daerah</div>
+                <div>{formatRupiahSkylite(rincian.ppn)}</div>
+              </div>
+            )}
             {rincian.denda > 0 && (
               <div className="kwitansi-item kwitansi-item-denda">
                 <div>Denda keterlambatan</div>

@@ -5,8 +5,8 @@ import { prisma } from "@/lib/prisma";
 import {
   getTagihanByNoInvoice,
   hitungRincian,
-  PPN_RATE,
 } from "@/lib/invoice";
+import { getPajakDaerahRate } from "@/lib/pengaturan";
 import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
 
 /**
@@ -68,7 +68,8 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Tagihan tidak ditemukan" }, { status: 404 });
   }
 
-  const rincian = hitungRincian(tagihan.jumlah, tagihan.denda);
+  const ppnRate = await getPajakDaerahRate();
+  const rincian = hitungRincian(tagihan.jumlah, tagihan.denda, ppnRate);
   const pembayaranLunas = tagihan.pembayaran.find(
     (p) => p.status === "terverifikasi" || p.status === "lunas"
   );
@@ -82,7 +83,7 @@ export async function GET(request: Request) {
     jumlah: tagihan.jumlah,
     denda: tagihan.denda || 0,
     ppn: rincian.ppn,
-    ppnRate: PPN_RATE,
+    ppnRate: ppnRate,
     total: rincian.total,
     duitkuAktif: isDuitkuEnabled(),
     jatuhTempo: tagihan.jatuhTempo,

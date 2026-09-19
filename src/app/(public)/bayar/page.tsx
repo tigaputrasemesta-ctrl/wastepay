@@ -445,10 +445,12 @@ function BayarPortalContent() {
                 <span>Iuran Pokok</span>
                 <span className="font-semibold">{formatRupiahSkylite(detail.jumlah)}</span>
               </div>
-              <div className="flex justify-between text-slate-600">
-                <span>PPN ({detail.ppnRate}%)</span>
-                <span className="font-semibold">{formatRupiahSkylite(detail.ppn)}</span>
-              </div>
+              {detail.ppnRate > 0 && (
+                <div className="flex justify-between text-slate-600">
+                  <span>Pajak Daerah ({detail.ppnRate}%)</span>
+                  <span className="font-semibold">{formatRupiahSkylite(detail.ppn)}</span>
+                </div>
+              )}
               {detail.denda > 0 && (
                 <div className="flex justify-between text-rose-600">
                   <span>Denda Keterlambatan</span>
