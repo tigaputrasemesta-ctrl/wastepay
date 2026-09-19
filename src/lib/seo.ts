@@ -81,7 +81,7 @@ export function generateLocalBusinessJsonLd() {
         legalName: SITE_CONFIG.legalName,
         alternateName: ["UPS HERU Depok", "WastePay", "TPS 3R Kalibaru"],
         url: baseUrl,
-        logo: `${baseUrl}/o2w-logo-v3.png`,
+      logo: `${baseUrl}/ups-heru-logo.jpg`,
         image: `${baseUrl}/opengraph-image`,
         description: SITE_CONFIG.description,
         telephone: SITE_CONFIG.telephone,

@@ -72,7 +72,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "/favicon.ico",
-    apple: "/o2w-logo-v3.png",
+    apple: "/ups-heru-logo.jpg",
   },
 };
 

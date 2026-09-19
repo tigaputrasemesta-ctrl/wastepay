@@ -16,9 +16,14 @@ export default function manifest(): MetadataRoute.Manifest {
         type: "image/x-icon",
       },
       {
-        src: "/o2w-logo-v3.png",
+        src: "/ups-heru-logo.jpg",
+        sizes: "192x192",
+        type: "image/jpeg",
+      },
+      {
+        src: "/ups-heru-logo.jpg",
         sizes: "512x512",
-        type: "image/png",
+        type: "image/jpeg",
         purpose: "maskable",
       },
     ],

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 type Props = {
   size?: "sm" | "md" | "lg" | "xl";
@@ -13,24 +14,20 @@ export default function O2WLogo({
   href = null,
   className = "",
 }: Props) {
-  const badgeSize =
-    size === "sm" ? "px-1.5 py-0.5 text-[10px]" :
-    size === "md" ? "px-2 py-0.5 text-xs" :
-    size === "lg" ? "px-3 py-1 text-sm" : "px-4 py-1.5 text-base";
-
-  const textSize =
-    size === "sm" ? "text-xl" :
-    size === "md" ? "text-3xl" :
-    size === "lg" ? "text-5xl" : "text-7xl";
+  const imageSize =
+    size === "sm" ? 32 :
+    size === "md" ? 48 :
+    size === "lg" ? 80 : 128;
 
   const logoContent = (
     <div className={`inline-flex items-center gap-2 select-none ${className}`}>
-      <span className={`bg-emerald-700 text-white font-bold tracking-wider rounded-lg ${badgeSize} shadow-sm`}>
-        UPS
-      </span>
-      <span className={`font-extrabold tracking-tight text-slate-900 ${textSize}`}>
-        HERU<span className="text-emerald-700">.</span>
-      </span>
+      <Image
+        src="/ups-heru-logo.jpg"
+        alt="UPS HERU Logo"
+        width={imageSize}
+        height={imageSize}
+        className="rounded-lg object-contain shadow-sm"
+      />
     </div>
   );
 
