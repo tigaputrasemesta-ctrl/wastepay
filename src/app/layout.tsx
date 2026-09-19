@@ -74,6 +74,9 @@ export const metadata: Metadata = {
     icon: "/favicon.ico",
     apple: "/ups-heru-logo.jpg",
   },
+  verification: {
+    google: "6aINUXOB2lc27VvIC1CK-GOYNUfHE3Y-0Su9xg8gEtI",
+  },
 };
 
 export default function RootLayout({
