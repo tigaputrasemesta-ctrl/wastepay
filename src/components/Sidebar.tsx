@@ -379,17 +379,12 @@ export default function Sidebar({
       {/* Logo */}
       <div className="flex items-center justify-between px-4 h-16 border-b border-slate-100 bg-white shrink-0">
         {isCollapsedEffective ? (
-          <div className="w-9 h-9 rounded-xl bg-emerald-700 flex items-center justify-center shrink-0 shadow-sm">
-            <span className="text-xs font-extrabold text-white leading-none">WP</span>
+          <div className="w-9 h-9 flex items-center justify-center shrink-0">
+            <img src="/ups-heru-logo.jpg" alt="Logo" className="w-9 h-9 object-cover rounded-md shadow-sm" />
           </div>
         ) : (
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-sm shadow-sm">
-              🚛
-            </div>
-            <span className="font-extrabold text-base tracking-tight text-slate-900">
-              WastePay <span className="text-emerald-700 text-xs font-bold uppercase ml-1 px-1.5 py-0.5 rounded-full bg-emerald-50">Admin</span>
-            </span>
+          <div className="flex items-center">
+            <img src="/ups-heru-logo.jpg" alt="UPS HERU Logo" className="h-12 w-12 object-contain rounded-lg shadow-sm" />
           </div>
         )}
         {isMobileDrawer ? (
