@@ -3,7 +3,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { Truck, MapPin, Smartphone, ArrowRight, Megaphone, ShieldCheck, Sparkles, Navigation, CheckCircle2 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import AnimatedDumpTruck from "@/components/AnimatedDumpTruck";
+
 import TrustStatsBar from "@/components/TrustStatsBar";
 import TimelineSection from "@/components/TimelineSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
@@ -88,7 +88,7 @@ export default async function LandingPage() {
           {/* Kolom Kiri: Copywriting & CTA (7 cols) */}
           <div className="md:col-span-7 space-y-6">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
               <span>Layanan Retribusi Sampah Modern • Kota Depok 2026</span>
             </div>
 
@@ -128,13 +128,13 @@ export default async function LandingPage() {
           <div className="md:col-span-5 relative">
             <div className="rounded-3xl border border-slate-200/80 bg-slate-900 p-6 text-white shadow-xl overflow-hidden relative">
               {/* Radar pulse background */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 border border-emerald-500/20 rounded-full animate-ping pointer-events-none" />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 border border-emerald-500/20 rounded-full pointer-events-none" />
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 border border-emerald-500/30 rounded-full pointer-events-none" />
 
               {/* Status Header */}
               <div className="flex items-center justify-between mb-6 relative z-10">
                 <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
                   <span>LIVE GPS DEPOK</span>
                 </div>
                 <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">AKTIF SEKARANG</span>
@@ -152,7 +152,7 @@ export default async function LandingPage() {
 
                 {/* Truck marker simulation */}
                 <div className="relative z-10 flex flex-col items-center">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-700 text-white flex items-center justify-center text-xl shadow-lg border-2 border-white/20 animate-bounce">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-700 text-white flex items-center justify-center text-xl shadow-lg border-2 border-white/20">
                     🚛
                   </div>
                   <div className="mt-2 px-3 py-1 rounded-full bg-slate-900/90 border border-emerald-500/40 text-[11px] font-bold text-white shadow-md">
@@ -300,7 +300,75 @@ export default async function LandingPage() {
         </section>
       )}
 
-      {/* ── G. Testimoni Warga Depok ── */}
+      {/* ── G. Artikel & Edukasi ── */}
+      <section className="py-20 px-6 bg-white border-b border-slate-200/80">
+        <div className="max-w-6xl mx-auto space-y-12">
+          <div className="flex flex-col sm:flex-row justify-between items-end gap-4">
+            <div className="max-w-2xl">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold mb-3">
+                Edukasi Lingkungan
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
+                Kabar & Tips UPS HERU
+              </h2>
+              <p className="text-slate-600 text-sm sm:text-base mt-2">
+                Informasi terbaru seputar pengelolaan sampah dan tips menjaga kebersihan lingkungan di Kota Depok.
+              </p>
+            </div>
+            <Link href="/artikel" className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl font-bold text-sm transition-colors whitespace-nowrap">
+              <span>Lihat Semua Artikel</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            <Link href="/artikel/jadwal-pengangkutan-sampah-cilodong-depok" className="group flex flex-col bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-md transition-all">
+              <div className="h-48 bg-slate-100 relative overflow-hidden">
+                <div className="absolute inset-0 bg-emerald-900/10 group-hover:bg-transparent transition-colors z-10" />
+                <div className="w-full h-full bg-gradient-to-br from-emerald-100 to-teal-50 flex items-center justify-center">
+                  <span className="text-4xl">🗓️</span>
+                </div>
+              </div>
+              <div className="p-6 flex-1 flex flex-col">
+                <span className="text-xs font-bold text-emerald-600 mb-2">Informasi Layanan</span>
+                <h3 className="text-lg font-bold text-slate-900 mb-3 group-hover:text-emerald-700 transition-colors leading-snug">Jadwal Pengangkutan Sampah di Cilodong Depok 2026</h3>
+                <p className="text-sm text-slate-600 mb-4 line-clamp-2">Pembaruan jadwal operasional truk pengangkut sampah UPS HERU untuk wilayah Cilodong dan sekitarnya.</p>
+                <div className="mt-auto text-[11px] font-semibold text-slate-400">18 September 2026</div>
+              </div>
+            </Link>
+            <Link href="/artikel/cara-memilah-sampah-organik-anorganik" className="group flex flex-col bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-md transition-all">
+              <div className="h-48 bg-slate-100 relative overflow-hidden">
+                <div className="absolute inset-0 bg-emerald-900/10 group-hover:bg-transparent transition-colors z-10" />
+                <div className="w-full h-full bg-gradient-to-br from-amber-100 to-orange-50 flex items-center justify-center">
+                  <span className="text-4xl">♻️</span>
+                </div>
+              </div>
+              <div className="p-6 flex-1 flex flex-col">
+                <span className="text-xs font-bold text-emerald-600 mb-2">Edukasi Warga</span>
+                <h3 className="text-lg font-bold text-slate-900 mb-3 group-hover:text-emerald-700 transition-colors leading-snug">Cara Benar Memilah Sampah Organik dan Anorganik di Rumah</h3>
+                <p className="text-sm text-slate-600 mb-4 line-clamp-2">Langkah mudah memilah sampah dari dapur tangga untuk membantu proses daur ulang di TPS 3R.</p>
+                <div className="mt-auto text-[11px] font-semibold text-slate-400">15 September 2026</div>
+              </div>
+            </Link>
+            <Link href="/artikel/daftar-tarif-retribusi-sampah-depok-terbaru" className="group flex flex-col bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-md transition-all">
+              <div className="h-48 bg-slate-100 relative overflow-hidden">
+                <div className="absolute inset-0 bg-emerald-900/10 group-hover:bg-transparent transition-colors z-10" />
+                <div className="w-full h-full bg-gradient-to-br from-sky-100 to-blue-50 flex items-center justify-center">
+                  <span className="text-4xl">💰</span>
+                </div>
+              </div>
+              <div className="p-6 flex-1 flex flex-col">
+                <span className="text-xs font-bold text-emerald-600 mb-2">Pembaruan Sistem</span>
+                <h3 className="text-lg font-bold text-slate-900 mb-3 group-hover:text-emerald-700 transition-colors leading-snug">Daftar Tarif Retribusi Sampah Kota Depok Terbaru</h3>
+                <p className="text-sm text-slate-600 mb-4 line-clamp-2">Transparansi biaya retribusi layanan kebersihan UPS HERU untuk kategori perumahan, niaga, dan industri.</p>
+                <div className="mt-auto text-[11px] font-semibold text-slate-400">10 September 2026</div>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── H. Testimoni Warga Depok ── */}
       <TestimonialsSection />
       </main>
 
