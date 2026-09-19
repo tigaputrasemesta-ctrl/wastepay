@@ -186,7 +186,7 @@ export async function GET(request: Request) {
         jumlahBulan: tunggakanList.length,
         totalNominal: totalTunggakan,
         daftarBulan: bulanMenunggak,
-        bolehPickup: !isMenunggak,
+        bolehPickup: tunggakanList.length < 3,
       },
     };
   });
@@ -245,6 +245,23 @@ export async function POST(request: Request) {
         if (!k) {
           return NextResponse.json({ error: "Kendaraan bukan milik Anda" }, { status: 403 });
         }
+      }
+    }
+
+    // Validasi tunggakan >= 3 bulan (tidak boleh diangkut)
+    if (status === "diambil") {
+      const tunggakanData = await prisma.tagihan.findMany({
+        where: {
+          pelangganId: parseInt(pelangganId),
+          status: "tunggakan",
+          deletedAt: null,
+        }
+      });
+      if (tunggakanData.length >= 3) {
+        return NextResponse.json(
+          { error: "Pengangkutan ditolak: Pelanggan memiliki tunggakan 3 bulan atau lebih." },
+          { status: 403 }
+        );
       }
     }
 

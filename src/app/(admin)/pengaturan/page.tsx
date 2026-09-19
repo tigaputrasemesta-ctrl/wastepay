@@ -23,6 +23,8 @@ export default function PengaturanPage() {
   const [showWilayahForm, setShowWilayahForm] = useState(false);
   const [form, setForm] = useState({ nama: "", rt: "", rw: "", kelurahanId: "", zonaId: "" });
   const [duitkuStatus, setDuitkuStatus] = useState<DuitkuStatus | null>(null);
+  const [tarifSettings, setTarifSettings] = useState({ PAJAK_DAERAH_RATE: 0, DENDA_KETERLAMBATAN_RATE: 0 });
+  const [tarifSaving, setTarifSaving] = useState(false);
   const { showToast } = useToast();
   
   // Hapus wilayah
@@ -90,7 +92,33 @@ export default function PengaturanPage() {
         if (res.ok) setDuitkuStatus(await res.json());
       } catch { /* abaikan */ }
     })();
+
+    // Pengaturan Tarif & Pajak
+    (async () => {
+      try {
+        const res = await fetch("/api/pengaturan");
+        if (res.ok) setTarifSettings(await res.json());
+      } catch { /* abaikan */ }
+    })();
   }, [fetchWilayah]);
+
+  async function handleSaveTarif(e: React.FormEvent) {
+    e.preventDefault();
+    setTarifSaving(true);
+    try {
+      const res = await fetch("/api/pengaturan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(tarifSettings),
+      });
+      if (res.ok) showToast("Pengaturan tarif & pajak berhasil disimpan");
+      else showToast("Gagal menyimpan pengaturan tarif", "error");
+    } catch {
+      showToast("Terjadi kesalahan jaringan", "error");
+    } finally {
+      setTarifSaving(false);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -197,6 +225,45 @@ export default function PengaturanPage() {
             </ol>
           </div>
         )}
+      </div>
+
+      {/* Tarif & Pajak */}
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 mb-6">
+        <h2 className="font-semibold text-slate-900 mb-1">Tarif & Pajak</h2>
+        <p className="text-sm text-slate-500 mb-4">Pengaturan persentase pajak daerah dan denda keterlambatan</p>
+        <form onSubmit={handleSaveTarif} className="space-y-4 max-w-md">
+          <div>
+            <label htmlFor="pajak" className="block text-sm font-medium text-slate-700 mb-1.5">Pajak Daerah (%)</label>
+            <input
+              id="pajak"
+              type="number"
+              min="0"
+              max="100"
+              step="any"
+              value={tarifSettings.PAJAK_DAERAH_RATE}
+              onChange={(e) => setTarifSettings({ ...tarifSettings, PAJAK_DAERAH_RATE: parseFloat(e.target.value) || 0 })}
+              className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+            />
+            <p className="text-xs text-slate-500 mt-1">Ganti nilai PPN 11% default. Isi 0 jika tidak ada pajak.</p>
+          </div>
+          <div>
+            <label htmlFor="denda" className="block text-sm font-medium text-slate-700 mb-1.5">Denda Keterlambatan (% per bulan)</label>
+            <input
+              id="denda"
+              type="number"
+              min="0"
+              max="100"
+              step="any"
+              value={tarifSettings.DENDA_KETERLAMBATAN_RATE}
+              onChange={(e) => setTarifSettings({ ...tarifSettings, DENDA_KETERLAMBATAN_RATE: parseFloat(e.target.value) || 0 })}
+              className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+            />
+            <p className="text-xs text-slate-500 mt-1">Denda berjalan setiap bulan per tagihan tertunggak. Isi 0 jika tidak ada denda.</p>
+          </div>
+          <button type="submit" disabled={tarifSaving} className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all w-full flex justify-center disabled:opacity-50">
+            {tarifSaving ? "Menyimpan..." : "Simpan Pengaturan Tarif"}
+          </button>
+        </form>
       </div>
 
       {/* Manajemen Wilayah */}

@@ -9,7 +9,7 @@ import "@/lib/leaflet-setup";
 import "leaflet.markercluster";
 import { useEffect, useMemo, useRef, useState } from "react";
 import L from "leaflet";
-import { MapContainer, TileLayer, Marker, Circle, CircleMarker, Polygon, Polyline, Tooltip, useMap, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Circle, CircleMarker, Polygon, Polyline, Tooltip, Popup, useMap, useMapEvents } from "react-leaflet";
 import { featureCollection, point } from "@turf/helpers";
 import voronoi from "@turf/voronoi";
 import union from "@turf/union";
@@ -523,42 +523,25 @@ function PinsKomplain({
   selectedKomplainId: number | null;
   onPilih: (id: number) => void;
 }) {
-  const map = useMap();
-  const markers = useRef(new Map<number, L.Marker>());
-
-  // Rebuild hanya saat daftar komplain berubah (polling), bukan saat seleksi.
-  useEffect(() => {
-    for (const m of markers.current.values()) map.removeLayer(m);
-    markers.current.clear();
-    for (const k of komplain) {
-      const pos = k.posisi as [number, number];
-      const m = L.marker(pos, {
-        icon: buatIconKomplain(KOMPLAIN_WARNA[k.status] ?? "#ff5c5c", false),
-      });
-      m.bindPopup(popupKomplainHtml(k));
-      m.on("click", () => onPilih(k.id));
-      markers.current.set(k.id, m);
-      map.addLayer(m);
-    }
-    const semua = markers.current;
-    return () => {
-      for (const m of semua.values()) map.removeLayer(m);
-      semua.clear();
-    };
-  }, [komplain, map, onPilih]);
-
-  // Update gaya aktif tanpa membangun ulang marker.
-  useEffect(() => {
-    for (const k of komplain) {
-      const m = markers.current.get(k.id);
-      if (m) {
-        m.setIcon(
-          buatIconKomplain(KOMPLAIN_WARNA[k.status] ?? "#ff5c5c", k.id === selectedKomplainId)
+  return (
+    <>
+      {komplain.map((k) => {
+        const pos = k.posisi as [number, number];
+        return (
+          <Marker
+            key={`komplain-${k.id}`}
+            position={pos}
+            icon={buatIconKomplain(KOMPLAIN_WARNA[k.status] ?? "#ff5c5c", k.id === selectedKomplainId)}
+            eventHandlers={{ click: () => onPilih(k.id) }}
+          >
+            <Popup closeButton={false}>
+              <div dangerouslySetInnerHTML={{ __html: popupKomplainHtml(k) }} />
+            </Popup>
+          </Marker>
         );
-      }
-    }
-  }, [komplain, selectedKomplainId]);
-  return null;
+      })}
+    </>
+  );
 }
 
 // Lacak level zoom untuk mengatur visibilitas layer.

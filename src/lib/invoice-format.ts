@@ -7,8 +7,8 @@
  */
 import { duitkuChannelLabel } from "./duitku-channels";
 
-/** Persen PPN yang dipakai saat menampilkan rincian invoice */
-export const PPN_RATE = 11;
+/** Persen Pajak Daerah (default 0, bisa diatur di Pengaturan) */
+export const PAJAK_DAERAH_RATE_DEFAULT = 0;
 
 /**
  * Info perusahaan pada invoice — diatur via env (default: contoh).
@@ -72,11 +72,11 @@ export function formatTanggalWaktuIndo(date: Date | string): string {
 
 /**
  * Hitung rincian nominal invoice.
- * Denda (tunggakan) dikenakan terpisah di luar PPN, seperti total yang harus dibayar.
+ * Denda (tunggakan) dikenakan terpisah di luar pajak, seperti total yang harus dibayar.
  */
-export function hitungRincian(jumlah: number, denda?: number | null) {
+export function hitungRincian(jumlah: number, denda?: number | null, pajakRate: number = 0) {
   const base = jumlah;
-  const ppn = Math.round((base * PPN_RATE) / 100);
+  const ppn = Math.round((base * pajakRate) / 100); // Sekarang merepresentasikan pajak daerah
   const subTotalPpn = base + ppn;
   const total = subTotalPpn + (denda || 0);
   return { base, ppn, subTotalPpn, denda: denda || 0, total };

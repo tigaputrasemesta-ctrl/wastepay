@@ -10,10 +10,10 @@ import {
   formatTanggalIndo,
   formatTanggalWaktuIndo,
   BULAN_INDO,
-  PPN_RATE,
   companyInfo,
   terbilangRupiah,
 } from "@/lib/invoice";
+import { getPajakDaerahRate } from "@/lib/pengaturan";
 import TombolCetak from "@/components/TombolCetak";
 import "./tagihan-cetak.css";
 
@@ -51,6 +51,7 @@ export default async function TagihanCetakPage({
   const tahun = parseInt(sp.tahun || String(now.getFullYear())) || now.getFullYear();
 
   let tagihan = await getTagihanMassal(bulan, tahun);
+  const pajakRate = await getPajakDaerahRate();
 
   // Scope kelurahan untuk petugas
   if (session.role === "petugas" && !PETUGAS_SCOPE_ALL) {
@@ -97,7 +98,7 @@ export default async function TagihanCetakPage({
           </div>
         ) : (
           tagihan.map((t, idx) => {
-            const rincian = hitungRincian(t.jumlah, t.denda);
+            const rincian = hitungRincian(t.jumlah, t.denda, pajakRate);
             const lunas = t.status === "lunas";
             const pembayaran = t.pembayaran?.[0];
             const alamatLengkap = [
@@ -178,14 +179,16 @@ export default async function TagihanCetakPage({
                       <td className="font-mono">{periode}</td>
                       <td className="ta-r font-mono">{formatRupiahSkylite(rincian.base)}</td>
                     </tr>
-                    <tr>
-                      <td>
-                        <span>Pajak Pertambahan Nilai (PPN {PPN_RATE}%)</span>
-                        <div className="tc-item-sub">Sesuai UU Harmonisasi Peraturan Perpajakan</div>
-                      </td>
-                      <td className="font-mono">{periode}</td>
-                      <td className="ta-r font-mono">{formatRupiahSkylite(rincian.ppn)}</td>
-                    </tr>
+                    {pajakRate > 0 && (
+                      <tr>
+                        <td>
+                          <span>Pajak Daerah ({pajakRate}%)</span>
+                          <div className="tc-item-sub">Sesuai ketentuan peraturan yang berlaku</div>
+                        </td>
+                        <td className="font-mono">{periode}</td>
+                        <td className="ta-r font-mono">{formatRupiahSkylite(rincian.ppn)}</td>
+                      </tr>
+                    )}
                     {rincian.denda ? (
                       <tr className="tc-row-denda">
                         <td>

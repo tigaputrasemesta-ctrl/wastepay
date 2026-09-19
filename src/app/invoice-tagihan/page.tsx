@@ -19,11 +19,11 @@ import {
   formatTanggalIndo,
   formatTanggalWaktuIndo,
   BULAN_INDO,
-  PPN_RATE,
   labelMetodePembayaran,
   companyInfo,
   terbilangRupiah,
 } from "@/lib/invoice";
+import { getPajakDaerahRate } from "@/lib/pengaturan";
 import "./invoice.css";
 
 /**
@@ -65,7 +65,8 @@ export default async function InvoiceTagihanPage({
   const tagihan = await getTagihanByNoInvoice(invoice);
   if (!tagihan) notFound();
 
-  const rincian = hitungRincian(tagihan.jumlah, tagihan.denda);
+  const pajakRate = await getPajakDaerahRate();
+  const rincian = hitungRincian(tagihan.jumlah, tagihan.denda, pajakRate);
   const lunas = tagihan.status === "lunas";
   const namaPeriode = `${BULAN_INDO[tagihan.bulan - 1]} ${tagihan.tahun}`;
   const perusahaan = companyInfo();
@@ -301,10 +302,12 @@ export default async function InvoiceTagihanPage({
                   <span className="calc-label">Subtotal Tarif Pokok</span>
                   <span className="calc-val tabular-nums font-semibold">{formatRupiahSkylite(rincian.base)}</span>
                 </div>
-                <div className="calc-row">
-                  <span className="calc-label">PPN {PPN_RATE}% (UU RI No. 7/2021)</span>
-                  <span className="calc-val tabular-nums font-semibold">+ {formatRupiahSkylite(rincian.ppn)}</span>
-                </div>
+                {pajakRate > 0 && (
+                  <div className="calc-row">
+                    <span className="calc-label">Pajak Daerah ({pajakRate}%)</span>
+                    <span className="calc-val tabular-nums font-semibold">+ {formatRupiahSkylite(rincian.ppn)}</span>
+                  </div>
+                )}
                 {tagihan.denda ? (
                   <div className="calc-row text-rose-700">
                     <span className="calc-label">Denda Keterlambatan</span>
