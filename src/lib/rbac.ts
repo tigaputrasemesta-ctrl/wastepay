@@ -56,6 +56,7 @@ export function getAllowedMenus(role: string): string[] {
     "pengeluaran",
     "laporan",
     "pengumuman",
+    "artikel",
     "notifikasi",
     "rekonsiliasi",
     "absensi",
