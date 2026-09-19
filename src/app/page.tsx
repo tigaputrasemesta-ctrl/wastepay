@@ -46,15 +46,11 @@ export default async function LandingPage() {
       <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-6 py-3.5 transition-all">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition-transform">
-              🚛
-            </div>
+            <img src="/ups-heru-logo.jpg" alt="UPS HERU Logo" className="h-10 w-10 sm:h-12 sm:w-12 object-contain rounded-xl shadow-sm group-hover:scale-105 transition-transform shrink-0" />
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="font-extrabold text-lg tracking-tight text-slate-900">UPS HERU</span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                  UPS HERU
-                </span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Depok</span>
               </div>
               <p className="text-[10px] text-slate-500 font-medium">Pengelolaan Sampah Terpadu Kota Depok</p>
             </div>
@@ -334,9 +330,7 @@ export default async function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pt-8 border-t border-slate-800 text-xs">
             <div className="space-y-3 md:col-span-1">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-emerald-700 flex items-center justify-center text-base">
-                  🚛
-                </div>
+                <img src="/ups-heru-logo.jpg" alt="UPS HERU Logo" className="w-8 h-8 rounded-xl object-contain bg-white shadow-sm" />
                 <span className="font-extrabold text-base tracking-tight text-white">UPS HERU</span>
               </div>
               <p className="text-slate-400 text-[11px] leading-relaxed">

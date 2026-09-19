@@ -101,9 +101,7 @@ export default function PublicNavbar() {
                 Depok
               </span>
             </div>
-            <p className="text-[10px] text-slate-500 font-medium truncate leading-normal mt-0.5">
-              Sistem Retribusi Bersih
-            </p>
+            <p className="text-[10px] text-slate-500 font-medium truncate leading-normal mt-0.5">Pengelolaan Sampah Terpadu Kota Depok</p>
           </div>
         </Link>
 
