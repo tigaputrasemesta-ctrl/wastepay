@@ -1,5 +1,5 @@
 /**
- * Konfigurasi & Helper SEO Terpusat WastePay (UPS HERU Kota Depok)
+ * Konfigurasi & Helper SEO Terpusat UPS HERU (UPS HERU Kota Depok)
  * Memastikan metadata konsisten, canonical URL valid, dan structured data (JSON-LD) sesuai standar Google Search.
  */
 
@@ -21,12 +21,12 @@ export function getSiteUrl(): string {
 }
 
 export const SITE_CONFIG = {
-  name: "UPS HERU WastePay",
+  name: "UPS HERU",
   shortName: "UPS HERU",
   legalName: "CV Hero Zero Waste",
   unitName: "Unit Pengelolaan & Retribusi Kebersihan (TPS 3R)",
-  titleDefault: "UPS HERU WastePay - Pengelolaan & Retribusi Sampah Kota Depok",
-  titleTemplate: "%s | UPS HERU WastePay Depok",
+  titleDefault: "UPS HERU - Pengelolaan & Retribusi Sampah Kota Depok",
+  titleTemplate: "%s | UPS HERU Depok",
   description:
     "Layanan pengelolaan sampah terpadu Kota Depok: penjemputan terjadwal, pelacakan armada truk sampah real-time, transparansi tarif retribusi, dan pembayaran digital via QRIS.",
   keywords: [
@@ -79,7 +79,7 @@ export function generateLocalBusinessJsonLd() {
         "@id": `${baseUrl}/#organization`,
         name: SITE_CONFIG.name,
         legalName: SITE_CONFIG.legalName,
-        alternateName: ["UPS HERU Depok", "WastePay", "TPS 3R Kalibaru"],
+        alternateName: ["UPS HERU Depok", "UPS HERU", "TPS 3R Kalibaru"],
         url: baseUrl,
       logo: `${baseUrl}/ups-heru-logo.jpg`,
         image: `${baseUrl}/opengraph-image`,

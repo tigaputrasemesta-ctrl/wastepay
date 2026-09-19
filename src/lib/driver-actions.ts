@@ -40,11 +40,11 @@ export function buildWhatsAppDriverUrl({
 
   let message = "";
   if (isMenunggak) {
-    message = `Halo Bpk/Ibu ${nama}, saya petugas kebersihan WastePay. Saat ini jadwal pengangkutan di alamat (${alamat}${
+    message = `Halo Bpk/Ibu ${nama}, saya petugas kebersihan UPS HERU. Saat ini jadwal pengangkutan di alamat (${alamat}${
       patokan ? " - " + patokan : ""
     }), namun ada info tunggakan iuran retribusi di sistem kami. Mohon kesediaannya untuk konfirmasi atau penyelesaian tagihan. Terima kasih 🙏`;
   } else {
-    message = `Halo Bpk/Ibu ${nama}, saya petugas kebersihan WastePay saat ini sudah tiba di depan rumah (${alamat}${
+    message = `Halo Bpk/Ibu ${nama}, saya petugas kebersihan UPS HERU saat ini sudah tiba di depan rumah (${alamat}${
       patokan ? " - " + patokan : ""
     }). Mohon dibukakan pagar atau tempat sampah ditaruh di luar ya. Terima kasih banyak 🙏`;
   }

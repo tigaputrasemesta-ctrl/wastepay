@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     canonical: "/daftar",
   },
   openGraph: {
-    title: "Daftar Layanan Angkut Sampah Kota Depok | UPS HERU WastePay",
+    title: "Daftar Layanan Angkut Sampah Kota Depok | UPS HERU",
     description:
       "Daftar layanan jemput sampah rutin untuk rumah tangga dan tempat usaha di Depok. Penjemputan terjadwal dan pelacakan truk real-time.",
   },
@@ -71,7 +71,7 @@ export default async function DaftarPage({
           <span>Registrasi Pelanggan Baru • Bebas Biaya Daftar</span>
         </div>
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
-          Daftar Layanan <span className="text-emerald-700">WastePay.</span>
+          Daftar Layanan <span className="text-emerald-700">UPS HERU.</span>
         </h1>
         <p className="text-sm md:text-base text-slate-600 mt-3 leading-relaxed">
           {tarifMin > 0 ? (

@@ -92,7 +92,7 @@ export default function Error({
       
       {/* Footer Info */}
       <div className="mt-8 text-center text-xs font-medium text-slate-400">
-        WastePay • Dinas UPS HERU Kota Depok
+        UPS HERU • Dinas UPS HERU Kota Depok
       </div>
     </div>
   );

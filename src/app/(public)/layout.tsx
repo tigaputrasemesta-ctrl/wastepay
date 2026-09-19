@@ -5,8 +5,8 @@ import PublicNavbar from "@/components/PublicNavbar";
 
 export const metadata: Metadata = {
   title: {
-    default: "Portal Layanan Warga | UPS HERU WastePay Depok",
-    template: "%s | UPS HERU WastePay Depok",
+    default: "Portal Layanan Warga | UPS HERU Depok",
+    template: "%s | UPS HERU Depok",
   },
   description:
     "Portal resmi layanan warga Kota Depok: pendaftaran jemput sampah, cek & bayar tagihan retribusi, pelacakan armada truk sampah, dan pusat pengaduan kebersihan.",

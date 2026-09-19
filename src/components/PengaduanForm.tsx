@@ -30,7 +30,7 @@ export default function PengaduanForm() {
       if (res.ok && data.ok) {
         setStatus("ok");
         setPesan(
-          `Laporan berhasil dikirim. Terima kasih ${data.namaPelanggan}. Tim reaksi cepat WastePay akan segera menindaklanjuti ke lokasi Anda.`
+          `Laporan berhasil dikirim. Terima kasih ${data.namaPelanggan}. Tim reaksi cepat UPS HERU akan segera menindaklanjuti ke lokasi Anda.`
         );
         setDeskripsi("");
         setNoWa("");

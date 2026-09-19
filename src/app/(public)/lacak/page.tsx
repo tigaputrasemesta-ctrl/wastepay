@@ -6,7 +6,7 @@ import LacakJemputan from "@/components/LacakJemputan";
 export const metadata: Metadata = {
   title: "Pelacakan Armada Truk Sampah Real-Time",
   description:
-    "Pantau posisi armada truk pengangkut sampah WastePay UPS HERU Kota Depok secara langsung di peta digital dengan perkiraan waktu tiba (ETA).",
+    "Pantau posisi armada truk pengangkut sampah UPS HERU Kota Depok secara langsung di peta digital dengan perkiraan waktu tiba (ETA).",
   alternates: {
     canonical: "/lacak",
   },
@@ -22,7 +22,7 @@ const PANDUAN = [
     no: "01",
     icon: Smartphone,
     judul: "Masukkan Nomor Pelanggan",
-    desc: "Gunakan nomor WhatsApp atau ID pelanggan Anda yang terdaftar pada sistem WastePay.",
+    desc: "Gunakan nomor WhatsApp atau ID pelanggan Anda yang terdaftar pada sistem UPS HERU.",
   },
   {
     no: "02",

@@ -3,7 +3,7 @@ import AdminShell from "@/components/AdminShell";
 import { ToastProvider } from "@/components/Toast";
 
 export const metadata: Metadata = {
-  title: "Admin Panel | UPS HERU WastePay",
+  title: "Admin Panel | UPS HERU",
   robots: {
     index: false,
     follow: false,

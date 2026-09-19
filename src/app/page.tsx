@@ -13,7 +13,7 @@ import { generateLocalBusinessJsonLd } from "@/lib/seo";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "UPS HERU WastePay - Sistem Pengelolaan & Retribusi Sampah Kota Depok",
+  title: "UPS HERU - Sistem Pengelolaan & Retribusi Sampah Kota Depok",
   alternates: {
     canonical: "/",
   },
@@ -51,7 +51,7 @@ export default async function LandingPage() {
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-extrabold text-lg tracking-tight text-slate-900">WastePay</span>
+                <span className="font-extrabold text-lg tracking-tight text-slate-900">UPS HERU</span>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
                   UPS HERU
                 </span>
@@ -337,7 +337,7 @@ export default async function LandingPage() {
                 <div className="w-8 h-8 rounded-xl bg-emerald-700 flex items-center justify-center text-base">
                   🚛
                 </div>
-                <span className="font-extrabold text-base tracking-tight text-white">WastePay</span>
+                <span className="font-extrabold text-base tracking-tight text-white">UPS HERU</span>
               </div>
               <p className="text-slate-400 text-[11px] leading-relaxed">
                 Platform digital layanan retribusi dan operasional pengangkutan sampah terpadu UPS HERU Kota Depok.
@@ -373,7 +373,7 @@ export default async function LandingPage() {
           </div>
 
           <div className="pt-8 border-t border-slate-800 text-center text-slate-400 text-[11px] flex flex-col sm:flex-row items-center justify-between gap-2">
-            <span>© 2026 WastePay / UPS HERU Depok. Hak Cipta Dilindungi.</span>
+            <span>© 2026 UPS HERU Kota Depok. Hak Cipta Dilindungi.<br />Sistem aplikasi dikelola bekerja sama dengan <a href="https://wastepay.id" className="text-emerald-500 hover:text-emerald-400 font-medium">wastepay.id</a></span>
             <div className="flex items-center gap-4">
               <Link href="/login" className="text-slate-400 hover:text-white transition-colors">Portal Petugas & Admin</Link>
               <Link href="/unduh" className="text-slate-400 hover:text-white transition-colors">Download App Android</Link>

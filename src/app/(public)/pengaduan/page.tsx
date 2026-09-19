@@ -20,7 +20,7 @@ const PANDUAN = [
   {
     no: "01",
     judul: "Nomor WhatsApp Terdaftar",
-    desc: "Masukkan nomor WhatsApp atau ID pelanggan yang terdaftar pada sistem WastePay.",
+    desc: "Masukkan nomor WhatsApp atau ID pelanggan yang terdaftar pada sistem UPS HERU.",
   },
   {
     no: "02",

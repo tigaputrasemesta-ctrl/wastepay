@@ -16,7 +16,7 @@ export default function NotFound() {
           Halaman Tidak Ditemukan
         </h1>
         <p className="text-slate-500 text-sm leading-relaxed mb-8 max-w-sm mx-auto">
-          Tautan yang Anda tuju salah, telah dipindahkan, atau tidak lagi tersedia pada sistem WastePay.
+          Tautan yang Anda tuju salah, telah dipindahkan, atau tidak lagi tersedia pada sistem UPS HERU.
         </p>
 
         <div className="flex flex-col gap-3">
@@ -36,7 +36,7 @@ export default function NotFound() {
       </div>
 
       <div className="mt-8 text-center text-xs font-medium text-slate-400">
-        WastePay • Dinas UPS HERU Kota Depok
+        UPS HERU • Dinas UPS HERU Kota Depok
       </div>
     </div>
   );

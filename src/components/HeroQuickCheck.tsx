@@ -79,7 +79,7 @@ export default function HeroQuickCheck() {
                 WP
               </div>
               <div>
-                <p className="text-xs font-bold text-slate-900">Kartu Anggota WastePay</p>
+                <p className="text-xs font-bold text-slate-900">Kartu Anggota UPS HERU</p>
                 <p className="text-[11px] text-emerald-700 font-medium">Pengelolaan Sampah Kota Depok</p>
               </div>
             </div>

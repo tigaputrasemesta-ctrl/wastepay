@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "UPS HERU WastePay - Pengelolaan Sampah Depok",
+    name: "UPS HERU - Pengelolaan Sampah Depok",
     short_name: "UPS HERU",
     description: "Sistem Pengelolaan Retribusi dan Layanan Angkut Sampah Terpadu Kota Depok",
     start_url: "/",

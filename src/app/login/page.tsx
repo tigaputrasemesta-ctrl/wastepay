@@ -75,7 +75,7 @@ export default function LoginPage() {
             <Truck strokeWidth={2.5} className="w-6 h-6" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-            WastePay Portal
+            UPS HERU Portal
           </h1>
           <p className="text-sm text-slate-500 mt-1">
             Sistem Informasi Pengelolaan & Retribusi

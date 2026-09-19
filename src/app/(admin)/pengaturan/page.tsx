@@ -355,7 +355,7 @@ export default function PengaturanPage() {
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
         <h2 className="font-semibold text-slate-900 mb-4">Informasi Sistem</h2>
         <div className="space-y-2 text-sm text-slate-600">
-          <p>Dashboard ini adalah aplikasi manajemen operasional & iuran sampah mandiri (WastePay).</p>
+          <p>Dashboard ini adalah aplikasi manajemen operasional & iuran sampah mandiri (UPS HERU).</p>
           <p>Fitur yang tersedia:</p>
           <ul className="list-disc list-inside space-y-1 ml-2 text-slate-500">
             <li>Manajemen pelanggan per wilayah</li>

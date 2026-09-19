@@ -92,7 +92,7 @@ export default function MobileHome() {
 
   function handleShareWhatsApp() {
     if (!referralData?.referralUrl) return;
-    const text = `Halo Bapak/Ibu! Yuk daftar layanan angkut & pengelolaan sampah resmi WastePay Kota Depok. Terjadwal, bersih, dan bisa pantau posisi armada langsung dari HP.\n\nKlik link pendaftaran resmi di sini:\n${referralData.referralUrl}`;
+    const text = `Halo Bapak/Ibu! Yuk daftar layanan angkut & pengelolaan sampah resmi UPS HERU Kota Depok. Terjadwal, bersih, dan bisa pantau posisi armada langsung dari HP.\n\nKlik link pendaftaran resmi di sini:\n${referralData.referralUrl}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   }
 

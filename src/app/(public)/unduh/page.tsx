@@ -6,14 +6,14 @@ import { MOBILE_VERSION, getApkUrl } from "@/lib/mobile-version";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Unduh Aplikasi WastePay Driver Mobile",
+  title: "Unduh Aplikasi UPS HERU Driver Mobile",
   description:
-    "Unduh aplikasi resmi WastePay Driver Mobile untuk petugas penjemputan sampah UPS HERU Kota Depok (Android APK).",
+    "Unduh aplikasi resmi UPS HERU Driver Mobile untuk petugas penjemputan sampah UPS HERU Kota Depok (Android APK).",
   alternates: {
     canonical: "/unduh",
   },
   openGraph: {
-    title: "Unduh Aplikasi Driver WastePay | UPS HERU Depok",
+    title: "Unduh Aplikasi Driver UPS HERU | UPS HERU Depok",
     description:
       "Aplikasi Android untuk petugas armada angkut sampah dan operasional lapangan UPS HERU.",
   },
@@ -33,7 +33,7 @@ export default function UnduhPage() {
               W
             </span>
             <div className="leading-tight">
-              <span className="font-extrabold text-slate-900 text-lg tracking-tight">WastePay</span>
+              <span className="font-extrabold text-slate-900 text-lg tracking-tight">UPS HERU</span>
               <span className="block text-[10px] font-semibold text-emerald-700 uppercase tracking-wider">Driver Mobile</span>
             </div>
           </Link>
@@ -53,7 +53,7 @@ export default function UnduhPage() {
             Aplikasi Khusus Petugas & Pengemudi Armada
           </div>
           <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
-            Unduh <span className="text-emerald-700">WastePay Driver</span>
+            Unduh <span className="text-emerald-700">UPS HERU Driver</span>
           </h1>
           <p className="text-slate-600 text-sm sm:text-base mt-3 max-w-lg mx-auto">
             Aplikasi lapangan resmi petugas UPS HERU Kota Depok untuk pencatatan rute jemputan, verifikasi timbangan, dan manifest TPA.
