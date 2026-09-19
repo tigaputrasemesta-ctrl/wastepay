@@ -4,7 +4,7 @@ import { getPengaturanNumber, setPengaturan } from "@/lib/pengaturan";
 
 export async function GET() {
   const session = await getSession();
-  if (!session || session.role !== "superadmin") {
+  if (!session || (session.role !== "superadmin" && session.role !== "admin")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -19,7 +19,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   const session = await getSession();
-  if (!session || session.role !== "superadmin") {
+  if (!session || (session.role !== "superadmin" && session.role !== "admin")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
