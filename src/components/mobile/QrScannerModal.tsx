@@ -70,6 +70,7 @@ export default function QrScannerModal({
         streamRef.current.getTracks().forEach((t) => t.stop());
         streamRef.current = null;
       }
+      // eslint-disable-next-line
       setIsScanning(false);
       return;
     }

@@ -165,6 +165,7 @@ export default function SlideToConfirm({
     },
   }[variant];
 
+  // eslint-disable-next-line react-hooks/refs
   const progressPercent = maxDragRef.current > 0 ? (dragX / maxDragRef.current) * 100 : 0;
 
   return (

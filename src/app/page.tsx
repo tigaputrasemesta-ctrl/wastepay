@@ -64,6 +64,9 @@ export default async function LandingPage() {
             <Link href="/bayar" className="hover:text-emerald-800 transition-colors">
               Cek Tagihan
             </Link>
+            <Link href="/pengaduan" className="hover:text-emerald-800 transition-colors">
+              Pengaduan
+            </Link>
             <Link href="/tarif" className="hover:text-emerald-800 transition-colors">
               Tarif Retribusi
             </Link>

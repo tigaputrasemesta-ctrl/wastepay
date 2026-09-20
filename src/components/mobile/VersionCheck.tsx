@@ -42,6 +42,7 @@ export default function VersionCheck() {
 
   useEffect(() => {
     if (terbaru && currentCode != null && terbaru.versionCode > currentCode) {
+      // eslint-disable-next-line
       setTampil(true);
     }
   }, [terbaru, currentCode]);

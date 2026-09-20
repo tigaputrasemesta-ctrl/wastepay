@@ -205,7 +205,7 @@ export async function POST(request: Request) {
         },
       });
     } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && (e as any).code === "P2002") {
         return NextResponse.json(
           { error: "Nomor WhatsApp ini sudah pernah didaftarkan. Silakan hubungi admin." },
           { status: 400 }

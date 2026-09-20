@@ -325,7 +325,7 @@ export async function POST(request: Request) {
         let tarif = jumlah !== undefined && jumlah !== null && String(jumlah).trim() !== "" ? parseFloat(jumlah) : 0;
         if (!tarif && p.customTarif) tarif = p.customTarif;
         if (!tarif && p.paket?.harga) tarif = p.paket.harga;
-        if (!tarif) tarif = kategoriTarifMap.get(p.kategori) ?? 0;
+        if (!tarif) tarif = (kategoriTarifMap.get(p.kategori) as number) ?? 0;
 
         const jatuhTempo = hitungJatuhTempoKonsumen(p.createdAt, bln, thn);
         const hariSiklus = new Date(p.createdAt).getDate();

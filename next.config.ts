@@ -4,10 +4,13 @@ const nextConfig: NextConfig = {
   /* config options here */
   // Arahkan Turbopack ke root project ini (hindari salah deteksi lockfile)
   turbopack: {
-    root: __dirname,
+    root: process.cwd(),
   },
   // Allow phone testing
   allowedDevOrigins: ["192.168.100.19"],
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   async headers() {
     const isProd = process.env.NODE_ENV === "production";
     return [

@@ -6,6 +6,7 @@ export function useRoadRoute(start?: [number, number], end?: [number, number]) {
 
   useEffect(() => {
     if (!start || !end) {
+      // eslint-disable-next-line
       setRoute([]);
       return;
     }

@@ -95,7 +95,7 @@ async function main() {
   const baseLat = -6.442;
   const baseLng = 106.835;
   
-  const pelangganData = [];
+  const pelangganData: any[] = [];
 
   for(let i=1; i<=25; i++) {
     // Sebagian besar aktif, beberapa calon, beberapa libur

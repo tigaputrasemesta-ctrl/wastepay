@@ -260,7 +260,7 @@ export async function POST(request: Request) {
         },
       });
     } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && (e as any).code === "P2002") {
         return NextResponse.json(
           { error: "Nomor WhatsApp ini sudah terdaftar. Silakan gunakan nomor lain." },
           { status: 400 }

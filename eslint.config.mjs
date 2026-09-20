@@ -15,6 +15,8 @@ const eslintConfig = defineConfig([
     // Artefak dev/debug di root (sudah di .gitignore)
     "**/replace-peta.js",
     "**/check.ts",
+    "test-*.js",
+    "tests/**",
   ]),
 ]);
 

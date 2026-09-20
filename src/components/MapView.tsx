@@ -154,7 +154,6 @@ function computeKelurahanGeom(): KelurahanGeomItem[] {
       st.feature = poly;
     } else {
       try {
-        // @ts-expect-error turf union overload compatibility
         st.feature = union(st.feature, poly);
       } catch {
         // fallback if union fails

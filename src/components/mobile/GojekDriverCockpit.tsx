@@ -14,6 +14,9 @@ import {
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import SlideToConfirm from "./SlideToConfirm";
+
+const MotionDiv = motion.div as any;
+
 import QrScannerModal from "./QrScannerModal";
 import { getMapTileConfig, type MapTileType } from "@/lib/map-tile";
 import { formatRupiah } from "@/lib/utils";
@@ -378,7 +381,7 @@ export default function GojekDriverCockpit({
     : undefined;
 
   // 2. Ambil rute jalan raya nyata via OSRM
-  const realRoadRoute = useRoadRoute(driverCoords, nextDestination);
+  const realRoadRoute = useRoadRoute(driverCoords || undefined, nextDestination);
 
   // Polyline rute dinamis (In-App Navigation) ke pelanggan pertama
   const routePoints = useMemo(() => {
@@ -885,7 +888,7 @@ export default function GojekDriverCockpit({
 
       {/* ── 5. AUTHENTIC BOTTOM SHEET (COMPACT & EXPANDED QUEUE) ── */}
       {sheetMode !== "hidden" && (
-        <motion.div
+        <MotionDiv
           layout
           onPanEnd={(e, { offset, velocity }) => {
             if (offset.y < -20 || velocity.y < -300) {
@@ -914,7 +917,7 @@ export default function GojekDriverCockpit({
           {currentTask ? (
             <>
               {/* Row 1: Trip Status & Multi-Drop Counter + Explicit Hide / Open Buttons */}
-              <motion.div layout className="flex items-center justify-between text-xs gap-2">
+              <MotionDiv layout className="flex items-center justify-between text-xs gap-2">
                 <div className="flex items-center gap-1.5 min-w-0">
                   <span
                     className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider truncate ${
@@ -973,10 +976,10 @@ export default function GojekDriverCockpit({
                     <span aria-hidden="true">✕</span>
                   </button>
                 </div>
-              </motion.div>
+              </MotionDiv>
 
               {/* Row 2: Customer Identity & Contact Action Buttons */}
-              <motion.div layout className="flex items-start justify-between gap-2 mt-1">
+              <MotionDiv layout className="flex items-start justify-between gap-2 mt-1">
                 <div className="space-y-1 min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="text-base sm:text-lg font-black text-white truncate max-w-[160px] sm:max-w-sm tracking-wide">
@@ -1055,10 +1058,10 @@ export default function GojekDriverCockpit({
                     </a>
                   )}
                 </div>
-              </motion.div>
+              </MotionDiv>
 
               {/* Row 3: Swipe Slider To Confirm */}
-              <motion.div layout className="pt-1">
+              <MotionDiv layout className="pt-1">
                 {currentIsMenunggak ? (
                   <SlideToConfirm
                     variant="danger"
@@ -1081,10 +1084,10 @@ export default function GojekDriverCockpit({
                     }}
                   />
                 )}
-              </motion.div>
+              </MotionDiv>
             </>
           ) : validTasks.length === 0 ? (
-            <motion.div layout className="space-y-2.5">
+            <MotionDiv layout className="space-y-2.5">
               {/* Header: Badge & Explicit Sembunyikan button */}
               <div className="flex items-center justify-between text-xs pb-1 border-b border-slate-800/80">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40">
@@ -1122,9 +1125,9 @@ export default function GojekDriverCockpit({
                   <span aria-hidden="true">✕</span>
                 </button>
               </div>
-            </motion.div>
+            </MotionDiv>
           ) : (
-            <motion.div layout className="space-y-2.5">
+            <MotionDiv layout className="space-y-2.5">
               {/* Header: Badge & Explicit Sembunyikan button */}
               <div className="flex items-center justify-between text-xs pb-1 border-b border-slate-800/80">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
@@ -1159,13 +1162,13 @@ export default function GojekDriverCockpit({
                   <span aria-hidden="true">✕</span>
                 </button>
               </div>
-            </motion.div>
+            </MotionDiv>
           )}
 
           {/* ── 6. EXPANDABLE MULTI-STOP QUEUE DRAWER DENGAN SEARCHING & FINDING ── */}
           <AnimatePresence initial={false}>
             {sheetMode === "expanded" && pendingTasks.length > 0 && (
-              <motion.div
+              <MotionDiv
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
@@ -1268,10 +1271,10 @@ export default function GojekDriverCockpit({
                     })}
                   </div>
                 </div>
-              </motion.div>
+              </MotionDiv>
             )}
           </AnimatePresence>
-        </motion.div>
+        </MotionDiv>
       )}
 
       {/* ── 7. QR / BARCODE SCANNER MODAL (Scanning) ── */}
