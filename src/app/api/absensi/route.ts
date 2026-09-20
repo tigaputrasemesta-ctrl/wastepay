@@ -25,7 +25,7 @@ export async function GET() {
     }
   });
 
-  let statusHariIni = null;
+  let statusHariIni: any = null;
   if (petugas) {
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
