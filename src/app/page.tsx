@@ -127,109 +127,93 @@ export default async function LandingPage() {
             </div>
           </div>
 
-          {/* Kolom Kanan: Mockup Aplikasi Modern (5 cols) */}
-          <div className="md:col-span-5 relative flex justify-center mt-12 md:mt-0">
-            {/* Dekorasi Background */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-emerald-400/20 rounded-full blur-[80px] -z-10" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 border border-emerald-500/10 rounded-full -z-10 hidden sm:block" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 border border-emerald-500/5 rounded-full -z-10 hidden sm:block" />
+          {/* Kolom Kanan: Dashboard Transparansi (5 cols) */}
+          <div className="md:col-span-5 relative flex justify-center lg:justify-end mt-12 md:mt-0">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-emerald-500/10 rounded-full blur-[100px] -z-10" />
             
-            {/* Frame HP (Sleek Glass/Metal Finish) */}
-            <div className="relative w-[280px] h-[580px] bg-white rounded-[44px] shadow-2xl border-[10px] border-slate-900 overflow-hidden flex flex-col ring-4 ring-slate-100">
-              {/* Hardware Details: Dynamic Island / Notch */}
-              <div className="absolute top-2 inset-x-0 mx-auto w-24 h-6 bg-slate-900 rounded-full z-30 flex items-center justify-between px-2 shadow-inner">
-                <div className="w-2 h-2 rounded-full bg-slate-800" />
-                <div className="w-2 h-2 rounded-full bg-emerald-900/50" />
+            <div className="w-full max-w-sm rounded-[32px] bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 p-6 sm:p-8 shadow-2xl shadow-emerald-900/20 relative overflow-hidden">
+              {/* Shine effect */}
+              <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent" />
+              
+              <div className="flex justify-between items-center mb-8">
+                <div>
+                  <h3 className="text-white font-extrabold text-lg tracking-tight">Kinerja Hari Ini</h3>
+                  <p className="text-emerald-400 text-xs font-medium mt-0.5">Live Dashboard Depok</p>
+                </div>
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
               </div>
               
-              {/* Status Bar */}
-              <div className="bg-emerald-700 text-white text-[10px] font-medium pt-3 pb-2 px-6 flex justify-between items-center z-20">
-                <span>08:00</span>
-                <div className="flex items-center gap-1 opacity-90">
-                   <div className="w-3 h-3 flex items-center justify-center"><div className="w-2 h-2 border-[1.5px] border-white rounded-full"/></div>
-                   <div className="w-3.5 h-2.5 border border-white rounded-[2px] relative"><div className="absolute inset-y-[1px] left-[1px] right-[2px] bg-white rounded-[1px]"/></div>
+              <div className="space-y-5">
+                {/* Stat 1 */}
+                <div className="bg-slate-800/50 rounded-2xl p-4 border border-slate-700/50 flex items-center gap-4 transition-colors hover:bg-slate-800/80 cursor-default">
+                  <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                    <Truck className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-extrabold text-white tracking-tight">15.4 <span className="text-lg text-slate-400 font-bold">Ton</span></p>
+                    <p className="text-[11px] text-slate-400 font-medium">Sampah Berhasil Diangkut</p>
+                  </div>
+                </div>
+                
+                {/* Stat 2 */}
+                <div className="bg-slate-800/50 rounded-2xl p-4 border border-slate-700/50 flex items-center gap-4 transition-colors hover:bg-slate-800/80 cursor-default">
+                  <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400">
+                    <ShieldCheck className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-extrabold text-white tracking-tight">2.450<span className="text-lg text-blue-400 font-bold">+</span></p>
+                    <p className="text-[11px] text-slate-400 font-medium">Rumah & Usaha Terlayani</p>
+                  </div>
                 </div>
               </div>
-
-              {/* Layar Aplikasi */}
-              <div className="flex-1 bg-slate-50 flex flex-col relative z-10 overflow-hidden pb-4">
-                {/* Header Mockup */}
-                <div className="bg-emerald-700 pt-6 pb-20 px-5 text-white relative">
-                  <div className="absolute bottom-0 inset-x-0 h-10 bg-slate-50 rounded-t-3xl" />
-                  <p className="text-[11px] text-emerald-100/80 mb-0.5 font-medium">Selamat datang,</p>
-                  <h3 className="text-xl font-bold tracking-tight">Keluarga Bpk. Budi</h3>
-                </div>
-
-                <div className="px-5 -mt-14 relative z-10 space-y-4">
-                  {/* Card Tagihan */}
-                  <div className="bg-white rounded-3xl p-5 text-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-slate-100 relative overflow-hidden">
-                    <div className="absolute -right-6 -top-6 w-24 h-24 bg-emerald-50 rounded-full blur-xl" />
-                    <div className="flex items-center justify-between mb-3 relative z-10">
-                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tagihan Aktif</p>
-                      <span className="px-2 py-1 bg-rose-50 text-rose-600 border border-rose-100 text-[9px] font-extrabold rounded-md tracking-wide">BELUM DIBAYAR</span>
+              
+              {/* Live Timeline */}
+              <div className="mt-8 pt-6 border-t border-slate-800/80">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4">Aktivitas Armada Live</p>
+                
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3 relative">
+                    <div className="absolute top-6 left-2.5 w-px h-8 bg-slate-700" />
+                    <div className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-500 flex items-center justify-center shrink-0 mt-0.5">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                     </div>
-                    <div className="relative z-10 mb-4">
-                      <p className="text-3xl font-extrabold text-slate-900 tracking-tight">Rp 50.000</p>
-                      <p className="text-[10px] text-slate-500 mt-1">Jatuh tempo: 10 Sep 2026</p>
-                    </div>
-                    <button className="w-full py-3 bg-emerald-600 text-white text-xs font-bold rounded-2xl flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 active:scale-95 transition-transform">
-                      <Smartphone className="w-4 h-4" /> Bayar Sekarang (QRIS)
-                    </button>
-                  </div>
-
-                  {/* Quick Action Grid */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] text-center">
-                      <div className="w-12 h-12 mx-auto bg-sky-50 text-sky-600 rounded-full flex items-center justify-center mb-2">
-                        <MapPin className="w-5 h-5" />
-                      </div>
-                      <p className="text-[11px] font-bold text-slate-700">Lacak Truk</p>
-                    </div>
-                    <div className="bg-white p-3.5 rounded-2xl border border-rose-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] text-center ring-1 ring-rose-50 relative overflow-hidden">
-                      <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-rose-500 animate-pulse shadow-sm" />
-                      <div className="w-12 h-12 mx-auto bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mb-2">
-                        <Megaphone className="w-5 h-5" />
-                      </div>
-                      <p className="text-[11px] font-bold text-slate-700">Buat Laporan</p>
+                    <div>
+                      <p className="text-xs font-bold text-slate-200">Armada 02 tiba di Beji Raya</p>
+                      <p className="text-[10px] text-slate-500 mt-0.5">2 menit yang lalu</p>
                     </div>
                   </div>
-
-                  {/* Recent Activity */}
-                  <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)]">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3">Aktivitas Terakhir</p>
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0 mt-0.5">
-                        <CheckCircle2 className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <p className="text-[11px] font-bold text-slate-800 leading-snug">Sampah Berhasil Diangkut</p>
-                        <p className="text-[10px] text-slate-500 mt-0.5">Oleh Petugas (Armada 02)</p>
-                        <p className="text-[9px] text-slate-400 mt-1">Hari ini, 07:45 WIB</p>
-                      </div>
+                  
+                  <div className="flex items-start gap-3">
+                    <div className="w-5 h-5 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0 mt-0.5">
+                      <div className="w-1.5 h-1.5 rounded-full bg-slate-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-slate-400">Armada 05 selesai rute Sawangan</p>
+                      <p className="text-[10px] text-slate-600 mt-0.5">15 menit yang lalu</p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             
-            {/* Floating Badges (Static but with hover effect instead of bounce to prevent layout bugs) */}
-            <div className="absolute -left-2 sm:-left-12 bottom-12 sm:bottom-20 bg-white p-2.5 sm:p-3 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 flex items-center gap-2 sm:gap-3 transition-transform hover:-translate-y-2 cursor-default z-30">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 shrink-0">
-                <ShieldCheck className="w-4 h-4 sm:w-5 h-5" />
+            {/* Floating Element: Before/After */}
+            <div className="absolute -left-4 sm:-left-12 top-10 sm:top-20 bg-white p-3.5 sm:p-4 rounded-2xl shadow-xl border border-slate-100 flex items-center gap-3 z-30 rotate-[-2deg] transition-transform hover:rotate-0">
+              <div className="w-10 h-10 bg-rose-50 rounded-xl flex items-center justify-center text-rose-600 shrink-0">
+                <span className="text-xl font-bold">✕</span>
               </div>
               <div>
-                <p className="text-[11px] sm:text-xs font-extrabold text-slate-800">QRIS Tersedia</p>
-                <p className="text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight">Otomatis Lunas</p>
+                <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 line-through decoration-rose-400">Jadwal Truk Tak Pasti</p>
+                <p className="text-[11px] sm:text-xs font-extrabold text-slate-800 mt-0.5">Lacak Truk Real-Time</p>
               </div>
             </div>
             
-            <div className="absolute -right-2 sm:-right-10 top-32 sm:top-40 bg-white p-2.5 sm:p-3 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 flex items-center gap-2 sm:gap-3 transition-transform hover:-translate-y-2 cursor-default z-30">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-rose-50 rounded-xl flex items-center justify-center text-rose-600 shrink-0">
-                <Megaphone className="w-4 h-4 sm:w-5 h-5" />
+            <div className="absolute -right-2 sm:-right-8 bottom-16 sm:bottom-24 bg-white p-3.5 sm:p-4 rounded-2xl shadow-xl border border-slate-100 flex items-center gap-3 z-30 rotate-[2deg] transition-transform hover:rotate-0">
+              <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 shrink-0">
+                <Smartphone className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-[11px] sm:text-xs font-extrabold text-slate-800">Sistem Laporan</p>
-                <p className="text-[9px] sm:text-[10px] text-slate-500 font-medium leading-tight">Respons Cepat</p>
+                <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 line-through decoration-rose-400">Ribet Uang Pas/Kembalian</p>
+                <p className="text-[11px] sm:text-xs font-extrabold text-slate-800 mt-0.5">Bayar Praktis via QRIS</p>
               </div>
             </div>
           </div>
