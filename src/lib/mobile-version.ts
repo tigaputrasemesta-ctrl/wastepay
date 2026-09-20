@@ -10,8 +10,8 @@
  * unduh nonaktif (hanya info "versi baru tersedia").
  */
 export const MOBILE_VERSION = {
-  versionName: "1.2.1",
-  versionCode: 13,
+  versionName: "1.2.2",
+  versionCode: 14,
   /** Di bawah versi ini APK dianggap terlalu lama → update wajib (blocking). */
   minVersionCode: 11,
   changelog: [
