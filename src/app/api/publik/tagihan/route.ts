@@ -37,8 +37,13 @@ export async function GET(request: Request) {
 
   await updateTunggakan();
 
-  const pelanggan = await prisma.pelanggan.findUnique({
-    where: { kodePelanggan: kode },
+  const pelanggan = await prisma.pelanggan.findFirst({
+    where: { 
+      OR: [
+        { kodePelanggan: kode },
+        { noTelepon: kode }
+      ]
+    },
     select: {
       id: true,
       nama: true,
