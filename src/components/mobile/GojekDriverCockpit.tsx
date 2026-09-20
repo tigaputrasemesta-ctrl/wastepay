@@ -25,6 +25,7 @@ import {
 } from "@/lib/driver-actions";
 import { playSound, speakText, vibrate } from "@/lib/mobile-feedback";
 import type { ProximityTugas } from "@/hooks/useProximityPickup";
+import { useRoadRoute } from "@/hooks/useRoadRoute";
 
 export type GojekTugas = {
   id: number;
@@ -371,15 +372,25 @@ export default function GojekDriverCockpit({
       ? Math.round((totalCompleted / validTasks.length) * 100)
       : 0;
 
-  // Polyline rute dinamis: Driver -> Stop 1 -> Stop 2 -> ...
+  // 1. Tentukan tujuan berikutnya (pelanggan teratas di antrean)
+  const nextDestination = pendingTasks[0] 
+    ? [pendingTasks[0].latitude, pendingTasks[0].longitude] as [number, number] 
+    : undefined;
+
+  // 2. Ambil rute jalan raya nyata via OSRM
+  const realRoadRoute = useRoadRoute(driverCoords, nextDestination);
+
+  // Polyline rute dinamis (In-App Navigation)
   const routePoints = useMemo(() => {
-    const pts: [number, number][] = [];
-    if (driverCoords) pts.push(driverCoords);
-    for (const t of pendingTasks) {
-      pts.push([t.latitude, t.longitude]);
+    if (realRoadRoute.length > 0) {
+      return realRoadRoute; // Gunakan rute jalan raya OSRM
     }
-    return pts.length >= 2 ? pts : [];
-  }, [driverCoords, pendingTasks]);
+    // Fallback: Garis lurus biasa (as the crow flies)
+    if (driverCoords && nextDestination) {
+      return [driverCoords, nextDestination];
+    }
+    return [];
+  }, [realRoadRoute, driverCoords, nextDestination]);
 
   // URLs Tindakan Gojek
   const waUrl = currentTask
