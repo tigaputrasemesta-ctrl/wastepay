@@ -10,7 +10,7 @@ export async function GET() {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const isPetugas = session.role === "petugas";
-  let petugasId = undefined;
+  let petugasId: number | undefined = undefined;
 
   if (isPetugas) {
     const petugas = await prisma.petugas.findUnique({ where: { userId: session.id } });
