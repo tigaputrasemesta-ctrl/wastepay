@@ -1,0 +1,211 @@
+/* ═══════════════════════════════════════════════════════════
+   DATA PELANGGAN (CETAK) — WastePay
+   Lembar cetak pelanggan landscape / portrait print-friendly.
+   ═══════════════════════════════════════════════════════════ */
+
+@page {
+  size: A4 landscape;
+  margin: 14mm;
+}
+
+.pl-page-bg {
+  background-color: #131517;
+  min-height: 100vh;
+  padding: 1.25rem 1rem;
+}
+
+.pl-wrapper {
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+/* ── Toolbar (layar saja) ── */
+.pl-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 4px 14px;
+  color: #a3a49c;
+}
+
+.pl-toolbar-title {
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  font-family: "Consolas", "Courier New", monospace;
+}
+
+.pl-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pl-toolbar-link {
+  font-size: 12px;
+  color: #b7e13c;
+  text-decoration: underline;
+  font-family: "Consolas", "Courier New", monospace;
+}
+
+/* ── Lembar cetak ── */
+.pl-sheet {
+  width: 100%;
+  background: #fcfcfa;
+  color: #1a1a1a;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+  padding: 0 0 12px;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+/* Kepala */
+.pl-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px 14px;
+  background: #17191d;
+  color: #e9e6dd;
+  border-bottom: 4px solid #b7e13c;
+}
+
+.pl-head-left h1 {
+  margin: 0;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  color: #f2efe6;
+}
+
+.pl-head-left p {
+  margin: 2px 0 0;
+  font-size: 9px;
+  color: #8a8d84;
+}
+
+.pl-head-right {
+  text-align: right;
+}
+
+.pl-head-right h2 {
+  margin: 0;
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  color: #b7e13c;
+}
+
+.pl-head-right p {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Info Ringkas */
+.pl-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 14px 24px;
+  border-bottom: 2px dashed #e3e3de;
+}
+
+.pl-info-row {
+  flex: 1;
+  min-width: 150px;
+}
+
+.pl-info-row span {
+  display: block;
+  font-size: 9px;
+  text-transform: uppercase;
+  color: #6b6e66;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+
+.pl-info-row p {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #17191d;
+}
+
+/* Tabel */
+.pl-table-wrapper {
+  padding: 14px 24px;
+}
+
+.pl-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+}
+
+.pl-table th,
+.pl-table td {
+  border: 1px solid #c8c8c4;
+  padding: 6px 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.pl-table thead th {
+  background: #17191d;
+  color: #b7e13c;
+  text-transform: uppercase;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  border-color: #17191d;
+}
+
+.pl-table tbody tr:nth-child(even) td {
+  background: #f4f4f0;
+}
+
+.pl-col-no { width: 30px; text-align: center !important; }
+.pl-col-kode { width: 90px; font-weight: 700; }
+.pl-col-nama { width: 140px; font-weight: 700; }
+.pl-col-alamat { width: auto; }
+.pl-col-kategori { width: 100px; }
+.pl-col-telp { width: 100px; }
+.pl-col-status { width: 60px; text-align: center !important; }
+
+.pl-status-aktif { color: #1a7a34; font-weight: 700; }
+.pl-status-nonaktif { color: #b31220; font-weight: 700; }
+.pl-status-calon { color: #8c6a0c; font-weight: 700; }
+.pl-status-libur { color: #444; font-weight: 700; }
+
+.pl-empty {
+  padding: 20px;
+  text-align: center;
+  color: #6b6e66;
+  font-size: 11px;
+  font-style: italic;
+}
+
+/* Footer */
+.pl-foot {
+  margin: 14px 24px 0;
+  padding-top: 10px;
+  border-top: 1px solid #e3e3de;
+  text-align: center;
+  font-size: 9px;
+  color: #6b6e66;
+}
+
+/* ═══ PRINT ═══ */
+@media print {
+  .pl-page-bg {
+    background: white !important;
+    padding: 0;
+    min-height: auto;
+  }
+
+  .pl-toolbar {
+    display: none !important;
+  }
+
+  .pl-sheet {
+    box-shadow: none;
+  }
+}
