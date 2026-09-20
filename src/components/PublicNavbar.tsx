@@ -39,16 +39,16 @@ const NAV_ITEMS: NavItem[] = [
     icon: <CreditCard className="w-5 h-5" />,
   },
   {
-    label: "Tarif Retribusi",
-    href: "/tarif",
-    description: "Daftar paket & tarif resmi per kategori",
-    icon: <Tag className="w-5 h-5" />,
-  },
-  {
     label: "Pengaduan",
     href: "/pengaduan",
     description: "Lapor sampah menumpuk atau belum terangkut",
     icon: <MessageSquareWarning className="w-5 h-5" />,
+  },
+  {
+    label: "Tarif Resmi",
+    href: "/tarif",
+    description: "Daftar paket & tarif resmi per kategori",
+    icon: <Tag className="w-5 h-5" />,
   },
 ];
 
@@ -260,7 +260,7 @@ export default function PublicNavbar() {
                     <MessageCircle className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-bold text-emerald-950">Butuh Bantuan Cepat?</p>
+                    <p className="font-bold text-emerald-950">Pengaduan</p>
                     <p className="text-[10px] text-emerald-700">Hubungi WhatsApp Bot CS 24 Jam</p>
                   </div>
                 </div>

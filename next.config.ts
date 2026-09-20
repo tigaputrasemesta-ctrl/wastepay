@@ -8,9 +8,7 @@ const nextConfig: NextConfig = {
   },
   // Allow phone testing
   allowedDevOrigins: ["192.168.100.19"],
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+
   async headers() {
     const isProd = process.env.NODE_ENV === "production";
     return [

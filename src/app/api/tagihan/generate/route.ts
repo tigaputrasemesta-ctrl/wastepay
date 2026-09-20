@@ -113,7 +113,7 @@ export async function POST(request: Request) {
       : null;
 
     let created = 0;
-    let skipped = pelangganList.length - candidates.length;
+    const skipped = pelangganList.length - candidates.length;
     const errors: string[] = [];
     const tagihanBaru: {
       pelangganId: number;

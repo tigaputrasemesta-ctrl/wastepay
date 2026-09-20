@@ -68,10 +68,7 @@ export default async function LandingPage() {
               Pengaduan
             </Link>
             <Link href="/tarif" className="hover:text-emerald-800 transition-colors">
-              Tarif Retribusi
-            </Link>
-            <Link href="/pengaduan" className="hover:text-emerald-800 transition-colors">
-              Pengaduan
+              Tarif Resmi
             </Link>
             <Link href="/login" className="hover:text-emerald-800 transition-colors">
               Masuk Petugas
@@ -418,7 +415,7 @@ export default async function LandingPage() {
                 <li><Link href="/lacak" className="hover:text-white transition-colors">Lacak Armada</Link></li>
                 <li><Link href="/bayar" className="hover:text-white transition-colors">Cek Tagihan</Link></li>
                 <li><Link href="/pengaduan" className="hover:text-white transition-colors">Pengaduan</Link></li>
-                <li><Link href="/tarif" className="hover:text-white transition-colors">Tarif Retribusi</Link></li>
+                <li><Link href="/tarif" className="hover:text-white transition-colors">Tarif Resmi</Link></li>
                 <li><Link href="/daftar" className="hover:text-white transition-colors">Daftar Warga Baru</Link></li>
                 <li><Link href="/login" className="hover:text-white transition-colors">Masuk Petugas</Link></li>
               </ul>

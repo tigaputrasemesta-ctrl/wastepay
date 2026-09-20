@@ -221,7 +221,7 @@ export default function MobileAngkut() {
 
   useEffect(() => {
     // fetch on mount: setState terjadi setelah await (async), bukan sinkron di body effect
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     fetchData();
   }, [fetchData]);
 
