@@ -127,50 +127,89 @@ export default async function LandingPage() {
             </div>
           </div>
 
-          {/* Kolom Kanan: Visual Live Fleet Radar (5 cols) */}
-          <div className="md:col-span-5 relative">
-            <div className="rounded-3xl border border-slate-200/80 bg-slate-900 p-6 text-white shadow-xl overflow-hidden relative">
-              {/* Radar pulse background */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 border border-emerald-500/20 rounded-full pointer-events-none" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 border border-emerald-500/30 rounded-full pointer-events-none" />
-
-              {/* Status Header */}
-              <div className="flex items-center justify-between mb-6 relative z-10">
-                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                  <span>LIVE GPS DEPOK</span>
-                </div>
-                <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">AKTIF SEKARANG</span>
-              </div>
-
-              {/* Vector Simulated Map */}
-              <div className="h-56 rounded-2xl bg-slate-800/80 border border-slate-700/60 p-4 relative overflow-hidden flex items-center justify-center">
-                {/* Roads */}
-                <svg className="absolute inset-0 w-full h-full opacity-30" viewBox="0 0 300 200">
-                  <path d="M 20 180 L 100 120 L 220 120 L 280 40" stroke="#10b981" strokeWidth="4" fill="none" />
-                  <path d="M 100 120 L 120 40 L 200 40" stroke="#94a3b8" strokeWidth="2" strokeDasharray="4 4" fill="none" />
-                  <circle cx="20" cy="180" r="4" fill="#10b981" />
-                  <circle cx="280" cy="40" r="5" fill="#f43f5e" />
-                </svg>
-
-                {/* Truck marker simulation */}
-                <div className="relative z-10 flex flex-col items-center">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-700 text-white flex items-center justify-center text-xl shadow-lg border-2 border-white/20">
-                    🚛
-                  </div>
-                  <div className="mt-2 px-3 py-1 rounded-full bg-slate-900/90 border border-emerald-500/40 text-[11px] font-bold text-white shadow-md">
-                    Armada 02 • Beji Raya
+          {/* Kolom Kanan: Mockup Aplikasi (5 cols) */}
+          <div className="md:col-span-5 relative flex justify-center mt-8 md:mt-0">
+            {/* Dekorasi Background */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-emerald-100 to-teal-50 rounded-full blur-3xl -z-10" />
+            
+            {/* Frame HP */}
+            <div className="relative w-72 h-[520px] bg-white rounded-[40px] shadow-2xl border-[8px] border-slate-900 overflow-hidden flex flex-col">
+              {/* Notch */}
+              <div className="absolute top-0 inset-x-0 h-6 bg-slate-900 rounded-b-2xl w-32 mx-auto z-20" />
+              
+              {/* Layar Aplikasi */}
+              <div className="flex-1 bg-slate-50 flex flex-col relative z-10 overflow-hidden">
+                {/* Header Mockup */}
+                <div className="bg-emerald-700 pt-10 pb-6 px-5 text-white rounded-b-3xl shadow-sm">
+                  <p className="text-[10px] font-medium text-emerald-100 mb-1">Selamat datang,</p>
+                  <h3 className="text-lg font-extrabold leading-tight mb-4">Warga Depok</h3>
+                  
+                  {/* Card Tagihan */}
+                  <div className="bg-white rounded-2xl p-4 text-slate-800 shadow-lg relative overflow-hidden">
+                    <div className="absolute -right-4 -top-4 w-16 h-16 bg-emerald-50 rounded-full" />
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 relative z-10">Tagihan Bulan Ini</p>
+                    <div className="flex items-end justify-between relative z-10">
+                      <p className="text-2xl font-extrabold text-slate-900">Rp 50rb</p>
+                      <span className="px-2 py-1 bg-rose-100 text-rose-700 text-[10px] font-bold rounded-lg">BELUM BAYAR</span>
+                    </div>
+                    <button className="w-full mt-3 py-2 bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 shadow-sm">
+                      <Smartphone className="w-3.5 h-3.5" /> Bayar via QRIS
+                    </button>
                   </div>
                 </div>
-              </div>
 
-              {/* Mini Dispatch Strip */}
-              <div className="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-300">
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <span>Status: Penjemputan Rute Pagi</span>
+                {/* Konten Bawah */}
+                <div className="p-5 space-y-4">
+                  {/* Menu Grid */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm text-center">
+                      <div className="w-10 h-10 mx-auto bg-sky-50 text-sky-600 rounded-xl flex items-center justify-center mb-2">
+                        <MapPin className="w-5 h-5" />
+                      </div>
+                      <p className="text-[10px] font-bold text-slate-700">Lacak Truk</p>
+                    </div>
+                    <div className="bg-white p-3 rounded-2xl border border-rose-200 shadow-sm text-center ring-2 ring-rose-50">
+                      <div className="w-10 h-10 mx-auto bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center mb-2">
+                        <Megaphone className="w-5 h-5" />
+                      </div>
+                      <p className="text-[10px] font-bold text-slate-700">Pengaduan</p>
+                    </div>
+                  </div>
+
+                  {/* Riwayat Alert */}
+                  <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+                        <CheckCircle2 className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <p className="text-[11px] font-bold text-slate-800">Sampah Diangkut</p>
+                        <p className="text-[10px] text-slate-500">Hari ini, 07:45 WIB</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <span className="text-emerald-400 font-bold">18 / 24 RT Selesai</span>
+              </div>
+            </div>
+            
+            {/* Floating Badges */}
+            <div className="absolute -left-2 sm:-left-6 bottom-16 bg-white p-2.5 sm:p-3 rounded-2xl shadow-xl border border-slate-100 flex items-center gap-2 sm:gap-3 animate-bounce" style={{ animationDuration: '3s' }}>
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600">
+                <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5" />
+              </div>
+              <div>
+                <p className="text-[11px] sm:text-xs font-extrabold text-slate-800">QRIS Aktif</p>
+                <p className="text-[9px] sm:text-[10px] text-slate-500 font-medium">Verifikasi Instan</p>
+              </div>
+            </div>
+            
+            <div className="absolute -right-2 sm:-right-8 top-32 bg-white p-2.5 sm:p-3 rounded-2xl shadow-xl border border-slate-100 flex items-center gap-2 sm:gap-3 animate-bounce" style={{ animationDuration: '4s', animationDelay: '1s' }}>
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-rose-50 rounded-xl flex items-center justify-center text-rose-600">
+                <Megaphone className="w-4 h-4 sm:w-5 sm:h-5" />
+              </div>
+              <div>
+                <p className="text-[11px] sm:text-xs font-extrabold text-slate-800">Lapor Cepat</p>
+                <p className="text-[9px] sm:text-[10px] text-slate-500 font-medium">Tuntas & Terpantau</p>
               </div>
             </div>
           </div>
