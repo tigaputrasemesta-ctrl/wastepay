@@ -976,40 +976,40 @@ export default function GojekDriverCockpit({
               </motion.div>
 
               {/* Row 2: Customer Identity & Contact Action Buttons */}
-              <motion.div layout className="flex items-start justify-between gap-2">
-                <div className="space-y-0.5 min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <h3 className="text-sm font-black text-white truncate max-w-[140px] sm:max-w-xs">
+              <motion.div layout className="flex items-start justify-between gap-2 mt-1">
+                <div className="space-y-1 min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="text-base sm:text-lg font-black text-white truncate max-w-[160px] sm:max-w-sm tracking-wide">
                       {currentTask.nama}
                     </h3>
-                    <span className="text-[9px] font-mono font-bold text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800 shrink-0">
+                    <span className="text-[10px] sm:text-xs font-mono font-bold text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-700 shrink-0 shadow-sm">
                       {currentTask.kodePelanggan}
                     </span>
                     {currentTask.fotoRumah && (
                       <button
                         type="button"
                         onClick={() => setPreviewFoto(currentTask.fotoRumah!)}
-                        className="text-[10px] text-emerald-400 underline font-bold shrink-0"
+                        className="text-xs text-emerald-400 underline font-bold shrink-0 p-1 active:scale-95"
                       >
                         [Foto]
                       </button>
                     )}
                   </div>
 
-                  <p className="text-[11px] text-slate-300 line-clamp-1 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-slate-300 line-clamp-2 leading-snug">
                     {currentTask.alamat}
                   </p>
 
                   {currentTask.patokanLokasi && (
-                    <p className="text-[10px] text-amber-300 font-semibold truncate">
+                    <p className="text-[11px] sm:text-xs text-amber-300 font-bold truncate bg-amber-950/30 inline-block px-1.5 py-0.5 rounded">
                       📍 Patokan: {currentTask.patokanLokasi}
                     </p>
                   )}
 
                   {/* Pricing / Tunggakan Tag if Overdue */}
                   {currentIsMenunggak && (
-                    <div className="pt-0.5">
-                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-rose-950/80 text-rose-300 border border-rose-800 text-[9px] font-bold">
+                    <div className="pt-1">
+                      <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-rose-950/90 text-rose-300 border border-rose-800 text-[10px] font-bold shadow-sm shadow-rose-900/20">
                         ⚠️ Menunggak {currentTask.tunggakan?.jumlahBulan} Bln ({formatRupiah(currentTask.tunggakan?.totalNominal || 0)})
                       </span>
                     </div>
