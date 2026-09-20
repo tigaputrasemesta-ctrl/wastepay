@@ -380,7 +380,7 @@ export default function GojekDriverCockpit({
   // 2. Ambil rute jalan raya nyata via OSRM
   const realRoadRoute = useRoadRoute(driverCoords, nextDestination);
 
-  // Polyline rute dinamis (In-App Navigation)
+  // Polyline rute dinamis (In-App Navigation) ke pelanggan pertama
   const routePoints = useMemo(() => {
     if (realRoadRoute.length > 0) {
       return realRoadRoute; // Gunakan rute jalan raya OSRM
@@ -391,6 +391,16 @@ export default function GojekDriverCockpit({
     }
     return [];
   }, [realRoadRoute, driverCoords, nextDestination]);
+
+  // 3. Garis rute sisa antrean (Pelanggan 1 -> 2 -> 3 dst)
+  const queuePoints = useMemo(() => {
+    if (pendingTasks.length < 2) return [];
+    const pts: [number, number][] = [];
+    for (const t of pendingTasks) {
+      pts.push([t.latitude, t.longitude]);
+    }
+    return pts;
+  }, [pendingTasks]);
 
   // URLs Tindakan Gojek
   const waUrl = currentTask
@@ -638,26 +648,43 @@ export default function GojekDriverCockpit({
             focusPos={focusPos}
           />
 
-          {/* Glow Trajectory Route Polyline */}
+          {/* 1. Rute Antrean Sisa (Pelanggan 1 ke Pelanggan 2, dst) */}
+          {queuePoints.length >= 2 && (
+            <Polyline
+              positions={queuePoints}
+              pathOptions={{
+                color: "#94A3B8", // Slate / abu-abu terang
+                weight: 3,
+                dashArray: "4, 8",
+                opacity: 0.8,
+                lineCap: "round",
+              }}
+            />
+          )}
+
+          {/* 2. Rute Jalan Utama (In-App Navigation ke Pelanggan 1) */}
           {routePoints.length >= 2 && (
             <>
+              {/* Outer Glow / Shadow (Lebih tebal) */}
               <Polyline
                 positions={routePoints}
                 pathOptions={{
-                  color: "#059669",
-                  weight: 8,
+                  color: "#059669", // Hijau gelap
+                  weight: 10,
                   opacity: 0.35,
                   lineCap: "round",
+                  lineJoin: "round",
                 }}
               />
+              {/* Inner Solid Line (Garis jalan utama yang solid, bukan putus-putus) */}
               <Polyline
                 positions={routePoints}
                 pathOptions={{
-                  color: "#00AA13",
-                  weight: 4,
-                  dashArray: "6, 10",
-                  opacity: 0.95,
+                  color: "#00AA13", // Hijau terang (Gojek)
+                  weight: 5,
+                  opacity: 1,
                   lineCap: "round",
+                  lineJoin: "round",
                 }}
               />
             </>
