@@ -3,6 +3,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { Truck, MapPin, Smartphone, ArrowRight, Megaphone, ShieldCheck, Sparkles, Navigation, CheckCircle2 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { formatDate } from "@/lib/utils";
 
 import TrustStatsBar from "@/components/TrustStatsBar";
 import TimelineSection from "@/components/TimelineSection";
@@ -20,6 +21,11 @@ export const metadata: Metadata = {
 };
 
 export default async function LandingPage() {
+  const artikelTop3 = await prisma.artikel.findMany({
+    where: { diterbitkan: true },
+    orderBy: { createdAt: "desc" },
+    take: 3,
+  });
   
   type PengumumanRingkas = {
     id: number;
@@ -368,48 +374,39 @@ export default async function LandingPage() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            <Link href="/artikel/jadwal-pengangkutan-sampah-cilodong-depok" className="group flex flex-col bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-md transition-all">
-              <div className="h-48 bg-slate-100 relative overflow-hidden">
-                <div className="absolute inset-0 bg-emerald-900/10 group-hover:bg-transparent transition-colors z-10" />
-                <div className="w-full h-full bg-gradient-to-br from-emerald-100 to-teal-50 flex items-center justify-center">
-                  <span className="text-4xl">🗓️</span>
-                </div>
+            {artikelTop3.length === 0 ? (
+              <div className="md:col-span-3 text-center py-12 bg-slate-50 rounded-3xl border border-slate-200/80">
+                <p className="text-slate-500 font-medium">Belum ada artikel yang diterbitkan.</p>
               </div>
-              <div className="p-6 flex-1 flex flex-col">
-                <span className="text-xs font-bold text-emerald-600 mb-2">Informasi Layanan</span>
-                <h3 className="text-lg font-bold text-slate-900 mb-3 group-hover:text-emerald-700 transition-colors leading-snug">Jadwal Pengangkutan Sampah di Cilodong Depok 2026</h3>
-                <p className="text-sm text-slate-600 mb-4 line-clamp-2">Pembaruan jadwal operasional truk pengangkut sampah UPS HERU untuk wilayah Cilodong dan sekitarnya.</p>
-                <div className="mt-auto text-[11px] font-semibold text-slate-400">18 September 2026</div>
-              </div>
-            </Link>
-            <Link href="/artikel/cara-memilah-sampah-organik-anorganik" className="group flex flex-col bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-md transition-all">
-              <div className="h-48 bg-slate-100 relative overflow-hidden">
-                <div className="absolute inset-0 bg-emerald-900/10 group-hover:bg-transparent transition-colors z-10" />
-                <div className="w-full h-full bg-gradient-to-br from-amber-100 to-orange-50 flex items-center justify-center">
-                  <span className="text-4xl">♻️</span>
-                </div>
-              </div>
-              <div className="p-6 flex-1 flex flex-col">
-                <span className="text-xs font-bold text-emerald-600 mb-2">Edukasi Warga</span>
-                <h3 className="text-lg font-bold text-slate-900 mb-3 group-hover:text-emerald-700 transition-colors leading-snug">Cara Benar Memilah Sampah Organik dan Anorganik di Rumah</h3>
-                <p className="text-sm text-slate-600 mb-4 line-clamp-2">Langkah mudah memilah sampah dari dapur tangga untuk membantu proses daur ulang di TPS 3R.</p>
-                <div className="mt-auto text-[11px] font-semibold text-slate-400">15 September 2026</div>
-              </div>
-            </Link>
-            <Link href="/artikel/daftar-tarif-retribusi-sampah-depok-terbaru" className="group flex flex-col bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-md transition-all">
-              <div className="h-48 bg-slate-100 relative overflow-hidden">
-                <div className="absolute inset-0 bg-emerald-900/10 group-hover:bg-transparent transition-colors z-10" />
-                <div className="w-full h-full bg-gradient-to-br from-sky-100 to-blue-50 flex items-center justify-center">
-                  <span className="text-4xl">💰</span>
-                </div>
-              </div>
-              <div className="p-6 flex-1 flex flex-col">
-                <span className="text-xs font-bold text-emerald-600 mb-2">Pembaruan Sistem</span>
-                <h3 className="text-lg font-bold text-slate-900 mb-3 group-hover:text-emerald-700 transition-colors leading-snug">Daftar Tarif Retribusi Sampah Kota Depok Terbaru</h3>
-                <p className="text-sm text-slate-600 mb-4 line-clamp-2">Transparansi biaya retribusi layanan kebersihan UPS HERU untuk kategori perumahan, niaga, dan industri.</p>
-                <div className="mt-auto text-[11px] font-semibold text-slate-400">10 September 2026</div>
-              </div>
-            </Link>
+            ) : (
+              artikelTop3.map((a) => (
+                <Link key={a.id} href={`/artikel/${a.slug}`} className="group flex flex-col bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-md transition-all">
+                  {a.gambar ? (
+                    <div className="h-48 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-emerald-900/10 group-hover:bg-transparent transition-colors z-10" />
+                      <img src={a.gambar} alt={a.judul} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    </div>
+                  ) : (
+                    <div className="h-48 bg-slate-100 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-emerald-900/10 group-hover:bg-transparent transition-colors z-10" />
+                      <div className="w-full h-full bg-gradient-to-br from-emerald-100 to-teal-50 flex items-center justify-center">
+                        <span className="text-4xl">📰</span>
+                      </div>
+                    </div>
+                  )}
+                  <div className="p-6 flex-1 flex flex-col">
+                    <span className="text-xs font-bold text-emerald-600 mb-2">
+                      {a.kategori.charAt(0).toUpperCase() + a.kategori.slice(1)}
+                    </span>
+                    <h3 className="text-lg font-bold text-slate-900 mb-3 group-hover:text-emerald-700 transition-colors leading-snug">
+                      {a.judul}
+                    </h3>
+                    <p className="text-sm text-slate-600 mb-4 line-clamp-2">{a.isi}</p>
+                    <div className="mt-auto text-[11px] font-semibold text-slate-400">{formatDate(a.createdAt)}</div>
+                  </div>
+                </Link>
+              ))
+            )}
           </div>
         </div>
       </section>

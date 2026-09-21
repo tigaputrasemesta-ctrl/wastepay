@@ -1,19 +1,37 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { prisma } from "@/lib/prisma";
+import { formatDate } from "@/lib/utils";
+
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
-  const title = resolvedParams.slug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+  const artikel = await prisma.artikel.findUnique({ where: { slug: resolvedParams.slug } });
+  
+  if (!artikel) {
+    return { title: "Artikel Tidak Ditemukan | UPS HERU Depok" };
+  }
+
   return {
-    title: `${title} | UPS HERU Depok`,
-    description: `Baca selengkapnya tentang ${title} di portal informasi UPS HERU Depok.`,
+    title: `${artikel.judul} | UPS HERU Depok`,
+    description: artikel.isi.slice(0, 160),
+    openGraph: artikel.gambar ? { images: [artikel.gambar] } : undefined,
   };
 }
 
 export default async function ArtikelDetail({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  const title = resolvedParams.slug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+  const artikel = await prisma.artikel.findUnique({
+    where: { slug: resolvedParams.slug },
+    include: { penulis: { select: { nama: true } } },
+  });
+
+  if (!artikel || (!artikel.diterbitkan)) {
+    notFound();
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 py-12 px-6">
@@ -25,30 +43,24 @@ export default async function ArtikelDetail({ params }: { params: Promise<{ slug
         
         <header className="space-y-4 border-b border-slate-100 pb-8">
           <span className="inline-block px-3 py-1 bg-emerald-50 text-emerald-700 font-bold text-xs rounded-full">
-            Berita & Edukasi
+            {artikel.kategori.charAt(0).toUpperCase() + artikel.kategori.slice(1)}
           </span>
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 leading-tight">
-            {title}
+            {artikel.judul}
           </h1>
           <div className="text-sm font-medium text-slate-500">
-            Dipublikasikan pada September 2026 • Oleh Tim UPS HERU
+            Dipublikasikan pada {formatDate(artikel.createdAt)} • Oleh {artikel.penulis?.nama || "Tim UPS HERU"}
           </div>
         </header>
 
-        <article className="prose prose-slate prose-emerald max-w-none">
-          <p className="lead text-lg text-slate-600">
-            Ini adalah halaman contoh (placeholder) untuk artikel dengan tautan <strong>{resolvedParams.slug}</strong>.
-            Nantinya, Anda bisa menghubungkan halaman ini dengan database (seperti CMS atau Prisma) agar isi beritanya bisa diubah-ubah dari dashboard admin.
-          </p>
-          <p>
-            Dengan adanya halaman artikel terpisah seperti ini, Google akan lebih mudah menemukan kata kunci yang spesifik, seperti lokasi "Cilodong", "Depok", dan topik "Pengelolaan Sampah".
-          </p>
-          <h3>Mengapa ini penting untuk SEO?</h3>
-          <ul>
-            <li>Menambah jumlah halaman di website yang bisa di-index Google.</li>
-            <li>Memungkinkan Anda menargetkan <em>long-tail keywords</em>.</li>
-            <li>Memberikan nilai edukasi bagi warga, sehingga mereka lebih lama berada di website.</li>
-          </ul>
+        {artikel.gambar && (
+          <div className="w-full">
+            <img src={artikel.gambar} alt={artikel.judul} className="w-full rounded-2xl object-cover max-h-96 border border-slate-200" />
+          </div>
+        )}
+
+        <article className="prose prose-slate prose-emerald max-w-none text-slate-700 whitespace-pre-wrap">
+          {artikel.isi}
         </article>
       </div>
     </div>

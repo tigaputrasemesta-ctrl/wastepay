@@ -1,13 +1,22 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { prisma } from "@/lib/prisma";
+import { formatDate } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Artikel & Edukasi Lingkungan | UPS HERU Depok",
   description: "Kumpulan artikel, jadwal pengangkutan sampah, dan tips kebersihan dari UPS HERU untuk warga Depok.",
 };
 
-export default function ArtikelPage() {
+export const dynamic = "force-dynamic";
+
+export default async function ArtikelPage() {
+  const artikelList = await prisma.artikel.findMany({
+    where: { diterbitkan: true },
+    orderBy: { createdAt: "desc" },
+  });
+
   return (
     <div className="min-h-screen bg-slate-50 py-12 px-6">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -25,35 +34,34 @@ export default function ArtikelPage() {
           </p>
         </div>
 
-        {/* Placeholder List Artikel */}
         <div className="grid gap-6">
-          <div className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row gap-6">
-            <div className="w-full sm:w-48 h-32 bg-emerald-50 rounded-2xl flex items-center justify-center shrink-0">
-              <span className="text-4xl">🗓️</span>
+          {artikelList.length === 0 ? (
+            <div className="text-center py-12 bg-white rounded-3xl border border-slate-200/80">
+              <p className="text-slate-500 font-medium">Belum ada artikel yang diterbitkan.</p>
             </div>
-            <div className="flex flex-col justify-center">
-              <span className="text-xs font-bold text-emerald-600 mb-2">Informasi Layanan • 18 September 2026</span>
-              <h2 className="text-xl font-bold text-slate-900 mb-2">Jadwal Pengangkutan Sampah di Cilodong Depok 2026</h2>
-              <p className="text-slate-600 text-sm mb-4">Pembaruan jadwal operasional truk pengangkut sampah UPS HERU untuk wilayah Cilodong dan sekitarnya.</p>
-              <Link href="/artikel/jadwal-pengangkutan-sampah-cilodong-depok" className="text-sm font-bold text-emerald-700 hover:underline">
-                Baca selengkapnya &rarr;
-              </Link>
-            </div>
-          </div>
-          
-          <div className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row gap-6">
-            <div className="w-full sm:w-48 h-32 bg-amber-50 rounded-2xl flex items-center justify-center shrink-0">
-              <span className="text-4xl">♻️</span>
-            </div>
-            <div className="flex flex-col justify-center">
-              <span className="text-xs font-bold text-emerald-600 mb-2">Edukasi Warga • 15 September 2026</span>
-              <h2 className="text-xl font-bold text-slate-900 mb-2">Cara Benar Memilah Sampah Organik dan Anorganik di Rumah</h2>
-              <p className="text-slate-600 text-sm mb-4">Langkah mudah memilah sampah dari dapur tangga untuk membantu proses daur ulang di TPS 3R.</p>
-              <Link href="/artikel/cara-memilah-sampah-organik-anorganik" className="text-sm font-bold text-emerald-700 hover:underline">
-                Baca selengkapnya &rarr;
-              </Link>
-            </div>
-          </div>
+          ) : (
+            artikelList.map((artikel) => (
+              <div key={artikel.id} className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row gap-6 hover:shadow-md transition-shadow">
+                {artikel.gambar ? (
+                  <img src={artikel.gambar} alt={artikel.judul} className="w-full sm:w-48 h-32 rounded-2xl object-cover border border-slate-200 shrink-0" />
+                ) : (
+                  <div className="w-full sm:w-48 h-32 bg-emerald-50 rounded-2xl flex items-center justify-center shrink-0 border border-emerald-100">
+                    <span className="text-4xl">📰</span>
+                  </div>
+                )}
+                <div className="flex flex-col justify-center">
+                  <span className="text-xs font-bold text-emerald-600 mb-2">
+                    {artikel.kategori.charAt(0).toUpperCase() + artikel.kategori.slice(1)} • {formatDate(artikel.createdAt)}
+                  </span>
+                  <h2 className="text-xl font-bold text-slate-900 mb-2">{artikel.judul}</h2>
+                  <p className="text-slate-600 text-sm mb-4 line-clamp-2">{artikel.isi}</p>
+                  <Link href={`/artikel/${artikel.slug}`} className="text-sm font-bold text-emerald-700 hover:underline">
+                    Baca selengkapnya &rarr;
+                  </Link>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>
