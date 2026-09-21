@@ -160,6 +160,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
   const [tampilkanBatasKelurahan, setTampilkanBatasKelurahan] = useState(true);
   const [tampilkanRt, setTampilkanRt] = useState(true);
   const [tampilkanArmada, setTampilkanArmada] = useState(true);
+  const [showHeatmap, setShowHeatmap] = useState(false);
   const [tab, setTab] = useState<TabKey>("pelanggan");
   const [bukaLapakList, setBukaLapakList] = useState(true);
   const [urutkan, setUrutkan] = useState<"nama" | "kode">("kode");
@@ -582,6 +583,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
               selectedKomplainId={selectedKomplainId}
               setSelectedKomplainId={pilihKomplain}
               tampilkanCakupan={tampilkanCakupan}
+              showHeatmap={showHeatmap}
               tampilkanBatas={tampilkanBatas}
               tampilkanBatasKelurahan={tampilkanBatasKelurahan}
               tampilkanRt={tampilkanRt}
@@ -682,6 +684,17 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
                 }`}
               >
                 <span>Cakupan Radius 200m</span> <span>{tampilkanCakupan ? "✓" : "○"}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowHeatmap((b) => !b)}
+                className={`text-xs px-3.5 py-2.5 rounded-xl border transition-all text-left flex items-center justify-between font-medium ${
+                  showHeatmap
+                    ? "border-rose-300 text-rose-800 bg-rose-50/80 font-semibold"
+                    : "border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                }`}
+              >
+                <span>🔥 Heatmap Kepadatan</span> <span>{showHeatmap ? "✓" : "○"}</span>
               </button>
               <button
                 type="button"

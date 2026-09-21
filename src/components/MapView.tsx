@@ -20,6 +20,7 @@ import type { Titik } from "@/lib/geo";
 import type { KomplainPeta, PelangganPeta, RutePeta } from "./PetaMap";
 import { KOMPLAIN_LABEL, KOMPLAIN_WARNA } from "@/lib/komplain";
 import { getMapTileConfig, type MapTileType } from "@/lib/map-tile";
+import HeatmapLayer from "./HeatmapLayer";
 
 export type PetugasPeta = {
   petugasId: number;
@@ -66,6 +67,7 @@ type Props = {
   selectedKomplainId: number | null;
   setSelectedKomplainId: (id: number) => void;
   tampilkanCakupan: boolean;
+  showHeatmap?: boolean;
   tampilkanBatas: boolean;
   tampilkanBatasKelurahan: boolean;
   tampilkanRt: boolean;
@@ -212,10 +214,14 @@ function formatWaktuRelatif(iso: string): string {
   return `${Math.floor(dt / 86400000)} hari lalu`;
 }
 
-function buatIcon(warna: string) {
+function buatIcon(warna: string, isBermasalah: boolean = false) {
+  const innerHtml = isBermasalah 
+    ? `<div style="position:absolute;top:0;left:0;right:0;bottom:0;border-radius:3px;background:#e11d48;animation:ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;opacity:0.75;transform:scale(2);"></div><div style="position:relative;width:14px;height:14px;transform:rotate(45deg);border-radius:3px;background:#e11d48;border:2px solid #131517;box-shadow:0 0 8px #e11d4877"></div>`
+    : `<div style="width:14px;height:14px;transform:rotate(45deg);border-radius:3px;background:${warna};border:2px solid #131517;box-shadow:0 0 8px ${warna}77"></div>`;
+    
   return L.divIcon({
     className: "animated-pin",
-    html: `<div style="width:14px;height:14px;transform:rotate(45deg);border-radius:3px;background:${warna};border:2px solid #131517;box-shadow:0 0 8px ${warna}77"></div>`,
+    html: `<div style="position:relative;width:14px;height:14px;">${innerHtml}</div>`,
     iconSize: [14, 14],
     iconAnchor: [7, 7],
     popupAnchor: [0, -10],
@@ -231,10 +237,17 @@ function buatIconRute(warna: string, label: string) {
   });
 }
 
-function buatIconKomplain(warna: string, aktif: boolean) {
+function buatIconKomplain(warna: string, aktif: boolean, isBaru: boolean = false) {
+  const pulseHtml = isBaru 
+    ? `<div style="position:absolute;top:-4px;left:-4px;width:100%;height:100%;border-radius:3px;background:#ef4444;animation:ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;opacity:0.8;transform:scale(1.5);"></div>` 
+    : "";
+    
   return L.divIcon({
     className: aktif ? "komplain-aktif" : "komplain-pin",
-    html: `<div style="width:${aktif ? 22 : 16}px;height:${aktif ? 22 : 16}px;transform:rotate(45deg);border-radius:3px;background:${warna};border:2px solid #131517;box-shadow:0 0 14px ${warna}cc, 0 0 0 ${aktif ? "5px" : "3px"} rgba(255,255,255,0.12)"></div>`,
+    html: `<div style="position:relative;width:${aktif ? 22 : 16}px;height:${aktif ? 22 : 16}px;">
+      ${pulseHtml}
+      <div style="position:relative;width:100%;height:100%;transform:rotate(45deg);border-radius:3px;background:${warna};border:2px solid #131517;box-shadow:0 0 14px ${warna}cc, 0 0 0 ${aktif ? "5px" : "3px"} rgba(255,255,255,0.12)"></div>
+    </div>`,
     iconSize: [aktif ? 22 : 16, aktif ? 22 : 16],
     iconAnchor: [aktif ? 11 : 8, aktif ? 11 : 8],
     popupAnchor: [0, -12],
@@ -464,7 +477,7 @@ function ClusterPins({
         continue;
       }
       const m = L.marker([p.latitude, p.longitude], {
-        icon: buatIcon(warnaStatus[p.status] ?? "#8b8f98"),
+        icon: buatIcon(warnaStatus[p.status] ?? "#8b8f98", p.statusTagihan === "tunggakan"),
       });
       m.bindPopup(popupHtml(p));
       m.on("click", () => {
@@ -530,7 +543,7 @@ function PinsKomplain({
           <Marker
             key={`komplain-${k.id}`}
             position={pos}
-            icon={buatIconKomplain(KOMPLAIN_WARNA[k.status] ?? "#ff5c5c", k.id === selectedKomplainId)}
+            icon={buatIconKomplain(KOMPLAIN_WARNA[k.status] ?? "#ff5c5c", k.id === selectedKomplainId, k.status === "baru")}
             eventHandlers={{ click: () => onPilih(k.id) }}
           >
             <Popup closeButton={false}>
@@ -620,6 +633,7 @@ export default function MapView({
   selectedKomplainId,
   setSelectedKomplainId,
   tampilkanCakupan,
+  showHeatmap,
   tampilkanBatas,
   tampilkanBatasKelurahan,
   tampilkanRt,
@@ -875,12 +889,22 @@ export default function MapView({
       {/* Titik transit (lapak) */}
       <PinsTransit transit={transit} />
 
-      <ClusterPins
-        pelanggan={pelanggan}
-        warnaStatus={warnaStatus}
-        selectedId={selectedId}
-        onPilih={setSelectedId}
-      />
+      {showHeatmap && (
+        <HeatmapLayer 
+          points={pelanggan
+            .filter(p => p.latitude != null && p.longitude != null && !isNaN(p.latitude) && !isNaN(p.longitude))
+            .map(p => [p.latitude as number, p.longitude as number, p.statusTagihan === "tunggakan" ? 1.0 : 0.2])} 
+        />
+      )}
+
+      {!showHeatmap && (
+        <ClusterPins
+          pelanggan={pelanggan}
+          warnaStatus={warnaStatus}
+          selectedId={selectedId}
+          onPilih={setSelectedId}
+        />
+      )}
 
       <FlyTo center={pusatFly} />
       <FitBounds rutePoints={ruteUrut} points={titik} />
