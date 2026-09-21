@@ -276,10 +276,11 @@ export type PendaftaranAdmin = {
   kodePelanggan: string;
   noTelepon: string;
   alamat: string;
-  kategori?: string;
-  paket?: string;
-  patokanLokasi?: string;
-  referal?: string;
+  kategori?: string | null;
+  paket?: string | null;
+  patokanLokasi?: string | null;
+  referal?: string | null;
+  tanggalPenagihanCustom?: string | null;
 };
 
 export function templatePendaftaranAdmin(p: PendaftaranAdmin): { judul: string; pesan: string } {
@@ -293,6 +294,7 @@ export function templatePendaftaranAdmin(p: PendaftaranAdmin): { judul: string; 
   ];
   if (p.paket) baris.push(`📦 Paket: ${p.paket}`);
   if (p.kategori) baris.push(`🗂 Kategori: ${p.kategori}`);
+  if (p.tanggalPenagihanCustom) baris.push(`🗓 Tgl Penagihan Custom: ${p.tanggalPenagihanCustom}`);
   if (p.patokanLokasi) baris.push(`🧭 Patokan: ${p.patokanLokasi}`);
   if (p.referal) baris.push(`🤝 Referal: ${p.referal}`);
   baris.push("", `Segera konfirmasi di aplikasi ${NAMA()}.`, `— ${NAMA()}`);

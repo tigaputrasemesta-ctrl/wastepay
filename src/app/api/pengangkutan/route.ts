@@ -127,6 +127,7 @@ export async function GET(request: Request) {
 
   const pengangkutan = await prisma.pengangkutan.findMany({
     where,
+    omit: { fotoBukti: true },
     include: {
       pelanggan: {
         select: {
@@ -138,7 +139,6 @@ export async function GET(request: Request) {
           longitude: true,
           patokanLokasi: true,
           noTelepon: true,
-          fotoRumah: true,
           tagihan: {
             where: {
               status: { in: ["tunggakan", "belum_bayar"] },

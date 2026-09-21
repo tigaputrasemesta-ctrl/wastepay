@@ -170,6 +170,7 @@ export async function GET(request: Request) {
 
   const pembayaran = await prisma.pembayaran.findMany({
     where,
+    omit: { buktiBayar: true },
     include: {
       pelanggan: { select: { id: true, nama: true, kodePelanggan: true } },
       tagihan: { select: { bulan: true, tahun: true, jumlah: true } },

@@ -11,6 +11,7 @@ import {
 } from "@/lib/wa";
 import { logAudit } from "@/lib/audit";
 import { formatRtRw, normalisasiTelepon, teleponValid } from "@/lib/daftar";
+import { tetapkanJadwalDanPetugasPelanggan } from "@/lib/penugasan-jadwal";
 
 export const dynamic = "force-dynamic";
 
@@ -126,6 +127,13 @@ export async function POST(request: Request) {
       );
     }
 
+    if (!fotoRumah) {
+      return NextResponse.json({ error: "Foto rumah wajib diisi." }, { status: 400 });
+    }
+    if (latitude === null || longitude === null || Number.isNaN(latitude) || Number.isNaN(longitude)) {
+      return NextResponse.json({ error: "Titik lokasi GPS wajib diisi." }, { status: 400 });
+    }
+
     if (nama.length < 3) {
       return NextResponse.json({ error: "Nama minimal 3 karakter." }, { status: 400 });
     }
@@ -141,6 +149,12 @@ export async function POST(request: Request) {
     if (alamat.length < 10) {
       return NextResponse.json({ error: "Alamat terlalu singkat." }, { status: 400 });
     }
+
+    const zonaId = body.zonaId ? parseInt(body.zonaId) : null;
+    const petugasId = body.petugasId ? parseInt(body.petugasId) : null;
+    const ruteId = body.ruteId ? parseInt(body.ruteId) : null;
+    const tanggalPenagihanCustom = body.tanggalPenagihanCustom ? String(body.tanggalPenagihanCustom).trim() : null;
+    const jadwalHari = typeof body.jadwalHari === "string" && body.jadwalHari.trim() ? body.jadwalHari.trim() : null;
 
     // Cocokkan lokasi: anchor kelurahan (canonical) + opsional RT/RW
     const lokasi = await cariLokasi({ rt, rw, kelurahan, kecamatan });
@@ -202,6 +216,7 @@ export async function POST(request: Request) {
             "Daftar mandiri via website",
             `(${kecamatan} / ${kelurahan})`,
             rtRw ? `RT/RW: ${rtRw}` : null,
+            tanggalPenagihanCustom ? `Tanggal Penagihan: ${tanggalPenagihanCustom}` : null,
           ]
             .filter(Boolean)
             .join(" "),
@@ -215,6 +230,17 @@ export async function POST(request: Request) {
         );
       }
       throw e;
+    }
+
+    if (zonaId || petugasId || jadwalHari || ruteId) {
+      await tetapkanJadwalDanPetugasPelanggan({
+        pelangganId: pelanggan.id,
+        kelurahanId: pelanggan.kelurahanId,
+        zonaId,
+        petugasId,
+        ruteId,
+        hari: jadwalHari,
+      });
     }
 
     await logAudit("create", "Pelanggan", pelanggan.id, undefined, {
@@ -250,6 +276,7 @@ export async function POST(request: Request) {
         paket: paketNama || undefined,
         patokanLokasi: patokanLokasi || undefined,
         referal: referal || undefined,
+        tanggalPenagihanCustom: tanggalPenagihanCustom || undefined,
       });
       await kirimNotifikasi({
         tipe: "pendaftaran_masuk",
