@@ -638,75 +638,84 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
           </div>
 
           {/* Layer toggle — styled chips */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm flex-1 flex flex-col justify-center">
-            <span className="font-bold uppercase tracking-wider text-xs text-slate-400 block mb-3 border-b border-slate-100 pb-2">LAYER KONTROL</span>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2 flex-1">
-              <button
-                type="button"
-                onClick={() => setTampilkanBatas((b) => !b)}
-                className={`text-xs px-3.5 py-2.5 rounded-xl border transition-all text-left flex items-center justify-between font-medium ${
-                  tampilkanBatas
-                    ? "border-emerald-300 text-emerald-800 bg-emerald-50/80 font-semibold"
-                    : "border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-                }`}
-              >
-                <span>Batas Kecamatan</span> <span>{tampilkanBatas ? "✓" : "○"}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setTampilkanBatasKelurahan((b) => !b)}
-                className={`text-xs px-3.5 py-2.5 rounded-xl border transition-all text-left flex items-center justify-between font-medium ${
-                  tampilkanBatasKelurahan
-                    ? "border-emerald-300 text-emerald-800 bg-emerald-50/80 font-semibold"
-                    : "border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-                }`}
-              >
-                <span>Batas Kelurahan</span> <span>{tampilkanBatasKelurahan ? "✓" : "○"}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setTampilkanRt((b) => !b)}
-                className={`text-xs px-3.5 py-2.5 rounded-xl border transition-all text-left flex items-center justify-between font-medium ${
-                  tampilkanRt
-                    ? "border-emerald-300 text-emerald-800 bg-emerald-50/80 font-semibold"
-                    : "border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-                }`}
-              >
-                <span>Titik Koordinat RT</span> <span>{tampilkanRt ? "✓" : "○"}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setTampilkanCakupan((b) => !b)}
-                className={`text-xs px-3.5 py-2.5 rounded-xl border transition-all text-left flex items-center justify-between font-medium ${
-                  tampilkanCakupan
-                    ? "border-emerald-300 text-emerald-800 bg-emerald-50/80 font-semibold"
-                    : "border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-                }`}
-              >
-                <span>Cakupan Radius 200m</span> <span>{tampilkanCakupan ? "✓" : "○"}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowHeatmap((b) => !b)}
-                className={`text-xs px-3.5 py-2.5 rounded-xl border transition-all text-left flex items-center justify-between font-medium ${
-                  showHeatmap
-                    ? "border-rose-300 text-rose-800 bg-rose-50/80 font-semibold"
-                    : "border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-                }`}
-              >
-                <span>🔥 Heatmap Kepadatan</span> <span>{showHeatmap ? "✓" : "○"}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setTampilkanArmada((b) => !b)}
-                className={`text-xs px-3.5 py-2.5 rounded-xl border transition-all text-left flex items-center justify-between font-medium ${
-                  tampilkanArmada
-                    ? "border-amber-300 text-amber-800 bg-amber-50/80 font-semibold"
-                    : "border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-                }`}
-              >
-                <span>Pelacakan Armada</span> <span>{tampilkanArmada ? "✓" : "○"}</span>
-              </button>
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm flex-1 flex flex-col justify-start overflow-y-auto custom-scrollbar">
+            <span className="font-bold uppercase tracking-wider text-[11px] text-slate-400 block mb-4 border-b border-slate-100 pb-2">KONTROL PETA</span>
+            
+            <div className="space-y-5">
+              {/* Grup: Batas Administrasi */}
+              <div className="space-y-1.5">
+                <h3 className="text-[10px] font-bold text-slate-400 uppercase px-1">🗺️ Batas Administrasi</h3>
+                
+                {/* Toggle Batas Kecamatan */}
+                <button type="button" onClick={() => setTampilkanBatas(!tampilkanBatas)} className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition-colors ${tampilkanBatas ? "bg-slate-50 border border-slate-200 shadow-sm" : "border border-transparent hover:bg-slate-50"}`}>
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-3.5 h-3.5 border-[1.5px] border-[#f5a524] border-dashed rounded-sm shrink-0" title="Garis batas oranye putus-putus" />
+                    <span className={`text-xs ${tampilkanBatas ? "font-bold text-slate-900" : "font-medium text-slate-600"}`}>Batas Kecamatan</span>
+                  </div>
+                  <div className={`relative inline-flex h-4 w-7 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ease-in-out ${tampilkanBatas ? "bg-emerald-500" : "bg-slate-200"}`}>
+                    <span className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition duration-200 ease-in-out ${tampilkanBatas ? "translate-x-3.5" : "translate-x-0.5"}`} />
+                  </div>
+                </button>
+
+                {/* Toggle Batas Kelurahan */}
+                <button type="button" onClick={() => setTampilkanBatasKelurahan(!tampilkanBatasKelurahan)} className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition-colors ${tampilkanBatasKelurahan ? "bg-slate-50 border border-slate-200 shadow-sm" : "border border-transparent hover:bg-slate-50"}`}>
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-3.5 h-3.5 border-[1.5px] border-emerald-400 rounded-sm bg-emerald-500/10 shrink-0" title="Garis batas hijau" />
+                    <span className={`text-xs ${tampilkanBatasKelurahan ? "font-bold text-slate-900" : "font-medium text-slate-600"}`}>Batas Kelurahan</span>
+                  </div>
+                  <div className={`relative inline-flex h-4 w-7 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ease-in-out ${tampilkanBatasKelurahan ? "bg-emerald-500" : "bg-slate-200"}`}>
+                    <span className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition duration-200 ease-in-out ${tampilkanBatasKelurahan ? "translate-x-3.5" : "translate-x-0.5"}`} />
+                  </div>
+                </button>
+
+                {/* Toggle Titik Koordinat RT */}
+                <button type="button" onClick={() => setTampilkanRt(!tampilkanRt)} className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition-colors ${tampilkanRt ? "bg-slate-50 border border-slate-200 shadow-sm" : "border border-transparent hover:bg-slate-50"}`}>
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-3.5 h-3.5 rounded-full bg-sky-500 shrink-0 shadow-[0_0_4px_rgba(14,165,233,0.5)]" title="Titik Biru RT" />
+                    <span className={`text-xs ${tampilkanRt ? "font-bold text-slate-900" : "font-medium text-slate-600"}`}>Titik Koordinat RT</span>
+                  </div>
+                  <div className={`relative inline-flex h-4 w-7 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ease-in-out ${tampilkanRt ? "bg-emerald-500" : "bg-slate-200"}`}>
+                    <span className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition duration-200 ease-in-out ${tampilkanRt ? "translate-x-3.5" : "translate-x-0.5"}`} />
+                  </div>
+                </button>
+              </div>
+
+              {/* Grup: Operasional */}
+              <div className="space-y-1.5">
+                <h3 className="text-[10px] font-bold text-slate-400 uppercase px-1">🚛 Operasional</h3>
+                <button type="button" onClick={() => setTampilkanArmada(!tampilkanArmada)} className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition-colors ${tampilkanArmada ? "bg-slate-50 border border-slate-200 shadow-sm" : "border border-transparent hover:bg-slate-50"}`}>
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-sm shrink-0">🛰️</span>
+                    <span className={`text-xs ${tampilkanArmada ? "font-bold text-slate-900" : "font-medium text-slate-600"}`}>Pelacakan Armada</span>
+                  </div>
+                  <div className={`relative inline-flex h-4 w-7 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ease-in-out ${tampilkanArmada ? "bg-amber-500" : "bg-slate-200"}`}>
+                    <span className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition duration-200 ease-in-out ${tampilkanArmada ? "translate-x-3.5" : "translate-x-0.5"}`} />
+                  </div>
+                </button>
+              </div>
+
+              {/* Grup: Analisis Spasial */}
+              <div className="space-y-1.5">
+                <h3 className="text-[10px] font-bold text-slate-400 uppercase px-1">📊 Analisis Spasial</h3>
+                <button type="button" onClick={() => setTampilkanCakupan(!tampilkanCakupan)} className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition-colors ${tampilkanCakupan ? "bg-slate-50 border border-slate-200 shadow-sm" : "border border-transparent hover:bg-slate-50"}`}>
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-3.5 h-3.5 rounded-full border border-sky-400 bg-sky-500/20 shrink-0" title="Lingkaran Biru Radius" />
+                    <span className={`text-xs ${tampilkanCakupan ? "font-bold text-slate-900" : "font-medium text-slate-600"}`}>Cakupan Radius 200m</span>
+                  </div>
+                  <div className={`relative inline-flex h-4 w-7 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ease-in-out ${tampilkanCakupan ? "bg-emerald-500" : "bg-slate-200"}`}>
+                    <span className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition duration-200 ease-in-out ${tampilkanCakupan ? "translate-x-3.5" : "translate-x-0.5"}`} />
+                  </div>
+                </button>
+                <button type="button" onClick={() => setShowHeatmap(!showHeatmap)} className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition-colors ${showHeatmap ? "bg-slate-50 border border-slate-200 shadow-sm" : "border border-transparent hover:bg-slate-50"}`}>
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-3.5 h-3.5 rounded-sm bg-gradient-to-tr from-yellow-400 via-rose-500 to-rose-700 shrink-0" title="Gradient Heatmap" />
+                    <span className={`text-xs ${showHeatmap ? "font-bold text-slate-900" : "font-medium text-slate-600"}`}>Heatmap Kepadatan</span>
+                  </div>
+                  <div className={`relative inline-flex h-4 w-7 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ease-in-out ${showHeatmap ? "bg-rose-500" : "bg-slate-200"}`}>
+                    <span className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition duration-200 ease-in-out ${showHeatmap ? "translate-x-3.5" : "translate-x-0.5"}`} />
+                  </div>
+                </button>
+              </div>
             </div>
           </div>
         </div>
