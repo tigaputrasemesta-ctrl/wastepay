@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatRupiah } from "@/lib/utils";
 import { useToast } from "@/components/Toast";
 import GeotagPhoto from "@/components/GeotagPhoto";
 import ModalApprovalPelanggan from "@/components/ModalApprovalPelanggan";
@@ -154,6 +154,7 @@ function PelangganContent() {
   const [pelanggan, setPelanggan] = useState<Pelanggan[]>([]);
   const [kelurahanList, setKelurahanList] = useState<Kelurahan[]>([]);
   const [zonaList, setZonaList] = useState<ZonaOption[]>([]);
+  const [kategoriTarifList, setKategoriTarifList] = useState<{kategori: string, tarif: number}[]>([]);
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [showFilter, setShowFilter] = useState(false);
@@ -198,6 +199,7 @@ function PelangganContent() {
     koordinatAkurasi: "",
     status: "aktif",
     catatan: "",
+    createdAt: "", // Untuk Ubah Tanggal Langganan
   });
 
   const fetchData = useCallback(async () => {
@@ -210,14 +212,20 @@ function PelangganContent() {
       if (filterKategori) params.set("kategori", filterKategori);
       const qs = params.toString();
 
-      const [pelangganRes, kelurahanRes, zonaRes] = await Promise.all([
+      const [pelangganRes, kelurahanRes, zonaRes, optionsRes] = await Promise.all([
         fetch(`/api/pelanggan${qs ? `?${qs}` : ""}`),
         fetch("/api/kelurahan"),
         fetch("/api/zona"),
+        fetch("/api/publik/daftar-options"),
       ]);
       const pelangganData = await pelangganRes.json();
       const kelurahanData = await kelurahanRes.json();
       const zonaData = await zonaRes.json();
+      const optionsData = await optionsRes.json();
+
+      if (optionsData?.kategoriTarif) {
+        setKategoriTarifList(optionsData.kategoriTarif);
+      }
 
       const cTotal = parseInt(pelangganRes.headers.get("X-Count-Total") || "0");
       const cAktif = parseInt(pelangganRes.headers.get("X-Count-Aktif") || "0");
@@ -267,6 +275,55 @@ function PelangganContent() {
     (async () => { await fetchData(); })();
   }, [fetchData]);
 
+  function downloadCSV() {
+    const headers = [
+      "Kode",
+      "Nama Pelanggan",
+      "No Telepon",
+      "Kategori",
+      "Alamat",
+      "Kelurahan",
+      "Zona",
+      "Status",
+      "Tanggal Daftar",
+      "Nominal Tarif (Rp)"
+    ];
+    
+    const rows = pelanggan.map(p => {
+      const namaWilayah = p.wilayah?.zona?.nama || p.wilayah?.nama || "-";
+      const namaKelurahan = p.kelurahan?.nama || "-";
+      let nominal = 0;
+      if (p.customTarif) nominal = p.customTarif;
+      else if (p.paket) nominal = p.paket.harga || 0;
+      else {
+        const kt = kategoriTarifList.find(x => x.kategori === p.kategori);
+        if (kt) nominal = kt.tarif;
+      }
+
+      return [
+        p.kodePelanggan || "-",
+        `"${p.nama.replace(/"/g, '""')}"`,
+        p.noTelepon ? `'${p.noTelepon}` : "-",
+        p.kategori,
+        `"${p.alamat.replace(/"/g, '""')}"`,
+        `"${namaKelurahan}"`,
+        `"${namaWilayah}"`,
+        p.status,
+        p.createdAt ? new Date(p.createdAt).toLocaleDateString("id-ID") : "-",
+        nominal
+      ].join(",");
+    });
+
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `data_pelanggan_${new Date().toISOString().split("T")[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   function openCreate() {
     setEditing(null);
     setForm({
@@ -288,6 +345,7 @@ function PelangganContent() {
       koordinatAkurasi: "",
       status: "aktif",
       catatan: "",
+      createdAt: "",
     });
     setShowForm(true);
   }
@@ -313,6 +371,7 @@ function PelangganContent() {
       koordinatAkurasi: p.koordinatAkurasi ? String(p.koordinatAkurasi) : "",
       status: p.status,
       catatan: p.catatan || "",
+      createdAt: p.createdAt ? new Date(p.createdAt).toISOString().slice(0, 16) : "",
     });
     setShowForm(true);
   }
@@ -394,6 +453,15 @@ function PelangganContent() {
           >
             <span>📝 Formulir Lengkap</span>
           </Link>
+          <button
+            onClick={downloadCSV}
+            className="px-3.5 py-2.5 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Download Data
+          </button>
           <button
             onClick={openCreate}
             className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-2 active:scale-95"
@@ -861,19 +929,32 @@ function PelangganContent() {
                     </div>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    {p.customTarif ? (
-                      <span className="inline-flex items-center px-2 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-full text-[10px] font-bold">
-                        Kustom
-                      </span>
-                    ) : p.paket ? (
-                      <span className="inline-flex items-center px-2 py-0.5 bg-purple-50 text-purple-700 border border-purple-200 rounded-full text-[10px] font-bold">
-                        {p.paket.nama.split(" ").slice(0, 2).join(" ")}
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-full text-[10px] font-bold">
-                        {p.kategori.replace('_', ' ')}
-                      </span>
-                    )}
+                    <div className="flex flex-col gap-1 items-start">
+                      {p.customTarif ? (
+                        <>
+                          <span className="text-xs font-bold text-amber-700">{formatRupiah(p.customTarif)}</span>
+                          <span className="inline-flex items-center px-2 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-full text-[9px] font-bold">
+                            Tarif Kustom
+                          </span>
+                        </>
+                      ) : p.paket ? (
+                        <>
+                          <span className="text-xs font-bold text-purple-700">{formatRupiah(p.paket.harga || 0)}</span>
+                          <span className="inline-flex items-center px-2 py-0.5 bg-purple-50 text-purple-700 border border-purple-200 rounded-full text-[9px] font-bold">
+                            {p.paket.nama.split(" ").slice(0, 2).join(" ")}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-xs font-bold text-blue-700">
+                            {formatRupiah(kategoriTarifList.find(x => x.kategori === p.kategori)?.tarif || 0)}
+                          </span>
+                          <span className="inline-flex items-center px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-full text-[9px] font-bold">
+                            {p.kategori.replace('_', ' ')}
+                          </span>
+                        </>
+                      )}
+                    </div>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     {p.status === "calon" ? (
@@ -1077,6 +1158,19 @@ function PelangganContent() {
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900 placeholder:text-slate-400"
                     placeholder="Kosongkan = pakai tarif Level"
                   />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Tanggal Langganan / Siklus Tagihan</label>
+                  <input
+                    type="datetime-local"
+                    value={form.createdAt}
+                    onChange={(e) => setForm({ ...form, createdAt: e.target.value })}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900"
+                    placeholder="Biarkan kosong untuk default"
+                  />
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    Tanggal ini menentukan hari jatuh tempo tagihan setiap bulannya.
+                  </p>
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1.5">Kelurahan *</label>

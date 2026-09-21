@@ -141,6 +141,7 @@ export async function PUT(
     if (penanggungjawab !== undefined) data.penanggungjawab = penanggungjawab;
     if (referal !== undefined) data.referal = referal;
     if (body.customTarif !== undefined) data.customTarif = body.customTarif ? parseFloat(body.customTarif) : null;
+    if (body.createdAt !== undefined) data.createdAt = body.createdAt ? new Date(body.createdAt) : undefined;
     if (status !== undefined) data.status = status;
     if (catatan !== undefined) data.catatan = catatan;
     if (kelurahanId !== undefined) {
