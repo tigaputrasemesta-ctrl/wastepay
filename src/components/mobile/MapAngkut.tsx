@@ -261,7 +261,7 @@ export default function MapAngkut({
   className = "",
 }: MapAngkutProps) {
   const [internalPos, setInternalPos] = useState<[number, number] | null>(null);
-  const [tileMode, setTileMode] = useState<MapTileType>("google-streets");
+  const [tileMode, setTileMode] = useState<MapTileType>("osm");
   const [isExpanded, setIsExpanded] = useState(false);
   const [filterMode, setFilterMode] = useState<"semua" | "antrean" | "menunggak" | "selesai">("semua");
   const [selectedTask, setSelectedTask] = useState<TugasMap | null>(null);
@@ -388,9 +388,9 @@ export default function MapAngkut({
           <div className="bg-slate-800 rounded-xl p-0.5 flex border border-slate-700 text-[10px] font-bold">
             <button
               type="button"
-              onClick={() => setTileMode("google-streets")}
+              onClick={() => setTileMode("osm")}
               className={`px-2 py-1 rounded-lg transition-all ${
-                tileMode === "google-streets"
+                tileMode === "osm"
                   ? "bg-emerald-500 text-slate-950"
                   : "text-slate-400 hover:text-white"
               }`}
@@ -399,9 +399,9 @@ export default function MapAngkut({
             </button>
             <button
               type="button"
-              onClick={() => setTileMode("google-hybrid")}
+              onClick={() => setTileMode("esri-satellite")}
               className={`px-2 py-1 rounded-lg transition-all ${
-                tileMode === "google-hybrid"
+                tileMode === "esri-satellite"
                   ? "bg-emerald-500 text-slate-950"
                   : "text-slate-400 hover:text-white"
               }`}

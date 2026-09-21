@@ -664,36 +664,36 @@ export default function MapView({
   // Prioritas terbang: petugas (direktori online) → komplain.
   // Seleksi pelanggan ditangani langsung secara aman oleh zoomToShowLayer di ClusterPins agar tidak bentrok popup & cluster.
   const pusatFly = pusatPetugas ?? (komplainSel ? pusatKomplain : null);
-  const [tileMode, setTileMode] = useState<MapTileType>("google-streets");
+  const [tileMode, setTileMode] = useState<MapTileType>("osm");
   const tileConfig = useMemo(() => getMapTileConfig(tileMode), [tileMode]);
 
   return (
     <div className="relative h-full w-full">
-      {/* Tombol Pilihan Basemap: Google Maps Jalan & Gang / Satelit / Gelap */}
+      {/* Tombol Pilihan Basemap: OSM / Esri Satelit / Gelap */}
       <div className="absolute top-3 right-3 z-[1000] flex items-center bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-2xl p-1 shadow-lg gap-1">
         <button
           type="button"
-          onClick={() => setTileMode("google-streets")}
+          onClick={() => setTileMode("osm")}
           className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
-            tileMode === "google-streets"
+            tileMode === "osm"
               ? "bg-emerald-700 text-white shadow-sm"
               : "text-slate-600 hover:bg-slate-100"
           }`}
-          title="Peta jalan Google Maps lengkap nama gang dan pemukiman Depok"
+          title="Peta jalan standar OpenStreetMap (Legal & Terbuka)"
         >
-          🗺️ <span className="hidden sm:inline">Google </span>Maps
+          🗺️ Standar
         </button>
         <button
           type="button"
-          onClick={() => setTileMode("google-hybrid")}
+          onClick={() => setTileMode("esri-satellite")}
           className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
-            tileMode === "google-hybrid"
+            tileMode === "esri-satellite"
               ? "bg-emerald-700 text-white shadow-sm"
               : "text-slate-600 hover:bg-slate-100"
           }`}
-          title="Foto udara satelit Google Maps berlabel jalan & gang"
+          title="Foto udara satelit murni beresolusi tinggi dari Esri World Imagery"
         >
-          🛰️ Satelit
+          🛰️ Satelit Esri
         </button>
         <button
           type="button"

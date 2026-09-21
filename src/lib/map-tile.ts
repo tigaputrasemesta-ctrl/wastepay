@@ -1,13 +1,13 @@
 /**
  * Konfigurasi Tile Map untuk Leaflet:
- * - "google-streets" (Default): Peta jalan resmi Google Maps lengkap nama gang, nomor, gedung, dan POI lokal Depok
- * - "google-hybrid": Foto satelit udara resolusi tinggi Google Maps dengan overlay nama jalan dan gang
+ * - "osm" (Default): OpenStreetMap standard jalan, 100% Legal dan open source.
+ * - "esri-satellite": Esri World Imagery. Sangat tajam dan legal untuk public web maps.
  * - "dark": ESRI World Dark Gray Canvas (matte gelap untuk dashboard wallboard)
  * - Jika `NEXT_PUBLIC_CARTO_API_KEY` disetel, beralih ke CARTO tiles dengan `?key=...`
  */
-export type MapTileType = "google-streets" | "google-hybrid" | "dark" | "light";
+export type MapTileType = "osm" | "esri-satellite" | "dark" | "light";
 
-export function getMapTileConfig(type: MapTileType = "google-streets") {
+export function getMapTileConfig(type: MapTileType = "osm") {
   const cartoKey = process.env.NEXT_PUBLIC_CARTO_API_KEY?.trim();
 
   if (cartoKey && (type === "dark" || type === "light")) {
@@ -31,21 +31,21 @@ export function getMapTileConfig(type: MapTileType = "google-streets") {
     };
   }
 
-  if (type === "google-hybrid") {
+  if (type === "esri-satellite") {
     return {
-      url: "https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}",
-      attribution: '&copy; Google Maps',
-      subdomains: ["mt0", "mt1", "mt2", "mt3"],
-      maxZoom: 20,
+      url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EAP, and the GIS User Community',
+      subdomains: [],
+      maxZoom: 19,
     };
   }
 
-  // Default: Google Maps Roadmap ("google-streets" / "light")
-  // Lengkap nama gang, jalan pemukiman, RT/RW, dan bangunan di Depok
+  // Default: OpenStreetMap (OSM) ("osm" / "light")
+  // 100% legal, gratis, tanpa takut blokir API.
   return {
-    url: "https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
-    attribution: '&copy; Google Maps',
-    subdomains: ["mt0", "mt1", "mt2", "mt3"],
-    maxZoom: 20,
+    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> contributors',
+    subdomains: ["a", "b", "c"],
+    maxZoom: 19,
   };
 }

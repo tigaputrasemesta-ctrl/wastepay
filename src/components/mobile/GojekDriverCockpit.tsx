@@ -308,7 +308,7 @@ export default function GojekDriverCockpit({
   percentComplete,
   onRadiusChange,
 }: GojekDriverCockpitProps) {
-  const [tileMode, setTileMode] = useState<MapTileType>("google-streets");
+  const [tileMode, setTileMode] = useState<MapTileType>("osm");
   const [centerTrigger, setCenterTrigger] = useState(0);
   const [fitTrigger, setFitTrigger] = useState(0);
   const [focusPos, setFocusPos] = useState<[number, number] | null>(null);
@@ -735,14 +735,14 @@ export default function GojekDriverCockpit({
             type="button"
             onClick={() => {
               setTileMode((m) =>
-                m === "google-streets" ? "google-hybrid" : m === "google-hybrid" ? "dark" : "google-streets"
+                m === "osm" ? "esri-satellite" : m === "esri-satellite" ? "dark" : "osm"
               );
             }}
             className="w-8.5 h-8.5 rounded-xl bg-slate-900/90 backdrop-blur-md hover:bg-slate-800 active:scale-95 text-white border border-slate-700 shadow-md flex items-center justify-center text-xs font-bold transition-all"
             aria-label="Ganti mode peta"
-            title={`Mode Peta: ${tileMode === "google-streets" ? "Jalan" : tileMode === "google-hybrid" ? "Satelit" : "Gelap"}`}
+            title={`Mode Peta: ${tileMode === "osm" ? "Jalan" : tileMode === "esri-satellite" ? "Satelit" : "Gelap"}`}
           >
-            <span aria-hidden="true">{tileMode === "google-streets" ? "🗺️" : tileMode === "google-hybrid" ? "🛰️" : "🌙"}</span>
+            <span aria-hidden="true">{tileMode === "osm" ? "🗺️" : tileMode === "esri-satellite" ? "🛰️" : "🌙"}</span>
           </button>
 
           {/* Center on Me */}
