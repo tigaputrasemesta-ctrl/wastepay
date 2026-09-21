@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { kompresGambar } from "@/lib/foto";
 
 const JENIS: { value: string; label: string }[] = [
   { value: "tidak_diangkut", label: "Sampah tidak diangkut sesuai jadwal" },
@@ -13,8 +14,21 @@ export default function PengaduanForm() {
   const [jenis, setJenis] = useState("tidak_diangkut");
   const [deskripsi, setDeskripsi] = useState("");
   const [noWa, setNoWa] = useState("");
+  const [foto, setFoto] = useState("");
   const [status, setStatus] = useState<"idle" | "kirim" | "ok" | "gagal">("idle");
   const [pesan, setPesan] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const base64 = await kompresGambar(file);
+      setFoto(base64);
+    } catch (err: any) {
+      alert("Gagal memproses gambar: " + err.message);
+    }
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -24,7 +38,7 @@ export default function PengaduanForm() {
       const res = await fetch("/api/publik/pengaduan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ kodePelanggan, jenis, deskripsi, noWa }),
+        body: JSON.stringify({ kodePelanggan, jenis, deskripsi, noWa, foto }),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.ok) {
@@ -34,6 +48,7 @@ export default function PengaduanForm() {
         );
         setDeskripsi("");
         setNoWa("");
+        setFoto("");
       } else {
         setStatus("gagal");
         setPesan(data.error ?? "Gagal mengirimkan pengaduan. Silakan coba kembali.");
@@ -102,6 +117,43 @@ export default function PengaduanForm() {
           required
           minLength={10}
           maxLength={1000}
+        />
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="block text-xs font-bold text-slate-700">
+          Foto Bukti / Dokumentasi (Opsional)
+        </label>
+        {foto ? (
+          <div className="relative inline-block">
+            <img src={foto} alt="Preview" className="h-32 rounded-xl object-cover border border-slate-200" />
+            <button
+              type="button"
+              onClick={() => { setFoto(""); if (fileInputRef.current) fileInputRef.current.value = ""; }}
+              className="absolute -top-2 -right-2 bg-rose-600 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs shadow-md"
+            >
+              ×
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 text-xs font-bold rounded-xl flex items-center gap-2 transition-colors"
+            >
+              <span>📷 Ambil Foto</span>
+            </button>
+            <span className="text-[10px] text-slate-500">Maks. 5MB, format JPG/PNG</span>
+          </div>
+        )}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onChange={handleFileChange}
+          className="hidden"
         />
       </div>
 

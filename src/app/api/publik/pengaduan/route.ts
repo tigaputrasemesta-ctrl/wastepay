@@ -31,6 +31,7 @@ export async function POST(request: Request) {
     const kodePelanggan = String(body.kodePelanggan ?? "").trim().toUpperCase();
     const jenis = JENIS_VALID.includes(body.jenis) ? body.jenis : "lainnya";
     const deskripsi = String(body.deskripsi ?? "").trim();
+    const foto = body.foto && typeof body.foto === "string" ? body.foto : null;
 
     if (!kodePelanggan) {
       return NextResponse.json({ error: "Kode pelanggan wajib diisi." }, { status: 400 });
@@ -56,7 +57,7 @@ export async function POST(request: Request) {
     }
 
     const komplain = await prisma.komplain.create({
-      data: { jenis, deskripsi, status: "baru", pelangganId: pelanggan.id },
+      data: { jenis, deskripsi, foto, status: "baru", pelangganId: pelanggan.id },
       select: { id: true, jenis: true, deskripsi: true, status: true, createdAt: true },
     });
 

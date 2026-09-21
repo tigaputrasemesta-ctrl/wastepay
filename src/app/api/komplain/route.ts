@@ -30,7 +30,6 @@ export async function GET(request: Request) {
 
   const komplain = await prisma.komplain.findMany({
     where,
-    omit: { foto: true },
     include: {
       pelanggan: {
         select: {

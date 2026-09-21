@@ -8,6 +8,7 @@ type Komplain = {
   id: number;
   jenis: string;
   deskripsi: string;
+  foto?: string;
   status: string;
   tanggapan?: string;
   createdAt: string;
@@ -86,7 +87,12 @@ export default function KomplainPage() {
                         {k.jenis === "tidak_diangkut" ? "Tidak Diangkut" : k.jenis === "sampah_menumpuk" ? "Sampah Menumpuk" : "Lainnya"}
                       </span>
                     </td>
-                    <td className="px-4 py-3.5 text-slate-700 text-xs max-w-xs truncate">{k.deskripsi}</td>
+                    <td className="px-4 py-3.5 text-slate-700 text-xs max-w-xs truncate">
+                      <div className="flex items-center gap-1.5">
+                        {k.foto && <span className="text-emerald-600 text-sm" title="Ada Foto Bukti">📷</span>}
+                        <span className="truncate">{k.deskripsi}</span>
+                      </div>
+                    </td>
                     <td className="px-4 py-3.5 text-center whitespace-nowrap">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
                         k.status === "baru" ? "bg-rose-50 text-rose-700 border border-rose-200" :
@@ -127,9 +133,14 @@ export default function KomplainPage() {
               </button>
             </div>
             <form onSubmit={handleResolve} className="p-6 space-y-4">
-              <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl text-xs space-y-1">
+              <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl text-xs space-y-2">
                 <p className="font-bold text-slate-900 text-sm">{showResolve.pelanggan.nama}</p>
                 <p className="text-slate-600 font-normal leading-relaxed">{showResolve.deskripsi}</p>
+                {showResolve.foto && (
+                  <div className="mt-2">
+                    <img src={showResolve.foto} alt="Dokumentasi komplain" className="w-full max-h-48 object-cover rounded-xl border border-slate-200 shadow-sm" />
+                  </div>
+                )}
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1.5">Status Penyelesaian</label>
