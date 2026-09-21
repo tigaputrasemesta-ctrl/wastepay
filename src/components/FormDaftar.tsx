@@ -17,6 +17,8 @@ const PetaLokasi = dynamic(() => import("@/components/PetaLokasi"), {
 type WilayahKec = { kecamatan: string; kelurahan: string[] };
 type Paket = { id: number; nama: string; harga: number; deskripsi: string | null };
 type KategoriTarif = { kategori: string; label: string; tarif: number; deskripsi: string | null };
+type Zona = { id: number; nama: string };
+type Petugas = { id: number; nama: string };
 
 export default function FormDaftar({ initialReferal = "" }: { initialReferal?: string }) {
   const [nama, setNama] = useState("");
@@ -30,6 +32,9 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
   const [patokanLokasi, setPatokanLokasi] = useState("");
   const [jenisLayanan, setJenisLayanan] = useState<"kategori" | "paket">("kategori");
   const [paketId, setPaketId] = useState("");
+  const [zonaId, setZonaId] = useState("");
+  const [petugasId, setPetugasId] = useState("");
+  const [jadwalHari, setJadwalHari] = useState<string[]>([]);
   const [penanggungjawab] = useState("");
   const [referal, setReferal] = useState(initialReferal);
   const [referalFromUrl, setReferalFromUrl] = useState(Boolean(initialReferal));
@@ -58,6 +63,8 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
     wilayah: WilayahKec[];
     paket: Paket[];
     kategoriTarif: KategoriTarif[];
+    zonas: Zona[];
+    petugas: Petugas[];
   } | null>(null);
   const [status, setStatus] = useState<"idle" | "kirim" | "ok" | "gagal">("idle");
   const [pesan, setPesan] = useState("");
@@ -74,7 +81,7 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
           setKategori((prev) => prev || d.kategoriTarif[0].kategori);
         }
       })
-      .catch(() => setOpsi({ wilayah: [], paket: [], kategoriTarif: [] }));
+      .catch(() => setOpsi({ wilayah: [], paket: [], kategoriTarif: [], zonas: [], petugas: [] }));
   }, []);
 
   const kelurahanList = opsi?.wilayah.find((w) => w.kecamatan === kecamatan)?.kelurahan ?? [];
@@ -130,6 +137,15 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (!fotoRumah) {
+      setPesan("FOTO DEPAN RUMAH WAJIB DIISI.");
+      return;
+    }
+    if (!gpsData) {
+      setPesan("TITIK LOKASI (GPS) WAJIB DIISI.");
+      return;
+    }
+
     setStatus("kirim");
     setPesan("");
     try {
@@ -147,6 +163,9 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
           rw,
           patokanLokasi,
           paketId,
+          zonaId,
+          petugasId,
+          jadwalHari: jadwalHari.length > 0 ? jadwalHari.join(",") : undefined,
           penanggungjawab,
           referal: referal.trim() || undefined,
           website,
@@ -461,9 +480,76 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
         />
       </div>
 
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-zona">
+            Zona Area Pickup (Sementara)
+          </label>
+          <div className="relative">
+            <select
+              id="d-zona"
+              value={zonaId}
+              onChange={(e) => setZonaId(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer"
+            >
+              <option value="">— Pilih Zona —</option>
+              {(opsi?.zonas ?? []).map((z) => (
+                <option key={z.id} value={z.id}>
+                  {z.nama}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">▼</div>
+          </div>
+        </div>
+        <div>
+          <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-petugas">
+            Petugas Supir (Sementara)
+          </label>
+          <div className="relative">
+            <select
+              id="d-petugas"
+              value={petugasId}
+              onChange={(e) => setPetugasId(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer"
+            >
+              <option value="">— Pilih Petugas —</option>
+              {(opsi?.petugas ?? []).map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.nama}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">▼</div>
+          </div>
+        </div>
+      </div>
+
       <div>
         <label className="block text-xs font-bold text-slate-700 mb-1.5">
-          Foto Depan Rumah (Opsional)
+          Hari Penjemputan (Sementara)
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"].map((hari) => (
+            <label key={hari} className="flex items-center gap-2 px-3 py-2 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
+              <input
+                type="checkbox"
+                className="w-4 h-4 accent-emerald-600 rounded"
+                checked={jadwalHari.includes(hari)}
+                onChange={(e) => {
+                  if (e.target.checked) setJadwalHari((p) => [...p, hari]);
+                  else setJadwalHari((p) => p.filter((h) => h !== hari));
+                }}
+              />
+              <span className="text-xs font-medium text-slate-700">{hari}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-xs font-bold text-slate-700 mb-1.5">
+          Foto Depan Rumah <span className="text-rose-500">*</span>
         </label>
         <input
           ref={kameraRef}
@@ -564,7 +650,7 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
 
       <div>
         <label className="block text-xs font-bold text-slate-700 mb-1.5">
-          Titik Lokasi (GPS)
+          Titik Lokasi (GPS) <span className="text-rose-500">*</span>
         </label>
         <div className="space-y-3">
           <PetaLokasi

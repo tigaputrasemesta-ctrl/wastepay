@@ -20,6 +20,7 @@ export async function GET(request: Request) {
 
   const pengeluaran = await prisma.pengeluaran.findMany({
     where,
+    omit: { bukti: true },
     orderBy: { tanggal: "desc" },
     include: { dicatatBy: { select: { id: true, nama: true } } },
   });

@@ -11,6 +11,7 @@ import {
 } from "@/lib/wa";
 import { logAudit } from "@/lib/audit";
 import { formatRtRw, normalisasiTelepon, teleponValid } from "@/lib/daftar";
+import { tetapkanJadwalDanPetugasPelanggan } from "@/lib/penugasan-jadwal";
 
 export const dynamic = "force-dynamic";
 
@@ -124,6 +125,13 @@ export async function POST(request: Request) {
       );
     }
 
+    if (!fotoRumah) {
+      return NextResponse.json({ error: "Foto rumah wajib diisi." }, { status: 400 });
+    }
+    if (latitude === null || longitude === null || Number.isNaN(latitude) || Number.isNaN(longitude)) {
+      return NextResponse.json({ error: "Titik lokasi GPS wajib diisi." }, { status: 400 });
+    }
+
     if (nama.length < 3) {
       return NextResponse.json({ error: "Nama minimal 3 karakter." }, { status: 400 });
     }
@@ -139,6 +147,10 @@ export async function POST(request: Request) {
     if (alamat.length < 10) {
       return NextResponse.json({ error: "Alamat terlalu singkat." }, { status: 400 });
     }
+
+    const zonaId = body.zonaId ? parseInt(body.zonaId) : null;
+    const petugasId = body.petugasId ? parseInt(body.petugasId) : null;
+    const jadwalHari = typeof body.jadwalHari === "string" && body.jadwalHari.trim() ? body.jadwalHari.trim() : null;
 
     // Cocokkan lokasi: anchor kelurahan (canonical) + opsional RT/RW
     const lokasi = await cariLokasi({ rt, rw, kelurahan, kecamatan });
@@ -212,6 +224,17 @@ export async function POST(request: Request) {
         );
       }
       throw e;
+    }
+
+    if (zonaId || petugasId || jadwalHari) {
+      await tetapkanJadwalDanPetugasPelanggan({
+        pelangganId: pelanggan.id,
+        kelurahanId: pelanggan.kelurahanId,
+        zonaId,
+        petugasId,
+        ruteId: null,
+        hari: jadwalHari,
+      });
     }
 
     await logAudit("create", "Pelanggan", pelanggan.id, undefined, {

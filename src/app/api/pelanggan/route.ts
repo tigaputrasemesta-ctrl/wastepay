@@ -91,6 +91,7 @@ export async function GET(request: Request) {
       where,
       skip,
       take,
+      omit: { fotoRumah: true },
       include: {
         wilayah: {
           include: {
