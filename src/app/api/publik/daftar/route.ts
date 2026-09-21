@@ -110,6 +110,8 @@ export async function POST(request: Request) {
     const patokanLokasi = String(body.patokanLokasi ?? "").trim();
     const penanggungjawab = String(body.penanggungjawab ?? "").trim();
     const referal = String(body.referal ?? "").trim();
+    const customTarifRaw = body.customTarif ? parseFloat(body.customTarif) : NaN;
+    const customTarif = !isNaN(customTarifRaw) ? customTarifRaw : undefined;
     const latitude = body.latitude ? parseFloat(body.latitude) : null;
     const longitude = body.longitude ? parseFloat(body.longitude) : null;
     const koordinatSumber = body.koordinatSumber ? String(body.koordinatSumber) : null;
@@ -187,6 +189,7 @@ export async function POST(request: Request) {
           patokanLokasi: patokanLokasi || null,
           penanggungjawab: penanggungjawab || null,
           referal: referal || null,
+          customTarif: customTarif,
           latitude,
           longitude,
           koordinatSumber,

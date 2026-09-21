@@ -34,6 +34,9 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
   const [referal, setReferal] = useState(initialReferal);
   const [referalFromUrl, setReferalFromUrl] = useState(Boolean(initialReferal));
   const [website, setWebsite] = useState("");
+  const [customTarif, setCustomTarif] = useState("");
+  const [cekWaLoading, setCekWaLoading] = useState(false);
+  const [cekWaPesan, setCekWaPesan] = useState<{ text: string; terdaftar: boolean } | null>(null);
   
   useEffect(() => {
     if (!referal && typeof window !== "undefined") {
@@ -128,6 +131,28 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
     }
   }
 
+  async function handleCekNomor() {
+    if (!noTelepon || noTelepon.length < 9) {
+      setCekWaPesan({ text: "Masukkan nomor telepon yang valid.", terdaftar: false });
+      return;
+    }
+    setCekWaLoading(true);
+    setCekWaPesan(null);
+    try {
+      const res = await fetch(`/api/publik/cek-nomor?telp=${encodeURIComponent(noTelepon)}`);
+      const data = await res.json();
+      if (res.ok) {
+        setCekWaPesan({ text: data.pesan, terdaftar: data.terdaftar });
+      } else {
+        setCekWaPesan({ text: data.error || "Gagal mengecek nomor.", terdaftar: false });
+      }
+    } catch {
+      setCekWaPesan({ text: "Koneksi bermasalah.", terdaftar: false });
+    } finally {
+      setCekWaLoading(false);
+    }
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("kirim");
@@ -149,6 +174,7 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
           paketId,
           penanggungjawab,
           referal: referal.trim() || undefined,
+          customTarif: customTarif ? customTarif : undefined,
           website,
           fotoRumah: fotoRumah || undefined,
           latitude: gpsData?.lat,
@@ -252,15 +278,30 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
         <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-telp">
           Nomor WhatsApp Aktif <span className="text-rose-500">*</span>
         </label>
-        <input
-          id="d-telp"
-          value={noTelepon}
-          onChange={(e) => setNoTelepon(e.target.value)}
-          placeholder="Contoh: 081234567890"
-          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
-          required
-          inputMode="tel"
-        />
+        <div className="flex gap-2">
+          <input
+            id="d-telp"
+            value={noTelepon}
+            onChange={(e) => setNoTelepon(e.target.value)}
+            placeholder="Contoh: 081234567890"
+            className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
+            required
+            inputMode="tel"
+          />
+          <button
+            type="button"
+            onClick={handleCekNomor}
+            disabled={cekWaLoading || !noTelepon}
+            className="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 transition-all disabled:opacity-50 whitespace-nowrap"
+          >
+            {cekWaLoading ? "Mengecek..." : "Cek Nomor"}
+          </button>
+        </div>
+        {cekWaPesan && (
+          <p className={`text-[11px] mt-1.5 font-medium ${cekWaPesan.terdaftar ? "text-rose-600" : "text-emerald-600"}`}>
+            {cekWaPesan.text}
+          </p>
+        )}
         <p className="text-[11px] text-slate-500 mt-1.5">
           Nomor ini akan menjadi ID pelanggan Anda untuk cek tagihan, pelacakan live armada, dan notifikasi WhatsApp.
         </p>
@@ -351,6 +392,23 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
             )}
           </div>
         )}
+
+        <div className="mt-4 p-4 border border-emerald-200 bg-emerald-50 rounded-2xl">
+          <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-custom-tarif">
+            Tarif Custom (Opsional - Sementara)
+          </label>
+          <input
+            id="d-custom-tarif"
+            type="number"
+            value={customTarif}
+            onChange={(e) => setCustomTarif(e.target.value)}
+            placeholder="Contoh: 50000"
+            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
+          />
+          <p className="text-[11px] text-slate-500 mt-1.5">
+            Kosongkan jika menggunakan tarif standar/paket dari pilihan di atas.
+          </p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
