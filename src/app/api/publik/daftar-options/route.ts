@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
  *  - kategoriTarif: tarif default per kategori (ditampilkan sebagai hint)
  */
 export async function GET() {
-  const [wilayahRows, paket, kategoriTarif, zonas, petugas] = await Promise.all([
+  const [wilayahRows, paket, kategoriTarif, zonas, petugas, rute] = await Promise.all([
     prisma.kelurahan.findMany({
       select: { nama: true, kecamatan: true },
       orderBy: [{ kecamatan: "asc" }, { nama: "asc" }],
@@ -34,6 +34,10 @@ export async function GET() {
       select: { id: true, nama: true },
       orderBy: { nama: "asc" },
     }),
+    prisma.rute.findMany({
+      select: { id: true, nama: true },
+      orderBy: { nama: "asc" },
+    }),
   ]);
 
   // Kelompokkan kelurahan per kecamatan (unik, urut alfabet)
@@ -51,5 +55,5 @@ export async function GET() {
     }))
     .sort((a, b) => a.kecamatan.localeCompare(b.kecamatan));
 
-  return NextResponse.json({ wilayah, paket, kategoriTarif, zonas, petugas });
+  return NextResponse.json({ wilayah, paket, kategoriTarif, zonas, petugas, rute });
 }

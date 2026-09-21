@@ -150,6 +150,8 @@ export async function POST(request: Request) {
 
     const zonaId = body.zonaId ? parseInt(body.zonaId) : null;
     const petugasId = body.petugasId ? parseInt(body.petugasId) : null;
+    const ruteId = body.ruteId ? parseInt(body.ruteId) : null;
+    const tanggalPenagihanCustom = body.tanggalPenagihanCustom ? String(body.tanggalPenagihanCustom).trim() : null;
     const jadwalHari = typeof body.jadwalHari === "string" && body.jadwalHari.trim() ? body.jadwalHari.trim() : null;
 
     // Cocokkan lokasi: anchor kelurahan (canonical) + opsional RT/RW
@@ -211,6 +213,7 @@ export async function POST(request: Request) {
             "Daftar mandiri via website",
             `(${kecamatan} / ${kelurahan})`,
             rtRw ? `RT/RW: ${rtRw}` : null,
+            tanggalPenagihanCustom ? `Tanggal Penagihan: ${tanggalPenagihanCustom}` : null,
           ]
             .filter(Boolean)
             .join(" "),
@@ -226,13 +229,13 @@ export async function POST(request: Request) {
       throw e;
     }
 
-    if (zonaId || petugasId || jadwalHari) {
+    if (zonaId || petugasId || jadwalHari || ruteId) {
       await tetapkanJadwalDanPetugasPelanggan({
         pelangganId: pelanggan.id,
         kelurahanId: pelanggan.kelurahanId,
         zonaId,
         petugasId,
-        ruteId: null,
+        ruteId,
         hari: jadwalHari,
       });
     }
@@ -270,6 +273,7 @@ export async function POST(request: Request) {
         paket: paketNama || undefined,
         patokanLokasi: patokanLokasi || undefined,
         referal: referal || undefined,
+        tanggalPenagihanCustom: tanggalPenagihanCustom || undefined,
       });
       await kirimNotifikasi({
         tipe: "pendaftaran_masuk",

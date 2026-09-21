@@ -19,6 +19,7 @@ type Paket = { id: number; nama: string; harga: number; deskripsi: string | null
 type KategoriTarif = { kategori: string; label: string; tarif: number; deskripsi: string | null };
 type Zona = { id: number; nama: string };
 type Petugas = { id: number; nama: string };
+type Rute = { id: number; nama: string };
 
 export default function FormDaftar({ initialReferal = "" }: { initialReferal?: string }) {
   const [nama, setNama] = useState("");
@@ -34,6 +35,8 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
   const [paketId, setPaketId] = useState("");
   const [zonaId, setZonaId] = useState("");
   const [petugasId, setPetugasId] = useState("");
+  const [ruteId, setRuteId] = useState("");
+  const [tanggalPenagihanCustom, setTanggalPenagihanCustom] = useState("");
   const [jadwalHari, setJadwalHari] = useState<string[]>([]);
   const [penanggungjawab] = useState("");
   const [referal, setReferal] = useState(initialReferal);
@@ -65,6 +68,7 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
     kategoriTarif: KategoriTarif[];
     zonas: Zona[];
     petugas: Petugas[];
+    rute: Rute[];
   } | null>(null);
   const [status, setStatus] = useState<"idle" | "kirim" | "ok" | "gagal">("idle");
   const [pesan, setPesan] = useState("");
@@ -81,7 +85,7 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
           setKategori((prev) => prev || d.kategoriTarif[0].kategori);
         }
       })
-      .catch(() => setOpsi({ wilayah: [], paket: [], kategoriTarif: [], zonas: [], petugas: [] }));
+      .catch(() => setOpsi({ wilayah: [], paket: [], kategoriTarif: [], zonas: [], petugas: [], rute: [] }));
   }, []);
 
   const kelurahanList = opsi?.wilayah.find((w) => w.kecamatan === kecamatan)?.kelurahan ?? [];
@@ -165,6 +169,8 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
           paketId,
           zonaId,
           petugasId,
+          ruteId,
+          tanggalPenagihanCustom: tanggalPenagihanCustom || undefined,
           jadwalHari: jadwalHari.length > 0 ? jadwalHari.join(",") : undefined,
           penanggungjawab,
           referal: referal.trim() || undefined,
@@ -482,6 +488,42 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
+          <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-rute">
+            Rute (Sementara)
+          </label>
+          <div className="relative">
+            <select
+              id="d-rute"
+              value={ruteId}
+              onChange={(e) => setRuteId(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer"
+            >
+              <option value="">— Pilih Rute —</option>
+              {(opsi?.rute ?? []).map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.nama}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">▼</div>
+          </div>
+        </div>
+        <div>
+          <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-tgl-penagihan">
+            Tanggal Penagihan (Sementara)
+          </label>
+          <input
+            id="d-tgl-penagihan"
+            type="number"
+            min="1"
+            max="31"
+            value={tanggalPenagihanCustom}
+            onChange={(e) => setTanggalPenagihanCustom(e.target.value)}
+            placeholder="Contoh: 15"
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
+          />
+        </div>
+        <div>
           <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-zona">
             Zona Area Pickup (Sementara)
           </label>
@@ -713,6 +755,16 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
           {pesan}
         </div>
       )}
+
+      <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex gap-3 text-amber-900 shadow-sm">
+        <svg className="w-5 h-5 shrink-0 text-amber-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <div>
+          <p className="font-extrabold text-sm mb-0.5">PENTING (Khusus Petugas Lapangan)</p>
+          <p className="text-xs font-medium opacity-90">Sebelum klik "Kirim", pastikan <strong className="font-bold">Foto Depan Rumah</strong> dan <strong className="font-bold">Titik Lokasi (GPS)</strong> sudah terisi dengan benar dan presisi!</p>
+        </div>
+      </div>
 
       <button
         type="submit"
