@@ -48,7 +48,7 @@ export type ApprovalPelangganTarget = {
   kelurahan?: { id: number; nama: string; kecamatan?: string | null } | null;
   wilayah?: { id: number; nama: string; zonaId?: number | null; zona?: { id: number; nama: string } | null } | null;
   paket?: { id: number; nama: string; harga: number | null } | null;
-  jadwal?: Array<{ id: number; hari: string; jam?: string | null; ruteId?: number; rute?: { id: number; nama: string; petugasId?: number | null } | null }> | null;
+  jadwal?: Array<{ id: number; hari: string; jam?: string | null; ruteId?: number; rute?: { id: number; nama: string; petugasId?: number | null; zonaId?: number | null } | null }> | null;
 };
 
 type Props = {
