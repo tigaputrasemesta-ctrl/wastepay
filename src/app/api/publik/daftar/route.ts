@@ -150,11 +150,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Alamat terlalu singkat." }, { status: 400 });
     }
 
-    const zonaId = body.zonaId ? parseInt(body.zonaId) : null;
+    let zonaId = body.zonaId ? parseInt(body.zonaId) : null;
     const petugasId = body.petugasId ? parseInt(body.petugasId) : null;
     const ruteId = body.ruteId ? parseInt(body.ruteId) : null;
     const tanggalPenagihanCustom = body.tanggalPenagihanCustom ? String(body.tanggalPenagihanCustom).trim() : null;
     const jadwalHari = typeof body.jadwalHari === "string" && body.jadwalHari.trim() ? body.jadwalHari.trim() : null;
+
+    if (!zonaId && ruteId) {
+      const r = await prisma.rute.findUnique({ where: { id: ruteId }, select: { zonaId: true } });
+      if (r?.zonaId) zonaId = r.zonaId;
+    }
 
     // Cocokkan lokasi: anchor kelurahan (canonical) + opsional RT/RW
     const lokasi = await cariLokasi({ rt, rw, kelurahan, kecamatan });
