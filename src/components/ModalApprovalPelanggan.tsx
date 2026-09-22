@@ -152,10 +152,14 @@ export default function ModalApprovalPelanggan({
       ? pelanggan.wilayahId.toString()
       : "";
 
+    const initialJadwal = pelanggan.jadwal && pelanggan.jadwal.length > 0 ? pelanggan.jadwal : null;
+
     const initialZonaId = pelanggan.wilayah?.zonaId
       ? pelanggan.wilayah.zonaId.toString()
       : pelanggan.wilayah?.zona?.id
       ? pelanggan.wilayah.zona.id.toString()
+      : initialJadwal?.[0]?.rute?.zonaId
+      ? initialJadwal[0].rute.zonaId.toString()
       : "";
 
     const initialPaketId = pelanggan.paket?.id
@@ -164,7 +168,6 @@ export default function ModalApprovalPelanggan({
       ? pelanggan.paketId.toString()
       : "";
 
-    const initialJadwal = pelanggan.jadwal && pelanggan.jadwal.length > 0 ? pelanggan.jadwal : null;
     const initialHari = initialJadwal ? initialJadwal.map((j) => j.hari) : ["Senin", "Kamis"];
     const initialJam = initialJadwal?.[0]?.jam || "08:00";
     const initialRuteId = initialJadwal?.[0]?.ruteId ? initialJadwal[0].ruteId.toString() : "";

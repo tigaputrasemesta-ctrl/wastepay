@@ -168,7 +168,28 @@ export async function POST(request: Request) {
     }
 
     const kelurahanId = lokasi.kelurahanId;
-    const wilayahId = lokasi.wilayahId;
+    let wilayahId = lokasi.wilayahId;
+
+    if (zonaId) {
+      if (wilayahId) {
+        await prisma.wilayah.update({
+          where: { id: wilayahId },
+          data: { zonaId },
+        });
+      } else {
+        const zonaInfo = await prisma.zona.findUnique({ where: { id: zonaId }, select: { nama: true } });
+        const newW = await prisma.wilayah.create({
+          data: {
+            nama: formatRtRw(rt, rw) ? `RT/RW ${formatRtRw(rt, rw)}` : (zonaInfo?.nama || `Zona ${zonaId}`),
+            kelurahanId,
+            zonaId,
+            rt: rt || null,
+            rw: rw || null,
+          },
+        });
+        wilayahId = newW.id;
+      }
+    }
 
     // Paket (opsional) — validasi keberadaan
     let paketNama: string | null = null;
