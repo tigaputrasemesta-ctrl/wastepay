@@ -169,6 +169,11 @@ const API_ROLE_MAP: Record<string, number> = {
   "PUT:/api/pengeluaran/": 50,
   "DELETE:/api/pengeluaran/": 50,
 
+
+  // Pengaturan Template
+  "GET:/api/pengaturan/": 50,
+  "POST:/api/pengaturan/": 50,
+
   // Pengumuman
   "GET:/api/pengumuman": 10,
   "POST:/api/pengumuman": 50,
