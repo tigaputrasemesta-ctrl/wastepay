@@ -238,19 +238,22 @@ function buatIconRute(warna: string, label: string) {
 }
 
 function buatIconKomplain(warna: string, aktif: boolean, isBaru: boolean = false) {
+  const size = aktif ? 24 : 18;
   const pulseHtml = isBaru 
-    ? `<div style="position:absolute;top:-4px;left:-4px;width:100%;height:100%;border-radius:3px;background:#ef4444;animation:ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;opacity:0.8;transform:scale(1.5);"></div>` 
+    ? `<div style="position:absolute;top:0;left:0;right:0;bottom:0;border-radius:50%;background:#ef4444;animation:ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;opacity:0.8;transform:scale(1.5);"></div>` 
     : "";
     
   return L.divIcon({
     className: aktif ? "komplain-aktif" : "komplain-pin",
-    html: `<div style="position:relative;width:${aktif ? 22 : 16}px;height:${aktif ? 22 : 16}px;">
+    html: `<div style="position:relative;width:${size}px;height:${size}px;display:flex;align-items:center;justify-content:center;">
       ${pulseHtml}
-      <div style="position:relative;width:100%;height:100%;transform:rotate(45deg);border-radius:3px;background:${warna};border:2px solid #131517;box-shadow:0 0 14px ${warna}cc, 0 0 0 ${aktif ? "5px" : "3px"} rgba(255,255,255,0.12)"></div>
+      <div style="position:relative;width:100%;height:100%;border-radius:50%;background:${warna};border:2px solid #131517;box-shadow:0 0 14px ${warna}cc, 0 0 0 ${aktif ? "4px" : "2px"} rgba(255,255,255,0.8);display:flex;align-items:center;justify-content:center;">
+        <span style="color:#fff;font-size:${aktif ? 14 : 11}px;font-weight:900;font-family:sans-serif;">!</span>
+      </div>
     </div>`,
-    iconSize: [aktif ? 22 : 16, aktif ? 22 : 16],
-    iconAnchor: [aktif ? 11 : 8, aktif ? 11 : 8],
-    popupAnchor: [0, -12],
+    iconSize: [size, size],
+    iconAnchor: [size/2, size/2],
+    popupAnchor: [0, -size/2],
   });
 }
 
