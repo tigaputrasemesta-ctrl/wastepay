@@ -14,7 +14,7 @@ export async function GET(request: Request) {
 
   const noTelepon = normalisasiTelepon(telp);
 
-  if (noTelepon === "08999999999") {
+  if (noTelepon === "628999999999") {
     try {
       const res = await fetch("https://api.fonnte.com/send", {
         method: "POST",
