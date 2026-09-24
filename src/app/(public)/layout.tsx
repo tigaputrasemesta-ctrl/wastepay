@@ -50,11 +50,6 @@ export default function PublicLayout({
             <p className="text-xs text-slate-500 leading-relaxed font-medium">
               Sistem Pengelolaan Sampah & Retribusi Terpadu Kota Depok. Layanan jemput sampah terjadwal, pelacakan armada transparan, dan pembayaran iuran bulanan yang mudah.
             </p>
-            <div className="pt-1">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">
-                🏛️ Binaan Dinas Lingkungan Hidup Kota Depok
-              </span>
-            </div>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 text-xs font-medium">
