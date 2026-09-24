@@ -580,6 +580,13 @@ function BayarPortalContent() {
             <p className="text-xs text-slate-500">Menganalisa data pelanggan dan riwayat tagihan</p>
           </div>
         )}
+
+        {suksesManual && (
+          <div className="mt-4 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
+            <span>✓</span>
+            <span>{suksesManual}</span>
+          </div>
+        )}
       </div>
 
       {/* Pesan Error (Tidak Ditemukan) dengan UI Laporan Analisa */}
@@ -609,14 +616,6 @@ function BayarPortalContent() {
           </div>
         </div>
       )}
-
-        {suksesManual && (
-          <div className="mt-4 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
-            <span>✓</span>
-            <span>{suksesManual}</span>
-          </div>
-        )}
-      </div>
 
       {/* Hasil Pencarian Tagihan */}
       {hasil && (
