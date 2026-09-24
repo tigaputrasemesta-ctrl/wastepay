@@ -190,7 +190,7 @@ export async function POST(request: Request) {
       waHasil = await kirimBlastWa(
         targets,
         "tagihan_baru",
-        (t) => {
+        async (t) => {
           const row = tagihanBaru.find((x) => x.pelangganId === t.pelangganId)!;
           return await templateTagihanBaru(buildTagihanWa(row, t.nama));
         },

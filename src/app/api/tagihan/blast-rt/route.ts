@@ -249,7 +249,7 @@ export async function POST(request: Request) {
     const blastResult = await kirimBlastWa(
       targets,
       "tagihan_jatuh_tempo",
-      (t) => {
+      async (t) => {
         const itemTagihan = mapTagihan.get(t.pelangganId)!;
         const tagihanWa = buildTagihanWa(
           {
