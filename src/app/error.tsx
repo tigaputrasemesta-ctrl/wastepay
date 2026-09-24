@@ -20,8 +20,7 @@ export default function Error({
     error.message?.includes("database") ||
     error.message?.includes("JWT_SECRET") ||
     error.message?.includes("connect") ||
-    error.message?.includes("DATABASE_URL") ||
-    Boolean(error.digest?.length);
+    error.message?.includes("DATABASE_URL");
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col items-center justify-center p-6 selection:bg-emerald-800 selection:text-white">

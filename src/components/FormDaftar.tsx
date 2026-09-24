@@ -196,7 +196,7 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
           petugasId,
           ruteId,
           tanggalPenagihanCustom: tanggalPenagihanCustom || undefined,
-          jadwalHari: jadwalHari.length > 0 ? jadwalHari.join(",") : undefined,
+          jadwalHari: jadwalHari.length > 0 ? jadwalHari.join(", ") : undefined,
           penanggungjawab,
           referal: referal.trim() || undefined,
           customTarif: customTarif ? customTarif : undefined,
