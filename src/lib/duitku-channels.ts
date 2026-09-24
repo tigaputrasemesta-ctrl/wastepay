@@ -21,7 +21,7 @@ export function channelAllowed(paymentMethod?: string | null): boolean {
   const env = process.env.DUITKU_CHANNELS?.trim();
   const allowed = env
     ? env.split(",").map((s) => s.trim().toUpperCase()).filter(Boolean)
-    : ["VA", "BT", "BC", "M2", "I1", "B1", "A1", "VC", "OV", "SP", "DA"];
+    : ["SQ"];
   return allowed.includes(m);
 }
 
@@ -45,6 +45,7 @@ export function duitkuChannelLabel(paymentMethod?: string | null): string {
     LINK_AJA: "LinkAja",
     SA: "Salam Super App",
     CREDIT_CARD: "Kartu Kredit",
+    SQ: "NusaPay QRIS",
   };
   return map[paymentMethod || ""] || (paymentMethod ? paymentMethod : "Payment Gateway");
 }
@@ -63,15 +64,5 @@ export type DuitkuPaymentMethod = {
 // Fallback saat getPaymentMethods gagal — hanya channel yang benar-benar
 // tersedia (lihat channelAllowed); jangan tampilkan channel yang pasti gagal.
 export const DUITKU_METHODS = [
-  { value: "VA", label: "Maybank Virtual Account", icon: "🏦" },
-  { value: "BT", label: "Permata Virtual Account", icon: "🏦" },
-  { value: "BC", label: "BCA Virtual Account", icon: "🏦" },
-  { value: "M2", label: "Mandiri Virtual Account", icon: "🏦" },
-  { value: "I1", label: "BNI Virtual Account", icon: "🏦" },
-  { value: "B1", label: "CIMB Virtual Account", icon: "🏦" },
-  { value: "A1", label: "ATM Bersama", icon: "🏦" },
-  { value: "VC", label: "Kartu Kredit", icon: "💳" },
-  { value: "OV", label: "OVO", icon: "💜" },
-  { value: "SP", label: "Shopee Pay", icon: "🛍️" },
-  { value: "DA", label: "DANA", icon: "🔵" },
+  { value: "SQ", label: "NusaPay QRIS", icon: "📱", imageUrl: "https://images.duitku.com/hotlink-ok/SQ.PNG" },
 ];

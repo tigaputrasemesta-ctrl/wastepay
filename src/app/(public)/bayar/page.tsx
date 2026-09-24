@@ -32,7 +32,7 @@ type HasilCek = {
   tagihan: TagihanPublik[];
 };
 
-type MetodeBayar = { value: string; label: string; icon: string };
+type MetodeBayar = { value: string; label: string; icon: string; imageUrl?: string };
 
 const ICON_CHANNEL: Record<string, string> = {
   VC: "🏦", VA: "🏦", BT: "🏦", M1: "🏛️", CIMB: "🏛️", BNI: "🏛️",
@@ -41,12 +41,13 @@ const ICON_CHANNEL: Record<string, string> = {
   CREDIT_CARD: "💳",
 };
 
-function keMetodeBayar(pm: { paymentMethod: string; paymentName?: string }): MetodeBayar {
+function keMetodeBayar(pm: { paymentMethod: string; paymentName?: string; paymentImage?: string }): MetodeBayar {
   const kode = pm.paymentMethod;
   return {
     value: kode,
     label: pm.paymentName || duitkuChannelLabel(kode),
     icon: ICON_CHANNEL[kode] || "💳",
+    imageUrl: pm.paymentImage,
   };
 }
 
@@ -482,7 +483,12 @@ function BayarPortalContent() {
                       : "border-slate-200 bg-white hover:border-slate-300"
                   }`}
                 >
-                  <span className="text-xl shrink-0">{m.icon}</span>
+                  {m.imageUrl ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={m.imageUrl} alt={m.label} className="w-12 h-auto shrink-0 object-contain" />
+                  ) : (
+                    <span className="text-xl shrink-0">{m.icon}</span>
+                  )}
                   <span className="text-xs font-bold text-slate-800 truncate">{m.label}</span>
                 </button>
               ))}
