@@ -49,6 +49,7 @@ export type ApprovalPelangganTarget = {
   wilayah?: { id: number; nama: string; zonaId?: number | null; zona?: { id: number; nama: string } | null } | null;
   paket?: { id: number; nama: string; harga: number | null } | null;
   jadwal?: Array<{ id: number; hari: string; jam?: string | null; ruteId?: number; rute?: { id: number; nama: string; petugasId?: number | null; zonaId?: number | null } | null }> | null;
+  createdAt?: string | null;
 };
 
 type Props = {
@@ -98,6 +99,7 @@ export default function ModalApprovalPelanggan({
   const [selectedKategori, setSelectedKategori] = useState("level_1");
   const [selectedPaket, setSelectedPaket] = useState("");
   const [customTarif, setCustomTarif] = useState("");
+  const [createdAt, setCreatedAt] = useState("");
 
   // Load auxiliary data
   useEffect(() => {
@@ -183,6 +185,7 @@ export default function ModalApprovalPelanggan({
     setSelectedKategori(pelanggan.kategori || "level_1");
     setSelectedPaket(initialPaketId);
     setCustomTarif(pelanggan.customTarif ? pelanggan.customTarif.toString() : "");
+    setCreatedAt(pelanggan.createdAt ? new Date(pelanggan.createdAt).toISOString().slice(0, 16) : "");
   }, [pelanggan]);
 
   // Handle Rute selection change
@@ -245,6 +248,7 @@ export default function ModalApprovalPelanggan({
         kategori: selectedKategori,
         paketId: selectedPaket ? parseInt(selectedPaket) : null,
         customTarif: customTarif ? parseFloat(customTarif) : null,
+        createdAt: createdAt ? new Date(createdAt).toISOString() : undefined,
       };
 
       const res = await fetch(`/api/pelanggan/${pelanggan.id}`, {
@@ -709,7 +713,7 @@ export default function ModalApprovalPelanggan({
               <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">
                 3. Kategori Tarif &amp; Paket Layanan
               </span>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {/* Kategori Tarif */}
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
@@ -745,6 +749,19 @@ export default function ModalApprovalPelanggan({
                       </option>
                     ))}
                   </select>
+                </div>
+
+                {/* Tanggal Langganan / Siklus Tagihan */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1 whitespace-nowrap overflow-hidden text-ellipsis">
+                    Tanggal Langganan / Tagihan
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={createdAt}
+                    onChange={(e) => setCreatedAt(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
                 </div>
               </div>
             </div>
