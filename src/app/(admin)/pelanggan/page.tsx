@@ -179,7 +179,6 @@ function PelangganContent() {
   });
   const [approvalTarget, setApprovalTarget] = useState<Pelanggan | null>(null);
   const [page, setPage] = useState(1);
-  const [totalData, setTotalData] = useState(0);
   const ITEMS_PER_PAGE = 20;
   const [form, setForm] = useState({
     nama: "",
@@ -211,15 +210,10 @@ function PelangganContent() {
       if (filterZona) params.set("zonaId", filterZona);
       if (filterStatus) params.set("status", filterStatus);
       if (filterKategori) params.set("kategori", filterKategori);
-      
-      // Server-side pagination
-      params.set("page", page.toString());
-      params.set("limit", ITEMS_PER_PAGE.toString());
-      
       const qs = params.toString();
 
       const [pelangganRes, kelurahanRes, zonaRes, optionsRes] = await Promise.all([
-        fetch(`/api/pelanggan?${qs}`),
+        fetch(`/api/pelanggan${qs ? `?${qs}` : ""}`),
         fetch("/api/kelurahan"),
         fetch("/api/zona"),
         fetch("/api/publik/daftar-options"),
@@ -239,8 +233,6 @@ function PelangganContent() {
       const cNonaktif = parseInt(pelangganRes.headers.get("X-Count-Nonaktif") || "0");
       const cLibur = parseInt(pelangganRes.headers.get("X-Count-Libur") || "0");
 
-      const actualData = Array.isArray(pelangganData) ? pelangganData : (pelangganData?.data || []);
-
       if (cTotal > 0 || cAktif > 0 || cCalon > 0 || cNonaktif > 0 || cLibur > 0) {
         setStatusCounts({
           total: cTotal,
@@ -249,18 +241,17 @@ function PelangganContent() {
           nonaktif: cNonaktif,
           libur: cLibur,
         });
-      } else if (actualData.length > 0) {
+      } else if (Array.isArray(pelangganData)) {
         setStatusCounts({
-          total: actualData.length,
-          aktif: actualData.filter((p: Pelanggan) => p.status === "aktif").length,
-          calon: actualData.filter((p: Pelanggan) => p.status === "calon").length,
-          nonaktif: actualData.filter((p: Pelanggan) => p.status === "nonaktif").length,
-          libur: actualData.filter((p: Pelanggan) => p.status === "libur").length,
+          total: pelangganData.length,
+          aktif: pelangganData.filter((p: Pelanggan) => p.status === "aktif").length,
+          calon: pelangganData.filter((p: Pelanggan) => p.status === "calon").length,
+          nonaktif: pelangganData.filter((p: Pelanggan) => p.status === "nonaktif").length,
+          libur: pelangganData.filter((p: Pelanggan) => p.status === "libur").length,
         });
       }
 
-      setPelanggan(actualData);
-      setTotalData(parseInt(pelangganRes.headers.get("X-Total-Count") || "0") || pelangganData?.total || 0);
+      setPelanggan(Array.isArray(pelangganData) ? pelangganData : []);
       setKelurahanList(Array.isArray(kelurahanData) ? kelurahanData : []);
       setZonaList(Array.isArray(zonaData) ? zonaData : []);
     } catch (error) {
@@ -269,7 +260,7 @@ function PelangganContent() {
     } finally {
       setLoading(false);
     }
-  }, [search, filterKelurahan, filterZona, filterStatus, filterKategori, showToast, page, ITEMS_PER_PAGE]);
+  }, [search, filterKelurahan, filterZona, filterStatus, filterKategori, showToast]);
 
   // Debounced search
   useEffect(() => {
@@ -284,72 +275,53 @@ function PelangganContent() {
     (async () => { await fetchData(); })();
   }, [fetchData]);
 
-  async function downloadCSV() {
-    showToast("Mempersiapkan data, mohon tunggu...", "success");
-    try {
-      const params = new URLSearchParams();
-      if (search) params.set("search", search);
-      if (filterKelurahan) params.set("kelurahanId", filterKelurahan);
-      if (filterZona) params.set("zonaId", filterZona);
-      if (filterStatus) params.set("status", filterStatus);
-      if (filterKategori) params.set("kategori", filterKategori);
-      // No limit/page params to fetch all for export
-      const qs = params.toString();
-      
-      const res = await fetch(`/api/pelanggan${qs ? `?${qs}` : ""}`);
-      const dataToExport = await res.json();
-      
-      if (!Array.isArray(dataToExport)) throw new Error("Gagal mengambil data");
+  function downloadCSV() {
+    const headers = [
+      "Kode",
+      "Nama Pelanggan",
+      "No Telepon",
+      "Kategori",
+      "Alamat",
+      "Kelurahan",
+      "Zona",
+      "Status",
+      "Tanggal Daftar",
+      "Nominal Tarif (Rp)"
+    ];
+    
+    const rows = pelanggan.map(p => {
+      const namaWilayah = p.wilayah?.zona?.nama || p.wilayah?.nama || "-";
+      const namaKelurahan = p.kelurahan?.nama || "-";
+      let nominal = 0;
+      if (p.customTarif) nominal = p.customTarif;
+      else if (p.paket) nominal = p.paket.harga || 0;
+      else {
+        const kt = kategoriTarifList.find(x => x.kategori === p.kategori);
+        if (kt) nominal = kt.tarif;
+      }
 
-      const headers = [
-        "Kode",
-        "Nama Pelanggan",
-        "No Telepon",
-        "Kategori",
-        "Alamat",
-        "Kelurahan",
-        "Zona",
-        "Status",
-        "Tanggal Daftar",
-        "Nominal Tarif (Rp)"
-      ];
-      
-      const rows = dataToExport.map((p: Pelanggan) => {
-        const namaWilayah = p.wilayah?.zona?.nama || p.wilayah?.nama || "-";
-        const namaKelurahan = p.kelurahan?.nama || "-";
-        let nominal = 0;
-        if (p.customTarif) nominal = p.customTarif;
-        else if (p.paket) nominal = p.paket.harga || 0;
-        else {
-          const kt = kategoriTarifList.find(x => x.kategori === p.kategori);
-          if (kt) nominal = kt.tarif;
-        }
+      return [
+        p.kodePelanggan || "-",
+        `"${p.nama.replace(/"/g, '""')}"`,
+        p.noTelepon ? `'${p.noTelepon}` : "-",
+        p.kategori,
+        `"${p.alamat.replace(/"/g, '""')}"`,
+        `"${namaKelurahan}"`,
+        `"${namaWilayah}"`,
+        p.status,
+        p.createdAt ? new Date(p.createdAt).toLocaleDateString("id-ID") : "-",
+        nominal
+      ].join(",");
+    });
 
-        return [
-          p.kodePelanggan || "-",
-          `"${p.nama.replace(/"/g, '""')}"`,
-          p.noTelepon ? `'${p.noTelepon}` : "-",
-          p.kategori,
-          `"${p.alamat.replace(/"/g, '""')}"`,
-          `"${namaKelurahan}"`,
-          `"${namaWilayah}"`,
-          p.status,
-          p.createdAt ? new Date(p.createdAt).toLocaleDateString("id-ID") : "-",
-          nominal
-        ].join(",");
-      });
-
-      const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows].join("\n");
-      const encodedUri = encodeURI(csvContent);
-      const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", `data_pelanggan_${new Date().toISOString().split("T")[0]}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (err) {
-      showToast("Gagal mendownload data CSV", "error");
-    }
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `data_pelanggan_${new Date().toISOString().split("T")[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
   function openCreate() {
@@ -460,9 +432,8 @@ function PelangganContent() {
   const liburCount = statusCounts.libur || liburList.length;
   const totalCount = statusCounts.total || pelanggan.length;
 
-  // Server-side pagination is now used, so pelanggan is already paginated.
-  const paginatedPelanggan = pelanggan;
-  const totalPages = Math.ceil((totalData || pelanggan.length) / ITEMS_PER_PAGE);
+  const paginatedPelanggan = pelanggan.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(pelanggan.length / ITEMS_PER_PAGE);
 
   return (
     <div className="p-6">
