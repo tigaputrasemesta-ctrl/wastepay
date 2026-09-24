@@ -88,7 +88,8 @@ function templateReminder(t, sisaHari) {
       `Terima kasih 🙏`,
       ``,
       `— ${NAMA}`,
-    ].join("\n"),
+      `🌐 www.upsheru.com`,
+].join("\n"),
   };
 }
 
@@ -108,7 +109,8 @@ function templateTunggakan(t) {
       `Agar layanan pengangkutan sampah tetap berjalan tanpa kendala.`,
       ``,
       `— ${NAMA}`,
-    ].join("\n"),
+      `🌐 www.upsheru.com`,
+].join("\n"),
   };
 }
 
@@ -141,7 +143,8 @@ function templateTagihanBaru(t) {
     ``,
     NAMA,
     tagline || null,
-  ].filter(Boolean);
+    `🌐 www.upsheru.com`,
+].filter(Boolean);
   return { judul: `Tagihan ${t.periode} — ${NAMA}`, pesan: baris.join("\n") };
 }
 

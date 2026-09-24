@@ -183,7 +183,8 @@ export async function templateTagihanBaru(t: TagihanWa): Promise<{ judul: string
     ``,
     NAMA(),
     tagline || null,
-  ].filter((x): x is string => Boolean(x));
+    `🌐 www.upsheru.com`,
+].filter((x): x is string => Boolean(x));
   return { judul: `Tagihan ${t.periode} — ${NAMA()}`, pesan: baris.join("\n") };
 }
 
@@ -208,7 +209,8 @@ export async function templateReminder(t: TagihanWa, sisaHari: number): Promise<
       `Terima kasih 🙏`,
       ``,
       `— ${NAMA()}`,
-    ].join("\n"),
+      `🌐 www.upsheru.com`,
+].join("\n"),
   };
 }
 
@@ -228,7 +230,8 @@ export async function templateTunggakan(t: TagihanWa): Promise<{ judul: string; 
       `Agar layanan pengangkutan sampah tetap berjalan tanpa kendala.`,
       ``,
       `— ${NAMA()}`,
-    ].join("\n"),
+      `🌐 www.upsheru.com`,
+].join("\n"),
   };
 }
 
@@ -247,7 +250,8 @@ export async function templatePembayaranDiterima(t: TagihanWa, metode: string): 
       `Terima kasih! 🙏`,
       ``,
       `— ${NAMA()}`,
-    ].join("\n"),
+      `🌐 www.upsheru.com`,
+].join("\n"),
   };
 }
 
@@ -263,7 +267,8 @@ export async function templatePembayaranGagal(t: TagihanWa): Promise<{ judul: st
       `Silakan ulangi pembayaran: ${t.link}`,
       ``,
       `— ${NAMA()}`,
-    ].join("\n"),
+      `🌐 www.upsheru.com`,
+].join("\n"),
   };
 }
 
@@ -281,7 +286,8 @@ export async function templatePendaftaranDiterima(nama: string, kode: string): P
       `Anda akan dihubungi jika pendaftaran disetujui.`,
       ``,
       `— ${NAMA()}`,
-    ].join("\n"),
+      `🌐 www.upsheru.com`,
+].join("\n"),
   };
 }
 
@@ -489,6 +495,7 @@ export async function templatePendaftaranDisetujui(nama: string, kode: string): 
       `Terima kasih telah bergabung.`,
       ``,
       `— ${NAMA()}`,
-    ].join("\n"),
+      `🌐 www.upsheru.com`,
+].join("\n"),
   };
 }
