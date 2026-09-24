@@ -53,10 +53,7 @@ export default async function LandingPage() {
           <div className="grid md:grid-cols-12 gap-12 lg:gap-16 items-center">
             {/* Kolom Kiri: Copywriting & CTA (7 cols) */}
             <div className="md:col-span-7 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-100/50 border border-emerald-200 text-emerald-800 text-xs font-bold shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span>Jasa Angkut Sampah Modern Kota Depok</span>
-              </div>
+              
 
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 leading-[1.12]">
                 Angkut Sampah Pasti, <br />
@@ -75,11 +72,11 @@ export default async function LandingPage() {
                   <span>Mulai Berlangganan 🚛</span>
                 </Link>
                 <Link
-                  href="/lacak"
+                  href="/bayar"
                   className="px-8 py-4 bg-white border border-slate-200 hover:bg-slate-50 text-slate-800 rounded-2xl font-bold text-sm active:scale-95 transition-all flex items-center justify-center gap-2 shadow-sm"
                 >
                   <Navigation className="w-4 h-4 text-emerald-700" />
-                  <span>Lacak Armada</span>
+                  <span>Cek Tagihan</span>
                 </Link>
               </div>
             </div>
@@ -173,12 +170,12 @@ export default async function LandingPage() {
                 </Link>
               </div>
 
-              {/* Feature 2: Pengaduan Online */}
+              {/* Feature 2: Lapor Her !!! */}
               <div className="bg-white rounded-[2rem] border border-slate-200 p-10 shadow-lg shadow-slate-200/40 hover:-translate-y-2 transition-transform duration-300">
                 <div className="w-20 h-20 rounded-3xl bg-rose-50 flex items-center justify-center text-rose-600 mb-8 border border-rose-100">
                   <Smartphone className="w-10 h-10" />
                 </div>
-                <h3 className="text-2xl font-black text-slate-900 mb-4">Pengaduan Online</h3>
+                <h3 className="text-2xl font-black text-slate-900 mb-4">Lapor Her !!!</h3>
                 <p className="text-base text-slate-600 leading-relaxed font-medium">
                   Melihat tumpukan sampah liar atau ada jadwal yang terlewat? Foto dan laporkan langsung via sistem kami. Geotagging pintar akan mengirimkan tim reaksi cepat ke lokasi.
                 </p>
