@@ -10,7 +10,7 @@ export default function Home() {
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Truck className="h-8 w-8 text-emerald-600" />
-            <span className="text-xl font-bold text-slate-900 tracking-tight">WastePay<span className="text-emerald-600">.</span></span>
+            <span className="text-xl font-bold text-slate-900 tracking-tight">UPS HERU<span className="text-emerald-600">.</span></span>
           </div>
           <nav className="hidden md:flex items-center gap-6 font-medium text-sm text-slate-600">
             <Link href="#layanan" className="hover:text-emerald-600 transition-colors">Layanan</Link>
@@ -104,10 +104,10 @@ export default function Home() {
           <div className="prose prose-lg prose-emerald mx-auto text-slate-600 text-center">
             <h2 className="text-2xl font-bold text-slate-900 mb-6">Layanan Buang Sampah Terdekat untuk Warga Depok</h2>
             <p className="mb-4">
-              Mencari <strong>jasa angkut sampah Depok</strong> yang bisa diandalkan kini semakin mudah. WastePay hadir sebagai platform penyedia layanan kebersihan modern yang menjembatani warga dengan petugas pengangkut sampah. Kami memahami bahwa kebersihan lingkungan adalah prioritas utama.
+              Mencari <strong>jasa angkut sampah Depok</strong> yang bisa diandalkan kini semakin mudah. UPS HERU hadir sebagai platform penyedia layanan kebersihan modern yang menjembatani warga dengan petugas pengangkut sampah. Kami memahami bahwa kebersihan lingkungan adalah prioritas utama.
             </p>
             <p>
-              Dengan WastePay, Anda tidak perlu lagi khawatir memikirkan kapan petugas datang atau kesulitan mengumpulkan iuran <strong>retribusi sampah Depok</strong>. Semua bisa diakses secara digital. Dapatkan informasi <strong>jadwal truk sampah</strong> secara real-time dan nikmati lingkungan yang lebih sehat.
+              Dengan UPS HERU, Anda tidak perlu lagi khawatir memikirkan kapan petugas datang atau kesulitan mengumpulkan iuran <strong>retribusi sampah Depok</strong>. Semua bisa diakses secara digital. Dapatkan informasi <strong>jadwal truk sampah</strong> secara real-time dan nikmati lingkungan yang lebih sehat.
             </p>
           </div>
         </div>
@@ -132,12 +132,12 @@ export default function Home() {
           <div className="md:col-span-2">
             <div className="flex items-center gap-2 mb-4">
               <Truck className="h-6 w-6 text-emerald-500" />
-              <span className="text-xl font-bold text-white tracking-tight">WastePay<span className="text-emerald-500">.</span></span>
+              <span className="text-xl font-bold text-white tracking-tight">UPS HERU<span className="text-emerald-500">.</span></span>
             </div>
             <p className="mb-4 max-w-sm">
               Platform Jasa Angkut Sampah Depok No. 1. Membantu digitalisasi pengelolaan retribusi sampah dan layanan kebersihan.
             </p>
-            <p className="text-sm">© {new Date().getFullYear()} WastePay Indonesia. All rights reserved.</p>
+            <p className="text-sm">© {new Date().getFullYear()} UPS HERU Indonesia. All rights reserved.</p>
           </div>
           <div>
             <h4 className="text-white font-semibold mb-4">Layanan</h4>
@@ -151,8 +151,8 @@ export default function Home() {
             <h4 className="text-white font-semibold mb-4">Kontak</h4>
             <ul className="space-y-2 text-sm">
               <li>Jl. Margonda Raya, Depok</li>
-              <li>halo@wastepay.id</li>
-              <li>0812-3456-7890</li>
+              <li>cv.herozerowaste@gmail.com</li>
+              <li>0814-0078-2617</li>
             </ul>
           </div>
         </div>
