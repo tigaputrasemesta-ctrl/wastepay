@@ -239,7 +239,7 @@ export async function PUT(
             tarif = kategoriTarif?.tarif ?? 0;
           }
 
-          await prisma.tagihan.create({
+          const tagihanPerdana = await prisma.tagihan.create({
             data: {
               pelangganId: pelanggan.id,
               bulan,
@@ -251,6 +251,31 @@ export async function PUT(
               noInvoice: generateNoInvoice(pelanggan.kodePelanggan, bulan, tahun),
             },
           });
+
+          // Send WA notification for the first bill
+          if (pelanggan.noTelepon) {
+            const { kirimNotifikasi, buildTagihanWa, templateTagihanBaru } = await import("@/lib/wa");
+            const tagihanWa = buildTagihanWa(
+              {
+                ...tagihanPerdana,
+                kodePelanggan: pelanggan.kodePelanggan,
+                paket: pelanggan.paket?.nama || undefined,
+              },
+              pelanggan.nama
+            );
+            const tmpl = templateTagihanBaru(tagihanWa);
+            // Customize the title and message slightly to welcome them
+            tmpl.judul = `Pendaftaran Disetujui & Tagihan Perdana — ${tagihanWa.periode}`;
+            tmpl.pesan = `*PENDAFTARAN DISETUJUI ✅*\n\nHalo ${pelanggan.nama}, pendaftaran layanan pengangkutan sampah Anda telah disetujui.\n\n` + tmpl.pesan;
+
+            await kirimNotifikasi({
+              tipe: "tagihan_baru",
+              judul: tmpl.judul,
+              pesan: tmpl.pesan,
+              pelangganId: pelanggan.id,
+              noTelepon: pelanggan.noTelepon,
+            });
+          }
         }
       } catch (errTagihan) {
         console.error("Gagal auto-generate tagihan approval:", errTagihan);
