@@ -281,6 +281,7 @@ export type PendaftaranAdmin = {
   patokanLokasi?: string | null;
   referal?: string | null;
   tanggalPenagihanCustom?: string | null;
+  jadwalHari?: string | null;
 };
 
 export function templatePendaftaranAdmin(p: PendaftaranAdmin): { judul: string; pesan: string } {
@@ -294,7 +295,8 @@ export function templatePendaftaranAdmin(p: PendaftaranAdmin): { judul: string; 
   ];
   if (p.paket) baris.push(`📦 Paket: ${p.paket}`);
   if (p.kategori) baris.push(`🗂 Kategori: ${p.kategori}`);
-  if (p.tanggalPenagihanCustom) baris.push(`🗓 Tgl Penagihan Custom: ${p.tanggalPenagihanCustom}`);
+  if (p.tanggalPenagihanCustom) baris.push(`🗓 Req Tgl Penagihan: ${p.tanggalPenagihanCustom}`);
+  if (p.jadwalHari) baris.push(`🗓 Req Hari Jemput: ${p.jadwalHari}`);
   if (p.patokanLokasi) baris.push(`🧭 Patokan: ${p.patokanLokasi}`);
   if (p.referal) baris.push(`🤝 Referal: ${p.referal}`);
   baris.push("", `Segera konfirmasi di aplikasi ${NAMA()}.`, `— ${NAMA()}`);
@@ -451,4 +453,23 @@ export async function sudahKirimWa(
     select: { id: true },
   });
   return Boolean(ada);
+}
+
+export function templatePendaftaranDisetujui(nama: string, kode: string): { judul: string; pesan: string } {
+  return {
+    judul: `Pendaftaran Disetujui — ${NAMA()}`,
+    pesan: [
+      `*PENDAFTARAN DISETUJUI ✅*`,
+      ``,
+      `Halo ${nama},`,
+      `Selamat! Pendaftaran berlangganan Anda telah disetujui.`,
+      ``,
+      `🆔 Kode Pelanggan: ${kode}`,
+      ``,
+      `Anda dapat menggunakan nomor WhatsApp Anda atau kode pelanggan untuk mengecek tagihan dan jadwal penjemputan di website kami.`,
+      `Terima kasih telah bergabung.`,
+      ``,
+      `— ${NAMA()}`,
+    ].join("\n"),
+  };
 }

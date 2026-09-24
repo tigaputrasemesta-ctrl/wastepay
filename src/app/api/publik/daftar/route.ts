@@ -242,10 +242,11 @@ export async function POST(request: Request) {
             "Daftar mandiri via website",
             `(${kecamatan} / ${kelurahan})`,
             rtRw ? `RT/RW: ${rtRw}` : null,
-            tanggalPenagihanCustom ? `Tanggal Penagihan: ${tanggalPenagihanCustom}` : null,
+            tanggalPenagihanCustom ? `Req Tgl Tagihan: ${tanggalPenagihanCustom}` : null,
+            jadwalHari ? `Req Hari: ${jadwalHari}` : null,
           ]
             .filter(Boolean)
-            .join(" "),
+            .join(" | "),
         },
       });
     } catch (e) {
@@ -303,6 +304,7 @@ export async function POST(request: Request) {
         patokanLokasi: patokanLokasi || undefined,
         referal: referal || undefined,
         tanggalPenagihanCustom: tanggalPenagihanCustom || undefined,
+        jadwalHari: jadwalHari || undefined,
       });
       await kirimNotifikasi({
         tipe: "pendaftaran_masuk",
