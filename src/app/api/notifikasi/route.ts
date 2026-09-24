@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     const hasil = await kirimBlastWa(
       targets,
       tipe || "pengumuman",
-      () => ({ judul, pesan: `*${judul}*\n\n${pesan}\n\n— UPS HERU DEPOK` }),
+      async () => ({ judul, pesan: `*${judul}*\n\n${pesan}\n\n— UPS HERU DEPOK` }),
       { createdById: user.id }
     );
 
