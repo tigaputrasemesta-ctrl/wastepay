@@ -239,6 +239,8 @@ function PelangganContent() {
       const cNonaktif = parseInt(pelangganRes.headers.get("X-Count-Nonaktif") || "0");
       const cLibur = parseInt(pelangganRes.headers.get("X-Count-Libur") || "0");
 
+      const actualData = Array.isArray(pelangganData) ? pelangganData : (pelangganData?.data || []);
+
       if (cTotal > 0 || cAktif > 0 || cCalon > 0 || cNonaktif > 0 || cLibur > 0) {
         setStatusCounts({
           total: cTotal,
@@ -247,18 +249,18 @@ function PelangganContent() {
           nonaktif: cNonaktif,
           libur: cLibur,
         });
-      } else if (Array.isArray(pelangganData)) {
+      } else if (actualData.length > 0) {
         setStatusCounts({
-          total: pelangganData.length,
-          aktif: pelangganData.filter((p: Pelanggan) => p.status === "aktif").length,
-          calon: pelangganData.filter((p: Pelanggan) => p.status === "calon").length,
-          nonaktif: pelangganData.filter((p: Pelanggan) => p.status === "nonaktif").length,
-          libur: pelangganData.filter((p: Pelanggan) => p.status === "libur").length,
+          total: actualData.length,
+          aktif: actualData.filter((p: Pelanggan) => p.status === "aktif").length,
+          calon: actualData.filter((p: Pelanggan) => p.status === "calon").length,
+          nonaktif: actualData.filter((p: Pelanggan) => p.status === "nonaktif").length,
+          libur: actualData.filter((p: Pelanggan) => p.status === "libur").length,
         });
       }
 
-      setPelanggan(Array.isArray(pelangganData) ? pelangganData : []);
-      setTotalData(parseInt(pelangganRes.headers.get("X-Total-Count") || "0"));
+      setPelanggan(actualData);
+      setTotalData(parseInt(pelangganRes.headers.get("X-Total-Count") || "0") || pelangganData?.total || 0);
       setKelurahanList(Array.isArray(kelurahanData) ? kelurahanData : []);
       setZonaList(Array.isArray(zonaData) ? zonaData : []);
     } catch (error) {
