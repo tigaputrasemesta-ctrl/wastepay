@@ -60,22 +60,22 @@ export default async function LandingPage() {
           <div className="md:col-span-7 space-y-6">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
               <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              <span>Layanan Retribusi Sampah Modern • Kota Depok 2026</span>
+              <span>Sistem Kelola Sampah Lebih Mudah & Transparan • Kota Depok</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.12]">
-              Layanan Angkut Sampah Pasti, <br />
-              <span className="text-emerald-700">Bebas Khawatir.</span>
+              Angkut Sampah Tepat Waktu, <br />
+              <span className="text-emerald-700">Bebas Repot.</span>
             </h1>
 
             <p className="text-base sm:text-lg text-slate-600 max-w-xl leading-relaxed">
-              Tinggalkan cara lama yang tidak menentu. Pantau truk penjemput secara real-time di peta, nikmati jadwal angkut teratur, dan bayar iuran praktis via QRIS.
+              Tinggalkan cara lama. Pantau armada real-time, dapatkan jadwal pasti, dan bayar retribusi mudah via QRIS.
             </p>
 
             {/* Badge Rekam Jejak */}
             <div className="inline-flex items-center gap-2 px-3.5 py-2 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs font-medium text-slate-700 shadow-sm">
               <Sparkles className="w-4 h-4 text-emerald-700 shrink-0" />
-              <span>Melayani Depok sejak 2014 • Dipercaya lebih dari 2.000+ pelanggan</span>
+              <span>Melayani Depok sejak 2014 • Dipercaya 2.000+ Pelanggan</span>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
@@ -83,7 +83,7 @@ export default async function LandingPage() {
                 href="/daftar"
                 className="px-6 py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-2xl font-bold text-sm shadow-md hover:shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2"
               >
-                <span>Daftar Berlangganan 🚛</span>
+                <span>Mulai Berlangganan 🚛</span>
               </Link>
               <Link
                 href="/lacak"
@@ -119,7 +119,7 @@ export default async function LandingPage() {
                   </div>
                   <div>
                     <p className="text-3xl font-extrabold text-white tracking-tight">15.4 <span className="text-lg text-slate-400 font-bold">Ton</span></p>
-                    <p className="text-[11px] text-slate-400 font-medium">Sampah Berhasil Diangkut</p>
+                    <p className="text-[11px] text-slate-400 font-medium">Sampah Terangkut</p>
                   </div>
                 </div>
                 
@@ -130,7 +130,7 @@ export default async function LandingPage() {
                   </div>
                   <div>
                     <p className="text-3xl font-extrabold text-white tracking-tight">2.450<span className="text-lg text-blue-400 font-bold">+</span></p>
-                    <p className="text-[11px] text-slate-400 font-medium">Rumah & Usaha Terlayani</p>
+                    <p className="text-[11px] text-slate-400 font-medium">Pelanggan Aktif</p>
                   </div>
                 </div>
               </div>
@@ -170,8 +170,8 @@ export default async function LandingPage() {
                 <span className="text-xl font-bold">✕</span>
               </div>
               <div>
-                <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 line-through decoration-rose-400">Jadwal Truk Tak Pasti</p>
-                <p className="text-[11px] sm:text-xs font-extrabold text-slate-800 mt-0.5">Lacak Truk Real-Time</p>
+                <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 line-through decoration-rose-400">Jadwal Tidak Pasti</p>
+                <p className="text-[11px] sm:text-xs font-extrabold text-slate-800 mt-0.5">Pantau Armada Real-Time</p>
               </div>
             </div>
             
@@ -180,8 +180,8 @@ export default async function LandingPage() {
                 <Smartphone className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 line-through decoration-rose-400">Ribet Uang Pas/Kembalian</p>
-                <p className="text-[11px] sm:text-xs font-extrabold text-slate-800 mt-0.5">Bayar Praktis via QRIS</p>
+                <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 line-through decoration-rose-400">Ribet Siapkan Uang Pas</p>
+                <p className="text-[11px] sm:text-xs font-extrabold text-slate-800 mt-0.5">Bayar Cepat via QRIS</p>
               </div>
             </div>
           </div>
@@ -199,13 +199,13 @@ export default async function LandingPage() {
         <div className="max-w-6xl mx-auto space-y-12">
           <div className="text-center max-w-2xl mx-auto">
             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold mb-3">
-              Solusi Terintegrasi
+              Fitur Unggulan
             </span>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900">
-              Pengelolaan Sampah Modern
+              Kelola Sampah Lebih Mudah & Transparan
             </h2>
             <p className="text-slate-600 text-sm sm:text-base mt-2">
-              Ekosistem lengkap yang dirancang khusus untuk mempermudah warga, pengurus RT, dan petugas lapangan.
+              Ekosistem terintegrasi untuk warga, pengurus RT, dan petugas kebersihan di Kota Depok.
             </p>
           </div>
 
@@ -218,7 +218,7 @@ export default async function LandingPage() {
                 </div>
                 <h3 className="text-xl font-extrabold text-slate-900 mb-2">Lacak Armada</h3>
                 <p className="text-sm text-slate-600 leading-relaxed">
-                  Pantau pergerakan armada secara real-time. Ketahui estimasi menit kedatangan truk di depan rumah tanpa perlu menebak-nebak.
+                  Pantau pergerakan truk real-time. Ketahui pasti kapan sampah Anda diangkut tanpa perlu menebak-nebak.
                 </p>
               </div>
               <Link
@@ -238,7 +238,7 @@ export default async function LandingPage() {
                 </div>
                 <h3 className="text-xl font-extrabold text-slate-900 mb-2">Pengaduan</h3>
                 <p className="text-sm text-slate-600 leading-relaxed">
-                  Ada sampah terlewat atau timbunan liar? Cukup foto dengan kamera HP Anda. Sistem geotag otomatis mencatat koordinat untuk unit reaksi cepat.
+                  Temukan sampah terlewat atau timbunan liar? Foto dan laporkan langsung. Sistem otomatis mengirimkan titik lokasi ke unit reaksi cepat kami.
                 </p>
               </div>
               <Link
@@ -258,7 +258,7 @@ export default async function LandingPage() {
                 </div>
                 <h3 className="text-xl font-extrabold text-slate-900 mb-2">Cek Tagihan</h3>
                 <p className="text-sm text-slate-600 leading-relaxed">
-                  Pemberitahuan jadwal dan tagihan bulanan langsung masuk ke WhatsApp Anda. Bayar dengan sekali scan QRIS atau Virtual Account.
+                  Notifikasi tagihan otomatis ke WhatsApp. Bayar retribusi dalam hitungan detik via QRIS atau Virtual Account.
                 </p>
               </div>
               <Link
@@ -280,7 +280,7 @@ export default async function LandingPage() {
             <div className="flex items-center gap-3">
               <Megaphone className="w-6 h-6 text-amber-700" />
               <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
-                Papan Pengumuman Warga
+                Pengumuman Warga
               </h2>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
@@ -326,7 +326,7 @@ export default async function LandingPage() {
                 Kabar & Tips UPS HERU
               </h2>
               <p className="text-slate-600 text-sm sm:text-base mt-2">
-                Informasi terbaru seputar pengelolaan sampah dan tips menjaga kebersihan lingkungan di Kota Depok.
+                Berita terbaru dan panduan praktis menjaga kebersihan lingkungan bersama UPS HERU.
               </p>
             </div>
             <Link href="/artikel" className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl font-bold text-sm transition-colors whitespace-nowrap">
@@ -383,17 +383,17 @@ export default async function LandingPage() {
           {/* CTA Banner */}
           <div className="bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-3xl p-8 sm:p-12 text-center text-white shadow-xl space-y-4 max-w-4xl mx-auto">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight leading-tight">
-              Siap Menikmati Lingkungan Bersih Tanpa Pusing?
+              Bebas Repot, Lingkungan Bersih Terjamin.
             </h2>
             <p className="text-emerald-100 text-sm sm:text-base max-w-xl mx-auto font-normal">
-              Bergabunglah dengan ribuan keluarga dan pemilik usaha di Depok. Daftar hari ini dan nikmati jadwal pengangkutan teratur.
+              Bergabunglah dengan 2.000+ warga Depok lainnya. Daftar sekarang dan nikmati layanan angkut sampah yang pasti dan transparan.
             </p>
             <div className="pt-2">
               <Link
                 href="/daftar"
                 className="inline-flex items-center gap-2 px-8 py-3.5 bg-white text-emerald-950 hover:bg-emerald-50 rounded-2xl font-extrabold text-sm shadow-md active:scale-95 transition-all"
               >
-                <span>Daftar Langganan Sekarang</span>
+                <span>Mulai Berlangganan Sekarang</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
