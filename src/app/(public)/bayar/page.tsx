@@ -236,7 +236,7 @@ function BayarPortalContent() {
       const res = await fetch(`/api/publik/tagihan?kode=${encodeURIComponent(query)}`);
       const data = await res.json();
       if (!res.ok) {
-        setErrorSearch(data.error || "Data pelanggan tidak ditemukan. Pastikan nomor WhatsApp atau kode pelanggan sudah benar.");
+        setErrorSearch(data.error || "Data pelanggan tidak ditemukan. Pastikan nomor WhatsApp sudah benar.");
         setHasil(null);
       } else {
         setHasil(data);
@@ -539,43 +539,76 @@ function BayarPortalContent() {
           Cek & Bayar Tagihan Retribusi
         </h1>
         <p className="text-sm text-slate-600 max-w-xl mx-auto leading-relaxed">
-          Masukkan <strong>Kode Pelanggan (WP-xxxx)</strong>, <strong>No. WhatsApp</strong>, atau <strong>Nomor Invoice</strong> untuk melihat tagihan dan membayar secara online.
+          Masukkan <strong>Nomor WhatsApp</strong> Anda atau <strong>Nomor Invoice</strong> untuk melihat tagihan dan membayar secara online.
         </p>
       </div>
 
       {/* Box Pencarian */}
-      <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-sm max-w-2xl mx-auto">
+      <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-sm max-w-2xl mx-auto relative overflow-hidden">
         <form onSubmit={cekTagihan} className="space-y-4">
           <div>
             <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-              Kode Pelanggan / No. WA / No. Invoice
+              Nomor WhatsApp / No. Invoice
             </label>
             <div className="relative">
               <input
                 type="text"
-                placeholder="cth: WP-2401-0001, 08123456789, atau INV-..."
+                placeholder="cth: 08123456789 atau INV-..."
                 value={kode}
                 onChange={(e) => setKode(e.target.value)}
-                className="w-full pl-4 pr-12 py-3.5 rounded-2xl border border-slate-200 text-slate-900 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-xs"
+                disabled={mencari}
+                className="w-full pl-4 pr-32 py-3.5 rounded-2xl border border-slate-200 text-slate-900 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-xs disabled:opacity-60 disabled:bg-slate-50"
                 required
               />
               <button
                 type="submit"
-                disabled={mencari}
-                className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs active:scale-95 disabled:opacity-50"
+                disabled={mencari || !kode.trim()}
+                className="absolute right-2 top-1/2 -translate-y-1/2 px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs active:scale-95 disabled:opacity-50"
               >
-                {mencari ? "Mencari..." : "Periksa"}
+                {mencari ? "Memeriksa..." : "Periksa"}
               </button>
             </div>
           </div>
         </form>
 
-        {errorSearch && (
-          <div className="mt-4 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
-            <span>⚠️</span>
-            <span>{errorSearch}</span>
+        {mencari && (
+          <div className="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 flex flex-col items-center justify-center space-y-4 rounded-3xl animate-in fade-in duration-300">
+            <AnimatedDumpTruck size="md" theme="green" />
+            <p className="font-bold text-sm tracking-wider uppercase text-emerald-700 animate-pulse">
+              Menunggu cek database...
+            </p>
+            <p className="text-xs text-slate-500">Menganalisa data pelanggan dan riwayat tagihan</p>
           </div>
         )}
+      </div>
+
+      {/* Pesan Error (Tidak Ditemukan) dengan UI Laporan Analisa */}
+      {errorSearch && !mencari && (
+        <div className="max-w-2xl mx-auto bg-white rounded-3xl border border-rose-200 shadow-sm p-6 sm:p-8 animate-in slide-in-from-bottom-4 fade-in duration-300 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-2 h-full bg-rose-500"></div>
+          <div className="flex flex-col sm:flex-row gap-5 items-start">
+            <div className="w-14 h-14 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center shrink-0">
+              <span className="text-2xl">🔍</span>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <div className="text-[10px] uppercase font-bold text-rose-500 tracking-wider mb-1">Hasil Analisa Pencarian</div>
+                <h3 className="text-lg font-extrabold text-slate-900">Data Tidak Ditemukan</h3>
+              </div>
+              <p className="text-sm text-slate-600 leading-relaxed">
+                {errorSearch}
+              </p>
+              <div className="bg-slate-50 p-4 rounded-xl text-xs text-slate-600 border border-slate-100 space-y-2">
+                <p className="font-bold text-slate-700">Rekomendasi Tindakan:</p>
+                <ul className="list-disc pl-4 space-y-1">
+                  <li>Pastikan Anda memasukkan nomor WhatsApp yang benar (contoh: 08123456789).</li>
+                  <li>Jika Anda pelanggan baru, pastikan pendaftaran Anda sudah diverifikasi oleh admin.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
         {suksesManual && (
           <div className="mt-4 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">

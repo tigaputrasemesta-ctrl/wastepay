@@ -32,7 +32,7 @@ export async function GET(request: Request) {
   }
 
   if (!kode) {
-    return NextResponse.json({ error: "Kode pelanggan wajib diisi" }, { status: 400 });
+    return NextResponse.json({ error: "Nomor WhatsApp wajib diisi" }, { status: 400 });
   }
 
   await updateTunggakan();
@@ -56,7 +56,7 @@ export async function GET(request: Request) {
   });
 
   if (!pelanggan || pelanggan.deletedAt) {
-    return NextResponse.json({ error: "Kode pelanggan tidak ditemukan" }, { status: 404 });
+    return NextResponse.json({ error: "Nomor WhatsApp tidak ditemukan dalam sistem. Pastikan pendaftaran sudah disetujui." }, { status: 404 });
   }
 
   const tagihanList = await prisma.tagihan.findMany({
