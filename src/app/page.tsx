@@ -9,6 +9,7 @@ import TrustStatsBar from "@/components/TrustStatsBar";
 import TimelineSection from "@/components/TimelineSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import JsonLd from "@/components/JsonLd";
+import PublicNavbar from "@/components/PublicNavbar";
 import { generateLocalBusinessJsonLd } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -49,49 +50,10 @@ export default async function LandingPage() {
     <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-emerald-800 selection:text-white">
       <JsonLd data={generateLocalBusinessJsonLd()} />
       {/* ── A. Sticky Modern Navbar ── */}
-      <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-6 py-3.5 transition-all">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
-          <Link href="/" className="flex items-center gap-3 group">
-            <img src="/ups-heru-logo.jpg" alt="UPS HERU Logo" className="h-10 w-10 sm:h-12 sm:w-12 object-contain rounded-xl shadow-sm group-hover:scale-105 transition-transform shrink-0" />
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-extrabold text-lg tracking-tight text-slate-900">UPS HERU</span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Depok</span>
-              </div>
-              <p className="text-[10px] text-slate-500 font-medium">Pengelolaan Sampah Terpadu Kota Depok</p>
-            </div>
-          </Link>
-
-          <div className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm font-bold text-slate-600 flex-wrap justify-center">
-            <Link href="/lacak" className="hover:text-emerald-800 transition-colors flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5 text-emerald-700" />
-              <span>Lacak Armada</span>
-            </Link>
-            <Link href="/bayar" className="hover:text-emerald-800 transition-colors">
-              Cek Tagihan
-            </Link>
-            <Link href="/pengaduan" className="hover:text-emerald-800 transition-colors">
-              Pengaduan
-            </Link>
-            <Link href="/tarif" className="hover:text-emerald-800 transition-colors">
-              Tarif Resmi
-            </Link>
-            <Link href="/login" className="hover:text-emerald-800 transition-colors">
-              Masuk Petugas
-            </Link>
-            <Link
-              href="/daftar"
-              className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded-xl font-bold shadow-sm active:scale-95 transition-all flex items-center gap-1.5"
-            >
-              <span>Daftar Warga Baru</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <PublicNavbar />
 
       {/* ── B. Hero Section ── */}
-      <main>
+      <main className="overflow-hidden">
         <div className="px-6 py-12 md:py-20 max-w-6xl mx-auto">
         <div className="grid md:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Kolom Kiri: Copywriting & CTA (7 cols) */}
@@ -121,7 +83,7 @@ export default async function LandingPage() {
                 href="/daftar"
                 className="px-6 py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-2xl font-bold text-sm shadow-md hover:shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2"
               >
-                <span>Mulai Berlangganan 🚛</span>
+                <span>Daftar Berlangganan 🚛</span>
               </Link>
               <Link
                 href="/lacak"
