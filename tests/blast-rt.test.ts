@@ -45,7 +45,7 @@ describe("Blast WA Tagihan RT", () => {
       "Ibu Siti RT 02"
     );
 
-    const { judul, pesan } = await (template as any)Reminder(wa, 3);
+    const { judul, pesan } = await (templateReminder as any)(wa, 3);
     expect(judul).toContain("Pengingat Tagihan");
     expect(pesan).toContain("Ibu Siti RT 02");
     expect(pesan).toContain("3 HARI LAGI");
@@ -67,7 +67,7 @@ describe("Blast WA Tagihan RT", () => {
       "Bpk. Ahmad RT 03"
     );
 
-    const { judul, pesan } = await (template as any)Tunggakan(wa);
+    const { judul, pesan } = await (templateTunggakan as any)(wa);
     expect(judul).toContain("Menunggak");
     expect(pesan).toContain("Bpk. Ahmad RT 03");
     expect(pesan).toMatch(/denda/i);
