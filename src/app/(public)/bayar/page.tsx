@@ -222,8 +222,13 @@ function BayarPortalContent() {
     if (!query) return;
 
     // Jika user mengetik invoice, alihkan langsung ke tampilan invoice
-    if (query.toUpperCase().startsWith("INV-")) {
-      window.location.href = `/bayar?invoice=${encodeURIComponent(query.toUpperCase())}`;
+    if (query.toUpperCase().startsWith("INV")) {
+      let invoiceUrl = query.toUpperCase();
+      // Normalisasi jika user mengetik INV- menjadi INV/
+      if (invoiceUrl.startsWith("INV-")) {
+        invoiceUrl = "INV/" + invoiceUrl.slice(4);
+      }
+      window.location.href = `/bayar?invoice=${encodeURIComponent(invoiceUrl)}`;
       return;
     }
 
@@ -553,7 +558,7 @@ function BayarPortalContent() {
             <div className="relative">
               <input
                 type="text"
-                placeholder="cth: 08123456789 atau INV-..."
+                placeholder="cth: 08123456789 atau INV/..."
                 value={kode}
                 onChange={(e) => setKode(e.target.value)}
                 disabled={mencari}
