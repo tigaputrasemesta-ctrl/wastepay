@@ -491,7 +491,7 @@ export default function ModalApprovalPelanggan({
               <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">
                 1. Wilayah &amp; Penetapan Zona Pickup
               </span>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* Kelurahan */}
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
@@ -558,6 +558,19 @@ export default function ModalApprovalPelanggan({
                       </option>
                     ))}
                   </select>
+                </div>
+
+                {/* Tanggal Langganan / Siklus Tagihan */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1 whitespace-nowrap overflow-hidden text-ellipsis">
+                    Tanggal Langganan / Tagihan
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={createdAt}
+                    onChange={(e) => setCreatedAt(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
                 </div>
               </div>
             </div>
@@ -713,7 +726,7 @@ export default function ModalApprovalPelanggan({
               <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">
                 3. Kategori Tarif &amp; Paket Layanan
               </span>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* Kategori Tarif */}
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
@@ -749,19 +762,6 @@ export default function ModalApprovalPelanggan({
                       </option>
                     ))}
                   </select>
-                </div>
-
-                {/* Tanggal Langganan / Siklus Tagihan */}
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1 whitespace-nowrap overflow-hidden text-ellipsis">
-                    Tanggal Langganan / Tagihan
-                  </label>
-                  <input
-                    type="datetime-local"
-                    value={createdAt}
-                    onChange={(e) => setCreatedAt(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
                 </div>
               </div>
             </div>
