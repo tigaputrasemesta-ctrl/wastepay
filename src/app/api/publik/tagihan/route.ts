@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { hitungRincian } from "@/lib/invoice";
 import { updateTunggakan } from "@/lib/tagihan";
 import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
+import { normalisasiTelepon } from "@/lib/daftar";
 
 /**
  * GET /api/publik/tagihan?kode=XXX
@@ -14,7 +15,8 @@ import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
  */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const kode = searchParams.get("kode")?.trim();
+  const kodeRaw = searchParams.get("kode")?.trim();
+  const kode = kodeRaw ? decodeURIComponent(kodeRaw).trim() : undefined;
 
   // Rate limit per IP DULU (sebelum validasi kode) — request dengan kode
   // invalid pun ikut dihitung, sehingga enumerasi kode pelanggan tetap terhambat.
@@ -35,13 +37,15 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Nomor WhatsApp wajib diisi" }, { status: 400 });
   }
 
+  const waNormalized = normalisasiTelepon(kode);
+
   await updateTunggakan();
 
   const pelanggan = await prisma.pelanggan.findFirst({
     where: { 
       OR: [
         { kodePelanggan: kode },
-        { noTelepon: kode }
+        { noTelepon: waNormalized || kode }
       ]
     },
     select: {
