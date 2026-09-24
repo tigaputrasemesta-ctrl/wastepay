@@ -299,6 +299,17 @@ function NotifikasiContent() {
             {riwayat.length}
           </span>
         </button>
+
+        <button
+          onClick={() => setActiveTab("template")}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+            activeTab === "template"
+              ? "bg-emerald-700 text-white shadow-sm"
+              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+          }`}
+        >
+          <span>⚙️ Template Pesan</span>
+        </button>
       </div>
 
       {/* ========================================================================= */}
