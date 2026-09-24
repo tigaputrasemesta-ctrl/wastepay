@@ -458,13 +458,8 @@ function ClusterPins({
   const clickedFromMapRef = useRef(false);
 
   useEffect(() => {
-    const group = L.markerClusterGroup({
-      maxClusterRadius: 60,
-      showCoverageOnHover: false,
-      spiderfyOnMaxZoom: true,
-      iconCreateFunction: clusterIcon,
-    });
-    groupRef.current = group;
+    const group = L.featureGroup();
+    groupRef.current = group as any;
     markersRef.current.clear();
 
     for (const p of pelanggan) {
@@ -497,9 +492,8 @@ function ClusterPins({
 
   // Handle selectedId dari luar (misalnya dari daftar bawah atau dropdown pencarian)
   useEffect(() => {
-    if (!selectedId || !groupRef.current) return;
+    if (!selectedId) return;
 
-    // Jika pemilihan dipicu langsung dari klik marker pada peta, lewati zoomToShowLayer
     if (clickedFromMapRef.current) {
       clickedFromMapRef.current = false;
       return;
@@ -509,18 +503,16 @@ function ClusterPins({
     if (!marker) return;
 
     try {
-      groupRef.current.zoomToShowLayer(marker, () => {
+      map.flyTo(marker.getLatLng(), 18, { duration: 0.5 });
+      setTimeout(() => {
         try {
           marker.openPopup();
         } catch {}
-      });
+      }, 500);
     } catch (err) {
-      console.warn("zoomToShowLayer error:", err);
-      try {
-        marker.openPopup();
-      } catch {}
+      console.warn("flyTo error:", err);
     }
-  }, [selectedId]);
+  }, [selectedId, map]);
 
   return null;
 }
@@ -785,10 +777,10 @@ export default function MapView({
                 positions={poly}
                 pathOptions={{
                   color: kel.warna,
-                  weight: 3,
-                  opacity: 0.8,
+                  weight: 1.5,
+                  opacity: 0.3,
                   fillColor: kel.warna,
-                  fillOpacity: 0.1,
+                  fillOpacity: 0.02,
                   dashArray: "8 6"
                 }}
                 interactive={false}
