@@ -25,7 +25,7 @@ export default function PublicLayout({
         className="bg-emerald-900 text-white text-xs py-2 px-4 text-center font-medium flex items-center justify-center gap-2"
       >
         <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-        <span>Layanan Pengelolaan Sampah Terpadu & Pembayaran Retribusi Digital Kota Depok</span>
+        <span>Mitra Pengangkutan Sampah & Retribusi Warga Depok</span>
       </section>
 
       {/* Modern Responsive Navbar (Desktop + Mobile Drawer) */}
