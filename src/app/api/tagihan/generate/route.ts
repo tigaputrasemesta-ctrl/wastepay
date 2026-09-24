@@ -192,7 +192,7 @@ export async function POST(request: Request) {
         "tagihan_baru",
         (t) => {
           const row = tagihanBaru.find((x) => x.pelangganId === t.pelangganId)!;
-          return templateTagihanBaru(buildTagihanWa(row, t.nama));
+          return await templateTagihanBaru(buildTagihanWa(row, t.nama));
         },
         { createdById: user.id }
       );

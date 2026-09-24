@@ -119,7 +119,7 @@ export async function PUT(request: Request, { params }: Params) {
         if (tagihan?.pelanggan.noTelepon) {
           await kirimNotifikasi({
             tipe: "pembayaran_diterima",
-            ...templatePembayaranDiterima(
+            ...await templatePembayaranDiterima(
               buildTagihanWa(
                 {
                   noInvoice: tagihan.noInvoice,

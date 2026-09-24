@@ -270,7 +270,7 @@ export async function PUT(
               },
               pelanggan.nama
             );
-            const tmpl = templateTagihanBaru(tagihanWa);
+            const tmpl = await templateTagihanBaru(tagihanWa);
             // Customize the title and message slightly to welcome them
             tmpl.judul = `Pendaftaran Disetujui & Tagihan Perdana — ${tagihanWa.periode}`;
             tmpl.pesan = `*PENDAFTARAN DISETUJUI ✅*\n\nHalo ${pelanggan.nama}, pendaftaran layanan pengangkutan sampah Anda telah disetujui.\n\n` + tmpl.pesan;
@@ -290,7 +290,7 @@ export async function PUT(
 
       // 2. Kirim Notifikasi WhatsApp Approval
       try {
-        const tDisetujui = templatePendaftaranDisetujui(pelanggan.nama, pelanggan.kodePelanggan);
+        const tDisetujui = await templatePendaftaranDisetujui(pelanggan.nama, pelanggan.kodePelanggan);
         await kirimNotifikasi({
           tipe: "approval",
           judul: tDisetujui.judul,

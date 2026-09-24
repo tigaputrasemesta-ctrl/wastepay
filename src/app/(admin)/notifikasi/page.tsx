@@ -47,7 +47,7 @@ export default function NotifikasiPage() {
 function NotifikasiContent() {
   const searchParams = useSearchParams();
   const initialTab = searchParams.get("tab") === "pengumuman" ? "pengumuman" : "broadcast";
-  const [activeTab, setActiveTab] = useState<"broadcast" | "pengumuman" | "riwayat">(initialTab);
+  const [activeTab, setActiveTab] = useState<"broadcast" | "pengumuman" | "riwayat" | "template">(initialTab as any);
 
   const { user } = useUser();
   const { showToast } = useToast();
@@ -93,6 +93,8 @@ function NotifikasiContent() {
     } else if (tabParam === "broadcast") {
       setActiveTab("broadcast");
     } else if (tabParam === "riwayat") {
+      setActiveTab("riwayat");
+    } else if (tabParam === "template") {
       setActiveTab("riwayat");
     }
   }, [searchParams]);
@@ -463,6 +465,12 @@ function NotifikasiContent() {
       {/* ========================================================================= */}
       {/* TAB 3: RIWAYAT NOTIFIKASI LENGKAP */}
       {/* ========================================================================= */}
+
+      {/* ========================================================================= */}
+      {/* TAB 4: TEMPLATE PESAN */}
+      {/* ========================================================================= */}
+      {activeTab === "template" && <TemplateSettingsForm showToast={showToast} />}
+
       {activeTab === "riwayat" && (
         <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
           <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/70">
@@ -744,6 +752,88 @@ function NotifikasiContent() {
         onConfirm={confirmDeletePengumuman}
         onCancel={() => setDeletePengumumanTarget(null)}
       />
+    </div>
+  );
+}
+
+
+
+// --- TemplateSettingsForm Component ---
+function TemplateSettingsForm({ showToast }: { showToast: (msg: string, type: 'success'|'error') => void }) {
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [templates, setTemplates] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    fetch('/api/pengaturan/template-pesan')
+      .then(res => res.json())
+      .then(data => {
+        if (!data.error) setTemplates(data);
+        setLoading(false);
+      });
+  }, []);
+
+  const handleChange = (key: string, val: string) => setTemplates(p => ({ ...p, [key]: val }));
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const res = await fetch('/api/pengaturan/template-pesan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(templates)
+      });
+      const data = await res.json();
+      if (data.ok) showToast("Template berhasil disimpan", "success");
+      else showToast(data.error || "Gagal menyimpan", "error");
+    } catch (e: any) {
+      showToast(e.message, "error");
+    }
+    setSaving(false);
+  };
+
+  if (loading) return <div className="p-8 text-center text-slate-500">Memuat template...</div>;
+
+  const tpls = [
+    { key: "WA_TEMPLATE_TAGIHAN_BARU", label: "Tagihan Baru / Perdana", vars: "[NAMA], [KODE], [PERIODE], [TOTAL], [JATUH_TEMPO], [PAKET], [LINK]" },
+    { key: "WA_TEMPLATE_TAGIHAN_JATUH_TEMPO", label: "Pengingat Tagihan (Jatuh Tempo)", vars: "[NAMA], [NO_INVOICE], [PERIODE], [TOTAL], [JATUH_TEMPO], [SISA_HARI], [LINK]" },
+    { key: "WA_TEMPLATE_TUNGGAKAN", label: "Tagihan Menunggak (Denda)", vars: "[NAMA], [NO_INVOICE], [PERIODE], [TOTAL], [DENDA], [LINK]" },
+    { key: "WA_TEMPLATE_PEMBAYARAN_DITERIMA", label: "Pembayaran Diterima", vars: "[NAMA], [NO_INVOICE], [PERIODE], [TOTAL], [METODE], [LINK]" },
+    { key: "WA_TEMPLATE_PEMBAYARAN_GAGAL", label: "Pembayaran Gagal/Kadaluarsa", vars: "[NAMA], [NO_INVOICE], [PERIODE], [TOTAL], [LINK]" },
+    { key: "WA_TEMPLATE_PENDAFTARAN_DITERIMA", label: "Pendaftaran Diterima", vars: "[NAMA], [KODE]" },
+    { key: "WA_TEMPLATE_PENDAFTARAN_DISETUJUI", label: "Pendaftaran Disetujui", vars: "[NAMA], [KODE]" },
+  ];
+
+  return (
+    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden p-5 space-y-6">
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h2 className="font-bold text-slate-900 text-lg">Pengaturan Template Pesan Otomatis</h2>
+          <p className="text-slate-500 text-sm mt-1">Sesuaikan kalimat untuk berbagai notifikasi WhatsApp otomatis. Kosongkan untuk menggunakan template bawaan sistem.</p>
+        </div>
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white px-5 py-2.5 rounded-xl font-bold shadow-sm transition-all flex items-center gap-2"
+        >
+          {saving ? "Menyimpan..." : "💾 Simpan Perubahan"}
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {tpls.map(t => (
+          <div key={t.key} className="space-y-2">
+            <label className="block text-sm font-bold text-slate-700">{t.label}</label>
+            <p className="text-xs text-emerald-700 bg-emerald-50 px-2 py-1 rounded font-mono break-all">{t.vars}</p>
+            <textarea
+              className="w-full rounded-xl border-slate-200 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 p-3 text-sm h-40 font-mono bg-slate-50"
+              value={templates[t.key] || ""}
+              onChange={e => handleChange(t.key, e.target.value)}
+              placeholder="Kosongkan untuk menggunakan template default sistem..."
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

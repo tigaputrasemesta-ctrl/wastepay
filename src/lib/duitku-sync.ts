@@ -127,7 +127,7 @@ export async function syncDuitkuPayment(
           if (!(await sudahKirimWa("pembayaran_diterima", tagihan.pelanggan.id, kataKunci))) {
             await kirimNotifikasi({
               tipe: "pembayaran_diterima",
-              ...templatePembayaranDiterima(
+              ...await templatePembayaranDiterima(
                 wa,
                 labelMetodePembayaran(dt.paymentMethod || pembayaran.metode)
               ),
@@ -139,7 +139,7 @@ export async function syncDuitkuPayment(
           if (!(await sudahKirimWa("pembayaran_gagal", tagihan.pelanggan.id, kataKunci))) {
             await kirimNotifikasi({
               tipe: "pembayaran_gagal",
-              ...templatePembayaranGagal(wa),
+              ...await templatePembayaranGagal(wa),
               pelangganId: tagihan.pelanggan.id,
               noTelepon: tagihan.pelanggan.noTelepon,
             });

@@ -282,7 +282,7 @@ export async function POST(request: Request) {
     });
 
     // WA ke pelanggan: konfirmasi pendaftaran diterima
-    const tDiterima = templatePendaftaranDiterima(pelanggan.nama, pelanggan.kodePelanggan);
+    const tDiterima = await templatePendaftaranDiterima(pelanggan.nama, pelanggan.kodePelanggan);
     await kirimNotifikasi({
       tipe: "pendaftaran_diterima",
       judul: tDiterima.judul,
@@ -294,7 +294,7 @@ export async function POST(request: Request) {
     // WA ke helpdesk: pendaftaran baru masuk (jika ADMIN_PHONE diisi)
     const adm = adminPhone();
     if (adm) {
-      const tAdmin = templatePendaftaranAdmin({
+      const tAdmin = await templatePendaftaranAdmin({
         nama: pelanggan.nama,
         kodePelanggan: pelanggan.kodePelanggan,
         noTelepon: pelanggan.noTelepon,

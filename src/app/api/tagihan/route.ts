@@ -268,7 +268,7 @@ export async function POST(request: Request) {
       if (process.env.WA_AUTO_SEND !== "false" && isWaEnabled() && tagihan.pelanggan.noTelepon) {
         await kirimNotifikasi({
           tipe: "tagihan_baru",
-          ...templateTagihanBaru(
+          ...await templateTagihanBaru(
             buildTagihanWa(
               {
                 noInvoice: tagihan.noInvoice || generateNoInvoice(tagihan.pelanggan.kodePelanggan, bln, thn),
@@ -365,7 +365,7 @@ export async function POST(request: Request) {
         }));
         await kirimBlastWa(targets, "tagihan_baru", (t) => {
           const row = tagihanBaru.find((x) => x.pelangganId === t.pelangganId)!;
-          return templateTagihanBaru(buildTagihanWa(row, t.nama));
+          return await templateTagihanBaru(buildTagihanWa(row, t.nama));
         });
       }
 

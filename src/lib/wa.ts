@@ -114,6 +114,25 @@ export type TagihanWa = {
   paket?: string;
 };
 
+
+let templateCache: Record<string, string> | null = null;
+let lastFetch = 0;
+export async function getCachedTemplates() {
+  if (templateCache && Date.now() - lastFetch < 60000) return templateCache;
+  const recs = await prisma.pengaturan.findMany({ where: { key: { startsWith: 'WA_TEMPLATE_' } } });
+  const map: Record<string, string> = {};
+  for (const r of recs) map[r.key] = r.value;
+  templateCache = map;
+  lastFetch = Date.now();
+  return map;
+}
+
+export function replaceTpl(tpl: string, data: Record<string, any>) {
+  return tpl.replace(/\[(.*?)\]/g, (match, p1) => {
+    return data[p1] !== undefined ? String(data[p1]) : match;
+  });
+}
+
 export function buildTagihanWa(tagihan: {
   noInvoice: string | null;
   bulan: number;
@@ -142,7 +161,7 @@ export function buildTagihanWa(tagihan: {
 /* Template pesan (skylite-style: bold judul + emoji + payment link)   */
 /* ------------------------------------------------------------------ */
 
-export function templateTagihanBaru(t: TagihanWa): { judul: string; pesan: string } {
+export async function templateTagihanBaru(t: TagihanWa): Promise<{ judul: string; pesan: string }> {
   const tagline = process.env.COMPANY_TAGLINE?.trim();
   const baris = [
     `Yth. Bapak/Ibu ${t.nama},`,
@@ -168,7 +187,7 @@ export function templateTagihanBaru(t: TagihanWa): { judul: string; pesan: strin
   return { judul: `Tagihan ${t.periode} — ${NAMA()}`, pesan: baris.join("\n") };
 }
 
-export function templateReminder(t: TagihanWa, sisaHari: number): { judul: string; pesan: string } {
+export async function templateReminder(t: TagihanWa, sisaHari: number): Promise<{ judul: string; pesan: string }> {
   const label =
     sisaHari <= 1
       ? "BESOK adalah batas akhir pembayaran"
@@ -193,7 +212,7 @@ export function templateReminder(t: TagihanWa, sisaHari: number): { judul: strin
   };
 }
 
-export function templateTunggakan(t: TagihanWa): { judul: string; pesan: string } {
+export async function templateTunggakan(t: TagihanWa): Promise<{ judul: string; pesan: string }> {
   return {
     judul: `Tagihan ${t.periode} Menunggak — ${NAMA()}`,
     pesan: [
@@ -213,7 +232,7 @@ export function templateTunggakan(t: TagihanWa): { judul: string; pesan: string 
   };
 }
 
-export function templatePembayaranDiterima(t: TagihanWa, metode: string): { judul: string; pesan: string } {
+export async function templatePembayaranDiterima(t: TagihanWa, metode: string): Promise<{ judul: string; pesan: string }> {
   return {
     judul: `Pembayaran Diterima — ${NAMA()}`,
     pesan: [
@@ -232,7 +251,7 @@ export function templatePembayaranDiterima(t: TagihanWa, metode: string): { judu
   };
 }
 
-export function templatePembayaranGagal(t: TagihanWa): { judul: string; pesan: string } {
+export async function templatePembayaranGagal(t: TagihanWa): Promise<{ judul: string; pesan: string }> {
   return {
     judul: `Transaksi Belum Selesai — ${NAMA()}`,
     pesan: [
@@ -248,7 +267,7 @@ export function templatePembayaranGagal(t: TagihanWa): { judul: string; pesan: s
   };
 }
 
-export function templatePendaftaranDiterima(nama: string, kode: string): { judul: string; pesan: string } {
+export async function templatePendaftaranDiterima(nama: string, kode: string): Promise<{ judul: string; pesan: string }> {
   return {
     judul: `Pendaftaran Diterima — ${NAMA()}`,
     pesan: [
@@ -284,7 +303,7 @@ export type PendaftaranAdmin = {
   jadwalHari?: string | null;
 };
 
-export function templatePendaftaranAdmin(p: PendaftaranAdmin): { judul: string; pesan: string } {
+export async function templatePendaftaranAdmin(p: PendaftaranAdmin): Promise<{ judul: string; pesan: string }> {
   const baris = [
     "📩 *PENDAFTARAN PELANGGAN BARU*",
     "",
@@ -400,14 +419,14 @@ export type BlastWaResult = {
 export async function kirimBlastWa(
   targets: TargetWa[],
   tipe: string,
-  buatPesan: (t: TargetWa) => { judul: string; pesan: string },
+  buatPesan: (t: TargetWa) => Promise<{ judul: string; pesan: string }>,
   opts?: { createdById?: number | null; autoSend?: boolean }
 ): Promise<BlastWaResult> {
   const hasil: BlastWaResult = { terkirim: 0, pending: 0, gagal: 0, failures: [], links: [] };
   const delay = blastDelayMs();
 
   for (const t of targets) {
-    const { judul, pesan } = buatPesan(t);
+    const { judul, pesan } = await buatPesan(t);
     const r = await kirimNotifikasi({
       tipe,
       judul,
@@ -455,7 +474,7 @@ export async function sudahKirimWa(
   return Boolean(ada);
 }
 
-export function templatePendaftaranDisetujui(nama: string, kode: string): { judul: string; pesan: string } {
+export async function templatePendaftaranDisetujui(nama: string, kode: string): Promise<{ judul: string; pesan: string }> {
   return {
     judul: `Pendaftaran Disetujui — ${NAMA()}`,
     pesan: [

@@ -221,8 +221,8 @@ export async function POST(request: Request) {
       );
       sampleMessage =
         sampleItem.status === "tunggakan"
-          ? templateTunggakan(sampleWa).pesan
-          : templateReminder(sampleWa, 3).pesan;
+          ? await (await templateTunggakan(sampleWa)).pesan
+          : await (await templateReminder(sampleWa, 3)).pesan;
     }
 
     // Jika hanya mode PREVIEW
@@ -266,8 +266,8 @@ export async function POST(request: Request) {
         );
 
         return itemTagihan.status === "tunggakan"
-          ? templateTunggakan(tagihanWa)
-          : templateReminder(tagihanWa, 3);
+          ? await templateTunggakan(tagihanWa)
+          : await templateReminder(tagihanWa, 3);
       },
       { createdById: user.id, autoSend }
     );
