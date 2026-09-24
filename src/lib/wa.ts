@@ -454,3 +454,22 @@ export async function sudahKirimWa(
   });
   return Boolean(ada);
 }
+
+export function templatePendaftaranDisetujui(nama: string, kode: string): { judul: string; pesan: string } {
+  return {
+    judul: `Pendaftaran Disetujui — ${NAMA()}`,
+    pesan: [
+      `*PENDAFTARAN DISETUJUI ✅*`,
+      ``,
+      `Halo ${nama},`,
+      `Selamat! Pendaftaran berlangganan Anda telah disetujui.`,
+      ``,
+      `🆔 Kode Pelanggan: ${kode}`,
+      ``,
+      `Anda dapat menggunakan nomor WhatsApp Anda atau kode pelanggan untuk mengecek tagihan dan jadwal penjemputan di website kami.`,
+      `Terima kasih telah bergabung.`,
+      ``,
+      `— ${NAMA()}`,
+    ].join("\n"),
+  };
+}

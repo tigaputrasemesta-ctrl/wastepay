@@ -6,6 +6,7 @@ import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 import { generateNoInvoice } from "@/lib/invoice";
 import { hitungJatuhTempoKonsumen } from "@/lib/tagihan";
 import { tetapkanJadwalDanPetugasPelanggan } from "@/lib/penugasan-jadwal";
+import { kirimNotifikasi, templatePendaftaranDisetujui } from "@/lib/wa";
 
 export async function GET(
   request: Request,
@@ -202,6 +203,11 @@ export async function PUT(
       });
     }
 
+    const oldPel = await prisma.pelanggan.findUnique({
+      where: { id },
+      select: { status: true },
+    });
+
     const pelanggan = await prisma.pelanggan.update({
       where: { id },
       data,
@@ -216,8 +222,9 @@ export async function PUT(
       },
     });
 
-    // Jika status diubah menjadi aktif (approval oleh admin pusat), auto-generate tagihan perdana
-    if (data.status === "aktif") {
+    // Jika status diubah menjadi aktif (approval oleh admin pusat)
+    if (data.status === "aktif" && oldPel?.status === "calon") {
+      // 1. Auto-generate tagihan perdana
       try {
         const now = new Date();
         const bulan = now.getMonth() + 1;
@@ -254,6 +261,20 @@ export async function PUT(
         }
       } catch (errTagihan) {
         console.error("Gagal auto-generate tagihan approval:", errTagihan);
+      }
+
+      // 2. Kirim Notifikasi WhatsApp Approval
+      try {
+        const tDisetujui = templatePendaftaranDisetujui(pelanggan.nama, pelanggan.kodePelanggan);
+        await kirimNotifikasi({
+          tipe: "approval",
+          judul: tDisetujui.judul,
+          pesan: tDisetujui.pesan,
+          noTelepon: pelanggan.noTelepon,
+          pelangganId: pelanggan.id,
+        });
+      } catch (errWa) {
+        console.error("Gagal kirim WA approval:", errWa);
       }
     }
 
