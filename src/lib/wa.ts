@@ -20,8 +20,8 @@ import {
   companyInfo,
 } from "./invoice";
 
-const WA_API_KEY = process.env.WA_API_KEY?.trim();
-const WA_API_URL = process.env.WA_API_URL?.trim();
+const WA_API_KEY = "yZeWGJymbrnTpub2x5rL";
+const WA_API_URL = "https://api.fonnte.com/send";
 
 /** Nama perusahaan untuk tanda tangan pesan WA (dari env COMPANY_NAME). */
 export const NAMA = () => companyInfo().nama;
