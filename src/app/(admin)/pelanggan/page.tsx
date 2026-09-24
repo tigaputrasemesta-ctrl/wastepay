@@ -179,6 +179,7 @@ function PelangganContent() {
   });
   const [approvalTarget, setApprovalTarget] = useState<Pelanggan | null>(null);
   const [page, setPage] = useState(1);
+  const [totalData, setTotalData] = useState(0);
   const ITEMS_PER_PAGE = 20;
   const [form, setForm] = useState({
     nama: "",
@@ -210,10 +211,15 @@ function PelangganContent() {
       if (filterZona) params.set("zonaId", filterZona);
       if (filterStatus) params.set("status", filterStatus);
       if (filterKategori) params.set("kategori", filterKategori);
+      
+      // Server-side pagination
+      params.set("page", page.toString());
+      params.set("limit", ITEMS_PER_PAGE.toString());
+      
       const qs = params.toString();
 
       const [pelangganRes, kelurahanRes, zonaRes, optionsRes] = await Promise.all([
-        fetch(`/api/pelanggan${qs ? `?${qs}` : ""}`),
+        fetch(`/api/pelanggan?${qs}`),
         fetch("/api/kelurahan"),
         fetch("/api/zona"),
         fetch("/api/publik/daftar-options"),
@@ -252,6 +258,7 @@ function PelangganContent() {
       }
 
       setPelanggan(Array.isArray(pelangganData) ? pelangganData : []);
+      setTotalData(parseInt(pelangganRes.headers.get("X-Total-Count") || "0"));
       setKelurahanList(Array.isArray(kelurahanData) ? kelurahanData : []);
       setZonaList(Array.isArray(zonaData) ? zonaData : []);
     } catch (error) {
@@ -260,7 +267,7 @@ function PelangganContent() {
     } finally {
       setLoading(false);
     }
-  }, [search, filterKelurahan, filterZona, filterStatus, filterKategori, showToast]);
+  }, [search, filterKelurahan, filterZona, filterStatus, filterKategori, showToast, page, ITEMS_PER_PAGE]);
 
   // Debounced search
   useEffect(() => {
@@ -275,53 +282,72 @@ function PelangganContent() {
     (async () => { await fetchData(); })();
   }, [fetchData]);
 
-  function downloadCSV() {
-    const headers = [
-      "Kode",
-      "Nama Pelanggan",
-      "No Telepon",
-      "Kategori",
-      "Alamat",
-      "Kelurahan",
-      "Zona",
-      "Status",
-      "Tanggal Daftar",
-      "Nominal Tarif (Rp)"
-    ];
-    
-    const rows = pelanggan.map(p => {
-      const namaWilayah = p.wilayah?.zona?.nama || p.wilayah?.nama || "-";
-      const namaKelurahan = p.kelurahan?.nama || "-";
-      let nominal = 0;
-      if (p.customTarif) nominal = p.customTarif;
-      else if (p.paket) nominal = p.paket.harga || 0;
-      else {
-        const kt = kategoriTarifList.find(x => x.kategori === p.kategori);
-        if (kt) nominal = kt.tarif;
-      }
+  async function downloadCSV() {
+    showToast("Mempersiapkan data, mohon tunggu...", "success");
+    try {
+      const params = new URLSearchParams();
+      if (search) params.set("search", search);
+      if (filterKelurahan) params.set("kelurahanId", filterKelurahan);
+      if (filterZona) params.set("zonaId", filterZona);
+      if (filterStatus) params.set("status", filterStatus);
+      if (filterKategori) params.set("kategori", filterKategori);
+      // No limit/page params to fetch all for export
+      const qs = params.toString();
+      
+      const res = await fetch(`/api/pelanggan${qs ? `?${qs}` : ""}`);
+      const dataToExport = await res.json();
+      
+      if (!Array.isArray(dataToExport)) throw new Error("Gagal mengambil data");
 
-      return [
-        p.kodePelanggan || "-",
-        `"${p.nama.replace(/"/g, '""')}"`,
-        p.noTelepon ? `'${p.noTelepon}` : "-",
-        p.kategori,
-        `"${p.alamat.replace(/"/g, '""')}"`,
-        `"${namaKelurahan}"`,
-        `"${namaWilayah}"`,
-        p.status,
-        p.createdAt ? new Date(p.createdAt).toLocaleDateString("id-ID") : "-",
-        nominal
-      ].join(",");
-    });
+      const headers = [
+        "Kode",
+        "Nama Pelanggan",
+        "No Telepon",
+        "Kategori",
+        "Alamat",
+        "Kelurahan",
+        "Zona",
+        "Status",
+        "Tanggal Daftar",
+        "Nominal Tarif (Rp)"
+      ];
+      
+      const rows = dataToExport.map((p: Pelanggan) => {
+        const namaWilayah = p.wilayah?.zona?.nama || p.wilayah?.nama || "-";
+        const namaKelurahan = p.kelurahan?.nama || "-";
+        let nominal = 0;
+        if (p.customTarif) nominal = p.customTarif;
+        else if (p.paket) nominal = p.paket.harga || 0;
+        else {
+          const kt = kategoriTarifList.find(x => x.kategori === p.kategori);
+          if (kt) nominal = kt.tarif;
+        }
 
-    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows].join("\n");
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `data_pelanggan_${new Date().toISOString().split("T")[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+        return [
+          p.kodePelanggan || "-",
+          `"${p.nama.replace(/"/g, '""')}"`,
+          p.noTelepon ? `'${p.noTelepon}` : "-",
+          p.kategori,
+          `"${p.alamat.replace(/"/g, '""')}"`,
+          `"${namaKelurahan}"`,
+          `"${namaWilayah}"`,
+          p.status,
+          p.createdAt ? new Date(p.createdAt).toLocaleDateString("id-ID") : "-",
+          nominal
+        ].join(",");
+      });
+
+      const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows].join("\n");
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `data_pelanggan_${new Date().toISOString().split("T")[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      showToast("Gagal mendownload data CSV", "error");
+    }
   }
 
   function openCreate() {
@@ -432,8 +458,9 @@ function PelangganContent() {
   const liburCount = statusCounts.libur || liburList.length;
   const totalCount = statusCounts.total || pelanggan.length;
 
-  const paginatedPelanggan = pelanggan.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
-  const totalPages = Math.ceil(pelanggan.length / ITEMS_PER_PAGE);
+  // Server-side pagination is now used, so pelanggan is already paginated.
+  const paginatedPelanggan = pelanggan;
+  const totalPages = Math.ceil((totalData || pelanggan.length) / ITEMS_PER_PAGE);
 
   return (
     <div className="p-6">
