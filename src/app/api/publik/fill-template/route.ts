@@ -91,7 +91,7 @@ Terima kasih telah bergabung.
   ];
 
   try {
-    let result = [];
+    let result: string[] = [];
     for (const t of templates) {
       await prisma.pengaturan.upsert({
         where: { key: t.key },
