@@ -1,43 +1,44 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ClipboardEdit, MapPin, CheckCircle2, Truck, ArrowRight } from "lucide-react";
 import FormDaftar from "@/components/FormDaftar";
 import { prisma } from "@/lib/prisma";
 import { formatRupiah } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Pendaftaran Pelanggan Baru Pengelolaan Sampah",
+  title: "Daftar Jasa Angkut Sampah Depok - UPS HERU",
   description:
-    "Formulir online pendaftaran layanan angkut sampah terpadu Kota Depok untuk rumah tangga, tempat usaha/niaga, dan instansi. Bebas biaya pendaftaran.",
+    "Formulir online pendaftaran layanan jasa angkut sampah terpadu Kota Depok untuk perumahan, RT/RW, dan tempat usaha. Bebas biaya pendaftaran awal.",
   alternates: {
     canonical: "/daftar",
   },
   openGraph: {
-    title: "Daftar Layanan Angkut Sampah Kota Depok | UPS HERU",
+    title: "Daftar Jasa Angkut Sampah Kota Depok | UPS HERU",
     description:
-      "Daftar layanan jemput sampah rutin untuk rumah tangga dan tempat usaha di Depok. Penjemputan terjadwal dan pelacakan truk real-time.",
+      "Daftar layanan jemput sampah rutin terpercaya di Depok. Penjemputan terjadwal dan bayar retribusi digital.",
   },
 };
 
 const ALUR_DAFTAR = [
   {
-    no: "01",
+    icon: <ClipboardEdit className="w-5 h-5 text-emerald-600" />,
     judul: "Isi Formulir Online",
-    desc: "Lengkapi data diri dan alamat penjemputan. Pendaftaran 100% Bebas Biaya.",
+    desc: "Lengkapi data diri dan lokasi penjemputan dalam 1 menit. 100% Gratis.",
   },
   {
-    no: "02",
-    judul: "Verifikasi Rute Lapangan",
-    desc: "Petugas operasional memetakan koordinat rumah Anda ke armada terdekat.",
+    icon: <MapPin className="w-5 h-5 text-sky-600" />,
+    judul: "Pemetaan Rute",
+    desc: "Tim lapangan kami akan memverifikasi titik lokasi rumah Anda ke rute armada terdekat.",
   },
   {
-    no: "03",
+    icon: <CheckCircle2 className="w-5 h-5 text-amber-600" />,
     judul: "Terima ID Pelanggan",
-    desc: "Setelah diverifikasi, Anda akan mendapatkan kode pelanggan resmi via WhatsApp.",
+    desc: "Kode pelanggan resmi akan otomatis dikirimkan ke WhatsApp Anda.",
   },
   {
-    no: "04",
-    judul: "Pengangkutan Berjalan",
-    desc: "Sampah diangkut rutin sesuai jadwal, pantau posisi truk di peta kapan saja.",
+    icon: <Truck className="w-5 h-5 text-rose-600" />,
+    judul: "Pengangkutan Rutin",
+    desc: "Sampah mulai diangkut teratur. Anda bisa melacak truk kami langsung dari HP.",
   },
 ];
 
@@ -63,73 +64,79 @@ export default async function DaftarPage({
   }
 
   return (
-    <div className="py-8 md:py-12 space-y-8 md:space-y-10">
+    <div className="py-10 md:py-16 space-y-10 md:space-y-12">
       {/* Header Section */}
-      <div className="max-w-2xl">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold mb-3">
+      <div className="max-w-3xl">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100/50 border border-emerald-200 text-emerald-800 text-xs font-bold mb-4 shadow-sm">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span>Registrasi Pelanggan Baru • Bebas Biaya Daftar</span>
+          <span>Bebas Biaya Registrasi Awal</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
-          Daftar Layanan <span className="text-emerald-700">UPS HERU.</span>
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 leading-tight">
+          Berlangganan <br />
+          <span className="text-emerald-700">Jasa Angkut Sampah.</span>
         </h1>
-        <p className="text-sm md:text-base text-slate-600 mt-3 leading-relaxed">
+        <p className="text-base md:text-lg text-slate-600 mt-4 leading-relaxed font-medium">
           {tarifMin > 0 ? (
             <>
-              Iuran retribusi mulai dari <span className="font-bold text-emerald-700">{formatRupiah(tarifMin)}/bulan</span>. 
-              Tanpa biaya registrasi awal. Cukup lengkapi formulir di bawah ini.
+              Solusi kebersihan rumah Anda dengan retribusi mulai dari <span className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">{formatRupiah(tarifMin)}/bulan</span>. 
+              Isi form di bawah, dan biarkan kami yang mengurus sisanya.
             </>
           ) : (
-            "Tanpa biaya registrasi awal. Cukup lengkapi formulir di bawah ini untuk mulai berlangganan."
+            "Isi formulir di bawah ini dalam 1 menit. Jadwal truk akan langsung terhubung ke lokasi rumah Anda tanpa repot."
           )}
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-12 gap-8 items-start">
+      <div className="grid lg:grid-cols-12 gap-10 items-start">
         {/* Panduan Alur (5 cols) */}
-        <div className="lg:col-span-5 space-y-4">
-          <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm">
-            <h2 className="font-extrabold text-base text-slate-900 mb-5">
-              Alur Pendaftaran Layanan
+        <div className="lg:col-span-5 space-y-6">
+          <div className="bg-white rounded-[2rem] border border-slate-200 p-8 shadow-lg shadow-slate-200/40">
+            <h2 className="font-black text-xl text-slate-900 mb-8 border-b border-slate-100 pb-4">
+              Bagaimana Prosesnya?
             </h2>
-            <div className="space-y-5">
-              {ALUR_DAFTAR.map((l) => (
-                <div key={l.no} className="flex gap-4 items-start">
-                  <div className="w-10 h-10 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-700 shrink-0 font-extrabold text-xs">
-                    {l.no}
+            <div className="space-y-6 relative before:absolute before:inset-0 before:ml-[1.4rem] before:h-full before:w-0.5 before:bg-gradient-to-b before:from-emerald-100 before:via-slate-100 before:to-transparent">
+              {ALUR_DAFTAR.map((l, i) => (
+                <div key={i} className="relative flex items-start gap-5">
+                  <div className="w-12 h-12 rounded-2xl bg-white border-2 border-slate-100 flex items-center justify-center shrink-0 z-10 shadow-sm">
+                    {l.icon}
                   </div>
-                  <div>
-                    <h3 className="font-bold text-sm text-slate-900">{l.judul}</h3>
-                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">{l.desc}</p>
+                  <div className="pt-2">
+                    <h3 className="font-bold text-base text-slate-900">{l.judul}</h3>
+                    <p className="text-sm text-slate-500 mt-1.5 leading-relaxed font-medium">{l.desc}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="p-5 rounded-3xl bg-emerald-50/80 border border-emerald-200/80 text-xs text-emerald-900 leading-relaxed space-y-1.5">
-            <p className="font-bold">Informasi Penting:</p>
-            <ul className="space-y-1 text-emerald-800 text-[11px] list-disc pl-4 font-medium">
-              <li>Layanan aktif segera setelah verifikasi rute selesai oleh tim lapangan.</li>
+          <div className="p-6 rounded-[2rem] bg-amber-50/80 border border-amber-200/80 text-amber-950 shadow-sm">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-2 h-2 rounded-full bg-amber-500" />
+              <p className="font-bold text-sm">Informasi Penting</p>
+            </div>
+            <ul className="space-y-2 text-amber-800/90 text-xs list-disc pl-5 font-medium leading-relaxed">
+              <li>Layanan langsung aktif segera setelah verifikasi rute selesai oleh tim.</li>
               <li>Pastikan nomor WhatsApp aktif untuk pengiriman kode pelanggan dan struk resmi.</li>
-              <li>Jadwal pengangkutan akan disesuaikan dengan ritase wilayah RT Anda.</li>
+              <li>Jadwal menyesuaikan wilayah RT/Perumahan Anda.</li>
             </ul>
           </div>
 
           <Link
             href="/bayar"
-            className="flex items-center justify-between p-4 bg-white hover:bg-slate-50 border border-slate-200/80 rounded-2xl transition-all shadow-sm group"
+            className="flex items-center justify-between p-6 bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-200 rounded-[2rem] transition-all shadow-sm group cursor-pointer"
           >
             <div>
-              <p className="text-xs font-bold text-slate-900">Sudah Terdaftar Sebelumnya?</p>
-              <p className="text-[11px] text-slate-500">Cek status tagihan atau konfirmasi bukti pembayaran</p>
+              <p className="text-sm font-black text-slate-900 group-hover:text-emerald-800 transition-colors">Sudah Terdaftar?</p>
+              <p className="text-xs text-slate-500 font-medium mt-1">Cek tagihan & konfirmasi bayar</p>
             </div>
-            <span className="text-xs font-bold text-emerald-700 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+            <div className="w-10 h-10 rounded-full bg-slate-50 group-hover:bg-emerald-100 flex items-center justify-center transition-colors">
+              <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-emerald-700 transition-colors" />
+            </div>
           </Link>
         </div>
 
         {/* Form Pendaftaran (7 cols) */}
-        <div className="lg:col-span-7">
+        <div className="lg:col-span-7 bg-white rounded-[2rem] border border-slate-200 shadow-xl shadow-slate-200/50 p-6 sm:p-8">
           <FormDaftar initialReferal={initialReferal} />
         </div>
       </div>
