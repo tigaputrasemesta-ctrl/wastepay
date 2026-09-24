@@ -545,27 +545,7 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-rute">
-            Rute (Sementara)
-          </label>
-          <div className="relative">
-            <select
-              id="d-rute"
-              value={ruteId}
-              onChange={(e) => setRuteId(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer"
-            >
-              <option value="">— Pilih Rute —</option>
-              {(opsi?.rute ?? []).map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.nama}
-                </option>
-              ))}
-            </select>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">▼</div>
-          </div>
-        </div>
+
         <div>
           <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-tgl-penagihan">
             Tanggal Penagihan (Sementara)
@@ -602,50 +582,10 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
             <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">▼</div>
           </div>
         </div>
-        <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-petugas">
-            Petugas Supir (Sementara)
-          </label>
-          <div className="relative">
-            <select
-              id="d-petugas"
-              value={petugasId}
-              onChange={(e) => setPetugasId(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer"
-            >
-              <option value="">— Pilih Petugas —</option>
-              {(opsi?.petugas ?? []).map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.nama}
-                </option>
-              ))}
-            </select>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">▼</div>
-          </div>
-        </div>
+
       </div>
 
-      <div>
-        <label className="block text-xs font-bold text-slate-700 mb-1.5">
-          Hari Penjemputan (Sementara)
-        </label>
-        <div className="flex flex-wrap gap-2">
-          {["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"].map((hari) => (
-            <label key={hari} className="flex items-center gap-2 px-3 py-2 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
-              <input
-                type="checkbox"
-                className="w-4 h-4 accent-emerald-600 rounded"
-                checked={jadwalHari.includes(hari)}
-                onChange={(e) => {
-                  if (e.target.checked) setJadwalHari((p) => [...p, hari]);
-                  else setJadwalHari((p) => p.filter((h) => h !== hari));
-                }}
-              />
-              <span className="text-xs font-medium text-slate-700">{hari}</span>
-            </label>
-          ))}
-        </div>
-      </div>
+
 
       <div>
         <label className="block text-xs font-bold text-slate-700 mb-1.5">
