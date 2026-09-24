@@ -65,7 +65,7 @@ export async function GET(request: Request) {
 
   const tagihan = await getTagihanByNoInvoice(invoice);
   if (!tagihan) {
-    return NextResponse.json({ error: "Tagihan tidak ditemukan" }, { status: 404 });
+    return NextResponse.json({ error: `Tagihan tidak ditemukan untuk invoice: ${invoice}` }, { status: 404 });
   }
 
   const ppnRate = await getPajakDaerahRate();

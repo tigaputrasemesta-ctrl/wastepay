@@ -167,6 +167,8 @@ function BayarPortalContent() {
 
   // Load detail invoice jika ada di param
   const muatInvoiceDetail = useCallback(async () => {
+    setLoadingInvoice(true);
+    setErrorInvoice("");
     try {
       let url = "/api/publik/tagihan-detail";
       if (invoiceParam) {
@@ -334,7 +336,7 @@ function BayarPortalContent() {
   // TAMPILAN 1: CHECKOUT INVOICE TERTENTU (Duitku / Link WA)
   // =========================================================================
   if (isInvoiceMode) {
-    if (loadingInvoice) {
+    if (loadingInvoice || (!detail && !errorInvoice)) {
       return (
         <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
           <AnimatedDumpTruck size="lg" theme="green" />
@@ -354,7 +356,7 @@ function BayarPortalContent() {
             </div>
             <h2 className="font-extrabold text-xl text-slate-900">Tagihan Tidak Ditemukan</h2>
             <p className="text-sm text-slate-500 mt-2 leading-relaxed max-w-md mx-auto">
-              {errorInvoice || "Nomor invoice atau order tidak valid. Pastikan nomor invoice yang Anda cari sudah sesuai."}
+              {errorInvoice || "Data tagihan belum tersedia."}
             </p>
             <div className="mt-8 pt-6 border-t border-slate-100">
               <Link
