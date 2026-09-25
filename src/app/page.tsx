@@ -170,12 +170,12 @@ export default async function LandingPage() {
                 </Link>
               </div>
 
-              {/* Feature 2: Lapor Her !!! */}
+              {/* Feature 2: Pengaduan */}
               <div className="bg-white rounded-[2rem] border border-slate-200 p-10 shadow-lg shadow-slate-200/40 hover:-translate-y-2 transition-transform duration-300">
                 <div className="w-20 h-20 rounded-3xl bg-rose-50 flex items-center justify-center text-rose-600 mb-8 border border-rose-100">
                   <Smartphone className="w-10 h-10" />
                 </div>
-                <h3 className="text-2xl font-black text-slate-900 mb-4">Lapor Her !!!</h3>
+                <h3 className="text-2xl font-black text-slate-900 mb-4">Pengaduan</h3>
                 <p className="text-base text-slate-600 leading-relaxed font-medium">
                   Melihat tumpukan sampah liar atau ada jadwal yang terlewat? Foto dan laporkan langsung via sistem kami. Geotagging pintar akan mengirimkan tim reaksi cepat ke lokasi.
                 </p>
