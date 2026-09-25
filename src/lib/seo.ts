@@ -4,20 +4,8 @@
  */
 
 export function getSiteUrl(): string {
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL.replace(/\/$/, "")}`;
-  }
-  const envUrl =
-    process.env.NEXT_PUBLIC_APP_URL?.trim() ||
-    process.env.APP_URL?.trim() ||
-    "";
-  if (envUrl) {
-    return envUrl.replace(/\/$/, "");
-  }
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL.replace(/\/$/, "")}`;
-  }
-  return "https://upsheru.com";
+  const url = process.env.NEXT_PUBLIC_APP_URL || "https://upsheru.com";
+  return url.replace(/\/+$/, "");
 }
 
 export const SITE_CONFIG = {

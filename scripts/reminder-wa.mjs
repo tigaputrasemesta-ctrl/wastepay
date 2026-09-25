@@ -37,7 +37,7 @@ const prisma = new PrismaClient({ adapter });
 const WA_API_KEY = process.env.WA_API_KEY?.trim();
 const WA_API_URL = process.env.WA_API_URL?.trim();
 const WA_AUTO_SEND = process.env.WA_AUTO_SEND !== "false";
-const NAMA = process.env.COMPANY_NAME?.trim() || "O2W Hero Zero Waste";
+const NAMA = process.env.COMPANY_NAME?.trim() || "UPS HERU";
 
 const DELAY_MS = (() => {
   const v = Number(process.env.WA_BLAST_DELAY_MS);
@@ -114,7 +114,7 @@ function templateTunggakan(t) {
   };
 }
 
-const appBase = (process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "").replace(/\/+$/, "");
+const appBase = "https://upsheru.com";
 const paymentLink = (noInvoice) => {
   const q = `?invoice=${encodeURIComponent(noInvoice)}`;
   return appBase ? `${appBase}/bayar-tagihan${q}` : `/bayar-tagihan${q}`;

@@ -45,11 +45,7 @@ export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /** Base URL aplikasi untuk link pembayaran di pesan WA. */
 export function appBaseUrl(): string {
-  return (
-    process.env.NEXT_PUBLIC_APP_URL?.trim() ||
-    process.env.APP_URL?.trim() ||
-    ""
-  ).replace(/\/+$/, "");
+  return "https://upsheru.com";
 }
 
 /** Link halaman tagihan publik untuk satu invoice (absolut jika APP_URL diisi). */
@@ -149,7 +145,7 @@ export function buildTagihanWa(tagihan: {
     nama,
     periode: periodeIndo(tagihan.bulan, tagihan.tahun),
     total,
-    denda: tagihan.denda || 0,
+    denda: 0,
     jatuhTempo: tagihan.jatuhTempo,
     link: paymentLink(tagihan.noInvoice || ""),
     kodePelanggan: tagihan.kodePelanggan || undefined,

@@ -71,21 +71,7 @@ export function duitkuBaseUrl(): string {
 
 /** Menentukan Base URL aplikasi yang valid untuk webhook & return gateway. */
 export function getAppBaseUrl(): string {
-  // 1. Prioritaskan domain production utama Vercel (cth: wastepay.vercel.app)
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL.replace(/\/$/, "")}`;
-  }
-  // 2. Cek NEXT_PUBLIC_APP_URL atau APP_URL jika disetel eksplisit
-  const envUrl = process.env.NEXT_PUBLIC_APP_URL?.trim() || process.env.APP_URL?.trim() || "";
-  if (envUrl) {
-    return envUrl.replace(/\/$/, "");
-  }
-  // 3. Cek VERCEL_URL bawaan
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL.replace(/\/$/, "")}`;
-  }
-  // Fallback domain default production
-  return "https://o2whero.com";
+  return "https://upsheru.com";
 }
 
 /** URL callback (webhook) — WAJIB publik HTTPS saat production. */

@@ -5,19 +5,18 @@ import { tvTokenValid } from "@/lib/tv-token";
 export const dynamic = "force-dynamic";
 
 /**
- * GET /api/publik/tv-peta?t=TV_VIEW_TOKEN
+ * GET /api/publik/tv-peta
  *
  * Endpoint read-only khusus layar TV / wallboard. Mengembalikan data realtime
  * (lokasi petugas, kendaraan, titik transit, dan pengaduan) dalam SATU
  * permintaan supaya polling di layar besar lebih hemat.
  *
- * Keamanan: tidak memakai sesi cookie, melainkan token `t` (atau header
- * `x-tv-token`) yang diverifikasi constant-time. Data yang dikembalikan adalah
+ * Keamanan: tidak memakai sesi cookie, melainkan header
+ * `x-tv-token` yang diverifikasi constant-time. Data yang dikembalikan adalah
  * scope admin (seluruh wilayah) — cocok untuk wallboard kantor.
  */
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const token = searchParams.get("t") || request.headers.get("x-tv-token");
+  const token = request.headers.get("x-tv-token");
 
   if (!tvTokenValid(token)) {
     return NextResponse.json({ error: "Akses ditolak" }, { status: 401 });

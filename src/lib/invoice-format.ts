@@ -72,14 +72,11 @@ export function formatTanggalWaktuIndo(date: Date | string): string {
 
 /**
  * Hitung rincian nominal invoice.
- * Denda (tunggakan) dikenakan terpisah di luar pajak, seperti total yang harus dibayar.
+ * PPN dan Denda telah dihapuskan dari sistem.
  */
 export function hitungRincian(jumlah: number, denda?: number | null, pajakRate: number = 0) {
   const base = jumlah;
-  const ppn = Math.round((base * pajakRate) / 100); // Sekarang merepresentasikan pajak daerah
-  const subTotalPpn = base + ppn;
-  const total = subTotalPpn + (denda || 0);
-  return { base, ppn, subTotalPpn, denda: denda || 0, total };
+  return { base, ppn: 0, subTotalPpn: base, denda: 0, total: base };
 }
 
 /** Label metode pembayaran (O2W + Duitku) */

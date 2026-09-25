@@ -64,7 +64,7 @@ export default function PetugasPage() {
   });
 
   function copyReferralLink(p: Petugas) {
-    const origin = typeof window !== "undefined" ? window.location.origin : "https://o2whero.com";
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://upsheru.com";
     const url = `${origin}/daftar?ref=${encodeURIComponent(p.nama)}`;
     const done = () => {
       setCopiedId(p.id);
@@ -559,7 +559,7 @@ export default function PetugasPage() {
                 </p>
                 {form.nama && (
                   <div className="bg-white px-2.5 py-1.5 rounded-lg border border-emerald-200 text-[11px] font-mono text-emerald-800 truncate select-all">
-                    {(typeof window !== "undefined" ? window.location.origin : "https://o2whero.com")}/daftar?ref={encodeURIComponent(form.nama)}
+                    {(typeof window !== "undefined" ? window.location.origin : "https://upsheru.com")}/daftar?ref={encodeURIComponent(form.nama)}
                   </div>
                 )}
               </div>

@@ -91,26 +91,30 @@ vi.mock("../src/lib/prisma", () => ({
       findMany: vi.fn(),
       update: vi.fn(),
     },
+    pengaturan: {
+      findUnique: vi.fn(),
+    },
   },
 }));
 
 const prismaMock = prisma as unknown as {
   tagihan: { findMany: Mock; update: Mock };
+  pengaturan: { findUnique: Mock };
 };
 
 describe("invoice-format", () => {
-  it("hitungRincian: PPN 11% dari jumlah, denda terpisah", () => {
-    const r = hitungRincian(50000, 2000);
-    expect(r.ppn).toBe(Math.round((50000 * 11) / 100)); // 5500
-    expect(r.subTotalPpn).toBe(55500);
-    expect(r.total).toBe(57500); // subTotal + denda
-    expect(r.denda).toBe(2000);
+  it("hitungRincian: PPN dan denda dihapus (selalu 0)", () => {
+    const r = hitungRincian(50000, 2000, 11);
+    expect(r.ppn).toBe(0);
+    expect(r.subTotalPpn).toBe(50000);
+    expect(r.total).toBe(50000);
+    expect(r.denda).toBe(0);
   });
 
-  it("hitungRincian: tanpa denda → total = jumlah + PPN", () => {
-    const r = hitungRincian(100000);
-    expect(r.ppn).toBe(11000);
-    expect(r.total).toBe(111000);
+  it("hitungRincian: perhitungan tagihan tanpa PPN", () => {
+    const r = hitungRincian(100000, 0, 11);
+    expect(r.ppn).toBe(0);
+    expect(r.total).toBe(100000);
     expect(r.denda).toBe(0);
   });
 });
@@ -120,7 +124,7 @@ describe("updateTunggakan", () => {
     vi.clearAllMocks();
   });
 
-  it("menghitung denda 2%/bulan & menandai status tunggakan", async () => {
+  it("menandai status tunggakan tapi denda selalu 0", async () => {
     const duaBulanLalu = new Date(Date.now() - 62 * 24 * 3600 * 1000);
     prismaMock.tagihan.findMany.mockResolvedValue([
       { id: 1, jumlah: 50000, denda: null, status: "belum_bayar", jatuhTempo: duaBulanLalu },
@@ -132,12 +136,12 @@ describe("updateTunggakan", () => {
     expect(prismaMock.tagihan.update).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { id: 1 },
-        data: expect.objectContaining({ status: "tunggakan", denda: 2000 }), // 50000 * 2% * 2 bulan
+        data: expect.objectContaining({ status: "tunggakan", denda: 0 }),
       })
     );
   });
 
-  it("memperbarui denda untuk tagihan yang sudah berstatus tunggakan jika bertambah bulan", async () => {
+  it("memperbarui denda menjadi 0 jika sebelumnya ada", async () => {
     const tigaBulanLalu = new Date(Date.now() - 93 * 24 * 3600 * 1000);
     prismaMock.tagihan.findMany.mockResolvedValue([
       { id: 2, jumlah: 100000, denda: 2000, status: "tunggakan", jatuhTempo: tigaBulanLalu },
@@ -149,7 +153,7 @@ describe("updateTunggakan", () => {
     expect(prismaMock.tagihan.update).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { id: 2 },
-        data: expect.objectContaining({ status: "tunggakan", denda: 6000 }), // 100000 * 2% * 3 bulan = 6000
+        data: expect.objectContaining({ status: "tunggakan", denda: 0 }),
       })
     );
   });
@@ -478,7 +482,7 @@ describe("seo module", () => {
     delete process.env.VERCEL_URL;
 
     const url = getSiteUrl();
-    expect(url).toBe("https://o2whero.com");
+    expect(url).toBe("https://upsheru.com");
 
     if (origEnv) process.env.NEXT_PUBLIC_APP_URL = origEnv;
   });

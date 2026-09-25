@@ -15,7 +15,7 @@ type QrScannerModalProps = {
  * Ekstraksi kode pelanggan dari QR Code / URL / Barcode sticker.
  * Contoh format:
  * - "0101-0001" -> "0101-0001"
- * - "https://o2whero.com/invoice-tagihan?invoice=INV%2F0101-0001%2F202609" -> "0101-0001"
+ * - "https://upsheru.com/invoice-tagihan?invoice=INV%2F0101-0001%2F202609" -> "0101-0001"
  * - "INV/0101-0001/202609" -> "0101-0001"
  * - "UPS-001" -> "UPS-001"
  */

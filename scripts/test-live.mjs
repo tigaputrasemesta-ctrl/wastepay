@@ -2,7 +2,7 @@
 // Jalankan:
 //   node scripts/test-live.mjs
 // Target bisa di-override:  BASE_URL=https://... node scripts/test-live.mjs
-const BASE = process.env.BASE_URL || "https://o2whero.com";
+const BASE = process.env.BASE_URL || "https://upsheru.com";
 
 const results = [];
 function check(name, ok, detail = "") {

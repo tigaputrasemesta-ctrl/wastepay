@@ -1,5 +1,4 @@
 import { prisma } from "./prisma";
-import { getDendaKeterlambatanRate } from "./pengaturan";
 
 // Throttle: update tunggakan maks 1x per 5 menit per proses.
 // updateTunggakan dipanggil dari GET publik (cek tagihan) & GET admin —
@@ -33,16 +32,9 @@ export async function updateTunggakan(opts?: { force?: boolean }): Promise<numbe
   const nowDate = new Date();
 
   // Pra-hitung dan saring hanya tagihan yang nominal denda atau statusnya berubah
-  const dendaRate = await getDendaKeterlambatanRate();
-  const dendaDecimal = dendaRate / 100;
-
   const targets = overdue
     .map((t) => {
-      const bulanTerlambat = Math.max(
-        1,
-        Math.floor((nowDate.getTime() - t.jatuhTempo.getTime()) / MS_PER_BULAN)
-      );
-      const denda = dendaRate > 0 ? Math.round(t.jumlah * dendaDecimal * bulanTerlambat) : 0;
+      const denda = 0; // Denda telah dihapuskan
       const needUpdate = t.status !== "tunggakan" || t.denda !== denda;
       return { id: t.id, denda, needUpdate };
     })

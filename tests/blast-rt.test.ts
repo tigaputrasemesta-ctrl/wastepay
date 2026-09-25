@@ -8,7 +8,7 @@ import {
 } from "../src/lib/wa";
 
 describe("Blast WA Tagihan RT", () => {
-  it("buildTagihanWa menghitung total dengan PPN 11% dan menyertakan denda", () => {
+  it("buildTagihanWa menghitung total tanpa PPN dan tanpa denda", () => {
     const data = {
       noInvoice: "INV-2026-09-001",
       bulan: 9,
@@ -21,17 +21,16 @@ describe("Blast WA Tagihan RT", () => {
     };
 
     const wa = buildTagihanWa(data, "Pak RT Heru");
-    // PPN 11% dari 50000 = 5500. Total = 50000 + 5500 + 5000 = 60500
     expect(wa.noInvoice).toBe("INV-2026-09-001");
     expect(wa.nama).toBe("Pak RT Heru");
-    expect(wa.total).toBe(60500);
-    expect(wa.denda).toBe(5000);
+    expect(wa.total).toBe(50000); // 50000 (tidak ada denda & ppn)
+    expect(wa.denda).toBe(0);
     expect(wa.periode).toContain("September 2026");
     expect(wa.kodePelanggan).toBe("PEL-001");
     expect(wa.paket).toBe("Standar Rumah Tangga");
   });
 
-  it("templateReminder menghasilkan pesan pengingat tagihan dengan link bayar", () => {
+  it("templateReminder menghasilkan pesan pengingat tagihan dengan link bayar", async () => {
     const wa = buildTagihanWa(
       {
         noInvoice: "INV-2026-09-002",
@@ -53,7 +52,7 @@ describe("Blast WA Tagihan RT", () => {
     expect(pesan).toContain("bayar-tagihan?invoice=INV-2026-09-002");
   });
 
-  it("templateTunggakan menghasilkan pesan peringatan tunggakan tegas dengan info denda", () => {
+  it("templateTunggakan menghasilkan pesan peringatan tunggakan tegas dengan info denda", async () => {
     const wa = buildTagihanWa(
       {
         noInvoice: "INV-2026-08-099",

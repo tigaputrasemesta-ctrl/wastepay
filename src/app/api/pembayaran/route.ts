@@ -84,9 +84,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // Tunai dicatat langsung lunas (verifikasi admin saat mencatat).
-    // Non-tunai (transfer/ewallet/qris/va) menunggu verifikasi.
+    // Jika admin yang catat tunai -> langsung lunas.
+    // Jika petugas yang catat tunai -> pending (menunggu rekonsiliasi & setor bukti ke admin di kantor).
+    // Non-tunai selalu pending menunggu verifikasi.
     const metodeTunai = metode === "tunai";
+    const isAdmin = session?.role === "admin" || session?.role === "superadmin";
+    const autoApproveTunai = metodeTunai && isAdmin;
 
     const pembayaran = await prisma.$transaction(async (tx) => {
       const created = await tx.pembayaran.create({
@@ -97,17 +100,20 @@ export async function POST(request: Request) {
           metode,
           buktiBayar: buktiBayar || null,
           catatan: catatan || null,
-          status: metodeTunai ? "terverifikasi" : "pending",
+          status: autoApproveTunai ? "terverifikasi" : "pending",
           // Siapa yang mencatat/menerima — penting utk rekonsiliasi kas harian
-          verifiedById: session?.id ?? null,
+          verifiedById: autoApproveTunai ? (session?.id ?? null) : null, // hanya diverifikasi otomatis jika admin
         },
       });
 
-      if (metodeTunai) {
-        await tx.tagihan.update({
-          where: { id: parseInt(tagihanId) },
+      if (autoApproveTunai) {
+        const updateResult = await tx.tagihan.updateMany({
+          where: { id: parseInt(tagihanId), status: { notIn: ["lunas", "dibatalkan"] } },
           data: { status: "lunas", tanggalLunas: new Date() },
         });
+        if (updateResult.count === 0) {
+          throw new Error("Tagihan sudah lunas atau dibatalkan");
+        }
       }
 
       return created;
@@ -124,9 +130,9 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         ...pembayaran,
-        message: metodeTunai
+        message: autoApproveTunai
           ? "Pembayaran tunai dicatat dan tagihan lunas"
-          : "Pembayaran dicatat, menunggu verifikasi admin",
+          : "Pembayaran dicatat, menunggu verifikasi admin setelah rekonsiliasi setor kas",
       },
       { status: 201 }
     );

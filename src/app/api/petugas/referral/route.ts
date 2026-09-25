@@ -30,7 +30,7 @@ export async function GET(request: Request) {
     }
 
     // Ambil base URL aplikasi
-    const host = request.headers.get("host") || "o2whero.com";
+    const host = request.headers.get("host") || "upsheru.com";
     const proto = request.headers.get("x-forwarded-proto") || "https";
     const baseUrl = `${proto}://${host}`;
     const referralUrl = `${baseUrl}/daftar?ref=${encodeURIComponent(targetNama)}`;
