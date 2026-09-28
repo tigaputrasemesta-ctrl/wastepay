@@ -260,9 +260,9 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
         </div>
         {hasil.kodePelanggan && (
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 max-w-sm mx-auto text-center space-y-1">
-            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">ID Pelanggan (Nomor WhatsApp)</p>
+            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">ID Pelanggan (Nomor WhatsApp)</p>
             <p className="font-extrabold text-2xl text-slate-900 font-mono tracking-wide">{hasil.kodePelanggan}</p>
-            <p className="text-[11px] text-emerald-700 font-medium pt-1">
+            <p className="text-xs text-emerald-700 font-medium pt-1">
               Simpan nomor ini untuk pengecekan tagihan bulanan dan pelacakan truk sampah.
             </p>
           </div>
@@ -305,12 +305,12 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
 
       {/* --- SECTION 1: DATA DIRI --- */}
       <div className="bg-slate-50/50 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/60 space-y-4 sm:space-y-5">
-        <h3 className="text-sm font-black text-slate-800 flex items-center gap-3 border-b border-slate-200/60 pb-3 sm:pb-4 mb-3 sm:mb-4">
+        <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-3 border-b border-slate-200/60 pb-3 sm:pb-4 mb-3 sm:mb-4">
           <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px]">1</span>
           Informasi Kontak & Pemesan
         </h3>
       <div>
-        <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-nama">
+        <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-nama">
           Nama Lengkap / Pemilik Tempat <span className="text-rose-500">*</span>
         </label>
         <input
@@ -318,14 +318,14 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
           value={nama}
           onChange={(e) => setNama(e.target.value)}
           placeholder="Contoh: Bpk. Budi Santoso"
-          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
+          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
           required
           minLength={3}
         />
       </div>
 
       <div>
-        <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-telp">
+        <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-telp">
           Nomor WhatsApp Aktif <span className="text-rose-500">*</span>
         </label>
         <div className="flex flex-col sm:flex-row gap-2">
@@ -334,7 +334,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
             value={noTelepon}
             onChange={(e) => setNoTelepon(e.target.value)}
             placeholder="Contoh: 081234567890"
-            className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
+            className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
             required
             inputMode="tel"
           />
@@ -348,11 +348,11 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
           </button>
         </div>
         {cekWaPesan && (
-          <p className={`text-[11px] mt-1.5 font-medium ${cekWaPesan.terdaftar ? "text-rose-600" : "text-emerald-600"}`}>
+          <p className={`text-xs mt-1.5 font-medium ${cekWaPesan.terdaftar ? "text-rose-600" : "text-emerald-600"}`}>
             {cekWaPesan.text}
           </p>
         )}
-        <p className="text-[11px] text-slate-500 mt-1.5">
+        <p className="text-xs text-slate-500 mt-1.5">
           Nomor ini akan menjadi ID pelanggan Anda untuk cek tagihan, pelacakan live armada, dan notifikasi WhatsApp.
         </p>
       </div>
@@ -361,12 +361,12 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
 
       {/* --- SECTION 2: LAYANAN --- */}
       <div className="bg-slate-50/50 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/60 space-y-4 sm:space-y-5">
-        <h3 className="text-sm font-black text-slate-800 flex items-center gap-3 border-b border-slate-200/60 pb-3 sm:pb-4 mb-3 sm:mb-4">
+        <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-3 border-b border-slate-200/60 pb-3 sm:pb-4 mb-3 sm:mb-4">
           <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px]">2</span>
           Paket & Layanan Retribusi
         </h3>
       <div className="space-y-4">
-        <label className="block text-xs font-bold text-slate-700">
+        <label className="block text-sm font-bold text-slate-700">
           Pilihan Layanan <span className="text-rose-500">*</span>
         </label>
         
@@ -383,8 +383,8 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
               }}
             />
             <div className="flex-1">
-              <span className="block font-bold text-xs sm:text-sm text-slate-900">Tarif Standar</span>
-              <span className="block text-[11px] text-slate-500 mt-0.5">Berdasarkan jenis bangunan / rumah</span>
+              <span className="block font-bold text-sm text-slate-900">Tarif Standar</span>
+              <span className="block text-xs text-slate-500 mt-0.5">Berdasarkan jenis bangunan / rumah</span>
             </div>
           </label>
           
@@ -398,8 +398,8 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
                 onChange={() => setJenisLayanan('paket')}
               />
               <div className="flex-1">
-                <span className="block font-bold text-xs sm:text-sm text-slate-900">Paket Khusus</span>
-                <span className="block text-[11px] text-slate-500 mt-0.5">Layanan ritase & volume fleksibel</span>
+                <span className="block font-bold text-sm text-slate-900">Paket Khusus</span>
+                <span className="block text-xs text-slate-500 mt-0.5">Layanan ritase & volume fleksibel</span>
               </div>
             </label>
           )}
@@ -407,11 +407,11 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
 
         {jenisLayanan === 'kategori' ? (
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-kategori">
+            <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-kategori">
               Pilih Kategori Pelanggan
             </label>
             <div className="relative">
-              <select id="d-kategori" value={kategori} onChange={(e) => setKategori(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer">
+              <select id="d-kategori" value={kategori} onChange={(e) => setKategori(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer">
                 {(opsi?.kategoriTarif ?? []).map((k) => (
                   <option key={k.kategori} value={k.kategori}>
                     {k.label} — Rp {k.tarif.toLocaleString("id-ID")}/bulan
@@ -429,11 +429,11 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
           </div>
         ) : (
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-paket">
+            <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-paket">
               Pilih Paket Khusus
             </label>
             <div className="relative">
-              <select id="d-paket" value={paketId} onChange={(e) => setPaketId(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer">
+              <select id="d-paket" value={paketId} onChange={(e) => setPaketId(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer">
                 <option value="" disabled>— Pilih Paket —</option>
                 {(opsi?.paket ?? []).map((p) => (
                   <option key={p.id} value={p.id}>
@@ -453,7 +453,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
 
         {isPetugas && (
           <div className="mt-4 p-4 border border-emerald-200 bg-emerald-50 rounded-2xl">
-            <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-custom-tarif">
+            <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-custom-tarif">
               Tarif Custom (Opsional - Khusus Petugas)
             </label>
             <input
@@ -462,9 +462,9 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
               value={customTarif}
               onChange={(e) => setCustomTarif(e.target.value)}
               placeholder="Contoh: 50000"
-              className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
+              className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
             />
-            <p className="text-[11px] text-slate-500 mt-1.5">
+            <p className="text-xs text-slate-500 mt-1.5">
               Kosongkan jika menggunakan tarif standar/paket dari pilihan di atas.
             </p>
           </div>
@@ -475,13 +475,13 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
 
       {/* --- SECTION 3: ALAMAT --- */}
       <div className="bg-slate-50/50 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/60 space-y-4 sm:space-y-5">
-        <h3 className="text-sm font-black text-slate-800 flex items-center gap-3 border-b border-slate-200/60 pb-3 sm:pb-4 mb-3 sm:mb-4">
+        <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-3 border-b border-slate-200/60 pb-3 sm:pb-4 mb-3 sm:mb-4">
           <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px]">3</span>
           Detail Alamat Penjemputan
         </h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-kecamatan">
+          <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-kecamatan">
             Kecamatan <span className="text-rose-500">*</span>
           </label>
           <div className="relative">
@@ -493,7 +493,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
                 setKelurahan("");
                 setZonaId("");
               }}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer"
               required
             >
               <option value="">— Pilih Kecamatan —</option>
@@ -507,7 +507,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
           </div>
         </div>
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-kelurahan">
+          <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-kelurahan">
             Kelurahan <span className="text-rose-500">*</span>
           </label>
           <div className="relative">
@@ -518,7 +518,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
                 setKelurahan(e.target.value);
                 setZonaId("");
               }}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer disabled:opacity-50"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer disabled:opacity-50"
               required
               disabled={!kecamatan}
             >
@@ -535,7 +535,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
       </div>
 
       <div>
-        <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-alamat">
+        <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-alamat">
           Alamat Lengkap <span className="text-rose-500">*</span>
         </label>
         <textarea
@@ -543,7 +543,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
           value={alamat}
           onChange={(e) => setAlamat(e.target.value)}
           placeholder="Contoh: Jalan Margonda Raya No. 123"
-          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all min-h-[80px] resize-y placeholder:text-slate-400"
+          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all min-h-[80px] resize-y placeholder:text-slate-400"
           required
           minLength={10}
         />
@@ -551,7 +551,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-rt">
+          <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-rt">
             RT (Opsional)
           </label>
           <input
@@ -559,12 +559,12 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
             value={rt}
             onChange={(e) => setRt(e.target.value)}
             placeholder="001"
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
             inputMode="numeric"
           />
         </div>
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-rw">
+          <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-rw">
             RW (Opsional)
           </label>
           <input
@@ -572,14 +572,14 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
             value={rw}
             onChange={(e) => setRw(e.target.value)}
             placeholder="002"
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
             inputMode="numeric"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-patokan">
+        <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-patokan">
           Patokan Lokasi (Opsional)
         </label>
         <input
@@ -587,14 +587,14 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
           value={patokanLokasi}
           onChange={(e) => setPatokanLokasi(e.target.value)}
           placeholder="Contoh: Depan Warung Makmur"
-          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
+          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
         />
       </div>
 
       {isPetugas && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-tgl-penagihan">
+            <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-tgl-penagihan">
               Tanggal Penagihan (Khusus Petugas)
             </label>
             <input
@@ -605,11 +605,11 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
               value={tanggalPenagihanCustom}
               onChange={(e) => setTanggalPenagihanCustom(e.target.value)}
               placeholder="Contoh: 15"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-zona">
+            <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-zona">
               Zona Area Pickup (Khusus Petugas)
             </label>
             <div className="relative">
@@ -617,7 +617,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
                 id="d-zona"
                 value={zonaId}
                 onChange={(e) => setZonaId(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer"
               >
                 <option value="">— Pilih Zona —</option>
                 {zonaList.map((z) => (
@@ -638,12 +638,12 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
 
       {/* --- SECTION 4: VALIDASI LOKASI --- */}
       <div className="bg-slate-50/50 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/60 space-y-4 sm:space-y-5">
-        <h3 className="text-sm font-black text-slate-800 flex items-center gap-3 border-b border-slate-200/60 pb-3 sm:pb-4 mb-3 sm:mb-4">
+        <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-3 border-b border-slate-200/60 pb-3 sm:pb-4 mb-3 sm:mb-4">
           <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px]">4</span>
           Validasi Lapangan (Foto & GPS)
         </h3>
       <div>
-        <label className="block text-xs font-bold text-slate-700 mb-1.5">
+        <label className="block text-sm font-bold text-slate-700 mb-1.5">
           Foto Depan Rumah <span className="text-rose-500">*</span>
         </label>
         <input
@@ -698,7 +698,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
               type="button"
               onClick={() => kameraRef.current?.click()}
               disabled={fotoLoading}
-              className="w-full py-3.5 border border-slate-200 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 shadow-sm transition-all disabled:opacity-50"
+              className="w-full py-3.5 border border-slate-200 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 shadow-sm transition-all disabled:opacity-50"
             >
               <svg className="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -710,7 +710,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
               type="button"
               onClick={() => galeriRef.current?.click()}
               disabled={fotoLoading}
-              className="w-full py-3.5 border border-slate-200 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 shadow-sm transition-all disabled:opacity-50"
+              className="w-full py-3.5 border border-slate-200 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 shadow-sm transition-all disabled:opacity-50"
             >
               <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -719,13 +719,13 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
             </button>
           </div>
         )}
-        <p className="text-[11px] text-slate-500 mt-2">
+        <p className="text-xs text-slate-500 mt-2">
           Foto membantu petugas mengenali rumah Anda saat survei & jemput sampah. Foto diperkecil otomatis.
         </p>
       </div>
 
       <div>
-        <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-referal">
+        <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-referal">
           Kode / Petugas Referral (Opsional)
         </label>
         <input
@@ -736,15 +736,15 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
             setReferalFromUrl(false);
           }}
           placeholder="Contoh: Nama atau ID Petugas yang mengajak Anda"
-          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
+          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
         />
-        <p className="text-[11px] text-slate-500 mt-1">
+        <p className="text-xs text-slate-500 mt-1">
           Bila Anda diajak atau didaftarkan oleh petugas lapangan kami, pastikan nama petugas terisi agar tercatat secara akurat.
         </p>
       </div>
 
       <div>
-        <label className="block text-xs font-bold text-slate-700 mb-1.5">
+        <label className="block text-sm font-bold text-slate-700 mb-1.5">
           Titik Lokasi (GPS) <span className="text-rose-500">*</span>
         </label>
         <div className="space-y-3">
@@ -761,7 +761,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
             <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
               <div className="min-w-0">
                 <p className="font-extrabold text-xs">Titik Lokasi Tersimpan</p>
-                <p className="text-[11px] text-emerald-700 font-medium break-all mt-0.5">
+                <p className="text-xs text-emerald-700 font-medium break-all mt-0.5">
                   <span className="font-mono tabular-nums">{gpsData.lat.toFixed(6)}, {gpsData.lng.toFixed(6)}</span> · ±{Math.round(gpsData.acc)} m
                   {koordinatSumber === "exif_foto" ? " (dari foto)" : koordinatSumber === "manual" ? " (manual)" : ""}
                 </p>
@@ -785,7 +785,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
             </button>
           )}
         </div>
-        <p className="text-[11px] text-slate-500 mt-2">
+        <p className="text-xs text-slate-500 mt-2">
           Geser atau ketuk pada peta untuk memastikan titik tepat di depan gerbang / rumah Anda.
         </p>
       </div>
