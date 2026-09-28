@@ -47,10 +47,11 @@ export const dynamic = "force-dynamic";
 export default async function DaftarPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ ref?: string; referal?: string }>;
+  searchParams?: Promise<{ ref?: string; referal?: string; mode?: string }>;
 }) {
   const sp = searchParams ? await searchParams : undefined;
   const initialReferal = (sp?.ref || sp?.referal || "").trim();
+  const isPetugas = sp?.mode === "petugas";
 
   let tarifMin = 0;
   try {
@@ -137,7 +138,7 @@ export default async function DaftarPage({
 
         {/* Form Pendaftaran (7 cols) */}
         <div className="lg:col-span-7 bg-white rounded-[2rem] border border-slate-200 shadow-xl shadow-slate-200/50 p-6 sm:p-8">
-          <FormDaftar initialReferal={initialReferal} />
+          <FormDaftar initialReferal={initialReferal} isPetugas={isPetugas} />
         </div>
       </div>
     </div>

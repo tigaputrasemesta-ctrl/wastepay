@@ -21,7 +21,7 @@ type Zona = { id: number; nama: string };
 type Petugas = { id: number; nama: string };
 type Rute = { id: number; nama: string };
 
-export default function FormDaftar({ initialReferal = "" }: { initialReferal?: string }) {
+export default function FormDaftar({ initialReferal = "", isPetugas = false }: { initialReferal?: string; isPetugas?: boolean }) {
   const [nama, setNama] = useState("");
   const [noTelepon, setNoTelepon] = useState("");
   const [kategori, setKategori] = useState("");
@@ -142,10 +142,14 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
     }
   }
 
+  useEffect(() => {
+    setCekWaPesan(null);
+  }, [noTelepon]);
+
   async function handleCekNomor() {
     if (!noTelepon || noTelepon.length < 9) {
       setCekWaPesan({ text: "Masukkan nomor telepon yang valid.", terdaftar: false });
-      return;
+      return false;
     }
     setCekWaLoading(true);
     setCekWaPesan(null);
@@ -154,11 +158,14 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
       const data = await res.json();
       if (res.ok) {
         setCekWaPesan({ text: data.pesan, terdaftar: data.terdaftar });
+        return !data.terdaftar;
       } else {
         setCekWaPesan({ text: data.error || "Gagal mengecek nomor.", terdaftar: false });
+        return false;
       }
     } catch {
       setCekWaPesan({ text: "Koneksi bermasalah.", terdaftar: false });
+      return false;
     } finally {
       setCekWaLoading(false);
     }
@@ -166,6 +173,17 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (!cekWaPesan) {
+      const valid = await handleCekNomor();
+      if (!valid) {
+        setPesan("Silakan selesaikan pengecekan nomor WhatsApp terlebih dahulu.");
+        return;
+      }
+    } else if (cekWaPesan.terdaftar) {
+      setPesan("Nomor WhatsApp ini sudah terdaftar. Gunakan nomor lain.");
+      return;
+    }
+
     if (!fotoRumah) {
       setPesan("FOTO DEPAN RUMAH WAJIB DIISI.");
       return;
@@ -284,6 +302,12 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
         </div>
       )}
 
+      {/* --- SECTION 1: DATA DIRI --- */}
+      <div className="bg-slate-50/50 p-5 sm:p-6 rounded-3xl border border-slate-200/60 space-y-5">
+        <h3 className="text-sm font-black text-slate-800 flex items-center gap-3 border-b border-slate-200/60 pb-4 mb-4">
+          <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px]">1</span>
+          Informasi Kontak & Pemesan
+        </h3>
       <div>
         <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-nama">
           Nama Lengkap / Pemilik Tempat <span className="text-rose-500">*</span>
@@ -332,6 +356,14 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
         </p>
       </div>
 
+      </div>
+
+      {/* --- SECTION 2: LAYANAN --- */}
+      <div className="bg-slate-50/50 p-5 sm:p-6 rounded-3xl border border-slate-200/60 space-y-5">
+        <h3 className="text-sm font-black text-slate-800 flex items-center gap-3 border-b border-slate-200/60 pb-4 mb-4">
+          <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px]">2</span>
+          Paket & Layanan Retribusi
+        </h3>
       <div className="space-y-4">
         <label className="block text-xs font-bold text-slate-700">
           Pilihan Layanan <span className="text-rose-500">*</span>
@@ -418,24 +450,34 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
           </div>
         )}
 
-        <div className="mt-4 p-4 border border-emerald-200 bg-emerald-50 rounded-2xl">
-          <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-custom-tarif">
-            Tarif Custom (Opsional - Sementara)
-          </label>
-          <input
-            id="d-custom-tarif"
-            type="number"
-            value={customTarif}
-            onChange={(e) => setCustomTarif(e.target.value)}
-            placeholder="Contoh: 50000"
-            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
-          />
-          <p className="text-[11px] text-slate-500 mt-1.5">
-            Kosongkan jika menggunakan tarif standar/paket dari pilihan di atas.
-          </p>
-        </div>
+        {isPetugas && (
+          <div className="mt-4 p-4 border border-emerald-200 bg-emerald-50 rounded-2xl">
+            <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-custom-tarif">
+              Tarif Custom (Opsional - Khusus Petugas)
+            </label>
+            <input
+              id="d-custom-tarif"
+              type="number"
+              value={customTarif}
+              onChange={(e) => setCustomTarif(e.target.value)}
+              placeholder="Contoh: 50000"
+              className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
+            />
+            <p className="text-[11px] text-slate-500 mt-1.5">
+              Kosongkan jika menggunakan tarif standar/paket dari pilihan di atas.
+            </p>
+          </div>
+        )}
       </div>
 
+      </div>
+
+      {/* --- SECTION 3: ALAMAT --- */}
+      <div className="bg-slate-50/50 p-5 sm:p-6 rounded-3xl border border-slate-200/60 space-y-5">
+        <h3 className="text-sm font-black text-slate-800 flex items-center gap-3 border-b border-slate-200/60 pb-4 mb-4">
+          <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px]">3</span>
+          Detail Alamat Penjemputan
+        </h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-kecamatan">
@@ -544,49 +586,57 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-        <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-tgl-penagihan">
-            Tanggal Penagihan (Sementara)
-          </label>
-          <input
-            id="d-tgl-penagihan"
-            type="number"
-            min="1"
-            max="31"
-            value={tanggalPenagihanCustom}
-            onChange={(e) => setTanggalPenagihanCustom(e.target.value)}
-            placeholder="Contoh: 15"
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-zona">
-            Zona Area Pickup (Sementara)
-          </label>
-          <div className="relative">
-            <select
-              id="d-zona"
-              value={zonaId}
-              onChange={(e) => setZonaId(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer"
-            >
-              <option value="">— Pilih Zona —</option>
-              {(opsi?.zonas ?? []).map((z) => (
-                <option key={z.id} value={z.id}>
-                  {z.nama}
-                </option>
-              ))}
-            </select>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">▼</div>
+      {isPetugas && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-tgl-penagihan">
+              Tanggal Penagihan (Khusus Petugas)
+            </label>
+            <input
+              id="d-tgl-penagihan"
+              type="number"
+              min="1"
+              max="31"
+              value={tanggalPenagihanCustom}
+              onChange={(e) => setTanggalPenagihanCustom(e.target.value)}
+              placeholder="Contoh: 15"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-zona">
+              Zona Area Pickup (Khusus Petugas)
+            </label>
+            <div className="relative">
+              <select
+                id="d-zona"
+                value={zonaId}
+                onChange={(e) => setZonaId(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer"
+              >
+                <option value="">— Pilih Zona —</option>
+                {(opsi?.zonas ?? []).map((z) => (
+                  <option key={z.id} value={z.id}>
+                    {z.nama}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">▼</div>
+            </div>
           </div>
         </div>
+      )}
+
+
 
       </div>
 
-
-
+      {/* --- SECTION 4: VALIDASI LOKASI --- */}
+      <div className="bg-slate-50/50 p-5 sm:p-6 rounded-3xl border border-slate-200/60 space-y-5">
+        <h3 className="text-sm font-black text-slate-800 flex items-center gap-3 border-b border-slate-200/60 pb-4 mb-4">
+          <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px]">4</span>
+          Validasi Lapangan (Foto & GPS)
+        </h3>
       <div>
         <label className="block text-xs font-bold text-slate-700 mb-1.5">
           Foto Depan Rumah <span className="text-rose-500">*</span>
@@ -734,6 +784,7 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
           Geser atau ketuk pada peta untuk memastikan titik tepat di depan gerbang / rumah Anda.
         </p>
       </div>
+      </div>
 
       {/* Honeypot */}
       <div className="hidden" aria-hidden="true">
@@ -754,15 +805,17 @@ export default function FormDaftar({ initialReferal = "" }: { initialReferal?: s
         </div>
       )}
 
-      <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex gap-3 text-amber-900 shadow-sm">
-        <svg className="w-5 h-5 shrink-0 text-amber-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
-        <div>
-          <p className="font-extrabold text-sm mb-0.5">PENTING (Khusus Petugas Lapangan)</p>
-          <p className="text-xs font-medium opacity-90">Sebelum klik "Kirim", pastikan <strong className="font-bold">Foto Depan Rumah</strong> dan <strong className="font-bold">Titik Lokasi (GPS)</strong> sudah terisi dengan benar dan presisi!</p>
+      {isPetugas && (
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex gap-3 text-amber-900 shadow-sm">
+          <svg className="w-5 h-5 shrink-0 text-amber-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <div>
+            <p className="font-extrabold text-sm mb-0.5">PENTING (Khusus Petugas Lapangan)</p>
+            <p className="text-xs font-medium opacity-90">Sebelum klik "Kirim", pastikan <strong className="font-bold">Foto Depan Rumah</strong> dan <strong className="font-bold">Titik Lokasi (GPS)</strong> sudah terisi dengan benar dan presisi!</p>
+          </div>
         </div>
-      </div>
+      )}
 
       <button
         type="submit"
