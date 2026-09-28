@@ -137,7 +137,7 @@ export default async function DaftarPage({
         </div>
 
         {/* Form Pendaftaran (7 cols) */}
-        <div className="lg:col-span-7 bg-white rounded-[2rem] border border-slate-200 shadow-xl shadow-slate-200/50 p-6 sm:p-8">
+        <div className="lg:col-span-7">
           <FormDaftar initialReferal={initialReferal} isPetugas={isPetugas} />
         </div>
       </div>

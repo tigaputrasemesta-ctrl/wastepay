@@ -272,8 +272,8 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
   }
 
   return (
-    <form onSubmit={submit} className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-sm space-y-6">
-      <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+    <form onSubmit={submit} className="bg-white rounded-[2rem] border border-slate-200/80 p-5 sm:p-8 shadow-xl shadow-slate-200/50 space-y-6 sm:space-y-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 gap-3 sm:gap-0">
         <div>
           <h2 className="font-extrabold text-lg text-slate-900">Formulir Pendaftaran</h2>
           <p className="text-xs text-slate-500">Isi data lengkap lokasi penjemputan sampah Anda</p>
@@ -304,8 +304,8 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
       )}
 
       {/* --- SECTION 1: DATA DIRI --- */}
-      <div className="bg-slate-50/50 p-5 sm:p-6 rounded-3xl border border-slate-200/60 space-y-5">
-        <h3 className="text-sm font-black text-slate-800 flex items-center gap-3 border-b border-slate-200/60 pb-4 mb-4">
+      <div className="bg-slate-50/50 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/60 space-y-4 sm:space-y-5">
+        <h3 className="text-sm font-black text-slate-800 flex items-center gap-3 border-b border-slate-200/60 pb-3 sm:pb-4 mb-3 sm:mb-4">
           <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px]">1</span>
           Informasi Kontak & Pemesan
         </h3>
@@ -328,7 +328,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
         <label className="block text-xs font-bold text-slate-700 mb-1.5" htmlFor="d-telp">
           Nomor WhatsApp Aktif <span className="text-rose-500">*</span>
         </label>
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <input
             id="d-telp"
             value={noTelepon}
@@ -360,8 +360,8 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
       </div>
 
       {/* --- SECTION 2: LAYANAN --- */}
-      <div className="bg-slate-50/50 p-5 sm:p-6 rounded-3xl border border-slate-200/60 space-y-5">
-        <h3 className="text-sm font-black text-slate-800 flex items-center gap-3 border-b border-slate-200/60 pb-4 mb-4">
+      <div className="bg-slate-50/50 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/60 space-y-4 sm:space-y-5">
+        <h3 className="text-sm font-black text-slate-800 flex items-center gap-3 border-b border-slate-200/60 pb-3 sm:pb-4 mb-3 sm:mb-4">
           <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px]">2</span>
           Paket & Layanan Retribusi
         </h3>
@@ -474,8 +474,8 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
       </div>
 
       {/* --- SECTION 3: ALAMAT --- */}
-      <div className="bg-slate-50/50 p-5 sm:p-6 rounded-3xl border border-slate-200/60 space-y-5">
-        <h3 className="text-sm font-black text-slate-800 flex items-center gap-3 border-b border-slate-200/60 pb-4 mb-4">
+      <div className="bg-slate-50/50 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/60 space-y-4 sm:space-y-5">
+        <h3 className="text-sm font-black text-slate-800 flex items-center gap-3 border-b border-slate-200/60 pb-3 sm:pb-4 mb-3 sm:mb-4">
           <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px]">3</span>
           Detail Alamat Penjemputan
         </h3>
@@ -637,8 +637,8 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
       </div>
 
       {/* --- SECTION 4: VALIDASI LOKASI --- */}
-      <div className="bg-slate-50/50 p-5 sm:p-6 rounded-3xl border border-slate-200/60 space-y-5">
-        <h3 className="text-sm font-black text-slate-800 flex items-center gap-3 border-b border-slate-200/60 pb-4 mb-4">
+      <div className="bg-slate-50/50 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/60 space-y-4 sm:space-y-5">
+        <h3 className="text-sm font-black text-slate-800 flex items-center gap-3 border-b border-slate-200/60 pb-3 sm:pb-4 mb-3 sm:mb-4">
           <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-[10px]">4</span>
           Validasi Lapangan (Foto & GPS)
         </h3>
@@ -662,7 +662,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
           onChange={(e) => handleFoto(e.target.files?.[0])}
         />
         {fotoRumah ? (
-          <div className="p-3.5 rounded-2xl border border-slate-200 bg-slate-50 flex gap-4 items-start">
+          <div className="p-3.5 rounded-2xl border border-slate-200 bg-slate-50 flex flex-col sm:flex-row gap-4 items-center sm:items-start text-center sm:text-left">
             <Image
               src={fotoRumah}
               alt="Foto depan rumah"
@@ -673,7 +673,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
             />
             <div className="flex-1 space-y-2">
               <p className="text-xs font-bold text-emerald-700">✓ Foto Tersimpan</p>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap justify-center sm:justify-start gap-2">
                 <button
                   type="button"
                   onClick={() => kameraRef.current?.click()}
@@ -758,7 +758,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
             className="h-64 rounded-2xl border border-slate-200 overflow-hidden"
           />
           {gpsData ? (
-            <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex justify-between items-center gap-3">
+            <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
               <div className="min-w-0">
                 <p className="font-extrabold text-xs">Titik Lokasi Tersimpan</p>
                 <p className="text-[11px] text-emerald-700 font-medium break-all mt-0.5">
