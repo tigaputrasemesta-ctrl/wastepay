@@ -17,7 +17,7 @@ const PetaLokasi = dynamic(() => import("@/components/PetaLokasi"), {
 type WilayahKec = { kecamatan: string; kelurahan: string[] };
 type Paket = { id: number; nama: string; harga: number; deskripsi: string | null };
 type KategoriTarif = { kategori: string; label: string; tarif: number; deskripsi: string | null };
-type Zona = { id: number; nama: string };
+type Zona = { id: number; nama: string; kelurahan?: { nama: string } };
 type Petugas = { id: number; nama: string };
 type Rute = { id: number; nama: string };
 
@@ -93,6 +93,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
 
   const kelurahanList = opsi?.wilayah.find((w) => w.kecamatan === kecamatan)?.kelurahan ?? [];
   const tarifKategori = opsi?.kategoriTarif.find((k) => k.kategori === kategori);
+  const zonaList = (opsi?.zonas ?? []).filter((z) => !kelurahan || z.kelurahan?.nama === kelurahan);
 
   function getGps() {
     if (!navigator.geolocation) {
@@ -490,6 +491,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
               onChange={(e) => {
                 setKecamatan(e.target.value);
                 setKelurahan("");
+                setZonaId("");
               }}
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer"
               required
@@ -512,7 +514,10 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
             <select
               id="d-kelurahan"
               value={kelurahan}
-              onChange={(e) => setKelurahan(e.target.value)}
+              onChange={(e) => {
+                setKelurahan(e.target.value);
+                setZonaId("");
+              }}
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer disabled:opacity-50"
               required
               disabled={!kecamatan}
@@ -615,7 +620,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer"
               >
                 <option value="">— Pilih Zona —</option>
-                {(opsi?.zonas ?? []).map((z) => (
+                {zonaList.map((z) => (
                   <option key={z.id} value={z.id}>
                     {z.nama}
                   </option>

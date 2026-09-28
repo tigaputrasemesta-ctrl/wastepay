@@ -26,7 +26,7 @@ export async function GET() {
     }),
     prisma.zona.findMany({
       where: { deletedAt: null },
-      select: { id: true, nama: true },
+      select: { id: true, nama: true, kelurahan: { select: { nama: true } } },
       orderBy: { nama: "asc" },
     }),
     prisma.petugas.findMany({
