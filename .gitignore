@@ -82,3 +82,4 @@ next-env.d.ts
 .mcp.json
 MCP-SETUP.md
 scripts/mcp-probe.mjs
+scratch/

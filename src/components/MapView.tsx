@@ -223,54 +223,40 @@ function formatWaktuRelatif(iso: string): string {
   return `${Math.floor(dt / 86400000)} hari lalu`;
 }
 
-// ── Vector SVGs for Markers (Samsara / LoadSwift Standard) ──
-const SVG_TRUCK_DUMP = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-5l-3-4h-5v10Z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>`;
+// ── Vector SVGs for Markers (LoadSwift GIS Platform Standard) ──
+const SVG_TRUCK_DUMP = `<svg viewBox="0 0 24 24" width="20" height="20" fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd"><path d="M 3 6 C 2.45 6 2 6.45 2 7 L 2 14.5 C 2 15.05 2.45 15.5 3 15.5 L 4.2 15.5 C 4.6 14.3 5.7 13.5 7 13.5 C 8.3 13.5 9.4 14.3 9.8 15.5 L 14.2 15.5 C 14.6 14.3 15.7 13.5 17 13.5 C 18.3 13.5 19.4 14.3 19.8 15.5 L 21 15.5 C 21.55 15.5 22 15.05 22 14.5 L 22 11.5 C 22 10.8 21.6 10.2 21 9.8 L 18.8 8.2 C 18.3 7.8 17.7 7.5 17 7.5 L 16 7.5 L 16 7 C 16 6.45 15.55 6 15 6 Z M 4.2 8 C 3.8 8 3.5 8.3 3.5 8.7 L 3.5 12.3 C 3.5 12.7 3.8 13 4.2 13 L 13.8 13 C 14.2 13 14.5 12.7 14.5 12.3 L 14.5 8.7 C 14.5 8.3 14.2 8 13.8 8 Z M 16.5 9.2 C 16.5 8.8 16.8 8.5 17.2 8.5 L 18.2 8.5 C 18.6 8.5 19 8.7 19.3 9 L 20.3 10.2 C 20.6 10.5 20.8 10.9 20.8 11.3 L 20.8 12.2 C 20.8 12.6 20.5 13 20 13 L 16.5 13 Z" /><path d="M 7 14.5 A 2.2 2.2 0 1 0 7 18.9 A 2.2 2.2 0 0 0 7 14.5 Z M 7 15.8 A 0.9 0.9 0 1 1 7 17.6 A 0.9 0.9 0 0 1 7 15.8 Z" /><path d="M 17 14.5 A 2.2 2.2 0 1 0 17 18.9 A 2.2 2.2 0 0 0 17 14.5 Z M 17 15.8 A 0.9 0.9 0 1 1 17 17.6 A 0.9 0.9 0 0 1 17 15.8 Z" /></svg>`;
 
-const SVG_TRUCK_PICKUP = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="5" width="14" height="10" rx="1"/><path d="M15 9h4l3 3v3h-7V9Z"/><circle cx="5.5" cy="17.5" r="2.5"/><circle cx="18.5" cy="17.5" r="2.5"/></svg>`;
+const SVG_TRUCK_PICKUP = `<svg viewBox="0 0 24 24" width="20" height="20" fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd"><path d="M 3 10 C 2.45 10 2 10.45 2 11 L 2 14.5 C 2 15.05 2.45 15.5 3 15.5 L 4.2 15.5 C 4.6 14.3 5.7 13.5 7 13.5 C 8.3 13.5 9.4 14.3 9.8 15.5 L 13 15.5 L 13 7.5 C 13 6.95 13.45 6.5 14 6.5 L 17 6.5 C 17.7 6.5 18.3 6.8 18.8 7.2 L 21 8.8 C 21.6 9.2 22 9.8 22 10.5 L 22 14.5 C 22 15.05 21.55 15.5 21 15.5 L 19.8 15.5 C 19.4 14.3 18.3 13.5 17 13.5 C 15.7 13.5 14.6 14.3 14.2 15.5 L 13 15.5 L 13 11 L 3 11 Z M 14.5 8 L 17 8 C 17.3 8 17.6 8.1 17.8 8.3 L 19.8 9.8 C 20.1 10 20.3 10.4 20.3 10.8 L 20.3 12.3 C 20.3 12.7 20 13 19.5 13 L 14.5 13 Z M 3.5 12 L 11.5 12 L 11.5 13.5 L 3.5 13.5 Z" /><path d="M 7 14.5 A 2.2 2.2 0 1 0 7 18.9 A 2.2 2.2 0 0 0 7 14.5 Z M 7 15.8 A 0.9 0.9 0 1 1 7 17.6 A 0.9 0.9 0 0 1 7 15.8 Z" /><path d="M 17 14.5 A 2.2 2.2 0 1 0 17 18.9 A 2.2 2.2 0 0 0 17 14.5 Z M 17 15.8 A 0.9 0.9 0 1 1 17 17.6 A 0.9 0.9 0 0 1 17 15.8 Z" /></svg>`;
 
-const SVG_RECYCLE = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 19H4.815a1.83 1.83 0 0 1-1.57-.881 1.785 1.785 0 0 1-.004-1.784L7.196 9.5"/><path d="M11 19h8.2a1.8 1.8 0 0 0 1.571-.875 1.8 1.8 0 0 0 0-1.788L16.8 9.5"/><path d="m14 5.5-2.2 4-2.2-4a1.8 1.8 0 0 1 1.56-2.7h1.28A1.8 1.8 0 0 1 14 5.5Z"/><path d="m3 14 2 2 2-2"/><path d="m19 14 2-2-2-2"/><path d="m9 3 2 2-2 2"/></svg>`;
+const SVG_RECYCLE = `<svg viewBox="0 0 24 24" width="18" height="18" fill="#ffffff"><path d="M12 2L2 7.5v12a1.5 1.5 0 0 0 1.5 1.5h17a1.5 1.5 0 0 0 1.5-1.5v-12L12 2zm0 2.8l7 3.85V19H5V8.65l7-3.85z"/><path d="M8.5 12h7a1 1 0 0 1 1 1v6h-9v-6a1 1 0 0 1 1-1z"/></svg>`;
 
-const SVG_OFFICER = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+const SVG_OFFICER = `<svg viewBox="0 0 24 24" width="18" height="18" fill="#ffffff"><path d="M12 2L4 5v6c0 5.5 3.8 10.7 8 11.9 4.2-1.2 8-6.4 8-11.9V5l-8-3zm0 4.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zm4 9.5H8v-.8c0-1.8 2.7-2.7 4-2.7s4 .9 4 2.7v.8z"/></svg>`;
 
-const SVG_ALERT = `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+const SVG_ALERT = `<svg viewBox="0 0 24 24" width="17" height="17" fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd"><path d="M 12 3 C 12.6 3 13.1 3.3 13.4 3.9 L 21.6 18.5 C 21.9 19.1 21.9 19.8 21.5 20.3 C 21.2 20.8 20.6 21.1 20 21.1 L 4 21.1 C 3.4 21.1 2.8 20.8 2.5 20.3 C 2.1 19.8 2.1 19.1 2.4 18.5 L 10.6 3.9 C 10.9 3.3 11.4 3 12 3 Z M 12 8 C 11.4 8 11 8.4 11 9 L 11 14 C 11 14.6 11.4 15 12 15 C 12.6 15 13 14.6 13 14 L 13 9 C 13 8.4 12.6 8 12 8 Z M 12 16.5 C 11.3 16.5 10.8 17 10.8 17.7 C 10.8 18.4 11.3 19 12 19 C 12.7 19 13.2 18.4 13.2 17.7 C 13.2 17 12.7 16.5 12 16.5 Z" /></svg>`;
 
-function renderFleetPill({
+function renderLoadswiftPuck({
   theme,
   iconSvg,
-  primaryText,
-  secondaryText,
-  statusLabel,
+  callsign,
   isOnline = false,
   isSelected = false,
 }: {
   theme: "dump" | "pickup" | "hub" | "officer" | "alert";
   iconSvg: string;
-  primaryText: string;
-  secondaryText: string;
-  statusLabel: string;
+  callsign: string;
   isOnline?: boolean;
   isSelected?: boolean;
 }) {
-  const pulseHtml = isOnline ? `<div class="fleet-pill-pulse"></div>` : "";
-  const statusClass = isOnline ? "online" : "standby";
+  const pulseHtml = isOnline ? `<div class="loadswift-puck-pulse"></div>` : "";
 
-  return `<div class="fleet-pill-marker ${theme} ${statusClass} ${isSelected ? "selected" : ""}">
+  return `<div class="loadswift-puck-marker ${theme} ${isSelected ? "selected" : ""}">
     ${pulseHtml}
-    <div class="fleet-pill-body">
-      <div class="fleet-pill-icon">
-        ${iconSvg}
-      </div>
-      <div class="fleet-pill-content">
-        <div class="fleet-pill-primary" title="${esc(primaryText)}">${esc(primaryText)}</div>
-        <div class="fleet-pill-secondary">
-          <span class="status-dot"></span>
-          <span class="status-text">${esc(secondaryText)}</span>
-        </div>
-      </div>
-      <div class="fleet-pill-tag">${esc(statusLabel)}</div>
+    <div class="loadswift-puck-disc">
+      ${iconSvg}
     </div>
-    <div class="fleet-pill-caret"></div>
-    <div class="fleet-pill-anchor-dot"></div>
+    <div class="loadswift-puck-stem"></div>
+    <div class="loadswift-puck-anchor"></div>
+    <div class="loadswift-puck-tag">${esc(callsign)}</div>
   </div>`;
 }
 
@@ -302,23 +288,22 @@ function buatIconRute(warna: string, label: string) {
 }
 
 function buatIconKomplain(warna: string, aktif: boolean, isBaru: boolean = false, k?: KomplainPeta) {
-  const primaryText = isBaru ? "PENGADUAN BARU" : "PENGADUAN AKTIF";
-  const secondaryText = k?.pelanggan?.nama || "Laporan Warga";
+  const callsign = isBaru
+    ? "ADUAN BARU · URGENT"
+    : `ADUAN #${k?.id ?? ""} · PROSES`;
 
   return L.divIcon({
     className: "",
-    html: renderFleetPill({
+    html: renderLoadswiftPuck({
       theme: "alert",
       iconSvg: SVG_ALERT,
-      primaryText,
-      secondaryText,
-      statusLabel: isBaru ? "URGENT" : "PROSES",
+      callsign,
       isOnline: true,
       isSelected: aktif,
     }),
-    iconSize: [164, 48],
-    iconAnchor: [82, 48],
-    popupAnchor: [0, -50],
+    iconSize: [36, 42],
+    iconAnchor: [18, 42],
+    popupAnchor: [0, -44],
   });
 }
 
@@ -425,9 +410,7 @@ function PinsKendaraan({
         const iconSvg = isDump ? SVG_TRUCK_DUMP : SVG_TRUCK_PICKUP;
         const online = Date.now() - new Date(k.updatedAt).getTime() < 15 * 60 * 1000;
         const isSelected = selectedKendaraanId === k.kendaraanId;
-        const primaryText = k.platNomor || k.nama;
-        const secondaryText = k.pengemudi ? `Supir: ${k.pengemudi}` : (isDump ? "Dump Truck" : "Pickup Feeder");
-        const statusLabel = online ? "AKTIF" : "PARKIR";
+        const callsign = `${k.platNomor ? k.platNomor.toUpperCase() : k.nama.toUpperCase()} · ${online ? "AKTIF" : "PARKIR"}`;
 
         return (
           <Marker
@@ -438,18 +421,16 @@ function PinsKendaraan({
             }}
             icon={L.divIcon({
               className: "",
-              html: renderFleetPill({
+              html: renderLoadswiftPuck({
                 theme: isDump ? "dump" : "pickup",
                 iconSvg,
-                primaryText,
-                secondaryText,
-                statusLabel,
+                callsign,
                 isOnline: online,
                 isSelected,
               }),
-              iconSize: [164, 48],
-              iconAnchor: [82, 48],
-              popupAnchor: [0, -50],
+              iconSize: [36, 42],
+              iconAnchor: [18, 42],
+              popupAnchor: [0, -44],
             })}
           >
             <Tooltip sticky>
@@ -484,8 +465,7 @@ function PinsTransit({
     <>
       {transit.filter((t) => t.aktif).map((t) => {
         const isSelected = selectedTransitId === t.id;
-        const primaryText = t.nama;
-        const secondaryText = t.alamat || t.catatan || "Depot Transit TPS";
+        const callsign = `${t.nama.toUpperCase()} · TPS 3R`;
 
         return (
           <Marker
@@ -496,18 +476,16 @@ function PinsTransit({
             }}
             icon={L.divIcon({
               className: "",
-              html: renderFleetPill({
+              html: renderLoadswiftPuck({
                 theme: "hub",
                 iconSvg: SVG_RECYCLE,
-                primaryText,
-                secondaryText,
-                statusLabel: "DEPOT",
+                callsign,
                 isOnline: true,
                 isSelected,
               }),
-              iconSize: [164, 48],
-              iconAnchor: [82, 48],
-              popupAnchor: [0, -50],
+              iconSize: [36, 42],
+              iconAnchor: [18, 42],
+              popupAnchor: [0, -44],
             })}
           >
             <Tooltip sticky>
@@ -538,9 +516,8 @@ function PinsPetugas({
       {petugas.map((p) => {
         const online = Date.now() - new Date(p.updatedAt).getTime() < 15 * 60 * 1000;
         const isSelected = selectedPetugasId === p.petugasId;
-        const primaryText = p.nama;
+        const callsign = `${p.nama.toUpperCase()} · ${online ? "ONLINE" : "OFFLINE"}`;
         const jabat = (p.jabatan || "").split(",").filter(Boolean);
-        const roleText = jabat.length > 0 ? jabat[0].toUpperCase() : "LAPANGAN";
 
         return (
           <Marker
@@ -551,18 +528,16 @@ function PinsPetugas({
             }}
             icon={L.divIcon({
               className: "",
-              html: renderFleetPill({
+              html: renderLoadswiftPuck({
                 theme: "officer",
                 iconSvg: SVG_OFFICER,
-                primaryText,
-                secondaryText: `Petugas ${roleText}`,
-                statusLabel: online ? "ONLINE" : "OFFLINE",
+                callsign,
                 isOnline: online,
                 isSelected,
               }),
-              iconSize: [164, 48],
-              iconAnchor: [82, 48],
-              popupAnchor: [0, -50],
+              iconSize: [36, 42],
+              iconAnchor: [18, 42],
+              popupAnchor: [0, -44],
             })}
           >
             <Tooltip sticky>

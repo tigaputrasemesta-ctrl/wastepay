@@ -92,304 +92,245 @@
   box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
 }
 
-/* ── Fleet Telemetry Pill System (Samsara / Uber Freight Standard) ── */
-.fleet-pill-marker {
+/* ── LoadSwift GIS Circular Puck System (Behance Logistics Standard) ── */
+.loadswift-puck-marker {
   position: relative;
-  width: 164px;
-  height: 48px;
+  width: 36px;
+  height: 42px;
   cursor: pointer;
-  transform-origin: bottom center;
+  transform-origin: 18px 42px;
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   user-select: none;
 }
-.fleet-pill-marker:hover {
-  transform: scale(1.06);
+.loadswift-puck-marker:hover {
+  transform: scale(1.15);
   z-index: 1000 !important;
 }
-.fleet-pill-marker.selected {
-  transform: scale(1.1);
+.loadswift-puck-marker.selected {
+  transform: scale(1.22);
   z-index: 1001 !important;
 }
 
-.fleet-pill-body {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 4px 7px 4px 5px;
-  background: rgba(15, 23, 42, 0.94);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1.5px solid rgba(255, 255, 255, 0.16);
-  border-radius: 9999px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.48), 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: all 0.2s ease;
-}
-
-.fleet-pill-icon {
-  width: 26px;
-  height: 26px;
-  border-radius: 9999px;
+/* 34px Circular Disc with Dark Theme & High Contrast Inner Vector */
+.loadswift-puck-disc {
+  position: absolute;
+  top: 0;
+  left: 1px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #0f172a;
+  border: 2px solid #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.35);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  transition: all 0.2s ease;
+  z-index: 2;
+  color: #ffffff;
 }
 
-.fleet-pill-content {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  flex: 1;
-  line-height: 1.15;
-}
-
-.fleet-pill-primary {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 10.5px;
-  font-weight: 800;
-  color: #f8fafc;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  letter-spacing: -0.2px;
-}
-
-.fleet-pill-secondary {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
-  font-size: 8.5px;
-  font-weight: 600;
-  color: #cbd5e1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.fleet-pill-secondary .status-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.fleet-pill-tag {
-  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
-  font-size: 7.5px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  padding: 2px 5px;
-  border-radius: 9999px;
-  white-space: nowrap;
-  line-height: 1;
-}
-
-/* Dump Truck theme (Amber) */
-.fleet-pill-marker.dump .fleet-pill-body {
-  border-color: rgba(245, 158, 11, 0.7);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), 0 0 10px rgba(245, 158, 11, 0.22);
-}
-.fleet-pill-marker.dump.selected .fleet-pill-body {
+/* Theme Rings */
+.loadswift-puck-marker.dump .loadswift-puck-disc {
   border-color: #f59e0b;
-  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.5), 0 0 0 3px rgba(245, 158, 11, 0.25);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), 0 0 8px rgba(245, 158, 11, 0.35);
 }
-.fleet-pill-marker.dump .fleet-pill-icon {
-  background: linear-gradient(135deg, #b45309 0%, #f59e0b 100%);
-  color: #ffffff;
-}
-.fleet-pill-marker.dump .fleet-pill-tag {
-  background: rgba(245, 158, 11, 0.15);
-  border: 1px solid rgba(245, 158, 11, 0.45);
-  color: #fbbf24;
-}
-
-/* Pickup / Feeder theme (Emerald) */
-.fleet-pill-marker.pickup .fleet-pill-body {
-  border-color: rgba(16, 185, 129, 0.7);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), 0 0 10px rgba(16, 185, 129, 0.22);
-}
-.fleet-pill-marker.pickup.selected .fleet-pill-body {
+.loadswift-puck-marker.pickup .loadswift-puck-disc {
   border-color: #10b981;
-  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.5), 0 0 0 3px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), 0 0 8px rgba(16, 185, 129, 0.35);
 }
-.fleet-pill-marker.pickup .fleet-pill-icon {
-  background: linear-gradient(135deg, #047857 0%, #10b981 100%);
-  color: #ffffff;
-}
-.fleet-pill-marker.pickup .fleet-pill-tag {
-  background: rgba(16, 185, 129, 0.15);
-  border: 1px solid rgba(16, 185, 129, 0.45);
-  color: #34d399;
-}
-
-/* Hub / TPS theme (Violet) */
-.fleet-pill-marker.hub .fleet-pill-body {
-  border-color: rgba(129, 140, 248, 0.7);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), 0 0 10px rgba(99, 102, 241, 0.25);
-}
-.fleet-pill-marker.hub.selected .fleet-pill-body {
+.loadswift-puck-marker.hub .loadswift-puck-disc {
   border-color: #818cf8;
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.5), 0 0 0 3px rgba(99, 102, 241, 0.25);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), 0 0 8px rgba(129, 140, 248, 0.35);
 }
-.fleet-pill-marker.hub .fleet-pill-icon {
-  background: linear-gradient(135deg, #4338ca 0%, #6366f1 100%);
-  color: #ffffff;
-}
-.fleet-pill-marker.hub .fleet-pill-tag {
-  background: rgba(99, 102, 241, 0.15);
-  border: 1px solid rgba(99, 102, 241, 0.45);
-  color: #a5b4fc;
-}
-
-/* Officer theme (Sky / Teal) */
-.fleet-pill-marker.officer .fleet-pill-body {
-  border-color: rgba(14, 165, 233, 0.7);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), 0 0 10px rgba(14, 165, 233, 0.22);
-}
-.fleet-pill-marker.officer.selected .fleet-pill-body {
+.loadswift-puck-marker.officer .loadswift-puck-disc {
   border-color: #0ea5e9;
-  box-shadow: 0 8px 24px rgba(14, 165, 233, 0.5), 0 0 0 3px rgba(14, 165, 233, 0.25);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), 0 0 8px rgba(14, 165, 233, 0.35);
 }
-.fleet-pill-marker.officer .fleet-pill-icon {
-  background: linear-gradient(135deg, #0369a1 0%, #0ea5e9 100%);
-  color: #ffffff;
-}
-.fleet-pill-marker.officer .fleet-pill-tag {
-  background: rgba(14, 165, 233, 0.15);
-  border: 1px solid rgba(14, 165, 233, 0.45);
-  color: #7dd3fc;
+.loadswift-puck-marker.alert .loadswift-puck-disc {
+  background: #dc2626;
+  border-color: #ffffff;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.5), 0 0 10px rgba(239, 68, 68, 0.45);
 }
 
-/* Alert / Komplain theme (Rose) */
-.fleet-pill-marker.alert .fleet-pill-body {
-  border-color: rgba(239, 68, 68, 0.8);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), 0 0 12px rgba(239, 68, 68, 0.35);
-}
-.fleet-pill-marker.alert.selected .fleet-pill-body {
-  border-color: #ef4444;
-  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.55), 0 0 0 3px rgba(239, 68, 68, 0.25);
-}
-.fleet-pill-marker.alert .fleet-pill-icon {
-  background: linear-gradient(135deg, #b91c1c 0%, #ef4444 100%);
-  color: #ffffff;
-}
-.fleet-pill-marker.alert .fleet-pill-tag {
-  background: rgba(239, 68, 68, 0.2);
-  border: 1px solid rgba(239, 68, 68, 0.5);
-  color: #fca5a5;
-  animation: badge-pulse-red 1.5s infinite;
+/* Selected state: Electric Blue (Behance Slide 03 Standard) */
+.loadswift-puck-marker.selected .loadswift-puck-disc {
+  background: #2563eb !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.45), 0 6px 20px rgba(37, 99, 235, 0.6) !important;
 }
 
-@keyframes badge-pulse-red {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.65; }
-}
-
-/* Online vs Standby Status */
-.fleet-pill-marker.online .status-dot {
-  background-color: #10b981;
-  box-shadow: 0 0 6px #10b981;
-}
-.fleet-pill-marker.standby .status-dot {
-  background-color: #64748b;
-}
-
-/* Caret Arrow beneath pill */
-.fleet-pill-caret {
+/* Micro Stem & Anchor Point on the Road */
+.loadswift-puck-stem {
   position: absolute;
-  bottom: 6px;
+  bottom: 4px;
   left: 50%;
   transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 6px solid rgba(15, 23, 42, 0.94);
-  z-index: 2;
+  width: 2px;
+  height: 5px;
+  background: #0f172a;
+  z-index: 1;
 }
-
-/* Anchor dot that sits right on the street coordinate */
-.fleet-pill-anchor-dot {
+.loadswift-puck-anchor {
   position: absolute;
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background: #ffffff;
-  border: 1.5px solid #0f172a;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   z-index: 3;
 }
-.fleet-pill-marker.dump .fleet-pill-anchor-dot { background: #f59e0b; }
-.fleet-pill-marker.pickup .fleet-pill-anchor-dot { background: #10b981; }
-.fleet-pill-marker.hub .fleet-pill-anchor-dot { background: #818cf8; }
-.fleet-pill-marker.officer .fleet-pill-anchor-dot { background: #0ea5e9; }
-.fleet-pill-marker.alert .fleet-pill-anchor-dot { background: #ef4444; }
+.loadswift-puck-marker.alert .loadswift-puck-stem {
+  background: #dc2626;
+}
+.loadswift-puck-marker.alert .loadswift-puck-anchor {
+  background: #dc2626;
+  border-color: #ffffff;
+  box-shadow: 0 0 6px rgba(220, 38, 38, 0.7);
+}
+.loadswift-puck-marker.selected .loadswift-puck-stem {
+  background: #2563eb;
+}
+.loadswift-puck-marker.selected .loadswift-puck-anchor {
+  background: #2563eb;
+  border-color: #ffffff;
+  box-shadow: 0 0 6px #2563eb;
+}
 
-/* Pulse wave for moving units */
-.fleet-pill-pulse {
+/* Callsign Micro-Tag (Floats above puck on hover / selected) */
+.loadswift-puck-tag {
   position: absolute;
-  bottom: 12px;
+  bottom: 42px;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #f8fafc;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  padding: 2.5px 8px;
+  border-radius: 9999px;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 10;
+}
+.loadswift-puck-tag::after {
+  content: "";
+  position: absolute;
+  top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  width: 154px;
-  height: 34px;
-  border-radius: 9999px;
-  pointer-events: none;
-  z-index: 1;
-  animation: fleet-pulse 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  border-width: 3.5px;
+  border-style: solid;
+  border-color: rgba(15, 23, 42, 0.95) transparent transparent transparent;
 }
-@keyframes fleet-pulse {
+.loadswift-puck-marker:hover .loadswift-puck-tag,
+.loadswift-puck-marker.selected .loadswift-puck-tag {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Sonar Pulse Wave for Online Moving Units */
+.loadswift-puck-pulse {
+  position: absolute;
+  top: 1px;
+  left: 2px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  animation: loadswift-sonar 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes loadswift-sonar {
   0% {
+    transform: scale(0.8);
+    opacity: 0.8;
     box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
   }
-  70% {
-    box-shadow: 0 0 0 12px rgba(16, 185, 129, 0);
-  }
   100% {
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    transform: scale(2.2);
+    opacity: 0;
+    box-shadow: 0 0 0 14px rgba(16, 185, 129, 0);
   }
 }
-.fleet-pill-marker.dump .fleet-pill-pulse {
-  animation-name: fleet-pulse-amber;
+.loadswift-puck-marker.dump .loadswift-puck-pulse {
+  animation-name: loadswift-sonar-amber;
 }
-@keyframes fleet-pulse-amber {
+@keyframes loadswift-sonar-amber {
   0% {
+    transform: scale(0.8);
+    opacity: 0.8;
     box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
   }
-  70% {
-    box-shadow: 0 0 0 12px rgba(245, 158, 11, 0);
-  }
   100% {
-    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+    transform: scale(2.2);
+    opacity: 0;
+    box-shadow: 0 0 0 14px rgba(245, 158, 11, 0);
   }
 }
-.fleet-pill-marker.alert .fleet-pill-pulse {
-  animation-name: fleet-pulse-red;
+.loadswift-puck-marker.alert .loadswift-puck-pulse {
+  animation-name: loadswift-sonar-red;
 }
-@keyframes fleet-pulse-red {
+@keyframes loadswift-sonar-red {
   0% {
+    transform: scale(0.8);
+    opacity: 0.9;
     box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8);
   }
-  70% {
-    box-shadow: 0 0 0 12px rgba(239, 68, 68, 0);
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+    box-shadow: 0 0 0 16px rgba(239, 68, 68, 0);
+  }
+}
+.loadswift-puck-marker.officer .loadswift-puck-pulse {
+  animation-name: loadswift-sonar-sky;
+}
+@keyframes loadswift-sonar-sky {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+    box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.7);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    transform: scale(2.2);
+    opacity: 0;
+    box-shadow: 0 0 0 14px rgba(14, 165, 233, 0);
+  }
+}
+.loadswift-puck-marker.hub .loadswift-puck-pulse {
+  animation-name: loadswift-sonar-violet;
+}
+@keyframes loadswift-sonar-violet {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+    box-shadow: 0 0 0 0 rgba(129, 140, 248, 0.7);
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+    box-shadow: 0 0 0 14px rgba(129, 140, 248, 0);
   }
 }
 
 /* Rute Waypoint Node Marker */
 .rute-node-marker {
   position: relative;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 34px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -399,9 +340,9 @@
   border: 1.5px solid var(--rute-color, #10b981);
   color: var(--rute-color, #10b981);
   font-family: ui-monospace, SFMono-Regular, monospace;
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 800;
-  padding: 1.5px 6px;
+  padding: 1px 5px;
   border-radius: 6px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
   line-height: 1.2;
@@ -409,9 +350,9 @@
 .rute-node-caret {
   width: 0;
   height: 0;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: 4px solid var(--rute-color, #10b981);
+  border-left: 3.5px solid transparent;
+  border-right: 3.5px solid transparent;
+  border-top: 3.5px solid var(--rute-color, #10b981);
 }
 .rute-node-dot {
   width: 4px;
@@ -425,19 +366,19 @@
 /* Pelanggan Micro-Dot Pin (Apple Maps / Clean GIS Standard) */
 .micro-dot-wrapper {
   position: relative;
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .micro-dot-pin {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  border: 2px solid #ffffff;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
   transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease;
   display: flex;
   align-items: center;
@@ -449,7 +390,7 @@
   z-index: 100;
 }
 .micro-dot-wrapper.tunggakan .micro-dot-pin {
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.5), 0 2px 8px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 0 2.5px rgba(239, 68, 68, 0.45), 0 2px 6px rgba(0, 0, 0, 0.4);
   animation: glow-red 1.8s infinite;
 }
 
