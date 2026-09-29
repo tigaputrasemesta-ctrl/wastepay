@@ -234,29 +234,43 @@ const SVG_OFFICER = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none"
 
 const SVG_ALERT = `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
 
-function renderTeardropPin(
-  bgFill: string,
-  strokeColor: string,
-  iconSvg: string,
-  badgeLabel: string,
-  badgeColorClass: string,
-  isMoving: boolean = false,
-  isSelected: boolean = false
-) {
-  const radarHtml = isMoving ? `<div class="vector-radar-ring ${badgeColorClass}"></div>` : "";
-  return `<div class="vector-pin-wrapper ${isSelected ? "selected" : ""}">
-    ${radarHtml}
-    <div class="vector-teardrop">
-      <svg class="pin-bg" viewBox="0 0 32 40" fill="none">
-        <path d="M16 0C7.163 0 0 7.163 0 16c0 10.5 16 24 16 24s16-13.5 16-24c0-8.837-7.163-16-16-16z" fill="${bgFill}" stroke="${strokeColor}" stroke-width="2"/>
-      </svg>
-      <div class="vector-teardrop-icon">
+function renderFleetPill({
+  theme,
+  iconSvg,
+  primaryText,
+  secondaryText,
+  statusLabel,
+  isOnline = false,
+  isSelected = false,
+}: {
+  theme: "dump" | "pickup" | "hub" | "officer" | "alert";
+  iconSvg: string;
+  primaryText: string;
+  secondaryText: string;
+  statusLabel: string;
+  isOnline?: boolean;
+  isSelected?: boolean;
+}) {
+  const pulseHtml = isOnline ? `<div class="fleet-pill-pulse"></div>` : "";
+  const statusClass = isOnline ? "online" : "standby";
+
+  return `<div class="fleet-pill-marker ${theme} ${statusClass} ${isSelected ? "selected" : ""}">
+    ${pulseHtml}
+    <div class="fleet-pill-body">
+      <div class="fleet-pill-icon">
         ${iconSvg}
       </div>
+      <div class="fleet-pill-content">
+        <div class="fleet-pill-primary" title="${esc(primaryText)}">${esc(primaryText)}</div>
+        <div class="fleet-pill-secondary">
+          <span class="status-dot"></span>
+          <span class="status-text">${esc(secondaryText)}</span>
+        </div>
+      </div>
+      <div class="fleet-pill-tag">${esc(statusLabel)}</div>
     </div>
-    <div class="vector-pin-badge ${badgeColorClass}">
-      ${badgeLabel}
-    </div>
+    <div class="fleet-pill-caret"></div>
+    <div class="fleet-pill-anchor-dot"></div>
   </div>`;
 }
 
@@ -265,7 +279,7 @@ function buatIcon(warna: string, isBermasalah: boolean = false) {
     className: "",
     html: `<div class="micro-dot-wrapper ${isBermasalah ? "tunggakan" : ""}">
       <div class="micro-dot-pin" style="background:${isBermasalah ? "#ef4444" : warna}; color:${warna};">
-        ${isBermasalah ? '<span style="color:#ffffff; font-size:8px; font-weight:900; line-height:1;">!</span>' : ""}
+        ${isBermasalah ? '<span style="color:#ffffff; font-size:7px; font-weight:900; line-height:1;">!</span>' : ""}
       </div>
     </div>`,
     iconSize: [14, 14],
@@ -277,42 +291,34 @@ function buatIcon(warna: string, isBermasalah: boolean = false) {
 function buatIconRute(warna: string, label: string) {
   return L.divIcon({
     className: "",
-    html: `<div class="vector-pin-wrapper">
-      <div class="vector-teardrop" style="width:28px; height:34px;">
-        <svg class="pin-bg" viewBox="0 0 32 40" fill="none">
-          <path d="M16 0C7.163 0 0 7.163 0 16c0 10.5 16 24 16 24s16-13.5 16-24c0-8.837-7.163-16-16-16z" fill="#0f172a" stroke="${warna}" stroke-width="2.5"/>
-        </svg>
-        <div class="vector-teardrop-icon" style="margin-top:-6px; font-family:monospace; font-size:9px; font-weight:800; color:${warna};">
-          ${label}
-        </div>
-      </div>
+    html: `<div class="rute-node-marker" style="--rute-color:${warna};">
+      <div class="rute-node-badge">${esc(label)}</div>
+      <div class="rute-node-caret"></div>
+      <div class="rute-node-dot"></div>
     </div>`,
-    iconSize: [28, 34],
-    iconAnchor: [14, 34],
+    iconSize: [36, 36],
+    iconAnchor: [18, 36],
   });
 }
 
-function buatIconKomplain(warna: string, aktif: boolean, isBaru: boolean = false) {
-  const radarHtml = isBaru ? `<div class="vector-radar-ring rose"></div>` : "";
+function buatIconKomplain(warna: string, aktif: boolean, isBaru: boolean = false, k?: KomplainPeta) {
+  const primaryText = isBaru ? "PENGADUAN BARU" : "PENGADUAN AKTIF";
+  const secondaryText = k?.pelanggan?.nama || "Laporan Warga";
+
   return L.divIcon({
     className: "",
-    html: `<div class="vector-pin-wrapper ${aktif ? "selected" : ""}">
-      ${radarHtml}
-      <div class="vector-teardrop">
-        <svg class="pin-bg" viewBox="0 0 32 40" fill="none">
-          <path d="M16 0C7.163 0 0 7.163 0 16c0 10.5 16 24 16 24s16-13.5 16-24c0-8.837-7.163-16-16-16z" fill="#dc2626" stroke="#ffffff" stroke-width="2"/>
-        </svg>
-        <div class="vector-teardrop-icon">
-          ${SVG_ALERT}
-        </div>
-      </div>
-      <div class="vector-pin-badge" style="border-color:#ef4444; color:#fca5a5;">
-        ${isBaru ? "BARU" : "PENGADUAN"}
-      </div>
-    </div>`,
-    iconSize: [36, 44],
-    iconAnchor: [18, 44],
-    popupAnchor: [0, -44],
+    html: renderFleetPill({
+      theme: "alert",
+      iconSvg: SVG_ALERT,
+      primaryText,
+      secondaryText,
+      statusLabel: isBaru ? "URGENT" : "PROSES",
+      isOnline: true,
+      isSelected: aktif,
+    }),
+    iconSize: [164, 48],
+    iconAnchor: [82, 48],
+    popupAnchor: [0, -50],
   });
 }
 
@@ -418,11 +424,10 @@ function PinsKendaraan({
         const isDump = k.jenis === "dump_truck";
         const iconSvg = isDump ? SVG_TRUCK_DUMP : SVG_TRUCK_PICKUP;
         const online = Date.now() - new Date(k.updatedAt).getTime() < 15 * 60 * 1000;
-        const bgFill = isDump ? "#1e2229" : "#131517";
-        const strokeColor = isDump ? "#f59e0b" : "#10b981";
-        const badgeColorClass = isDump ? "amber" : "emerald";
         const isSelected = selectedKendaraanId === k.kendaraanId;
-        const label = esc(k.platNomor || k.nama);
+        const primaryText = k.platNomor || k.nama;
+        const secondaryText = k.pengemudi ? `Supir: ${k.pengemudi}` : (isDump ? "Dump Truck" : "Pickup Feeder");
+        const statusLabel = online ? "AKTIF" : "PARKIR";
 
         return (
           <Marker
@@ -433,10 +438,18 @@ function PinsKendaraan({
             }}
             icon={L.divIcon({
               className: "",
-              html: renderTeardropPin(bgFill, strokeColor, iconSvg, label, badgeColorClass, online, isSelected),
-              iconSize: [36, 44],
-              iconAnchor: [18, 44],
-              popupAnchor: [0, -44],
+              html: renderFleetPill({
+                theme: isDump ? "dump" : "pickup",
+                iconSvg,
+                primaryText,
+                secondaryText,
+                statusLabel,
+                isOnline: online,
+                isSelected,
+              }),
+              iconSize: [164, 48],
+              iconAnchor: [82, 48],
+              popupAnchor: [0, -50],
             })}
           >
             <Tooltip sticky>
@@ -471,7 +484,9 @@ function PinsTransit({
     <>
       {transit.filter((t) => t.aktif).map((t) => {
         const isSelected = selectedTransitId === t.id;
-        const label = esc(t.nama);
+        const primaryText = t.nama;
+        const secondaryText = t.alamat || t.catatan || "Depot Transit TPS";
+
         return (
           <Marker
             key={`transit-${t.id}`}
@@ -481,10 +496,18 @@ function PinsTransit({
             }}
             icon={L.divIcon({
               className: "",
-              html: renderTeardropPin("#064e3b", "#10b981", SVG_RECYCLE, label, "emerald", false, isSelected),
-              iconSize: [36, 44],
-              iconAnchor: [18, 44],
-              popupAnchor: [0, -44],
+              html: renderFleetPill({
+                theme: "hub",
+                iconSvg: SVG_RECYCLE,
+                primaryText,
+                secondaryText,
+                statusLabel: "DEPOT",
+                isOnline: true,
+                isSelected,
+              }),
+              iconSize: [164, 48],
+              iconAnchor: [82, 48],
+              popupAnchor: [0, -50],
             })}
           >
             <Tooltip sticky>
@@ -515,14 +538,9 @@ function PinsPetugas({
       {petugas.map((p) => {
         const online = Date.now() - new Date(p.updatedAt).getTime() < 15 * 60 * 1000;
         const isSelected = selectedPetugasId === p.petugasId;
-        const label = esc(p.nama);
+        const primaryText = p.nama;
         const jabat = (p.jabatan || "").split(",").filter(Boolean);
-        const labelJabat = jabat.map((j) => {
-          if (j === "angkut") return "ANGKUT";
-          if (j === "tagih") return "TAGIH";
-          if (j === "survei") return "SURVEI";
-          return j.toUpperCase();
-        }).join(" · ");
+        const roleText = jabat.length > 0 ? jabat[0].toUpperCase() : "LAPANGAN";
 
         return (
           <Marker
@@ -533,16 +551,24 @@ function PinsPetugas({
             }}
             icon={L.divIcon({
               className: "",
-              html: renderTeardropPin("#164e63", "#06b6d4", SVG_OFFICER, label, "cyan", online, isSelected),
-              iconSize: [36, 44],
-              iconAnchor: [18, 44],
-              popupAnchor: [0, -44],
+              html: renderFleetPill({
+                theme: "officer",
+                iconSvg: SVG_OFFICER,
+                primaryText,
+                secondaryText: `Petugas ${roleText}`,
+                statusLabel: online ? "ONLINE" : "OFFLINE",
+                isOnline: online,
+                isSelected,
+              }),
+              iconSize: [164, 48],
+              iconAnchor: [82, 48],
+              popupAnchor: [0, -50],
             })}
           >
             <Tooltip sticky>
               <span className="text-[11px] text-slate-800 font-medium">
                 👮 {p.nama.toUpperCase()}
-                {labelJabat ? ` · ${labelJabat}` : ""}
+                {jabat.length > 0 ? ` · ${jabat.map(j => j.toUpperCase()).join(" · ")}` : ""}
                 <br />
                 <span className="text-slate-500">
                   {formatWaktuRelatif(p.updatedAt)} · akurasi {p.akurasi ? Math.round(p.akurasi) : "?"} m
@@ -650,7 +676,7 @@ function PinsKomplain({
           <Marker
             key={`komplain-${k.id}`}
             position={pos}
-            icon={buatIconKomplain(KOMPLAIN_WARNA[k.status] ?? "#ff5c5c", k.id === selectedKomplainId, k.status === "baru")}
+            icon={buatIconKomplain(KOMPLAIN_WARNA[k.status] ?? "#ff5c5c", k.id === selectedKomplainId, k.status === "baru", k)}
             eventHandlers={{ click: () => onPilih(k.id) }}
           >
             <Popup closeButton={false}>

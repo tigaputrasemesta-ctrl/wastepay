@@ -92,134 +92,364 @@
   box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
 }
 
-/* ── Vector Pin System (Samsara / LoadSwift Standard) ── */
-.vector-pin-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+/* ── Fleet Telemetry Pill System (Samsara / Uber Freight Standard) ── */
+.fleet-pill-marker {
   position: relative;
-  transform: translate(-50%, -100%);
-  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.35));
+  width: 164px;
+  height: 48px;
   cursor: pointer;
+  transform-origin: bottom center;
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  user-select: none;
 }
-.vector-pin-wrapper:hover {
-  transform: translate(-50%, -108%) scale(1.08);
+.fleet-pill-marker:hover {
+  transform: scale(1.06);
   z-index: 1000 !important;
 }
-.vector-pin-wrapper.selected {
-  transform: translate(-50%, -110%) scale(1.18);
-  filter: drop-shadow(0 8px 24px rgba(245, 158, 11, 0.55));
+.fleet-pill-marker.selected {
+  transform: scale(1.1);
   z-index: 1001 !important;
 }
 
-/* Teardrop Pin Shape Container */
-.vector-teardrop {
-  position: relative;
-  width: 36px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.vector-teardrop svg.pin-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  transition: all 0.2s ease;
-}
-.vector-teardrop-icon {
+.fleet-pill-body {
   position: relative;
   z-index: 2;
-  margin-top: -8px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 7px 4px 5px;
+  background: rgba(15, 23, 42, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(255, 255, 255, 0.16);
+  border-radius: 9999px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.48), 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.fleet-pill-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 9999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  flex-shrink: 0;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.35);
 }
 
-/* High-Contrast Capsule Badge Beneath Pin */
-.vector-pin-badge {
-  margin-top: -2px;
-  background: #0f172a;
-  color: #f8fafc;
-  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
-  font-size: 10px;
+.fleet-pill-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+  line-height: 1.15;
+}
+
+.fleet-pill-primary {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10.5px;
   font-weight: 800;
-  letter-spacing: 0.03em;
-  padding: 2.5px 8px;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #f8fafc;
   white-space: nowrap;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.2px;
+}
+
+.fleet-pill-secondary {
   display: flex;
   align-items: center;
   gap: 4px;
-  pointer-events: none;
-}
-.vector-pin-badge.amber {
-  border-color: #f59e0b;
-  color: #fbbf24;
-}
-.vector-pin-badge.emerald {
-  border-color: #10b981;
-  color: #34d399;
-}
-.vector-pin-badge.cyan {
-  border-color: #06b6d4;
-  color: #67e8f9;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 8.5px;
+  font-weight: 600;
+  color: #cbd5e1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Radar Pulse Waves for Realtime Moving Units */
-@keyframes radar-pulse-wave {
-  0% { transform: scale(0.5); opacity: 0.9; }
-  100% { transform: scale(2.2); opacity: 0; }
+.fleet-pill-secondary .status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
-.vector-radar-ring {
+
+.fleet-pill-tag {
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 7.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 2px 5px;
+  border-radius: 9999px;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+/* Dump Truck theme (Amber) */
+.fleet-pill-marker.dump .fleet-pill-body {
+  border-color: rgba(245, 158, 11, 0.7);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), 0 0 10px rgba(245, 158, 11, 0.22);
+}
+.fleet-pill-marker.dump.selected .fleet-pill-body {
+  border-color: #f59e0b;
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.5), 0 0 0 3px rgba(245, 158, 11, 0.25);
+}
+.fleet-pill-marker.dump .fleet-pill-icon {
+  background: linear-gradient(135deg, #b45309 0%, #f59e0b 100%);
+  color: #ffffff;
+}
+.fleet-pill-marker.dump .fleet-pill-tag {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  color: #fbbf24;
+}
+
+/* Pickup / Feeder theme (Emerald) */
+.fleet-pill-marker.pickup .fleet-pill-body {
+  border-color: rgba(16, 185, 129, 0.7);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), 0 0 10px rgba(16, 185, 129, 0.22);
+}
+.fleet-pill-marker.pickup.selected .fleet-pill-body {
+  border-color: #10b981;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.5), 0 0 0 3px rgba(16, 185, 129, 0.25);
+}
+.fleet-pill-marker.pickup .fleet-pill-icon {
+  background: linear-gradient(135deg, #047857 0%, #10b981 100%);
+  color: #ffffff;
+}
+.fleet-pill-marker.pickup .fleet-pill-tag {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  color: #34d399;
+}
+
+/* Hub / TPS theme (Violet) */
+.fleet-pill-marker.hub .fleet-pill-body {
+  border-color: rgba(129, 140, 248, 0.7);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), 0 0 10px rgba(99, 102, 241, 0.25);
+}
+.fleet-pill-marker.hub.selected .fleet-pill-body {
+  border-color: #818cf8;
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.5), 0 0 0 3px rgba(99, 102, 241, 0.25);
+}
+.fleet-pill-marker.hub .fleet-pill-icon {
+  background: linear-gradient(135deg, #4338ca 0%, #6366f1 100%);
+  color: #ffffff;
+}
+.fleet-pill-marker.hub .fleet-pill-tag {
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.45);
+  color: #a5b4fc;
+}
+
+/* Officer theme (Sky / Teal) */
+.fleet-pill-marker.officer .fleet-pill-body {
+  border-color: rgba(14, 165, 233, 0.7);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), 0 0 10px rgba(14, 165, 233, 0.22);
+}
+.fleet-pill-marker.officer.selected .fleet-pill-body {
+  border-color: #0ea5e9;
+  box-shadow: 0 8px 24px rgba(14, 165, 233, 0.5), 0 0 0 3px rgba(14, 165, 233, 0.25);
+}
+.fleet-pill-marker.officer .fleet-pill-icon {
+  background: linear-gradient(135deg, #0369a1 0%, #0ea5e9 100%);
+  color: #ffffff;
+}
+.fleet-pill-marker.officer .fleet-pill-tag {
+  background: rgba(14, 165, 233, 0.15);
+  border: 1px solid rgba(14, 165, 233, 0.45);
+  color: #7dd3fc;
+}
+
+/* Alert / Komplain theme (Rose) */
+.fleet-pill-marker.alert .fleet-pill-body {
+  border-color: rgba(239, 68, 68, 0.8);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), 0 0 12px rgba(239, 68, 68, 0.35);
+}
+.fleet-pill-marker.alert.selected .fleet-pill-body {
+  border-color: #ef4444;
+  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.55), 0 0 0 3px rgba(239, 68, 68, 0.25);
+}
+.fleet-pill-marker.alert .fleet-pill-icon {
+  background: linear-gradient(135deg, #b91c1c 0%, #ef4444 100%);
+  color: #ffffff;
+}
+.fleet-pill-marker.alert .fleet-pill-tag {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  color: #fca5a5;
+  animation: badge-pulse-red 1.5s infinite;
+}
+
+@keyframes badge-pulse-red {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.65; }
+}
+
+/* Online vs Standby Status */
+.fleet-pill-marker.online .status-dot {
+  background-color: #10b981;
+  box-shadow: 0 0 6px #10b981;
+}
+.fleet-pill-marker.standby .status-dot {
+  background-color: #64748b;
+}
+
+/* Caret Arrow beneath pill */
+.fleet-pill-caret {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid rgba(15, 23, 42, 0.94);
+  z-index: 2;
+}
+
+/* Anchor dot that sits right on the street coordinate */
+.fleet-pill-anchor-dot {
   position: absolute;
   bottom: 0;
   left: 50%;
-  margin-left: -14px;
-  width: 28px;
-  height: 28px;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: rgba(16, 185, 129, 0.5);
+  background: #ffffff;
+  border: 1.5px solid #0f172a;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
+  z-index: 3;
+}
+.fleet-pill-marker.dump .fleet-pill-anchor-dot { background: #f59e0b; }
+.fleet-pill-marker.pickup .fleet-pill-anchor-dot { background: #10b981; }
+.fleet-pill-marker.hub .fleet-pill-anchor-dot { background: #818cf8; }
+.fleet-pill-marker.officer .fleet-pill-anchor-dot { background: #0ea5e9; }
+.fleet-pill-marker.alert .fleet-pill-anchor-dot { background: #ef4444; }
+
+/* Pulse wave for moving units */
+.fleet-pill-pulse {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 154px;
+  height: 34px;
+  border-radius: 9999px;
   pointer-events: none;
-  animation: radar-pulse-wave 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  z-index: 1;
+  animation: fleet-pulse 2s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
-.vector-radar-ring.amber {
-  background: rgba(245, 158, 11, 0.5);
+@keyframes fleet-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
 }
-.vector-radar-ring.rose {
-  background: rgba(239, 68, 68, 0.6);
-  animation-duration: 1.3s;
+.fleet-pill-marker.dump .fleet-pill-pulse {
+  animation-name: fleet-pulse-amber;
+}
+@keyframes fleet-pulse-amber {
+  0% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(245, 158, 11, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+  }
+}
+.fleet-pill-marker.alert .fleet-pill-pulse {
+  animation-name: fleet-pulse-red;
+}
+@keyframes fleet-pulse-red {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
 }
 
-/* Pelanggan Micro-Dot Pin (Apple Maps / Modern GIS Style) */
+/* Rute Waypoint Node Marker */
+.rute-node-marker {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.rute-node-badge {
+  background: #0f172a;
+  border: 1.5px solid var(--rute-color, #10b981);
+  color: var(--rute-color, #10b981);
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1.5px 6px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  line-height: 1.2;
+}
+.rute-node-caret {
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid var(--rute-color, #10b981);
+}
+.rute-node-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid var(--rute-color, #10b981);
+  margin-top: 1px;
+}
+
+/* Pelanggan Micro-Dot Pin (Apple Maps / Clean GIS Standard) */
 .micro-dot-wrapper {
   position: relative;
-  transform: translate(-50%, -50%);
-  cursor: pointer;
-}
-.micro-dot-pin {
   width: 14px;
   height: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.micro-dot-pin {
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   border: 2px solid #ffffff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .micro-dot-wrapper:hover .micro-dot-pin {
-  transform: scale(1.4);
-  box-shadow: 0 0 12px currentColor;
+  transform: scale(1.6);
+  box-shadow: 0 0 10px currentColor;
+  z-index: 100;
 }
 .micro-dot-wrapper.tunggakan .micro-dot-pin {
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.5), 0 2px 8px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.5), 0 2px 8px rgba(0, 0, 0, 0.5);
   animation: glow-red 1.8s infinite;
 }
 
