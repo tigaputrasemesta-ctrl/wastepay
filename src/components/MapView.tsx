@@ -66,6 +66,15 @@ type Props = {
   setSelectedId: (id: number) => void;
   selectedKomplainId: number | null;
   setSelectedKomplainId: (id: number) => void;
+  selectedKendaraanId?: number | null;
+  setSelectedKendaraanId?: (id: number) => void;
+  selectedPetugasId?: number | null;
+  setSelectedPetugasId?: (id: number) => void;
+  selectedTransitId?: number | null;
+  setSelectedTransitId?: (id: number) => void;
+  tileMode?: MapTileType;
+  setTileMode?: (mode: MapTileType) => void;
+  hideTileButtons?: boolean;
   tampilkanCakupan: boolean;
   showHeatmap?: boolean;
   tampilkanBatas: boolean;
@@ -344,20 +353,35 @@ function clusterIcon(c: L.MarkerCluster): L.DivIcon {
 }
 
 // Semua pin pelanggan digabung jadi cluster marker (anti-tumpuk di zoom rendah).
-function PinsKendaraan({ kendaraan }: { kendaraan: KendaraanPeta[] }) {
+function PinsKendaraan({
+  kendaraan,
+  selectedKendaraanId,
+  onPilih,
+}: {
+  kendaraan: KendaraanPeta[];
+  selectedKendaraanId?: number | null;
+  onPilih?: (id: number) => void;
+}) {
   return (
     <>
       {kendaraan.map((k) => {
         const isDump = k.jenis === "dump_truck";
         const icon = isDump ? "🚛" : k.jenis === "gerobak" ? "🛞" : "🛺";
-        const warna = isDump ? "#f5a524" : "#b7e13c";
+        const warna = isDump ? "#f5a524" : "#10b981";
+        const isSelected = selectedKendaraanId === k.kendaraanId;
         return (
           <Marker
             key={`kendaraan-${k.kendaraanId}`}
             position={[k.latitude, k.longitude]}
+            eventHandlers={{
+              click: () => onPilih?.(k.kendaraanId),
+            }}
             icon={L.divIcon({
               className: "",
-              html: `<div class="kendaraan-marker" style="--warna:${warna}"><span class="kendaraan-head">${icon}</span><span class="kendaraan-label">${esc(k.nama)}${k.platNomor ? ` · ${esc(k.platNomor)}` : ""}</span></div>`,
+              html: `<div class="kendaraan-marker ${isSelected ? "ring-active" : ""}" style="--warna:${warna}">
+                <span class="kendaraan-head" style="${isSelected ? "box-shadow: 0 0 0 4px #f59e0b, 0 0 24px rgba(245, 158, 11, 0.8); transform: scale(1.2);" : ""}">${icon}</span>
+                <span class="kendaraan-label" style="${isSelected ? "background:#f59e0b; color:#0f172a; font-weight:800; border-color:#f59e0b;" : ""}">${esc(k.nama)}${k.platNomor ? ` · ${esc(k.platNomor)}` : ""}</span>
+              </div>`,
               iconSize: [1, 1],
             })}
           >
@@ -380,33 +404,55 @@ function PinsKendaraan({ kendaraan }: { kendaraan: KendaraanPeta[] }) {
   );
 }
 
-function PinsTransit({ transit }: { transit: TransitPeta[] }) {
+function PinsTransit({
+  transit,
+  selectedTransitId,
+  onPilih,
+}: {
+  transit: TransitPeta[];
+  selectedTransitId?: number | null;
+  onPilih?: (id: number) => void;
+}) {
   return (
     <>
-      {transit.filter((t) => t.aktif).map((t) => (
-        <Marker
-          key={`transit-${t.id}`}
-          position={[t.latitude, t.longitude]}
-          icon={L.divIcon({
-            className: "",
-            html: `<div class="transit-marker"><span class="transit-head">▲</span><span class="transit-label">${esc(t.nama)}</span></div>`,
-            iconSize: [1, 1],
-          })}
-        >
-          <Tooltip sticky>
-            <span className="text-[11px] text-slate-800 font-medium">
-              ▲ LAPAK / TITIK TRANSIT — {t.nama.toUpperCase()}
-              {t.alamat ? <><br /><span className="text-slate-500">{t.alamat}</span></> : null}
-              {t.catatan ? <><br /><span className="text-slate-500">{t.catatan}</span></> : null}
-            </span>
-          </Tooltip>
-        </Marker>
-      ))}
+      {transit.filter((t) => t.aktif).map((t) => {
+        const isSelected = selectedTransitId === t.id;
+        return (
+          <Marker
+            key={`transit-${t.id}`}
+            position={[t.latitude, t.longitude]}
+            eventHandlers={{
+              click: () => onPilih?.(t.id),
+            }}
+            icon={L.divIcon({
+              className: "",
+              html: `<div class="transit-marker"><span class="transit-head" style="${isSelected ? "box-shadow: 0 0 0 4px #10b981, 0 0 20px rgba(16, 185, 129, 0.8); transform: scale(1.2);" : ""}">▲</span><span class="transit-label" style="${isSelected ? "background:#10b981; color:#fff; font-weight:800;" : ""}">${esc(t.nama)}</span></div>`,
+              iconSize: [1, 1],
+            })}
+          >
+            <Tooltip sticky>
+              <span className="text-[11px] text-slate-800 font-medium">
+                ▲ LAPAK / TITIK TRANSIT — {t.nama.toUpperCase()}
+                {t.alamat ? <><br /><span className="text-slate-500">{t.alamat}</span></> : null}
+                {t.catatan ? <><br /><span className="text-slate-500">{t.catatan}</span></> : null}
+              </span>
+            </Tooltip>
+          </Marker>
+        );
+      })}
     </>
   );
 }
 
-function PinsPetugas({ petugas }: { petugas: PetugasPeta[] }) {
+function PinsPetugas({
+  petugas,
+  selectedPetugasId,
+  onPilih,
+}: {
+  petugas: PetugasPeta[];
+  selectedPetugasId?: number | null;
+  onPilih?: (id: number) => void;
+}) {
   return (
     <>
       {petugas.map((p) => {
@@ -417,13 +463,17 @@ function PinsPetugas({ petugas }: { petugas: PetugasPeta[] }) {
           if (j === "survei") return "SURVEI";
           return j.toUpperCase();
         }).join(" · ");
+        const isSelected = selectedPetugasId === p.petugasId;
         return (
           <Marker
             key={`petugas-${p.petugasId}`}
             position={[p.latitude, p.longitude]}
+            eventHandlers={{
+              click: () => onPilih?.(p.petugasId),
+            }}
             icon={L.divIcon({
               className: "",
-              html: `<div class="petugas-marker ${label ? "" : ""}"><span class="petugas-head">🚛</span><span class="petugas-label">${esc(p.nama)}</span></div>`,
+              html: `<div class="petugas-marker"><span class="petugas-head" style="${isSelected ? "box-shadow: 0 0 0 4px #06b6d4, 0 0 20px rgba(6, 182, 212, 0.8); transform: scale(1.2);" : ""}">🚛</span><span class="petugas-label" style="${isSelected ? "background:#06b6d4; color:#fff; font-weight:800;" : ""}">${esc(p.nama)}</span></div>`,
               iconSize: [1, 1],
             })}
           >
@@ -627,6 +677,15 @@ export default function MapView({
   setSelectedId,
   selectedKomplainId,
   setSelectedKomplainId,
+  selectedKendaraanId,
+  setSelectedKendaraanId,
+  selectedPetugasId,
+  setSelectedPetugasId,
+  selectedTransitId,
+  setSelectedTransitId,
+  tileMode: externalTileMode,
+  setTileMode: externalSetTileMode,
+  hideTileButtons = false,
   tampilkanCakupan,
   showHeatmap,
   tampilkanBatas,
@@ -656,53 +715,65 @@ export default function MapView({
 
   const komplainSel = komplain.find((k) => k.id === selectedKomplainId);
   const pusatKomplain = komplainSel ? (komplainSel.posisi as [number, number]) : null;
-  // Prioritas terbang: petugas (direktori online) → komplain.
-  // Seleksi pelanggan ditangani langsung secara aman oleh zoomToShowLayer di ClusterPins agar tidak bentrok popup & cluster.
-  const pusatFly = pusatPetugas ?? (komplainSel ? pusatKomplain : null);
-  const [tileMode, setTileMode] = useState<MapTileType>("osm");
+  const kSel = kendaraan.find((k) => k.kendaraanId === selectedKendaraanId);
+  const pSel = petugas.find((p) => p.petugasId === selectedPetugasId);
+  const tSel = transit.find((t) => t.id === selectedTransitId);
+
+  const pusatFly = pusatPetugas ?? (
+    kSel ? [kSel.latitude, kSel.longitude] as [number, number] :
+    pSel ? [pSel.latitude, pSel.longitude] as [number, number] :
+    tSel ? [tSel.latitude, tSel.longitude] as [number, number] :
+    (komplainSel ? pusatKomplain : null)
+  );
+
+  const [internalTileMode, setInternalTileMode] = useState<MapTileType>("osm");
+  const tileMode = externalTileMode ?? internalTileMode;
+  const setTileMode = externalSetTileMode ?? setInternalTileMode;
   const tileConfig = useMemo(() => getMapTileConfig(tileMode), [tileMode]);
 
   return (
     <div className="relative h-full w-full">
-      {/* Tombol Pilihan Basemap: OSM / Esri Satelit / Gelap */}
-      <div className="absolute top-3 right-3 z-[1000] flex items-center bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-2xl p-1 shadow-lg gap-1">
-        <button
-          type="button"
-          onClick={() => setTileMode("osm")}
-          className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
-            tileMode === "osm"
-              ? "bg-emerald-700 text-white shadow-sm"
-              : "text-slate-600 hover:bg-slate-100"
-          }`}
-          title="Peta jalan standar OpenStreetMap (Legal & Terbuka)"
-        >
-          🗺️ Standar
-        </button>
-        <button
-          type="button"
-          onClick={() => setTileMode("esri-satellite")}
-          className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
-            tileMode === "esri-satellite"
-              ? "bg-emerald-700 text-white shadow-sm"
-              : "text-slate-600 hover:bg-slate-100"
-          }`}
-          title="Foto udara satelit murni beresolusi tinggi dari Esri World Imagery"
-        >
-          🛰️ Satelit Esri
-        </button>
-        <button
-          type="button"
-          onClick={() => setTileMode("dark")}
-          className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
-            tileMode === "dark"
-              ? "bg-emerald-700 text-white shadow-sm"
-              : "text-slate-600 hover:bg-slate-100"
-          }`}
-          title="Peta mode gelap matte"
-        >
-          🌙 Gelap
-        </button>
-      </div>
+      {/* Tombol Pilihan Basemap: OSM / Esri Satelit / Gelap (Jika tidak disembunyikan) */}
+      {!hideTileButtons && (
+        <div className="absolute top-3 right-3 z-[1000] flex items-center bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-2xl p-1 shadow-lg gap-1">
+          <button
+            type="button"
+            onClick={() => setTileMode("osm")}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
+              tileMode === "osm"
+                ? "bg-emerald-700 text-white shadow-sm"
+                : "text-slate-600 hover:bg-slate-100"
+            }`}
+            title="Peta jalan standar OpenStreetMap (Legal & Terbuka)"
+          >
+            🗺️ Standar
+          </button>
+          <button
+            type="button"
+            onClick={() => setTileMode("esri-satellite")}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
+              tileMode === "esri-satellite"
+                ? "bg-emerald-700 text-white shadow-sm"
+                : "text-slate-600 hover:bg-slate-100"
+            }`}
+            title="Foto udara satelit murni beresolusi tinggi dari Esri World Imagery"
+          >
+            🛰️ Satelit Esri
+          </button>
+          <button
+            type="button"
+            onClick={() => setTileMode("dark")}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
+              tileMode === "dark"
+                ? "bg-emerald-700 text-white shadow-sm"
+                : "text-slate-600 hover:bg-slate-100"
+            }`}
+            title="Peta mode gelap matte"
+          >
+            🌙 Gelap
+          </button>
+        </div>
+      )}
 
       <MapContainer
         center={[-6.424838, 106.832667]}
@@ -876,13 +947,25 @@ export default function MapView({
       )}
 
       {/* Lokasi realtime petugas lapangan */}
-      <PinsPetugas petugas={petugas} />
+      <PinsPetugas
+        petugas={petugas}
+        selectedPetugasId={selectedPetugasId}
+        onPilih={setSelectedPetugasId}
+      />
 
       {/* Kendaraan operasional: dump truck & mobil pickup */}
-      <PinsKendaraan kendaraan={kendaraan} />
+      <PinsKendaraan
+        kendaraan={kendaraan}
+        selectedKendaraanId={selectedKendaraanId}
+        onPilih={setSelectedKendaraanId}
+      />
 
       {/* Titik transit (lapak) */}
-      <PinsTransit transit={transit} />
+      <PinsTransit
+        transit={transit}
+        selectedTransitId={selectedTransitId}
+        onPilih={setSelectedTransitId}
+      />
 
       {showHeatmap && (
         <HeatmapLayer 

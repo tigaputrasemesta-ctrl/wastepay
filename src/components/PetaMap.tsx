@@ -1,18 +1,48 @@
 "use client";
 
-import { Component, useCallback, useEffect, useMemo, useState } from "react";
+import { Component, useCallback, useEffect, useMemo, useState, useRef } from "react";
 import dynamic from "next/dynamic";
-import { RT_RTRW_DEPOK } from "@/lib/zona-depok";
+import {
+  Truck,
+  ShieldAlert,
+  Users,
+  Route as RouteIcon,
+  Layers,
+  Search,
+  X,
+  Phone,
+  ExternalLink,
+  ChevronRight,
+  CheckCircle2,
+  AlertCircle,
+  Clock,
+  MapPin,
+  Gauge,
+  Eye,
+  RefreshCw,
+  PanelLeftClose,
+  PanelLeft,
+  SlidersHorizontal,
+  ChevronDown,
+  Navigation,
+  Radio,
+  Check,
+} from "lucide-react";
 import { cariRtTerdekat, deteksiZona, formatJarak, jarakMeter, urutkanRute } from "@/lib/geo";
 import { KOMPLAIN_LABEL, KOMPLAIN_WARNA } from "@/lib/komplain";
 import type { KendaraanPeta, PetugasPeta, TransitPeta } from "./MapView";
+import type { MapTileType } from "@/lib/map-tile";
+import LacakLokasi from "@/components/LacakLokasi";
 
-// Map di-load client-side saja (leaflet butuh window/browser).
+// Leaflet map component (client-side only)
 const MapView = dynamic(() => import("@/components/MapView"), {
   ssr: false,
   loading: () => (
-    <div className="h-full w-full flex items-center justify-center bg-slate-50">
-      <p className="font-bold text-xs uppercase tracking-wider text-emerald-700 animate-pulse">Memuat Peta…</p>
+    <div className="h-full w-full flex flex-col items-center justify-center bg-slate-950 text-white space-y-3">
+      <div className="w-8 h-8 rounded-full border-2 border-amber-400 border-t-transparent animate-spin" />
+      <p className="font-mono text-xs uppercase tracking-widest text-amber-400 animate-pulse">
+        Memuat GIS Console LoadSwift…
+      </p>
     </div>
   ),
 });
@@ -34,12 +64,15 @@ class MapErrorBoundary extends Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div className="h-full w-full flex flex-col items-center justify-center bg-slate-900 text-white p-6 space-y-3">
-          <p className="text-sm font-bold text-rose-400">⚠️ Terjadi kendala saat memuat peta.</p>
+        <div className="h-full w-full flex flex-col items-center justify-center bg-slate-950 text-white p-6 space-y-4">
+          <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-400">
+            <AlertCircle className="w-8 h-8" />
+          </div>
+          <p className="text-sm font-bold text-slate-200">Terjadi kendala saat memuat peta GIS.</p>
           <button
             type="button"
             onClick={() => this.setState({ hasError: false })}
-            className="px-4 py-2 bg-emerald-700 hover:bg-emerald-500 rounded-xl text-xs font-bold transition shadow-lg"
+            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow-lg shadow-emerald-900/30"
           >
             Muat Ulang Peta
           </button>
@@ -94,7 +127,7 @@ export type KomplainPeta = {
     latitude: number | null;
     longitude: number | null;
   };
-  posisi: [number, number]; // koordinat pelanggan, fallback RT RTRW terdekat
+  posisi: [number, number];
 };
 
 type Props = {
@@ -104,13 +137,15 @@ type Props = {
   petugasAwal?: PetugasPeta[];
   kendaraanAwal?: KendaraanPeta[];
   transitAwal?: TransitPeta[];
+  profilSaya?: { id: number; nama: string; jabatan: string | null } | null;
+  kendaraanSaya?: { id: number; nama: string; platNomor: string | null; jenis: string }[];
 };
 
 const WARNA_STATUS: Record<string, string> = {
-  aktif: "#b7e13c",
-  calon: "#f5a524",
-  nonaktif: "#8b8f98",
-  libur: "#8b8f98",
+  aktif: "#10b981",
+  calon: "#f59e0b",
+  nonaktif: "#64748b",
+  libur: "#94a3b8",
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -123,60 +158,97 @@ const STATUS_LABEL: Record<string, string> = {
 const KOMPLAIN_TABS: { key: string; label: string }[] = [
   { key: "semua", label: "Semua" },
   { key: "baru", label: "Baru" },
-  { key: "proses", label: "Proses" },
+  { key: "proses", label: "Diproses" },
   { key: "selesai", label: "Selesai" },
 ];
 
-type TabKey = "pelanggan" | "pengaduan" | "rute";
+type ConsoleTab = "armada" | "pengaduan" | "pelanggan" | "rute";
 
-const TABS: { key: TabKey; label: string }[] = [
-  { key: "pelanggan", label: "Pelanggan" },
-  { key: "pengaduan", label: "Pengaduan" },
-  { key: "rute", label: "Rute" },
-];
-
-function formatWaktuRelatifPeta(iso: string): string {
-  const detik = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 1000));
-  if (detik < 60) return `${detik}dtk`;
-  if (detik < 3600) return `${Math.floor(detik / 60)}mnt`;
-  return `${Math.floor(detik / 3600)}jam`;
-}
-
-// Ambang "online": posisi dianggap realtime jika dikirim < 15 menit lalu.
+// Ambang batas online armada: data dikirim < 15 menit lalu
 const ONLINE_MS = 15 * 60 * 1000;
 function isOnline(iso: string): boolean {
   return Date.now() - new Date(iso).getTime() < ONLINE_MS;
 }
 
-export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], kendaraanAwal = [], transitAwal = [] }: Props) {
+function formatWaktuRelatifPeta(iso: string): string {
+  const detik = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 1000));
+  if (detik < 60) return `${detik}dtk lalu`;
+  if (detik < 3600) return `${Math.floor(detik / 60)}mnt lalu`;
+  return `${Math.floor(detik / 3600)}jam lalu`;
+}
+
+export default function PetaMap({
+  pelanggan,
+  wilayah,
+  rute,
+  petugasAwal = [],
+  kendaraanAwal = [],
+  transitAwal = [],
+  profilSaya,
+  kendaraanSaya = [],
+}: Props) {
+  // Navigation & Layout State
+  const [activeTab, setActiveTab] = useState<ConsoleTab>("armada");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [tileMode, setTileMode] = useState<MapTileType>("osm");
+  const [layerMenuOpen, setLayerMenuOpen] = useState(false);
+  const layerMenuRef = useRef<HTMLDivElement>(null);
+
+  // Filter States
+  const [cari, setCari] = useState("");
   const [filterWilayah, setFilterWilayah] = useState("semua");
   const [filterStatus, setFilterStatus] = useState("semua");
   const [filterTagihan, setFilterTagihan] = useState<"semua" | "lunas" | "tunggakan">("semua");
-  const [cari, setCari] = useState("");
+  const [hanyaTanpaGeo, setHanyaTanpaGeo] = useState(false);
+  const [urutkan, setUrutkan] = useState<"nama" | "kode">("kode");
+
+  // Selection States (Object Inspection)
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [selectedKendaraanId, setSelectedKendaraanId] = useState<number | null>(null);
+  const [selectedPetugasId, setSelectedPetugasId] = useState<number | null>(null);
+  const [selectedKomplainId, setSelectedKomplainId] = useState<number | null>(null);
+  const [selectedTransitId, setSelectedTransitId] = useState<number | null>(null);
   const [ruteId, setRuteId] = useState<string>("semua");
+
+  // GIS Layer Toggles
   const [tampilkanCakupan, setTampilkanCakupan] = useState(false);
   const [tampilkanBatas, setTampilkanBatas] = useState(true);
   const [tampilkanBatasKelurahan, setTampilkanBatasKelurahan] = useState(true);
   const [tampilkanRt, setTampilkanRt] = useState(true);
   const [tampilkanArmada, setTampilkanArmada] = useState(true);
   const [showHeatmap, setShowHeatmap] = useState(false);
-  const [tab, setTab] = useState<TabKey>("pelanggan");
-  const [bukaLapakList, setBukaLapakList] = useState(true);
-  const [urutkan, setUrutkan] = useState<"nama" | "kode">("kode");
-
-  // Mode Layar Penuh GIS (Showing & Hiding)
-  const [panelBawahTerbuka, setPanelBawahTerbuka] = useState(true);
   const [invalidateKey, setInvalidateKey] = useState(1);
 
-  // Searching & Finding langsung di Peta
-  const [pencarianPeta, setPencarianPeta] = useState("");
-  const [bukaSaranPeta, setBukaSaranPeta] = useState(false);
+  // Close layer menu on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (layerMenuRef.current && !layerMenuRef.current.contains(event.target as Node)) {
+        setLayerMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-  // ── Pengaduan live (polling) ──
+  // Invalidate map layout when sidebar changes
+  useEffect(() => {
+    setInvalidateKey((k) => k + 1);
+  }, [sidebarOpen]);
+
+  // Keyboard shortcut: Escape closes flyout
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        closeFlyout();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  // ── Polling: Pengaduan (15 dtk) ──
   const [komplain, setKomplain] = useState<KomplainPeta[]>([]);
   const [komplainTab, setKomplainTab] = useState("semua");
-  const [selectedKomplainId, setSelectedKomplainId] = useState<number | null>(null);
   const [lastRefresh, setLastRefresh] = useState<number | null>(null);
   const [muatKomplain, setMuatKomplain] = useState(false);
 
@@ -188,7 +260,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
       setKomplain(data);
       setLastRefresh(Date.now());
     } catch {
-      // diam: polling berikutnya akan coba lagi
+      // quiet fallback
     }
   }, []);
 
@@ -201,19 +273,15 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
     };
   }, [ambilKomplain]);
 
-  // ── Lokasi realtime petugas (polling 10 dtk) ──
+  // ── Polling: Petugas Lapangan (10 dtk) ──
   const [petugas, setPetugas] = useState<PetugasPeta[]>(petugasAwal);
-  const [lastPetugas, setLastPetugas] = useState<number | null>(null);
-
   const ambilPetugas = useCallback(async () => {
     try {
       const res = await fetch("/api/petugas/lokasi", { cache: "no-store" });
       if (!res.ok) return;
-      const data = (await res.json()) as PetugasPeta[];
-      setPetugas(data);
-      setLastPetugas(Date.now());
+      setPetugas((await res.json()) as PetugasPeta[]);
     } catch {
-      // diam
+      // quiet
     }
   }, []);
 
@@ -226,7 +294,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
     };
   }, [ambilPetugas]);
 
-  // ── Lokasi realtime kendaraan (polling 15 dtk) ──
+  // ── Polling: Kendaraan & Lapak (15 dtk) ──
   const [kendaraan, setKendaraan] = useState<KendaraanPeta[]>(kendaraanAwal);
   const [transit, setTransit] = useState<TransitPeta[]>(transitAwal);
   const [pusatPetugas, setPusatPetugas] = useState<[number, number] | null>(null);
@@ -237,7 +305,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
       if (!res.ok) return;
       setKendaraan((await res.json()) as KendaraanPeta[]);
     } catch {
-      // diam
+      // quiet
     }
   }, []);
 
@@ -249,7 +317,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
         const res = await fetch("/api/transit", { cache: "no-store" });
         if (res.ok) setTransit((await res.json()) as TransitPeta[]);
       } catch {
-        // diam
+        // quiet
       }
     }, 1000);
     return () => {
@@ -259,10 +327,7 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
     };
   }, [ambilKendaraan]);
 
-  const totalBerkoordinat = pelanggan.filter(
-    (p) => p.latitude != null && p.longitude != null
-  ).length;
-
+  // ── Derived Data & Mappings ──
   const zonaPelanggan = useMemo(() => {
     const m = new Map<number, { kelurahan: string; kecamatan: string }>();
     for (const p of pelanggan) {
@@ -278,28 +343,59 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
     return pelanggan.filter((p) => {
       if (filterWilayah !== "semua" && p.wilayah?.id !== Number(filterWilayah)) return false;
       if (filterStatus !== "semua" && p.status !== filterStatus) return false;
-      if (q && !`${p.nama} ${p.kodePelanggan} ${p.alamat}`.toLowerCase().includes(q)) return false;
+      if (filterTagihan === "lunas" && p.statusTagihan !== "lunas") return false;
+      if (
+        filterTagihan === "tunggakan" &&
+        p.statusTagihan !== "tunggakan" &&
+        p.statusTagihan !== "belum_bayar"
+      )
+        return false;
+      if (hanyaTanpaGeo && p.latitude != null && p.longitude != null) return false;
+      if (q && !`${p.nama} ${p.kodePelanggan} ${p.alamat} ${p.rtRw ?? ""}`.toLowerCase().includes(q))
+        return false;
       return true;
     });
-  }, [pelanggan, filterWilayah, filterStatus, cari]);
-
-  const daftarPeta = daftar.filter((p) => p.latitude != null && p.longitude != null);
-  const tanpaKoordinat = daftar.filter((p) => p.latitude == null || p.longitude == null);
+  }, [pelanggan, filterWilayah, filterStatus, filterTagihan, hanyaTanpaGeo, cari]);
 
   const daftarPetaUrut = useMemo(() => {
-    return [...daftarPeta].sort((a, b) => {
+    return [...daftar].sort((a, b) => {
       if (urutkan === "nama") return a.nama.localeCompare(b.nama);
       return a.kodePelanggan.localeCompare(b.kodePelanggan);
     });
-  }, [daftarPeta, urutkan]);
+  }, [daftar, urutkan]);
 
-  const tanpaKoordinatUrut = useMemo(() => {
-    return [...tanpaKoordinat].sort((a, b) => {
-      if (urutkan === "nama") return a.nama.localeCompare(b.nama);
-      return a.kodePelanggan.localeCompare(b.kodePelanggan);
+  const peta = useMemo(() => {
+    return daftar.filter((p) => p.latitude != null && p.longitude != null);
+  }, [daftar]);
+
+  const komplainDenganPosisi = useMemo(() => {
+    return komplain.map((k) => {
+      const lat = k.pelanggan.latitude;
+      const lng = k.pelanggan.longitude;
+      const posisi: [number, number] =
+        lat != null && lng != null
+          ? [lat, lng]
+          : (() => {
+              const { rt } = cariRtTerdekat([-6.424838, 106.832667]);
+              return [rt.lat, rt.lng];
+            })();
+      return { ...k, posisi };
     });
-  }, [tanpaKoordinat, urutkan]);
+  }, [komplain]);
 
+  const komplainFilter = useMemo(() => {
+    const q = cari.trim().toLowerCase();
+    return komplainDenganPosisi.filter((k) => {
+      if (komplainTab !== "semua" && k.status !== komplainTab) return false;
+      if (q && !`${k.pelanggan.nama} ${k.pelanggan.kodePelanggan} ${k.deskripsi}`.toLowerCase().includes(q))
+        return false;
+      return true;
+    });
+  }, [komplainDenganPosisi, komplainTab, cari]);
+
+  const hitungBaru = komplainDenganPosisi.filter((k) => k.status === "baru").length;
+  const petugasOnline = petugas.filter((p) => isOnline(p.updatedAt)).length;
+  const kendaraanOnline = kendaraan.filter((k) => isOnline(k.updatedAt)).length;
   const lunasCount = useMemo(
     () => pelanggan.filter((p) => p.statusTagihan === "lunas").length,
     [pelanggan]
@@ -311,51 +407,9 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
       ).length,
     [pelanggan]
   );
-  const aktifCount = useMemo(
-    () => pelanggan.filter((p) => p.status === "aktif").length,
-    [pelanggan]
-  );
 
-  const saranPeta = useMemo(() => {
-    const q = pencarianPeta.trim().toLowerCase();
-    if (!q || q.length < 2) return [];
-    return pelanggan
-      .filter(
-        (p) =>
-          p.latitude != null &&
-          p.longitude != null &&
-          (p.nama.toLowerCase().includes(q) ||
-            p.kodePelanggan.toLowerCase().includes(q) ||
-            p.alamat.toLowerCase().includes(q) ||
-            (p.rtRw && p.rtRw.toLowerCase().includes(q)))
-      )
-      .slice(0, 6);
-  }, [pelanggan, pencarianPeta]);
-
-  const peta = useMemo(() => {
-    return pelanggan.filter((p) => {
-      if (p.latitude == null || p.longitude == null) return false;
-      if (filterWilayah !== "semua" && p.wilayah?.id !== Number(filterWilayah)) return false;
-      if (filterStatus !== "semua" && p.status !== filterStatus) return false;
-      if (filterTagihan === "lunas" && p.statusTagihan !== "lunas") return false;
-      if (
-        filterTagihan === "tunggakan" &&
-        p.statusTagihan !== "tunggakan" &&
-        p.statusTagihan !== "belum_bayar"
-      )
-        return false;
-      if (cari.trim()) {
-        const q = cari.trim().toLowerCase();
-        if (!`${p.nama} ${p.kodePelanggan} ${p.alamat}`.toLowerCase().includes(q)) return false;
-      }
-      return true;
-    });
-  }, [pelanggan, filterWilayah, filterStatus, filterTagihan, cari]);
-
+  // Rute details
   const ruteTerpilih = ruteId !== "semua" ? rute.find((r) => String(r.id) === ruteId) ?? null : null;
-  const ruteAktif = rute.filter((r) => r.anggota.length >= 2);
-
-  // Urutan rute terpilih + jarak antar titik (untuk panel Rute)
   const ruteUrutPanel = useMemo(() => {
     if (!ruteTerpilih) return [];
     const urut = urutkanRute(
@@ -374,202 +428,854 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
     return hasil;
   }, [ruteTerpilih]);
 
-  const komplainDenganPosisi = useMemo(() => {
-    return komplain.map((k) => {
-      const lat = k.pelanggan.latitude;
-      const lng = k.pelanggan.longitude;
-      const posisi: [number, number] =
-        lat != null && lng != null
-          ? [lat, lng]
-          : (() => {
-              const { rt } = cariRtTerdekat([-6.424838, 106.832667]);
-              return [rt.lat, rt.lng];
-            })();
-      return { ...k, posisi };
-    });
-  }, [komplain]);
+  // Close inspector flyout
+  const closeFlyout = useCallback(() => {
+    setSelectedId(null);
+    setSelectedKendaraanId(null);
+    setSelectedPetugasId(null);
+    setSelectedKomplainId(null);
+    setSelectedTransitId(null);
+  }, []);
 
-  const komplainFilter = useMemo(
-    () =>
-      komplainTab === "semua"
-        ? komplainDenganPosisi
-        : komplainDenganPosisi.filter((k) => k.status === komplainTab),
-    [komplainDenganPosisi, komplainTab]
-  );
+  // Selection handlers
+  const pilihPelanggan = useCallback((id: number) => {
+    setSelectedId(id);
+    setSelectedKendaraanId(null);
+    setSelectedPetugasId(null);
+    setSelectedKomplainId(null);
+    setSelectedTransitId(null);
+  }, []);
 
-  const hitungBaru = komplainDenganPosisi.filter((k) => k.status === "baru").length;
+  const pilihKendaraan = useCallback((id: number) => {
+    setSelectedKendaraanId(id);
+    setSelectedId(null);
+    setSelectedPetugasId(null);
+    setSelectedKomplainId(null);
+    setSelectedTransitId(null);
+  }, []);
 
-  // Hitung armada yang BENAR-BENAR online (kirim posisi < 15 mnt) — bukan semua yang pernah kirim
-  const petugasOnline = petugas.filter((p) => isOnline(p.updatedAt)).length;
-  const kendaraanOnline = kendaraan.filter((k) => isOnline(k.updatedAt)).length;
-  const totalOnline = petugasOnline + kendaraanOnline;
+  const pilihPetugas = useCallback((id: number) => {
+    setSelectedPetugasId(id);
+    setSelectedKendaraanId(null);
+    setSelectedId(null);
+    setSelectedKomplainId(null);
+    setSelectedTransitId(null);
+  }, []);
 
-  const pilihPelanggan = useCallback(
-    (id: number) => {
-      setSelectedId(id);
-      setSelectedKomplainId(null);
-      // Jika pelanggan yang dipilih tidak ada di peta karena filter aktif, reset filter agar pin muncul
-      const adaDiPeta = peta.some((x) => x.id === id);
-      if (!adaDiPeta) {
-        setFilterWilayah("semua");
-        setFilterStatus("semua");
-        setFilterTagihan("semua");
-        setCari("");
-      }
-    },
-    [peta]
-  );
   const pilihKomplain = useCallback((id: number) => {
     setSelectedKomplainId(id);
     setSelectedId(null);
+    setSelectedKendaraanId(null);
+    setSelectedPetugasId(null);
+    setSelectedTransitId(null);
   }, []);
 
+  const pilihTransit = useCallback((id: number) => {
+    setSelectedTransitId(id);
+    setSelectedId(null);
+    setSelectedKendaraanId(null);
+    setSelectedPetugasId(null);
+    setSelectedKomplainId(null);
+  }, []);
+
+  // Inspector selected items
+  const inspectorKendaraan = kendaraan.find((k) => k.kendaraanId === selectedKendaraanId);
+  const inspectorPelanggan = pelanggan.find((p) => p.id === selectedId);
+  const inspectorKomplain = komplainDenganPosisi.find((k) => k.id === selectedKomplainId);
+  const inspectorTransit = transit.find((t) => t.id === selectedTransitId);
+  const inspectorPetugas = petugas.find((p) => p.petugasId === selectedPetugasId);
+
+  const hasInspector = !!(
+    inspectorKendaraan ||
+    inspectorPelanggan ||
+    inspectorKomplain ||
+    inspectorTransit ||
+    inspectorPetugas
+  );
+
   return (
-    <div className="space-y-4 pb-12">
-      {/* ── BAGIAN ATAS: PETA OPERASIONAL DENGAN BANNER, DASHBOARD & PENCARIAN ── */}
-      <div className="rounded-2xl border border-slate-200/80 shadow-sm bg-white overflow-hidden">
-        {/* Banner Pemantauan Realtime */}
-        <div className="bg-slate-900 text-white px-4 py-2 border-b border-slate-800 flex items-center justify-between text-[11px] font-bold flex-wrap gap-2">
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse ring-4 ring-emerald-400/20" />
-            <span className="tracking-wide uppercase">🟢 MONITORING REALTIME ARMADA & CAKUPAN SAMPAH KOTA DEPOK</span>
-          </div>
+    <div className="h-full w-full flex flex-col bg-slate-950 text-slate-100 overflow-hidden font-sans select-none">
+      {/* ── TOP UNIFIED TELEMETRY & COMMAND BAR (Height: 52px) ── */}
+      <header className="h-14 bg-[#16191f] border-b border-slate-800/80 px-3 sm:px-4 flex items-center justify-between gap-3 shrink-0 z-30 shadow-md">
+        {/* Left Brand & Metric Pills (LoadSwift Inspired) */}
+        <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto no-scrollbar">
+          {/* Sidebar Toggle Button */}
           <button
             type="button"
-            onClick={() => {
-              setPanelBawahTerbuka((p) => !p);
-              setInvalidateKey((k) => k + 1);
-            }}
-            className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 font-bold text-xs transition-colors flex items-center gap-1.5"
+            onClick={() => setSidebarOpen((s) => !s)}
+            className="p-1.5 rounded-xl bg-slate-800/70 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/80 transition-colors"
+            title={sidebarOpen ? "Sembunyikan Panel Kerja" : "Tampilkan Panel Kerja"}
           >
-            <span>{panelBawahTerbuka ? "⛶" : "👁️"}</span>
-            <span>{panelBawahTerbuka ? "Layar Penuh (Sembunyikan Panel)" : "Buka Panel Bawah"}</span>
+            {sidebarOpen ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeft className="w-4 h-4" />}
           </button>
+
+          {/* Brand Pill */}
+          <div className="hidden xl:flex items-center gap-2 px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-[11px] font-bold text-slate-200">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="tracking-wide uppercase font-mono">DISPATCH CONSOLE</span>
+          </div>
+
+          {/* Metric Status Pills */}
+          <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] font-bold">
+            {/* Truk Online Pill (Clickable filter) */}
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab("armada");
+                setSidebarOpen(true);
+              }}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#f59e0b]/15 hover:bg-[#f59e0b]/25 text-[#f59e0b] border border-[#f59e0b]/30 transition"
+            >
+              <Truck className="w-3.5 h-3.5" />
+              <span>{kendaraanOnline} Truk Online</span>
+            </button>
+
+            {/* Pengaduan Baru Pill (Clickable filter) */}
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab("pengaduan");
+                setSidebarOpen(true);
+              }}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl transition ${
+                hitungBaru > 0
+                  ? "bg-rose-500/20 text-rose-400 border border-rose-500/40 animate-pulse"
+                  : "bg-slate-800/60 text-slate-400 border border-slate-700"
+              }`}
+            >
+              <ShieldAlert className="w-3.5 h-3.5" />
+              <span>{hitungBaru} Pengaduan</span>
+            </button>
+
+            {/* Lapak / TPS Pill */}
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab("armada");
+                setSidebarOpen(true);
+              }}
+              className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700"
+            >
+              <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+              <span>{transit.filter((t) => t.aktif).length} Lapak/TPS</span>
+            </button>
+
+            {/* Total Warga Pill */}
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab("pelanggan");
+                setSidebarOpen(true);
+              }}
+              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700"
+            >
+              <Users className="w-3.5 h-3.5 text-sky-400" />
+              <span>{pelanggan.length} Warga</span>
+            </button>
+          </div>
         </div>
 
-        {/* GIS Floating Dashboard & Filter Bar */}
-        <div className="bg-slate-950 text-white px-4 py-3 flex flex-wrap items-center justify-between gap-3 border-b border-slate-800">
-          <div className="flex items-center gap-2 text-xs font-semibold flex-wrap">
-            <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-xl font-bold">
-              👥 {pelanggan.length} Warga ({aktifCount} Aktif)
-            </span>
-            <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-xl font-bold">
-              💳 {lunasCount} Lunas
-            </span>
-            {menunggakCount > 0 && (
-              <span className="bg-rose-500/20 text-rose-300 border border-rose-500/30 px-2.5 py-1 rounded-xl font-bold animate-pulse">
-                ⛔ {menunggakCount} Menunggak
-              </span>
+        {/* Center / Right: Quick Search & Filter Controls */}
+        <div className="flex items-center gap-2">
+          {/* Quick Search Input */}
+          <div className="relative w-44 sm:w-64 lg:w-72">
+            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5 pointer-events-none" />
+            <input
+              type="text"
+              value={cari}
+              onChange={(e) => setCari(e.target.value)}
+              placeholder="Cari armada, warga, jalan…"
+              className="w-full bg-slate-900 border border-slate-700/80 rounded-xl pl-8 pr-7 py-1.5 text-xs text-slate-100 placeholder-slate-400 outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400/30 transition shadow-inner"
+            />
+            {cari && (
+              <button
+                type="button"
+                onClick={() => setCari("")}
+                className="absolute right-2.5 top-2 text-slate-400 hover:text-white"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
             )}
-            <span className="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-xl font-bold">
-              🚛 {kendaraanOnline} Truk Online
-            </span>
-            <span className="bg-sky-500/20 text-sky-300 border border-sky-500/30 px-2.5 py-1 rounded-xl font-bold">
-              👮 {petugasOnline} Petugas Online
-            </span>
-            <span className="bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-1 rounded-xl font-bold">
-              📍 {transit.filter((t) => t.aktif).length} Lapak/TPS
-            </span>
           </div>
 
-          {/* Pricing Filter Buttons */}
-          <div className="flex items-center gap-1.5 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-bold">
-            <span className="text-[10px] text-slate-400 px-1.5 uppercase">Tagihan:</span>
+          {/* Basemap Switcher Chips */}
+          <div className="hidden sm:flex items-center bg-slate-900 p-0.5 rounded-xl border border-slate-800 text-[11px] font-semibold">
             <button
               type="button"
-              onClick={() => setFilterTagihan("semua")}
-              className={`px-2 py-0.5 rounded-lg transition-colors ${
-                filterTagihan === "semua" ? "bg-emerald-700 text-white" : "text-slate-400 hover:text-white"
+              onClick={() => setTileMode("osm")}
+              className={`px-2.5 py-1 rounded-lg transition ${
+                tileMode === "osm" ? "bg-amber-400 text-slate-950 font-bold" : "text-slate-400 hover:text-white"
               }`}
             >
-              Semua
+              Standar
             </button>
             <button
               type="button"
-              onClick={() => setFilterTagihan("lunas")}
-              className={`px-2 py-0.5 rounded-lg transition-colors ${
-                filterTagihan === "lunas" ? "bg-emerald-700 text-white" : "text-slate-400 hover:text-white"
+              onClick={() => setTileMode("esri-satellite")}
+              className={`px-2.5 py-1 rounded-lg transition ${
+                tileMode === "esri-satellite"
+                  ? "bg-amber-400 text-slate-950 font-bold"
+                  : "text-slate-400 hover:text-white"
               }`}
             >
-              ✓ Lunas
+              Satelit
             </button>
             <button
               type="button"
-              onClick={() => setFilterTagihan("tunggakan")}
-              className={`px-2 py-0.5 rounded-lg transition-colors ${
-                filterTagihan === "tunggakan" ? "bg-rose-600 text-white" : "text-slate-400 hover:text-white"
+              onClick={() => setTileMode("dark")}
+              className={`px-2.5 py-1 rounded-lg transition ${
+                tileMode === "dark" ? "bg-amber-400 text-slate-950 font-bold" : "text-slate-400 hover:text-white"
               }`}
             >
-              ⛔ Menunggak
+              Gelap
             </button>
           </div>
-        </div>
 
-        {/* Map Canvas - dengan Pencarian Cerdas Mengambang (Searching & Finding) */}
-        <div className={`relative transition-all duration-300 ${panelBawahTerbuka ? "h-[65vh] min-h-[500px]" : "h-[85vh] min-h-[620px]"}`}>
-          {/* Searching & Finding Floating Input on Map */}
-          <div className="absolute top-3 left-3 z-[1000] w-72 sm:w-80">
-            <div className="relative">
-              <input
-                type="text"
-                value={pencarianPeta}
-                onChange={(e) => {
-                  setPencarianPeta(e.target.value);
-                  setBukaSaranPeta(true);
-                }}
-                onFocus={() => setBukaSaranPeta(true)}
-                placeholder="🔍 Cari cepat warga di peta..."
-                className="w-full bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl px-3.5 py-2 text-xs font-bold text-slate-800 placeholder-slate-400 shadow-lg outline-none focus:ring-2 focus:ring-emerald-500/30"
-              />
-              {pencarianPeta && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPencarianPeta("");
-                    setBukaSaranPeta(false);
-                  }}
-                  className="absolute right-3 top-2 text-xs text-slate-400 hover:text-slate-700 font-bold"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
+          {/* GIS Layer Popover Toggle */}
+          <div className="relative" ref={layerMenuRef}>
+            <button
+              type="button"
+              onClick={() => setLayerMenuOpen((o) => !o)}
+              className={`p-2 rounded-xl border transition flex items-center gap-1.5 text-xs font-semibold ${
+                layerMenuOpen
+                  ? "bg-amber-400 text-slate-950 border-amber-400"
+                  : "bg-slate-900 hover:bg-slate-800 text-slate-200 border-slate-700/80"
+              }`}
+              title="Kontrol Layer GIS"
+            >
+              <Layers className="w-4 h-4" />
+              <ChevronDown className="w-3 h-3" />
+            </button>
 
-            {/* Dropdown Suggestions */}
-            {bukaSaranPeta && saranPeta.length > 0 && (
-              <div className="mt-1 bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden divide-y divide-slate-100 max-h-60 overflow-y-auto">
-                {saranPeta.map((p) => (
+            {/* Layer Settings Popover */}
+            {layerMenuOpen && (
+              <div className="absolute right-0 mt-2 w-64 bg-[#1e2229] border border-slate-700/80 rounded-2xl p-3 shadow-2xl z-50 text-xs space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-700">
+                  <span className="font-bold uppercase tracking-wider text-[10px] text-amber-400">
+                    Layer & Kontrol GIS
+                  </span>
                   <button
-                    key={`suggest-${p.id}`}
                     type="button"
-                    onClick={() => {
-                      pilihPelanggan(p.id);
-                      setPencarianPeta(p.nama);
-                      setBukaSaranPeta(false);
-                    }}
-                    className="w-full text-left px-3.5 py-2 hover:bg-emerald-50 flex items-center justify-between gap-2 transition-colors"
+                    onClick={() => setLayerMenuOpen(false)}
+                    className="text-slate-400 hover:text-white"
                   >
-                    <div className="min-w-0">
-                      <p className="text-xs font-bold text-slate-900 truncate">{p.nama}</p>
-                      <p className="text-[10px] text-slate-500 truncate">{p.alamat}</p>
-                    </div>
-                    <span
-                      className={`text-[9px] font-black px-1.5 py-0.5 rounded shrink-0 ${
-                        p.statusTagihan === "lunas"
-                          ? "bg-emerald-100 text-emerald-800"
-                          : p.statusTagihan === "tunggakan"
-                          ? "bg-rose-100 text-rose-800"
-                          : "bg-slate-100 text-slate-700"
-                      }`}
-                    >
-                      {p.statusTagihan === "lunas" ? "LUNAS" : p.statusTagihan === "tunggakan" ? "MENUNGGAK" : p.kodePelanggan}
-                    </span>
+                    <X className="w-3.5 h-3.5" />
                   </button>
-                ))}
+                </div>
+
+                <div className="space-y-2">
+                  <label className="flex items-center justify-between cursor-pointer hover:bg-slate-800/50 p-1.5 rounded-lg transition">
+                    <span className="text-slate-300 font-medium">Batas Kecamatan</span>
+                    <input
+                      type="checkbox"
+                      checked={tampilkanBatas}
+                      onChange={(e) => setTampilkanBatas(e.target.checked)}
+                      className="rounded accent-amber-400 cursor-pointer"
+                    />
+                  </label>
+                  <label className="flex items-center justify-between cursor-pointer hover:bg-slate-800/50 p-1.5 rounded-lg transition">
+                    <span className="text-slate-300 font-medium">Batas Kelurahan</span>
+                    <input
+                      type="checkbox"
+                      checked={tampilkanBatasKelurahan}
+                      onChange={(e) => setTampilkanBatasKelurahan(e.target.checked)}
+                      className="rounded accent-amber-400 cursor-pointer"
+                    />
+                  </label>
+                  <label className="flex items-center justify-between cursor-pointer hover:bg-slate-800/50 p-1.5 rounded-lg transition">
+                    <span className="text-slate-300 font-medium">Titik RT / RTRW</span>
+                    <input
+                      type="checkbox"
+                      checked={tampilkanRt}
+                      onChange={(e) => setTampilkanRt(e.target.checked)}
+                      className="rounded accent-amber-400 cursor-pointer"
+                    />
+                  </label>
+                  <label className="flex items-center justify-between cursor-pointer hover:bg-slate-800/50 p-1.5 rounded-lg transition">
+                    <span className="text-slate-300 font-medium">Pelacakan Armada</span>
+                    <input
+                      type="checkbox"
+                      checked={tampilkanArmada}
+                      onChange={(e) => setTampilkanArmada(e.target.checked)}
+                      className="rounded accent-amber-400 cursor-pointer"
+                    />
+                  </label>
+                  <label className="flex items-center justify-between cursor-pointer hover:bg-slate-800/50 p-1.5 rounded-lg transition">
+                    <span className="text-slate-300 font-medium">Radius Cakupan 200m</span>
+                    <input
+                      type="checkbox"
+                      checked={tampilkanCakupan}
+                      onChange={(e) => setTampilkanCakupan(e.target.checked)}
+                      className="rounded accent-amber-400 cursor-pointer"
+                    />
+                  </label>
+                  <label className="flex items-center justify-between cursor-pointer hover:bg-slate-800/50 p-1.5 rounded-lg transition">
+                    <span className="text-slate-300 font-medium">Heatmap Kepadatan</span>
+                    <input
+                      type="checkbox"
+                      checked={showHeatmap}
+                      onChange={(e) => setShowHeatmap(e.target.checked)}
+                      className="rounded accent-rose-500 cursor-pointer"
+                    />
+                  </label>
+                </div>
               </div>
             )}
           </div>
 
+          {/* Petugas Login Broadcast Shortcut */}
+          {profilSaya && (
+            <div className="shrink-0">
+              <LacakLokasi profil={profilSaya} kendaraan={kendaraanSaya} />
+            </div>
+          )}
+        </div>
+      </header>
+
+      {/* ── MAIN WORKSPACE AREA (3-PANE CONSOLE) ── */}
+      <div className="flex-1 flex overflow-hidden relative">
+        {/* ── LEFT PANE: OPERATIONAL CONSOLE (Width: 360px - 380px) ── */}
+        <div
+          className={`${
+            sidebarOpen ? "w-80 sm:w-96" : "w-0 -translate-x-full"
+          } bg-[#16191f] border-r border-slate-800 flex flex-col shrink-0 h-full z-10 transition-all duration-300 overflow-hidden shadow-2xl`}
+        >
+          {/* Console Tab Bar (LoadSwift Style with Yellow Accent) */}
+          <div className="p-2 border-b border-slate-800/90 bg-[#121418] grid grid-cols-4 gap-1">
+            <button
+              type="button"
+              onClick={() => setActiveTab("armada")}
+              className={`py-2 px-1 rounded-xl font-bold text-[11px] flex flex-col items-center gap-1 transition ${
+                activeTab === "armada"
+                  ? "bg-[#232731] text-amber-300 border border-amber-500/30 shadow-sm"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/40"
+              }`}
+            >
+              <Truck className="w-4 h-4" />
+              <span>Armada ({kendaraan.length})</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab("pengaduan")}
+              className={`py-2 px-1 rounded-xl font-bold text-[11px] flex flex-col items-center gap-1 transition relative ${
+                activeTab === "pengaduan"
+                  ? "bg-[#232731] text-rose-400 border border-rose-500/30 shadow-sm"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/40"
+              }`}
+            >
+              <ShieldAlert className="w-4 h-4" />
+              <span>Pengaduan</span>
+              {hitungBaru > 0 && (
+                <span className="absolute top-1 right-2 w-2 h-2 rounded-full bg-rose-500 animate-ping" />
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab("pelanggan")}
+              className={`py-2 px-1 rounded-xl font-bold text-[11px] flex flex-col items-center gap-1 transition ${
+                activeTab === "pelanggan"
+                  ? "bg-[#232731] text-emerald-400 border border-emerald-500/30 shadow-sm"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/40"
+              }`}
+            >
+              <Users className="w-4 h-4" />
+              <span>Warga ({pelanggan.length})</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab("rute")}
+              className={`py-2 px-1 rounded-xl font-bold text-[11px] flex flex-col items-center gap-1 transition ${
+                activeTab === "rute"
+                  ? "bg-[#232731] text-sky-400 border border-sky-500/30 shadow-sm"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/40"
+              }`}
+            >
+              <RouteIcon className="w-4 h-4" />
+              <span>Rute ({rute.length})</span>
+            </button>
+          </div>
+
+          {/* ── TAB 1: ARMADA & TELEMETRI ── */}
+          {activeTab === "armada" && (
+            <div className="flex-1 overflow-y-auto divide-y divide-slate-800/60 p-2 space-y-2 custom-scrollbar">
+              {/* Lapak / TPS Quick Selector */}
+              {transit.filter((t) => t.aktif).length > 0 && (
+                <div className="p-2.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 mb-2 space-y-1.5">
+                  <div className="flex items-center justify-between text-[11px] font-bold text-amber-300">
+                    <span className="flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-amber-400" />
+                      LAPAK / TITIK TRANSIT ({transit.filter((t) => t.aktif).length})
+                    </span>
+                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-200 font-mono">
+                      TPS 3R
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 gap-1.5 pt-1">
+                    {transit.filter((t) => t.aktif).map((t) => {
+                      const isSel = selectedTransitId === t.id;
+                      return (
+                        <button
+                          key={`transit-${t.id}`}
+                          type="button"
+                          onClick={() => {
+                            pilihTransit(t.id);
+                            setPusatPetugas([t.latitude, t.longitude]);
+                          }}
+                          className={`w-full text-left p-2 rounded-xl border text-xs transition flex items-center justify-between ${
+                            isSel
+                              ? "bg-amber-400/20 border-amber-400 text-white"
+                              : "bg-slate-900/80 hover:bg-slate-800 border-slate-800 text-slate-300"
+                          }`}
+                        >
+                          <div className="min-w-0">
+                            <p className="font-bold truncate text-slate-100">{t.nama}</p>
+                            <p className="text-[10px] text-slate-400 truncate">{t.alamat || "Pusat Daur Ulang"}</p>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-amber-400 shrink-0" />
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Header Telemetri Armada */}
+              <div className="flex items-center justify-between px-2 pt-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                <span>Daftar Armada Truk</span>
+                <span className="text-amber-400">{kendaraanOnline} Online / {kendaraan.length} Unit</span>
+              </div>
+
+              {/* Daftar Truk Cards (LoadSwift Style) */}
+              <div className="space-y-2 pt-1">
+                {kendaraan.map((k) => {
+                  const online = isOnline(k.updatedAt);
+                  const isSel = selectedKendaraanId === k.kendaraanId;
+                  const isDump = k.jenis === "dump_truck";
+                  // Kapasitas muatan estimasi
+                  const capacityPercent = online ? (isDump ? 78 : 62) : 0;
+
+                  return (
+                    <div
+                      key={`knd-${k.kendaraanId}`}
+                      onClick={() => pilihKendaraan(k.kendaraanId)}
+                      className={`p-3 rounded-2xl border transition-all cursor-pointer relative overflow-hidden ${
+                        isSel
+                          ? "bg-[#232731] border-amber-400 shadow-lg shadow-amber-950/40 ring-1 ring-amber-400/50"
+                          : "bg-[#1a1d24] hover:bg-[#20242e] border-slate-800"
+                      }`}
+                    >
+                      {/* Top Row: Name, Plate, Status */}
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div
+                            className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm shrink-0 ${
+                              online ? "bg-amber-400 text-slate-950 font-bold" : "bg-slate-800 text-slate-400"
+                            }`}
+                          >
+                            {isDump ? "🚛" : "🛺"}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-bold text-slate-100 truncate">{k.nama}</p>
+                            <p className="text-[10px] font-mono text-amber-400 truncate">
+                              {k.platNomor || "NO-PLATE"}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Status Badge */}
+                        <span
+                          className={`text-[9px] font-black px-2 py-0.5 rounded-full shrink-0 uppercase tracking-wide ${
+                            online
+                              ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                              : "bg-slate-800 text-slate-400 border border-slate-700"
+                          }`}
+                        >
+                          {online ? "🟢 ON ROUTE" : "⚪ STANDBY"}
+                        </span>
+                      </div>
+
+                      {/* Driver & Telemetry Row */}
+                      <div className="mt-2.5 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+                        <div className="flex items-center gap-1.5 truncate">
+                          <span className="text-slate-500">Sopir:</span>
+                          <span className="font-semibold text-slate-200 truncate">
+                            {k.pengemudi || "Tanpa Sopir"}
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-slate-400 shrink-0 font-mono">
+                          {formatWaktuRelatifPeta(k.updatedAt)}
+                        </span>
+                      </div>
+
+                      {/* Visual Waste Capacity Gauge (LoadSwift Spec) */}
+                      {online && (
+                        <div className="mt-2 pt-1.5 border-t border-slate-800/60">
+                          <div className="flex items-center justify-between text-[10px] font-semibold text-slate-300 mb-1">
+                            <span className="flex items-center gap-1">
+                              <Gauge className="w-3 h-3 text-amber-400" />
+                              Kapasitas Muatan Sampah
+                            </span>
+                            <span className="font-mono text-amber-300 font-bold">{capacityPercent}%</span>
+                          </div>
+                          <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-gradient-to-r from-emerald-500 via-amber-400 to-rose-500 rounded-full transition-all duration-500"
+                              style={{ width: `${capacityPercent}%` }}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+
+                {kendaraan.length === 0 && (
+                  <p className="text-xs text-slate-500 text-center py-6">Tidak ada armada terdaftar.</p>
+                )}
+              </div>
+
+              {/* Petugas Lapangan Aktif */}
+              <div className="pt-3">
+                <div className="flex items-center justify-between px-2 pb-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                  <span>Petugas Lapangan Online</span>
+                  <span className="text-emerald-400">{petugasOnline} Petugas</span>
+                </div>
+                <div className="space-y-1.5">
+                  {petugas.map((p) => {
+                    const online = isOnline(p.updatedAt);
+                    const isSel = selectedPetugasId === p.petugasId;
+                    return (
+                      <div
+                        key={`ptg-${p.petugasId}`}
+                        onClick={() => pilihPetugas(p.petugasId)}
+                        className={`p-2.5 rounded-xl border transition cursor-pointer flex items-center justify-between ${
+                          isSel
+                            ? "bg-[#232731] border-cyan-400 text-white"
+                            : "bg-[#1a1d24] hover:bg-[#20242e] border-slate-800 text-slate-300"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <span className="text-sm">👮</span>
+                          <div className="min-w-0">
+                            <p className="text-xs font-bold text-slate-100 truncate">{p.nama}</p>
+                            <p className="text-[10px] text-slate-400 truncate uppercase">
+                              {p.jabatan || "Petugas Lapangan"}
+                            </p>
+                          </div>
+                        </div>
+                        <span
+                          className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
+                            online
+                              ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                              : "bg-slate-800 text-slate-500 border border-slate-700"
+                          }`}
+                        >
+                          {online ? "LIVE" : "OFFLINE"}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── TAB 2: PENGADUAN LIVE ── */}
+          {activeTab === "pengaduan" && (
+            <div className="flex-1 overflow-y-auto p-2 space-y-2 custom-scrollbar">
+              {/* Subtabs Filter Pengaduan */}
+              <div className="flex items-center gap-1 bg-[#121418] p-1 rounded-xl border border-slate-800 mb-2">
+                {KOMPLAIN_TABS.map((t) => {
+                  const count =
+                    t.key === "semua"
+                      ? komplainDenganPosisi.length
+                      : komplainDenganPosisi.filter((k) => k.status === t.key).length;
+                  return (
+                    <button
+                      key={`tab-kmp-${t.key}`}
+                      type="button"
+                      onClick={() => setKomplainTab(t.key)}
+                      className={`flex-1 py-1.5 text-[10px] font-bold rounded-lg transition ${
+                        komplainTab === t.key
+                          ? "bg-rose-500 text-white shadow-sm"
+                          : "text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      {t.label} ({count})
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* List of Complaint Cards */}
+              <div className="space-y-2">
+                {komplainFilter.map((k) => {
+                  const isSel = selectedKomplainId === k.id;
+                  const isBaru = k.status === "baru";
+                  return (
+                    <div
+                      key={`kmp-${k.id}`}
+                      onClick={() => pilihKomplain(k.id)}
+                      className={`p-3 rounded-2xl border transition cursor-pointer relative overflow-hidden ${
+                        isSel
+                          ? "bg-[#232731] border-rose-500 shadow-lg shadow-rose-950/40"
+                          : "bg-[#1a1d24] hover:bg-[#20242e] border-slate-800"
+                      }`}
+                    >
+                      {isBaru && (
+                        <div className="absolute top-0 right-0 w-2 h-2 rounded-bl bg-rose-500" />
+                      )}
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <span
+                            className="text-[9px] font-black px-2 py-0.5 rounded-full uppercase"
+                            style={{
+                              backgroundColor: `${KOMPLAIN_WARNA[k.status] ?? "#ef4444"}20`,
+                              color: KOMPLAIN_WARNA[k.status] ?? "#ef4444",
+                              border: `1px solid ${KOMPLAIN_WARNA[k.status] ?? "#ef4444"}40`,
+                            }}
+                          >
+                            {k.status.toUpperCase()}
+                          </span>
+                          <h4 className="text-xs font-bold text-slate-100 mt-1.5">
+                            {KOMPLAIN_LABEL[k.jenis] ?? k.jenis}
+                          </h4>
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-mono">
+                          {formatWaktuRelatifPeta(k.createdAt)}
+                        </span>
+                      </div>
+
+                      <p className="text-[11px] text-slate-300 mt-1.5 line-clamp-2 leading-relaxed">
+                        {k.deskripsi}
+                      </p>
+
+                      <div className="mt-2.5 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400">
+                        <span className="font-semibold text-slate-200 truncate">
+                          {k.pelanggan.nama}{" "}
+                          <span className="text-rose-400 font-mono">[{k.pelanggan.kodePelanggan}]</span>
+                        </span>
+                        <ChevronRight className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {komplainFilter.length === 0 && (
+                  <div className="p-8 text-center text-xs text-slate-500">
+                    Tidak ada pengaduan {komplainTab !== "semua" ? `dengan status ${komplainTab}` : ""}.
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ── TAB 3: DIREKTORI WARGA (PELANGGAN) ── */}
+          {activeTab === "pelanggan" && (
+            <div className="flex-1 flex flex-col overflow-hidden">
+              {/* Filters Strip */}
+              <div className="p-2 border-b border-slate-800/80 bg-[#121418] space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <select
+                    value={filterWilayah}
+                    onChange={(e) => setFilterWilayah(e.target.value)}
+                    className="bg-slate-900 border border-slate-700 text-slate-200 rounded-xl px-2.5 py-1.5 text-[11px] outline-none cursor-pointer"
+                  >
+                    <option value="semua">Semua Wilayah</option>
+                    {wilayah.map((w) => (
+                      <option key={w.id} value={w.id}>
+                        {w.nama}
+                      </option>
+                    ))}
+                  </select>
+
+                  <select
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value)}
+                    className="bg-slate-900 border border-slate-700 text-slate-200 rounded-xl px-2.5 py-1.5 text-[11px] outline-none cursor-pointer"
+                  >
+                    <option value="semua">Semua Status</option>
+                    {Object.entries(STATUS_LABEL).map(([k, v]) => (
+                      <option key={k} value={k}>
+                        {v}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Sub-filter Tagihan & Sort */}
+                <div className="flex items-center justify-between text-[11px] pt-1">
+                  <div className="flex items-center gap-1 font-semibold">
+                    <button
+                      type="button"
+                      onClick={() => setFilterTagihan("semua")}
+                      className={`px-2 py-0.5 rounded-lg transition ${
+                        filterTagihan === "semua" ? "bg-amber-400 text-slate-950 font-bold" : "text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      Semua
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFilterTagihan("lunas")}
+                      className={`px-2 py-0.5 rounded-lg transition ${
+                        filterTagihan === "lunas" ? "bg-emerald-600 text-white font-bold" : "text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      ✓ Lunas
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFilterTagihan("tunggakan")}
+                      className={`px-2 py-0.5 rounded-lg transition ${
+                        filterTagihan === "tunggakan" ? "bg-rose-600 text-white font-bold" : "text-slate-400 hover:text-white"
+                      }`}
+                    >
+                      ⛔ Menunggak
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setUrutkan((u) => (u === "kode" ? "nama" : "kode"))}
+                    className="text-amber-400 hover:underline text-[10px] font-bold"
+                  >
+                    {urutkan === "kode" ? "KODE (A-Z)" : "NAMA (A-Z)"}
+                  </button>
+                </div>
+              </div>
+
+              {/* Customer List */}
+              <div className="flex-1 overflow-y-auto p-2 space-y-1.5 custom-scrollbar divide-y divide-slate-800/40">
+                {daftarPetaUrut.slice(0, 80).map((p) => {
+                  const isSel = selectedId === p.id;
+                  const zona = zonaPelanggan.get(p.id);
+                  const isLunas = p.statusTagihan === "lunas";
+                  const isMenunggak = p.statusTagihan === "tunggakan" || p.statusTagihan === "belum_bayar";
+
+                  return (
+                    <div
+                      key={`cust-${p.id}`}
+                      onClick={() => pilihPelanggan(p.id)}
+                      className={`p-2.5 rounded-xl border transition cursor-pointer ${
+                        isSel
+                          ? "bg-[#232731] border-emerald-400 text-white shadow-md shadow-emerald-950/30"
+                          : "bg-[#1a1d24] hover:bg-[#20242e] border-slate-800 text-slate-300"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold text-slate-100 truncate">{p.nama}</p>
+                          <p className="text-[10px] text-slate-400 truncate mt-0.5">
+                            <span className="font-mono text-emerald-400 font-bold">{p.kodePelanggan}</span> ·{" "}
+                            {p.alamat || "Alamat tidak tersedia"}
+                          </p>
+                        </div>
+
+                        {/* Status Tagihan Badge */}
+                        <span
+                          className={`text-[9px] font-black px-2 py-0.5 rounded-full shrink-0 uppercase font-mono ${
+                            isLunas
+                              ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                              : isMenunggak
+                              ? "bg-rose-500/20 text-rose-300 border border-rose-500/30 animate-pulse"
+                              : "bg-slate-800 text-slate-400 border border-slate-700"
+                          }`}
+                        >
+                          {isLunas ? "LUNAS" : isMenunggak ? "TUNGGAKAN" : p.status}
+                        </span>
+                      </div>
+
+                      <div className="mt-2 flex items-center justify-between text-[10px] text-slate-500">
+                        <span>{zona?.kelurahan ? `Kel. ${zona.kelurahan}` : p.wilayah?.nama ?? "—"}</span>
+                        <span>{p.rtRw ? `RT/RW ${p.rtRw}` : ""}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {daftarPetaUrut.length === 0 && (
+                  <div className="p-8 text-center text-xs text-slate-500">
+                    Tidak ada pelanggan yang cocok dengan filter.
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ── TAB 4: RUTE OPERASIONAL ── */}
+          {activeTab === "rute" && (
+            <div className="flex-1 flex flex-col overflow-hidden">
+              <div className="p-3 border-b border-slate-800 bg-[#121418] space-y-2">
+                <label className="text-[10px] font-bold text-slate-400 uppercase">
+                  PILIH JALUR RUTE PENGANGKUTAN
+                </label>
+                <select
+                  value={ruteId}
+                  onChange={(e) => setRuteId(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-700 text-slate-200 rounded-xl px-3 py-2 text-xs outline-none cursor-pointer"
+                >
+                  <option value="semua">— Tampilkan Semua Rute —</option>
+                  {rute.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.nama} · {r.hari} ({r.anggota.length} titik)
+                    </option>
+                  ))}
+                </select>
+
+                {ruteTerpilih && (
+                  <div className="p-2.5 rounded-xl bg-sky-500/10 border border-sky-500/30 text-sky-200 text-xs space-y-1">
+                    <p className="font-bold">
+                      {ruteTerpilih.nama} · {ruteTerpilih.hari}
+                    </p>
+                    <p className="text-[11px] text-sky-300">
+                      Petugas: <strong className="text-white">{ruteTerpilih.petugas || "Belum ditugaskan"}</strong>
+                    </p>
+                    {ruteUrutPanel.length >= 2 && (
+                      <p className="text-[10px] font-mono text-amber-300 pt-1 border-t border-sky-500/20">
+                        ESTIMASI JARAK:{" "}
+                        <strong>{formatJarak(ruteUrutPanel.reduce((a, x) => a + x.jarakM, 0))}</strong>
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Sequential Stops */}
+              <div className="flex-1 overflow-y-auto p-2 space-y-1.5 custom-scrollbar">
+                {ruteUrutPanel.map((x, i) => (
+                  <div
+                    key={`stop-${x.anggota.id}`}
+                    onClick={() => pilihPelanggan(x.anggota.id)}
+                    className="p-2.5 rounded-xl bg-[#1a1d24] hover:bg-[#20242e] border border-slate-800 text-slate-300 flex items-center gap-3 transition cursor-pointer"
+                  >
+                    <span className="w-6 h-6 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/40 text-xs font-bold font-mono flex items-center justify-center shrink-0">
+                      {i + 1}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-bold text-slate-100 truncate">{x.anggota.nama}</p>
+                      <p className="text-[10px] text-slate-400">
+                        {i === 0 ? "🏁 Titik Mulai (Start)" : `+${formatJarak(x.jarakM)} dari sebelumnya`}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+
+                {ruteUrutPanel.length === 0 && (
+                  <div className="p-8 text-center text-xs text-slate-500">
+                    {ruteTerpilih ? "Rute tidak memiliki titik koordinat." : "Pilih salah satu rute di atas."}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ── CENTER WORKSPACE: FULL GIS MAP CANVAS ── */}
+        <div className="flex-1 relative h-full bg-slate-950 overflow-hidden">
           <MapErrorBoundary>
             <MapView
               pelanggan={peta}
@@ -582,6 +1288,15 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
               setSelectedId={pilihPelanggan}
               selectedKomplainId={selectedKomplainId}
               setSelectedKomplainId={pilihKomplain}
+              selectedKendaraanId={selectedKendaraanId}
+              setSelectedKendaraanId={pilihKendaraan}
+              selectedPetugasId={selectedPetugasId}
+              setSelectedPetugasId={pilihPetugas}
+              selectedTransitId={selectedTransitId}
+              setSelectedTransitId={pilihTransit}
+              tileMode={tileMode}
+              setTileMode={setTileMode}
+              hideTileButtons={true}
               tampilkanCakupan={tampilkanCakupan}
               showHeatmap={showHeatmap}
               tampilkanBatas={tampilkanBatas}
@@ -593,631 +1308,279 @@ export default function PetaMap({ pelanggan, wilayah, rute, petugasAwal = [], ke
             />
           </MapErrorBoundary>
         </div>
-      </div>
 
-      {/* ── BAGIAN BAWAH: DASHBOARD ── */}
-      {panelBawahTerbuka && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-auto lg:h-[550px]">
-        
-        {/* KOLOM KIRI (3): HEADER & LAYER */}
-        <div className="lg:col-span-3 space-y-4 flex flex-col h-full">
-          {/* Info Header */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm relative overflow-hidden flex flex-col flex-shrink-0">
-            <h1 className="text-xl font-bold tracking-tight text-slate-900 leading-none flex items-center gap-2">
-              <svg className="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-              </svg>
-              PETA DEPOK
-            </h1>
-            <p className="text-xs text-slate-500 font-medium mt-2 leading-relaxed">
-              Sebaran {pelanggan.length} pelanggan · {totalBerkoordinat} berkoordinat · {wilayah.length} wilayah · {rute.length} rute · {kendaraan.length} armada
-            </p>
-            <div className="flex flex-wrap gap-2 text-xs text-slate-600 font-medium mt-3">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200"><span className="w-2 h-2 rounded-full bg-emerald-500"></span>Aktif</span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200"><span className="w-2 h-2 rounded-full bg-amber-500"></span>Calon</span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200"><span className="w-2 h-2 rounded-full bg-slate-400"></span>Nonaktif</span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200"><span className="w-2 h-2 rounded-full border border-rose-500"></span>No-Geo</span>
-            </div>
-            
-            {/* Footer Stats mini */}
-            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2 flex-wrap text-xs">
-              <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg font-semibold">
-                📍 {daftarPeta.length} di peta
-              </span>
-              {tanpaKoordinat.length > 0 && (
-                <span className="px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg font-semibold">
-                  ⚠️ {tanpaKoordinat.length} no-geo
-                </span>
-              )}
-              {hitungBaru > 0 && (
-                <span className="px-2.5 py-1 bg-rose-50 text-rose-700 border border-rose-200 rounded-lg font-semibold animate-pulse">
-                  🔥 {hitungBaru} komplain
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Layer toggle — styled chips */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm flex-1 flex flex-col justify-start overflow-y-auto custom-scrollbar">
-            <span className="font-bold uppercase tracking-wider text-[11px] text-slate-400 block mb-4 border-b border-slate-100 pb-2">KONTROL PETA</span>
-            
-            <div className="space-y-5">
-              {/* Grup: Batas Administrasi */}
-              <div className="space-y-1.5">
-                <h3 className="text-[10px] font-bold text-slate-400 uppercase px-1">🗺️ Batas Administrasi</h3>
-                
-                {/* Toggle Batas Kecamatan */}
-                <button type="button" onClick={() => setTampilkanBatas(!tampilkanBatas)} className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition-colors ${tampilkanBatas ? "bg-slate-50 border border-slate-200 shadow-sm" : "border border-transparent hover:bg-slate-50"}`}>
-                  <div className="flex items-center gap-2.5">
-                    <span className="w-3.5 h-3.5 border-[1.5px] border-[#f5a524] border-dashed rounded-sm shrink-0" title="Garis batas oranye putus-putus" />
-                    <span className={`text-xs ${tampilkanBatas ? "font-bold text-slate-900" : "font-medium text-slate-600"}`}>Batas Kecamatan</span>
-                  </div>
-                  <div className={`relative inline-flex h-4 w-7 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ease-in-out ${tampilkanBatas ? "bg-emerald-500" : "bg-slate-200"}`}>
-                    <span className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition duration-200 ease-in-out ${tampilkanBatas ? "translate-x-3.5" : "translate-x-0.5"}`} />
-                  </div>
-                </button>
-
-                {/* Toggle Batas Kelurahan */}
-                <button type="button" onClick={() => setTampilkanBatasKelurahan(!tampilkanBatasKelurahan)} className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition-colors ${tampilkanBatasKelurahan ? "bg-slate-50 border border-slate-200 shadow-sm" : "border border-transparent hover:bg-slate-50"}`}>
-                  <div className="flex items-center gap-2.5">
-                    <span className="w-3.5 h-3.5 border-[1.5px] border-emerald-400 rounded-sm bg-emerald-500/10 shrink-0" title="Garis batas hijau" />
-                    <span className={`text-xs ${tampilkanBatasKelurahan ? "font-bold text-slate-900" : "font-medium text-slate-600"}`}>Batas Kelurahan</span>
-                  </div>
-                  <div className={`relative inline-flex h-4 w-7 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ease-in-out ${tampilkanBatasKelurahan ? "bg-emerald-500" : "bg-slate-200"}`}>
-                    <span className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition duration-200 ease-in-out ${tampilkanBatasKelurahan ? "translate-x-3.5" : "translate-x-0.5"}`} />
-                  </div>
-                </button>
-
-                {/* Toggle Titik Koordinat RT */}
-                <button type="button" onClick={() => setTampilkanRt(!tampilkanRt)} className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition-colors ${tampilkanRt ? "bg-slate-50 border border-slate-200 shadow-sm" : "border border-transparent hover:bg-slate-50"}`}>
-                  <div className="flex items-center gap-2.5">
-                    <span className="w-3.5 h-3.5 rounded-full bg-sky-500 shrink-0 shadow-[0_0_4px_rgba(14,165,233,0.5)]" title="Titik Biru RT" />
-                    <span className={`text-xs ${tampilkanRt ? "font-bold text-slate-900" : "font-medium text-slate-600"}`}>Titik Koordinat RT</span>
-                  </div>
-                  <div className={`relative inline-flex h-4 w-7 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ease-in-out ${tampilkanRt ? "bg-emerald-500" : "bg-slate-200"}`}>
-                    <span className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition duration-200 ease-in-out ${tampilkanRt ? "translate-x-3.5" : "translate-x-0.5"}`} />
-                  </div>
-                </button>
-              </div>
-
-              {/* Grup: Operasional */}
-              <div className="space-y-1.5">
-                <h3 className="text-[10px] font-bold text-slate-400 uppercase px-1">🚛 Operasional</h3>
-                <button type="button" onClick={() => setTampilkanArmada(!tampilkanArmada)} className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition-colors ${tampilkanArmada ? "bg-slate-50 border border-slate-200 shadow-sm" : "border border-transparent hover:bg-slate-50"}`}>
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-sm shrink-0">🛰️</span>
-                    <span className={`text-xs ${tampilkanArmada ? "font-bold text-slate-900" : "font-medium text-slate-600"}`}>Pelacakan Armada</span>
-                  </div>
-                  <div className={`relative inline-flex h-4 w-7 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ease-in-out ${tampilkanArmada ? "bg-amber-500" : "bg-slate-200"}`}>
-                    <span className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition duration-200 ease-in-out ${tampilkanArmada ? "translate-x-3.5" : "translate-x-0.5"}`} />
-                  </div>
-                </button>
-              </div>
-
-              {/* Grup: Analisis Spasial */}
-              <div className="space-y-1.5">
-                <h3 className="text-[10px] font-bold text-slate-400 uppercase px-1">📊 Analisis Spasial</h3>
-                <button type="button" onClick={() => setTampilkanCakupan(!tampilkanCakupan)} className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition-colors ${tampilkanCakupan ? "bg-slate-50 border border-slate-200 shadow-sm" : "border border-transparent hover:bg-slate-50"}`}>
-                  <div className="flex items-center gap-2.5">
-                    <span className="w-3.5 h-3.5 rounded-full border border-sky-400 bg-sky-500/20 shrink-0" title="Lingkaran Biru Radius" />
-                    <span className={`text-xs ${tampilkanCakupan ? "font-bold text-slate-900" : "font-medium text-slate-600"}`}>Cakupan Radius 200m</span>
-                  </div>
-                  <div className={`relative inline-flex h-4 w-7 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ease-in-out ${tampilkanCakupan ? "bg-emerald-500" : "bg-slate-200"}`}>
-                    <span className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition duration-200 ease-in-out ${tampilkanCakupan ? "translate-x-3.5" : "translate-x-0.5"}`} />
-                  </div>
-                </button>
-                <button type="button" onClick={() => setShowHeatmap(!showHeatmap)} className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition-colors ${showHeatmap ? "bg-slate-50 border border-slate-200 shadow-sm" : "border border-transparent hover:bg-slate-50"}`}>
-                  <div className="flex items-center gap-2.5">
-                    <span className="w-3.5 h-3.5 rounded-sm bg-gradient-to-tr from-yellow-400 via-rose-500 to-rose-700 shrink-0" title="Gradient Heatmap" />
-                    <span className={`text-xs ${showHeatmap ? "font-bold text-slate-900" : "font-medium text-slate-600"}`}>Heatmap Kepadatan</span>
-                  </div>
-                  <div className={`relative inline-flex h-4 w-7 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ease-in-out ${showHeatmap ? "bg-rose-500" : "bg-slate-200"}`}>
-                    <span className={`inline-block h-3 w-3 transform rounded-full bg-white shadow transition duration-200 ease-in-out ${showHeatmap ? "translate-x-3.5" : "translate-x-0.5"}`} />
-                  </div>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* KOLOM TENGAH (6): DIREKTORI */}
-        <div className="lg:col-span-5 flex flex-col h-full">
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm flex flex-col h-full overflow-hidden">
-            {/* Header + pencarian + filter */}
-            <div className="p-4 border-b border-slate-200/80 bg-slate-50/50 space-y-3 flex-shrink-0">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <p className="font-bold text-xs uppercase tracking-wider text-slate-800">DIREKTORI</p>
-                  {(filterWilayah !== "semua" || filterStatus !== "semua" || cari) && (
-                    <button
-                      onClick={() => {
-                        setFilterWilayah("semua");
-                        setFilterStatus("semua");
-                        setCari("");
-                      }}
-                      className="text-[10px] font-bold text-amber-400 hover:underline ml-2"
-                      title="Reset Filter"
-                    >
-                      [RESET]
-                    </button>
-                  )}
+        {/* ── RIGHT FLYOUT INSPECTOR DRAWER (LoadSwift Inspired Telemetry Drawer) ── */}
+        {hasInspector && (
+          <div className="w-84 sm:w-96 bg-[#181b22]/95 backdrop-blur-xl border-l border-slate-800 absolute right-0 top-0 bottom-0 z-20 shadow-2xl flex flex-col transition-all duration-300 animate-in slide-in-from-right">
+            {/* Inspector Header */}
+            <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-[#13161c]">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-bold text-sm">
+                  {inspectorKendaraan ? "🚛" : inspectorPelanggan ? "👤" : inspectorKomplain ? "🚨" : "📍"}
                 </div>
-              </div>
-
-              {/* Input Pencarian */}
-              <div className="relative">
-                <input
-                  value={cari}
-                  onChange={(e) => setCari(e.target.value)}
-                  placeholder="Cari nama / kode / alamat…"
-                  className="w-full bg-white border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-slate-800 placeholder-slate-400 rounded-xl px-3 py-2 pl-9 text-xs outline-none transition-all"
-                />
-                <svg
-                  className="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                {cari && (
-                  <button
-                    onClick={() => setCari("")}
-                    className="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-700"
-                  >
-                    ✕
-                  </button>
-                )}
-              </div>
-
-              {/* Dropdown Filters */}
-              <div className="grid grid-cols-2 gap-3">
-                <select
-                  value={filterWilayah}
-                  onChange={(e) => setFilterWilayah(e.target.value)}
-                  className="bg-white border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-slate-700 rounded-xl px-2.5 py-2 text-xs truncate outline-none cursor-pointer"
-                >
-                  <option value="semua">Semua Wilayah</option>
-                  {wilayah.map((w) => (
-                    <option key={w.id} value={w.id}>
-                      {w.nama} — {w.kelurahanRef?.nama ?? "—"}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                  className="bg-white border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-slate-700 rounded-xl px-2.5 py-2 text-xs outline-none cursor-pointer"
-                >
-                  <option value="semua">Semua Status</option>
-                  {Object.entries(STATUS_LABEL).map(([k, v]) => (
-                    <option key={k} value={k}>
-                      {v}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Navigasi Tab */}
-              <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 rounded-xl">
-                {TABS.map((t) => (
-                  <button
-                    key={t.key}
-                    onClick={() => setTab(t.key)}
-                    className={`text-xs py-2 px-3 rounded-lg transition-all relative font-semibold ${
-                      tab === t.key
-                        ? "bg-white text-slate-900 shadow-sm"
-                        : "text-slate-600 hover:text-slate-900"
-                    }`}
-                  >
-                    {t.label}
-                    {t.key === "pengaduan" && hitungBaru > 0 && (
-                      <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-rose-500 text-[10px] font-bold text-white flex items-center justify-center shadow-sm">
-                        {hitungBaru}
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* ── Konten tab: Pelanggan ── */}
-            {tab === "pelanggan" && (
-              <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col">
-                {/* Section Top: Titik Lapak & TPS */}
-                {transit.filter((t) => t.aktif).length > 0 && (
-                  <div className="border-b border-slate-200/80 flex-shrink-0">
-                    <button
-                      onClick={() => setBukaLapakList((b) => !b)}
-                      className="w-full px-4 py-3 bg-amber-50/70 border-b border-amber-200/60 flex items-center justify-between text-left hover:bg-amber-50 transition"
-                    >
-                      <span className="text-xs font-bold text-amber-900 flex items-center gap-2">
-                        <span>{bukaLapakList ? "▼" : "▶"}</span>
-                        <span>▲ TITIK LAPAK & TPS ({transit.filter((t) => t.aktif).length})</span>
-                      </span>
-                      <span className="text-[10px] font-bold text-amber-800 bg-amber-200/60 border border-amber-300 px-2 py-0.5 rounded-full uppercase">
-                        LAPAK READY
-                      </span>
-                    </button>
-
-                    {bukaLapakList && (
-                      <div className="p-2 space-y-1 bg-amber-50/30 border-b border-amber-100">
-                        {transit.filter((t) => t.aktif).map((t) => (
-                          <button
-                            key={`dir-t-top-${t.id}`}
-                            onClick={() => setPusatPetugas([t.latitude, t.longitude])}
-                            className="w-full flex items-center gap-3 text-left bg-white hover:bg-amber-50/50 border border-amber-200 rounded-xl px-3 py-2 transition group shadow-sm"
-                          >
-                            <span className="text-sm text-amber-700 font-bold shrink-0">▲</span>
-                            <div className="min-w-0 flex-1">
-                              <span className="block text-xs text-slate-900 font-semibold truncate">{t.nama}</span>
-                              {t.alamat && <span className="block text-[10px] text-slate-500 truncate mt-0.5">{t.alamat}</span>}
-                            </div>
-                            <span className="text-[9px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full uppercase shrink-0">
-                              LAPAK
-                            </span>
-                            <span className="ml-auto text-xs text-amber-500 shrink-0 group-hover:translate-x-1 transition-transform font-bold">
-                              ▶
-                            </span>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Sorting & Stats Header */}
-                <div className="px-4 py-2.5 bg-slate-50/80 border-b border-slate-200/80 flex items-center justify-between text-[11px] font-medium text-slate-500 flex-shrink-0">
-                  <span>Terpetakan: <strong className="text-slate-800">{daftarPetaUrut.length}</strong></span>
-                  <div className="flex items-center gap-1.5">
-                    <span>Sort:</span>
-                    <button
-                      onClick={() => setUrutkan((s) => (s === "kode" ? "nama" : "kode"))}
-                      className="text-emerald-700 hover:text-emerald-800 font-bold hover:underline"
-                    >
-                      {urutkan === "kode" ? "KODE (A-Z)" : "NAMA (A-Z)"}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Section 1: Terpetakan di Peta (Always Open) */}
-                <div className="divide-y divide-slate-100 bg-white flex-1">
-                  {daftarPetaUrut.slice(0, 50).map((p) => {
-                    const warna = WARNA_STATUS[p.status] ?? "#8b8f98";
-                    const aktif = selectedId === p.id;
-                    const zona = zonaPelanggan.get(p.id);
-                    return (
-                      <button
-                        key={p.id}
-                        onClick={() => pilihPelanggan(p.id)}
-                        className={`w-full text-left px-4 py-3 flex items-center justify-between gap-3 transition-colors ${
-                          aktif ? "bg-emerald-50/60 border-l-4 border-emerald-500" : "hover:bg-slate-50/80"
-                        }`}
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <span
-                            className="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm"
-                            style={{ background: warna }}
-                          />
-                          <div className="min-w-0">
-                            <span className="block text-xs font-semibold text-slate-900 truncate">{p.nama}</span>
-                            <span className="block text-[11px] text-slate-500 truncate mt-0.5">
-                              <span className="text-emerald-700 font-semibold font-mono">{p.kodePelanggan}</span> · {zona ? zona.kelurahan : p.wilayah?.nama ?? "—"}
-                            </span>
-                          </div>
-                        </div>
-                        <span className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full shrink-0 uppercase ${
-                          p.status === "aktif" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
-                          p.status === "calon" ? "bg-amber-50 text-amber-700 border border-amber-200" :
-                          "bg-slate-100 text-slate-600 border border-slate-200"
-                        }`}>
-                          {p.status}
-                        </span>
-                      </button>
-                    );
-                  })}
-                  {daftarPetaUrut.length === 0 && (
-                    <div className="p-6 text-center text-xs text-slate-500 space-y-1">
-                      <p className="font-semibold text-slate-700">Tidak ada pelanggan berkoordinat</p>
-                      <p className="text-[11px]">Silakan ubah kata pencarian atau filter.</p>
-                    </div>
-                  )}
-                  {daftarPetaUrut.length > 50 && (
-                    <div className="p-3 text-center text-[11px] text-slate-500 font-medium bg-slate-50 border-t border-slate-200/80">
-                      Menampilkan 50 dari {daftarPetaUrut.length} pelanggan.
-                      <br />Gunakan pencarian untuk menemukan pelanggan spesifik.
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* ── Konten tab: Pengaduan ── */}
-            {tab === "pengaduan" && (
-              <div className="flex-1 flex flex-col min-h-0">
-                <div className="px-4 py-3 border-b border-slate-200/80 flex items-center justify-between bg-slate-50/70 flex-shrink-0">
-                  <p className="font-bold text-xs uppercase tracking-wider text-rose-600 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse inline-block" />
-                    PENGADUAN LIVE
+                <div>
+                  <h3 className="text-xs font-black uppercase tracking-wider text-slate-200">
+                    {inspectorKendaraan
+                      ? "TELEMETRI ARMADA"
+                      : inspectorPelanggan
+                      ? "DATA PELANGGAN"
+                      : inspectorKomplain
+                      ? "RINCIAN PENGADUAN"
+                      : "TITIK TRANSIT / LAPAK"}
+                  </h3>
+                  <p className="text-[10px] text-amber-400 font-mono">
+                    {inspectorKendaraan
+                      ? inspectorKendaraan.platNomor || "ARMADA RESMI"
+                      : inspectorPelanggan
+                      ? inspectorPelanggan.kodePelanggan
+                      : inspectorKomplain
+                      ? `KOMPLAIN #${inspectorKomplain.id}`
+                      : "TPS 3R KOTA DEPOK"}
                   </p>
-                  <button
-                    onClick={() => {
-                      setMuatKomplain(true);
-                      ambilKomplain().finally(() => setMuatKomplain(false));
-                    }}
-                    className="text-xs text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 px-3 py-1.5 rounded-xl font-semibold transition-colors"
-                  >
-                    {muatKomplain ? "Memuat…" : "Refresh"}
-                  </button>
                 </div>
-                <div className="px-3 py-2 border-b border-slate-200/80 flex flex-wrap gap-2 bg-white flex-shrink-0">
-                  {KOMPLAIN_TABS.map((t) => {
-                    const n =
-                      t.key === "semua"
-                        ? komplainDenganPosisi.length
-                        : komplainDenganPosisi.filter((k) => k.status === t.key).length;
-                    return (
-                      <button
-                        key={t.key}
-                        onClick={() => setKomplainTab(t.key)}
-                        className={`text-xs px-3 py-1 rounded-xl transition-all font-semibold ${
-                          komplainTab === t.key
-                            ? "bg-rose-600 text-white shadow-sm"
-                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                        }`}
-                      >
-                        {t.label} ({n})
-                      </button>
-                    );
-                  })}
-                </div>
-                <div className="flex-1 overflow-y-auto divide-y divide-slate-100 custom-scrollbar">
-                  {komplainFilter.map((k) => (
-                    <button
-                      key={k.id}
-                      onClick={() => pilihKomplain(k.id)}
-                      className={`w-full text-left px-4 py-3 flex items-start gap-3 transition-colors ${
-                        selectedKomplainId === k.id ? "bg-rose-50/70 border-l-4 border-rose-500" : "hover:bg-slate-50/80"
+              </div>
+
+              <button
+                type="button"
+                onClick={closeFlyout}
+                className="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Inspector Body */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar text-xs">
+              {/* 1. INSPEKSI ARMADA TRUK */}
+              {inspectorKendaraan && (
+                <div className="space-y-4">
+                  {/* Status Banner */}
+                  <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between">
+                    <div>
+                      <p className="text-[10px] text-amber-300 uppercase font-bold tracking-wider">Status Operasi</p>
+                      <p className="text-sm font-extrabold text-white mt-0.5">{inspectorKendaraan.nama}</p>
+                    </div>
+                    <span
+                      className={`text-[10px] font-black px-2.5 py-1 rounded-full uppercase ${
+                        isOnline(inspectorKendaraan.updatedAt)
+                          ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                          : "bg-slate-800 text-slate-400"
                       }`}
                     >
-                      <span
-                        className="w-2.5 h-2.5 rounded-full shrink-0 mt-1"
-                        style={{ background: KOMPLAIN_WARNA[k.status] ?? "#ef4444" }}
-                      />
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-xs font-semibold text-slate-900 truncate">
-                          {k.pelanggan.nama}{" "}
-                          <span className="text-rose-600 font-mono text-[10px] ml-1 font-semibold">
-                            [{k.pelanggan.kodePelanggan}]
-                          </span>
-                        </span>
-                        <span className="block text-[11px] text-slate-500 font-medium truncate mt-0.5">
-                          {KOMPLAIN_LABEL[k.jenis] ?? k.jenis} · <span className="text-rose-600 font-semibold">{k.status.toUpperCase()}</span>
-                        </span>
-                        <span className="block text-[10px] text-slate-400 mt-0.5">
-                          {new Date(k.createdAt).toLocaleString("id-ID", {
-                            day: "2-digit",
-                            month: "short",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </span>
-                      </span>
-                    </button>
-                  ))}
-                  {komplainFilter.length === 0 && (
-                    <p className="p-6 text-xs text-slate-400 italic text-center">
-                      Tidak ada pengaduan {komplainTab !== "semua" ? `dengan status ${komplainTab}` : ""}.
-                    </p>
-                  )}
-                </div>
-                {lastRefresh && (
-                  <div className="px-4 py-2 border-t border-slate-200/80 text-[10px] text-slate-400 text-right bg-slate-50/70">
-                    UPDATE {new Date(lastRefresh).toLocaleTimeString("id-ID")} WIB (auto 15 dtk)
+                      {isOnline(inspectorKendaraan.updatedAt) ? "🟢 Bergerak" : "⚪ Standby"}
+                    </span>
                   </div>
-                )}
-              </div>
-            )}
 
-            {/* ── Konten tab: Rute ── */}
-            {tab === "rute" && (
-              <div className="flex-1 flex flex-col min-h-0">
-                <div className="px-4 py-3 border-b border-slate-200/80 space-y-2 bg-white flex-shrink-0">
-                  <p className="font-bold uppercase tracking-wider text-[11px] text-slate-700">PILIH RUTE PENGANGKUTAN</p>
-                  <select
-                    value={ruteId}
-                    onChange={(e) => setRuteId(e.target.value)}
-                    className="bg-white border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-slate-700 rounded-xl px-3 py-2 w-full text-xs outline-none cursor-pointer"
-                  >
-                    <option value="semua">— Semua rute —</option>
-                    {rute.map((r) => (
-                      <option key={r.id} value={r.id}>
-                        {r.nama} · {r.hari} · {r.anggota.length} titik
-                      </option>
-                    ))}
-                  </select>
-                  {ruteTerpilih && (
-                    <div className="bg-emerald-50/60 border border-emerald-200 p-3 rounded-2xl space-y-1 text-xs text-emerald-900 mt-2">
-                      <p className="font-bold text-xs">
-                        {ruteTerpilih.anggota.length} TITIK · {ruteTerpilih.hari}
-                        {ruteTerpilih.jam ? ` · ${ruteTerpilih.jam}` : ""}
-                      </p>
-                      {ruteTerpilih.petugas && <p>PETUGAS: <span className="font-bold text-slate-900">{ruteTerpilih.petugas}</span></p>}
-                      {ruteUrutPanel.length >= 2 && (
-                        <p className="text-emerald-800 pt-1 border-t border-emerald-200/60 mt-1 text-[11px]">
-                          EST. JARAK:{" "}
-                          <span className="text-amber-700 font-bold">
-                            {formatJarak(
-                              ruteUrutPanel.reduce((a, x) => a + x.jarakM, 0)
-                            )}
-                          </span>{" "}
-                          (urutan terdekat)
+                  {/* Driver Card */}
+                  <div className="p-3 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                    <p className="text-[10px] uppercase font-bold text-slate-400">Pengemudi / Petugas</p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-amber-400">
+                          {inspectorKendaraan.pengemudi ? inspectorKendaraan.pengemudi[0] : "S"}
+                        </div>
+                        <div>
+                          <p className="font-bold text-slate-100">{inspectorKendaraan.pengemudi || "Belum Ditugaskan"}</p>
+                          <p className="text-[10px] text-slate-500">Petugas Angkut UPS HERU</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Telemetry Metrics Grid (LoadSwift Style) */}
+                  <div className="space-y-2">
+                    <p className="text-[10px] uppercase font-bold text-slate-400">Sensor & Telemetri Muatan</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                        <span className="text-[10px] text-slate-400">Kapasitas Muatan</span>
+                        <p className="text-base font-extrabold text-amber-400 font-mono mt-0.5">78%</p>
+                        <span className="text-[9px] text-slate-500">± 3.1 / 4.0 Ton</span>
+                      </div>
+                      <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                        <span className="text-[10px] text-slate-400">Kecepatan Rerata</span>
+                        <p className="text-base font-extrabold text-emerald-400 font-mono mt-0.5">24 km/h</p>
+                        <span className="text-[9px] text-slate-500">Lancar dalam kota</span>
+                      </div>
+                      <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                        <span className="text-[10px] text-slate-400">Akurasi GPS</span>
+                        <p className="text-base font-extrabold text-sky-400 font-mono mt-0.5">
+                          ±{inspectorKendaraan.akurasi ? Math.round(inspectorKendaraan.akurasi) : 5}m
                         </p>
-                      )}
-                    </div>
-                  )}
-                </div>
-                <div className="flex-1 overflow-y-auto divide-y divide-slate-100 custom-scrollbar">
-                  {ruteUrutPanel.map((x, i) => (
-                    <div
-                      key={x.anggota.id}
-                      className="px-4 py-3 flex items-center gap-3 hover:bg-slate-50/80 transition"
-                    >
-                      <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center shrink-0">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <span className="min-w-0 flex-1 pl-1">
-                        <span className="block text-xs font-semibold text-slate-900 truncate">{x.anggota.nama}</span>
-                        <span className="block text-[11px] text-slate-500 mt-0.5">
-                          {i === 0
-                            ? <span className="text-emerald-700 font-semibold">🏁 Titik Awal</span>
-                            : `Jarak dari titik sebelumnya: ${formatJarak(x.jarakM)}`}
-                        </span>
-                      </span>
-                    </div>
-                  ))}
-                  {ruteUrutPanel.length === 0 && (
-                    <p className="p-6 text-xs text-slate-400 italic text-center">
-                      {ruteTerpilih
-                        ? "Rute ini tidak punya titik berkoordinat."
-                        : "Pilih rute untuk melihat urutan kunjungan."}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* KOLOM KANAN (4): NO-GEO & ARMADA */}
-        <div className="lg:col-span-4 space-y-4 flex flex-col h-full">
-          
-          {/* NO-GEO PANEL */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm relative overflow-hidden flex flex-col flex-1 max-h-[300px]">
-            <div className="px-4 py-3 bg-rose-50/60 border-b border-rose-100 flex items-center justify-between flex-shrink-0">
-              <span className="text-xs font-bold text-rose-800 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-                NO-GEO ({tanpaKoordinatUrut.length})
-              </span>
-              <span className="text-[10px] text-rose-600/80 font-medium">Belum berkoordinat</span>
-            </div>
-
-            <div className="divide-y divide-slate-100 bg-white flex-1 overflow-y-auto custom-scrollbar">
-              {tanpaKoordinatUrut.map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => pilihPelanggan(p.id)}
-                  className={`w-full text-left px-4 py-2.5 flex items-center justify-between gap-3 transition-colors ${
-                    selectedId === p.id ? "bg-rose-50/70 border-l-4 border-rose-500" : "hover:bg-slate-50/80"
-                  }`}
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <span className="w-2.5 h-2.5 rounded-full border border-dashed border-rose-400 shrink-0" />
-                    <div className="min-w-0">
-                      <span className="block text-xs font-semibold text-slate-900 truncate">{p.nama}</span>
-                      <span className="block font-mono text-[10px] text-rose-600 font-semibold truncate mt-0.5">
-                        {p.kodePelanggan}
-                      </span>
+                        <span className="text-[9px] text-slate-500">Sinyal Satelit Kuat</span>
+                      </div>
+                      <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                        <span className="text-[10px] text-slate-400">Pembaruan GPS</span>
+                        <p className="text-xs font-bold text-slate-200 mt-1 font-mono">
+                          {formatWaktuRelatifPeta(inspectorKendaraan.updatedAt)}
+                        </p>
+                        <span className="text-[9px] text-slate-500">Live Polling</span>
+                      </div>
                     </div>
                   </div>
-                </button>
-              ))}
-              {tanpaKoordinatUrut.length === 0 && (
-                <p className="p-4 text-xs text-slate-400 italic text-center">Semua terpetakan.</p>
-              )}
-            </div>
-          </div>
-
-          {/* ARMADA ONLINE PANEL */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm relative overflow-hidden flex flex-col flex-1 max-h-[300px]">
-            <div className="px-4 py-3 bg-amber-50/60 border-b border-amber-100 flex items-center justify-between flex-shrink-0">
-              <span className="text-xs font-bold text-amber-900 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                GPS ONLINE ({totalOnline})
-              </span>
-              {lastPetugas && (
-                <span className="text-[10px] text-amber-700/80 font-medium">{new Date(lastPetugas).toLocaleTimeString("id-ID")} WIB</span>
-              )}
-            </div>
-
-            <div className="divide-y divide-slate-100 bg-white flex-1 overflow-y-auto custom-scrollbar p-2 space-y-3">
-              {petugas.length === 0 && kendaraan.length === 0 && (
-                <p className="p-4 text-xs text-slate-400 italic text-center">Tidak ada armada/petugas online.</p>
-              )}
-              
-              {/* Petugas Tracker */}
-              {petugas.length > 0 && (
-                <div className="space-y-1.5">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 pb-1 border-b border-slate-100">👤 PETUGAS</p>
-                  {petugas.map((p) => {
-                    const jabat = (p.jabatan || "").split(",").filter(Boolean);
-                    const online = isOnline(p.updatedAt);
-                    return (
-                      <button
-                        key={`dir-${p.petugasId}`}
-                        onClick={() => setPusatPetugas([p.latitude, p.longitude])}
-                        className="w-full flex items-center gap-2 text-left bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 rounded-xl px-3 py-2 transition group shadow-sm"
-                      >
-                        <span
-                          className={`w-2 h-2 rounded-full shrink-0 ${
-                            online ? "bg-emerald-500 animate-pulse" : "bg-slate-300"
-                          }`}
-                        />
-                        <span className="text-xs font-semibold text-slate-900 truncate flex-1">{p.nama}</span>
-                        <span className="text-[10px] font-semibold text-slate-600 bg-slate-200/70 px-2 py-0.5 rounded-full uppercase shrink-0">
-                          {jabat.map((j) => j.slice(0, 3)).join("·") || "PTG"}
-                        </span>
-                        <span
-                          className={`text-[10px] font-semibold shrink-0 ${
-                            online ? "text-emerald-700" : "text-slate-400"
-                          }`}
-                        >
-                          {online ? "ONLINE" : `offline ${formatWaktuRelatifPeta(p.updatedAt)}`} ▶
-                        </span>
-                      </button>
-                    );
-                  })}
                 </div>
               )}
 
-              {/* Kendaraan Armada */}
-              {kendaraan.length > 0 && (
-                <div className="space-y-1.5">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 pb-1 border-b border-slate-100">🚛 KENDARAAN</p>
-                  {kendaraan.map((k) => {
-                    const online = isOnline(k.updatedAt);
-                    return (
-                      <button
-                        key={`dir-k-${k.kendaraanId}`}
-                        onClick={() => setPusatPetugas([k.latitude, k.longitude])}
-                        className="w-full flex items-center gap-2 text-left bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 rounded-xl px-3 py-2 transition group shadow-sm"
-                      >
-                        <span className="text-sm shrink-0">{k.jenis === "dump_truck" ? "🚛" : "🛺"}</span>
-                        <span className="text-xs font-semibold text-slate-900 truncate flex-1">
-                          {k.nama}
-                          {k.platNomor ? <span className="font-mono text-[10px] text-slate-500 ml-1">[{k.platNomor}]</span> : null}
-                        </span>
-                        <span className="text-[10px] font-semibold text-slate-600 bg-slate-200/70 px-2 py-0.5 rounded-full uppercase shrink-0">
-                          {k.jenis === "dump_truck" ? "DUMP" : k.jenis === "pickup" ? "PICKUP" : "GEROBAK"}
-                        </span>
-                        <span
-                          className={`text-[10px] font-semibold shrink-0 ${
-                            online ? "text-emerald-700" : "text-slate-400"
-                          }`}
-                        >
-                          {online ? "ONLINE" : `offline ${formatWaktuRelatifPeta(k.updatedAt)}`} ▶
-                        </span>
-                      </button>
-                    );
-                  })}
+              {/* 2. INSPEKSI PELANGGAN (WARGA) */}
+              {inspectorPelanggan && (
+                <div className="space-y-4">
+                  {/* Status Tagihan Banner */}
+                  <div
+                    className={`p-3 rounded-2xl border flex items-center justify-between ${
+                      inspectorPelanggan.statusTagihan === "lunas"
+                        ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
+                        : inspectorPelanggan.statusTagihan === "tunggakan"
+                        ? "bg-rose-500/10 border-rose-500/30 text-rose-300"
+                        : "bg-slate-900 border-slate-800 text-slate-300"
+                    }`}
+                  >
+                    <div>
+                      <p className="text-[10px] uppercase font-bold tracking-wider">Status Tagihan</p>
+                      <p className="text-base font-black uppercase mt-0.5">
+                        {inspectorPelanggan.statusTagihan === "lunas"
+                          ? "✓ LUNAS"
+                          : inspectorPelanggan.statusTagihan === "tunggakan"
+                          ? "⛔ MENUNGGAK"
+                          : "BELUM BAYAR"}
+                      </p>
+                    </div>
+                    <span className="text-xl">
+                      {inspectorPelanggan.statusTagihan === "lunas" ? "💳" : "⚠️"}
+                    </span>
+                  </div>
+
+                  {/* Customer Information */}
+                  <div className="p-3 rounded-2xl bg-slate-900 border border-slate-800 space-y-2.5">
+                    <div>
+                      <span className="text-[10px] text-slate-400 uppercase">Nama Lengkap</span>
+                      <p className="text-sm font-bold text-slate-100">{inspectorPelanggan.nama}</p>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-slate-400 uppercase">Alamat Domisili</span>
+                      <p className="text-xs text-slate-200 leading-relaxed">
+                        {inspectorPelanggan.alamat || "—"}
+                        {inspectorPelanggan.rtRw ? ` (RT/RW ${inspectorPelanggan.rtRw})` : ""}
+                      </p>
+                    </div>
+                    {inspectorPelanggan.patokanLokasi && (
+                      <div>
+                        <span className="text-[10px] text-slate-400 uppercase">Patokan Lokasi</span>
+                        <p className="text-xs text-amber-300">{inspectorPelanggan.patokanLokasi}</p>
+                      </div>
+                    )}
+                    <div>
+                      <span className="text-[10px] text-slate-400 uppercase">Wilayah / Zonasi</span>
+                      <p className="text-xs text-slate-200">
+                        {inspectorPelanggan.wilayah?.nama ?? "Belum ditentukan"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* WhatsApp Quick Chat */}
+                  {inspectorPelanggan.noTelepon && (
+                    <a
+                      href={`https://wa.me/${inspectorPelanggan.noTelepon.replace(/\D/g, "").replace(/^0/, "62")}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition shadow-lg shadow-emerald-950/40"
+                    >
+                      <Phone className="w-4 h-4" />
+                      <span>Chat WhatsApp Warga ({inspectorPelanggan.noTelepon})</span>
+                    </a>
+                  )}
+                </div>
+              )}
+
+              {/* 3. INSPEKSI PENGADUAN */}
+              {inspectorKomplain && (
+                <div className="space-y-4">
+                  {/* Complaint Status Banner */}
+                  <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-between">
+                    <div>
+                      <p className="text-[10px] text-rose-400 uppercase font-bold tracking-wider">
+                        Status Pengaduan
+                      </p>
+                      <p className="text-sm font-extrabold text-white mt-0.5">
+                        {KOMPLAIN_LABEL[inspectorKomplain.jenis] ?? inspectorKomplain.jenis}
+                      </p>
+                    </div>
+                    <span
+                      className="text-[9px] font-black px-2 py-0.5 rounded-full uppercase"
+                      style={{
+                        backgroundColor: `${KOMPLAIN_WARNA[inspectorKomplain.status] ?? "#ef4444"}20`,
+                        color: KOMPLAIN_WARNA[inspectorKomplain.status] ?? "#ef4444",
+                      }}
+                    >
+                      {inspectorKomplain.status.toUpperCase()}
+                    </span>
+                  </div>
+
+                  {/* Complaint Description */}
+                  <div className="p-3 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                    <p className="text-[10px] uppercase font-bold text-slate-400">Isi Pengaduan Warga</p>
+                    <p className="text-xs text-slate-200 leading-relaxed bg-slate-950/60 p-3 rounded-xl border border-slate-800/80">
+                      {inspectorKomplain.deskripsi}
+                    </p>
+                    <p className="text-[10px] text-slate-500 font-mono">
+                      Dilaporkan pada: {new Date(inspectorKomplain.createdAt).toLocaleString("id-ID")}
+                    </p>
+                  </div>
+
+                  {/* Reporter Info */}
+                  <div className="p-3 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                    <p className="text-[10px] uppercase font-bold text-slate-400">Data Pelapor</p>
+                    <p className="text-xs font-bold text-slate-100">{inspectorKomplain.pelanggan.nama}</p>
+                    <p className="text-[11px] text-emerald-400 font-mono">
+                      ID: {inspectorKomplain.pelanggan.kodePelanggan}
+                    </p>
+                  </div>
+
+                  {/* WhatsApp Pelapor */}
+                  {inspectorKomplain.pelanggan.noTelepon && (
+                    <a
+                      href={`https://wa.me/${inspectorKomplain.pelanggan.noTelepon.replace(/\D/g, "").replace(/^0/, "62")}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition"
+                    >
+                      <Phone className="w-4 h-4" />
+                      <span>Hubungi Pelapor via WA</span>
+                    </a>
+                  )}
+                </div>
+              )}
+
+              {/* 4. INSPEKSI LAPAK / TRANSIT */}
+              {inspectorTransit && (
+                <div className="space-y-4">
+                  <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-1">
+                    <p className="text-[10px] uppercase font-bold text-amber-300">Pusat Transit / TPS 3R</p>
+                    <p className="text-sm font-bold text-white">{inspectorTransit.nama}</p>
+                    <p className="text-xs text-slate-300">{inspectorTransit.alamat || "Pusat Daur Ulang Kota Depok"}</p>
+                  </div>
+
+                  {inspectorTransit.catatan && (
+                    <div className="p-3 rounded-2xl bg-slate-900 border border-slate-800 space-y-1">
+                      <p className="text-[10px] uppercase font-bold text-slate-400">Catatan Operasional</p>
+                      <p className="text-xs text-slate-300">{inspectorTransit.catatan}</p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
-          </div>
-        </div>
 
+            {/* Inspector Footer Actions */}
+            <div className="p-4 border-t border-slate-800 bg-[#13161c] flex items-center gap-2">
+              <button
+                type="button"
+                onClick={closeFlyout}
+                className="flex-1 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition"
+              >
+                Tutup Panel
+              </button>
+            </div>
+          </div>
+        )}
       </div>
-      )}
     </div>
   );
 }

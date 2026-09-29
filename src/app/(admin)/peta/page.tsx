@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import PetaMap from "@/components/PetaMap";
-import LacakLokasi from "@/components/LacakLokasi";
 import type { PelangganPeta, RutePeta } from "@/components/PetaMap";
 import type { KendaraanPeta, PetugasPeta, TransitPeta } from "@/components/MapView";
 import { getSession } from "@/lib/auth";
@@ -234,12 +233,16 @@ export default async function PetaPage() {
 
   return (
     <div className="h-full w-full relative">
-      {profilSaya && (
-        <div className="absolute top-4 right-4 z-[1001]">
-          <LacakLokasi profil={profilSaya} kendaraan={kendaraanSaya} />
-        </div>
-      )}
-      <PetaMap pelanggan={data} wilayah={wilayahList} rute={rutePeta} petugasAwal={petugasPeta} kendaraanAwal={kendaraanPeta} transitAwal={transitPeta} />
+      <PetaMap
+        pelanggan={data}
+        wilayah={wilayahList}
+        rute={rutePeta}
+        petugasAwal={petugasPeta}
+        kendaraanAwal={kendaraanPeta}
+        transitAwal={transitPeta}
+        profilSaya={profilSaya}
+        kendaraanSaya={kendaraanSaya}
+      />
     </div>
   );
 }

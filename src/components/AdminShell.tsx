@@ -106,12 +106,18 @@ export default function AdminShell({
           </div>
         </header>
 
-        {/* Scrollable Main Area */}
-        <main className="flex-1 overflow-y-auto p-3 sm:p-6 lg:p-8">
-          <div className="max-w-7xl mx-auto space-y-6">
+        {/* Main Content Area */}
+        {pathname === "/peta" ? (
+          <main className="flex-1 overflow-hidden relative h-[calc(100vh-4rem)]">
             {children}
-          </div>
-        </main>
+          </main>
+        ) : (
+          <main className="flex-1 overflow-y-auto p-3 sm:p-6 lg:p-8">
+            <div className="max-w-7xl mx-auto space-y-6">
+              {children}
+            </div>
+          </main>
+        )}
       </div>
     </div>
   );
