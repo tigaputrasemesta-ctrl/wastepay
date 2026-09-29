@@ -212,13 +212,58 @@ export default function PetaMap({
   const [ruteId, setRuteId] = useState<string>("semua");
 
   // GIS Layer Toggles
-  const [tampilkanCakupan, setTampilkanCakupan] = useState(false);
-  const [tampilkanBatas, setTampilkanBatas] = useState(true);
-  const [tampilkanBatasKelurahan, setTampilkanBatasKelurahan] = useState(true);
-  const [tampilkanRt, setTampilkanRt] = useState(true);
+  const [tampilkanPelanggan, setTampilkanPelanggan] = useState(true);
   const [tampilkanArmada, setTampilkanArmada] = useState(true);
+  const [tampilkanPetugas, setTampilkanPetugas] = useState(true);
+  const [tampilkanKomplain, setTampilkanKomplain] = useState(true);
+  const [tampilkanTransit, setTampilkanTransit] = useState(true);
+  const [tampilkanBatas, setTampilkanBatas] = useState(true);
+  const [tampilkanBatasKelurahan, setTampilkanBatasKelurahan] = useState(false); // default off agar peta tidak terpotong garis geometris
+  const [tampilkanRt, setTampilkanRt] = useState(false); // default off agar titik tidak tumpang tindih
+  const [tampilkanCakupan, setTampilkanCakupan] = useState(false);
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [invalidateKey, setInvalidateKey] = useState(1);
+
+  const resetLayerDefault = useCallback(() => {
+    setTampilkanPelanggan(true);
+    setTampilkanArmada(true);
+    setTampilkanPetugas(true);
+    setTampilkanKomplain(true);
+    setTampilkanTransit(true);
+    setTampilkanBatas(true);
+    setTampilkanBatasKelurahan(false);
+    setTampilkanRt(false);
+    setTampilkanCakupan(false);
+    setShowHeatmap(false);
+  }, []);
+
+  const activeLayerCount = useMemo(
+    () =>
+      [
+        tampilkanPelanggan,
+        tampilkanArmada,
+        tampilkanPetugas,
+        tampilkanKomplain,
+        tampilkanTransit,
+        tampilkanBatas,
+        tampilkanBatasKelurahan,
+        tampilkanRt,
+        tampilkanCakupan,
+        showHeatmap,
+      ].filter(Boolean).length,
+    [
+      tampilkanPelanggan,
+      tampilkanArmada,
+      tampilkanPetugas,
+      tampilkanKomplain,
+      tampilkanTransit,
+      tampilkanBatas,
+      tampilkanBatasKelurahan,
+      tampilkanRt,
+      tampilkanCakupan,
+      showHeatmap,
+    ]
+  );
 
   // Close layer menu on outside click
   useEffect(() => {
@@ -371,8 +416,8 @@ export default function PetaMap({
 
   const komplainDenganPosisi = useMemo(() => {
     return komplain.map((k) => {
-      const lat = k.pelanggan.latitude;
-      const lng = k.pelanggan.longitude;
+      const lat = k.pelanggan?.latitude;
+      const lng = k.pelanggan?.longitude;
       const posisi: [number, number] =
         lat != null && lng != null
           ? [lat, lng]
@@ -388,7 +433,9 @@ export default function PetaMap({
     const q = cari.trim().toLowerCase();
     return komplainDenganPosisi.filter((k) => {
       if (komplainTab !== "semua" && k.status !== komplainTab) return false;
-      if (q && !`${k.pelanggan.nama} ${k.pelanggan.kodePelanggan} ${k.deskripsi}`.toLowerCase().includes(q))
+      const nama = k.pelanggan?.nama ?? "";
+      const kode = k.pelanggan?.kodePelanggan ?? "";
+      if (q && !`${nama} ${kode} ${k.deskripsi}`.toLowerCase().includes(q))
         return false;
       return true;
     });
@@ -686,28 +733,40 @@ export default function PetaMap({
               onClick={() => setLayerMenuOpen((o) => !o)}
               className={`p-2 rounded-xl border transition flex items-center gap-1.5 text-xs font-semibold ${
                 layerMenuOpen
-                  ? isDark ? "bg-amber-400 text-slate-950 border-amber-400" : "bg-emerald-600 text-white border-emerald-600"
+                  ? isDark ? "bg-amber-400 text-slate-950 border-amber-400" : "bg-emerald-600 text-white border-emerald-600 shadow-sm"
                   : isDark ? "bg-slate-900 hover:bg-slate-800 text-slate-200 border-slate-700/80" : "bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200"
               }`}
               title="Kontrol Layer GIS"
             >
               <Layers className="w-4 h-4" />
+              <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${
+                layerMenuOpen
+                  ? isDark ? "bg-slate-950 text-amber-400" : "bg-white text-emerald-700"
+                  : isDark ? "bg-emerald-500/20 text-emerald-400" : "bg-emerald-100 text-emerald-700"
+              }`}>
+                {activeLayerCount}
+              </span>
               <ChevronDown className="w-3 h-3" />
             </button>
 
             {/* Layer Settings Popover */}
             {layerMenuOpen && (
-              <div className={`absolute right-0 mt-2 w-64 ${
+              <div className={`absolute right-0 mt-2 w-72 ${
                 isDark ? "bg-[#1e2229] border-slate-700/80 text-white" : "bg-white border-slate-200 text-slate-800"
-              } rounded-2xl border p-3 shadow-2xl z-50 text-xs space-y-3`}>
+              } rounded-2xl border p-3.5 shadow-2xl z-50 text-xs space-y-3`}>
                 <div className={`flex items-center justify-between pb-2 border-b ${
                   isDark ? "border-slate-700" : "border-slate-200"
                 }`}>
-                  <span className={`font-bold uppercase tracking-wider text-[10px] ${
-                    isDark ? "text-amber-400" : "text-emerald-700"
-                  }`}>
-                    Layer & Kontrol GIS
-                  </span>
+                  <div>
+                    <span className={`font-bold uppercase tracking-wider text-[10px] ${
+                      isDark ? "text-amber-400" : "text-emerald-700"
+                    }`}>
+                      Layer & Kontrol GIS
+                    </span>
+                    <p className={`text-[10px] ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                      {activeLayerCount} layer aktif
+                    </p>
+                  </div>
                   <button
                     type="button"
                     onClick={() => setLayerMenuOpen(false)}
@@ -717,73 +776,166 @@ export default function PetaMap({
                   </button>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className={`flex items-center justify-between cursor-pointer p-1.5 rounded-lg transition ${
-                    isDark ? "hover:bg-slate-800/50 text-slate-300" : "hover:bg-slate-50 text-slate-700"
-                  }`}>
-                    <span className="font-medium">Batas Kecamatan</span>
-                    <input
-                      type="checkbox"
-                      checked={tampilkanBatas}
-                      onChange={(e) => setTampilkanBatas(e.target.checked)}
-                      className="rounded accent-emerald-600 cursor-pointer"
-                    />
-                  </label>
-                  <label className={`flex items-center justify-between cursor-pointer p-1.5 rounded-lg transition ${
-                    isDark ? "hover:bg-slate-800/50 text-slate-300" : "hover:bg-slate-50 text-slate-700"
-                  }`}>
-                    <span className="font-medium">Batas Kelurahan</span>
-                    <input
-                      type="checkbox"
-                      checked={tampilkanBatasKelurahan}
-                      onChange={(e) => setTampilkanBatasKelurahan(e.target.checked)}
-                      className="rounded accent-emerald-600 cursor-pointer"
-                    />
-                  </label>
-                  <label className={`flex items-center justify-between cursor-pointer p-1.5 rounded-lg transition ${
-                    isDark ? "hover:bg-slate-800/50 text-slate-300" : "hover:bg-slate-50 text-slate-700"
-                  }`}>
-                    <span className="font-medium">Titik RT / RTRW</span>
-                    <input
-                      type="checkbox"
-                      checked={tampilkanRt}
-                      onChange={(e) => setTampilkanRt(e.target.checked)}
-                      className="rounded accent-emerald-600 cursor-pointer"
-                    />
-                  </label>
-                  <label className={`flex items-center justify-between cursor-pointer p-1.5 rounded-lg transition ${
-                    isDark ? "hover:bg-slate-800/50 text-slate-300" : "hover:bg-slate-50 text-slate-700"
-                  }`}>
-                    <span className="font-medium">Pelacakan Armada</span>
-                    <input
-                      type="checkbox"
-                      checked={tampilkanArmada}
-                      onChange={(e) => setTampilkanArmada(e.target.checked)}
-                      className="rounded accent-emerald-600 cursor-pointer"
-                    />
-                  </label>
-                  <label className={`flex items-center justify-between cursor-pointer p-1.5 rounded-lg transition ${
-                    isDark ? "hover:bg-slate-800/50 text-slate-300" : "hover:bg-slate-50 text-slate-700"
-                  }`}>
-                    <span className="font-medium">Radius Cakupan 200m</span>
-                    <input
-                      type="checkbox"
-                      checked={tampilkanCakupan}
-                      onChange={(e) => setTampilkanCakupan(e.target.checked)}
-                      className="rounded accent-emerald-600 cursor-pointer"
-                    />
-                  </label>
-                  <label className={`flex items-center justify-between cursor-pointer p-1.5 rounded-lg transition ${
-                    isDark ? "hover:bg-slate-800/50 text-slate-300" : "hover:bg-slate-50 text-slate-700"
-                  }`}>
-                    <span className="font-medium">Heatmap Kepadatan</span>
-                    <input
-                      type="checkbox"
-                      checked={showHeatmap}
-                      onChange={(e) => setShowHeatmap(e.target.checked)}
-                      className="rounded accent-rose-500 cursor-pointer"
-                    />
-                  </label>
+                <div className="space-y-3 max-h-[65vh] overflow-y-auto pr-1">
+                  {/* Kategori 1: Objek Operasional */}
+                  <div>
+                    <div className={`text-[9.5px] font-black uppercase tracking-wider mb-1 px-1 ${
+                      isDark ? "text-slate-400" : "text-slate-500"
+                    }`}>
+                      Objek & Realtime
+                    </div>
+                    <div className="space-y-1">
+                      <label className={`flex items-center justify-between cursor-pointer p-1.5 rounded-lg transition ${
+                        isDark ? "hover:bg-slate-800/50 text-slate-300" : "hover:bg-slate-50 text-slate-700"
+                      }`}>
+                        <span className="font-medium flex items-center gap-1.5">👥 Pelanggan / Warga</span>
+                        <input
+                          type="checkbox"
+                          checked={tampilkanPelanggan}
+                          onChange={(e) => setTampilkanPelanggan(e.target.checked)}
+                          className="rounded accent-emerald-600 cursor-pointer"
+                        />
+                      </label>
+                      <label className={`flex items-center justify-between cursor-pointer p-1.5 rounded-lg transition ${
+                        isDark ? "hover:bg-slate-800/50 text-slate-300" : "hover:bg-slate-50 text-slate-700"
+                      }`}>
+                        <span className="font-medium flex items-center gap-1.5">🚛 Kendaraan Armada</span>
+                        <input
+                          type="checkbox"
+                          checked={tampilkanArmada}
+                          onChange={(e) => setTampilkanArmada(e.target.checked)}
+                          className="rounded accent-emerald-600 cursor-pointer"
+                        />
+                      </label>
+                      <label className={`flex items-center justify-between cursor-pointer p-1.5 rounded-lg transition ${
+                        isDark ? "hover:bg-slate-800/50 text-slate-300" : "hover:bg-slate-50 text-slate-700"
+                      }`}>
+                        <span className="font-medium flex items-center gap-1.5">👮 Petugas Lapangan</span>
+                        <input
+                          type="checkbox"
+                          checked={tampilkanPetugas}
+                          onChange={(e) => setTampilkanPetugas(e.target.checked)}
+                          className="rounded accent-emerald-600 cursor-pointer"
+                        />
+                      </label>
+                      <label className={`flex items-center justify-between cursor-pointer p-1.5 rounded-lg transition ${
+                        isDark ? "hover:bg-slate-800/50 text-slate-300" : "hover:bg-slate-50 text-slate-700"
+                      }`}>
+                        <span className="font-medium flex items-center gap-1.5">🚨 Pengaduan Live</span>
+                        <input
+                          type="checkbox"
+                          checked={tampilkanKomplain}
+                          onChange={(e) => setTampilkanKomplain(e.target.checked)}
+                          className="rounded accent-emerald-600 cursor-pointer"
+                        />
+                      </label>
+                      <label className={`flex items-center justify-between cursor-pointer p-1.5 rounded-lg transition ${
+                        isDark ? "hover:bg-slate-800/50 text-slate-300" : "hover:bg-slate-50 text-slate-700"
+                      }`}>
+                        <span className="font-medium flex items-center gap-1.5">♻️ Titik Transit / Lapak</span>
+                        <input
+                          type="checkbox"
+                          checked={tampilkanTransit}
+                          onChange={(e) => setTampilkanTransit(e.target.checked)}
+                          className="rounded accent-emerald-600 cursor-pointer"
+                        />
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Kategori 2: Batas Administrasi */}
+                  <div className={`pt-2 border-t ${isDark ? "border-slate-800" : "border-slate-100"}`}>
+                    <div className={`text-[9.5px] font-black uppercase tracking-wider mb-1 px-1 ${
+                      isDark ? "text-slate-400" : "text-slate-500"
+                    }`}>
+                      Batas Administrasi
+                    </div>
+                    <div className="space-y-1">
+                      <label className={`flex items-center justify-between cursor-pointer p-1.5 rounded-lg transition ${
+                        isDark ? "hover:bg-slate-800/50 text-slate-300" : "hover:bg-slate-50 text-slate-700"
+                      }`}>
+                        <span className="font-medium flex items-center gap-1.5">🏛️ Batas Kecamatan (BPS)</span>
+                        <input
+                          type="checkbox"
+                          checked={tampilkanBatas}
+                          onChange={(e) => setTampilkanBatas(e.target.checked)}
+                          className="rounded accent-emerald-600 cursor-pointer"
+                        />
+                      </label>
+                      <label className={`flex items-center justify-between cursor-pointer p-1.5 rounded-lg transition ${
+                        isDark ? "hover:bg-slate-800/50 text-slate-300" : "hover:bg-slate-50 text-slate-700"
+                      }`}>
+                        <span className="font-medium flex items-center gap-1.5">🏘️ Zonasi Kelurahan</span>
+                        <input
+                          type="checkbox"
+                          checked={tampilkanBatasKelurahan}
+                          onChange={(e) => setTampilkanBatasKelurahan(e.target.checked)}
+                          className="rounded accent-emerald-600 cursor-pointer"
+                        />
+                      </label>
+                      <label className={`flex items-center justify-between cursor-pointer p-1.5 rounded-lg transition ${
+                        isDark ? "hover:bg-slate-800/50 text-slate-300" : "hover:bg-slate-50 text-slate-700"
+                      }`}>
+                        <span className="font-medium flex items-center gap-1.5">📍 Titik RT / RTRW</span>
+                        <input
+                          type="checkbox"
+                          checked={tampilkanRt}
+                          onChange={(e) => setTampilkanRt(e.target.checked)}
+                          className="rounded accent-emerald-600 cursor-pointer"
+                        />
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Kategori 3: Analisis Spasial */}
+                  <div className={`pt-2 border-t ${isDark ? "border-slate-800" : "border-slate-100"}`}>
+                    <div className={`text-[9.5px] font-black uppercase tracking-wider mb-1 px-1 ${
+                      isDark ? "text-slate-400" : "text-slate-500"
+                    }`}>
+                      Analisis Spasial
+                    </div>
+                    <div className="space-y-1">
+                      <label className={`flex items-center justify-between cursor-pointer p-1.5 rounded-lg transition ${
+                        isDark ? "hover:bg-slate-800/50 text-slate-300" : "hover:bg-slate-50 text-slate-700"
+                      }`}>
+                        <span className="font-medium flex items-center gap-1.5">⭕ Radius Cakupan 200m</span>
+                        <input
+                          type="checkbox"
+                          checked={tampilkanCakupan}
+                          onChange={(e) => setTampilkanCakupan(e.target.checked)}
+                          className="rounded accent-emerald-600 cursor-pointer"
+                        />
+                      </label>
+                      <label className={`flex items-center justify-between cursor-pointer p-1.5 rounded-lg transition ${
+                        isDark ? "hover:bg-slate-800/50 text-slate-300" : "hover:bg-slate-50 text-slate-700"
+                      }`}>
+                        <span className="font-medium flex items-center gap-1.5">🔥 Heatmap Kepadatan</span>
+                        <input
+                          type="checkbox"
+                          checked={showHeatmap}
+                          onChange={(e) => setShowHeatmap(e.target.checked)}
+                          className="rounded accent-rose-500 cursor-pointer"
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer Popover: Reset to default */}
+                <div className={`pt-2 border-t flex justify-end ${
+                  isDark ? "border-slate-700" : "border-slate-200"
+                }`}>
+                  <button
+                    type="button"
+                    onClick={resetLayerDefault}
+                    className={`text-[10.5px] font-semibold px-2.5 py-1 rounded-lg transition ${
+                      isDark
+                        ? "text-slate-400 hover:text-white hover:bg-slate-800"
+                        : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"
+                    }`}
+                  >
+                    Reset ke Standar
+                  </button>
                 </div>
               </div>
             )}
@@ -1494,6 +1646,10 @@ export default function PetaMap({
               tampilkanBatas={tampilkanBatas}
               tampilkanBatasKelurahan={tampilkanBatasKelurahan}
               tampilkanRt={tampilkanRt}
+              tampilkanPelanggan={tampilkanPelanggan}
+              tampilkanPetugas={tampilkanPetugas}
+              tampilkanKomplain={tampilkanKomplain}
+              tampilkanTransit={tampilkanTransit}
               ruteTerpilih={ruteTerpilih}
               invalidateKey={invalidateKey}
               warnaStatus={WARNA_STATUS}

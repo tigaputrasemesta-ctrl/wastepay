@@ -11,24 +11,27 @@ export default function HeatmapLayer({ points }: { points: [number, number, numb
 
   useEffect(() => {
     if (typeof (L as any).heatLayer !== "function") return;
-    
-    // Titik array: [lat, lng, intensity]
-    layerRef.current = (L as any).heatLayer(points, {
+
+    // Inisialisasi heat layer sekali saja saat mount
+    const layer = (L as any).heatLayer(points, {
       radius: 25,
       blur: 20,
       maxZoom: 15,
       max: 1.0,
-      gradient: { 0.2: "blue", 0.4: "cyan", 0.6: "lime", 0.8: "yellow", 1.0: "red" }
+      gradient: { 0.2: "blue", 0.4: "cyan", 0.6: "lime", 0.8: "yellow", 1.0: "red" },
     }).addTo(map);
 
-    return () => {
-      if (layerRef.current) {
-        map.removeLayer(layerRef.current);
-      }
-    };
-  }, [map, points]);
+    layerRef.current = layer;
 
-  // Update points when they change
+    return () => {
+      if (layer) {
+        map.removeLayer(layer);
+      }
+      layerRef.current = null;
+    };
+  }, [map]);
+
+  // Update points secara reaktif saat ada filter atau perubahan data
   useEffect(() => {
     if (layerRef.current && points) {
       layerRef.current.setLatLngs(points);

@@ -80,6 +80,10 @@ type Props = {
   tampilkanBatas: boolean;
   tampilkanBatasKelurahan: boolean;
   tampilkanRt: boolean;
+  tampilkanPelanggan?: boolean;
+  tampilkanPetugas?: boolean;
+  tampilkanKomplain?: boolean;
+  tampilkanTransit?: boolean;
   ruteTerpilih: RutePeta | null;
   invalidateKey: number;
   warnaStatus: Record<string, string>;
@@ -165,7 +169,8 @@ function computeKelurahanGeom(): KelurahanGeomItem[] {
       st.feature = poly;
     } else {
       try {
-        st.feature = union(st.feature, poly);
+        const u = union(featureCollection([st.feature, poly]));
+        if (u) st.feature = u;
       } catch {
         // fallback if union fails
       }
@@ -721,10 +726,18 @@ function FitBounds({
   points: [number, number][];
 }) {
   const map = useMap();
+  const fittedInitialRef = useRef(false);
+  const lastRuteKeyRef = useRef<string>("");
+
   useEffect(() => {
     if (rutePoints.length >= 2) {
-      map.fitBounds(rutePoints, { padding: [70, 70], maxZoom: 17 });
-    } else if (points.length > 0) {
+      const key = `${rutePoints.length}-${rutePoints[0][0]}-${rutePoints[rutePoints.length - 1][0]}`;
+      if (lastRuteKeyRef.current !== key) {
+        lastRuteKeyRef.current = key;
+        map.fitBounds(rutePoints, { padding: [70, 70], maxZoom: 17 });
+      }
+    } else if (!fittedInitialRef.current && points.length > 0) {
+      fittedInitialRef.current = true;
       map.fitBounds(points, { padding: [50, 50], maxZoom: 16 });
     }
   }, [map, rutePoints, points]);
@@ -756,6 +769,10 @@ export default function MapView({
   tampilkanBatas,
   tampilkanBatasKelurahan,
   tampilkanRt,
+  tampilkanPelanggan = true,
+  tampilkanPetugas = true,
+  tampilkanKomplain = true,
+  tampilkanTransit = true,
   ruteTerpilih,
   invalidateKey,
   warnaStatus,
@@ -763,7 +780,37 @@ export default function MapView({
   const [zoom, setZoom] = useState(13);
 
   const titik = useMemo(
-    () => pelanggan.map((p) => [p.latitude!, p.longitude!] as [number, number]),
+    () =>
+      pelanggan
+        .filter(
+          (p) =>
+            p.latitude != null &&
+            p.longitude != null &&
+            !isNaN(p.latitude) &&
+            !isNaN(p.longitude)
+        )
+        .map((p) => [p.latitude as number, p.longitude as number] as [number, number]),
+    [pelanggan]
+  );
+
+  const heatmapPoints = useMemo(
+    () =>
+      pelanggan
+        .filter(
+          (p) =>
+            p.latitude != null &&
+            p.longitude != null &&
+            !isNaN(p.latitude) &&
+            !isNaN(p.longitude)
+        )
+        .map(
+          (p) =>
+            [
+              p.latitude as number,
+              p.longitude as number,
+              p.statusTagihan === "tunggakan" ? 1.0 : 0.2,
+            ] as [number, number, number]
+        ),
     [pelanggan]
   );
 
@@ -870,7 +917,7 @@ export default function MapView({
         <ZoomTracker onZoom={setZoom} />
         <InvalidateSize invalidateKey={invalidateKey} />
 
-      {/* Batas kecamatan resmi (BPS) */}
+      {/* Batas kecamatan resmi (BPS Kota Depok) */}
       {tampilkanBatas && (
         <>
           {KECAMATAN_DEPOK.map((k) => (
@@ -884,13 +931,8 @@ export default function MapView({
                 fillColor: "#f5a524",
                 fillOpacity: 0.03,
               }}
-            >
-              <Tooltip sticky>
-                <span className="text-[11px] text-slate-800 font-medium">
-                  BATAS RESMI — KEC. {k.nama}
-                </span>
-              </Tooltip>
-            </Polygon>
+              interactive={false}
+            />
           ))}
           {zoom <= 13 &&
             KECAMATAN_DEPOK.map((k) => (
@@ -905,8 +947,13 @@ export default function MapView({
                 </Tooltip>
               </Marker>
             ))}
-          
-          {tampilkanBatasKelurahan && zoom >= 14 &&
+        </>
+      )}
+
+      {/* Batas zonasi kelurahan (Tessellation GIS Kota Depok) */}
+      {tampilkanBatasKelurahan && (
+        <>
+          {zoom >= 15 &&
             kelurahanGeom.map((kel) => (
               <Marker
                 key={`kel-${kel.nama}`}
@@ -921,22 +968,24 @@ export default function MapView({
             ))}
 
           {/* Render polygon batas kelurahan saat zoom in */}
-          {tampilkanBatasKelurahan && zoom >= 13 &&
-            kelurahanGeom.map((kel) => kel.polygons.map((poly, idx) => (
-              <Polygon
-                key={`poly-${kel.nama}-${idx}`}
-                positions={poly}
-                pathOptions={{
-                  color: kel.warna,
-                  weight: 1.5,
-                  opacity: 0.3,
-                  fillColor: kel.warna,
-                  fillOpacity: 0.02,
-                  dashArray: "8 6"
-                }}
-                interactive={false}
-              />
-            )))}
+          {zoom >= 13 &&
+            kelurahanGeom.map((kel) =>
+              kel.polygons.map((poly, idx) => (
+                <Polygon
+                  key={`poly-${kel.nama}-${idx}`}
+                  positions={poly}
+                  pathOptions={{
+                    color: kel.warna,
+                    weight: 1.2,
+                    opacity: 0.35,
+                    fillColor: kel.warna,
+                    fillOpacity: 0.02,
+                    dashArray: "6 5",
+                  }}
+                  interactive={false}
+                />
+              ))
+            )}
         </>
       )}
 
@@ -1008,24 +1057,34 @@ export default function MapView({
         </>
       )}
 
+      {/* Radius cakupan 200m pelanggan (dengan koordinat valid) */}
       {tampilkanCakupan &&
-        pelanggan.map((p) => (
-          <Circle
-            key={`c-${p.id}`}
-            center={[p.latitude!, p.longitude!]}
-            radius={200}
-            pathOptions={{
-              color: "#b7e13c",
-              weight: 1,
-              opacity: 0.35,
-              fillColor: "#b7e13c",
-              fillOpacity: 0.05,
-            }}
-          />
-        ))}
+        pelanggan
+          .filter(
+            (p) =>
+              p.latitude != null &&
+              p.longitude != null &&
+              !isNaN(p.latitude) &&
+              !isNaN(p.longitude)
+          )
+          .map((p) => (
+            <Circle
+              key={`c-${p.id}`}
+              center={[p.latitude as number, p.longitude as number]}
+              radius={200}
+              pathOptions={{
+                color: tileMode === "dark" ? "#b7e13c" : "#10b981",
+                weight: 1,
+                opacity: 0.35,
+                fillColor: tileMode === "dark" ? "#b7e13c" : "#10b981",
+                fillOpacity: 0.06,
+              }}
+              interactive={false}
+            />
+          ))}
 
       {/* Pengaduan live */}
-      {komplain.length > 0 && (
+      {tampilkanKomplain && komplain.length > 0 && (
         <PinsKomplain
           komplain={komplain}
           selectedKomplainId={selectedKomplainId}
@@ -1034,11 +1093,13 @@ export default function MapView({
       )}
 
       {/* Lokasi realtime petugas lapangan */}
-      <PinsPetugas
-        petugas={petugas}
-        selectedPetugasId={selectedPetugasId}
-        onPilih={setSelectedPetugasId}
-      />
+      {tampilkanPetugas && (
+        <PinsPetugas
+          petugas={petugas}
+          selectedPetugasId={selectedPetugasId}
+          onPilih={setSelectedPetugasId}
+        />
+      )}
 
       {/* Kendaraan operasional: dump truck & mobil pickup */}
       <PinsKendaraan
@@ -1048,21 +1109,19 @@ export default function MapView({
       />
 
       {/* Titik transit (lapak) */}
-      <PinsTransit
-        transit={transit}
-        selectedTransitId={selectedTransitId}
-        onPilih={setSelectedTransitId}
-      />
-
-      {showHeatmap && (
-        <HeatmapLayer 
-          points={pelanggan
-            .filter(p => p.latitude != null && p.longitude != null && !isNaN(p.latitude) && !isNaN(p.longitude))
-            .map(p => [p.latitude as number, p.longitude as number, p.statusTagihan === "tunggakan" ? 1.0 : 0.2])} 
+      {tampilkanTransit && (
+        <PinsTransit
+          transit={transit}
+          selectedTransitId={selectedTransitId}
+          onPilih={setSelectedTransitId}
         />
       )}
 
-      {!showHeatmap && (
+      {showHeatmap && (
+        <HeatmapLayer points={heatmapPoints} />
+      )}
+
+      {!showHeatmap && tampilkanPelanggan && (
         <ClusterPins
           pelanggan={pelanggan}
           warnaStatus={warnaStatus}
