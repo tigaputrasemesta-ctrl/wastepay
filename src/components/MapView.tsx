@@ -314,46 +314,48 @@ function popupHtml(p: PelangganPeta): string {
     const statusTxt = TAGIHAN_LABEL[p.statusTagihan ?? ""] ?? "—";
     const telClean = p.noTelepon ? String(p.noTelepon).replace(/\D/g, "") : "";
     const waUrl = telClean ? `https://wa.me/${telClean.replace(/^0/, "62")}` : null;
+    const isTunggakan = p.statusTagihan === "tunggakan";
+    const isLunas = p.statusTagihan === "lunas";
     
-    return `<div style="font-family:'Inter',system-ui,sans-serif;font-size:11px;color:#f1f5f9;min-width:210px;line-height:1.4">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;border-bottom:1px solid #334155;padding-bottom:6px;">
+    return `<div style="font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:11px;min-width:210px;line-height:1.4">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;border-bottom:1px solid #e2e8f0;padding-bottom:6px;">
         <div>
-          <div style="font-weight:800;font-size:14px;color:#ffffff;letter-spacing:-0.2px;">${esc(p.nama)}</div>
-          <div style="color:#10b981;font-size:10px;font-weight:700;margin-top:1px;font-family:ui-monospace,monospace;">${esc(p.kodePelanggan)}</div>
+          <div style="font-weight:800;font-size:14px;color:#0f172a;letter-spacing:-0.2px;">${esc(p.nama)}</div>
+          <div style="color:#059669;font-size:11px;font-weight:700;margin-top:1px;font-family:ui-monospace,monospace;">${esc(p.kodePelanggan)}</div>
         </div>
       </div>
       
-      <div style="color:#cbd5e1;margin-bottom:8px;">
+      <div style="color:#475569;margin-bottom:8px;font-size:11px;">
         ${esc(p.alamat || "Alamat tidak tersedia")}${p.rtRw ? " · RT/RW " + esc(p.rtRw) : ""}
       </div>
       
       <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;">
-        <span style="background:#334155;color:#e2e8f0;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:600;">KATEGORI: ${esc(KATEGORI_LABEL[p.kategori] ?? p.kategori)}</span>
-        ${p.wilayah?.nama ? `<span style="background:#334155;color:#e2e8f0;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:600;">WILAYAH: ${esc(p.wilayah.nama)}</span>` : ""}
+        <span style="background:#f1f5f9;color:#334155;border:1px solid #e2e8f0;padding:2px 7px;border-radius:6px;font-size:9.5px;font-weight:600;">KATEGORI: ${esc(KATEGORI_LABEL[p.kategori] ?? p.kategori)}</span>
+        ${p.wilayah?.nama ? `<span style="background:#f1f5f9;color:#334155;border:1px solid #e2e8f0;padding:2px 7px;border-radius:6px;font-size:9.5px;font-weight:600;">WILAYAH: ${esc(p.wilayah.nama)}</span>` : ""}
       </div>
       
       ${
         zona
-          ? `<div style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);color:#34d399;padding:6px;border-radius:6px;margin-bottom:8px;font-weight:600;font-size:10px;">
+          ? `<div style="background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;padding:6px 8px;border-radius:8px;margin-bottom:8px;font-weight:600;font-size:10px;">
               ZONA: ${esc((zona.kelurahan || "").toUpperCase())} · KEC. ${esc((zona.kecamatan || "").toUpperCase())}<br/>
               RT/RW #${esc(zona.rtId)} <span style="opacity:0.8">(±${zona.jarakRtM ?? 0}m)</span>
              </div>`
           : ""
       }
       
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid #334155;">
-        <div style="background:${p.statusTagihan === 'tunggakan' ? '#7f1d1d' : '#064e3b'};color:${p.statusTagihan === 'tunggakan' ? '#fca5a5' : '#6ee7b7'};padding:3px 8px;border-radius:999px;font-weight:800;font-size:10px;display:inline-flex;align-items:center;gap:4px;border:1px solid ${p.statusTagihan === 'tunggakan' ? '#991b1b' : '#047857'};box-shadow:0 2px 4px rgba(0,0,0,0.2);">
-          ${p.statusTagihan === 'tunggakan' ? '⛔' : '✓'} ${esc(statusTxt).toUpperCase()}
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid #e2e8f0;">
+        <div style="background:${isTunggakan ? '#fef2f2' : isLunas ? '#ecfdf5' : '#f8fafc'};color:${isTunggakan ? '#dc2626' : isLunas ? '#059669' : '#64748b'};padding:3px 9px;border-radius:999px;font-weight:800;font-size:10px;display:inline-flex;align-items:center;gap:4px;border:1px solid ${isTunggakan ? '#fecaca' : isLunas ? '#a7f3d0' : '#e2e8f0'};">
+          ${isTunggakan ? '⛔' : isLunas ? '✓' : '•'} ${esc(statusTxt).toUpperCase()}
         </div>
-        ${waUrl ? `<a href="${waUrl}" target="_blank" rel="noreferrer" style="background:#10b981;color:#ffffff;padding:4px 10px;border-radius:6px;font-weight:700;text-decoration:none;font-size:10px;display:inline-flex;align-items:center;box-shadow:0 2px 4px rgba(16,185,129,0.3);">💬 WA</a>` : ""}
+        ${waUrl ? `<a href="${waUrl}" target="_blank" rel="noreferrer" style="background:#10b981;color:#ffffff;padding:4px 10px;border-radius:8px;font-weight:700;text-decoration:none;font-size:10px;display:inline-flex;align-items:center;gap:4px;box-shadow:0 2px 5px rgba(16,185,129,0.3);">💬 Chat WA</a>` : ""}
       </div>
     </div>`;
   } catch (err) {
     console.error("Gagal membuat popup pelanggan:", err);
-    return `<div style="font-family:'Inter',system-ui,sans-serif;font-size:11px;color:#f1f5f9;min-width:160px;line-height:1.4">
-      <div style="font-weight:800;font-size:13px;color:#ffffff;">${esc(p.nama)}</div>
-      <div style="color:#10b981;font-weight:700;font-family:ui-monospace,monospace;margin-bottom:4px;">${esc(p.kodePelanggan)}</div>
-      <div style="color:#cbd5e1;">${esc(p.alamat)}</div>
+    return `<div style="font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:11px;min-width:160px;line-height:1.4">
+      <div style="font-weight:800;font-size:13px;color:#0f172a;">${esc(p.nama)}</div>
+      <div style="color:#059669;font-weight:700;font-family:ui-monospace,monospace;margin-bottom:4px;">${esc(p.kodePelanggan)}</div>
+      <div style="color:#475569;">${esc(p.alamat)}</div>
     </div>`;
   }
 }
@@ -363,17 +365,17 @@ function popupKomplainHtml(k: KomplainPeta): string {
     const telClean = k.pelanggan?.noTelepon ? String(k.pelanggan.noTelepon).replace(/\D/g, "") : "";
     const waUrl = telClean ? `https://wa.me/${telClean.replace(/^0/, "62")}` : null;
     const wa = waUrl
-      ? `<a href="${waUrl}" target="_blank" rel="noreferrer" style="display:inline-block;margin-top:6px;color:#131517;background:#f87171;font-family:ui-monospace,monospace;font-size:10px;font-weight:700;padding:4px 8px;border-radius:2px;text-decoration:none;letter-spacing:0.06em">HUBUNGI WA</a>`
+      ? `<a href="${waUrl}" target="_blank" rel="noreferrer" style="display:inline-block;margin-top:8px;color:#ffffff;background:#10b981;font-size:10px;font-weight:700;padding:4px 10px;border-radius:8px;text-decoration:none;">💬 HUBUNGI WA</a>`
       : "";
-    return `<div style="font-family:ui-monospace,monospace;font-size:11px;color:#f0eee6;min-width:200px">
-      <div style="display:flex;align-items:center;gap:6px">
-        <span style="width:8px;height:8px;border-radius:50%;background:${KOMPLAIN_WARNA[k.status] ?? "#ff5c5c"}"></span>
-        <span style="font-weight:700;font-size:12px;color:#ffffff;text-transform:uppercase">${esc(KOMPLAIN_LABEL[k.jenis] ?? k.jenis)}</span>
+    return `<div style="font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:11px;min-width:210px">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+        <span style="width:8px;height:8px;border-radius:50%;background:${KOMPLAIN_WARNA[k.status] ?? "#ef4444"}"></span>
+        <span style="font-weight:800;font-size:12px;color:#0f172a;text-transform:uppercase">${esc(KOMPLAIN_LABEL[k.jenis] ?? k.jenis)}</span>
       </div>
-      <div style="color:#c5c8bc;font-size:10px;margin:3px 0 8px">${esc(k.pelanggan?.nama)} · ${esc(k.pelanggan?.kodePelanggan)} · ${formatWaktuRelatif(k.createdAt)}</div>
-      <div style="color:#f0eee6;line-height:1.5;border-left:2px solid ${KOMPLAIN_WARNA[k.status] ?? "#ff5c5c"};padding-left:8px">${esc(k.deskripsi)}</div>
-      ${k.tanggapan ? `<div style="color:#b7e13c;margin-top:6px;font-weight:600">RESPON: ${esc(k.tanggapan)}</div>` : ""}
-      <div style="color:#c5c8bc;margin-top:6px;text-transform:uppercase;font-weight:600">STATUS: ${esc(k.status)}</div>
+      <div style="color:#64748b;font-size:10px;margin:3px 0 8px">${esc(k.pelanggan?.nama)} · <span style="font-family:monospace;font-weight:700;color:#059669;">${esc(k.pelanggan?.kodePelanggan)}</span> · ${formatWaktuRelatif(k.createdAt)}</div>
+      <div style="color:#1e293b;line-height:1.5;background:#f8fafc;border-left:3px solid ${KOMPLAIN_WARNA[k.status] ?? "#ef4444"};padding:6px 8px;border-radius:4px;font-size:11px;">${esc(k.deskripsi)}</div>
+      ${k.tanggapan ? `<div style="color:#059669;margin-top:6px;font-weight:700;font-size:10px;">RESPON: ${esc(k.tanggapan)}</div>` : ""}
+      <div style="color:#64748b;margin-top:6px;text-transform:uppercase;font-weight:700;font-size:10px;">STATUS: <span style="color:${KOMPLAIN_WARNA[k.status] ?? '#ef4444'};font-weight:800;">${esc(k.status)}</span></div>
       ${wa}
     </div>`;
   } catch (err) {

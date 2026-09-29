@@ -38,10 +38,10 @@ import LacakLokasi from "@/components/LacakLokasi";
 const MapView = dynamic(() => import("@/components/MapView"), {
   ssr: false,
   loading: () => (
-    <div className="h-full w-full flex flex-col items-center justify-center bg-slate-950 text-white space-y-3">
-      <div className="w-8 h-8 rounded-full border-2 border-amber-400 border-t-transparent animate-spin" />
-      <p className="font-mono text-xs uppercase tracking-widest text-amber-400 animate-pulse">
-        Memuat GIS Console LoadSwift…
+    <div className="h-full w-full flex flex-col items-center justify-center bg-slate-50 text-slate-800 space-y-3">
+      <div className="w-9 h-9 rounded-full border-3 border-emerald-600 border-t-transparent animate-spin" />
+      <p className="font-sans text-xs font-bold uppercase tracking-wider text-emerald-800">
+        Memuat Peta Navigasi Gojek Clean…
       </p>
     </div>
   ),
@@ -64,11 +64,11 @@ class MapErrorBoundary extends Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div className="h-full w-full flex flex-col items-center justify-center bg-slate-950 text-white p-6 space-y-4">
-          <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-400">
+        <div className="h-full w-full flex flex-col items-center justify-center bg-slate-50 text-slate-800 p-6 space-y-4">
+          <div className="p-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600">
             <AlertCircle className="w-8 h-8" />
           </div>
-          <p className="text-sm font-bold text-slate-200">Terjadi kendala saat memuat peta GIS.</p>
+          <p className="text-sm font-bold text-slate-800">Terjadi kendala saat memuat peta GIS.</p>
           <button
             type="button"
             onClick={() => this.setState({ hasError: false })}
@@ -515,11 +515,11 @@ export default function PetaMap({
           </button>
 
           {/* Brand Pill */}
-          <div className={`hidden xl:flex items-center gap-2 px-2.5 py-1 rounded-full border text-[11px] font-bold ${
-            isDark ? "bg-slate-900 border-slate-800 text-slate-200" : "bg-emerald-50 border-emerald-200/80 text-emerald-800"
+          <div className={`hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-full border text-[11px] font-bold ${
+            isDark ? "bg-slate-900 border-slate-800 text-slate-200" : "bg-emerald-50 border-emerald-300 text-emerald-900 shadow-xs"
           }`}>
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="tracking-wide uppercase font-mono">DISPATCH CONSOLE</span>
+            <span className="tracking-wide uppercase font-mono">🛵 GOJEK CLEAN GIS</span>
           </div>
 
           {/* Metric Status Pills */}
@@ -1467,7 +1467,7 @@ export default function PetaMap({
         </div>
 
         {/* ── CENTER WORKSPACE: FULL GIS MAP CANVAS ── */}
-        <div className="flex-1 relative h-full bg-slate-950 overflow-hidden">
+        <div className={`flex-1 relative h-full overflow-hidden ${isDark ? "bg-slate-950" : "bg-slate-100"}`}>
           <MapErrorBoundary>
             <MapView
               pelanggan={peta}
