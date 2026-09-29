@@ -70,127 +70,157 @@
   display: none;
 }
 
-/* Cluster marker */
-.marker-cluster {
-  background: transparent;
-}
-.marker-cluster div {
-  background: #059669;
-  border: 2px solid #ffffff;
-  font-weight: 800;
-  border-radius: 9999px;
-  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.45);
-  color: #ffffff;
-  font-family: ui-sans-serif, system-ui, sans-serif;
-}
-
-/* ── Marker petugas realtime (truk) ── */
-.petugas-marker {
-  position: relative;
-  transform: translate(-50%, -50%);
-  text-align: center;
-}
-.petugas-head {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Modern Cluster Badge */
+.vector-cluster-badge {
   width: 36px;
   height: 36px;
   border-radius: 9999px;
-  background: #10b981;
-  border: 2.5px solid #ffffff;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
-  font-size: 16px;
-  margin: 0 auto;
-}
-.petugas-label {
-  display: inline-block;
-  margin-top: 4px;
-  text-align: center;
-  font-family: ui-sans-serif, system-ui, sans-serif;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: #ffffff;
-  background: #0f172a;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 2px 8px;
-  border-radius: 9999px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  white-space: nowrap;
-}
-
-/* ── Marker kendaraan ── */
-.kendaraan-marker {
-  position: relative;
-  transform: translate(-50%, -50%);
-  text-align: center;
-}
-.kendaraan-head {
+  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 9999px;
-  background: var(--warna, #10b981);
-  border: 2.5px solid #ffffff;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
-  font-size: 18px;
-  margin: 0 auto;
-}
-.kendaraan-label {
-  display: inline-block;
-  margin-top: 4px;
-  text-align: center;
   font-family: ui-sans-serif, system-ui, sans-serif;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  font-size: 12px;
+  font-weight: 800;
   color: #ffffff;
-  background: #0f172a;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 2px 8px;
-  border-radius: 9999px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  white-space: nowrap;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.vector-cluster-badge:hover {
+  transform: scale(1.15);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
 }
 
-/* ── Marker titik transit / lapak ── */
-.transit-marker {
+/* ── Vector Pin System (Samsara / LoadSwift Standard) ── */
+.vector-pin-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   position: relative;
   transform: translate(-50%, -100%);
-  text-align: center;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.35));
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.transit-head {
+.vector-pin-wrapper:hover {
+  transform: translate(-50%, -108%) scale(1.08);
+  z-index: 1000 !important;
+}
+.vector-pin-wrapper.selected {
+  transform: translate(-50%, -110%) scale(1.18);
+  filter: drop-shadow(0 8px 24px rgba(245, 158, 11, 0.55));
+  z-index: 1001 !important;
+}
+
+/* Teardrop Pin Shape Container */
+.vector-teardrop {
+  position: relative;
+  width: 36px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 9999px;
-  background: #f59e0b;
-  border: 2.5px solid #ffffff;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
-  font-size: 15px;
-  color: #ffffff;
-  margin: 0 auto;
 }
-.transit-label {
-  display: inline-block;
-  margin-top: 4px;
-  text-align: center;
-  font-family: ui-sans-serif, system-ui, sans-serif;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+.vector-teardrop svg.pin-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: all 0.2s ease;
+}
+.vector-teardrop-icon {
+  position: relative;
+  z-index: 2;
+  margin-top: -8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #ffffff;
+}
+
+/* High-Contrast Capsule Badge Beneath Pin */
+.vector-pin-badge {
+  margin-top: -2px;
   background: #0f172a;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 2px 8px;
+  color: #f8fafc;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  padding: 2.5px 8px;
   border-radius: 9999px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+}
+.vector-pin-badge.amber {
+  border-color: #f59e0b;
+  color: #fbbf24;
+}
+.vector-pin-badge.emerald {
+  border-color: #10b981;
+  color: #34d399;
+}
+.vector-pin-badge.cyan {
+  border-color: #06b6d4;
+  color: #67e8f9;
+}
+
+/* Radar Pulse Waves for Realtime Moving Units */
+@keyframes radar-pulse-wave {
+  0% { transform: scale(0.5); opacity: 0.9; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+.vector-radar-ring {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  margin-left: -14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.5);
+  pointer-events: none;
+  animation: radar-pulse-wave 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+.vector-radar-ring.amber {
+  background: rgba(245, 158, 11, 0.5);
+}
+.vector-radar-ring.rose {
+  background: rgba(239, 68, 68, 0.6);
+  animation-duration: 1.3s;
+}
+
+/* Pelanggan Micro-Dot Pin (Apple Maps / Modern GIS Style) */
+.micro-dot-wrapper {
+  position: relative;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+.micro-dot-pin {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.micro-dot-wrapper:hover .micro-dot-pin {
+  transform: scale(1.4);
+  box-shadow: 0 0 12px currentColor;
+}
+.micro-dot-wrapper.tunggakan .micro-dot-pin {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.5), 0 2px 8px rgba(0, 0, 0, 0.4);
+  animation: glow-red 1.8s infinite;
 }
 
 /* ── Leaflet Popups (Clean Modern Mode) ── */
