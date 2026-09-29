@@ -16,9 +16,11 @@ import {
   Users,
   Recycle,
   CheckCircle2,
-  HelpCircle,
-  FileText,
   ChevronRight,
+  TrendingUp,
+  FileCheck2,
+  Layers,
+  Sparkles,
 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
@@ -34,7 +36,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "UPS HERU - Jasa Angkut Sampah & Retribusi Digital Kota Depok",
   description:
-    "Layanan pengelolaan sampah terpadu Kota Depok oleh TPS 3R Kalibaru (CV Hero Zero Waste): penjemputan terjadwal ke rumah warga, pelacakan armada truk sampah live GPS, transparansi tarif retribusi, dan pembayaran digital via QRIS.",
+    "Solusi pengelolaan sampah terpadu Kota Depok oleh TPS 3R Kalibaru (CV Hero Zero Waste). Penjemputan terjadwal ke rumah warga, pelacakan armada live GPS, transparansi tarif retribusi, dan pembayaran digital via QRIS.",
   alternates: {
     canonical: "/",
   },
@@ -82,31 +84,31 @@ export default async function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-emerald-800 selection:text-white">
+    <div className="min-h-screen bg-[#f8fafb] text-slate-900 font-sans selection:bg-[#0d7a75] selection:text-white">
       <JsonLd data={generateLocalBusinessJsonLd()} />
 
-      {/* ── 1. Top Civic Operational Status Bar ── */}
+      {/* ── 1. Top Civic Status Bar ── */}
       <section
         aria-label="Status Operasional Dinas"
-        className="bg-slate-900 text-white text-xs py-2 px-4 border-b border-slate-800"
+        className="bg-[#0c3d3a] text-white text-xs py-2 px-4 border-b border-[#124b47]"
       >
         <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-semibold text-[11px]">
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#1b5e59] text-emerald-300 font-semibold text-[11px]">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               Operasional Normal
             </span>
-            <span className="text-slate-300 hidden sm:inline text-[11px]">
+            <span className="text-slate-200 hidden sm:inline text-[11px]">
               Armada aktif di Kec. Cilodong, Kel. Kalibaru, Jatimulya, Sukamaju & sekitarnya
             </span>
           </div>
-          <div className="flex items-center gap-4 text-slate-400 text-[11px]">
-            <span className="hidden md:inline">TPS 3R: 07.00 – 17.00 WIB</span>
+          <div className="flex items-center gap-4 text-slate-300 text-[11px]">
+            <span className="hidden md:inline">Loket TPS 3R: 07.00 – 17.00 WIB</span>
             <a
               href="https://wa.me/6281400782617"
               target="_blank"
               rel="noreferrer"
-              className="text-emerald-400 font-bold hover:underline inline-flex items-center gap-1"
+              className="text-emerald-300 font-bold hover:underline inline-flex items-center gap-1"
             >
               <PhoneCall className="w-3 h-3" />
               <span>Hotline CS: 0814-0078-2617</span>
@@ -115,33 +117,34 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* ── 2. Primary Civic Navbar ── */}
+      {/* ── 2. Primary Public Navbar ── */}
       <PublicNavbar />
 
-      {/* ── 3. Hero Section: Clean, Authoritative, High-Utility ── */}
       <main>
-        <section className="bg-slate-50 border-b border-slate-200 py-12 md:py-20 px-4 sm:px-6">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-12 gap-10 lg:gap-12 items-center">
-            {/* Left Column: Civic Value Proposition (7 cols) */}
+        {/* ── 3. Hero Section (Editorial + Dashboard Console ala BeCycle) ── */}
+        <section className="bg-white border-b border-slate-200 py-12 md:py-20 px-4 sm:px-6">
+          <div className="max-w-6xl mx-auto grid md:grid-cols-12 gap-10 lg:gap-14 items-center">
+            {/* Left Column: Editorial Value Proposition (7 cols) */}
             <div className="md:col-span-7 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-white border border-slate-200 text-slate-700 text-xs font-semibold shadow-xs">
-                <span className="w-2 h-2 rounded-full bg-emerald-600" />
-                <span>TPS 3R Kalibaru • Layanan Pengelolaan Sampah Kota Depok</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#e8f5f4] border border-[#d1ecea] text-[#0d7a75] text-xs font-bold">
+                <span className="w-2 h-2 rounded-full bg-[#0d7a75]" />
+                <span>Pengelolaan Sampah Terpadu • Kota Depok 2026</span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
-                Layanan Angkut Sampah Rutin & Retribusi Resmi Kota Depok
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.18]">
+                Solusi Pengelolaan Sampah yang{" "}
+                <span className="text-[#0d7a75]">Memudahkan Warga</span> & Menjaga Lingkungan.
               </h1>
 
               <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal max-w-xl">
-                Pengelolaan sampah terpadu berbasis lingkungan oleh CV Hero Zero Waste (TPS 3R Kalibaru). Nikmati kepastian penjemputan sampah rumah tangga, pantau posisi truk secara real-time di peta, dan bayar retribusi bulanan transparan lewat QRIS.
+                Platform operasional resmi TPS 3R Kalibaru (CV Hero Zero Waste). Kami menghubungkan ribuan rumah tangga dan unit usaha di Depok dengan kepastian jadwal angkut, pelacakan armada live GPS, dan kemudahan pembayaran retribusi digital via QRIS.
               </p>
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
                 <Link
                   href="/daftar"
-                  className="px-6 py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2 active:scale-95"
+                  className="px-6 py-3.5 bg-[#0d7a75] hover:bg-[#0b6460] text-white rounded-xl font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2 active:scale-95"
                 >
                   <Home className="w-4 h-4" />
                   <span>Daftar Langganan Baru</span>
@@ -151,175 +154,395 @@ export default async function LandingPage() {
                   href="/lacak"
                   className="px-6 py-3.5 bg-white border border-slate-300 hover:bg-slate-50 hover:border-slate-400 text-slate-800 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-xs active:scale-95"
                 >
-                  <Navigation className="w-4 h-4 text-emerald-700" />
+                  <Navigation className="w-4 h-4 text-[#0d7a75]" />
                   <span>Lacak Truk di Peta</span>
                 </Link>
               </div>
 
-              {/* Trust Points Checklist */}
-              <div className="pt-2 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs text-slate-600 font-medium">
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
-                  <span>Jadwal Pasti 2–3x / Minggu</span>
+              {/* Metadata strip (Inspired by BeCycle specs row) */}
+              <div className="pt-4 border-t border-slate-100 flex flex-wrap gap-x-6 gap-y-2 text-xs text-slate-500 font-medium">
+                <div>
+                  <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Fasilitas</span>
+                  <span className="text-slate-800 font-semibold">TPS 3R Kalibaru</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
-                  <span>Kwitansi & QRIS Otomatis</span>
+                <div>
+                  <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Wilayah</span>
+                  <span className="text-slate-800 font-semibold">Cilodong, Depok</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
-                  <span>Dikelola TPS 3R Kalibaru</span>
+                <div>
+                  <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Kapasitas</span>
+                  <span className="text-slate-800 font-semibold">15+ Ton / hari</span>
+                </div>
+                <div>
+                  <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Metode</span>
+                  <span className="text-slate-800 font-semibold">Kompos & Daur Ulang</span>
                 </div>
               </div>
             </div>
 
-            {/* Right Column: Civic Utility Console Widget (5 cols) */}
+            {/* Right Column: Interactive Console (5 cols) */}
             <div className="md:col-span-5">
               <CivicHeroWidget />
             </div>
           </div>
         </section>
 
-        {/* ── 4. Key Operational Assurance Grid (Pilar Layanan) ── */}
-        <section className="py-14 px-4 sm:px-6 bg-white border-b border-slate-200">
-          <div className="max-w-6xl mx-auto space-y-10">
-            <div className="max-w-2xl">
-              <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 block mb-1">
-                Pilar Operasional
+        {/* ── 4. Problem & Tantangan (Dark Forest Teal Container ala BeCycle img2) ── */}
+        <section className="py-16 md:py-20 px-4 sm:px-6 bg-[#0c3d3a] text-white">
+          <div className="max-w-6xl mx-auto space-y-12">
+            <div className="max-w-3xl space-y-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 block">
+                Problem & Tantangan
               </span>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                Standar Pengelolaan Kebersihan Warga
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight">
+                Mengapa Pengelolaan Sampah Tradisional Perlu Diubah?
               </h2>
-              <p className="text-sm text-slate-600 mt-2">
-                Empat jaminan layanan kami untuk memastikan kebersihan pemukiman terjaga secara tertib dan transparan.
+              <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
+                Setiap hari ratusan ton sampah domestik bercampur tanpa pemilahan, membebani kapasitas TPA Cipayung dan menyulitkan warga akibat jadwal angkut manual yang sering tidak menentu.
               </p>
             </div>
 
+            {/* 4 Numbered Problem Cards (01, 02, 03, 04) */}
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              <div className="p-6 rounded-2xl bg-[#124b47] border border-[#1b5e59] flex flex-col justify-between space-y-4">
+                <span className="text-xl font-mono font-bold text-emerald-400">01</span>
+                <div className="space-y-2">
+                  <h3 className="text-base font-bold text-white">Jadwal Tidak Menentu</h3>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Warga sering menunggu berhari-hari tanpa kepastian jam kedatangan gerobak atau truk sampah di depan rumah.
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-[#124b47] border border-[#1b5e59] flex flex-col justify-between space-y-4">
+                <span className="text-xl font-mono font-bold text-emerald-400">02</span>
+                <div className="space-y-2">
+                  <h3 className="text-base font-bold text-white">Tanpa Pemilahan Sumber</h3>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Sampah organik dan anorganik tercampur di wadah yang sama, menghilangkan potensi daur ulang bernilai ekonomis.
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-[#124b47] border border-[#1b5e59] flex flex-col justify-between space-y-4">
+                <span className="text-xl font-mono font-bold text-emerald-400">03</span>
+                <div className="space-y-2">
+                  <h3 className="text-base font-bold text-white">Iuran Tunai Rumit</h3>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Penarikan iuran manual door-to-door sering terkendala uang pas, kembalian, atau ketidakhadiran penghuni rumah.
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-[#124b47] border border-[#1b5e59] flex flex-col justify-between space-y-4">
+                <span className="text-xl font-mono font-bold text-emerald-400">04</span>
+                <div className="space-y-2">
+                  <h3 className="text-base font-bold text-white">Saluran Aduan Tertutup</h3>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Bila ada sampah tercecer atau timbunan liar di lingkungan, warga tidak memiliki saluran pengaduan langsung yang terdata.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── 5. Solution & Core Ecosystem (Clean White Cards ala BeCycle img3) ── */}
+        <section className="py-16 md:py-20 px-4 sm:px-6 bg-[#f8fafb] border-b border-slate-200">
+          <div className="max-w-6xl mx-auto space-y-12">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+              <div className="max-w-2xl space-y-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#0d7a75] block">
+                  Solusi Terintegrasi
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                  Pengelolaan Sampah Mandiri & Berkelanjutan
+                </h2>
+                <p className="text-sm text-slate-600">
+                  Ekosistem terpadu yang memadukan operasional armada fisik dengan sistem monitoring digital untuk kenyamanan seluruh warga.
+                </p>
+              </div>
+              <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                Standar Operasional 2026
+              </div>
+            </div>
+
+            {/* 4 White Solution Cards (01, 02, 03, 04) */}
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {/* Card 1 */}
-              <div className="p-6 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300 transition-all flex flex-col justify-between space-y-4">
-                <div className="w-11 h-11 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0">
-                  <Calendar className="w-5 h-5" />
-                </div>
+              <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs hover:border-[#0d7a75]/40 hover:shadow-md transition-all flex flex-col justify-between space-y-4">
+                <span className="text-2xl font-mono font-extrabold text-[#0d7a75]">01</span>
                 <div className="space-y-2">
-                  <h3 className="text-base font-bold text-slate-900">Jadwal Angkut Teratur</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    Petugas armada menjemput sampah rutin 2 hingga 3 kali seminggu sesuai jadwal zona wilayah Anda tanpa keterlambatan berulang.
+                  <h3 className="text-base font-bold text-slate-900">Jadwal Pasti & Pelacakan Live</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                    Penjemputan rutin 2–3x seminggu di depan pagar rumah. Pantau pergerakan truk langsung di peta untuk estimasi kedatangan.
                   </p>
                 </div>
-                <div className="text-[11px] font-semibold text-emerald-800">Senin – Sabtu Operasional</div>
-              </div>
-
-              {/* Card 2 */}
-              <div className="p-6 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300 transition-all flex flex-col justify-between space-y-4">
-                <div className="w-11 h-11 rounded-xl bg-sky-50 border border-sky-200 text-sky-700 flex items-center justify-center shrink-0">
-                  <MapPin className="w-5 h-5" />
-                </div>
-                <div className="space-y-2">
-                  <h3 className="text-base font-bold text-slate-900">Pelacakan Live GPS</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    Lihat pergerakan truk pengangkut langsung di peta digital untuk memperkirakan waktu kedatangan armada di depan rumah.
-                  </p>
-                </div>
-                <Link href="/lacak" className="text-[11px] font-bold text-sky-700 hover:underline inline-flex items-center gap-1">
-                  <span>Buka Peta Pelacakan</span>
-                  <ArrowRight className="w-3 h-3" />
+                <Link href="/lacak" className="text-xs font-bold text-[#0d7a75] hover:underline inline-flex items-center gap-1">
+                  <span>Lihat Peta Armada</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
 
-              {/* Card 3 */}
-              <div className="p-6 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300 transition-all flex flex-col justify-between space-y-4">
-                <div className="w-11 h-11 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0">
-                  <QrCode className="w-5 h-5" />
-                </div>
+              <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs hover:border-[#0d7a75]/40 hover:shadow-md transition-all flex flex-col justify-between space-y-4">
+                <span className="text-2xl font-mono font-extrabold text-[#0d7a75]">02</span>
                 <div className="space-y-2">
-                  <h3 className="text-base font-bold text-slate-900">Pembayaran QRIS Mudah</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    Tagihan bulanan masuk otomatis ke WhatsApp. Bayar sekali scan dari seluruh aplikasi m-Banking dan e-Wallet tanpa uang tunai.
+                  <h3 className="text-base font-bold text-slate-900">Fasilitas TPS 3R Mandiri</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                    Sampah organik diolah menjadi kompos & budidaya maggot BSF di TPS 3R Kalibaru, sedangkan anorganik didaur ulang sirkular.
                   </p>
                 </div>
-                <Link href="/bayar" className="text-[11px] font-bold text-emerald-800 hover:underline inline-flex items-center gap-1">
-                  <span>Cek Portal Tagihan</span>
-                  <ArrowRight className="w-3 h-3" />
+                <span className="text-[11px] font-semibold text-emerald-800">82% Sampah Tereduksi</span>
+              </div>
+
+              <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs hover:border-[#0d7a75]/40 hover:shadow-md transition-all flex flex-col justify-between space-y-4">
+                <span className="text-2xl font-mono font-extrabold text-[#0d7a75]">03</span>
+                <div className="space-y-2">
+                  <h3 className="text-base font-bold text-slate-900">Penagihan WhatsApp & QRIS</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                    Notifikasi tagihan masuk berkala ke WhatsApp. Pembayaran selesai dalam hitungan detik via scan QRIS tanpa uang kembalian.
+                  </p>
+                </div>
+                <Link href="/bayar" className="text-xs font-bold text-[#0d7a75] hover:underline inline-flex items-center gap-1">
+                  <span>Cek Tagihan Warga</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
 
-              {/* Card 4 */}
-              <div className="p-6 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300 transition-all flex flex-col justify-between space-y-4">
-                <div className="w-11 h-11 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center shrink-0">
-                  <ShieldCheck className="w-5 h-5" />
-                </div>
+              <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs hover:border-[#0d7a75]/40 hover:shadow-md transition-all flex flex-col justify-between space-y-4">
+                <span className="text-2xl font-mono font-extrabold text-[#0d7a75]">04</span>
                 <div className="space-y-2">
-                  <h3 className="text-base font-bold text-slate-900">Respon Aduan Cepat</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    Sampah tertinggal atau ada timbunan liar di lingkungan Anda? Foto dan laporkan secara online; tim reaksi cepat segera dikerahkan.
+                  <h3 className="text-base font-bold text-slate-900">Pengaduan Foto Geotagging</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                    Sampah terlewat atau ada timbunan liar? Foto lewat HP, koordinat GPS otomatis tersimpan dan unit lapangan segera bergerak.
                   </p>
                 </div>
-                <Link href="/pengaduan" className="text-[11px] font-bold text-amber-800 hover:underline inline-flex items-center gap-1">
-                  <span>Form Pengaduan Warga</span>
-                  <ArrowRight className="w-3 h-3" />
+                <Link href="/pengaduan" className="text-xs font-bold text-[#0d7a75] hover:underline inline-flex items-center gap-1">
+                  <span>Buat Laporan Warga</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ── 5. Paket & Skema Tarif Retribusi Resmi ── */}
-        <section className="py-16 px-4 sm:px-6 bg-slate-50 border-b border-slate-200">
+        {/* ── 6. Interactive Dashboard & Recovery Breakdown (Inspired by BeCycle img4/img5) ── */}
+        <section className="py-16 md:py-20 px-4 sm:px-6 bg-white border-b border-slate-200">
           <div className="max-w-6xl mx-auto space-y-12">
-            <div className="text-center max-w-2xl mx-auto space-y-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">
-                Tarif Transparan
+            <div className="max-w-2xl space-y-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#0d7a75] block">
+                Transparansi Pengolahan
               </span>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
-                Pilihan Paket Retribusi Sesuai Kebutuhan
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                Metrik Kinerja & Distribusi Daur Ulang TPS 3R
               </h2>
               <p className="text-sm text-slate-600">
-                Tarif flat bulanan tanpa biaya tersembunyi. Disesuaikan dengan volume sampah domestik, komersial, maupun kerjasama lingkungan RT/RW.
+                Data kinerja harian fasilitas pengolahan sampah TPS 3R Kalibaru untuk mendukung Depok Zero Waste City.
+              </p>
+            </div>
+
+            <div className="grid lg:grid-cols-12 gap-8 items-start">
+              {/* Left Column: Visual Donut Gauges (5 cols) */}
+              <div className="lg:col-span-5 bg-[#f8fafb] border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-6">
+                <div className="flex items-center justify-between border-b border-slate-200/80 pb-4">
+                  <div>
+                    <h3 className="text-base font-extrabold text-slate-900">Tingkat Pengolahan Mandiri</h3>
+                    <p className="text-xs text-slate-500">Rata-rata pemulihan material TPS 3R</p>
+                  </div>
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-[#e6f5f4] text-[#0d7a75]">
+                    Aktif
+                  </span>
+                </div>
+
+                {/* Circular Gauge Representation */}
+                <div className="flex flex-col items-center justify-center py-2">
+                  <div className="relative w-44 h-44 flex items-center justify-center">
+                    <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                      {/* Background track */}
+                      <circle cx="50" cy="50" r="40" fill="transparent" stroke="#e2e8f0" strokeWidth="10" />
+                      {/* Organic track (62%) */}
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="40"
+                        fill="transparent"
+                        stroke="#0d7a75"
+                        strokeWidth="10"
+                        strokeDasharray="251.2"
+                        strokeDashoffset="95.4"
+                        strokeLinecap="round"
+                      />
+                      {/* Inorganic track (23%) */}
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="30"
+                        fill="transparent"
+                        stroke="#22577a"
+                        strokeWidth="8"
+                        strokeDasharray="188.5"
+                        strokeDashoffset="145.1"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                      <span className="text-3xl font-extrabold text-slate-900 tracking-tight">85%</span>
+                      <span className="text-[11px] font-bold text-[#0d7a75] uppercase tracking-wider">Tereduksi</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Progress bars list (ala BeCycle img5) */}
+                <div className="space-y-3 pt-2 text-xs">
+                  <div>
+                    <div className="flex justify-between font-semibold text-slate-700 mb-1">
+                      <span>Sampah Organik (Kompos & Maggot BSF)</span>
+                      <span className="text-[#0d7a75] font-bold">62%</span>
+                    </div>
+                    <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
+                      <div className="h-full rounded-full bg-[#0d7a75]" style={{ width: "62%" }} />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between font-semibold text-slate-700 mb-1">
+                      <span>Daur Ulang Anorganik (Plastik, Kertas, Logam)</span>
+                      <span className="text-[#22577a] font-bold">23%</span>
+                    </div>
+                    <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
+                      <div className="h-full rounded-full bg-[#22577a]" style={{ width: "23%" }} />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between font-semibold text-slate-700 mb-1">
+                      <span>Residu Terangkut ke TPA Cipayung</span>
+                      <span className="text-slate-500 font-bold">15%</span>
+                    </div>
+                    <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
+                      <div className="h-full rounded-full bg-slate-400" style={{ width: "15%" }} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Key Operational Statistics (7 cols) */}
+              <div className="lg:col-span-7 space-y-6">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="p-5 rounded-2xl bg-[#f8fafb] border border-slate-200/90 space-y-2">
+                    <div className="w-9 h-9 rounded-xl bg-emerald-50 text-[#0d7a75] flex items-center justify-center font-bold text-xs">
+                      <TrendingUp className="w-4 h-4" />
+                    </div>
+                    <span className="text-2xl font-extrabold text-slate-900 block">15.4 Ton</span>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      Kapasitas harian sampah domestik yang diolah di fasilitas TPS 3R Kalibaru per hari kerja.
+                    </p>
+                  </div>
+
+                  <div className="p-5 rounded-2xl bg-[#f8fafb] border border-slate-200/90 space-y-2">
+                    <div className="w-9 h-9 rounded-xl bg-sky-50 text-sky-700 flex items-center justify-center font-bold text-xs">
+                      <Users className="w-4 h-4" />
+                    </div>
+                    <span className="text-2xl font-extrabold text-slate-900 block">2.450+ KK</span>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      Kepala keluarga & unit usaha terdaftar di wilayah Cilodong, Kalibaru, Jatimulya, Sukamaju & sekitarnya.
+                    </p>
+                  </div>
+
+                  <div className="p-5 rounded-2xl bg-[#f8fafb] border border-slate-200/90 space-y-2">
+                    <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold text-xs">
+                      <Truck className="w-4 h-4" />
+                    </div>
+                    <span className="text-2xl font-extrabold text-slate-900 block">6 Unit</span>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      Armada truk pickup & motor roda tiga pengangkut kebersihan aktif melayani rute pagi dan siang.
+                    </p>
+                  </div>
+
+                  <div className="p-5 rounded-2xl bg-[#f8fafb] border border-slate-200/90 space-y-2">
+                    <div className="w-9 h-9 rounded-xl bg-teal-50 text-[#0d7a75] flex items-center justify-center font-bold text-xs">
+                      <FileCheck2 className="w-4 h-4" />
+                    </div>
+                    <span className="text-2xl font-extrabold text-slate-900 block">100% Legal</span>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      Dikelola oleh CV Hero Zero Waste dengan perizinan operasional resmi TPS 3R Kota Depok.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Callout box */}
+                <div className="p-5 rounded-2xl border border-slate-200 bg-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div>
+                    <h4 className="text-sm font-bold text-slate-900">Ingin melihat rincian tarif retribusi resmi?</h4>
+                    <p className="text-xs text-slate-500">Transparansi iuran untuk rumah tinggal, warung, toko, dan ruko.</p>
+                  </div>
+                  <Link
+                    href="/tarif"
+                    className="px-4 py-2.5 bg-[#0d7a75] hover:bg-[#0b6460] text-white text-xs font-bold rounded-xl transition-all shadow-xs shrink-0"
+                  >
+                    Buka Daftar Tarif
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── 7. Paket & Kategori Layanan (Inspired by BeCycle Waste Registry) ── */}
+        <section className="py-16 md:py-20 px-4 sm:px-6 bg-[#f8fafb] border-b border-slate-200">
+          <div className="max-w-6xl mx-auto space-y-12">
+            <div className="text-center max-w-2xl mx-auto space-y-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#0d7a75]">
+                Pilihan Retribusi
+              </span>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
+                Paket Layanan Sesuai Kebutuhan Anda
+              </h2>
+              <p className="text-sm text-slate-600">
+                Pilih skema penjemputan sampah yang paling tepat untuk rumah tinggal perorangan, tempat usaha komersial, maupun kerjasama lingkungan RT/RW.
               </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-6 items-stretch">
-              {/* Tier 1: Rumah Tangga */}
-              <div className="bg-white border-2 border-emerald-600 rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-sm relative">
-                <div className="absolute -top-3 left-6 bg-emerald-700 text-white text-[10px] font-extrabold uppercase px-3 py-0.5 rounded-full tracking-wider">
-                  Paling Banyak Digunakan
+              {/* Tier 1: Warga Rumah Tangga */}
+              <div className="bg-white border-2 border-[#0d7a75] rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-sm relative">
+                <div className="absolute -top-3 left-6 bg-[#0d7a75] text-white text-[10px] font-extrabold uppercase px-3 py-0.5 rounded-full tracking-wider">
+                  Paling Banyak Dipilih
                 </div>
                 <div className="space-y-4">
                   <div>
                     <h3 className="text-lg font-extrabold text-slate-900">Rumah Tangga / Warga</h3>
-                    <p className="text-xs text-slate-500 mt-1">Untuk pemukiman warga perorangan & cluster</p>
+                    <p className="text-xs text-slate-500 mt-1">Untuk pemukiman warga perorangan & komplek cluster</p>
                   </div>
-                  <div className="py-2 border-y border-slate-100">
-                    <span className="text-xs text-slate-500 font-medium">Mulai dari</span>
+                  <div className="py-2.5 border-y border-slate-100">
+                    <span className="text-xs text-slate-400 font-medium">Mulai dari</span>
                     <div className="flex items-baseline gap-1 mt-0.5">
                       <span className="text-3xl font-extrabold text-slate-900">Rp 30.000</span>
                       <span className="text-xs text-slate-500">/ bulan</span>
                     </div>
                   </div>
-                  <ul className="space-y-2.5 text-xs text-slate-600">
+                  <ul className="space-y-2.5 text-xs text-slate-600 font-medium">
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                      <span>Jadwal rutin 2–3 kali seminggu</span>
+                      <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                      <span>Penjemputan rutin 2–3 kali seminggu</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                      <span>Penjemputan di depan pagar rumah</span>
+                      <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                      <span>Diambil langsung di depan pagar rumah</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                      <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
                       <span>Notifikasi tagihan WhatsApp & kwitansi</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                      <span>Akses penuh pelacakan truk di peta</span>
+                      <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                      <span>Akses penuh pelacakan truk di peta live</span>
                     </li>
                   </ul>
                 </div>
                 <div className="pt-6">
                   <Link
                     href="/daftar?kategori=R1"
-                    className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 active:scale-95"
+                    className="w-full py-3 bg-[#0d7a75] hover:bg-[#0b6460] text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 active:scale-95"
                   >
                     <span>Daftar Rumah Tangga</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -327,36 +550,36 @@ export default async function LandingPage() {
                 </div>
               </div>
 
-              {/* Tier 2: Niaga & Ruko */}
-              <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-xs">
+              {/* Tier 2: Niaga & Toko */}
+              <div className="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-xs">
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-lg font-extrabold text-slate-900">Niaga, Toko & Ruko</h3>
-                    <p className="text-xs text-slate-500 mt-1">Untuk toko retail, warung, kafe, kantor & UMKM</p>
+                    <h3 className="text-lg font-extrabold text-slate-900">Niaga, Ruko & Usaha</h3>
+                    <p className="text-xs text-slate-500 mt-1">Untuk toko retail, warung makan, kafe, kantor & UMKM</p>
                   </div>
-                  <div className="py-2 border-y border-slate-100">
-                    <span className="text-xs text-slate-500 font-medium">Mulai dari</span>
+                  <div className="py-2.5 border-y border-slate-100">
+                    <span className="text-xs text-slate-400 font-medium">Mulai dari</span>
                     <div className="flex items-baseline gap-1 mt-0.5">
                       <span className="text-3xl font-extrabold text-slate-900">Rp 60.000</span>
                       <span className="text-xs text-slate-500">/ bulan</span>
                     </div>
                   </div>
-                  <ul className="space-y-2.5 text-xs text-slate-600">
+                  <ul className="space-y-2.5 text-xs text-slate-600 font-medium">
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                      <span>Penjemputan volume komersial</span>
+                      <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                      <span>Kapasitas penjemputan volume komersial</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                      <span>Frekuensi harian atau sesuai volume usaha</span>
+                      <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                      <span>Frekuensi harian atau sesuai jadwal usaha</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                      <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
                       <span>Invoice resmi untuk pembukuan operasional</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                      <span>Bukti manifest penanganan sampah legal</span>
+                      <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                      <span>Bukti pengelolaan sampah legal & teratur</span>
                     </li>
                   </ul>
                 </div>
@@ -365,41 +588,41 @@ export default async function LandingPage() {
                     href="/daftar?kategori=B1"
                     className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 active:scale-95"
                   >
-                    <span>Daftar Usaha / Niaga</span>
+                    <span>Daftar Unit Usaha</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
               </div>
 
               {/* Tier 3: RT/RW & Kolektif */}
-              <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-xs">
+              <div className="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-xs">
                 <div className="space-y-4">
                   <div>
                     <h3 className="text-lg font-extrabold text-slate-900">Kerjasama Pengurus RT/RW</h3>
                     <p className="text-xs text-slate-500 mt-1">Skema kolektif perumahan, paguyuban & komplek</p>
                   </div>
-                  <div className="py-2 border-y border-slate-100">
-                    <span className="text-xs text-slate-500 font-medium">Skema Pembayaran</span>
+                  <div className="py-2.5 border-y border-slate-100">
+                    <span className="text-xs text-slate-400 font-medium">Skema Pembayaran</span>
                     <div className="flex items-baseline gap-1 mt-0.5">
                       <span className="text-2xl font-extrabold text-slate-900">Kolektif Lingkungan</span>
                     </div>
                   </div>
-                  <ul className="space-y-2.5 text-xs text-slate-600">
+                  <ul className="space-y-2.5 text-xs text-slate-600 font-medium">
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                      <span>Tarif hemat per KK untuk satu wilayah RT/RW</span>
+                      <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                      <span>Tarif hemat per KK untuk seluruh lingkungan</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                      <span>Laporan rekap pembayaran rutin bagi pengurus</span>
+                      <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                      <span>Laporan rekap pembayaran rutin bagi pengurus RT</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                      <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
                       <span>Penetapan rute khusus seluruh jalan komplek</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                      <span>Dukungan tong komunal jika diperlukan</span>
+                      <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                      <span>Dukungan tong komunal bila dibutuhkan</span>
                     </li>
                   </ul>
                 </div>
@@ -416,190 +639,69 @@ export default async function LandingPage() {
                 </div>
               </div>
             </div>
-
-            <div className="text-center pt-2">
-              <Link href="/tarif" className="text-xs font-bold text-emerald-800 hover:underline inline-flex items-center gap-1">
-                <span>Lihat tabel rincian tarif resmi selengkapnya</span>
-                <ArrowRight className="w-3 h-3" />
-              </Link>
-            </div>
           </div>
         </section>
 
-        {/* ── 6. Alur 4 Langkah Cara Menjadi Pelanggan ── */}
-        <section className="py-16 px-4 sm:px-6 bg-white border-b border-slate-200">
+        {/* ── 8. Multi-step Onboarding Workflow (Inspired by BeCycle Process) ── */}
+        <section className="py-16 md:py-20 px-4 sm:px-6 bg-white border-b border-slate-200">
           <div className="max-w-6xl mx-auto space-y-12">
-            <div className="max-w-2xl">
-              <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 block mb-1">
-                Prosedur Pelayanan
+            <div className="max-w-2xl space-y-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#0d7a75] block">
+                Alur Berlangganan
               </span>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                Alur Berlangganan Mudah & Cepat
+                Empat Langkah Mudah Menuju Lingkungan Bersih
               </h2>
-              <p className="text-sm text-slate-600 mt-2">
-                Tanpa birokrasi rumit, cukup empat langkah untuk menikmati layanan penjemputan sampah teratur.
+              <p className="text-sm text-slate-600">
+                Proses registrasi cepat dan transparan tanpa birokrasi berbelit.
               </p>
             </div>
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {/* Step 1 */}
-              <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/40 space-y-3">
-                <span className="w-8 h-8 rounded-lg bg-emerald-700 text-white font-extrabold text-sm flex items-center justify-center">
+              <div className="p-6 rounded-2xl border border-slate-200/90 bg-[#f8fafb] space-y-3">
+                <span className="w-8 h-8 rounded-lg bg-[#0d7a75] text-white font-extrabold text-sm flex items-center justify-center">
                   1
                 </span>
-                <h3 className="text-sm font-bold text-slate-900">Pengisian Formulir</h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Daftar melalui halaman pendaftaran online dengan mengisi alamat rumah, RT/RW, dan nomor kontak WhatsApp aktif.
+                <h3 className="text-sm font-bold text-slate-900">Pendaftaran Online</h3>
+                <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                  Isi formulir pendaftaran dengan nama, alamat rumah/usaha, RT/RW, dan nomor WhatsApp aktif Anda.
                 </p>
               </div>
 
-              {/* Step 2 */}
-              <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/40 space-y-3">
-                <span className="w-8 h-8 rounded-lg bg-emerald-700 text-white font-extrabold text-sm flex items-center justify-center">
+              <div className="p-6 rounded-2xl border border-slate-200/90 bg-[#f8fafb] space-y-3">
+                <span className="w-8 h-8 rounded-lg bg-[#0d7a75] text-white font-extrabold text-sm flex items-center justify-center">
                   2
                 </span>
-                <h3 className="text-sm font-bold text-slate-900">Verifikasi & Zona</h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Petugas operasional memvalidasi lokasi rumah dan menetapkan jadwal hari jemput rutin sesuai rute lingkungan.
+                <h3 className="text-sm font-bold text-slate-900">Verifikasi & Penentuan Rute</h3>
+                <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                  Petugas operasional memvalidasi lokasi penjemputan dan menetapkan hari jadwal rute yang melintas.
                 </p>
               </div>
 
-              {/* Step 3 */}
-              <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/40 space-y-3">
-                <span className="w-8 h-8 rounded-lg bg-emerald-700 text-white font-extrabold text-sm flex items-center justify-center">
+              <div className="p-6 rounded-2xl border border-slate-200/90 bg-[#f8fafb] space-y-3">
+                <span className="w-8 h-8 rounded-lg bg-[#0d7a75] text-white font-extrabold text-sm flex items-center justify-center">
                   3
                 </span>
-                <h3 className="text-sm font-bold text-slate-900">Penjemputan Armada</h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Letakkan wadah sampah di depan pagar pada hari jadwal; armada kami akan mengangkut sampah secara tertib.
+                <h3 className="text-sm font-bold text-slate-900">Penjemputan Rutin</h3>
+                <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                  Letakkan wadah sampah di depan pagar pada hari jadwal; armada kami akan mengangkut sampah secara teratur.
                 </p>
               </div>
 
-              {/* Step 4 */}
-              <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/40 space-y-3">
-                <span className="w-8 h-8 rounded-lg bg-emerald-700 text-white font-extrabold text-sm flex items-center justify-center">
+              <div className="p-6 rounded-2xl border border-slate-200/90 bg-[#f8fafb] space-y-3">
+                <span className="w-8 h-8 rounded-lg bg-[#0d7a75] text-white font-extrabold text-sm flex items-center justify-center">
                   4
                 </span>
                 <h3 className="text-sm font-bold text-slate-900">Tagihan WhatsApp & QRIS</h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Terima rincian iuran bulanan via WhatsApp resmi setiap awal bulan dan selesaikan pembayaran instan via QRIS.
+                <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                  Terima rincian tagihan via WhatsApp di awal bulan dan selesaikan pembayaran instan via QRIS kapan saja.
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ── 7. Cakupan Wilayah & Fasilitas TPS 3R Kalibaru ── */}
-        <section className="py-16 px-4 sm:px-6 bg-slate-50 border-b border-slate-200">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-12 gap-10 items-center">
-            <div className="md:col-span-7 space-y-6">
-              <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 block">
-                Fasilitas Pengolahan & Jangkauan
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
-                Pusat Pengolahan Sampah Terpadu TPS 3R Kalibaru
-              </h2>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                Kami bukan sekadar memindahkan sampah ke TPA Cipayung, melainkan mengedepankan prinsip 3R (Reduce, Reuse, Recycle) untuk menekan volume residu di Kota Depok.
-              </p>
-
-              <div className="grid sm:grid-cols-2 gap-4 text-xs">
-                <div className="p-4 rounded-xl bg-white border border-slate-200 space-y-1.5">
-                  <div className="flex items-center gap-2 font-bold text-slate-900">
-                    <Recycle className="w-4 h-4 text-emerald-700" />
-                    <span>Pemilahan Organik</span>
-                  </div>
-                  <p className="text-slate-600 leading-relaxed">
-                    Sisa makanan dan dedaunan diolah menjadi kompos dan pakan maggot BSF ramah lingkungan.
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-xl bg-white border border-slate-200 space-y-1.5">
-                  <div className="flex items-center gap-2 font-bold text-slate-900">
-                    <Building2 className="w-4 h-4 text-emerald-700" />
-                    <span>Daur Ulang Anorganik</span>
-                  </div>
-                  <p className="text-slate-600 leading-relaxed">
-                    Botol plastik, kardus, dan logam dipres serta disalurkan ke industri daur ulang sirkular.
-                  </p>
-                </div>
-              </div>
-
-              {/* Area List Chips */}
-              <div className="space-y-2 pt-2">
-                <span className="text-xs font-bold text-slate-700 block">Wilayah Jangkauan Rutin:</span>
-                <div className="flex flex-wrap gap-2 text-xs">
-                  {["Kel. Kalibaru", "Kel. Cilodong", "Kel. Jatimulya", "Kel. Sukamaju", "Kel. Kalimulya", "Sukmajaya Sekitar"].map(
-                    (wilayah) => (
-                      <span
-                        key={wilayah}
-                        className="px-3 py-1 bg-white border border-slate-200 rounded-lg text-slate-700 font-medium"
-                      >
-                        ✓ {wilayah}
-                      </span>
-                    )
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="md:col-span-5">
-              <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-xs">
-                <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
-                  <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs">
-                    UPS
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-900">Kantor & Fasilitas TPS 3R</h3>
-                    <p className="text-[11px] text-slate-500">CV Hero Zero Waste</p>
-                  </div>
-                </div>
-
-                <div className="space-y-3 text-xs text-slate-600">
-                  <div className="flex items-start gap-2.5">
-                    <MapPin className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                    <div>
-                      <span className="font-semibold text-slate-900 block">Alamat Operasional:</span>
-                      <span>Jl. Kandang Ayam, Kel. Kalibaru, Kec. Cilodong, Kota Depok 16414</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-2.5">
-                    <Clock className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                    <div>
-                      <span className="font-semibold text-slate-900 block">Jam Operasional Kantor:</span>
-                      <span>Senin – Sabtu (07.00 – 17.00 WIB)</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-2.5">
-                    <PhoneCall className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                    <div>
-                      <span className="font-semibold text-slate-900 block">Call Center WhatsApp:</span>
-                      <a href="https://wa.me/6281400782617" target="_blank" rel="noreferrer" className="text-emerald-700 font-bold hover:underline">
-                        0814-0078-2617
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-2">
-                  <a
-                    href="https://maps.google.com/?q=-6.424838,106.832667"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-colors"
-                  >
-                    <Navigation className="w-3.5 h-3.5 text-emerald-700" />
-                    <span>Petunjuk Arah Google Maps</span>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── 8. Papan Pengumuman Resmi (Jika Ada) ── */}
+        {/* ── 9. Papan Pengumuman Resmi (Jika Ada) ── */}
         {pengumuman.length > 0 && (
           <section className="bg-amber-50/70 border-b border-amber-200/80 py-12 px-4 sm:px-6">
             <div className="max-w-6xl mx-auto space-y-6">
@@ -608,8 +710,8 @@ export default async function LandingPage() {
                   <Megaphone className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-slate-900">Pengumuman & Pemberitahuan Warga</h2>
-                  <p className="text-xs text-slate-600">Informasi operasional terkini dari manajemen UPS HERU</p>
+                  <h2 className="text-xl font-bold text-slate-900">Pengumuman Resmi Warga</h2>
+                  <p className="text-xs text-slate-600">Pemberitahuan terkini seputar operasional dinas pengangkutan</p>
                 </div>
               </div>
 
@@ -644,24 +746,24 @@ export default async function LandingPage() {
           </section>
         )}
 
-        {/* ── 9. Edukasi & Artikel Lingkungan ── */}
-        <section className="py-16 px-4 sm:px-6 bg-white border-b border-slate-200">
+        {/* ── 10. Edukasi Lingkungan (Kabar & Panduan Praktis) ── */}
+        <section className="py-16 md:py-20 px-4 sm:px-6 bg-[#f8fafb] border-b border-slate-200">
           <div className="max-w-6xl mx-auto space-y-10">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
-              <div className="max-w-2xl">
-                <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 block mb-1">
+              <div className="max-w-2xl space-y-1">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#0d7a75] block">
                   Edukasi Lingkungan
                 </span>
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
                   Kabar & Panduan Praktis Kebersihan
                 </h2>
-                <p className="text-sm text-slate-600 mt-1">
-                  Informasi seputar pemilahan sampah mandiri, jadwal operasional, dan kabar kebersihan Kota Depok.
+                <p className="text-sm text-slate-600">
+                  Panduan memilah sampah di rumah, informasi armada kebersihan, dan kabar TPS 3R Kota Depok.
                 </p>
               </div>
               <Link
                 href="/artikel"
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-colors shrink-0"
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-slate-200 hover:border-slate-300 text-slate-800 rounded-xl text-xs font-bold transition-colors shrink-0 shadow-xs"
               >
                 <span>Lihat Semua Artikel</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -673,9 +775,9 @@ export default async function LandingPage() {
                 <Link
                   key={a.id}
                   href={`/artikel/${a.slug}`}
-                  className="group flex flex-col bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs hover:shadow-md hover:border-slate-300 transition-all"
+                  className="group flex flex-col bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-xs hover:shadow-md hover:border-slate-300 transition-all"
                 >
-                  <div className="h-44 bg-slate-100 border-b border-slate-100 relative overflow-hidden flex items-center justify-center">
+                  <div className="h-44 bg-[#f1f5f9] border-b border-slate-100 relative overflow-hidden flex items-center justify-center">
                     {a.gambar ? (
                       <img
                         src={a.gambar}
@@ -685,24 +787,24 @@ export default async function LandingPage() {
                     ) : (
                       <span className="text-4xl opacity-40">📰</span>
                     )}
-                    <span className="absolute top-3 left-3 px-2.5 py-0.5 bg-white/95 text-emerald-800 text-[10px] font-extrabold uppercase rounded-md shadow-xs">
+                    <span className="absolute top-3 left-3 px-2.5 py-0.5 bg-white/95 text-[#0d7a75] text-[10px] font-extrabold uppercase rounded-md shadow-xs">
                       {a.kategori}
                     </span>
                   </div>
 
                   <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
                     <div className="space-y-2">
-                      <h3 className="text-base font-bold text-slate-900 group-hover:text-emerald-700 transition-colors leading-snug">
+                      <h3 className="text-base font-bold text-slate-900 group-hover:text-[#0d7a75] transition-colors leading-snug">
                         {a.judul}
                       </h3>
-                      <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                      <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed font-normal">
                         {a.isi}
                       </p>
                     </div>
 
                     <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
                       <span>{formatDate(a.createdAt)}</span>
-                      <span className="font-bold text-emerald-700 group-hover:underline inline-flex items-center gap-1">
+                      <span className="font-bold text-[#0d7a75] group-hover:underline inline-flex items-center gap-1">
                         Baca Panduan
                         <ChevronRight className="w-3 h-3" />
                       </span>
@@ -714,68 +816,68 @@ export default async function LandingPage() {
           </div>
         </section>
 
-        {/* ── 10. FAQ Seputar Layanan Warga ── */}
-        <section className="py-16 px-4 sm:px-6 bg-slate-50 border-b border-slate-200">
+        {/* ── 11. FAQ Seputar Layanan Warga ── */}
+        <section className="py-16 md:py-20 px-4 sm:px-6 bg-white border-b border-slate-200">
           <div className="max-w-4xl mx-auto space-y-8">
             <div className="text-center space-y-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">
-                Pertanyaan Umum
+              <span className="text-xs font-bold uppercase tracking-wider text-[#0d7a75]">
+                Pusat Informasi
               </span>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
                 Tanya Jawab Seputar Layanan UPS HERU
               </h2>
               <p className="text-xs sm:text-sm text-slate-600">
-                Informasi penting yang sering ditanyakan oleh warga mengenai operasional pengangkutan sampah.
+                Pertanyaan yang paling sering diajukan warga terkait prosedur pengangkutan dan pembayaran.
               </p>
             </div>
 
             <div className="space-y-3">
-              <details className="group bg-white border border-slate-200 rounded-xl p-4 sm:p-5 transition-all open:ring-1 open:ring-emerald-700">
+              <details className="group bg-[#f8fafb] border border-slate-200 rounded-xl p-4 sm:p-5 transition-all open:bg-white open:ring-1 open:ring-[#0d7a75]">
                 <summary className="font-bold text-sm text-slate-900 cursor-pointer list-none flex items-center justify-between gap-3">
-                  <span>1. Berapa kali dalam seminggu sampah rumah tangga saya diangkut?</span>
+                  <span>1. Berapa kali dalam seminggu sampah rumah tangga saya dijemput?</span>
                   <ChevronRight className="w-4 h-4 text-slate-400 group-open:rotate-90 transition-transform shrink-0" />
                 </summary>
-                <p className="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed pt-2 border-t border-slate-100">
+                <p className="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed pt-2 border-t border-slate-200/80">
                   Untuk paket rumah tangga standar, penjemputan dilakukan secara rutin 2 hingga 3 kali seminggu sesuai jadwal zona jalan Anda (misal Senin–Rabu–Jumat atau Selasa–Kamis–Sabtu). Jam operasional armada berlangsung mulai pukul 07.00 hingga 17.00 WIB.
                 </p>
               </details>
 
-              <details className="group bg-white border border-slate-200 rounded-xl p-4 sm:p-5 transition-all open:ring-1 open:ring-emerald-700">
+              <details className="group bg-[#f8fafb] border border-slate-200 rounded-xl p-4 sm:p-5 transition-all open:bg-white open:ring-1 open:ring-[#0d7a75]">
                 <summary className="font-bold text-sm text-slate-900 cursor-pointer list-none flex items-center justify-between gap-3">
                   <span>2. Bagaimana jika sampah saya terlewat dan belum terangkut oleh petugas?</span>
                   <ChevronRight className="w-4 h-4 text-slate-400 group-open:rotate-90 transition-transform shrink-0" />
                 </summary>
-                <p className="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed pt-2 border-t border-slate-100">
+                <p className="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed pt-2 border-t border-slate-200/80">
                   Bila pintu pagar terkunci atau armada belum sempat melintas, Anda dapat langsung membuat laporan melalui menu &quot;Pengaduan&quot; di situs ini atau chat ke WhatsApp CS resmi. Tim reaksi cepat kami akan melakukan penjemputan susulan maksimal 1x24 jam.
                 </p>
               </details>
 
-              <details className="group bg-white border border-slate-200 rounded-xl p-4 sm:p-5 transition-all open:ring-1 open:ring-emerald-700">
+              <details className="group bg-[#f8fafb] border border-slate-200 rounded-xl p-4 sm:p-5 transition-all open:bg-white open:ring-1 open:ring-[#0d7a75]">
                 <summary className="font-bold text-sm text-slate-900 cursor-pointer list-none flex items-center justify-between gap-3">
                   <span>3. Apakah UPS HERU melayani sampah skala besar (puing renovasi / tebangan pohon)?</span>
                   <ChevronRight className="w-4 h-4 text-slate-400 group-open:rotate-90 transition-transform shrink-0" />
                 </summary>
-                <p className="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed pt-2 border-t border-slate-100">
+                <p className="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed pt-2 border-t border-slate-200/80">
                   Ya, kami melayani pengangkutan khusus volume besar (insidental) seperti puing bangunan, dahan/pohon tebangan, atau pembersihan gudang dengan tarif borongan terpisah menggunakan truk engkel/dump truck. Silakan hubungi Call Center WhatsApp untuk survei volume dan estimasi biaya.
                 </p>
               </details>
 
-              <details className="group bg-white border border-slate-200 rounded-xl p-4 sm:p-5 transition-all open:ring-1 open:ring-emerald-700">
+              <details className="group bg-[#f8fafb] border border-slate-200 rounded-xl p-4 sm:p-5 transition-all open:bg-white open:ring-1 open:ring-[#0d7a75]">
                 <summary className="font-bold text-sm text-slate-900 cursor-pointer list-none flex items-center justify-between gap-3">
                   <span>4. Bagaimana cara pembayaran tagihan jika warga tidak memiliki mobile banking?</span>
                   <ChevronRight className="w-4 h-4 text-slate-400 group-open:rotate-90 transition-transform shrink-0" />
                 </summary>
-                <p className="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed pt-2 border-t border-slate-100">
+                <p className="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed pt-2 border-t border-slate-200/80">
                   Pembayaran QRIS dapat di-scan melalui dompet digital apa pun (GoPay, OVO, ShopeePay, Dana, LinkAja) atau dibantu oleh gerai minimarket/agen pembayaran terdekat. Warga juga dapat melakukan pembayaran tunai langsung di loket kantor TPS 3R Kalibaru atau melalui petugas resmi berbekal kwitansi digital.
                 </p>
               </details>
 
-              <details className="group bg-white border border-slate-200 rounded-xl p-4 sm:p-5 transition-all open:ring-1 open:ring-emerald-700">
+              <details className="group bg-[#f8fafb] border border-slate-200 rounded-xl p-4 sm:p-5 transition-all open:bg-white open:ring-1 open:ring-[#0d7a75]">
                 <summary className="font-bold text-sm text-slate-900 cursor-pointer list-none flex items-center justify-between gap-3">
                   <span>5. Bagaimana prosedur pendaftaran kolektif satu lingkungan RT atau perumahan?</span>
                   <ChevronRight className="w-4 h-4 text-slate-400 group-open:rotate-90 transition-transform shrink-0" />
                 </summary>
-                <p className="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed pt-2 border-t border-slate-100">
+                <p className="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed pt-2 border-t border-slate-200/80">
                   Pengurus RT/RW atau perwakilan paguyuban cluster dapat menghubungi tim kami. Kami akan melakukan survei jalur jalan, penentuan armada penjemput yang sesuai (motor roda 3 atau truk pickup), dan memberikan tarif kolektif terpadu dengan laporan rekapitulasi pembayaran bulanan.
                 </p>
               </details>
@@ -783,10 +885,10 @@ export default async function LandingPage() {
           </div>
         </section>
 
-        {/* ── 11. Call-To-Action Penutup (Dignified Civic Banner) ── */}
-        <section className="bg-slate-900 text-white py-14 px-4 sm:px-6">
+        {/* ── 12. Call-To-Action Penutup (Deep Forest Teal ala BeCycle) ── */}
+        <section className="bg-[#0c3d3a] text-white py-16 px-4 sm:px-6">
           <div className="max-w-4xl mx-auto text-center space-y-6">
-            <span className="inline-block px-3 py-1 bg-emerald-900/60 border border-emerald-700 text-emerald-300 text-xs font-bold rounded-full">
+            <span className="inline-block px-3 py-1 bg-[#124b47] border border-[#1b5e59] text-emerald-300 text-xs font-bold rounded-full">
               Wujudkan Kota Depok Bersih & Nyaman
             </span>
 
@@ -801,7 +903,7 @@ export default async function LandingPage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
               <Link
                 href="/daftar"
-                className="w-full sm:w-auto px-8 py-3.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl font-bold text-xs sm:text-sm transition-all shadow-sm active:scale-95 flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-8 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl font-bold text-xs sm:text-sm transition-all shadow-sm active:scale-95 flex items-center justify-center gap-2"
               >
                 <span>Daftar Langganan Sekarang</span>
                 <ArrowRight className="w-4 h-4" />
@@ -810,9 +912,9 @@ export default async function LandingPage() {
                 href="https://wa.me/6281400782617"
                 target="_blank"
                 rel="noreferrer"
-                className="w-full sm:w-auto px-8 py-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-8 py-3.5 bg-[#124b47] hover:bg-[#185d58] text-white border border-[#1b5e59] rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2"
               >
-                <PhoneCall className="w-4 h-4 text-emerald-400" />
+                <PhoneCall className="w-4 h-4 text-emerald-300" />
                 <span>Hubungi Call Center WA</span>
               </a>
             </div>
@@ -820,7 +922,7 @@ export default async function LandingPage() {
         </section>
       </main>
 
-      {/* ── 12. Footer Resmi Komprehensif ── */}
+      {/* ── 13. Comprehensive Municipal Footer ── */}
       <footer className="bg-slate-950 text-white pt-14 pb-10 px-4 sm:px-6 border-t border-slate-800">
         <div className="max-w-6xl mx-auto space-y-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-xs">
