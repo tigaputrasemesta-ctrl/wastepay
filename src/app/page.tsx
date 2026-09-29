@@ -88,37 +88,7 @@ export default async function LandingPage() {
     <div className="min-h-screen bg-[#f8fafb] text-slate-900 font-sans selection:bg-[#0d7a75] selection:text-white">
       <JsonLd data={generateLocalBusinessJsonLd()} />
 
-      {/* ── 1. Top Civic Status Bar ── */}
-      <section
-        aria-label="Status Operasional Dinas"
-        className="bg-[#0c3d3a] text-white text-xs py-2 px-4 border-b border-[#124b47]"
-      >
-        <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#1b5e59] text-emerald-300 font-semibold text-[11px]">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Operasional Normal
-            </span>
-            <span className="text-slate-200 hidden sm:inline text-[11px]">
-              Armada aktif di Kec. Cilodong, Kel. Kalibaru, Jatimulya, Sukamaju & sekitarnya
-            </span>
-          </div>
-          <div className="flex items-center gap-4 text-slate-300 text-[11px]">
-            <span className="hidden md:inline">Loket TPS 3R: 07.00 – 17.00 WIB</span>
-            <a
-              href="https://wa.me/6281400782617"
-              target="_blank"
-              rel="noreferrer"
-              className="text-emerald-300 font-bold hover:underline inline-flex items-center gap-1"
-            >
-              <PhoneCall className="w-3 h-3" />
-              <span>Hotline CS: 0814-0078-2617</span>
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* ── 2. Primary Public Navbar ── */}
+      {/* ── Primary Public Navbar ── */}
       <PublicNavbar />
 
       <main>
@@ -869,7 +839,7 @@ export default async function LandingPage() {
                   <ChevronRight className="w-4 h-4 text-slate-400 group-open:rotate-90 transition-transform shrink-0" />
                 </summary>
                 <p className="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed pt-2 border-t border-slate-200/80">
-                  Pembayaran QRIS dapat di-scan melalui dompet digital apa pun (GoPay, OVO, ShopeePay, Dana, LinkAja) atau dibantu oleh gerai minimarket/agen pembayaran terdekat. Warga juga dapat melakukan pembayaran tunai langsung di loket kantor TPS 3R Kalibaru atau melalui petugas resmi berbekal kwitansi digital.
+                  Pembayaran QRIS dapat di-scan melalui dompet digital apa pun (GoPay, OVO, ShopeePay, Dana, LinkAja) atau dibantu oleh gerai minimarket/agen pembayaran terdekat. Warga juga dapat melakukan pembayaran tunai langsung di kantor operasional UPS HERU atau melalui petugas resmi berbekal kwitansi digital.
                 </p>
               </details>
 
@@ -940,9 +910,6 @@ export default async function LandingPage() {
               <p className="text-slate-400 text-xs leading-relaxed">
                 Unit Pengolahan Sampah (UPS HERU) Kalibaru Kota Depok. Melayani retribusi dan operasional kebersihan terpadu.
               </p>
-              <div className="text-[11px] text-slate-500">
-                Izin Operasional Pengelolaan Sampah Kota Depok
-              </div>
             </div>
 
             {/* Col 2: Layanan Warga */}
@@ -1002,10 +969,6 @@ export default async function LandingPage() {
                   <a href="mailto:kontak@upsheru.com" className="hover:text-white transition-colors">
                     kontak@upsheru.com
                   </a>
-                </li>
-                <li className="text-[11px] text-slate-500 pt-1">
-                  Jam Layanan Loket: <br />
-                  Senin – Sabtu (07.00 – 17.00 WIB)
                 </li>
               </ul>
             </div>

@@ -179,12 +179,11 @@ export default function CivicHeroWidget() {
               </button>
             </form>
 
-            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+            <div className="pt-2 border-t border-slate-100 flex items-center text-[11px] text-slate-500">
               <span className="flex items-center gap-1 text-[#0d7a75] font-semibold">
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 Terhubung WhatsApp Bot
               </span>
-              <span>Kwitansi Otomatis Terbit</span>
             </div>
           </>
         ) : (
@@ -252,8 +251,7 @@ export default function CivicHeroWidget() {
       </div>
 
       {/* Widget Footer Status */}
-      <div className="px-5 py-3 bg-slate-50 border-t border-slate-200/80 flex items-center justify-between text-[11px] text-slate-500">
-        <span className="font-medium text-slate-600">Pusat Layanan: TPS 3R Kalibaru</span>
+      <div className="px-5 py-3 bg-slate-50 border-t border-slate-200/80 flex items-center justify-end text-[11px] text-slate-500">
         <a
           href="https://wa.me/6281400782617"
           target="_blank"
