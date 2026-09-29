@@ -22,7 +22,7 @@ export function companyInfo() {
       process.env.COMPANY_ADDRESS?.trim() ||
       "Jl. Kandang Ayam, Kalibaru, Kec. Cilodong, Kota Depok, Jawa Barat 16414",
     whatsapp: process.env.COMPANY_WHATSAPP?.trim() || "+62 814-0078-2617",
-    email: process.env.COMPANY_EMAIL?.trim() || "cv.herozerowaste@gmail.com",
+    email: process.env.COMPANY_EMAIL?.trim() || "kontak@upsheru.com",
     kota: "Kota Depok, Jawa Barat 16414",
     latitude: -6.424838,
     longitude: 106.832667,

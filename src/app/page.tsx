@@ -36,7 +36,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "UPS HERU - Jasa Angkut Sampah & Retribusi Digital Kota Depok",
   description:
-    "Solusi pengelolaan sampah terpadu Kota Depok oleh TPS 3R Kalibaru (CV Hero Zero Waste). Penjemputan terjadwal ke rumah warga, pelacakan armada live GPS, transparansi tarif retribusi, dan pembayaran digital via QRIS.",
+    "Solusi pengelolaan sampah terpadu Kota Depok oleh UPS HERU (TPS 3R Kalibaru). Penjemputan terjadwal ke rumah warga, pelacakan armada live GPS, transparansi tarif retribusi, dan pembayaran digital via QRIS.",
   alternates: {
     canonical: "/",
   },
@@ -137,7 +137,7 @@ export default async function LandingPage() {
               </h1>
 
               <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal max-w-xl">
-                Platform operasional resmi TPS 3R Kalibaru (CV Hero Zero Waste). Kami menghubungkan ribuan rumah tangga dan unit usaha di Depok dengan kepastian jadwal angkut, pelacakan armada live GPS, dan kemudahan pembayaran retribusi digital via QRIS.
+                Platform operasional resmi UPS HERU (TPS 3R Kalibaru Kota Depok). Kami menghubungkan ribuan rumah tangga dan unit usaha di Depok dengan kepastian jadwal angkut, pelacakan armada live GPS, dan kemudahan pembayaran retribusi digital via QRIS.
               </p>
 
               {/* Action Buttons */}
@@ -163,7 +163,7 @@ export default async function LandingPage() {
               <div className="pt-4 border-t border-slate-100 flex flex-wrap gap-x-6 gap-y-2 text-xs text-slate-500 font-medium">
                 <div>
                   <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Fasilitas</span>
-                  <span className="text-slate-800 font-semibold">TPS 3R Kalibaru</span>
+                  <span className="text-slate-800 font-semibold">UPS HERU Kalibaru</span>
                 </div>
                 <div>
                   <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Wilayah</span>
@@ -286,9 +286,9 @@ export default async function LandingPage() {
               <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs hover:border-[#0d7a75]/40 hover:shadow-md transition-all flex flex-col justify-between space-y-4">
                 <span className="text-2xl font-mono font-extrabold text-[#0d7a75]">02</span>
                 <div className="space-y-2">
-                  <h3 className="text-base font-bold text-slate-900">Fasilitas TPS 3R Mandiri</h3>
+                  <h3 className="text-base font-bold text-slate-900">Fasilitas UPS HERU Mandiri</h3>
                   <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                    Sampah organik diolah menjadi kompos & budidaya maggot BSF di TPS 3R Kalibaru, sedangkan anorganik didaur ulang sirkular.
+                    Sampah organik diolah menjadi kompos & budidaya maggot BSF di fasilitas UPS HERU Kalibaru, sedangkan anorganik didaur ulang sirkular.
                   </p>
                 </div>
                 <span className="text-[11px] font-semibold text-emerald-800">82% Sampah Tereduksi</span>
@@ -333,10 +333,10 @@ export default async function LandingPage() {
                 Transparansi Pengolahan
               </span>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                Metrik Kinerja & Distribusi Daur Ulang TPS 3R
+                Metrik Kinerja & Distribusi Daur Ulang UPS HERU
               </h2>
               <p className="text-sm text-slate-600">
-                Data kinerja harian fasilitas pengolahan sampah TPS 3R Kalibaru untuk mendukung Depok Zero Waste City.
+                Data kinerja harian fasilitas pengolahan sampah UPS HERU Kalibaru untuk mendukung kebersihan Kota Depok.
               </p>
             </div>
 
@@ -346,7 +346,7 @@ export default async function LandingPage() {
                 <div className="flex items-center justify-between border-b border-slate-200/80 pb-4">
                   <div>
                     <h3 className="text-base font-extrabold text-slate-900">Tingkat Pengolahan Mandiri</h3>
-                    <p className="text-xs text-slate-500">Rata-rata pemulihan material TPS 3R</p>
+                    <p className="text-xs text-slate-500">Rata-rata pemulihan material fasilitas UPS HERU</p>
                   </div>
                   <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-[#e6f5f4] text-[#0d7a75]">
                     Aktif
@@ -464,7 +464,7 @@ export default async function LandingPage() {
                     </div>
                     <span className="text-2xl font-extrabold text-slate-900 block">100% Legal</span>
                     <p className="text-xs text-slate-500 leading-relaxed">
-                      Dikelola oleh CV Hero Zero Waste dengan perizinan operasional resmi TPS 3R Kota Depok.
+                      Dikelola resmi oleh UPS HERU dengan perizinan operasional pengelolaan sampah di Kota Depok.
                     </p>
                   </div>
                 </div>
@@ -937,10 +937,10 @@ export default async function LandingPage() {
                 <span className="font-extrabold text-base tracking-tight text-white">UPS HERU</span>
               </div>
               <p className="text-slate-400 text-xs leading-relaxed">
-                Unit Pengelolaan Sampah 3R Kalibaru di bawah naungan CV Hero Zero Waste. Melayani retribusi dan operasional kebersihan Kota Depok.
+                Unit Pengolahan Sampah (UPS HERU) Kalibaru Kota Depok. Melayani retribusi dan operasional kebersihan terpadu.
               </p>
               <div className="text-[11px] text-slate-500">
-                Izin Operasional TPS 3R Kota Depok
+                Izin Operasional Pengelolaan Sampah Kota Depok
               </div>
             </div>
 
@@ -998,8 +998,8 @@ export default async function LandingPage() {
                 </li>
                 <li>
                   Email:{" "}
-                  <a href="mailto:cv.herozerowaste@gmail.com" className="hover:text-white transition-colors">
-                    cv.herozerowaste@gmail.com
+                  <a href="mailto:kontak@upsheru.com" className="hover:text-white transition-colors">
+                    kontak@upsheru.com
                   </a>
                 </li>
                 <li className="text-[11px] text-slate-500 pt-1">
@@ -1011,7 +1011,7 @@ export default async function LandingPage() {
 
             {/* Col 4: Fasilitas Fisik */}
             <div className="space-y-3">
-              <p className="font-bold text-slate-200 uppercase tracking-wider text-[11px]">Kantor TPS 3R</p>
+              <p className="font-bold text-slate-200 uppercase tracking-wider text-[11px]">Kantor UPS HERU</p>
               <p className="text-slate-400 text-xs leading-relaxed">
                 Jl. Kandang Ayam, Kel. Kalibaru, Kec. Cilodong, Kota Depok, Jawa Barat 16414
               </p>
@@ -1020,7 +1020,7 @@ export default async function LandingPage() {
           </div>
 
           <div className="pt-6 border-t border-slate-800 text-slate-500 text-xs flex flex-col sm:flex-row items-center justify-between gap-3">
-            <span>© {new Date().getFullYear()} UPS HERU Kota Depok (CV Hero Zero Waste). Hak Cipta Dilindungi.</span>
+            <span>© {new Date().getFullYear()} UPS HERU Kota Depok. Hak Cipta Dilindungi.</span>
             <div className="flex items-center gap-5">
               <Link href="/login" className="hover:text-white transition-colors">
                 Portal Petugas
