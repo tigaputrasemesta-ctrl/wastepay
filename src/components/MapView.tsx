@@ -789,35 +789,47 @@ export default function MapView({
     (komplainSel ? pusatKomplain : null)
   );
 
-  const [internalTileMode, setInternalTileMode] = useState<MapTileType>("dark");
+  const [internalTileMode, setInternalTileMode] = useState<MapTileType>("osm");
   const tileMode = externalTileMode ?? internalTileMode;
   const setTileMode = externalSetTileMode ?? setInternalTileMode;
   const tileConfig = useMemo(() => getMapTileConfig(tileMode), [tileMode]);
 
   return (
     <div className="relative h-full w-full">
-      {/* Tombol Pilihan Basemap: CARTO Dark (Menyala) / Esri Satelit / CARTO Terang */}
+      {/* Tombol Pilihan Basemap: Gojek Clean / Klasik Hangat / Satelit / Mode Malam */}
       {!hideTileButtons && (
-        <div className="absolute top-3 right-3 z-[1000] flex items-center bg-slate-950/85 backdrop-blur-md border border-slate-800 rounded-2xl p-1 shadow-2xl gap-1">
+        <div className="absolute top-3 right-3 z-[1000] flex items-center bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl p-1 shadow-lg gap-1">
           <button
             type="button"
-            onClick={() => setTileMode("dark")}
+            onClick={() => setTileMode("osm")}
             className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all ${
-              tileMode === "dark"
-                ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30"
-                : "text-slate-400 hover:text-white hover:bg-slate-800/60"
+              tileMode === "osm"
+                ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
             }`}
-            title="Peta Obsidian Dark Canvas dengan kontras jalan & elemen menyala"
+            title="Peta Standar Gojek Clean — bersih, nyaman di mata, dan detail jalan sangat jelas"
           >
-            🌙 Gelap (Menyala 🔥)
+            🛵 Gojek Clean
+          </button>
+          <button
+            type="button"
+            onClick={() => setTileMode("esri-street")}
+            className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all ${
+              tileMode === "esri-street"
+                ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+            }`}
+            title="Peta jalan bernuansa hangat dan nyaman khas navigasi"
+          >
+            🗺️ Klasik Hangat
           </button>
           <button
             type="button"
             onClick={() => setTileMode("esri-satellite")}
             className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all ${
               tileMode === "esri-satellite"
-                ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30"
-                : "text-slate-400 hover:text-white hover:bg-slate-800/60"
+                ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
             }`}
             title="Foto udara satelit murni beresolusi tinggi dari Esri World Imagery"
           >
@@ -825,15 +837,15 @@ export default function MapView({
           </button>
           <button
             type="button"
-            onClick={() => setTileMode("osm")}
+            onClick={() => setTileMode("dark")}
             className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all ${
-              tileMode === "osm"
-                ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30"
-                : "text-slate-400 hover:text-white hover:bg-slate-800/60"
+              tileMode === "dark"
+                ? "bg-slate-900 text-white shadow-md"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
             }`}
-            title="Peta jalan modern terang beresolusi tinggi"
+            title="Mode gelap untuk operasional malam"
           >
-            🗺️ Terang
+            🌙 Malam
           </button>
         </div>
       )}

@@ -5,7 +5,7 @@
  * - "dark": ESRI World Dark Gray Canvas (matte gelap untuk dashboard wallboard)
  * - Jika `NEXT_PUBLIC_CARTO_API_KEY` disetel, beralih ke CARTO tiles dengan `?key=...`
  */
-export type MapTileType = "osm" | "esri-satellite" | "dark" | "light";
+export type MapTileType = "osm" | "esri-street" | "esri-satellite" | "dark" | "light";
 
 export type MapTileConfig = {
   url: string;
@@ -16,9 +16,10 @@ export type MapTileConfig = {
   isDarkFilter: boolean;
 };
 
-export function getMapTileConfig(type: MapTileType = "dark"): MapTileConfig {
+export function getMapTileConfig(type: MapTileType = "osm"): MapTileConfig {
   const cartoKey = process.env.NEXT_PUBLIC_CARTO_API_KEY?.trim();
 
+  // Mode Gelap (Obsidian Dark)
   if (type === "dark") {
     // Jika ada CARTO API key yang sah, gunakan CARTO Dark Matter
     if (cartoKey) {
@@ -33,7 +34,7 @@ export function getMapTileConfig(type: MapTileType = "dark"): MapTileConfig {
     }
 
     // Default tanpa CARTO API key: OpenStreetMap standar resmi + CSS filter Obsidian Dark
-    // 100% Bebas dari watermark/error "API KEY REQUIRED" dan jalan/kontur menyala tajam
+    // 100% Bebas dari watermark/error "API KEY REQUIRED"
     return {
       url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
       attribution:
@@ -44,6 +45,19 @@ export function getMapTileConfig(type: MapTileType = "dark"): MapTileConfig {
     };
   }
 
+  // Mode Klasik Hangat (Esri World Street Map — sangat nyaman di mata, jalan dan label navigasi sangat jelas)
+  if (type === "esri-street") {
+    return {
+      url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+      attribution:
+        'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, METI, TomTom',
+      subdomains: [],
+      maxZoom: 19,
+      isDarkFilter: false,
+    };
+  }
+
+  // Mode Satelit HD (Esri World Imagery)
   if (type === "esri-satellite") {
     return {
       url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
@@ -55,7 +69,8 @@ export function getMapTileConfig(type: MapTileType = "dark"): MapTileConfig {
     };
   }
 
-  // "osm" / "light"
+  // "osm" / "light" -> Standar Gojek Clean
+  // OpenStreetMap standard resmi: jalanan putih bersih, pemukiman terpetakan detail, teks nama jalan hitam tajam dan sangat jelas
   if (cartoKey) {
     return {
       url: `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=${encodeURIComponent(cartoKey)}`,
@@ -67,7 +82,6 @@ export function getMapTileConfig(type: MapTileType = "dark"): MapTileConfig {
     };
   }
 
-  // Default light: OpenStreetMap standar resmi tanpa watermark
   return {
     url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     attribution:
