@@ -21,6 +21,7 @@ import {
   FileCheck2,
   Layers,
   Sparkles,
+  AlertCircle,
 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
@@ -151,11 +152,11 @@ export default async function LandingPage() {
                 </Link>
 
                 <Link
-                  href="/lacak"
-                  className="px-6 py-3.5 bg-white border border-slate-300 hover:bg-slate-50 hover:border-slate-400 text-slate-800 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-xs active:scale-95"
+                  href="/pengaduan"
+                  className="px-6 py-3.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-sm shadow-red-600/20 active:scale-95"
                 >
-                  <Navigation className="w-4 h-4 text-[#0d7a75]" />
-                  <span>Lacak Truk di Peta</span>
+                  <AlertCircle className="w-4 h-4" />
+                  <span>Pengaduan</span>
                 </Link>
               </div>
 
