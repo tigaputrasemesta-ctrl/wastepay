@@ -50,7 +50,7 @@ export default function Image() {
             </div>
             <div style={{ display: "flex", flexDirection: "column" }}>
               <span style={{ fontSize: "28px", fontWeight: "bold", letterSpacing: "-0.5px" }}>
-                UPS HERU <span style={{ color: "#34d399" }}>UPS HERU</span>
+                UPS HERU <span style={{ color: "#34d399" }}>Depok</span>
               </span>
               <span style={{ fontSize: "14px", color: "rgba(255, 255, 255, 0.75)" }}>
                 Unit Pengelolaan Sampah 3R • Kota Depok

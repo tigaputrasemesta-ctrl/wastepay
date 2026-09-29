@@ -4,14 +4,35 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
+import { DEFAULT_ARTIKEL } from "@/lib/default-articles";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
-  const artikel = await prisma.artikel.findUnique({ where: { slug: resolvedParams.slug } });
-  
+  let artikel: {
+    judul: string;
+    isi: string;
+    gambar: string | null;
+  } | null = null;
+
+  try {
+    artikel = await prisma.artikel.findUnique({
+      where: { slug: resolvedParams.slug },
+      select: { judul: true, isi: true, gambar: true },
+    });
+  } catch {
+    // ignore
+  }
+
   if (!artikel) {
+    const fallback = DEFAULT_ARTIKEL.find((a) => a.slug === resolvedParams.slug);
+    if (fallback) {
+      return {
+        title: `${fallback.judul} | UPS HERU Depok`,
+        description: fallback.isi.slice(0, 160),
+      };
+    }
     return { title: "Artikel Tidak Ditemukan | UPS HERU Depok" };
   }
 
@@ -24,13 +45,37 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ArtikelDetail({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  const artikel = await prisma.artikel.findUnique({
-    where: { slug: resolvedParams.slug },
-    include: { penulis: { select: { nama: true } } },
-  });
+  let artikel: {
+    id: number;
+    slug: string;
+    judul: string;
+    isi: string;
+    kategori: string;
+    gambar: string | null;
+    diterbitkan: boolean;
+    createdAt: Date;
+    penulis?: { nama: string } | null;
+  } | null = null;
 
-  if (!artikel || (!artikel.diterbitkan)) {
-    notFound();
+  try {
+    artikel = await prisma.artikel.findUnique({
+      where: { slug: resolvedParams.slug },
+      include: { penulis: { select: { nama: true } } },
+    });
+  } catch {
+    // ignore
+  }
+
+  if (!artikel || !artikel.diterbitkan) {
+    const fallback = DEFAULT_ARTIKEL.find((a) => a.slug === resolvedParams.slug);
+    if (fallback) {
+      artikel = {
+        ...fallback,
+        penulis: { nama: fallback.penulisNama },
+      };
+    } else {
+      notFound();
+    }
   }
 
   return (

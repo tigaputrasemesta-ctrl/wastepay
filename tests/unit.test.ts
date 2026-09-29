@@ -495,6 +495,14 @@ describe("seo module", () => {
     else delete process.env.NEXT_PUBLIC_APP_URL;
   });
 
+  it("getSiteUrl: mengabaikan domain vercel.app dan fallback ke https://upsheru.com", () => {
+    const orig = process.env.NEXT_PUBLIC_APP_URL;
+    process.env.NEXT_PUBLIC_APP_URL = "https://tpsheru.vercel.app";
+    expect(getSiteUrl()).toBe("https://upsheru.com");
+    if (orig) process.env.NEXT_PUBLIC_APP_URL = orig;
+    else delete process.env.NEXT_PUBLIC_APP_URL;
+  });
+
   it("generateLocalBusinessJsonLd: menghasilkan schema valid untuk LocalBusiness dan GovernmentService", () => {
     const schema = generateLocalBusinessJsonLd() as {
       "@context": string;

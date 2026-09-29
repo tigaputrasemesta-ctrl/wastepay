@@ -7,6 +7,7 @@ import { formatDate } from "@/lib/utils";
 import JsonLd from "@/components/JsonLd";
 import PublicNavbar from "@/components/PublicNavbar";
 import { generateLocalBusinessJsonLd } from "@/lib/seo";
+import { DEFAULT_ARTIKEL } from "@/lib/default-articles";
 
 export const dynamic = "force-dynamic";
 
@@ -18,11 +19,27 @@ export const metadata: Metadata = {
 };
 
 export default async function LandingPage() {
-  const artikelTop3 = await prisma.artikel.findMany({
-    where: { diterbitkan: true },
-    orderBy: { createdAt: "desc" },
-    take: 3,
-  });
+  let artikelTop3: Array<{
+    id: number;
+    slug: string;
+    judul: string;
+    isi: string;
+    kategori: string;
+    gambar: string | null;
+    createdAt: Date;
+  }> = [];
+
+  try {
+    artikelTop3 = await prisma.artikel.findMany({
+      where: { diterbitkan: true },
+      orderBy: { createdAt: "desc" },
+      take: 3,
+    });
+  } catch {
+    // ignore
+  }
+
+  const displayedArticles = artikelTop3.length > 0 ? artikelTop3 : DEFAULT_ARTIKEL;
   
   type PengumumanRingkas = {
     id: number;
@@ -269,39 +286,33 @@ export default async function LandingPage() {
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
-              {artikelTop3.length === 0 ? (
-                <div className="md:col-span-3 text-center py-16 bg-white rounded-3xl border border-slate-200/80">
-                  <p className="text-slate-500 font-medium text-lg">Belum ada artikel yang diterbitkan.</p>
-                </div>
-              ) : (
-                artikelTop3.map((a) => (
-                  <Link key={a.id} href={`/artikel/${a.slug}`} className="group flex flex-col bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
-                    {a.gambar ? (
-                      <div className="h-56 relative overflow-hidden">
-                        <div className="absolute inset-0 bg-emerald-900/0 group-hover:bg-emerald-900/10 transition-colors z-10" />
-                        <img src={a.gambar} alt={a.judul} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                        <div className="absolute top-4 left-4 z-20">
-                          <span className="px-3 py-1 bg-white/90 backdrop-blur-md text-emerald-700 text-xs font-black uppercase rounded-lg">
-                            {a.kategori}
-                          </span>
-                        </div>
+              {displayedArticles.map((a) => (
+                <Link key={a.id} href={`/artikel/${a.slug}`} className="group flex flex-col bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
+                  {a.gambar ? (
+                    <div className="h-56 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-emerald-900/0 group-hover:bg-emerald-900/10 transition-colors z-10" />
+                      <img src={a.gambar} alt={a.judul} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                      <div className="absolute top-4 left-4 z-20">
+                        <span className="px-3 py-1 bg-white/90 backdrop-blur-md text-emerald-700 text-xs font-black uppercase rounded-lg">
+                          {a.kategori}
+                        </span>
                       </div>
-                    ) : (
-                      <div className="h-56 bg-slate-100 relative overflow-hidden flex items-center justify-center">
-                        <div className="absolute inset-0 bg-emerald-900/0 group-hover:bg-emerald-900/5 transition-colors z-10" />
-                        <span className="text-5xl opacity-50">📰</span>
-                      </div>
-                    )}
-                    <div className="p-8 flex-1 flex flex-col">
-                      <h3 className="text-xl font-bold text-slate-900 mb-4 group-hover:text-emerald-600 transition-colors leading-snug">
-                        {a.judul}
-                      </h3>
-                      <p className="text-slate-600 font-medium mb-6 line-clamp-2 leading-relaxed">{a.isi}</p>
-                      <div className="mt-auto text-xs font-bold text-slate-400">{formatDate(a.createdAt)}</div>
                     </div>
-                  </Link>
-                ))
-              )}
+                  ) : (
+                    <div className="h-56 bg-slate-100 relative overflow-hidden flex items-center justify-center">
+                      <div className="absolute inset-0 bg-emerald-900/0 group-hover:bg-emerald-900/5 transition-colors z-10" />
+                      <span className="text-5xl opacity-50">📰</span>
+                    </div>
+                  )}
+                  <div className="p-8 flex-1 flex flex-col">
+                    <h3 className="text-xl font-bold text-slate-900 mb-4 group-hover:text-emerald-600 transition-colors leading-snug">
+                      {a.judul}
+                    </h3>
+                    <p className="text-slate-600 font-medium mb-6 line-clamp-2 leading-relaxed">{a.isi}</p>
+                    <div className="mt-auto text-xs font-bold text-slate-400">{formatDate(a.createdAt)}</div>
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
         </section>

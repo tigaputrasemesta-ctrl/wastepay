@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
+import { DEFAULT_ARTIKEL } from "@/lib/default-articles";
 
 export const metadata: Metadata = {
   title: "Artikel & Edukasi Lingkungan | UPS HERU Depok",
@@ -12,10 +13,26 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function ArtikelPage() {
-  const artikelList = await prisma.artikel.findMany({
-    where: { diterbitkan: true },
-    orderBy: { createdAt: "desc" },
-  });
+  let artikelList: Array<{
+    id: number;
+    slug: string;
+    judul: string;
+    isi: string;
+    kategori: string;
+    gambar: string | null;
+    createdAt: Date;
+  }> = [];
+
+  try {
+    artikelList = await prisma.artikel.findMany({
+      where: { diterbitkan: true },
+      orderBy: { createdAt: "desc" },
+    });
+  } catch {
+    // ignore
+  }
+
+  const displayedList = artikelList.length > 0 ? artikelList : DEFAULT_ARTIKEL;
 
   return (
     <div className="min-h-screen bg-slate-50 py-12 px-6">
@@ -35,12 +52,7 @@ export default async function ArtikelPage() {
         </div>
 
         <div className="grid gap-6">
-          {artikelList.length === 0 ? (
-            <div className="text-center py-12 bg-white rounded-3xl border border-slate-200/80">
-              <p className="text-slate-500 font-medium">Belum ada artikel yang diterbitkan.</p>
-            </div>
-          ) : (
-            artikelList.map((artikel) => (
+          {displayedList.map((artikel) => (
               <div key={artikel.id} className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row gap-6 hover:shadow-md transition-shadow">
                 {artikel.gambar ? (
                   <img src={artikel.gambar} alt={artikel.judul} className="w-full sm:w-48 h-32 rounded-2xl object-cover border border-slate-200 shrink-0" />
@@ -60,8 +72,7 @@ export default async function ArtikelPage() {
                   </Link>
                 </div>
               </div>
-            ))
-          )}
+            ))}
         </div>
       </div>
     </div>

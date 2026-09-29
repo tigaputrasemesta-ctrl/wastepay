@@ -15,6 +15,7 @@ export default function robots(): MetadataRoute.Robots {
           "/tarif",
           "/daftar",
           "/pengaduan",
+          "/artikel",
           "/unduh",
         ],
         disallow: [

@@ -17,7 +17,7 @@ const config: CapacitorConfig = {
   appName: "UPS HERU Lapangan",
   webDir: "public",
   server: {
-    url: process.env.CAPACITOR_URL || "https://o2whero.com",
+    url: process.env.CAPACITOR_URL || "https://upsheru.com",
     cleartext: true,
     // Buka langsung ke dashboard mobile petugas (bukan landing page publik)
     appStartPath: "/m",
