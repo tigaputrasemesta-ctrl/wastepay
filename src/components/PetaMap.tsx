@@ -190,7 +190,7 @@ export default function PetaMap({
   // Navigation & Layout State
   const [activeTab, setActiveTab] = useState<ConsoleTab>("armada");
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [tileMode, setTileMode] = useState<MapTileType>("osm");
+  const [tileMode, setTileMode] = useState<MapTileType>("dark");
   const [layerMenuOpen, setLayerMenuOpen] = useState(false);
   const layerMenuRef = useRef<HTMLDivElement>(null);
 
@@ -602,32 +602,32 @@ export default function PetaMap({
           <div className="hidden sm:flex items-center bg-slate-900 p-0.5 rounded-xl border border-slate-800 text-[11px] font-semibold">
             <button
               type="button"
-              onClick={() => setTileMode("osm")}
+              onClick={() => setTileMode("dark")}
               className={`px-2.5 py-1 rounded-lg transition ${
-                tileMode === "osm" ? "bg-amber-400 text-slate-950 font-bold" : "text-slate-400 hover:text-white"
+                tileMode === "dark" ? "bg-emerald-400 text-slate-950 font-extrabold shadow-sm" : "text-slate-400 hover:text-white"
               }`}
             >
-              Standar
+              🌙 Gelap (Menyala)
             </button>
             <button
               type="button"
               onClick={() => setTileMode("esri-satellite")}
               className={`px-2.5 py-1 rounded-lg transition ${
                 tileMode === "esri-satellite"
-                  ? "bg-amber-400 text-slate-950 font-bold"
+                  ? "bg-emerald-400 text-slate-950 font-extrabold shadow-sm"
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              Satelit
+              🛰️ Satelit
             </button>
             <button
               type="button"
-              onClick={() => setTileMode("dark")}
+              onClick={() => setTileMode("osm")}
               className={`px-2.5 py-1 rounded-lg transition ${
-                tileMode === "dark" ? "bg-amber-400 text-slate-950 font-bold" : "text-slate-400 hover:text-white"
+                tileMode === "osm" ? "bg-emerald-400 text-slate-950 font-extrabold shadow-sm" : "text-slate-400 hover:text-white"
               }`}
             >
-              Gelap
+              🗺️ Terang
             </button>
           </div>
 

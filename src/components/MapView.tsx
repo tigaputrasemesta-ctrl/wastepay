@@ -789,51 +789,51 @@ export default function MapView({
     (komplainSel ? pusatKomplain : null)
   );
 
-  const [internalTileMode, setInternalTileMode] = useState<MapTileType>("osm");
+  const [internalTileMode, setInternalTileMode] = useState<MapTileType>("dark");
   const tileMode = externalTileMode ?? internalTileMode;
   const setTileMode = externalSetTileMode ?? setInternalTileMode;
   const tileConfig = useMemo(() => getMapTileConfig(tileMode), [tileMode]);
 
   return (
     <div className="relative h-full w-full">
-      {/* Tombol Pilihan Basemap: OSM / Esri Satelit / Gelap (Jika tidak disembunyikan) */}
+      {/* Tombol Pilihan Basemap: CARTO Dark (Menyala) / Esri Satelit / CARTO Terang */}
       {!hideTileButtons && (
-        <div className="absolute top-3 right-3 z-[1000] flex items-center bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-2xl p-1 shadow-lg gap-1">
+        <div className="absolute top-3 right-3 z-[1000] flex items-center bg-slate-950/85 backdrop-blur-md border border-slate-800 rounded-2xl p-1 shadow-2xl gap-1">
           <button
             type="button"
-            onClick={() => setTileMode("osm")}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
-              tileMode === "osm"
-                ? "bg-emerald-700 text-white shadow-sm"
-                : "text-slate-600 hover:bg-slate-100"
+            onClick={() => setTileMode("dark")}
+            className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all ${
+              tileMode === "dark"
+                ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30"
+                : "text-slate-400 hover:text-white hover:bg-slate-800/60"
             }`}
-            title="Peta jalan standar OpenStreetMap (Legal & Terbuka)"
+            title="Peta Obsidian Dark Canvas dengan kontras jalan & elemen menyala"
           >
-            🗺️ Standar
+            🌙 Gelap (Menyala 🔥)
           </button>
           <button
             type="button"
             onClick={() => setTileMode("esri-satellite")}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
+            className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all ${
               tileMode === "esri-satellite"
-                ? "bg-emerald-700 text-white shadow-sm"
-                : "text-slate-600 hover:bg-slate-100"
+                ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30"
+                : "text-slate-400 hover:text-white hover:bg-slate-800/60"
             }`}
             title="Foto udara satelit murni beresolusi tinggi dari Esri World Imagery"
           >
-            🛰️ Satelit Esri
+            🛰️ Satelit
           </button>
           <button
             type="button"
-            onClick={() => setTileMode("dark")}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
-              tileMode === "dark"
-                ? "bg-emerald-700 text-white shadow-sm"
-                : "text-slate-600 hover:bg-slate-100"
+            onClick={() => setTileMode("osm")}
+            className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all ${
+              tileMode === "osm"
+                ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/30"
+                : "text-slate-400 hover:text-white hover:bg-slate-800/60"
             }`}
-            title="Peta mode gelap matte"
+            title="Peta jalan modern terang beresolusi tinggi"
           >
-            🌙 Gelap
+            🗺️ Terang
           </button>
         </div>
       )}
@@ -951,15 +951,25 @@ export default function MapView({
         </>
       )}
 
-      {/* Rute terpilih: garis urutan + titik start/akhir + estimasi jarak */}
+      {/* Rute terpilih: garis urutan neon menyala + titik start/akhir + estimasi jarak */}
       {ruteTerpilih && ruteUrut.length >= 2 && (
         <>
+          {/* Neon laser outer glow halo */}
+          <Polyline
+            positions={ruteUrut}
+            pathOptions={{
+              color: "#38bdf8",
+              weight: 9,
+              opacity: 0.45,
+            }}
+          />
+          {/* Sharp core route dashed line */}
           <Polyline
             positions={ruteUrut}
             pathOptions={{
               color: "#f5a524",
-              weight: 3,
-              opacity: 0.95,
+              weight: 3.5,
+              opacity: 1,
               dashArray: "8 6",
             }}
           />

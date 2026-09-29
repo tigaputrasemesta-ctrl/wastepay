@@ -1,83 +1,47 @@
-/* Label nama kecamatan (tooltip permanen Leaflet) */
+/* Label nama kecamatan (tooltip permanen Leaflet) - Menyala High Contrast */
 .leaflet-tooltip.kec-label {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
-  color: #ffffff !important;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.8), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+  color: #38bdf8 !important; /* Cyan neon */
+  text-shadow: 0 0 12px rgba(56, 189, 248, 0.8), 2px 2px 4px rgba(0,0,0,0.95), -1px -1px 0 #000, 1px -1px 0 #000;
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  font-size: 14px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
+  font-size: 13.5px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
   padding: 0;
   text-transform: uppercase;
 }
+.leaflet-tooltip.kec-label::before {
+  display: none;
+}
 
-/* Label nama kelurahan */
+/* Label nama kelurahan - Menyala Emerald Neon */
 .leaflet-tooltip.kel-label {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
-  color: #b7e13c !important; /* warna hijau khas O2W/wastepay */
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.9), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+  color: #34d399 !important; /* Emerald neon */
+  text-shadow: 0 0 10px rgba(52, 211, 153, 0.85), 1px 1px 3px rgba(0,0,0,0.95), -1px -1px 0 #000, 1px -1px 0 #000;
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
   padding: 0;
   text-transform: uppercase;
 }
 .leaflet-tooltip.kel-label::before {
   display: none;
 }
-.leaflet-tooltip.kec-label::before {
-  display: none;
-}
 
-/* Label nama kecamatan (tooltip permanen Leaflet) */
-.leaflet-tooltip.kec-label {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  color: #ffffff !important;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.8), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  padding: 0;
-  text-transform: uppercase;
-}
-
-/* Label nama kelurahan */
-.leaflet-tooltip.kel-label {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  color: #10b981 !important; /* warna hijau khas CleanTech */
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.9), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  padding: 0;
-  text-transform: uppercase;
-}
-.leaflet-tooltip.kel-label::before {
-  display: none;
-}
-.leaflet-tooltip.kec-label::before {
-  display: none;
-}
-
-/* Modern Cluster Badge */
+/* Modern Cluster Badge - Menyala Emerald Glow */
 .vector-cluster-badge {
   width: 36px;
   height: 36px;
   border-radius: 9999px;
   background: linear-gradient(135deg, #10b981 0%, #047857 100%);
   border: 2px solid #ffffff;
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.8), 0 0 0 2px rgba(52, 211, 153, 0.4), 0 4px 14px rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -88,8 +52,8 @@
   transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .vector-cluster-badge:hover {
-  transform: scale(1.15);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+  transform: scale(1.18);
+  box-shadow: 0 0 25px rgba(16, 185, 129, 1), 0 0 0 3px #ffffff, 0 6px 20px rgba(0, 0, 0, 0.6);
 }
 
 /* ── LoadSwift GIS Circular Puck System (Behance Logistics Standard) ── */
@@ -130,34 +94,86 @@
   color: #ffffff;
 }
 
-/* Theme Rings */
+/* Theme Rings - Menjadikan Marker Peta Menyala (Vibrant High-Contrast Neon Glow) */
 .loadswift-puck-marker.dump .loadswift-puck-disc {
-  border-color: #f59e0b;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), 0 0 8px rgba(245, 158, 11, 0.35);
+  border-color: #fbbf24;
+  box-shadow: 0 0 0 1.5px rgba(251, 191, 36, 0.5), 0 0 20px rgba(245, 158, 11, 0.85), 0 4px 14px rgba(0, 0, 0, 0.6);
 }
+.loadswift-puck-marker.dump .loadswift-puck-stem {
+  background: #f59e0b;
+}
+.loadswift-puck-marker.dump .loadswift-puck-anchor {
+  background: #f59e0b;
+  border-color: #ffffff;
+  box-shadow: 0 0 10px #f59e0b;
+}
+
 .loadswift-puck-marker.pickup .loadswift-puck-disc {
-  border-color: #10b981;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), 0 0 8px rgba(16, 185, 129, 0.35);
+  border-color: #34d399;
+  box-shadow: 0 0 0 1.5px rgba(52, 211, 153, 0.5), 0 0 20px rgba(16, 185, 129, 0.85), 0 4px 14px rgba(0, 0, 0, 0.6);
 }
+.loadswift-puck-marker.pickup .loadswift-puck-stem {
+  background: #10b981;
+}
+.loadswift-puck-marker.pickup .loadswift-puck-anchor {
+  background: #10b981;
+  border-color: #ffffff;
+  box-shadow: 0 0 10px #10b981;
+}
+
 .loadswift-puck-marker.hub .loadswift-puck-disc {
-  border-color: #818cf8;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), 0 0 8px rgba(129, 140, 248, 0.35);
+  border-color: #a5b4fc;
+  box-shadow: 0 0 0 1.5px rgba(165, 180, 252, 0.5), 0 0 20px rgba(129, 140, 248, 0.85), 0 4px 14px rgba(0, 0, 0, 0.6);
 }
+.loadswift-puck-marker.hub .loadswift-puck-stem {
+  background: #818cf8;
+}
+.loadswift-puck-marker.hub .loadswift-puck-anchor {
+  background: #818cf8;
+  border-color: #ffffff;
+  box-shadow: 0 0 10px #818cf8;
+}
+
 .loadswift-puck-marker.officer .loadswift-puck-disc {
-  border-color: #0ea5e9;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), 0 0 8px rgba(14, 165, 233, 0.35);
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 1.5px rgba(56, 189, 248, 0.5), 0 0 20px rgba(14, 165, 233, 0.85), 0 4px 14px rgba(0, 0, 0, 0.6);
 }
+.loadswift-puck-marker.officer .loadswift-puck-stem {
+  background: #0ea5e9;
+}
+.loadswift-puck-marker.officer .loadswift-puck-anchor {
+  background: #0ea5e9;
+  border-color: #ffffff;
+  box-shadow: 0 0 10px #0ea5e9;
+}
+
 .loadswift-puck-marker.alert .loadswift-puck-disc {
   background: #dc2626;
   border-color: #ffffff;
-  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.5), 0 0 10px rgba(239, 68, 68, 0.45);
+  box-shadow: 0 0 0 2px #ffffff, 0 0 24px rgba(239, 68, 68, 1), 0 0 45px rgba(220, 38, 38, 0.7);
+}
+.loadswift-puck-marker.alert .loadswift-puck-stem {
+  background: #dc2626;
+}
+.loadswift-puck-marker.alert .loadswift-puck-anchor {
+  background: #dc2626;
+  border-color: #ffffff;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 1);
 }
 
-/* Selected state: Electric Blue (Behance Slide 03 Standard) */
+/* Selected state: Electric Blue Menyala (Behance Slide 03 Standard) */
 .loadswift-puck-marker.selected .loadswift-puck-disc {
   background: #2563eb !important;
-  border-color: #ffffff !important;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.45), 0 6px 20px rgba(37, 99, 235, 0.6) !important;
+  border-color: #60a5fa !important;
+  box-shadow: 0 0 0 3px #ffffff, 0 0 28px rgba(37, 99, 235, 1), 0 0 55px rgba(96, 165, 250, 0.9) !important;
+}
+.loadswift-puck-marker.selected .loadswift-puck-stem {
+  background: #2563eb;
+}
+.loadswift-puck-marker.selected .loadswift-puck-anchor {
+  background: #2563eb;
+  border-color: #ffffff;
+  box-shadow: 0 0 12px #2563eb;
 }
 
 /* Micro Stem & Anchor Point on the Road */
@@ -183,22 +199,6 @@
   border: 1px solid rgba(255, 255, 255, 0.7);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   z-index: 3;
-}
-.loadswift-puck-marker.alert .loadswift-puck-stem {
-  background: #dc2626;
-}
-.loadswift-puck-marker.alert .loadswift-puck-anchor {
-  background: #dc2626;
-  border-color: #ffffff;
-  box-shadow: 0 0 6px rgba(220, 38, 38, 0.7);
-}
-.loadswift-puck-marker.selected .loadswift-puck-stem {
-  background: #2563eb;
-}
-.loadswift-puck-marker.selected .loadswift-puck-anchor {
-  background: #2563eb;
-  border-color: #ffffff;
-  box-shadow: 0 0 6px #2563eb;
 }
 
 /* Callsign Micro-Tag (Floats above puck on hover / selected) */
@@ -256,13 +256,13 @@
 @keyframes loadswift-sonar {
   0% {
     transform: scale(0.8);
-    opacity: 0.8;
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    opacity: 0.95;
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.85);
   }
   100% {
-    transform: scale(2.2);
+    transform: scale(2.6);
     opacity: 0;
-    box-shadow: 0 0 0 14px rgba(16, 185, 129, 0);
+    box-shadow: 0 0 0 22px rgba(16, 185, 129, 0);
   }
 }
 .loadswift-puck-marker.dump .loadswift-puck-pulse {
@@ -271,13 +271,13 @@
 @keyframes loadswift-sonar-amber {
   0% {
     transform: scale(0.8);
-    opacity: 0.8;
-    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+    opacity: 0.95;
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.85);
   }
   100% {
-    transform: scale(2.2);
+    transform: scale(2.6);
     opacity: 0;
-    box-shadow: 0 0 0 14px rgba(245, 158, 11, 0);
+    box-shadow: 0 0 0 22px rgba(245, 158, 11, 0);
   }
 }
 .loadswift-puck-marker.alert .loadswift-puck-pulse {
@@ -286,13 +286,13 @@
 @keyframes loadswift-sonar-red {
   0% {
     transform: scale(0.8);
-    opacity: 0.9;
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8);
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.95);
   }
   100% {
-    transform: scale(2.4);
+    transform: scale(2.8);
     opacity: 0;
-    box-shadow: 0 0 0 16px rgba(239, 68, 68, 0);
+    box-shadow: 0 0 0 26px rgba(239, 68, 68, 0);
   }
 }
 .loadswift-puck-marker.officer .loadswift-puck-pulse {
@@ -301,13 +301,13 @@
 @keyframes loadswift-sonar-sky {
   0% {
     transform: scale(0.8);
-    opacity: 0.8;
-    box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.7);
+    opacity: 0.95;
+    box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.85);
   }
   100% {
-    transform: scale(2.2);
+    transform: scale(2.6);
     opacity: 0;
-    box-shadow: 0 0 0 14px rgba(14, 165, 233, 0);
+    box-shadow: 0 0 0 22px rgba(14, 165, 233, 0);
   }
 }
 .loadswift-puck-marker.hub .loadswift-puck-pulse {
@@ -316,17 +316,17 @@
 @keyframes loadswift-sonar-violet {
   0% {
     transform: scale(0.8);
-    opacity: 0.8;
-    box-shadow: 0 0 0 0 rgba(129, 140, 248, 0.7);
+    opacity: 0.95;
+    box-shadow: 0 0 0 0 rgba(129, 140, 248, 0.85);
   }
   100% {
-    transform: scale(2.2);
+    transform: scale(2.6);
     opacity: 0;
-    box-shadow: 0 0 0 14px rgba(129, 140, 248, 0);
+    box-shadow: 0 0 0 22px rgba(129, 140, 248, 0);
   }
 }
 
-/* Rute Waypoint Node Marker */
+/* Rute Waypoint Node Marker - Menyala Neon */
 .rute-node-marker {
   position: relative;
   width: 32px;
@@ -344,7 +344,7 @@
   font-weight: 800;
   padding: 1px 5px;
   border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 10px var(--rute-color, #10b981), 0 2px 8px rgba(0, 0, 0, 0.6);
   line-height: 1.2;
 }
 .rute-node-caret {
@@ -355,19 +355,20 @@
   border-top: 3.5px solid var(--rute-color, #10b981);
 }
 .rute-node-dot {
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: #ffffff;
   border: 1px solid var(--rute-color, #10b981);
+  box-shadow: 0 0 6px var(--rute-color, #10b981);
   margin-top: 1px;
 }
 
-/* Pelanggan Micro-Dot Pin (Apple Maps / Clean GIS Standard) */
+/* Pelanggan Micro-Dot Pin (Menyala Neon Constellation) */
 .micro-dot-wrapper {
   position: relative;
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -378,20 +379,20 @@
   height: 10px;
   border-radius: 50%;
   border: 1.5px solid #ffffff;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 8px currentColor, 0 1px 4px rgba(0, 0, 0, 0.5);
   transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .micro-dot-wrapper:hover .micro-dot-pin {
-  transform: scale(1.6);
-  box-shadow: 0 0 10px currentColor;
+  transform: scale(1.7);
+  box-shadow: 0 0 16px currentColor, 0 0 4px #ffffff;
   z-index: 100;
 }
 .micro-dot-wrapper.tunggakan .micro-dot-pin {
-  box-shadow: 0 0 0 2.5px rgba(239, 68, 68, 0.45), 0 2px 6px rgba(0, 0, 0, 0.4);
-  animation: glow-red 1.8s infinite;
+  box-shadow: 0 0 0 2.5px rgba(239, 68, 68, 0.6), 0 0 14px rgba(239, 68, 68, 0.95);
+  animation: glow-red 1.5s infinite;
 }
 
 /* ── Leaflet Popups (Clean Modern Mode) ── */
@@ -442,32 +443,38 @@
   border-right-color: #0f172a !important;
 }
 
-/* ── Leaflet Zoom Controls Clean Styling ── */
+/* ── Leaflet Zoom Controls Dark Glass Styling ── */
 .leaflet-control-zoom a {
-  background-color: #ffffff !important;
-  color: #1e293b !important;
-  border: 1px solid #e2e8f0 !important;
+  background-color: rgba(15, 23, 42, 0.9) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
   border-radius: 10px !important;
   font-weight: 700 !important;
   margin-bottom: 2px !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
 }
 .leaflet-control-zoom a:hover {
-  background-color: #f8fafc !important;
-  color: #059669 !important;
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+  border-color: #60a5fa !important;
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.8) !important;
 }
 .leaflet-container .leaflet-control-attribution {
-  background: rgba(255, 255, 255, 0.9) !important;
-  color: #64748b !important;
-  border: 1px solid #e2e8f0 !important;
+  background: rgba(15, 23, 42, 0.8) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  color: #94a3b8 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 6px !important;
-  padding: 2px 6px !important;
+  padding: 2px 8px !important;
   font-weight: 600 !important;
   font-family: ui-sans-serif, system-ui, sans-serif !important;
   font-size: 10px !important;
 }
 .leaflet-container .leaflet-control-attribution a {
-  color: #059669 !important;
+  color: #38bdf8 !important;
 }
 
 /* -- Animations -- */
