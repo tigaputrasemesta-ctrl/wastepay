@@ -502,7 +502,7 @@ export default function MapAngkut({
           zoom={16}
           scrollWheelZoom
           zoomControl={false}
-          className="h-full w-full"
+          className={`h-full w-full ${tileConfig.isDarkFilter ? "dark-map-tiles" : ""}`}
           style={{ background: "#090d16" }}
         >
           <TileLayer

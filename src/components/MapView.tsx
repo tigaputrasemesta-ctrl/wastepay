@@ -842,7 +842,7 @@ export default function MapView({
         center={[-6.424838, 106.832667]}
         zoom={14}
         scrollWheelZoom
-        className="h-full w-full"
+        className={`h-full w-full ${tileConfig.isDarkFilter ? "dark-map-tiles" : ""}`}
         style={{ background: tileMode === "dark" ? "#020617" : "#f8fafc" }}
       >
         <MapReadyWrapper>

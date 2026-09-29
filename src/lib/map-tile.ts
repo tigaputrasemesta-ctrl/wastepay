@@ -7,19 +7,40 @@
  */
 export type MapTileType = "osm" | "esri-satellite" | "dark" | "light";
 
-export function getMapTileConfig(type: MapTileType = "dark") {
+export type MapTileConfig = {
+  url: string;
+  attribution: string;
+  subdomains: string | string[];
+  maxZoom: number;
+  /** True jika basemap ini memerlukan CSS filter .dark-map-tiles untuk dark mode obsidian */
+  isDarkFilter: boolean;
+};
+
+export function getMapTileConfig(type: MapTileType = "dark"): MapTileConfig {
   const cartoKey = process.env.NEXT_PUBLIC_CARTO_API_KEY?.trim();
 
   if (type === "dark") {
-    // CARTO Dark Matter — obsidian black canvas dengan kontras jalan & elemen menyala
+    // Jika ada CARTO API key yang sah, gunakan CARTO Dark Matter
+    if (cartoKey) {
+      return {
+        url: `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key=${encodeURIComponent(cartoKey)}`,
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank" rel="noreferrer">CARTO</a>',
+        subdomains: "abcd",
+        maxZoom: 20,
+        isDarkFilter: false,
+      };
+    }
+
+    // Default tanpa CARTO API key: OpenStreetMap standar resmi + CSS filter Obsidian Dark
+    // 100% Bebas dari watermark/error "API KEY REQUIRED" dan jalan/kontur menyala tajam
     return {
-      url: cartoKey
-        ? `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key=${encodeURIComponent(cartoKey)}`
-        : "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+      url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
       attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank" rel="noreferrer">CARTO</a>',
-      subdomains: "abcd",
-      maxZoom: 20,
+        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> contributors',
+      subdomains: "abc",
+      maxZoom: 19,
+      isDarkFilter: true,
     };
   }
 
@@ -30,17 +51,29 @@ export function getMapTileConfig(type: MapTileType = "dark") {
         'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EAP, and the GIS User Community',
       subdomains: [],
       maxZoom: 19,
+      isDarkFilter: false,
     };
   }
 
-  // "osm" / "light" -> CARTO Voyager (Behance LoadSwift light aesthetic dengan jalan tol/arterial kuning menyala)
+  // "osm" / "light"
+  if (cartoKey) {
+    return {
+      url: `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=${encodeURIComponent(cartoKey)}`,
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank" rel="noreferrer">CARTO</a>',
+      subdomains: "abcd",
+      maxZoom: 20,
+      isDarkFilter: false,
+    };
+  }
+
+  // Default light: OpenStreetMap standar resmi tanpa watermark
   return {
-    url: cartoKey
-      ? `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=${encodeURIComponent(cartoKey)}`
-      : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank" rel="noreferrer">CARTO</a>',
-    subdomains: "abcd",
-    maxZoom: 20,
+      '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> contributors',
+    subdomains: "abc",
+    maxZoom: 19,
+    isDarkFilter: false,
   };
 }

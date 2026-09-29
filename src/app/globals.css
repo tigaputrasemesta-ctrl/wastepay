@@ -393,3 +393,8 @@ button.rounded-none {
     scroll-behavior: auto !important;
   }
 }
+
+/* ── Obsidian Dark Glowing Basemap for Leaflet (100% Free, No Watermark, No API Key Required) ── */
+.dark-map-tiles .leaflet-tile-pane {
+  filter: invert(100%) hue-rotate(180deg) brightness(90%) contrast(135%) saturate(85%);
+}
