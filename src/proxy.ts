@@ -206,6 +206,8 @@ const API_ROLE_MAP: Record<string, number> = {
   "POST:/api/wilayah": 50,
   "PUT:/api/wilayah/": 50,
   "DELETE:/api/wilayah/": 50,
+  "GET:/api/wilayah/dedup": 50,
+  "POST:/api/wilayah/dedup": 50,
 
   // Kelurahan & Kecamatan — master referensi wilayah
   "GET:/api/kelurahan": 10,
