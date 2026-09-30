@@ -93,7 +93,7 @@ export default function AbsensiPage() {
   const hasSelesai = statusHariIni?.waktuSelesai != null;
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 space-y-6 w-full">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Absensi Petugas</h1>

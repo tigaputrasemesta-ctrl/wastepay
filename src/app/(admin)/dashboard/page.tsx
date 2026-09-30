@@ -264,7 +264,7 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <div className="pb-12 space-y-8 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 pb-12 space-y-8 w-full">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

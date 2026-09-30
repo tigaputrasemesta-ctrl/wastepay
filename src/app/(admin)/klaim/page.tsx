@@ -110,7 +110,7 @@ export default function KlaimPage() {
   const isAdmin = role === "admin" || role === "superadmin";
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 space-y-6 w-full">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">

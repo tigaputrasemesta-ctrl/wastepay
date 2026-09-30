@@ -169,7 +169,7 @@ export default function TarifPage() {
 
   if (loading) {
     return (
-      <div className="p-8 max-w-7xl mx-auto flex items-center justify-center min-h-[400px]">
+      <div className="p-8 w-full flex items-center justify-center min-h-[400px]">
         <div className="flex items-center gap-3 text-slate-600 font-medium text-sm">
           <div className="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
           <span>Memuat data tarif...</span>
@@ -179,7 +179,7 @@ export default function TarifPage() {
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 w-full space-y-6">
       <div className="mb-8">
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">
           Manajemen Tarif

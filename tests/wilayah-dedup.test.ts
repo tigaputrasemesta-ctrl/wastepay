@@ -25,7 +25,12 @@ function groupAndFindDuplicates(wilayahList: MockWilayah[]) {
     groups.set(key, list);
   }
 
-  const duplicateGroups = [];
+  type DuplicateResult = {
+    canonical: MockWilayah;
+    duplicateIds: number[];
+    totalRemoved: number;
+  };
+  const duplicateGroups: DuplicateResult[] = [];
 
   for (const [, members] of groups.entries()) {
     if (members.length > 1) {

@@ -411,7 +411,7 @@ export default function PengaturanPage() {
   }
 
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
+    <div className="p-4 sm:p-6 w-full space-y-6">
       <div className="mb-2">
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Pengaturan</h1>
         <p className="text-sm text-slate-500 font-medium">Kelola konfigurasi sistem, wilayah operasional, dan parameter tarif</p>

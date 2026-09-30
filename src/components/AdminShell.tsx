@@ -112,8 +112,8 @@ export default function AdminShell({
             {children}
           </main>
         ) : (
-          <main className="flex-1 overflow-y-auto p-3 sm:p-6 lg:p-8">
-            <div className="max-w-7xl mx-auto space-y-6">
+          <main className="flex-1 overflow-y-auto w-full min-w-0">
+            <div className="w-full min-w-0">
               {children}
             </div>
           </main>

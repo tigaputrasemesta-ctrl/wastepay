@@ -113,7 +113,7 @@ export default function AdminChat() {
   const threadTerpilih = threads.find((t) => t.petugasId === petugasId);
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 w-full">
       <div className="flex items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Chat Petugas Lapangan</h1>
