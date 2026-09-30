@@ -798,7 +798,7 @@ export default function TagihanPage() {
           ))}
         </select>
 
-        {/* Filter Zona */}
+        {/* Filter Zona Area Pickup */}
         <select
           value={zonaId}
           onChange={(e) => setZonaId(e.target.value)}
@@ -808,20 +808,6 @@ export default function TagihanPage() {
           {availableZonas.map((z) => (
             <option key={z.id} value={z.id.toString()}>
               🏷️ {z.nama} {z.kelurahan?.nama ? `(${z.kelurahan.nama})` : ""}
-            </option>
-          ))}
-        </select>
-
-        {/* Filter Wilayah / RT */}
-        <select
-          value={wilayahId}
-          onChange={(e) => setWilayahId(e.target.value)}
-          className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 shadow-sm"
-        >
-          <option value="">Semua Wilayah</option>
-          {wilayahList.map((w) => (
-            <option key={w.id} value={w.id.toString()}>
-              {w.nama} {w.rt ? `(RT ${w.rt}${w.rw ? `/RW ${w.rw}` : ""})` : ""}
             </option>
           ))}
         </select>
@@ -846,7 +832,7 @@ export default function TagihanPage() {
           )}
         </div>
 
-        {(kelurahanId || zonaId || wilayahId || rtFilter || status || bulan !== (new Date().getMonth() + 1).toString()) && (
+        {(kelurahanId || zonaId || rtFilter || status || bulan !== (new Date().getMonth() + 1).toString()) && (
           <button
             onClick={() => {
               setKelurahanId("");
@@ -863,7 +849,7 @@ export default function TagihanPage() {
           </button>
         )}
 
-        {(kelurahanId || zonaId || wilayahId || rtFilter) && (
+        {(kelurahanId || zonaId || rtFilter) && (
           <div className="flex items-center gap-2 text-xs font-semibold bg-amber-50 text-amber-900 border border-amber-200/80 rounded-xl px-3.5 py-2 flex-wrap">
             <span className="font-bold">🔍 Filter Aktif:</span>
             {kelurahanId && (
@@ -941,28 +927,38 @@ export default function TagihanPage() {
                         <span className="text-xs text-slate-600 font-medium">—</span>
                       )}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 max-w-[240px]">
                       <div className="font-semibold text-slate-900">{t.pelanggan.nama}</div>
-                      <div className="text-xs text-slate-500">{t.pelanggan.noTelepon || "—"}</div>
-                      <div className="mt-1 flex flex-wrap gap-1 items-center">
-                        {t.pelanggan.kelurahan?.nama && (
-                          <span className="inline-flex items-center text-[10px] font-medium bg-slate-50 text-slate-700 border border-slate-200 px-1.5 py-0.5 rounded-md">
-                            🏛️ {t.pelanggan.kelurahan.nama}
+                      <div className="text-xs text-slate-500 font-mono">{t.pelanggan.noTelepon || "—"}</div>
+                      {t.pelanggan.alamat && (
+                        <div className="text-xs text-slate-600 truncate max-w-[220px]" title={t.pelanggan.alamat}>
+                          {t.pelanggan.alamat}
+                        </div>
+                      )}
+                      <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                        <div className="inline-flex items-center px-2 py-0.5 bg-slate-100 rounded-md text-[10px] font-semibold text-slate-600">
+                          {t.pelanggan.kelurahan?.nama ?? "—"}
+                        </div>
+                        {t.pelanggan.wilayah?.zona ? (
+                          <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 border border-emerald-200/80 rounded-md text-[10px] font-bold text-emerald-800">
+                            <span
+                              className="w-1.5 h-1.5 rounded-full shrink-0"
+                              style={{ backgroundColor: t.pelanggan.wilayah.zona.warna || "#10b981" }}
+                            />
+                            <span className="truncate max-w-[120px]">{t.pelanggan.wilayah.zona.nama}</span>
+                          </div>
+                        ) : t.pelanggan.wilayah?.nama ? (
+                          <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 border border-emerald-200/80 rounded-md text-[10px] font-bold text-emerald-800">
+                            <span className="truncate max-w-[120px]">{t.pelanggan.wilayah.nama}</span>
+                          </div>
+                        ) : (
+                          <span className="text-[10px] text-amber-600 font-semibold">
+                            Belum ada zona
                           </span>
                         )}
-                        {t.pelanggan.wilayah?.zona?.nama && (
-                          <span
-                            className="inline-flex items-center text-[10px] font-semibold text-slate-900 border border-black/10 px-1.5 py-0.5 rounded-md"
-                            style={{
-                              backgroundColor: t.pelanggan.wilayah.zona.warna || "#a7f3d0",
-                            }}
-                          >
-                            🏷️ {t.pelanggan.wilayah.zona.nama}
-                          </span>
-                        )}
-                        {(t.pelanggan.rtRw || t.pelanggan.wilayah?.nama || t.pelanggan.wilayah?.rt) && (
-                          <span className="inline-flex items-center text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200/80 px-2 py-0.5 rounded-md">
-                            📍 {t.pelanggan.rtRw || `${t.pelanggan.wilayah?.nama || ""}${t.pelanggan.wilayah?.rt ? ` (RT ${t.pelanggan.wilayah.rt})` : ""}`}
+                        {t.pelanggan.rtRw && (
+                          <span className="text-[10px] text-slate-500 font-mono">
+                            {t.pelanggan.rtRw}
                           </span>
                         )}
                       </div>
@@ -1321,7 +1317,7 @@ export default function TagihanPage() {
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                   <div>
                     <label className="block text-[11px] font-semibold text-slate-600 mb-1">Kelurahan</label>
                     <select
@@ -1358,25 +1354,6 @@ export default function TagihanPage() {
                       {availableBlastZonas.map((z) => (
                         <option key={z.id} value={z.id.toString()}>
                           🏷️ {z.nama}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">Wilayah</label>
-                    <select
-                      value={blastWilayahId}
-                      onChange={(e) => {
-                        setBlastWilayahId(e.target.value);
-                        loadBlastPreview({ wilayahId: e.target.value });
-                      }}
-                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
-                    >
-                      <option value="">Semua Wilayah</option>
-                      {wilayahList.map((w) => (
-                        <option key={w.id} value={w.id.toString()}>
-                          {w.nama} {w.rt ? `(RT ${w.rt})` : ""}
                         </option>
                       ))}
                     </select>
@@ -1532,7 +1509,6 @@ export default function TagihanPage() {
                     <p className="text-xs font-bold text-slate-800 mt-1">
                       {blastPreview.zonaNama ? `🏷️ Zona ${blastPreview.zonaNama}` : (blastZonaId ? `Zona #${blastZonaId}` : "Semua Zona")}
                       {blastRt ? ` · RT ${blastRt}` : ""}
-                      {blastWilayahId ? ` · ${wilayahList.find((w) => w.id === parseInt(blastWilayahId))?.nama || ""}` : ""}
                     </p>
                   </div>
                 </div>
@@ -1589,9 +1565,11 @@ export default function TagihanPage() {
                                   🏷️ {r.zonaNama}
                                 </span>
                               )}
-                              <span className="text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded text-[10px]">
-                                📍 {r.rtRw}
-                              </span>
+                              {r.rtRw && r.rtRw !== "-" && (
+                                <span className="text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded text-[10px]">
+                                  📍 {r.rtRw}
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>
