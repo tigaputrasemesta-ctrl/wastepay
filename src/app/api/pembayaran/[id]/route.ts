@@ -73,7 +73,8 @@ export async function PUT(request: Request, { params }: Params) {
 
     // Pembayaran payment gateway (Duitku) diverifikasi otomatis via callback/live-check,
     // bukan manual — cegah selisih kas karena verifikasi sebelum settlement.
-    if (pembayaran.metode.startsWith("duitku")) {
+    // Penolakan/pembatalan manual ("ditolak") diizinkan agar admin dapat membatalkan checkout yang ditinggalkan.
+    if (pembayaran.metode.startsWith("duitku") && status === "terverifikasi") {
       return NextResponse.json(
         { error: "Pembayaran gateway diverifikasi otomatis oleh sistem — gunakan Cek Status Live" },
         { status: 400 }

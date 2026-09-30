@@ -509,6 +509,8 @@ export default function TagihanPage() {
 
   // Pembayaran gateway (Duitku) tidak bisa diverifikasi manual — cek status live ke penyedia.
   const [cekLoading, setCekLoading] = useState<number | null>(null);
+  const [cekSemuaLoading, setCekSemuaLoading] = useState(false);
+
   async function cekStatusGateway(pembayaranId: number, orderId: string) {
     setCekLoading(pembayaranId);
     try {
@@ -530,6 +532,52 @@ export default function TagihanPage() {
       showToast("Gagal menghubungi Duitku", "error");
     } finally {
       setCekLoading(null);
+    }
+  }
+
+  async function cekSemuaGateway() {
+    const gatewayItems = pending.filter(
+      (p) => isGateway(p.metode) && p.duitkuTransaction?.orderId
+    );
+    if (gatewayItems.length === 0) {
+      showToast("Tidak ada transaksi gateway yang perlu dicek", "info");
+      return;
+    }
+
+    setCekSemuaLoading(true);
+    let lunasCount = 0;
+    let ditolakCount = 0;
+    let pendingCount = 0;
+
+    try {
+      for (const item of gatewayItems) {
+        try {
+          const res = await fetch(
+            `/api/publik/duitku/status?orderId=${encodeURIComponent(item.duitkuTransaction!.orderId!)}`
+          );
+          if (res.ok) {
+            const data = await res.json();
+            if (data.tagihanStatus === "lunas" || data.pembayaranStatus === "terverifikasi") {
+              lunasCount++;
+            } else if (data.pembayaranStatus === "ditolak") {
+              ditolakCount++;
+            } else {
+              pendingCount++;
+            }
+          }
+        } catch {
+          // ignore single item failure
+        }
+      }
+      showToast(
+        `Pengecekan selesai: ${lunasCount} lunas, ${ditolakCount} expired/ditolak, ${pendingCount} masih pending.`,
+        lunasCount > 0 ? "success" : "info"
+      );
+      fetchTagihan();
+    } catch {
+      showToast("Terjadi kendala saat memeriksa status live", "error");
+    } finally {
+      setCekSemuaLoading(false);
     }
   }
 
@@ -621,9 +669,20 @@ export default function TagihanPage() {
       {/* Pembayaran pending menunggu verifikasi */}
       {pending.length > 0 && (
         <div className="bg-amber-50/60 border border-amber-200/80 rounded-2xl p-5 mb-6">
-          <h3 className="font-bold text-amber-900 text-sm mb-3 flex items-center gap-2">
-            <span>⏳</span> Pembayaran Menunggu Verifikasi ({pending.length})
-          </h3>
+          <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+            <h3 className="font-bold text-amber-900 text-sm flex items-center gap-2">
+              <span>⏳</span> Pembayaran Menunggu Verifikasi ({pending.length})
+            </h3>
+            {pending.some((p) => isGateway(p.metode) && p.duitkuTransaction?.orderId) && (
+              <button
+                onClick={cekSemuaGateway}
+                disabled={cekSemuaLoading}
+                className="text-xs bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-semibold px-3 py-1.5 rounded-xl transition-all shadow-xs flex items-center gap-1.5 disabled:opacity-50"
+              >
+                <span>{cekSemuaLoading ? "⟳ Memeriksa Semua..." : "⟳ Cek Semua Status Live"}</span>
+              </button>
+            )}
+          </div>
           <div className="space-y-3">
             {pending.map((p) => (
               <div key={p.id} className="flex items-center justify-between bg-white rounded-xl border border-amber-200/60 p-4 shadow-sm flex-wrap gap-3">
@@ -647,17 +706,26 @@ export default function TagihanPage() {
                 </div>
                 <div className="flex gap-2">
                   {isGateway(p.metode) ? (
-                    p.duitkuTransaction?.orderId ? (
+                    <>
+                      {p.duitkuTransaction?.orderId ? (
+                        <button
+                          onClick={() => cekStatusGateway(p.id, p.duitkuTransaction!.orderId!)}
+                          disabled={cekLoading === p.id}
+                          className="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-3.5 py-2 rounded-xl transition-all disabled:opacity-50 shadow-sm"
+                        >
+                          {cekLoading === p.id ? "Mengecek…" : "⟳ Cek Status Live"}
+                        </button>
+                      ) : (
+                        <span className="text-xs text-slate-600 font-medium italic">Transaksi gateway tanpa orderId</span>
+                      )}
                       <button
-                        onClick={() => cekStatusGateway(p.id, p.duitkuTransaction!.orderId!)}
-                        disabled={cekLoading === p.id}
-                        className="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-3.5 py-2 rounded-xl transition-all disabled:opacity-50 shadow-sm"
+                        onClick={() => verifikasiPembayaran(p.id, "ditolak")}
+                        className="text-xs bg-rose-50 hover:bg-rose-100 text-rose-600 font-semibold px-3 py-2 rounded-xl transition-all"
+                        title="Batalkan transaksi checkout yang ditinggalkan/tidak dibayar"
                       >
-                        {cekLoading === p.id ? "Mengecek…" : "⟳ Cek Status Live"}
+                        Batalkan
                       </button>
-                    ) : (
-                      <span className="text-xs text-slate-600 font-medium italic">Transaksi gateway tanpa orderId</span>
-                    )
+                    </>
                   ) : (
                     <>
                       <button
