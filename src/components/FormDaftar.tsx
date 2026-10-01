@@ -93,7 +93,8 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
 
   const kelurahanList = opsi?.wilayah.find((w) => w.kecamatan === kecamatan)?.kelurahan ?? [];
   const tarifKategori = opsi?.kategoriTarif.find((k) => k.kategori === kategori);
-  const zonaList = (opsi?.zonas ?? []).filter((z) => !kelurahan || z.kelurahan?.nama === kelurahan);
+  // Perbaikan: Kosongkan zonaList jika kelurahan belum dipilih agar tidak global
+  const zonaList = kelurahan ? (opsi?.zonas ?? []).filter((z) => z.kelurahan?.nama === kelurahan) : [];
 
   function getGps() {
     if (!navigator.geolocation) {
@@ -534,6 +535,31 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
         </div>
       </div>
 
+      {isPetugas && (
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-zona">
+            Zona Area Pickup (Khusus Petugas)
+          </label>
+          <div className="relative">
+            <select
+              id="d-zona"
+              value={zonaId}
+              onChange={(e) => setZonaId(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer disabled:opacity-50"
+              disabled={!kelurahan}
+            >
+              <option value="">{kelurahan ? "— Pilih Zona —" : "— Pilih Kelurahan Dulu —"}</option>
+              {zonaList.map((z) => (
+                <option key={z.id} value={z.id}>
+                  {z.nama}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">▼</div>
+          </div>
+        </div>
+      )}
+
       <div>
         <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-alamat">
           Alamat Lengkap <span className="text-rose-500">*</span>
@@ -592,43 +618,20 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
       </div>
 
       {isPetugas && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-tgl-penagihan">
-              Tanggal Penagihan (Khusus Petugas)
-            </label>
-            <input
-              id="d-tgl-penagihan"
-              type="number"
-              min="1"
-              max="31"
-              value={tanggalPenagihanCustom}
-              onChange={(e) => setTanggalPenagihanCustom(e.target.value)}
-              placeholder="Contoh: 15"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-zona">
-              Zona Area Pickup (Khusus Petugas)
-            </label>
-            <div className="relative">
-              <select
-                id="d-zona"
-                value={zonaId}
-                onChange={(e) => setZonaId(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer"
-              >
-                <option value="">— Pilih Zona —</option>
-                {zonaList.map((z) => (
-                  <option key={z.id} value={z.id}>
-                    {z.nama}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">▼</div>
-            </div>
-          </div>
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-tgl-penagihan">
+            Tanggal Penagihan (Khusus Petugas)
+          </label>
+          <input
+            id="d-tgl-penagihan"
+            type="number"
+            min="1"
+            max="31"
+            value={tanggalPenagihanCustom}
+            onChange={(e) => setTanggalPenagihanCustom(e.target.value)}
+            placeholder="Contoh: 15"
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
+          />
         </div>
       )}
 
