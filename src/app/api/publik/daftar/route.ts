@@ -198,16 +198,18 @@ export async function POST(request: Request) {
 
     // Paket (opsional) — validasi keberadaan
     let paketNama: string | null = null;
+    let paketHarga: number | null = null;
     const paketIdRaw = body.paketId ? parseInt(body.paketId) : NaN;
     let paketId: number | null = null;
     if (Number.isFinite(paketIdRaw)) {
       const p = await prisma.paket.findUnique({
         where: { id: paketIdRaw },
-        select: { id: true, nama: true },
+        select: { id: true, nama: true, harga: true },
       });
       if (p) {
         paketId = p.id;
         paketNama = p.nama;
+        paketHarga = p.harga;
       }
     }
 
@@ -300,7 +302,7 @@ export async function POST(request: Request) {
         noTelepon: pelanggan.noTelepon,
         alamat: pelanggan.alamat,
         kategori,
-        paket: paketNama || undefined,
+        nominalTagihan: customTarif || paketHarga || undefined,
         patokanLokasi: patokanLokasi || undefined,
         referal: referal || undefined,
         tanggalPenagihanCustom: tanggalPenagihanCustom || undefined,

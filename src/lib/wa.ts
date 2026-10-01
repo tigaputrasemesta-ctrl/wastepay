@@ -279,7 +279,14 @@ export async function templatePendaftaranDiterima(nama: string, kode: string): P
       ``,
       `🆔 Kode Pelanggan: ${kode}`,
       ``,
-      `Anda akan dihubungi jika pendaftaran disetujui.`,
+      `💡 *Informasi Layanan Web ${NAMA()}*:`,
+      `Melalui website kami (www.upsheru.com), nantinya Anda dapat:`,
+      `- Mengecek tagihan dan riwayat pembayaran`,
+      `- Melakukan pembayaran secara online (Otomatis terverifikasi)`,
+      `- Melihat jadwal penjemputan sampah`,
+      `- Menyampaikan keluhan atau komplain terkait layanan`,
+      ``,
+      `Mohon ditunggu, Anda akan dihubungi jika pendaftaran disetujui.`,
       ``,
       `— ${NAMA()}`,
       `🌐 www.upsheru.com`,
@@ -299,6 +306,7 @@ export type PendaftaranAdmin = {
   alamat: string;
   kategori?: string | null;
   paket?: string | null;
+  nominalTagihan?: number | null;
   patokanLokasi?: string | null;
   referal?: string | null;
   tanggalPenagihanCustom?: string | null;
@@ -314,7 +322,9 @@ export async function templatePendaftaranAdmin(p: PendaftaranAdmin): Promise<{ j
     `📱 WhatsApp: ${p.noTelepon}`,
     `📍 Alamat: ${p.alamat}`,
   ];
-  if (p.paket) baris.push(`📦 Paket: ${p.paket}`);
+  if (p.nominalTagihan) {
+    baris.push(`💰 Nominal Tagihan: ${formatRupiahSkylite(p.nominalTagihan)}`);
+  }
   if (p.kategori) baris.push(`🗂 Kategori: ${p.kategori}`);
   if (p.tanggalPenagihanCustom) baris.push(`🗓 Req Tgl Penagihan: ${p.tanggalPenagihanCustom}`);
   if (p.jadwalHari) baris.push(`🗓 Req Hari Jemput: ${p.jadwalHari}`);
@@ -487,7 +497,14 @@ export async function templatePendaftaranDisetujui(nama: string, kode: string): 
       ``,
       `🆔 Kode Pelanggan: ${kode}`,
       ``,
-      `Anda dapat menggunakan nomor WhatsApp Anda atau kode pelanggan untuk mengecek tagihan dan jadwal penjemputan di website kami.`,
+      `💡 *Informasi Layanan Web ${NAMA()}*:`,
+      `Melalui website kami (www.upsheru.com), Anda dapat:`,
+      `- Mengecek tagihan dan riwayat pembayaran`,
+      `- Melakukan pembayaran secara online (Otomatis terverifikasi)`,
+      `- Melihat jadwal penjemputan sampah`,
+      `- Menyampaikan keluhan atau komplain terkait layanan`,
+      ``,
+      `Anda dapat menggunakan nomor WhatsApp Anda atau kode pelanggan untuk masuk ke sistem kami.`,
       `Terima kasih telah bergabung.`,
       ``,
       `— ${NAMA()}`,
