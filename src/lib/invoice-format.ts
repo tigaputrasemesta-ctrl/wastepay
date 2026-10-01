@@ -16,7 +16,7 @@ export const PAJAK_DAERAH_RATE_DEFAULT = 0;
  */
 export function companyInfo() {
   return {
-    nama: process.env.COMPANY_NAME?.trim() || "UPS HERU",
+    nama: "UPS HERU",
     unit: "Unit Pengelolaan & Retribusi Kebersihan (TPS 3R)",
     alamat:
       process.env.COMPANY_ADDRESS?.trim() ||
