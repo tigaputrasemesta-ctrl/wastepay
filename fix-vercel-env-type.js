@@ -1,4 +1,4 @@
-const TOKEN = "vcp_8bRsDfnuW9s0f2I0eKzDHa2762RRPDDXtCbXk5qThkRfyog0zh0GZVQr";
+const TOKEN = require("fs").readFileSync(require("os").homedir() + "/.vercel_token", "utf-8").trim();
 const PROJECT_ID = "prj_sCvulhFpYfuCiRiweWkEJnn6h45T"; 
 
 async function api(path, opts = {}) {
