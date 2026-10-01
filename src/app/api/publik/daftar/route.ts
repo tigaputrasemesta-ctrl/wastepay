@@ -8,6 +8,7 @@ import {
   kirimNotifikasi,
   templatePendaftaranAdmin,
   templatePendaftaranDiterima,
+  templatePendaftaranPelangganOlehPetugas,
 } from "@/lib/wa";
 import { logAudit } from "@/lib/audit";
 import { formatRtRw, normalisasiTelepon, teleponValid } from "@/lib/daftar";
@@ -118,6 +119,7 @@ export async function POST(request: Request) {
     const koordinatSumber = body.koordinatSumber ? String(body.koordinatSumber) : null;
     const koordinatAkurasi = body.koordinatAkurasi ? parseFloat(body.koordinatAkurasi) : null;
     const fotoRumah = typeof body.fotoRumah === "string" ? body.fotoRumah.trim() : "";
+    const isPetugas = Boolean(body.isPetugas);
 
     // Foto harus data URL gambar dan dibatasi ukurannya (base64 hasil kompres).
     if (fotoRumah && (!fotoRumah.startsWith("data:image/") || fotoRumah.length > 2_000_000)) {
@@ -284,7 +286,23 @@ export async function POST(request: Request) {
     });
 
     // WA ke pelanggan: konfirmasi pendaftaran diterima
-    const tDiterima = await templatePendaftaranDiterima(pelanggan.nama, pelanggan.kodePelanggan);
+    let tDiterima;
+    if (isPetugas) {
+      tDiterima = await templatePendaftaranPelangganOlehPetugas({
+        nama: pelanggan.nama,
+        kodePelanggan: pelanggan.kodePelanggan,
+        noTelepon: pelanggan.noTelepon,
+        alamat: pelanggan.alamat,
+        kategori,
+        nominalTagihan: customTarif || paketHarga || undefined,
+        patokanLokasi: patokanLokasi || undefined,
+        referal: referal || undefined,
+        tanggalPenagihanCustom: tanggalPenagihanCustom || undefined,
+        jadwalHari: jadwalHari || undefined,
+      });
+    } else {
+      tDiterima = await templatePendaftaranDiterima(pelanggan.nama, pelanggan.kodePelanggan);
+    }
     await kirimNotifikasi({
       tipe: "pendaftaran_diterima",
       judul: tDiterima.judul,

@@ -224,6 +224,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
           fotoRumah: fotoRumah || undefined,
           latitude: gpsData?.lat,
           longitude: gpsData?.lng,
+          isPetugas,
           koordinatAkurasi: gpsData?.acc,
           koordinatSumber: gpsData ? koordinatSumber || "gps_perangkat" : undefined,
         }),

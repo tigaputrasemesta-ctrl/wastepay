@@ -294,6 +294,38 @@ export async function templatePendaftaranDiterima(nama: string, kode: string): P
   };
 }
 
+export async function templatePendaftaranPelangganOlehPetugas(p: PendaftaranAdmin): Promise<{ judul: string; pesan: string }> {
+  const baris = [
+    "📩 *PENDAFTARAN PELANGGAN BARU*",
+    "",
+    `👤 *Nama*: ${p.nama}`,
+    `🆔 *Kode*: _${p.kodePelanggan}_`,
+    `📱 *WhatsApp*: _${p.noTelepon}_`,
+    `📍 *Alamat*: ${p.alamat}`,
+  ];
+  if (p.nominalTagihan) {
+    baris.push(`💰 *Nominal Tagihan*: _${formatRupiahSkylite(p.nominalTagihan)}_`);
+  }
+  if (p.kategori) baris.push(`🗂 *Kategori*: ${p.kategori}`);
+  
+  baris.push(
+    "",
+    `💡 *Informasi Layanan Web ${NAMA()}*:`,
+    `Melalui website kami (www.upsheru.com), nantinya Anda dapat:`,
+    `- Mengecek tagihan dan riwayat pembayaran`,
+    `- Melakukan pembayaran secara online (Otomatis terverifikasi)`,
+    `- Melihat jadwal penjemputan sampah`,
+    `- Menyampaikan keluhan atau komplain terkait layanan`,
+    ``,
+    `Mohon ditunggu, Anda akan dihubungi jika pendaftaran disetujui.`,
+    ``,
+    `— *${NAMA()}*`,
+    `🌐 _www.upsheru.com_`
+  );
+
+  return { judul: `Pendaftaran Diterima — ${NAMA()}`, pesan: baris.join("\n") };
+}
+
 /* ------------------------------------------------------------------ */
 /* Template: pendaftaran baru → admin/helpdesk (pola skylite:          */
 /* data registrasi diteruskan ke helpdesk via WA)                      */
