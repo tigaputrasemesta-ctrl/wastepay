@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import AnimatedDumpTruck from "@/components/AnimatedDumpTruck";
 import PublicNavbar from "@/components/PublicNavbar";
+import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 
 export const metadata: Metadata = {
   title: {
@@ -89,6 +90,9 @@ export default function PublicLayout({
           <p className="font-medium">Menuju Depok Bebas Sampah (Zero Waste City)</p>
         </div>
       </footer>
+
+      {/* Floating WA Button */}
+      <FloatingWhatsApp phoneNumber="6281400782617" />
     </div>
   );
 }
