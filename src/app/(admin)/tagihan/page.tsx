@@ -218,7 +218,7 @@ export default function TagihanPage() {
   const [previewSortConfig, setPreviewSortConfig] = useState<{ key: keyof PreviewItem; direction: "asc" | "desc" } | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [showBayar, setShowBayar] = useState<{ tagihanId: number; pelangganId: number; jumlah: number } | null>(null);
-  const [formBayar, setFormBayar] = useState({ metode: "transfer", catatan: "" });
+  const [formBayar, setFormBayar] = useState({ metode: "transfer", catatan: "", buktiBayar: "" });
 
   const filteredAndSortedPreview = useMemo(() => {
     if (!preview) return [];
@@ -1112,7 +1112,7 @@ export default function TagihanPage() {
                     <td className="px-4 py-3 text-center">
                       {t.status !== "lunas" ? (
                         <button
-                          onClick={() => { setFormBayar({ metode: isPetugas ? "tunai" : "transfer", catatan: isPetugas ? "Bayar tunai via petugas tagih" : "" }); setShowBayar({ tagihanId: t.id, pelangganId: t.pelanggan.id, jumlah: hitungRincian(t.jumlah, t.denda).total }); }}
+                          onClick={() => { setFormBayar({ metode: isPetugas ? "tunai" : "transfer", catatan: isPetugas ? "Bayar tunai via petugas tagih" : "", buktiBayar: "" }); setShowBayar({ tagihanId: t.id, pelangganId: t.pelanggan.id, jumlah: hitungRincian(t.jumlah, t.denda).total }); }}
                           className="text-xs font-semibold bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-lg shadow-sm hover:shadow-sm active:scale-95 transition-all inline-flex items-center gap-1.5"
                         >
                           <span>💳</span>
@@ -1417,9 +1417,41 @@ export default function TagihanPage() {
                   </p>
                 )}
                 {formBayar.metode !== "tunai" && (
-                  <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 mt-2">
-                    Pembayaran non-tunai dicatat sebagai <b>pending</b> dan perlu diverifikasi admin di antrean verifikasi di atas.
-                  </p>
+                  <>
+                    <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 mt-2">
+                      Pembayaran non-tunai dicatat sebagai <b>pending</b> dan perlu diverifikasi admin di antrean verifikasi di atas.
+                    </p>
+                    <div className="mt-3">
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Upload Bukti Transfer</label>
+                      <input 
+                        type="file" 
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            if (file.size > 2_000_000) {
+                              alert("File terlalu besar, maksimal 2MB");
+                              e.target.value = "";
+                              return;
+                            }
+                            const reader = new FileReader();
+                            reader.onload = () => {
+                              setFormBayar((prev) => ({ ...prev, buktiBayar: reader.result as string }));
+                            };
+                            reader.readAsDataURL(file);
+                          } else {
+                            setFormBayar((prev) => ({ ...prev, buktiBayar: "" }));
+                          }
+                        }}
+                        className="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100"
+                      />
+                      {formBayar.buktiBayar && (
+                        <div className="mt-2">
+                          <img src={formBayar.buktiBayar} alt="Preview" className="h-24 object-cover rounded-lg border border-slate-200" />
+                        </div>
+                      )}
+                    </div>
+                  </>
                 )}
               </div>
               <div>
