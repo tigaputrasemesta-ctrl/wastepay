@@ -17,6 +17,16 @@ export async function getLaporan(bulanIni: number, tahunIni: number) {
     _sum: { jumlah: true },
   });
 
+  // Pemasukan per metode
+  const pemasukanByMetode = await prisma.pembayaran.groupBy({
+    by: ["metode"],
+    where: {
+      status: "terverifikasi",
+      createdAt: { gte: awalBulan, lt: akhirBulan },
+    },
+    _sum: { jumlah: true },
+  });
+
   // Pengeluaran bulan ini
   const pengeluaranBulanIni = await prisma.pengeluaran.aggregate({
     where: {
@@ -147,6 +157,10 @@ export async function getLaporan(bulanIni: number, tahunIni: number) {
     bulanIni,
     tahunIni,
     totalPemasukan,
+    pemasukanByMetode: pemasukanByMetode.map(m => ({
+      metode: m.metode,
+      jumlah: m._sum.jumlah || 0,
+    })),
     totalPengeluaran,
     saldo: totalPemasukan - totalPengeluaran,
     totalTagihan: totalTagihanBulanIni._sum.jumlah || 0,

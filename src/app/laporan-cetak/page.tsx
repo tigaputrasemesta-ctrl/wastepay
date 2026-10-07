@@ -106,6 +106,34 @@ export default async function LaporanCetakPage({
               <div className="lp-row"><span>Belum Bayar</span><p>{data.totalBelumBayar}</p></div>
             </div>
             <div className="lp-section">
+              <h3>Pemasukan per Metode</h3>
+              {data.pemasukanByMetode.length === 0 ? (
+                <p className="lp-empty">Tidak ada pemasukan bulan ini</p>
+              ) : (
+                <>
+                  {data.pemasukanByMetode.map((m) => {
+                    let namaMetode = m.metode;
+                    if (m.metode.startsWith("duitku")) namaMetode = "Payment Gateway";
+                    else if (m.metode === "transfer") namaMetode = "Transfer Bank";
+                    else if (m.metode === "tunai") namaMetode = "Tunai";
+                    else if (m.metode === "ewallet") namaMetode = "E-Wallet";
+                    else if (m.metode === "virtual_account") namaMetode = "Virtual Account";
+                    else if (m.metode === "qris") namaMetode = "QRIS";
+                    return (
+                      <div className="lp-row" key={m.metode}>
+                        <span style={{ textTransform: "capitalize" }}>{namaMetode}</span>
+                        <p className="lp-green">{formatRupiah(m.jumlah)}</p>
+                      </div>
+                    );
+                  })}
+                  <div className="lp-row lp-total-row">
+                    <span>Total</span>
+                    <p className="lp-green">{formatRupiah(data.totalPemasukan)}</p>
+                  </div>
+                </>
+              )}
+            </div>
+            <div className="lp-section">
               <h3>Pengeluaran per Kategori</h3>
               {data.pengeluaranByKategori.length === 0 ? (
                 <p className="lp-empty">Tidak ada pengeluaran bulan ini</p>
