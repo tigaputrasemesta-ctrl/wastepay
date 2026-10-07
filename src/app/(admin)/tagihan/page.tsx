@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { formatRupiah, formatDate } from "@/lib/utils";
@@ -213,9 +213,77 @@ export default function TagihanPage() {
   const [autoResult, setAutoResult] = useState<{ message: string; created: number; skipped: number } | null>(null);
   const [generating, setGenerating] = useState(false);
   const [preview, setPreview] = useState<PreviewItem[] | null>(null);
+  const [selectedPreviewIds, setSelectedPreviewIds] = useState<Set<number>>(new Set());
+  const [previewSearchQuery, setPreviewSearchQuery] = useState("");
+  const [previewSortConfig, setPreviewSortConfig] = useState<{ key: keyof PreviewItem; direction: "asc" | "desc" } | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [showBayar, setShowBayar] = useState<{ tagihanId: number; pelangganId: number; jumlah: number } | null>(null);
   const [formBayar, setFormBayar] = useState({ metode: "transfer", catatan: "" });
+
+  const filteredAndSortedPreview = useMemo(() => {
+    if (!preview) return [];
+    let result = [...preview];
+
+    // Filter
+    if (previewSearchQuery) {
+      const lowerQuery = previewSearchQuery.toLowerCase();
+      result = result.filter(
+        (p) =>
+          p.nama.toLowerCase().includes(lowerQuery) ||
+          p.kodePelanggan.toLowerCase().includes(lowerQuery)
+      );
+    }
+
+    // Sort
+    if (previewSortConfig) {
+      result.sort((a, b) => {
+        const aVal = a[previewSortConfig.key];
+        const bVal = b[previewSortConfig.key];
+        if (aVal === bVal) return 0;
+        if (aVal === null || aVal === undefined) return 1;
+        if (bVal === null || bVal === undefined) return -1;
+        if (aVal < bVal) return previewSortConfig.direction === "asc" ? -1 : 1;
+        if (aVal > bVal) return previewSortConfig.direction === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+
+    return result;
+  }, [preview, previewSearchQuery, previewSortConfig]);
+
+  const togglePreviewSort = (key: keyof PreviewItem) => {
+    setPreviewSortConfig((current) => {
+      if (current?.key === key) {
+        if (current.direction === "asc") return { key, direction: "desc" };
+        return null;
+      }
+      return { key, direction: "asc" };
+    });
+  };
+
+  const handleSelectAllPreview = () => {
+    if (selectedPreviewIds.size === filteredAndSortedPreview.length) {
+      // Deselect all currently filtered items
+      const newSelected = new Set(selectedPreviewIds);
+      filteredAndSortedPreview.forEach(p => newSelected.delete(p.pelangganId));
+      setSelectedPreviewIds(newSelected);
+    } else {
+      // Select all currently filtered items
+      const newSelected = new Set(selectedPreviewIds);
+      filteredAndSortedPreview.forEach(p => newSelected.add(p.pelangganId));
+      setSelectedPreviewIds(newSelected);
+    }
+  };
+
+  const toggleSelectPreview = (id: number) => {
+    const newSelected = new Set(selectedPreviewIds);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedPreviewIds(newSelected);
+  };
 
   const fetchTagihan = useCallback(async () => {
     try {
@@ -438,6 +506,9 @@ export default function TagihanPage() {
     setPreviewLoading(true);
     setAutoResult(null);
     setPreview(null);
+    setSelectedPreviewIds(new Set());
+    setPreviewSearchQuery("");
+    setPreviewSortConfig(null);
     try {
       const res = await fetch("/api/tagihan/generate", {
         method: "POST",
@@ -450,8 +521,10 @@ export default function TagihanPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        setPreview(data.preview || []);
-        if ((data.preview || []).length === 0) {
+        const pData = data.preview || [];
+        setPreview(pData);
+        setSelectedPreviewIds(new Set(pData.map((p: PreviewItem) => p.pelangganId)));
+        if (pData.length === 0) {
           setAutoResult({ message: "Tidak ada pelanggan aktif yang perlu ditagih di periode ini.", created: 0, skipped: 0 });
         }
       } else {
@@ -476,7 +549,9 @@ export default function TagihanPage() {
       ? {
           bulan: parseInt(formAuto.bulan),
           tahun: parseInt(formAuto.tahun),
-          items: preview.map((p) => ({ pelangganId: p.pelangganId, jumlah: p.jumlah })),
+          items: preview
+            .filter((p) => selectedPreviewIds.has(p.pelangganId))
+            .map((p) => ({ pelangganId: p.pelangganId, jumlah: p.jumlah })),
         }
       : {
           bulan: parseInt(formAuto.bulan),
@@ -1156,44 +1231,93 @@ export default function TagihanPage() {
               )}
 
               {preview && preview.length > 0 && (
-                <div className="rounded-xl border border-slate-200 overflow-hidden">
-                  <div className="max-h-64 overflow-y-auto">
+                <div className="rounded-xl border border-slate-200 overflow-hidden flex flex-col gap-0">
+                  <div className="p-3 bg-slate-50 border-b border-slate-200">
+                    <input
+                      type="text"
+                      placeholder="Cari pelanggan (nama/kode)..."
+                      value={previewSearchQuery}
+                      onChange={(e) => setPreviewSearchQuery(e.target.value)}
+                      className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    />
+                  </div>
+                  <div className="max-h-64 overflow-y-auto bg-white">
                     <table className="w-full text-sm">
-                      <thead className="sticky top-0 bg-slate-50 border-b border-slate-200">
+                      <thead className="sticky top-0 bg-slate-50 border-b border-slate-200 z-10">
                         <tr className="text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                          <th className="px-4 py-2.5 text-left">Pelanggan</th>
+                          <th className="px-4 py-2.5 text-center w-12">
+                            <input
+                              type="checkbox"
+                              checked={filteredAndSortedPreview.length > 0 && filteredAndSortedPreview.every(p => selectedPreviewIds.has(p.pelangganId))}
+                              onChange={handleSelectAllPreview}
+                              className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                            />
+                          </th>
+                          <th className="px-4 py-2.5 text-left cursor-pointer hover:bg-slate-100" onClick={() => togglePreviewSort("kodePelanggan")}>
+                            <div className="flex items-center gap-1">
+                              Pelanggan
+                              {previewSortConfig?.key === "kodePelanggan" && (
+                                <span className="text-emerald-600">{previewSortConfig.direction === "asc" ? "↑" : "↓"}</span>
+                              )}
+                            </div>
+                          </th>
                           <th className="px-4 py-2.5 text-left">Siklus / Jatuh Tempo</th>
                           <th className="px-4 py-2.5 text-left">Level</th>
-                          <th className="px-4 py-2.5 text-right">Nominal (Rp)</th>
+                          <th className="px-4 py-2.5 text-right cursor-pointer hover:bg-slate-100" onClick={() => togglePreviewSort("jumlah")}>
+                            <div className="flex items-center justify-end gap-1">
+                              Nominal (Rp)
+                              {previewSortConfig?.key === "jumlah" && (
+                                <span className="text-emerald-600">{previewSortConfig.direction === "asc" ? "↑" : "↓"}</span>
+                              )}
+                            </div>
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 text-slate-800">
-                        {preview.map((p) => (
-                          <tr key={p.pelangganId} className="hover:bg-slate-50/80 transition-colors">
-                            <td className="px-4 py-2.5">
-                              <p className="font-semibold text-xs text-slate-900">{p.nama}</p>
-                              <p className="text-[10px] text-slate-500 font-mono">{p.kodePelanggan}{p.paket ? ` · ${p.paket}` : ""}</p>
-                            </td>
-                            <td className="px-4 py-2.5 text-xs text-slate-600">
-                              <div>{p.jatuhTempo ? formatDate(p.jatuhTempo) : "-"}</div>
-                              {p.hariSiklus ? (
-                                <span className="text-[10px] text-sky-700 font-medium">
-                                  Siklus tgl {p.hariSiklus}
-                                </span>
-                              ) : null}
-                            </td>
-                            <td className="px-4 py-2.5 text-xs text-slate-600 capitalize">{p.kategori.replace(/_/g, " ")}</td>
-                            <td className="px-4 py-2.5 text-right">
-                              <input type="number" min={0} value={p.jumlah} onChange={(e) => updatePreviewJumlah(p.pelangganId, Number(e.target.value))} className="w-28 px-2 py-1 rounded-lg border border-slate-200 text-right text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500" />
+                        {filteredAndSortedPreview.length === 0 ? (
+                          <tr>
+                            <td colSpan={5} className="px-4 py-6 text-center text-slate-500 text-sm">
+                              Tidak ada data yang cocok dengan pencarian.
                             </td>
                           </tr>
-                        ))}
+                        ) : (
+                          filteredAndSortedPreview.map((p) => (
+                            <tr key={p.pelangganId} className="hover:bg-slate-50/80 transition-colors">
+                              <td className="px-4 py-2.5 text-center">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedPreviewIds.has(p.pelangganId)}
+                                  onChange={() => toggleSelectPreview(p.pelangganId)}
+                                  className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                                />
+                              </td>
+                              <td className="px-4 py-2.5">
+                                <p className="font-semibold text-xs text-slate-900">{p.nama}</p>
+                                <p className="text-[10px] text-slate-500 font-mono">{p.kodePelanggan}{p.paket ? ` · ${p.paket}` : ""}</p>
+                              </td>
+                              <td className="px-4 py-2.5 text-xs text-slate-600">
+                                <div>{p.jatuhTempo ? formatDate(p.jatuhTempo) : "-"}</div>
+                                {p.hariSiklus ? (
+                                  <span className="text-[10px] text-sky-700 font-medium">
+                                    Siklus tgl {p.hariSiklus}
+                                  </span>
+                                ) : null}
+                              </td>
+                              <td className="px-4 py-2.5 text-xs text-slate-600 capitalize">{p.kategori.replace(/_/g, " ")}</td>
+                              <td className="px-4 py-2.5 text-right">
+                                <input type="number" min={0} value={p.jumlah} onChange={(e) => updatePreviewJumlah(p.pelangganId, Number(e.target.value))} className="w-28 px-2 py-1 rounded-lg border border-slate-200 text-right text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500" />
+                              </td>
+                            </tr>
+                          ))
+                        )}
                       </tbody>
                     </table>
                   </div>
                   <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700">
-                    <span>{preview.length} tagihan</span>
-                    <span className="text-emerald-700 font-bold">Total: {formatRupiah(preview.reduce((s, p) => s + (p.jumlah || 0), 0))}</span>
+                    <span>Terpilih: {selectedPreviewIds.size} dari {preview.length} tagihan</span>
+                    <span className="text-emerald-700 font-bold">
+                      Total: {formatRupiah(preview.filter(p => selectedPreviewIds.has(p.pelangganId)).reduce((s, p) => s + (p.jumlah || 0), 0))}
+                    </span>
                   </div>
                 </div>
               )}
@@ -1207,8 +1331,8 @@ export default function TagihanPage() {
 
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => { setShowAutoGenerate(false); setAutoResult(null); setPreview(null); }} className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-all">Batal</button>
-                <button type="submit" disabled={generating || (preview !== null && preview.length === 0)} className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm hover:shadow active:scale-[0.98] transition-all text-sm font-semibold rounded-xl disabled:opacity-50">
-                  {generating ? "Memproses..." : preview ? `Generate (${preview.length})` : "Generate Semua"}
+                <button type="submit" disabled={generating || (preview !== null && selectedPreviewIds.size === 0)} className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm hover:shadow active:scale-[0.98] transition-all text-sm font-semibold rounded-xl disabled:opacity-50">
+                  {generating ? "Memproses..." : preview ? `Generate (${selectedPreviewIds.size})` : "Generate Semua"}
                 </button>
               </div>
             </form>
