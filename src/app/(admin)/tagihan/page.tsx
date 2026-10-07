@@ -191,6 +191,7 @@ export default function TagihanPage() {
   const [zonaId, setZonaId] = useState("");
   const [wilayahId, setWilayahId] = useState("");
   const [rtFilter, setRtFilter] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Blast WA Modal State
   const [showBlastModal, setShowBlastModal] = useState(false);
@@ -760,6 +761,13 @@ export default function TagihanPage() {
 
       {/* Filters */}
       <div className="flex gap-2.5 mb-4 flex-wrap items-center">
+        <input
+          type="text"
+          placeholder="Cari Kode / Nama..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500/20 shadow-sm w-full sm:w-48"
+        />
         <select
           value={bulan}
           onChange={(e) => setBulan(e.target.value)}
@@ -888,7 +896,15 @@ export default function TagihanPage() {
 
       {/* Table */}
       {(() => {
-        const sortedTagihan = [...tagihan].sort((a, b) => {
+        const filteredTagihan = tagihan.filter((t) => {
+          if (!searchQuery.trim()) return true;
+          const query = searchQuery.toLowerCase();
+          const kode = t.pelanggan.kodePelanggan?.toLowerCase() || "";
+          const nama = t.pelanggan.nama?.toLowerCase() || "";
+          return kode.includes(query) || nama.includes(query);
+        });
+
+        const sortedTagihan = [...filteredTagihan].sort((a, b) => {
           if (sortConfig.key === "kode") {
             const valA = a.pelanggan.kodePelanggan || "";
             const valB = b.pelanggan.kodePelanggan || "";
