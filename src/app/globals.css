@@ -378,6 +378,8 @@ button.rounded-none {
 .fade-in { --tw-enter-opacity: 0; }
 .zoom-in-95 { --tw-enter-scale: 0.95; }
 .slide-in-from-bottom-5 { --tw-enter-translate-y: 1.25rem; }
+.slide-in-from-right { --tw-enter-translate-x: 100%; }
+.slide-in-from-left { --tw-enter-translate-x: -100%; }
 
 /* ===== Hormati preferensi pengurangan gerak (WCAG 2.3.3) =====
    Sebelumnya tidak ada satu pun aturan prefers-reduced-motion sementara ada

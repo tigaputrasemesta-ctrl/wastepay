@@ -137,6 +137,12 @@ export default function DetailPelangganPage() {
   const totalTagihan = data.tagihan.reduce((sum, t) => sum + t.jumlah, 0);
   const totalBayar = data.pembayaran.reduce((sum, p) => sum + p.jumlah, 0);
 
+  const tagihanLunas = data.tagihan.filter((t) => t.status === "lunas").sort((a, b) => {
+    if (a.tahun !== b.tahun) return b.tahun - a.tahun;
+    return b.bulan - a.bulan;
+  });
+  const lunasSampai = tagihanLunas.length > 0 ? `${bulanList[tagihanLunas[0].bulan - 1]} ${tagihanLunas[0].tahun}` : "Belum ada";
+
   return (
     <div className="p-6">
       {/* Header */}
@@ -525,13 +531,17 @@ export default function DetailPelangganPage() {
                 <span className="font-semibold text-emerald-700">{formatRupiah(totalBayar)}</span>
               </div>
               <div className="flex justify-between border-t border-slate-100 pt-3">
-                <span className="text-slate-500 font-medium">Sisa</span>
+                <span className="text-slate-500 font-medium">Sisa Tagihan</span>
                 <span className={`font-semibold ${totalTagihan - totalBayar > 0 ? "text-rose-600" : "text-emerald-700"}`}>
-                  {formatRupiah(totalTagihan - totalBayar)}
+                  {formatRupiah(Math.max(0, totalTagihan - totalBayar))}
                 </span>
               </div>
+              <div className="flex justify-between border-t border-slate-100 pt-3">
+                <span className="text-slate-500 font-medium">Lunas Sampai</span>
+                <span className="font-semibold text-sky-700 bg-sky-50 px-2 py-0.5 rounded-md text-xs">{lunasSampai}</span>
+              </div>
               <div className="flex justify-between">
-                <span className="text-slate-500 font-medium">Tagihan Aktif</span>
+                <span className="text-slate-500 font-medium">Tagihan Aktif (Belum Lunas)</span>
                 <span className="font-semibold text-amber-700">{tagihanAktif.length}</span>
               </div>
             </div>

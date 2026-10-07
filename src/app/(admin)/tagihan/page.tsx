@@ -165,6 +165,15 @@ export default function TagihanPage() {
   const { showToast } = useToast();
   const [tagihan, setTagihan] = useState<Tagihan[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortConfig, setSortConfig] = useState<{key: "kode" | "nama" | null, direction: "asc" | "desc"}>({ key: null, direction: "asc" });
+
+  const handleSort = (key: "kode" | "nama") => {
+    let direction: "asc" | "desc" = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+  };
   const [pageSize, setPageSize] = useState(25);
   const [pending, setPending] = useState<PembayaranPending[]>([]);
   const [loading, setLoading] = useState(true);
@@ -879,10 +888,24 @@ export default function TagihanPage() {
 
       {/* Table */}
       {(() => {
-        const totalItems = tagihan.length;
+        const sortedTagihan = [...tagihan].sort((a, b) => {
+          if (sortConfig.key === "kode") {
+            const valA = a.pelanggan.kodePelanggan || "";
+            const valB = b.pelanggan.kodePelanggan || "";
+            return sortConfig.direction === "asc" ? valA.localeCompare(valB) : valB.localeCompare(valA);
+          }
+          if (sortConfig.key === "nama") {
+            const valA = a.pelanggan.nama || "";
+            const valB = b.pelanggan.nama || "";
+            return sortConfig.direction === "asc" ? valA.localeCompare(valB) : valB.localeCompare(valA);
+          }
+          return 0;
+        });
+
+        const totalItems = sortedTagihan.length;
         const totalPages = Math.ceil(totalItems / pageSize) || 1;
         const safePage = Math.min(currentPage, totalPages);
-        const displayedTagihan = tagihan.slice((safePage - 1) * pageSize, safePage * pageSize);
+        const displayedTagihan = sortedTagihan.slice((safePage - 1) * pageSize, safePage * pageSize);
 
         return (
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
@@ -890,9 +913,19 @@ export default function TagihanPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
-                    <th className="text-left px-4 py-3 font-semibold">Kode</th>
+                    <th className="text-left px-4 py-3 font-semibold cursor-pointer hover:bg-slate-100" onClick={() => handleSort("kode")}>
+                      Kode
+                      {sortConfig.key === "kode" && (
+                        <span className="ml-1">{sortConfig.direction === "asc" ? "▲" : "▼"}</span>
+                      )}
+                    </th>
                     <th className="text-left px-4 py-3 font-semibold">No. Invoice</th>
-                    <th className="text-left px-4 py-3 font-semibold">Pelanggan</th>
+                    <th className="text-left px-4 py-3 font-semibold cursor-pointer hover:bg-slate-100" onClick={() => handleSort("nama")}>
+                      Pelanggan
+                      {sortConfig.key === "nama" && (
+                        <span className="ml-1">{sortConfig.direction === "asc" ? "▲" : "▼"}</span>
+                      )}
+                    </th>
                     <th className="text-left px-4 py-3 font-semibold">Periode</th>
                     <th className="text-right px-4 py-3 font-semibold">Jumlah</th>
                     <th className="text-left px-4 py-3 font-semibold">Jatuh Tempo</th>

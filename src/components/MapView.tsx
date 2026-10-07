@@ -87,6 +87,7 @@ type Props = {
   ruteTerpilih: RutePeta | null;
   invalidateKey: number;
   warnaStatus: Record<string, string>;
+  onMapClick?: () => void;
 };
 
 const KATEGORI_LABEL: Record<string, string> = {
@@ -405,10 +406,12 @@ function PinsKendaraan({
   kendaraan,
   selectedKendaraanId,
   onPilih,
+  isMovingRef,
 }: {
   kendaraan: KendaraanPeta[];
   selectedKendaraanId?: number | null;
   onPilih?: (id: number) => void;
+  isMovingRef?: React.MutableRefObject<boolean>;
 }) {
   return (
     <>
@@ -423,8 +426,14 @@ function PinsKendaraan({
           <Marker
             key={`kendaraan-${k.kendaraanId}`}
             position={[k.latitude, k.longitude]}
+            bubblingMouseEvents={false}
             eventHandlers={{
-              click: () => onPilih?.(k.kendaraanId),
+              click: (e) => {
+                if (isMovingRef?.current) return;
+                if (e.originalEvent && (e.originalEvent as MouseEvent).button !== 0) return;
+                L.DomEvent.stopPropagation(e as any);
+                onPilih?.(k.kendaraanId);
+              },
             }}
             icon={L.divIcon({
               className: "",
@@ -463,10 +472,12 @@ function PinsTransit({
   transit,
   selectedTransitId,
   onPilih,
+  isMovingRef,
 }: {
   transit: TransitPeta[];
   selectedTransitId?: number | null;
   onPilih?: (id: number) => void;
+  isMovingRef?: React.MutableRefObject<boolean>;
 }) {
   return (
     <>
@@ -478,8 +489,14 @@ function PinsTransit({
           <Marker
             key={`transit-${t.id}`}
             position={[t.latitude, t.longitude]}
+            bubblingMouseEvents={false}
             eventHandlers={{
-              click: () => onPilih?.(t.id),
+              click: (e) => {
+                if (isMovingRef?.current) return;
+                if (e.originalEvent && (e.originalEvent as MouseEvent).button !== 0) return;
+                L.DomEvent.stopPropagation(e as any);
+                onPilih?.(t.id);
+              },
             }}
             icon={L.divIcon({
               className: "",
@@ -513,10 +530,12 @@ function PinsPetugas({
   petugas,
   selectedPetugasId,
   onPilih,
+  isMovingRef,
 }: {
   petugas: PetugasPeta[];
   selectedPetugasId?: number | null;
   onPilih?: (id: number) => void;
+  isMovingRef?: React.MutableRefObject<boolean>;
 }) {
   return (
     <>
@@ -530,8 +549,14 @@ function PinsPetugas({
           <Marker
             key={`petugas-${p.petugasId}`}
             position={[p.latitude, p.longitude]}
+            bubblingMouseEvents={false}
             eventHandlers={{
-              click: () => onPilih?.(p.petugasId),
+              click: (e) => {
+                if (isMovingRef?.current) return;
+                if (e.originalEvent && (e.originalEvent as MouseEvent).button !== 0) return;
+                L.DomEvent.stopPropagation(e as any);
+                onPilih?.(p.petugasId);
+              },
             }}
             icon={L.divIcon({
               className: "",
@@ -569,20 +594,22 @@ function ClusterPins({
   warnaStatus,
   selectedId,
   onPilih,
+  isMovingRef,
 }: {
   pelanggan: PelangganPeta[];
   warnaStatus: Record<string, string>;
   selectedId: number | null;
   onPilih: (id: number) => void;
+  isMovingRef: React.MutableRefObject<boolean>;
 }) {
   const map = useMap();
-  const groupRef = useRef<L.MarkerClusterGroup | null>(null);
+  const groupRef = useRef<L.FeatureGroup | null>(null);
   const markersRef = useRef<Map<number, L.Marker>>(new Map());
   const clickedFromMapRef = useRef(false);
 
   useEffect(() => {
     const group = L.featureGroup();
-    groupRef.current = group as any;
+    groupRef.current = group;
     markersRef.current.clear();
 
     for (const p of pelanggan) {
@@ -596,9 +623,16 @@ function ClusterPins({
       }
       const m = L.marker([p.latitude, p.longitude], {
         icon: buatIcon(warnaStatus[p.status] ?? "#8b8f98", p.statusTagihan === "tunggakan"),
+        bubblingMouseEvents: false,
       });
-      m.bindPopup(popupHtml(p));
-      m.on("click", () => {
+      m.bindPopup(popupHtml(p), { autoPan: false });
+      m.on("click", (e: L.LeafletMouseEvent) => {
+        // 1. Abaikan klik jika peta sedang bergerak/zoom (mencegah klik saat scroll mouse)
+        if (isMovingRef.current) return;
+        // 2. Hanya terima klik kiri murni (button 0), abaikan middle-click scroll wheel atau klik kanan
+        if (e.originalEvent && e.originalEvent.button !== 0) return;
+
+        L.DomEvent.stopPropagation(e);
         clickedFromMapRef.current = true;
         onPilih(p.id);
       });
@@ -611,7 +645,7 @@ function ClusterPins({
       groupRef.current = null;
       markersRef.current.clear();
     };
-  }, [pelanggan, map, warnaStatus, onPilih]);
+  }, [pelanggan, map, warnaStatus, onPilih, isMovingRef]);
 
   // Handle selectedId dari luar (misalnya dari daftar bawah atau dropdown pencarian)
   useEffect(() => {
@@ -645,10 +679,12 @@ function PinsKomplain({
   komplain,
   selectedKomplainId,
   onPilih,
+  isMovingRef,
 }: {
   komplain: KomplainPeta[];
   selectedKomplainId: number | null;
   onPilih: (id: number) => void;
+  isMovingRef?: React.MutableRefObject<boolean>;
 }) {
   return (
     <>
@@ -659,9 +695,17 @@ function PinsKomplain({
             key={`komplain-${k.id}`}
             position={pos}
             icon={buatIconKomplain(KOMPLAIN_WARNA[k.status] ?? "#ff5c5c", k.id === selectedKomplainId, k.status === "baru", k)}
-            eventHandlers={{ click: () => onPilih(k.id) }}
+            bubblingMouseEvents={false}
+            eventHandlers={{
+              click: (e) => {
+                if (isMovingRef?.current) return;
+                if (e.originalEvent && (e.originalEvent as MouseEvent).button !== 0) return;
+                L.DomEvent.stopPropagation(e as any);
+                onPilih(k.id);
+              },
+            }}
           >
-            <Popup closeButton={false}>
+            <Popup closeButton={false} autoPan={false}>
               <div dangerouslySetInnerHTML={{ __html: popupKomplainHtml(k) }} />
             </Popup>
           </Marker>
@@ -669,6 +713,61 @@ function PinsKomplain({
       })}
     </>
   );
+}
+
+// Lacak pergerakan / zoom peta agar klik hantu dari scroll-wheel / drag diabaikan
+function MapMotionTracker({
+  isMovingRef,
+  onMapClick,
+}: {
+  isMovingRef: React.MutableRefObject<boolean>;
+  onMapClick?: () => void;
+}) {
+  const map = useMap();
+  const moveEndTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    const handleMoveStart = () => {
+      isMovingRef.current = true;
+      if (moveEndTimerRef.current) {
+        clearTimeout(moveEndTimerRef.current);
+        moveEndTimerRef.current = null;
+      }
+    };
+
+    const handleMoveEnd = () => {
+      if (moveEndTimerRef.current) clearTimeout(moveEndTimerRef.current);
+      // Buffer 180ms setelah pergerakan/zoom berhenti sebelum mengizinkan klik marker
+      // Ini secara efektif memblokir "ghost click" yang dipicu oleh roda mouse / trackpad
+      moveEndTimerRef.current = setTimeout(() => {
+        isMovingRef.current = false;
+      }, 180);
+    };
+
+    map.on("movestart", handleMoveStart);
+    map.on("zoomstart", handleMoveStart);
+    map.on("moveend", handleMoveEnd);
+    map.on("zoomend", handleMoveEnd);
+
+    return () => {
+      map.off("movestart", handleMoveStart);
+      map.off("zoomstart", handleMoveStart);
+      map.off("moveend", handleMoveEnd);
+      map.off("zoomend", handleMoveEnd);
+      if (moveEndTimerRef.current) clearTimeout(moveEndTimerRef.current);
+    };
+  }, [map, isMovingRef]);
+
+  useMapEvents({
+    click: (e) => {
+      // Hanya tutup inspector jika peta diam dan klik kiri murni pada kanvas kosong
+      if (isMovingRef.current) return;
+      if (e.originalEvent && (e.originalEvent as MouseEvent).button !== 0) return;
+      onMapClick?.();
+    },
+  });
+
+  return null;
 }
 
 // Lacak level zoom untuk mengatur visibilitas layer.
@@ -776,8 +875,10 @@ export default function MapView({
   ruteTerpilih,
   invalidateKey,
   warnaStatus,
+  onMapClick,
 }: Props) {
   const [zoom, setZoom] = useState(13);
+  const isMovingRef = useRef(false);
 
   const titik = useMemo(
     () =>
@@ -915,6 +1016,7 @@ export default function MapView({
             maxZoom={tileConfig.maxZoom}
           />
         <ZoomTracker onZoom={setZoom} />
+        <MapMotionTracker isMovingRef={isMovingRef} onMapClick={onMapClick} />
         <InvalidateSize invalidateKey={invalidateKey} />
 
       {/* Batas kecamatan resmi (BPS Kota Depok) */}
@@ -1089,6 +1191,7 @@ export default function MapView({
           komplain={komplain}
           selectedKomplainId={selectedKomplainId}
           onPilih={setSelectedKomplainId}
+          isMovingRef={isMovingRef}
         />
       )}
 
@@ -1098,6 +1201,7 @@ export default function MapView({
           petugas={petugas}
           selectedPetugasId={selectedPetugasId}
           onPilih={setSelectedPetugasId}
+          isMovingRef={isMovingRef}
         />
       )}
 
@@ -1106,6 +1210,7 @@ export default function MapView({
         kendaraan={kendaraan}
         selectedKendaraanId={selectedKendaraanId}
         onPilih={setSelectedKendaraanId}
+        isMovingRef={isMovingRef}
       />
 
       {/* Titik transit (lapak) */}
@@ -1114,6 +1219,7 @@ export default function MapView({
           transit={transit}
           selectedTransitId={selectedTransitId}
           onPilih={setSelectedTransitId}
+          isMovingRef={isMovingRef}
         />
       )}
 
@@ -1127,6 +1233,7 @@ export default function MapView({
           warnaStatus={warnaStatus}
           selectedId={selectedId}
           onPilih={setSelectedId}
+          isMovingRef={isMovingRef}
         />
       )}
 

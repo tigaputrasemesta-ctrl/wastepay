@@ -174,7 +174,7 @@ export async function POST(request: Request) {
     }
 
     // Auto-kirim WA invoice ke pelanggan yang tagihannya baru dibuat (skylite pattern).
-    const waAutoSend = process.env.WA_AUTO_SEND !== "false" && isWaEnabled();
+    const waAutoSend = process.env.WA_AUTO_SEND !== "false" && isWaEnabled() && body.skipWa !== true;
     let waHasil: {
       terkirim: number;
       pending: number;

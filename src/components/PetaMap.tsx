@@ -1638,6 +1638,7 @@ export default function PetaMap({
               setSelectedPetugasId={pilihPetugas}
               selectedTransitId={selectedTransitId}
               setSelectedTransitId={pilihTransit}
+              onMapClick={closeFlyout}
               tileMode={tileMode}
               setTileMode={setTileMode}
               hideTileButtons={true}
