@@ -275,54 +275,7 @@ function PelangganContent() {
     (async () => { await fetchData(); })();
   }, [fetchData]);
 
-  function downloadCSV() {
-    const headers = [
-      "Kode",
-      "Nama Pelanggan",
-      "No Telepon",
-      "Kategori",
-      "Alamat",
-      "Kelurahan",
-      "Zona",
-      "Status",
-      "Tanggal Daftar",
-      "Nominal Tarif (Rp)"
-    ];
-    
-    const rows = pelanggan.map(p => {
-      const namaWilayah = p.wilayah?.zona?.nama || p.wilayah?.nama || "-";
-      const namaKelurahan = p.kelurahan?.nama || "-";
-      let nominal = 0;
-      if (p.customTarif) nominal = p.customTarif;
-      else if (p.paket) nominal = p.paket.harga || 0;
-      else {
-        const kt = kategoriTarifList.find(x => x.kategori === p.kategori);
-        if (kt) nominal = kt.tarif;
-      }
 
-      return [
-        p.kodePelanggan || "-",
-        `"${p.nama.replace(/"/g, '""')}"`,
-        p.noTelepon ? `'${p.noTelepon}` : "-",
-        p.kategori,
-        `"${p.alamat.replace(/"/g, '""')}"`,
-        `"${namaKelurahan}"`,
-        `"${namaWilayah}"`,
-        p.status,
-        p.createdAt ? new Date(p.createdAt).toLocaleDateString("id-ID") : "-",
-        nominal
-      ].join(",");
-    });
-
-    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows].join("\n");
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `data_pelanggan_${new Date().toISOString().split("T")[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
 
   function openCreate() {
     setEditing(null);
@@ -453,15 +406,19 @@ function PelangganContent() {
           >
             <span>📝 Formulir Lengkap</span>
           </Link>
-          <button
-            onClick={downloadCSV}
+          <Link
+            href={`/pelanggan-cetak?${new URLSearchParams({
+              ...(filterStatus ? { status: filterStatus } : {}),
+              ...(filterKategori ? { kategori: filterKategori } : {}),
+              ...(filterKelurahan ? { kelurahanId: filterKelurahan } : {}),
+            }).toString()}`}
             className="px-3.5 py-2.5 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
             </svg>
-            Download Data
-          </button>
+            Cetak / Ekspor
+          </Link>
           <button
             onClick={openCreate}
             className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-2 active:scale-95"

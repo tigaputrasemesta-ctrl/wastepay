@@ -87,6 +87,17 @@ export default async function PelangganCetakPage({
           </div>
           <div className="pl-toolbar-actions">
             <TombolCetak label="Cetak / Unduh PDF" />
+            <a 
+              href={`/api/pelanggan/export?${new URLSearchParams({
+                ...(params.status ? { status: params.status } : {}),
+                ...(params.kategori ? { kategori: params.kategori } : {}),
+                ...(params.kelurahanId ? { kelurahanId: params.kelurahanId } : {})
+              }).toString()}`}
+              className="pl-toolbar-btn pl-toolbar-excel"
+              style={{ backgroundColor: "#10b981", color: "white", padding: "8px 16px", borderRadius: "6px", textDecoration: "none", fontSize: "14px", fontWeight: "bold" }}
+            >
+              📊 Ekspor Excel
+            </a>
             <Link href="/pelanggan" className="pl-toolbar-link">
               &larr; Kembali ke Data Pelanggan
             </Link>
