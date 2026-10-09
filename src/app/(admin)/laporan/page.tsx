@@ -129,21 +129,22 @@ export default async function LaporanPage({
             <p className="text-sm text-slate-400 font-medium">Belum ada pemasukan bulan ini</p>
           ) : (
             <div className="space-y-3">
-              {data.pemasukanByMetode.map((m) => {
-                let namaMetode = m.metode;
-                if (m.metode.startsWith("duitku")) namaMetode = "Payment Gateway (Duitku)";
-                else if (m.metode === "transfer") namaMetode = "Transfer Bank";
-                else if (m.metode === "tunai") namaMetode = "Tunai";
-                else if (m.metode === "ewallet") namaMetode = "E-Wallet";
-                else if (m.metode === "virtual_account") namaMetode = "Virtual Account";
-                else if (m.metode === "qris") namaMetode = "QRIS";
-                return (
-                  <div key={m.metode} className="flex justify-between items-center text-sm">
-                    <span className="text-slate-500 font-medium capitalize">{namaMetode}</span>
-                    <span className="font-semibold text-emerald-700">{formatRupiah(m.jumlah)}</span>
-                  </div>
-                );
-              })}
+              {Object.entries(
+                data.pemasukanByMetode.reduce((acc, m) => {
+                  let kat = "Lainnya";
+                  if (m.metode.startsWith("duitku") || ["qris", "ewallet", "virtual_account"].includes(m.metode)) {
+                    kat = "Payment Gateway (Duitku)";
+                  } else if (m.metode === "transfer") kat = "Transfer Bank";
+                  else if (m.metode === "tunai") kat = "Tunai";
+                  acc[kat] = (acc[kat] || 0) + m.jumlah;
+                  return acc;
+                }, {} as Record<string, number>)
+              ).map(([namaMetode, jumlah]) => (
+                <div key={namaMetode} className="flex justify-between items-center text-sm">
+                  <span className="text-slate-500 font-medium capitalize">{namaMetode}</span>
+                  <span className="font-semibold text-emerald-700">{formatRupiah(jumlah)}</span>
+                </div>
+              ))}
               <div className="border-t border-slate-100 pt-3 flex justify-between items-center text-sm font-semibold text-slate-900">
                 <span>Total</span>
                 <span className="text-emerald-700">{formatRupiah(data.totalPemasukan)}</span>

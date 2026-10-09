@@ -475,8 +475,23 @@ export default function TagihanPage() {
     bulan: (new Date().getMonth() + 1).toString(),
     tahun: new Date().getFullYear().toString(),
     untukSemua: true,
-    pelangganId: "",
   });
+
+  const [pelangganList, setPelangganList] = useState<{ id: number; nama: string; kodePelanggan: string }[]>([]);
+  const [selectedPelangganIds, setSelectedPelangganIds] = useState<number[]>([]);
+  const [searchPelanggan, setSearchPelanggan] = useState("");
+
+  useEffect(() => {
+    if (showGenerate && pelangganList.length === 0) {
+      fetch("/api/pelanggan?limit=1000") // Ambil max pelanggan untuk dicentang
+        .then(res => res.json())
+        .then(data => {
+          if (data.data) {
+            setPelangganList(data.data);
+          }
+        });
+    }
+  }, [showGenerate]);
 
   const [formAuto, setFormAuto] = useState({
     bulan: (new Date().getMonth() + 1).toString(),
@@ -490,7 +505,7 @@ export default function TagihanPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formGenerate.untukSemua
         ? { jumlah: formGenerate.jumlah, bulan: formGenerate.bulan, tahun: formGenerate.tahun }
-        : { ...formGenerate, pelangganId: formGenerate.pelangganId }),
+        : { ...formGenerate, pelangganId: (formGenerate as any).pelangganId }),
     });
     if (res.ok) {
       setShowGenerate(false);
@@ -747,6 +762,14 @@ export default function TagihanPage() {
         >
           <span>🖨</span>
           <span>Cetak Massal</span>
+        </Link>
+        <Link
+          href={`/laporan-pembayaran-cetak?bulan=${bulan || new Date().getMonth() + 1}&tahun=${tahun || new Date().getFullYear()}&status=${status || 'all'}`}
+          target="_blank"
+          className="px-4 py-2 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 text-indigo-700 rounded-xl text-xs font-bold shadow-sm active:scale-95 transition flex items-center gap-1.5"
+        >
+          <span>📊</span>
+          <span>Rekap Laporan</span>
         </Link>
         </div>
       </div>
