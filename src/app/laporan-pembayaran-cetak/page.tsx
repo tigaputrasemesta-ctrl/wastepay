@@ -123,13 +123,12 @@ export default async function LaporanPembayaranCetakPage({
             >
               Ekspor Excel (CSV)
             </a>
-            <button 
-              onClick={() => window.close()} 
-              className="lp-toolbar-link" 
-              style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+            <Link 
+              href={`/tagihan?bulan=${params.bulan || ''}&tahun=${tahun}`}
+              className="lp-toolbar-link"
             >
-              Tutup Tab
-            </button>
+              &larr; Kembali
+            </Link>
           </div>
         </div>
 
