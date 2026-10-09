@@ -98,37 +98,56 @@ export async function GET(request: Request) {
     "Longitude"
   ]);
 
-  pelangganList.forEach((p, idx) => {
-    let nominal = 0;
-    if (p.customTarif) {
-      nominal = p.customTarif;
-    } else if (p.paket) {
-      nominal = p.paket.harga || 0;
-    } else {
-      nominal = tarifMap[p.kategori] || 0;
-    }
+  const groupedPelanggan: Record<string, typeof pelangganList> = {};
+  pelangganList.forEach((p) => {
+    const zonaNama = p.wilayah?.zona?.nama || p.wilayah?.nama || "Tanpa Zona";
+    if (!groupedPelanggan[zonaNama]) groupedPelanggan[zonaNama] = [];
+    groupedPelanggan[zonaNama].push(p);
+  });
 
-    const d = new Date(p.createdAt);
-    const tglDaftar = `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
+  const sortedZonas = Object.keys(groupedPelanggan).sort((a, b) => {
+    if (a === "Tanpa Zona") return 1;
+    if (b === "Tanpa Zona") return -1;
+    return a.localeCompare(b);
+  });
 
-    rows.push([
-      idx + 1,
-      p.kodePelanggan,
-      p.nama,
-      p.penanggungjawab && p.penanggungjawab !== p.nama ? p.penanggungjawab : "",
-      p.noTelepon,
-      p.alamat,
-      p.rtRw,
-      p.patokanLokasi,
-      p.kelurahan?.nama || "",
-      p.wilayah?.zona?.nama || p.wilayah?.nama || "",
-      KATEGORI_LABEL[p.kategori] || p.kategori,
-      nominal,
-      p.status.toUpperCase(),
-      tglDaftar,
-      p.latitude || "",
-      p.longitude || ""
-    ]);
+  sortedZonas.forEach((zonaNama) => {
+    const list = groupedPelanggan[zonaNama];
+    rows.push([]);
+    rows.push([`ZONA: ${zonaNama.toUpperCase()} (${list.length} Pelanggan)`]);
+    
+    list.forEach((p, idx) => {
+      let nominal = 0;
+      if (p.customTarif) {
+        nominal = p.customTarif;
+      } else if (p.paket) {
+        nominal = p.paket.harga || 0;
+      } else {
+        nominal = tarifMap[p.kategori] || 0;
+      }
+
+      const d = new Date(p.createdAt);
+      const tglDaftar = `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
+
+      rows.push([
+        idx + 1,
+        p.kodePelanggan,
+        p.nama,
+        p.penanggungjawab && p.penanggungjawab !== p.nama ? p.penanggungjawab : "",
+        p.noTelepon,
+        p.alamat,
+        p.rtRw,
+        p.patokanLokasi,
+        p.kelurahan?.nama || "",
+        p.wilayah?.zona?.nama || p.wilayah?.nama || "",
+        KATEGORI_LABEL[p.kategori] || p.kategori,
+        nominal,
+        p.status.toUpperCase(),
+        tglDaftar,
+        p.latitude || "",
+        p.longitude || ""
+      ]);
+    });
   });
 
   const csv = rows.map((r) => r.map(csvEscape).join(",")).join("\r\n");

@@ -1,3 +1,4 @@
+import React from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
@@ -60,6 +61,7 @@ export default async function PelangganCetakPage({
     orderBy: [{ kelurahanId: "asc" }, { nama: "asc" }],
     include: {
       kelurahan: true,
+      wilayah: { include: { zona: true } },
     },
   });
 
@@ -76,6 +78,20 @@ export default async function PelangganCetakPage({
   
   const statusLabel = params.status ? STATUS_MAP[params.status]?.label || params.status.toUpperCase() : "Semua Status";
   const kategoriLabel = params.kategori ? KATEGORI_LABEL[params.kategori] || params.kategori : "Semua Kategori";
+
+  // Grouping by Zona
+  const groupedPelanggan: Record<string, typeof pelangganList> = {};
+  pelangganList.forEach((p) => {
+    const zonaNama = p.wilayah?.zona?.nama || "Tanpa Zona";
+    if (!groupedPelanggan[zonaNama]) groupedPelanggan[zonaNama] = [];
+    groupedPelanggan[zonaNama].push(p);
+  });
+
+  const sortedZonas = Object.keys(groupedPelanggan).sort((a, b) => {
+    if (a === "Tanpa Zona") return 1;
+    if (b === "Tanpa Zona") return -1;
+    return a.localeCompare(b);
+  });
 
   return (
     <div className="pl-page-bg">
@@ -114,7 +130,7 @@ export default async function PelangganCetakPage({
             </div>
             <div className="pl-head-right">
               <h2>DATA PELANGGAN</h2>
-              <p>Daftar Rekapitulasi</p>
+              <p>Daftar Rekapitulasi per Zona</p>
             </div>
           </div>
 
@@ -158,41 +174,53 @@ export default async function PelangganCetakPage({
                   </tr>
                 </thead>
                 <tbody>
-                  {pelangganList.map((p, idx) => {
-                    const statusData = STATUS_MAP[p.status] || { label: p.status, className: "" };
-                    const katLabel = KATEGORI_LABEL[p.kategori] || p.kategori;
+                  {sortedZonas.map((zonaNama) => {
+                    const list = groupedPelanggan[zonaNama];
                     return (
-                      <tr key={p.id}>
-                        <td className="pl-col-no">{idx + 1}</td>
-                        <td className="pl-col-kode">{p.kodePelanggan || "-"}</td>
-                        <td className="pl-col-nama">
-                          {p.nama}
-                          {p.penanggungjawab && p.penanggungjawab !== p.nama && (
-                            <span style={{ display: 'block', fontSize: '9px', color: '#6b6e66', marginTop: '2px' }}>
-                              PIC: {p.penanggungjawab}
-                            </span>
-                          )}
-                        </td>
-                        <td className="pl-col-alamat">
-                          {p.alamat}
-                          {p.rtRw && <span> (RT/RW: {p.rtRw})</span>}
-                          {p.patokanLokasi && (
-                            <span style={{ display: 'block', fontSize: '9px', color: '#6b6e66', marginTop: '2px' }}>
-                              Patokan: {p.patokanLokasi}
-                            </span>
-                          )}
-                          {p.kelurahan && (
-                            <span style={{ display: 'block', fontSize: '9px', color: '#6b6e66', marginTop: '2px' }}>
-                              Kelurahan: {p.kelurahan.nama}
-                            </span>
-                          )}
-                        </td>
-                        <td className="pl-col-telp">{p.noTelepon || "-"}</td>
-                        <td className="pl-col-kategori">{katLabel}</td>
-                        <td className="pl-col-status">
-                          <span className={statusData.className}>{statusData.label}</span>
-                        </td>
-                      </tr>
+                      <React.Fragment key={zonaNama}>
+                        <tr>
+                          <td colSpan={7} style={{ backgroundColor: '#e9ecef', fontWeight: 'bold', fontSize: '11px', textAlign: 'center', padding: '6px' }}>
+                            ZONA: {zonaNama.toUpperCase()} ({list.length} Pelanggan)
+                          </td>
+                        </tr>
+                        {list.map((p, idx) => {
+                          const statusData = STATUS_MAP[p.status] || { label: p.status, className: "" };
+                          const katLabel = KATEGORI_LABEL[p.kategori] || p.kategori;
+                          return (
+                            <tr key={p.id}>
+                              <td className="pl-col-no">{idx + 1}</td>
+                              <td className="pl-col-kode">{p.kodePelanggan || "-"}</td>
+                              <td className="pl-col-nama">
+                                {p.nama}
+                                {p.penanggungjawab && p.penanggungjawab !== p.nama && (
+                                  <span style={{ display: 'block', fontSize: '9px', color: '#6b6e66', marginTop: '2px' }}>
+                                    PIC: {p.penanggungjawab}
+                                  </span>
+                                )}
+                              </td>
+                              <td className="pl-col-alamat">
+                                {p.alamat}
+                                {p.rtRw && <span> (RT/RW: {p.rtRw})</span>}
+                                {p.patokanLokasi && (
+                                  <span style={{ display: 'block', fontSize: '9px', color: '#6b6e66', marginTop: '2px' }}>
+                                    Patokan: {p.patokanLokasi}
+                                  </span>
+                                )}
+                                {p.kelurahan && (
+                                  <span style={{ display: 'block', fontSize: '9px', color: '#6b6e66', marginTop: '2px' }}>
+                                    Kelurahan: {p.kelurahan.nama}
+                                  </span>
+                                )}
+                              </td>
+                              <td className="pl-col-telp">{p.noTelepon || "-"}</td>
+                              <td className="pl-col-kategori">{katLabel}</td>
+                              <td className="pl-col-status">
+                                <span className={statusData.className}>{statusData.label}</span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </React.Fragment>
                     );
                   })}
                 </tbody>
