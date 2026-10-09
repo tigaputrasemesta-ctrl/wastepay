@@ -73,7 +73,7 @@
   transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .vector-cluster-badge:hover {
-  transform: scale(1.18);
+  transform: scale(1.15);
   box-shadow: 0 0 25px rgba(16, 185, 129, 1), 0 0 0 3px #ffffff, 0 6px 20px rgba(0, 0, 0, 0.6);
 }
 
@@ -454,7 +454,7 @@
   border: 1px solid #e2e8f0 !important;
 }
 .leaflet-popup-close-button {
-  color: #64748b !important;
+  color: #334155 !important;
   font-size: 18px !important;
   font-weight: 700 !important;
   padding: 6px 8px 0 0 !important;
@@ -598,7 +598,7 @@
   transition: transform 0.2s ease-in-out;
 }
 .animated-pin:hover div {
-  transform: scale(1.2) rotate(45deg);
+  transform: scale(1.15) rotate(45deg);
 }
 
 .komplain-pin div {
@@ -613,6 +613,6 @@
   transition: all 0.2s ease;
 }
 .marker-cluster:hover div {
-  transform: scale(1.08);
+  transform: scale(1.15);
   background: #047857;
 }

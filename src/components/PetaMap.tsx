@@ -197,6 +197,21 @@ export default function PetaMap({
   const layerMenuRef = useRef<HTMLDivElement>(null);
   const isDark = tileMode === "dark";
 
+  // Online status
+  const [isOnlineStatus, setIsOnlineStatus] = useState(true);
+
+  useEffect(() => {
+    setIsOnlineStatus(navigator.onLine);
+    const handleOnline = () => setIsOnlineStatus(true);
+    const handleOffline = () => setIsOnlineStatus(false);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
   // Filter States
   const [cari, setCari] = useState("");
   const [filterWilayah, setFilterWilayah] = useState("semua");
@@ -571,6 +586,13 @@ export default function PetaMap({
             <span className="tracking-wide uppercase font-mono">🛵 GOJEK CLEAN GIS</span>
           </div>
 
+          {!isOnlineStatus && (
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl border bg-rose-500/20 text-rose-500 border-rose-500/40 text-[11px] font-bold animate-pulse">
+              <Phone className="w-3.5 h-3.5" />
+              <span>OFFLINE</span>
+            </div>
+          )}
+
           {/* Metric Status Pills */}
           <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] font-bold">
             {/* Truk Online Pill */}
@@ -582,11 +604,11 @@ export default function PetaMap({
               }}
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border transition ${
                 isDark
-                  ? "bg-[#f59e0b]/15 hover:bg-[#f59e0b]/25 text-[#f59e0b] border-[#f59e0b]/30"
-                  : "bg-amber-50 hover:bg-amber-100 text-amber-900 border-amber-200"
+                  ? "bg-slate-800/80 hover:bg-slate-700 text-slate-300 border-slate-700"
+                  : "bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200"
               }`}
             >
-              <Truck className="w-3.5 h-3.5" />
+              <Truck className={`w-3.5 h-3.5 ${isDark ? "text-slate-400" : "text-slate-500"}`} />
               <span>{kendaraanOnline} Truk Online</span>
             </button>
 
@@ -624,7 +646,7 @@ export default function PetaMap({
                   : "bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200"
               }`}
             >
-              <MapPin className="w-3.5 h-3.5 text-emerald-500" />
+              <MapPin className={`w-3.5 h-3.5 ${isDark ? "text-slate-400" : "text-slate-500"}`} />
               <span>{transit.filter((t) => t.aktif).length} Lapak/TPS</span>
             </button>
 
@@ -638,10 +660,10 @@ export default function PetaMap({
               className={`hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-xl border ${
                 isDark
                   ? "bg-slate-800/80 hover:bg-slate-700 text-slate-300 border-slate-700"
-                  : "bg-sky-50 hover:bg-sky-100 text-sky-800 border-sky-200"
+                  : "bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200"
               }`}
             >
-              <Users className="w-3.5 h-3.5 text-sky-500" />
+              <Users className={`w-3.5 h-3.5 ${isDark ? "text-slate-400" : "text-slate-500"}`} />
               <span>{pelanggan.length} Warga</span>
             </button>
           </div>
@@ -944,11 +966,11 @@ export default function PetaMap({
       <div className="flex-1 flex overflow-hidden relative">
         {/* ── LEFT PANE: OPERATIONAL WORKSPACE CONSOLE ── */}
         <div
-          className={`${
-            sidebarOpen ? "w-80 sm:w-96" : "w-0 -translate-x-full"
+          className={`absolute sm:relative ${
+            sidebarOpen ? "w-full sm:w-96" : "w-0 -translate-x-full"
           } ${
             isDark ? "bg-[#16191f] border-slate-800 text-slate-100" : "bg-white border-slate-200 text-slate-800"
-          } border-r flex flex-col shrink-0 h-full z-10 transition-all duration-300 overflow-hidden shadow-xl`}
+          } border-r flex flex-col shrink-0 h-full z-[400] sm:z-10 transition-all duration-300 overflow-hidden shadow-xl`}
         >
           {/* Console Tab Bar */}
           <div className={`p-2 border-b grid grid-cols-4 gap-1 ${
@@ -1664,7 +1686,7 @@ export default function PetaMap({
 
         {/* ── RIGHT FLYOUT INSPECTOR DRAWER (LoadSwift Inspired Telemetry Drawer) ── */}
         {hasInspector && (
-          <div className={`w-84 sm:w-96 backdrop-blur-xl border-l absolute right-0 top-0 bottom-0 z-20 shadow-2xl flex flex-col transition-all duration-300 animate-in slide-in-from-right ${
+          <div className={`w-full sm:w-96 backdrop-blur-xl border-l absolute right-0 top-0 bottom-0 z-20 shadow-2xl flex flex-col transition-all duration-300 animate-in slide-in-from-right ${
             isDark
               ? "bg-[#181b22]/95 border-slate-800 text-slate-100"
               : "bg-white/95 border-slate-200 text-slate-800 shadow-slate-300"
