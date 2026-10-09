@@ -5,7 +5,7 @@
  * - "dark": ESRI World Dark Gray Canvas (matte gelap untuk dashboard wallboard)
  * - Jika `NEXT_PUBLIC_CARTO_API_KEY` disetel, beralih ke CARTO tiles dengan `?key=...`
  */
-export type MapTileType = "osm" | "esri-street" | "esri-satellite" | "dark" | "light";
+export type MapTileType = "osm" | "esri-satellite" | "dark";
 
 export type MapTileConfig = {
   url: string;
@@ -42,18 +42,6 @@ export function getMapTileConfig(type: MapTileType = "osm"): MapTileConfig {
       subdomains: "abc",
       maxZoom: 19,
       isDarkFilter: true,
-    };
-  }
-
-  // Mode Klasik Hangat (Esri World Street Map — sangat nyaman di mata, jalan dan label navigasi sangat jelas)
-  if (type === "esri-street") {
-    return {
-      url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
-      attribution:
-        'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, METI, TomTom',
-      subdomains: [],
-      maxZoom: 19,
-      isDarkFilter: false,
     };
   }
 

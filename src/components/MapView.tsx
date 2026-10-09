@@ -304,14 +304,16 @@ function renderLoadswiftPuck({
 function buatIcon(warna: string, isBermasalah: boolean = false) {
   return L.divIcon({
     className: "",
-    html: `<div class="micro-dot-wrapper ${isBermasalah ? "tunggakan" : ""}">
-      <div class="micro-dot-pin" style="background:${warna}; color:${warna};">
-        ${isBermasalah ? '<span style="color:#ffffff; font-size:7px; font-weight:900; line-height:1;">!</span>' : ""}
+    html: `<div class="waze-pin-wrapper ${isBermasalah ? "stop-angkut" : ""}">
+      <div class="waze-pin" style="--pin-color:${warna};">
+        <div class="waze-pin-inner">
+          ${isBermasalah ? '<span style="color:#0f172a; font-size:9px; font-weight:900; line-height:1; font-family:sans-serif;">!</span>' : ""}
+        </div>
       </div>
     </div>`,
-    iconSize: [14, 14],
-    iconAnchor: [7, 7],
-    popupAnchor: [0, -10],
+    iconSize: [32, 38],
+    iconAnchor: [16, 38],
+    popupAnchor: [0, -36],
   });
 }
 
@@ -452,7 +454,7 @@ function popupHtml(p: PelangganPeta): string {
         <div style="font-weight:800;color:#0f172a;">${tarifTagihan}</div>
         
         <div style="font-weight:700;color:#64748b;">BLOK/ZONA:</div>
-        <div style="font-weight:800;color:#0f172a;">${esc(p.wilayah?.nama || p.kategori)}</div>
+        <div style="font-weight:800;color:#0f172a;">${esc(p.wilayah?.nama || p.kategori).replace(/jatimulya/ig, "").replace(/kec\.?\s*cilodong/ig, "").replace(/zona\s*[:-]?/ig, "").replace(/,\s*$/, "").trim()}</div>
       </div>
       
       ${riwayatHtml}
@@ -1056,7 +1058,7 @@ export default function MapView({
 
   return (
     <div className="relative h-full w-full">
-      {/* Tombol Pilihan Basemap: Gojek Clean / Klasik Hangat / Satelit / Mode Malam */}
+      {/* Tombol Pilihan Basemap: Siang / Satelit / Mode Malam */}
       {!hideTileButtons && (
         <div className="absolute top-3 right-3 z-[1000] flex items-center bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl p-1 shadow-lg gap-1">
           <button
@@ -1067,21 +1069,9 @@ export default function MapView({
                 ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
             }`}
-            title="Peta Standar Gojek Clean — bersih, nyaman di mata, dan detail jalan sangat jelas"
+            title="Peta Terang / Siang"
           >
-            🛵 Gojek Clean
-          </button>
-          <button
-            type="button"
-            onClick={() => setTileMode("esri-street")}
-            className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all ${
-              tileMode === "esri-street"
-                ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-            }`}
-            title="Peta jalan bernuansa hangat dan nyaman khas navigasi"
-          >
-            🗺️ Klasik Hangat
+            ☀️ Siang
           </button>
           <button
             type="button"

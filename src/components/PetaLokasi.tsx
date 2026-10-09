@@ -99,7 +99,7 @@ export default function PetaLokasi({
 
   const center: [number, number] = valid ? [latitude!, longitude!] : PUSAT_DEPOK;
 
-  const tileConfig = getMapTileConfig("light");
+  const tileConfig = getMapTileConfig("osm");
 
   return (
     <MapContainer

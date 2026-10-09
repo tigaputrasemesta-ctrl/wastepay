@@ -91,7 +91,7 @@ export default function MapJemput({ pickup, truk, userPos }: Props) {
     ? [pickup.latitude, pickup.longitude]
     : PUSAT_DEPOK;
 
-  const tileConfig = useMemo(() => getMapTileConfig("light"), []);
+  const tileConfig = useMemo(() => getMapTileConfig("osm"), []);
 
   return (
     <MapContainer

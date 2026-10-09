@@ -686,21 +686,9 @@ export default function PetaMap({
                   ? "bg-emerald-600 text-white font-extrabold shadow-sm"
                   : isDark ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
               }`}
-              title="Peta Standar Gojek Clean — bersih, nyaman di mata"
+              title="Peta Terang / Siang"
             >
-              🛵 Gojek Clean
-            </button>
-            <button
-              type="button"
-              onClick={() => setTileMode("esri-street")}
-              className={`px-2.5 py-1 rounded-lg transition ${
-                tileMode === "esri-street"
-                  ? "bg-emerald-600 text-white font-extrabold shadow-sm"
-                  : isDark ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
-              }`}
-              title="Peta jalan bernuansa hangat dan nyaman khas navigasi"
-            >
-              🗺️ Klasik Hangat
+              ☀️ Siang
             </button>
             <button
               type="button"
