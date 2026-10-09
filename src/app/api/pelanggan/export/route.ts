@@ -63,22 +63,17 @@ export async function GET(request: Request) {
     ],
   });
 
-  const kategoriTarifList = await prisma.opsiSistem.findUnique({
-    where: { key: "kategori_tarif" }
+  const kategoriTarifList = await prisma.kategoriTarif.findMany({
+    select: { kategori: true, tarif: true }
   });
   
   let tarifMap: Record<string, number> = {};
-  if (kategoriTarifList && kategoriTarifList.value) {
-    try {
-      const parsed = JSON.parse(kategoriTarifList.value as string);
-      if (Array.isArray(parsed)) {
-        parsed.forEach((k: any) => {
-          if (k.kategori && typeof k.tarif === 'number') {
-            tarifMap[k.kategori] = k.tarif;
-          }
-        });
+  if (Array.isArray(kategoriTarifList)) {
+    kategoriTarifList.forEach((k: any) => {
+      if (k.kategori && typeof k.tarif === 'number') {
+        tarifMap[k.kategori] = k.tarif;
       }
-    } catch (e) {}
+    });
   }
 
   const rows: (string | number | null)[][] = [];
