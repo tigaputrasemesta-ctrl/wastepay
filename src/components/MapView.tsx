@@ -708,12 +708,12 @@ function ClusterPins({
   isMovingRef: React.MutableRefObject<boolean>;
 }) {
   const map = useMap();
-  const groupRef = useRef<L.FeatureGroup | null>(null);
+  const groupRef = useRef<L.MarkerClusterGroup | null>(null);
   const markersRef = useRef<Map<number, L.Marker>>(new Map());
   const clickedFromMapRef = useRef(false);
 
   useEffect(() => {
-    const group = L.featureGroup();
+    const group = L.markerClusterGroup({ maxClusterRadius: 40, showCoverageOnHover: false });
     groupRef.current = group;
     markersRef.current.clear();
 
