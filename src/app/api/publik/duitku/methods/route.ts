@@ -3,7 +3,7 @@ import { getPaymentMethods } from "@/lib/duitku";
 import { channelAllowed, DUITKU_METHODS } from "@/lib/duitku-channels";
 import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
 
-const FEE_CODES = new Set(["QR", "SQ", "SP"]);
+const FEE_CODES = new Set<string>(["SP", "SQ"]);
 const BIAYA_ADMIN = 1000;
 
 /**

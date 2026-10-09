@@ -18,10 +18,14 @@
 export function channelAllowed(paymentMethod?: string | null): boolean {
   const m = (paymentMethod || "").toUpperCase();
   if (!m) return false;
+  
+  // Hanya menghilangkan opsi "QR" (QRIS Nasional), biarkan NusaPay (SQ) dan ShopeePay (SP)
+  if (m === "QR") return false;
+
   const env = process.env.DUITKU_CHANNELS?.trim();
   const allowed = env
     ? env.split(",").map((s) => s.trim().toUpperCase()).filter(Boolean)
-    : ["SQ", "SP", "QR"];
+    : ["SP", "SQ"];
   return allowed.includes(m);
 }
 
@@ -61,10 +65,7 @@ export type DuitkuPaymentMethod = {
  * Daftar channel pembayaran default (fallback) — dipakai jika getPaymentMethods
  * belum aktif/gagal. id dipakai sebagai paymentMethod Duitku.
  */
-// Fallback saat getPaymentMethods gagal — hanya channel yang benar-benar
-// tersedia (lihat channelAllowed); jangan tampilkan channel yang pasti gagal.
-export const DUITKU_METHODS = [
-  { value: "QR", label: "QRIS", icon: "📱", imageUrl: "https://images.duitku.com/hotlink-ok/QR.PNG", totalFee: "1000" },
+export const DUITKU_METHODS: any[] = [
   { value: "SP", label: "ShopeePay", icon: "📱", imageUrl: "https://images.duitku.com/hotlink-ok/SP.PNG", totalFee: "1000" },
   { value: "SQ", label: "NusaPay QRIS", icon: "📱", imageUrl: "https://images.duitku.com/hotlink-ok/SQ.PNG", totalFee: "1000" },
 ];
