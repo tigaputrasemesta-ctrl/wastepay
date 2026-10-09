@@ -36,7 +36,6 @@ export function hasRole(user: SessionUser, minRole: Role): boolean {
 export function getAllowedMenus(role: string): string[] {
   const allMenus = [
     "dashboard",
-    "live-report",
     "daftar",
     "survei",
     "pelanggan",

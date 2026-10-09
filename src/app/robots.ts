@@ -50,7 +50,6 @@ export default function robots(): MetadataRoute.Robots {
           // Autentikasi & Aplikasi Mobile Driver
           "/login",
           "/m",
-          "/live",
           // Faktur spesifik & dokumen cetak kasir (privasi data keuangan warga)
           "/bayar-tagihan",
           "/invoice-tagihan",
