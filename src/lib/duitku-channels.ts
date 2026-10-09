@@ -66,6 +66,6 @@ export type DuitkuPaymentMethod = {
 export const DUITKU_METHODS = [
   { value: "QR", label: "QRIS", icon: "📱", imageUrl: "https://images.duitku.com/hotlink-ok/QR.PNG", totalFee: "1000" },
   { value: "OVO", label: "OVO", icon: "📱", imageUrl: "https://images.duitku.com/hotlink-ok/OVO.PNG" },
-  { value: "SP", label: "ShopeePay", icon: "📱", imageUrl: "https://images.duitku.com/hotlink-ok/SP.PNG" },
+  { value: "SP", label: "ShopeePay", icon: "📱", imageUrl: "https://images.duitku.com/hotlink-ok/SP.PNG", totalFee: "1000" },
   { value: "SQ", label: "NusaPay QRIS", icon: "📱", imageUrl: "https://images.duitku.com/hotlink-ok/SQ.PNG", totalFee: "1000" },
 ];

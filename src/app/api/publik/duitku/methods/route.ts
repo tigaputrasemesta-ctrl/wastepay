@@ -34,7 +34,7 @@ export async function GET(request: Request) {
   // Filter: hanya channel yang benar-benar aktif di merchant (inquiry terverifikasi).
   // getPaymentMethod Duitku sering mengembalikan channel "enabled" yang saat
   // inquiry ditolak (HTTP 404 "Payment channel not available").
-  const QRIS_CODES = new Set(["QR", "SQ"]);
+  const QRIS_CODES = new Set(["QR", "SQ", "SP"]);
   const BIAYA_ADMIN_QRIS = 1000;
   const methods = raw
     .filter((m) => channelAllowed(m.paymentMethod))

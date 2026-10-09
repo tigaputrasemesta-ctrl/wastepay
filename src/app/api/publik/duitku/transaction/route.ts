@@ -110,7 +110,7 @@ export async function POST(request: Request) {
 
     // Biaya admin Rp 1.000 untuk pembayaran QRIS — dibebankan ke pelanggan
     const metodeUpper = String(paymentMethod).trim().toUpperCase();
-    const isQris = metodeUpper === "QR" || metodeUpper === "SQ";
+    const isQris = metodeUpper === "QR" || metodeUpper === "SQ" || metodeUpper === "SP";
     const biayaAdmin = isQris ? 1000 : 0;
     const total = totalTagihan + biayaAdmin;
 
