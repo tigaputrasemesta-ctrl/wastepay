@@ -112,28 +112,46 @@ export async function GET(request: Request) {
     "Total Dibayar (Rp)"
   ]);
 
-  tagihanList.forEach((t, idx) => {
-    const lunas = t.status === "lunas";
-    const p = t.pembayaran.length > 0 ? t.pembayaran[0] : null;
+  const groupedTagihan: Record<string, typeof tagihanList> = {};
+  tagihanList.forEach((t) => {
     const zonaNama = t.pelanggan.wilayah?.zona?.nama || "Tanpa Zona";
-    
-    rows.push([
-      idx + 1,
-      t.pelanggan.kodePelanggan,
-      t.pelanggan.nama,
-      zonaNama,
-      t.pelanggan.alamat,
-      `${NAMA_BULAN[t.bulan - 1]} ${t.tahun}`,
-      t.jumlah,
-      t.denda || 0,
-      lunas ? "LUNAS" : (t.status === "tunggakan" ? "TUNGGAKAN" : "BELUM BAYAR"),
-      lunas && p ? formatTanggalSingkat(p.createdAt) : "",
-      lunas && p ? labelMetode(p.metode) : "",
-      lunas && p ? p.jumlah : 0
-    ]);
+    if (!groupedTagihan[zonaNama]) groupedTagihan[zonaNama] = [];
+    groupedTagihan[zonaNama].push(t);
   });
 
-  const csv = rows.map((r) => r.map(csvEscape).join(",")).join("\r\n");
+  const sortedZonas = Object.keys(groupedTagihan).sort((a, b) => {
+    if (a === "Tanpa Zona") return 1;
+    if (b === "Tanpa Zona") return -1;
+    return a.localeCompare(b);
+  });
+
+  sortedZonas.forEach((zonaNama) => {
+    const list = groupedTagihan[zonaNama];
+    rows.push([]);
+    rows.push([`ZONA: ${zonaNama.toUpperCase()} (${list.length} Tagihan)`]);
+    
+    list.forEach((t, idx) => {
+      const lunas = t.status === "lunas";
+      const p = t.pembayaran.length > 0 ? t.pembayaran[0] : null;
+      
+      rows.push([
+        idx + 1,
+        t.pelanggan.kodePelanggan,
+        t.pelanggan.nama,
+        zonaNama,
+        t.pelanggan.alamat,
+        `${NAMA_BULAN[t.bulan - 1]} ${t.tahun}`,
+        t.jumlah,
+        t.denda || 0,
+        lunas ? "LUNAS" : (t.status === "tunggakan" ? "TUNGGAKAN" : "BELUM BAYAR"),
+        lunas && p ? formatTanggalSingkat(p.createdAt) : "",
+        lunas && p ? labelMetode(p.metode) : "",
+        lunas && p ? p.jumlah : 0
+      ]);
+    });
+  });
+
+  const csv = rows.map((r) => r.map(csvEscape).join(";")).join("\r\n");
 
   // Output as CSV that can be directly opened in Excel nicely
   return new NextResponse("\uFEFF" + csv, {

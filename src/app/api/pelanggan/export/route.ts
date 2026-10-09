@@ -150,7 +150,7 @@ export async function GET(request: Request) {
     });
   });
 
-  const csv = rows.map((r) => r.map(csvEscape).join(",")).join("\r\n");
+  const csv = rows.map((r) => r.map(csvEscape).join(";")).join("\r\n");
 
   const today = new Date().toISOString().split("T")[0];
   
