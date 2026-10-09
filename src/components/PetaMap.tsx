@@ -97,7 +97,7 @@ export type PelangganPeta = {
   longitude: number | null;
   patokanLokasi: string | null;
   statusTagihan: string | null;
-  riwayatTagihan?: { bulan: number; tahun: number; status: string }[];
+  riwayatTagihan?: { bulan: number; tahun: number; status: string; jatuhTempo: string | null; jumlah: number }[];
   wilayah: {
     id: number;
     nama: string;

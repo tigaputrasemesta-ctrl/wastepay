@@ -69,7 +69,7 @@ export default async function PetaPage() {
           : petugasTanpaProfil
             ? { id: -1 }
             : {},
-        select: { pelangganId: true, status: true, bulan: true, tahun: true },
+        select: { pelangganId: true, status: true, bulan: true, tahun: true, jatuhTempo: true, jumlah: true },
         orderBy: [{ tahun: "desc" }, { bulan: "desc" }],
       }),
       prisma.rute.findMany({
@@ -99,12 +99,12 @@ export default async function PetaPage() {
     wilayahList = wList;
 
     // Riwayat Tagihan per pelanggan (Maks 6 bulan terakhir)
-    const riwayatMap = new Map<number, { bulan: number; tahun: number; status: string }[]>();
+    const riwayatMap = new Map<number, { bulan: number; tahun: number; status: string; jatuhTempo: string | null; jumlah: number }[]>();
     for (const t of tagihanList) {
       if (!riwayatMap.has(t.pelangganId)) riwayatMap.set(t.pelangganId, []);
       const riwayat = riwayatMap.get(t.pelangganId)!;
       if (riwayat.length < 6) { // Ambil 6 tagihan terbaru
-        riwayat.push({ bulan: t.bulan, tahun: t.tahun, status: t.status });
+        riwayat.push({ bulan: t.bulan, tahun: t.tahun, status: t.status, jatuhTempo: t.jatuhTempo ? t.jatuhTempo.toISOString() : null, jumlah: t.jumlah });
       }
     }
 
