@@ -32,22 +32,23 @@ type HasilCek = {
   tagihan: TagihanPublik[];
 };
 
-type MetodeBayar = { value: string; label: string; icon: string; imageUrl?: string };
+type MetodeBayar = { value: string; label: string; icon: string; imageUrl?: string; totalFee?: string };
 
 const ICON_CHANNEL: Record<string, string> = {
   VC: "🏦", VA: "🏦", BT: "🏦", M1: "🏛️", CIMB: "🏛️", BNI: "🏛️",
   BRI: "🏛️", PERMATA: "🏛️", MANDIRI: "🏛️", QR: "📱", SP: "🛍️",
   OVO: "💜", DANA: "🔵", GOPAY: "🟢", LINK_AJA: "🟠", SA: "🕌",
-  CREDIT_CARD: "💳",
+  CREDIT_CARD: "💳", SQ: "📱",
 };
 
-function keMetodeBayar(pm: { paymentMethod: string; paymentName?: string; paymentImage?: string }): MetodeBayar {
+function keMetodeBayar(pm: { paymentMethod: string; paymentName?: string; paymentImage?: string; totalFee?: string }): MetodeBayar {
   const kode = pm.paymentMethod;
   return {
     value: kode,
     label: pm.paymentName || duitkuChannelLabel(kode),
     icon: ICON_CHANNEL[kode] || "💳",
     imageUrl: pm.paymentImage,
+    totalFee: pm.totalFee,
   };
 }
 
@@ -496,7 +497,14 @@ function BayarPortalContent() {
                   ) : (
                     <span className="text-xl shrink-0">{m.icon}</span>
                   )}
-                  <span className="text-xs font-bold text-slate-800 truncate">{m.label}</span>
+                  <div className="flex flex-col flex-1 min-w-0">
+                    <span className="text-xs font-bold text-slate-800 truncate">{m.label}</span>
+                    {m.totalFee && (
+                      <span className="text-[10px] font-medium text-slate-500 truncate">
+                        Biaya Layanan: {m.totalFee === "0" ? "Gratis" : `Rp ${parseInt(m.totalFee).toLocaleString("id-ID")}`}
+                      </span>
+                    )}
+                  </div>
                 </button>
               ))}
             </div>
