@@ -131,11 +131,22 @@ export default async function LaporanPembayaranCetakPage({
     <div className="lp-page-bg">
       <div className="lp-wrapper">
         {/* Toolbar (layar saja) */}
-        <div className="lp-toolbar">
+        <div className="lp-toolbar" style={{ flexWrap: 'wrap', gap: '12px' }}>
           <div className="lp-toolbar-title">
             Laporan Tagihan & Pembayaran per Pelanggan
           </div>
-          <div className="lp-toolbar-actions">
+          <div className="lp-toolbar-actions" style={{ flexWrap: 'wrap' }}>
+            <form method="GET" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <select name="bulan" defaultValue={filterBulan || "all"} style={{ padding: '6px', fontSize: '12px', background: '#3a3d43', color: '#fff', border: 'none', borderRadius: '4px' }}>
+                <option value="all">Semua Bulan</option>
+                {NAMA_BULAN.map((b, i) => <option key={i+1} value={i+1}>{b}</option>)}
+              </select>
+              <select name="tahun" defaultValue={tahun} style={{ padding: '6px', fontSize: '12px', background: '#3a3d43', color: '#fff', border: 'none', borderRadius: '4px' }}>
+                {[2024, 2025, 2026, 2027, 2028].map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+              <button type="submit" style={{ padding: '6px 12px', fontSize: '12px', background: '#b7e13c', color: '#13150a', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>Filter</button>
+            </form>
+            <div style={{ width: '1px', height: '24px', background: '#3a3d43', margin: '0 4px' }}></div>
             <TombolCetak label="Cetak / Unduh PDF" />
             <a 
               href={`/api/laporan/pembayaran/export?bulan=${params.bulan || ''}&tahun=${tahun}&status=${filterStatus}`}
