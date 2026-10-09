@@ -20,21 +20,39 @@ import type { Titik } from "@/lib/geo";
 import type { KomplainPeta, PelangganPeta, RutePeta } from "./PetaMap";
 import { KOMPLAIN_LABEL, KOMPLAIN_WARNA } from "@/lib/komplain";
 
-export function getWarnaTagihan(p: PelangganPeta): { warna: string; label: string; tunggakanCount: number } {
-  if (p.status === "libur" || p.status === "nonaktif") return { warna: "#3b82f6", label: "Libur/Nonaktif", tunggakanCount: 0 };
+
+export function getWarnaTagihan(p: PelangganPeta): { warna: string; label: string; tunggakanCount: number; isStopAngkut: boolean } {
+  if (p.status === "libur" || p.status === "nonaktif") return { warna: "#3b82f6", label: "Libur/Nonaktif", tunggakanCount: 0, isStopAngkut: false };
   
-  if (!p.riwayatTagihan || p.riwayatTagihan.length === 0) return { warna: "#8b8f98", label: "Belum Ada Tagihan", tunggakanCount: 0 };
+  if (!p.riwayatTagihan || p.riwayatTagihan.length === 0) return { warna: "#8b8f98", label: "Belum Ada Tagihan", tunggakanCount: 0, isStopAngkut: false };
 
   let tunggakan = 0;
+  let maxTelatHari = 0;
+  
   for (const t of p.riwayatTagihan) {
-    if (t.status === "tunggakan" || t.status === "belum_bayar") tunggakan++;
+    if (t.status === "tunggakan" || t.status === "belum_bayar") {
+      tunggakan++;
+      if (t.jatuhTempo) {
+        const jt = new Date(t.jatuhTempo);
+        const selisihMs = new Date().getTime() - jt.getTime();
+        const selisihHari = Math.floor(selisihMs / (1000 * 60 * 60 * 24));
+        if (selisihHari > maxTelatHari) {
+          maxTelatHari = selisihHari;
+        }
+      }
+    }
   }
 
-  if (tunggakan === 0) return { warna: "#10b981", label: "Lunas", tunggakanCount: 0 };
-  if (tunggakan === 1) return { warna: "#eab308", label: "Tunggakan 1 Bln", tunggakanCount: 1 };
-  if (tunggakan === 2) return { warna: "#f97316", label: "Tunggakan 2 Bln", tunggakanCount: 2 };
-  return { warna: "#ef4444", label: "Tunggakan 3+ Bln", tunggakanCount: tunggakan };
+  const isStopAngkut = maxTelatHari >= 7;
+
+  if (isStopAngkut) return { warna: "#0f172a", label: "STOP ANGKUT (>7 Hari)", tunggakanCount: tunggakan, isStopAngkut: true }; // Hitam / Dark Slate
+
+  if (tunggakan === 0) return { warna: "#10b981", label: "Lunas", tunggakanCount: 0, isStopAngkut: false };
+  if (tunggakan === 1) return { warna: "#eab308", label: "Tunggakan 1 Bln", tunggakanCount: 1, isStopAngkut: false };
+  if (tunggakan === 2) return { warna: "#f97316", label: "Tunggakan 2 Bln", tunggakanCount: 2, isStopAngkut: false };
+  return { warna: "#ef4444", label: "Tunggakan 3+ Bln", tunggakanCount: tunggakan, isStopAngkut: false };
 }
+
 
 import { getMapTileConfig, type MapTileType } from "@/lib/map-tile";
 import HeatmapLayer from "./HeatmapLayer";
@@ -333,6 +351,7 @@ function buatIconKomplain(warna: string, aktif: boolean, isBaru: boolean = false
 
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
 
+
 function popupHtml(p: PelangganPeta): string {
   try {
     const warnaInfo = getWarnaTagihan(p);
@@ -352,13 +371,19 @@ function popupHtml(p: PelangganPeta): string {
       tarifTagihan = formatRp(p.riwayatTagihan[0].jumlah);
     }
 
+    let isStopAngkut = warnaInfo.isStopAngkut;
+
     // Hitung telat berapa hari
-    const hitungTelat = (jatuhTempoIso: string | null) => {
-      if (!jatuhTempoIso) return "";
+    const hitungTelatRaw = (jatuhTempoIso: string | null) => {
+      if (!jatuhTempoIso) return 0;
       const jt = new Date(jatuhTempoIso);
       const skrg = new Date();
       const selisihMs = skrg.getTime() - jt.getTime();
-      const selisihHari = Math.floor(selisihMs / (1000 * 60 * 60 * 24));
+      return Math.floor(selisihMs / (1000 * 60 * 60 * 24));
+    };
+
+    const hitungTelat = (jatuhTempoIso: string | null) => {
+      const selisihHari = hitungTelatRaw(jatuhTempoIso);
       if (selisihHari > 0) return `telat ${selisihHari} hari`;
       return "";
     };
@@ -370,7 +395,13 @@ function popupHtml(p: PelangganPeta): string {
             ${p.riwayatTagihan.map(t => {
               const isLunas = t.status === 'lunas';
               const nm = monthNames[t.bulan - 1] || t.bulan;
+              
+              const hariTelat = hitungTelatRaw(t.jatuhTempo);
               const textTelat = (!isLunas && t.status !== 'libur') ? hitungTelat(t.jatuhTempo) : "";
+              
+              if (!isLunas && t.status !== 'libur' && hariTelat >= 7) {
+                isStopAngkut = true;
+              }
               
               if (isLunas) {
                 return `<div style="display:flex;justify-content:space-between;font-size:10px;background:#ecfdf5;color:#059669;padding:4px 8px;border-radius:4px;font-weight:700;">
@@ -397,6 +428,16 @@ function popupHtml(p: PelangganPeta): string {
              </div>`
           : ""
       }
+      
+      ${
+        isStopAngkut
+          ? `<div style="background:#ef4444;color:#ffffff;padding:6px;border-radius:6px;font-weight:800;font-size:11px;text-align:center;margin-bottom:10px;box-shadow:0 2px 5px rgba(239,68,68,0.4);animation: pulse 2s infinite;">
+               🛑 SUSPEND / JANGAN DIANGKUT
+               <div style="font-size:9px;font-weight:600;opacity:0.9;">Tunggakan lebih dari 7 hari</div>
+             </div>`
+          : ""
+      }
+      
       <div style="margin-bottom:8px;">
         <div style="font-weight:800;font-size:15px;color:#0f172a;letter-spacing:-0.2px;">${esc(p.nama)}</div>
         <div style="color:#059669;font-size:12px;font-weight:700;font-family:ui-monospace,monospace;">${esc(p.kodePelanggan)}</div>
@@ -684,7 +725,7 @@ function ClusterPins({
         continue;
       }
       const m = L.marker([p.latitude, p.longitude], {
-        icon: buatIcon(getWarnaTagihan(p).warna, getWarnaTagihan(p).tunggakanCount >= 3),
+        icon: buatIcon(getWarnaTagihan(p).warna, getWarnaTagihan(p).isStopAngkut),
         bubblingMouseEvents: false,
       });
       
