@@ -1,3 +1,4 @@
+import React from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
@@ -56,6 +57,13 @@ export default async function LaporanPembayaranCetakPage({
           kodePelanggan: true,
           nama: true,
           alamat: true,
+          wilayah: {
+            select: {
+              zona: {
+                select: { nama: true }
+              }
+            }
+          }
         },
       },
       pembayaran: {
@@ -78,12 +86,25 @@ export default async function LaporanPembayaranCetakPage({
   let totalDenda = 0;
   let totalTerbayar = 0;
 
+  // Grouping by Zona
+  const groupedTagihan: Record<string, typeof tagihanList> = {};
+
   tagihanList.forEach((t) => {
     totalTagihan += t.jumlah;
     if (t.denda) totalDenda += t.denda;
     if (t.status === "lunas" && t.pembayaran.length > 0) {
       totalTerbayar += t.pembayaran[0].jumlah;
     }
+
+    const zonaNama = t.pelanggan.wilayah?.zona?.nama || "Tanpa Zona";
+    if (!groupedTagihan[zonaNama]) groupedTagihan[zonaNama] = [];
+    groupedTagihan[zonaNama].push(t);
+  });
+
+  const sortedZonas = Object.keys(groupedTagihan).sort((a, b) => {
+    if (a === "Tanpa Zona") return 1;
+    if (b === "Tanpa Zona") return -1;
+    return a.localeCompare(b);
   });
 
   // Helper untuk format tanggal
@@ -180,38 +201,51 @@ export default async function LaporanPembayaranCetakPage({
                 </tr>
               </thead>
               <tbody>
-                {tagihanList.length === 0 ? (
+                {sortedZonas.length === 0 ? (
                   <tr>
                     <td colSpan={9} style={{ textAlign: 'center', padding: '20px', fontStyle: 'italic', color: '#6b6e66' }}>
                       Tidak ada data tagihan untuk periode ini.
                     </td>
                   </tr>
                 ) : (
-                  tagihanList.map((t, idx) => {
-                    const lunas = t.status === "lunas";
-                    const p = t.pembayaran.length > 0 ? t.pembayaran[0] : null;
+                  sortedZonas.map((zonaNama) => {
+                    const tList = groupedTagihan[zonaNama];
                     return (
-                      <tr key={t.id}>
-                        <td>{idx + 1}</td>
-                        <td style={{ fontFamily: 'monospace' }}>{t.pelanggan.kodePelanggan}</td>
-                        <td>
-                          <div style={{ fontWeight: 600 }}>{t.pelanggan.nama}</div>
-                        </td>
-                        <td>{NAMA_BULAN[t.bulan - 1]} {t.tahun}</td>
-                        <td className="ta-r">{t.jumlah.toLocaleString("id-ID")}</td>
-                        <td className="ta-r">{t.denda ? t.denda.toLocaleString("id-ID") : "-"}</td>
-                        <td>
-                          {lunas ? (
-                            <span style={{ color: '#1a7a34', fontWeight: 600 }}>LUNAS</span>
-                          ) : (
-                            <span style={{ color: '#b31220', fontWeight: 600 }}>
-                              {t.status === "tunggakan" ? "TUNGGAKAN" : "BELUM BAYAR"}
-                            </span>
-                          )}
-                        </td>
-                        <td>{lunas && p ? formatTanggalSingkat(p.createdAt) : "-"}</td>
-                        <td>{lunas && p ? labelMetode(p.metode) : "-"}</td>
-                      </tr>
+                      <React.Fragment key={zonaNama}>
+                        {/* Header Zona */}
+                        <tr>
+                          <td colSpan={9} style={{ backgroundColor: '#e9ecef', fontWeight: 'bold', fontSize: '11px', textAlign: 'center', padding: '6px' }}>
+                            ZONA: {zonaNama.toUpperCase()}
+                          </td>
+                        </tr>
+                        {tList.map((t, idx) => {
+                          const lunas = t.status === "lunas";
+                          const p = t.pembayaran.length > 0 ? t.pembayaran[0] : null;
+                          return (
+                            <tr key={t.id}>
+                              <td>{idx + 1}</td>
+                              <td style={{ fontFamily: 'monospace' }}>{t.pelanggan.kodePelanggan}</td>
+                              <td>
+                                <div style={{ fontWeight: 600 }}>{t.pelanggan.nama}</div>
+                              </td>
+                              <td>{NAMA_BULAN[t.bulan - 1]} {t.tahun}</td>
+                              <td className="ta-r">{t.jumlah.toLocaleString("id-ID")}</td>
+                              <td className="ta-r">{t.denda ? t.denda.toLocaleString("id-ID") : "-"}</td>
+                              <td>
+                                {lunas ? (
+                                  <span style={{ color: '#1a7a34', fontWeight: 600 }}>LUNAS</span>
+                                ) : (
+                                  <span style={{ color: '#b31220', fontWeight: 600 }}>
+                                    {t.status === "tunggakan" ? "TUNGGAKAN" : "BELUM BAYAR"}
+                                  </span>
+                                )}
+                              </td>
+                              <td>{lunas && p ? formatTanggalSingkat(p.createdAt) : "-"}</td>
+                              <td>{lunas && p ? labelMetode(p.metode) : "-"}</td>
+                            </tr>
+                          );
+                        })}
+                      </React.Fragment>
                     );
                   })
                 )}

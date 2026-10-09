@@ -49,6 +49,13 @@ export async function GET(request: Request) {
           kodePelanggan: true,
           nama: true,
           alamat: true,
+          wilayah: {
+            select: {
+              zona: {
+                select: { nama: true }
+              }
+            }
+          }
         },
       },
       pembayaran: {
@@ -94,6 +101,7 @@ export async function GET(request: Request) {
     "No", 
     "No Pelanggan", 
     "Nama Pelanggan", 
+    "Zona",
     "Alamat", 
     "Bulan Tagihan", 
     "Nominal Tagihan (Rp)", 
@@ -107,11 +115,13 @@ export async function GET(request: Request) {
   tagihanList.forEach((t, idx) => {
     const lunas = t.status === "lunas";
     const p = t.pembayaran.length > 0 ? t.pembayaran[0] : null;
+    const zonaNama = t.pelanggan.wilayah?.zona?.nama || "Tanpa Zona";
     
     rows.push([
       idx + 1,
       t.pelanggan.kodePelanggan,
       t.pelanggan.nama,
+      zonaNama,
       t.pelanggan.alamat,
       `${NAMA_BULAN[t.bulan - 1]} ${t.tahun}`,
       t.jumlah,
