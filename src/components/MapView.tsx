@@ -713,7 +713,11 @@ function ClusterPins({
   const clickedFromMapRef = useRef(false);
 
   useEffect(() => {
-    const group = L.markerClusterGroup({ maxClusterRadius: 40, showCoverageOnHover: false });
+    const group = L.markerClusterGroup({ 
+      maxClusterRadius: 40, 
+      showCoverageOnHover: false,
+      disableClusteringAtZoom: 16 // Memecah otomatis semua cluster saat di-zoom in (level 16+)
+    });
     groupRef.current = group;
     markersRef.current.clear();
 
