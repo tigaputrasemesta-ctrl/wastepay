@@ -21,7 +21,7 @@ export function channelAllowed(paymentMethod?: string | null): boolean {
   const env = process.env.DUITKU_CHANNELS?.trim();
   const allowed = env
     ? env.split(",").map((s) => s.trim().toUpperCase()).filter(Boolean)
-    : ["SQ"];
+    : ["SQ", "OVO", "SP", "QR"];
   return allowed.includes(m);
 }
 
@@ -64,5 +64,8 @@ export type DuitkuPaymentMethod = {
 // Fallback saat getPaymentMethods gagal — hanya channel yang benar-benar
 // tersedia (lihat channelAllowed); jangan tampilkan channel yang pasti gagal.
 export const DUITKU_METHODS = [
+  { value: "QR", label: "QRIS", icon: "📱", imageUrl: "https://images.duitku.com/hotlink-ok/QR.PNG" },
+  { value: "OVO", label: "OVO", icon: "📱", imageUrl: "https://images.duitku.com/hotlink-ok/OVO.PNG" },
+  { value: "SP", label: "ShopeePay", icon: "📱", imageUrl: "https://images.duitku.com/hotlink-ok/SP.PNG" },
   { value: "SQ", label: "NusaPay QRIS", icon: "📱", imageUrl: "https://images.duitku.com/hotlink-ok/SQ.PNG" },
 ];
