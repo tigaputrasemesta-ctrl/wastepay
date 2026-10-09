@@ -51,6 +51,7 @@ export default async function PetaTvPage({
       nama: true,
       kodePelanggan: true,
       alamat: true,
+      fotoRumah: true,
       rtRw: true,
       noTelepon: true,
       status: true,

@@ -88,6 +88,7 @@ export type PelangganPeta = {
   nama: string;
   kodePelanggan: string;
   alamat: string;
+  fotoRumah: string | null;
   rtRw: string | null;
   noTelepon: string | null;
   status: string;

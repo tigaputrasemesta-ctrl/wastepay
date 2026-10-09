@@ -324,6 +324,13 @@ function popupHtml(p: PelangganPeta): string {
     const isLunas = p.statusTagihan === "lunas";
     
     return `<div style="font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:11px;min-width:210px;line-height:1.4">
+      ${
+        p.fotoRumah
+          ? `<div style="margin:-14px -14px 10px -14px;border-radius:12px 12px 0 0;overflow:hidden;background:#f1f5f9;">
+               <img src="${esc(p.fotoRumah)}" alt="Foto Rumah" style="width:100%;height:140px;object-fit:cover;display:block;" onerror="this.style.display='none'" />
+             </div>`
+          : ""
+      }
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;border-bottom:1px solid #e2e8f0;padding-bottom:6px;">
         <div>
           <div style="font-weight:800;font-size:14px;color:#0f172a;letter-spacing:-0.2px;">${esc(p.nama)}</div>
@@ -625,6 +632,13 @@ function ClusterPins({
         icon: buatIcon(warnaStatus[p.status] ?? "#8b8f98", p.statusTagihan === "tunggakan"),
         bubblingMouseEvents: false,
       });
+      
+      // Tambahkan Tooltip nama pelanggan yang muncul saat di-hover (sebelum diklik)
+      m.bindTooltip(
+        `<div style="font-weight:700;font-size:10px;font-family:'Plus Jakarta Sans',system-ui">${esc(p.nama)}</div>`,
+        { direction: "top", offset: [0, -16], sticky: true, opacity: 0.95 }
+      );
+
       m.bindPopup(popupHtml(p), { autoPan: false });
       m.on("click", (e: L.LeafletMouseEvent) => {
         // 1. Abaikan klik jika peta sedang bergerak/zoom (mencegah klik saat scroll mouse)
