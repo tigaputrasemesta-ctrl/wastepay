@@ -714,9 +714,10 @@ function ClusterPins({
 
   useEffect(() => {
     const group = L.markerClusterGroup({ 
-      maxClusterRadius: 40, 
+      maxClusterRadius: 30, 
       showCoverageOnHover: false,
-      disableClusteringAtZoom: 16 // Memecah otomatis semua cluster saat di-zoom in (level 16+)
+      disableClusteringAtZoom: 18, // Memecah otomatis semua cluster saat di-zoom in
+      iconCreateFunction: clusterIcon
     });
     groupRef.current = group;
     markersRef.current.clear();

@@ -1636,14 +1636,14 @@ export default function PetaMap({
           
           {/* Legenda Indikator Peta */}
           {activeTab === "pelanggan" && (
-            <div className={`absolute bottom-6 z-[400] p-3 rounded-xl border shadow-lg backdrop-blur-md text-[10px] font-bold space-y-1.5 transition-all duration-300 ${hasInspector ? "hidden sm:block sm:right-[400px]" : "right-4"} ${isDark ? "bg-slate-900/90 border-slate-700/50 text-slate-200" : "bg-white/95 border-slate-200/80 text-slate-700"}`}>
-              <p className="mb-2 text-[9px] opacity-70 uppercase tracking-widest text-center">Warna Pelanggan</p>
-              <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#10b981] shadow-inner border border-black/10"></div> Lunas</div>
-              <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#eab308] shadow-inner border border-black/10"></div> Tunggakan 1 Bln</div>
-              <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#f97316] shadow-inner border border-black/10"></div> Tunggakan 2 Bln</div>
-              <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#ef4444] shadow-inner border border-black/10"></div> Tunggakan ≥ 3 Bln</div>
-              <div className="flex items-center gap-2 mt-2 pt-2 border-t border-slate-500/30"><div className="w-3 h-3 rounded-full bg-[#0f172a] shadow-inner border border-white/20 animate-pulse"></div> STOP ANGKUT (&gt;7 Hari)</div>
-              <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#3b82f6] shadow-inner border border-black/10"></div> Libur / Nonaktif</div>
+            <div className={`absolute bottom-6 z-[600] p-2 rounded-xl border shadow-lg backdrop-blur-md text-[9px] font-bold space-y-1 transition-all duration-300 ${hasInspector ? "right-4 sm:right-[400px]" : "right-4"} ${isDark ? "bg-slate-900/90 border-slate-700/50 text-slate-200" : "bg-white/95 border-slate-200/80 text-slate-700"}`}>
+              <p className="mb-1 text-[8px] opacity-70 uppercase tracking-widest text-center">Warna Pelanggan</p>
+              <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-[#10b981] shadow-inner border border-black/10"></div> Lunas</div>
+              <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-[#eab308] shadow-inner border border-black/10"></div> Tunggakan 1 Bln</div>
+              <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-[#f97316] shadow-inner border border-black/10"></div> Tunggakan 2 Bln</div>
+              <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-[#ef4444] shadow-inner border border-black/10"></div> Tunggakan ≥ 3 Bln</div>
+              <div className="flex items-center gap-1.5 mt-1 pt-1 border-t border-slate-500/30"><div className="w-2.5 h-2.5 rounded-full bg-[#0f172a] shadow-inner border border-white/20 animate-pulse"></div> STOP ANGKUT</div>
+              <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-[#3b82f6] shadow-inner border border-black/10"></div> Libur / Nonaktif</div>
             </div>
           )}
           <MapErrorBoundary>
@@ -1686,7 +1686,7 @@ export default function PetaMap({
 
         {/* ── RIGHT FLYOUT INSPECTOR DRAWER (LoadSwift Inspired Telemetry Drawer) ── */}
         {hasInspector && (
-          <div className={`w-full sm:w-96 backdrop-blur-xl border-l absolute right-0 top-0 bottom-0 z-20 shadow-2xl flex flex-col transition-all duration-300 animate-in slide-in-from-right ${
+          <div className={`w-full sm:w-96 backdrop-blur-xl border-l absolute right-0 top-0 bottom-0 z-[500] shadow-2xl flex flex-col transition-all duration-300 animate-in slide-in-from-right ${
             isDark
               ? "bg-[#181b22]/95 border-slate-800 text-slate-100"
               : "bg-white/95 border-slate-200 text-slate-800 shadow-slate-300"
