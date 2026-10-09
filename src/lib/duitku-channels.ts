@@ -64,8 +64,8 @@ export type DuitkuPaymentMethod = {
 // Fallback saat getPaymentMethods gagal — hanya channel yang benar-benar
 // tersedia (lihat channelAllowed); jangan tampilkan channel yang pasti gagal.
 export const DUITKU_METHODS = [
-  { value: "QR", label: "QRIS", icon: "📱", imageUrl: "https://images.duitku.com/hotlink-ok/QR.PNG" },
+  { value: "QR", label: "QRIS", icon: "📱", imageUrl: "https://images.duitku.com/hotlink-ok/QR.PNG", totalFee: "1000" },
   { value: "OVO", label: "OVO", icon: "📱", imageUrl: "https://images.duitku.com/hotlink-ok/OVO.PNG" },
   { value: "SP", label: "ShopeePay", icon: "📱", imageUrl: "https://images.duitku.com/hotlink-ok/SP.PNG" },
-  { value: "SQ", label: "NusaPay QRIS", icon: "📱", imageUrl: "https://images.duitku.com/hotlink-ok/SQ.PNG" },
+  { value: "SQ", label: "NusaPay QRIS", icon: "📱", imageUrl: "https://images.duitku.com/hotlink-ok/SQ.PNG", totalFee: "1000" },
 ];

@@ -521,7 +521,15 @@ function BayarPortalContent() {
               onClick={bayarOnlineDuitku}
               className="w-full py-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white font-bold text-sm shadow-sm transition active:scale-95 flex items-center justify-center gap-2"
             >
-              {bayarLoading ? "Menghubungkan ke Gateway..." : `Bayar Sekarang (${formatRupiahSkylite(detail.total)})`}
+              {(() => {
+                if (bayarLoading) return "Menghubungkan ke Gateway...";
+                const selected = metodeList.find((m) => m.value === pilihMetode);
+                const fee = selected?.totalFee ? parseInt(selected.totalFee) || 0 : 0;
+                const grandTotal = detail.total + fee;
+                return fee > 0
+                  ? `Bayar ${formatRupiahSkylite(grandTotal)} (termasuk admin Rp ${fee.toLocaleString("id-ID")})`
+                  : `Bayar Sekarang (${formatRupiahSkylite(detail.total)})`;
+              })()}
             </button>
           </div>
         ) : (

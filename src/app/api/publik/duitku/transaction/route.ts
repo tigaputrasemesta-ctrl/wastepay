@@ -106,7 +106,13 @@ export async function POST(request: Request) {
 
     // Total yang ditagih = jumlah + PPN 11% + denda — sama dengan yang tampil di invoice
     // (lihat hitungRincian di src/lib/invoice.ts)
-    const total = hitungRincian(tagihan.jumlah, tagihan.denda).total;
+    const totalTagihan = hitungRincian(tagihan.jumlah, tagihan.denda).total;
+
+    // Biaya admin Rp 1.000 untuk pembayaran QRIS — dibebankan ke pelanggan
+    const metodeUpper = String(paymentMethod).trim().toUpperCase();
+    const isQris = metodeUpper === "QR" || metodeUpper === "SQ";
+    const biayaAdmin = isQris ? 1000 : 0;
+    const total = totalTagihan + biayaAdmin;
 
     // OrderId acak (tidak dapat ditebak/enumerasi) — hindari IDOR via endpoint status publik
     const orderId = `DW-${crypto.randomBytes(8).toString("hex").toUpperCase()}`;
@@ -115,8 +121,8 @@ export async function POST(request: Request) {
     const dt = await createPayment({
       orderId,
       amount: total,
-      paymentMethod: String(paymentMethod).trim().toUpperCase(),
-      productDetails: `Iuran sampah ${BULAN[tagihan.bulan - 1]} ${tagihan.tahun} — ${pelanggan.nama}`,
+      paymentMethod: metodeUpper,
+      productDetails: `Iuran sampah ${BULAN[tagihan.bulan - 1]} ${tagihan.tahun} — ${pelanggan.nama}${biayaAdmin ? ` (termasuk biaya admin Rp ${biayaAdmin.toLocaleString("id-ID")})` : ""}`,
       customerVaName: pelanggan.nama,
       phoneNumber: pelanggan.noTelepon || undefined,
     });
@@ -130,7 +136,7 @@ export async function POST(request: Request) {
           jumlah: total,
           metode: "duitku",
           status: "pending",
-          catatan: `Payment Gateway Via Duitku (${paymentMethod})`,
+          catatan: `Payment Gateway Via Duitku (${metodeUpper})${biayaAdmin ? ` — biaya admin Rp ${biayaAdmin.toLocaleString("id-ID")}` : ""}`,
         },
       });
 

@@ -34,7 +34,17 @@ export async function GET(request: Request) {
   // Filter: hanya channel yang benar-benar aktif di merchant (inquiry terverifikasi).
   // getPaymentMethod Duitku sering mengembalikan channel "enabled" yang saat
   // inquiry ditolak (HTTP 404 "Payment channel not available").
-  const methods = raw.filter((m) => channelAllowed(m.paymentMethod));
+  const QRIS_CODES = new Set(["QR", "SQ"]);
+  const BIAYA_ADMIN_QRIS = 1000;
+  const methods = raw
+    .filter((m) => channelAllowed(m.paymentMethod))
+    .map((m) => {
+      if (QRIS_CODES.has(m.paymentMethod.toUpperCase())) {
+        const existingFee = parseInt(m.totalFee || "0", 10) || 0;
+        return { ...m, totalFee: String(existingFee + BIAYA_ADMIN_QRIS) };
+      }
+      return m;
+    });
 
   return NextResponse.json({ enabled: methods.length > 0, methods });
 }
