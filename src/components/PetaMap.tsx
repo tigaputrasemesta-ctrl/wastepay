@@ -1886,7 +1886,7 @@ export default function PetaMap({
                   </div>
 
                   {/* Customer Information */}
-                  <div className={`p-3 rounded-2xl border space-y-2.5 ${
+                  <div className={`p-3 rounded-2xl border space-y-3 ${
                     isDark ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-200 shadow-xs"
                   }`}>
                     <div>
@@ -1896,7 +1896,30 @@ export default function PetaMap({
                       <p className={`text-sm font-bold ${isDark ? "text-slate-100" : "text-slate-900"}`}>
                         {inspectorPelanggan.nama}
                       </p>
+                      <p className={`text-[10px] font-mono mt-0.5 ${isDark ? "text-emerald-400" : "text-emerald-700 font-bold"}`}>
+                        ID: {inspectorPelanggan.kodePelanggan}
+                      </p>
                     </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <span className={`text-[10px] uppercase ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                          Kategori
+                        </span>
+                        <p className={`text-xs ${isDark ? "text-slate-200" : "text-slate-700"}`}>
+                          {inspectorPelanggan.kategori.replace(/level_/i, "Level ")}
+                        </p>
+                      </div>
+                      <div>
+                        <span className={`text-[10px] uppercase ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                          Wilayah / Zonasi
+                        </span>
+                        <p className={`text-xs ${isDark ? "text-slate-200" : "text-slate-700"}`}>
+                          {inspectorPelanggan.wilayah?.nama ?? "Belum ditentukan"}
+                        </p>
+                      </div>
+                    </div>
+
                     <div>
                       <span className={`text-[10px] uppercase ${isDark ? "text-slate-400" : "text-slate-500"}`}>
                         Alamat Domisili
@@ -1906,6 +1929,7 @@ export default function PetaMap({
                         {inspectorPelanggan.rtRw ? ` (RT/RW ${inspectorPelanggan.rtRw})` : ""}
                       </p>
                     </div>
+
                     {inspectorPelanggan.patokanLokasi && (
                       <div>
                         <span className={`text-[10px] uppercase ${isDark ? "text-slate-400" : "text-slate-500"}`}>
@@ -1916,15 +1940,47 @@ export default function PetaMap({
                         </p>
                       </div>
                     )}
-                    <div>
-                      <span className={`text-[10px] uppercase ${isDark ? "text-slate-400" : "text-slate-500"}`}>
-                        Wilayah / Zonasi
-                      </span>
-                      <p className={`text-xs ${isDark ? "text-slate-200" : "text-slate-700"}`}>
-                        {inspectorPelanggan.wilayah?.nama ?? "Belum ditentukan"}
-                      </p>
-                    </div>
+
+                    {(inspectorPelanggan.latitude != null && inspectorPelanggan.longitude != null) && (
+                      <div>
+                        <span className={`text-[10px] uppercase ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                          Titik Koordinat (GPS)
+                        </span>
+                        <p className={`text-[10px] font-mono ${isDark ? "text-sky-300" : "text-sky-700"}`}>
+                          {inspectorPelanggan.latitude.toFixed(6)}, {inspectorPelanggan.longitude.toFixed(6)}
+                        </p>
+                      </div>
+                    )}
                   </div>
+
+                  {/* Riwayat Tagihan */}
+                  {inspectorPelanggan.riwayatTagihan && inspectorPelanggan.riwayatTagihan.length > 0 && (
+                    <div className={`p-3 rounded-2xl border space-y-2 ${
+                      isDark ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-200 shadow-xs"
+                    }`}>
+                      <span className={`text-[10px] font-bold uppercase ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                        Riwayat Tagihan
+                      </span>
+                      <div className="space-y-1.5 mt-1">
+                        {inspectorPelanggan.riwayatTagihan.map((t, idx) => {
+                          const isLunas = t.status === "lunas";
+                          return (
+                            <div key={idx} className={`flex items-center justify-between p-2 rounded-xl text-[10px] border ${
+                              isLunas
+                                ? isDark ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-300" : "bg-emerald-50 border-emerald-200 text-emerald-800"
+                                : isDark ? "bg-rose-500/10 border-rose-500/20 text-rose-300" : "bg-rose-50 border-rose-200 text-rose-800"
+                            }`}>
+                              <span className="font-bold">Bulan {t.bulan}/{t.tahun}</span>
+                              <div className="flex flex-col items-end">
+                                <span className="font-mono">Rp {t.jumlah.toLocaleString("id-ID")}</span>
+                                <span className="uppercase text-[9px] font-black">{isLunas ? "LUNAS" : "TUNGGAKAN"}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
 
                   {/* WhatsApp Quick Chat */}
                   {inspectorPelanggan.noTelepon && (

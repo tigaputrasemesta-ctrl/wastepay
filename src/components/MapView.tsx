@@ -425,8 +425,8 @@ function popupHtml(p: PelangganPeta): string {
     return `<div style="font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:13px;min-width:250px;line-height:1.5;color:#334155;">
       ${
         p.fotoRumah
-          ? `<div style="margin:-14px -14px 10px -14px;border-radius:12px 12px 0 0;overflow:hidden;background:#f1f5f9;">
-               <img src="${esc(p.fotoRumah)}" alt="Foto Rumah" style="width:100%;height:150px;object-fit:cover;display:block;" onerror="this.style.display='none'" />
+          ? `<div style="margin:-14px -14px 10px -14px;border-radius:12px 12px 0 0;overflow:hidden;background:#0f172a;">
+               <img src="${esc(p.fotoRumah)}" alt="Foto Rumah" style="width:100%;height:auto;max-height:250px;object-fit:contain;display:block;" onerror="this.style.display='none'" />
              </div>`
           : ""
       }
