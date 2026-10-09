@@ -1149,14 +1149,18 @@ export default function TagihanPage() {
                           {t.pembayaran
                             .filter((pb) => pb.status === "terverifikasi")
                             .map((pb) => (
-                              <Link
-                                key={pb.id}
-                                href={`/kwitansi/${pb.id}`}
-                                target="_blank"
-                                className="text-xs text-emerald-700 underline hover:text-emerald-700 font-semibold"
-                              >
-                                Kwitansi
-                              </Link>
+                              <div key={pb.id} className="flex flex-col items-center">
+                                <span className="text-[10px] text-slate-500 font-semibold bg-slate-100 px-2 py-0.5 rounded-full mb-1 whitespace-nowrap">
+                                  {labelMetode(pb.metode)}
+                                </span>
+                                <Link
+                                  href={`/kwitansi/${pb.id}`}
+                                  target="_blank"
+                                  className="text-xs text-emerald-700 underline hover:text-emerald-700 font-semibold"
+                                >
+                                  Kwitansi
+                                </Link>
+                              </div>
                             ))}
                         </div>
                       )}
