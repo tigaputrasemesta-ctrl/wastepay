@@ -19,6 +19,23 @@ import { deteksiZona, formatJarak, panjangRute, titikTengah, urutkanRute } from 
 import type { Titik } from "@/lib/geo";
 import type { KomplainPeta, PelangganPeta, RutePeta } from "./PetaMap";
 import { KOMPLAIN_LABEL, KOMPLAIN_WARNA } from "@/lib/komplain";
+
+export function getWarnaTagihan(p: PelangganPeta): { warna: string; label: string; tunggakanCount: number } {
+  if (p.status === "libur" || p.status === "nonaktif") return { warna: "#3b82f6", label: "Libur/Nonaktif", tunggakanCount: 0 };
+  
+  if (!p.riwayatTagihan || p.riwayatTagihan.length === 0) return { warna: "#8b8f98", label: "Belum Ada Tagihan", tunggakanCount: 0 };
+
+  let tunggakan = 0;
+  for (const t of p.riwayatTagihan) {
+    if (t.status === "tunggakan" || t.status === "belum_bayar") tunggakan++;
+  }
+
+  if (tunggakan === 0) return { warna: "#10b981", label: "Lunas", tunggakanCount: 0 };
+  if (tunggakan === 1) return { warna: "#eab308", label: "Tunggakan 1 Bln", tunggakanCount: 1 };
+  if (tunggakan === 2) return { warna: "#f97316", label: "Tunggakan 2 Bln", tunggakanCount: 2 };
+  return { warna: "#ef4444", label: "Tunggakan 3+ Bln", tunggakanCount: tunggakan };
+}
+
 import { getMapTileConfig, type MapTileType } from "@/lib/map-tile";
 import HeatmapLayer from "./HeatmapLayer";
 
@@ -270,7 +287,7 @@ function buatIcon(warna: string, isBermasalah: boolean = false) {
   return L.divIcon({
     className: "",
     html: `<div class="micro-dot-wrapper ${isBermasalah ? "tunggakan" : ""}">
-      <div class="micro-dot-pin" style="background:${isBermasalah ? "#ef4444" : warna}; color:${warna};">
+      <div class="micro-dot-pin" style="background:${warna}; color:${warna};">
         ${isBermasalah ? '<span style="color:#ffffff; font-size:7px; font-weight:900; line-height:1;">!</span>' : ""}
       </div>
     </div>`,
@@ -315,6 +332,8 @@ function buatIconKomplain(warna: string, aktif: boolean, isBaru: boolean = false
 
 function popupHtml(p: PelangganPeta): string {
   try {
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
+
     const zona =
       p.latitude != null && p.longitude != null ? deteksiZona([p.latitude, p.longitude]) : null;
     const statusTxt = TAGIHAN_LABEL[p.statusTagihan ?? ""] ?? "—";
@@ -323,6 +342,22 @@ function popupHtml(p: PelangganPeta): string {
     const isTunggakan = p.statusTagihan === "tunggakan";
     const isLunas = p.statusTagihan === "lunas";
     
+    const warnaInfo = getWarnaTagihan(p);
+    const riwayatHtml = p.riwayatTagihan && p.riwayatTagihan.length > 0 
+      ? `<div style="margin-top:8px;padding-top:8px;border-top:1px solid #e2e8f0;">
+          <div style="font-size:10px;font-weight:800;color:#334155;margin-bottom:4px;text-transform:uppercase;">Status: <span style="color:${warnaInfo.warna}">${warnaInfo.label}</span></div>
+          <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:4px;">
+            ${p.riwayatTagihan.map(t => {
+              const isLunas = t.status === 'lunas';
+              const color = isLunas ? '#10b981' : '#ef4444';
+              const bg = isLunas ? '#ecfdf5' : '#fef2f2';
+              const nm = monthNames[t.bulan - 1] || t.bulan;
+              return `<div style="background:${bg};border:1px solid ${color}40;color:${color};text-align:center;padding:2px 0;border-radius:4px;font-size:9px;font-weight:700;">${nm} '${t.tahun.toString().slice(2)}</div>`;
+            }).join("")}
+          </div>
+        </div>`
+      : `<div style="margin-top:8px;padding-top:8px;border-top:1px solid #e2e8f0;font-size:10px;font-weight:800;color:#64748b;">STATUS: ${warnaInfo.label}</div>`;
+
     return `<div style="font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:11px;min-width:210px;line-height:1.4">
       ${
         p.fotoRumah
@@ -357,9 +392,7 @@ function popupHtml(p: PelangganPeta): string {
       }
       
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid #e2e8f0;">
-        <div style="background:${isTunggakan ? '#fef2f2' : isLunas ? '#ecfdf5' : '#f8fafc'};color:${isTunggakan ? '#dc2626' : isLunas ? '#059669' : '#64748b'};padding:3px 9px;border-radius:999px;font-weight:800;font-size:10px;display:inline-flex;align-items:center;gap:4px;border:1px solid ${isTunggakan ? '#fecaca' : isLunas ? '#a7f3d0' : '#e2e8f0'};">
-          ${isTunggakan ? '⛔' : isLunas ? '✓' : '•'} ${esc(statusTxt).toUpperCase()}
-        </div>
+        ${riwayatHtml}
         ${waUrl ? `<a href="${waUrl}" target="_blank" rel="noreferrer" style="background:#10b981;color:#ffffff;padding:4px 10px;border-radius:8px;font-weight:700;text-decoration:none;font-size:10px;display:inline-flex;align-items:center;gap:4px;box-shadow:0 2px 5px rgba(16,185,129,0.3);">💬 Chat WA</a>` : ""}
       </div>
     </div>`;
@@ -629,7 +662,7 @@ function ClusterPins({
         continue;
       }
       const m = L.marker([p.latitude, p.longitude], {
-        icon: buatIcon(warnaStatus[p.status] ?? "#8b8f98", p.statusTagihan === "tunggakan"),
+        icon: buatIcon(getWarnaTagihan(p).warna, getWarnaTagihan(p).tunggakanCount >= 3),
         bubblingMouseEvents: false,
       });
       

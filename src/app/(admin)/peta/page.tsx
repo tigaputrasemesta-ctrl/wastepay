@@ -98,17 +98,25 @@ export default async function PetaPage() {
 
     wilayahList = wList;
 
-    // Status tagihan terbaru per pelanggan
-    const tagihanTerbaru = new Map<number, string>();
+    // Riwayat Tagihan per pelanggan (Maks 6 bulan terakhir)
+    const riwayatMap = new Map<number, { bulan: number; tahun: number; status: string }[]>();
     for (const t of tagihanList) {
-      if (!tagihanTerbaru.has(t.pelangganId)) tagihanTerbaru.set(t.pelangganId, t.status);
+      if (!riwayatMap.has(t.pelangganId)) riwayatMap.set(t.pelangganId, []);
+      const riwayat = riwayatMap.get(t.pelangganId)!;
+      if (riwayat.length < 6) { // Ambil 6 tagihan terbaru
+        riwayat.push({ bulan: t.bulan, tahun: t.tahun, status: t.status });
+      }
     }
 
-    data = pList.map((p) => ({
-      ...p,
-      alamat: p.alamat || "",
-      statusTagihan: tagihanTerbaru.get(p.id) ?? null,
-    }));
+    data = pList.map((p) => {
+      const riwayat = riwayatMap.get(p.id) || [];
+      return {
+        ...p,
+        alamat: p.alamat || "",
+        statusTagihan: riwayat.length > 0 ? riwayat[0].status : null,
+        riwayatTagihan: riwayat,
+      };
+    });
 
     rutePeta = rList.map((r) => ({
       id: r.id,
