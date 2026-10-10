@@ -689,7 +689,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
               className={`${isPetugas ? 'w-10 h-10' : 'w-28 h-28'} object-cover rounded-lg border border-slate-200 shrink-0`}
             />
             <div className="flex-1 space-y-1">
-              {!isPetugas && <p className="text-xs font-bold text-emerald-700">✓ Foto Tersimpan</p>}
+              <p className={`font-bold text-emerald-700 ${isPetugas ? 'text-[10px]' : 'text-xs'}`}>✓ Foto Tersimpan</p>
               <div className="flex flex-wrap justify-center sm:justify-start gap-2">
                 <button
                   type="button"
