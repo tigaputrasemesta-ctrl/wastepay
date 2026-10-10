@@ -142,7 +142,7 @@ export default async function LaporanPage({
               ).map(([namaMetode, jumlah]) => (
                 <div key={namaMetode} className="flex justify-between items-center text-sm">
                   <span className="text-slate-500 font-medium capitalize">{namaMetode}</span>
-                  <span className="font-semibold text-emerald-700">{formatRupiah(jumlah)}</span>
+                  <span className="font-semibold text-emerald-700">{formatRupiah(jumlah as number)}</span>
                 </div>
               ))}
               <div className="border-t border-slate-100 pt-3 flex justify-between items-center text-sm font-semibold text-slate-900">
