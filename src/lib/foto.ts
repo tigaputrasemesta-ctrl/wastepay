@@ -9,32 +9,41 @@ const QUALITY = 0.8;
  */
 export function kompresGambar(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = () => reject(new Error("Gagal membaca file"));
-    reader.onload = () => {
-      const img = new Image();
-      img.onerror = () => reject(new Error("File bukan gambar valid"));
-      img.onload = () => {
-        let { width, height } = img;
-        const scale = Math.min(1, MAX_DIMENSI / Math.max(width, height));
-        if (scale < 1) {
-          width = Math.round(width * scale);
-          height = Math.round(height * scale);
-        }
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) {
-          reject(new Error("Canvas tidak didukung"));
-          return;
-        }
-        ctx.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL("image/jpeg", QUALITY));
-      };
-      img.src = reader.result as string;
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("File bukan gambar valid"));
     };
-    reader.readAsDataURL(file);
+    
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      let { width, height } = img;
+      const scale = Math.min(1, MAX_DIMENSI / Math.max(width, height));
+      if (scale < 1) {
+        width = Math.round(width * scale);
+        height = Math.round(height * scale);
+      }
+      
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      
+      if (!ctx) {
+        reject(new Error("Canvas tidak didukung"));
+        return;
+      }
+      
+      // Draw image to canvas to resize it
+      ctx.drawImage(img, 0, 0, width, height);
+      
+      // Extract base64
+      resolve(canvas.toDataURL("image/jpeg", QUALITY));
+    };
+    
+    img.src = objectUrl;
   });
 }
 
