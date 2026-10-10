@@ -24,7 +24,14 @@ export default function PengaduanForm() {
     if (!file) return;
     try {
       const base64 = await kompresGambar(file);
-      setFoto(base64);
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: base64 }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Gagal mengunggah foto");
+      setFoto(data.url);
     } catch (err: any) {
       alert("Gagal memproses gambar: " + err.message);
     }

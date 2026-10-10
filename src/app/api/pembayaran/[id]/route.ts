@@ -8,6 +8,7 @@ import {
   isWaEnabled,
   kirimNotifikasi,
   templatePembayaranDiterima,
+  templatePembayaranGagal,
 } from "@/lib/wa";
 import { labelMetodePembayaran } from "@/lib/invoice";
 
@@ -110,30 +111,33 @@ export async function PUT(request: Request, { params }: Params) {
 
     await logAudit("update", "Pembayaran", pembayaran.id, { status: pembayaran.status }, { status });
 
-    // Auto-kirim WA konfirmasi ke pelanggan saat pembayaran terverifikasi (skylite pattern)
-    if (status === "terverifikasi" && isWaEnabled()) {
+    // Auto-kirim WA konfirmasi ke pelanggan saat pembayaran diproses (skylite pattern)
+    if ((status === "terverifikasi" || status === "ditolak") && isWaEnabled()) {
       try {
         const tagihan = await prisma.tagihan.findUnique({
           where: { id: pembayaran.tagihanId },
           include: { pelanggan: { select: { id: true, nama: true, noTelepon: true } } },
         });
         if (tagihan?.pelanggan.noTelepon) {
+          const tWa = buildTagihanWa(
+            {
+              noInvoice: tagihan.noInvoice,
+              bulan: tagihan.bulan,
+              tahun: tagihan.tahun,
+              jumlah: tagihan.jumlah,
+              denda: tagihan.denda,
+              jatuhTempo: tagihan.jatuhTempo,
+            },
+            tagihan.pelanggan.nama
+          );
+          
+          const templateData = status === "terverifikasi" 
+            ? await templatePembayaranDiterima(tWa, labelMetodePembayaran(pembayaran.metode))
+            : await templatePembayaranGagal(tWa);
+
           await kirimNotifikasi({
-            tipe: "pembayaran_diterima",
-            ...await templatePembayaranDiterima(
-              buildTagihanWa(
-                {
-                  noInvoice: tagihan.noInvoice,
-                  bulan: tagihan.bulan,
-                  tahun: tagihan.tahun,
-                  jumlah: tagihan.jumlah,
-                  denda: tagihan.denda,
-                  jatuhTempo: tagihan.jatuhTempo,
-                },
-                tagihan.pelanggan.nama
-              ),
-              labelMetodePembayaran(pembayaran.metode)
-            ),
+            tipe: status === "terverifikasi" ? "pembayaran_diterima" : "pembayaran_gagal",
+            ...templateData,
             pelangganId: tagihan.pelanggan.id,
             noTelepon: tagihan.pelanggan.noTelepon,
           });

@@ -121,8 +121,8 @@ export async function POST(request: Request) {
     const fotoRumah = typeof body.fotoRumah === "string" ? body.fotoRumah.trim() : "";
     const isPetugas = Boolean(body.isPetugas);
 
-    // Foto harus data URL gambar dan dibatasi ukurannya (base64 hasil kompres).
-    if (fotoRumah && (!fotoRumah.startsWith("data:image/") || fotoRumah.length > 2_000_000)) {
+    // Foto bisa berupa URL /uploads/... atau data URL base64
+    if (fotoRumah && !fotoRumah.startsWith("/uploads/") && (!fotoRumah.startsWith("data:image/") || fotoRumah.length > 2_000_000)) {
       return NextResponse.json(
         { error: "Foto rumah tidak valid atau terlalu besar." },
         { status: 400 }

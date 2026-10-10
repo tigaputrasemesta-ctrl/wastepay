@@ -14,8 +14,9 @@ const isProd = process.env.NODE_ENV === "production";
 // idleTimeoutMillis: 1000 agar koneksi segera dibebaskan kembali ke pooler.
 const pool = new Pool({
   connectionString,
-  max: 1, // Batasi 1 per Lambda instance
-  idleTimeoutMillis: 1000,
+  // max: dihapus agar request paralel dalam satu eksekusi lambda tidak saling menunggu. 
+  // (Supavisor di port 6543 yang akan menangani pembatasan koneksi server).
+  idleTimeoutMillis: 5000,
   connectionTimeoutMillis: 8000,
   ssl: isProd || process.env.DATABASE_SSL === "true" || rawConnectionString?.includes("supabase.com")
     ? { rejectUnauthorized: false }

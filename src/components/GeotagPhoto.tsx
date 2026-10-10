@@ -46,6 +46,15 @@ export default function GeotagPhoto({
     setPesan("");
     try {
       const base64 = await kompresGambar(file);
+      
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: base64 }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Gagal mengunggah foto");
+      const fotoUrl = data.url;
 
       // Coba ekstrak koordinat GPS dari EXIF foto (geotag)
       let lat = latitude;
@@ -67,7 +76,7 @@ export default function GeotagPhoto({
         setPesan(""); // clear message if EXIF reading fails
       }
 
-      onFotoChange(base64);
+      onFotoChange(fotoUrl);
       onKoordinatChange(lat, lng, sumber, akurasi);
     } catch (err) {
       setPesan(err instanceof Error ? err.message : "Gagal memproses foto");

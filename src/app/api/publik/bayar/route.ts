@@ -58,7 +58,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Ukuran bukti terlalu besar (maks 2MB)" }, { status: 400 });
     }
     // Hanya terima data URL gambar (bukan HTML/script/arbitrary text)
-    if (buktiBayar && typeof buktiBayar === "string" && !buktiBayar.startsWith("data:image/")) {
+    if (buktiBayar && typeof buktiBayar === "string" && !buktiBayar.startsWith("/uploads/") && !buktiBayar.startsWith("data:image/")) {
       return NextResponse.json({ error: "Bukti harus berupa gambar" }, { status: 400 });
     }
 

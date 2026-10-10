@@ -265,7 +265,23 @@ function BayarPortalContent() {
     }
     setKirimError("");
     const reader = new FileReader();
-    reader.onload = () => setBukti(reader.result as string);
+    reader.onload = async () => {
+      const base64 = reader.result as string;
+      setMengirim(true);
+      try {
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ image: base64 }),
+        });
+        const data = await res.json();
+        if (res.ok) setBukti(data.url);
+        else setKirimError(data.error || "Gagal mengunggah foto");
+      } catch {
+        setKirimError("Gagal mengunggah foto");
+      }
+      setMengirim(false);
+    };
     reader.readAsDataURL(file);
   }
 
