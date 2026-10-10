@@ -128,16 +128,10 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
     try {
       const base64 = await kompresGambar(file);
       
-      // Upload ke server
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: base64 }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Gagal mengunggah foto");
-      
-      setFotoRumah(data.url);
+      // Karena Vercel menggunakan Read-Only Filesystem, 
+      // kita simpan langsung string base64-nya ke state untuk disubmit.
+      // API /api/publik/daftar/route.ts sudah mendukung data:image base64.
+      setFotoRumah(base64);
 
       // Isi koordinat dari EXIF foto bila belum ada lokasi sama sekali.
       if (!gpsData) {
@@ -148,7 +142,9 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
         }
       }
     } catch (err) {
-      setPesan(err instanceof Error ? err.message : "GAGAL MEMPROSES FOTO");
+      const msg = err instanceof Error ? err.message : "GAGAL MEMPROSES FOTO";
+      setPesan(msg);
+      alert(msg);
     } finally {
       setFotoLoading(false);
     }
@@ -669,14 +665,20 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
           accept="image/*"
           capture="environment"
           className="hidden"
-          onChange={(e) => handleFoto(e.target.files?.[0])}
+          onChange={(e) => {
+            handleFoto(e.target.files?.[0]);
+            e.target.value = "";
+          }}
         />
         <input
           ref={galeriRef}
           type="file"
           accept="image/*"
           className="hidden"
-          onChange={(e) => handleFoto(e.target.files?.[0])}
+          onChange={(e) => {
+            handleFoto(e.target.files?.[0]);
+            e.target.value = "";
+          }}
         />
         {fotoRumah ? (
           <div className={`border border-slate-200 bg-slate-50 flex items-center ${isPetugas ? 'p-1.5 rounded-lg gap-2' : 'p-3.5 rounded-2xl flex-col sm:flex-row gap-4 sm:items-start text-center sm:text-left'}`}>

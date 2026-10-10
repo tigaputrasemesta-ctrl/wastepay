@@ -47,14 +47,7 @@ export default function GeotagPhoto({
     try {
       const base64 = await kompresGambar(file);
       
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: base64 }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Gagal mengunggah foto");
-      const fotoUrl = data.url;
+      const fotoUrl = base64;
 
       // Coba ekstrak koordinat GPS dari EXIF foto (geotag)
       let lat = latitude;

@@ -269,14 +269,7 @@ function BayarPortalContent() {
       const base64 = reader.result as string;
       setMengirim(true);
       try {
-        const res = await fetch("/api/upload", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ image: base64 }),
-        });
-        const data = await res.json();
-        if (res.ok) setBukti(data.url);
-        else setKirimError(data.error || "Gagal mengunggah foto");
+        setBukti(base64);
       } catch {
         setKirimError("Gagal mengunggah foto");
       }
