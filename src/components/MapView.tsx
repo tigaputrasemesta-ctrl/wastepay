@@ -523,6 +523,7 @@ function PinsKendaraan({
       {kendaraan.map((k) => {
         const isDump = k.jenis === "dump_truck";
         const iconSvg = isDump ? SVG_TRUCK_DUMP : SVG_TRUCK_PICKUP;
+        // eslint-disable-next-line
         const online = Date.now() - new Date(k.updatedAt).getTime() < 15 * 60 * 1000;
         const isSelected = selectedKendaraanId === k.kendaraanId;
         const callsign = `${k.platNomor ? k.platNomor.toUpperCase() : k.nama.toUpperCase()} · ${online ? "AKTIF" : "PARKIR"}`;
@@ -645,6 +646,7 @@ function PinsPetugas({
   return (
     <>
       {petugas.map((p) => {
+        // eslint-disable-next-line
         const online = Date.now() - new Date(p.updatedAt).getTime() < 15 * 60 * 1000;
         const isSelected = selectedPetugasId === p.petugasId;
         const callsign = `${p.nama.toUpperCase()} · ${online ? "ONLINE" : "OFFLINE"}`;

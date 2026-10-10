@@ -298,6 +298,15 @@ export default function PetaMap({
     setInvalidateKey((k) => k + 1);
   }, [sidebarOpen]);
 
+  // Close inspector flyout
+  const closeFlyout = useCallback(() => {
+    setSelectedId(null);
+    setSelectedKendaraanId(null);
+    setSelectedPetugasId(null);
+    setSelectedKomplainId(null);
+    setSelectedTransitId(null);
+  }, []);
+
   // Keyboard shortcut: Escape closes flyout
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -493,14 +502,6 @@ export default function PetaMap({
     return hasil;
   }, [ruteTerpilih]);
 
-  // Close inspector flyout
-  const closeFlyout = useCallback(() => {
-    setSelectedId(null);
-    setSelectedKendaraanId(null);
-    setSelectedPetugasId(null);
-    setSelectedKomplainId(null);
-    setSelectedTransitId(null);
-  }, []);
 
   // Selection handlers
   const pilihPelanggan = useCallback((id: number) => {
