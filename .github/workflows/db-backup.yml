@@ -1,0 +1,36 @@
+name: Database Auto-Backup
+
+on:
+  schedule:
+    # Berjalan otomatis setiap hari pada pukul 00:00 UTC (07:00 WIB)
+    - cron: '0 0 * * *'
+  # Memungkinkan kita menekan tombol "Run workflow" secara manual kapan saja di GitHub
+  workflow_dispatch: 
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set up PostgreSQL client
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y postgresql-client
+
+    - name: Generate timestamp
+      run: echo "DATE=$(date +'%Y-%m-%d_%H-%M')" >> $GITHUB_ENV
+
+    - name: Backup Database
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      run: |
+        # Mengekstrak database ke dalam file SQL lalu meng-compress-nya (gzip)
+        pg_dump "$DATABASE_URL" --clean --if-exists --no-owner --no-privileges > backup_wastepay_${{ env.DATE }}.sql
+        gzip backup_wastepay_${{ env.DATE }}.sql
+
+    - name: Upload Backup to GitHub Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: db-backup-${{ env.DATE }}
+        path: backup_wastepay_${{ env.DATE }}.sql.gz
+        retention-days: 30 # Disimpan dengan aman di server GitHub selama 30 hari sebelum dihapus
