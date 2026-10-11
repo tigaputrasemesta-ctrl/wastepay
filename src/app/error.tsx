@@ -11,10 +11,33 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const isChunkError =
+    error.message?.includes("Failed to load chunk") ||
+    error.message?.includes("Loading chunk") ||
+    error.name === "ChunkLoadError";
+
   useEffect(() => {
     // Log error to client console for easier debugging
     console.error("Unhandled Application Error:", error);
-  }, [error]);
+
+    // Jika terjadi ChunkLoadError (versi web baru ter-deploy), reload otomatis 1x
+    if (isChunkError && typeof window !== "undefined") {
+      const reloaded = sessionStorage.getItem("chunk_reloaded");
+      if (!reloaded) {
+        sessionStorage.setItem("chunk_reloaded", "1");
+        window.location.reload();
+      }
+    }
+  }, [error, isChunkError]);
+
+  const handleRetry = () => {
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("chunk_reloaded");
+      window.location.reload();
+      return;
+    }
+    reset();
+  };
 
   const isDbOrEnvError =
     error.message?.includes("database") ||
@@ -32,10 +55,10 @@ export default function Error({
           </div>
           <div>
             <div className="text-xs font-semibold uppercase tracking-wider text-rose-600">
-              Terjadi Kendala Sistem
+              {isChunkError ? "Pembaruan Versi Sistem" : "Terjadi Kendala Sistem"}
             </div>
             <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
-              Gagal Memuat Halaman
+              {isChunkError ? "Versi Baru Tersedia" : "Gagal Memuat Halaman"}
             </h1>
           </div>
         </div>
@@ -51,7 +74,9 @@ export default function Error({
             </div>
           )}
           <div className="break-words text-slate-700">
-            {error.message || "Aplikasi mengalami kendala saat memproses permintaan."}
+            {isChunkError
+              ? "Sistem web baru saja diperbarui di server. Peramban (browser) Anda memerlukan muat ulang untuk mengambil aset versi terbaru."
+              : error.message || "Aplikasi mengalami kendala saat memproses permintaan."}
           </div>
         </div>
 
@@ -75,10 +100,10 @@ export default function Error({
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
           <button
-            onClick={() => reset()}
+            onClick={handleRetry}
             className="flex-1 py-3 px-5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
-            <RefreshCw className="w-4 h-4" /> Coba Muat Ulang
+            <RefreshCw className="w-4 h-4" /> {isChunkError ? "Perbarui & Muat Ulang" : "Coba Muat Ulang"}
           </button>
           <Link
             href="/"

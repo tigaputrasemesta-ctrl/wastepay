@@ -10,9 +10,30 @@ export default function AdminError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const isChunkError =
+    error.message?.includes("Failed to load chunk") ||
+    error.message?.includes("Loading chunk") ||
+    error.name === "ChunkLoadError";
+
   useEffect(() => {
     console.error("Admin Page Error:", error);
-  }, [error]);
+    if (isChunkError && typeof window !== "undefined") {
+      const reloaded = sessionStorage.getItem("admin_chunk_reloaded");
+      if (!reloaded) {
+        sessionStorage.setItem("admin_chunk_reloaded", "1");
+        window.location.reload();
+      }
+    }
+  }, [error, isChunkError]);
+
+  const handleRetry = () => {
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("admin_chunk_reloaded");
+      window.location.reload();
+      return;
+    }
+    reset();
+  };
 
   return (
     <div className="p-6 md:p-8 bg-white rounded-3xl border border-slate-200/80 shadow-sm">
@@ -22,10 +43,10 @@ export default function AdminError({
         </div>
         <div>
           <div className="text-xs font-bold uppercase tracking-wider text-rose-600">
-            Error Modul Admin
+            {isChunkError ? "Pembaruan Versi Sistem" : "Error Modul Admin"}
           </div>
           <h2 className="text-xl font-bold tracking-tight text-slate-900">
-            Gagal Memuat Halaman Ini
+            {isChunkError ? "Versi Baru Tersedia" : "Gagal Memuat Halaman Ini"}
           </h2>
         </div>
       </div>
@@ -40,16 +61,18 @@ export default function AdminError({
           </div>
         )}
         <div className="text-slate-700 break-words">
-          {error.message || "Terjadi kendala saat mengambil data modul dari server."}
+          {isChunkError
+            ? "Aplikasi telah diperbarui ke versi baru di server. Silakan muat ulang untuk memperbarui cache."
+            : error.message || "Terjadi kendala saat mengambil data modul dari server."}
         </div>
       </div>
 
       <div className="flex gap-3">
         <button
-          onClick={() => reset()}
+          onClick={handleRetry}
           className="py-2.5 px-5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
         >
-          <RefreshCw className="w-4 h-4" /> Coba Lagi
+          <RefreshCw className="w-4 h-4" /> {isChunkError ? "Perbarui & Muat Ulang" : "Coba Lagi"}
         </button>
       </div>
     </div>
