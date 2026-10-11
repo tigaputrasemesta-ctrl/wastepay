@@ -54,19 +54,19 @@ export default function AdminShell({
       {/* Mobile Off-Canvas Drawer (Visible only when mobileOpen on < md) */}
       <AnimatePresence>
         {mobileOpen && (
-          <div
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             className="fixed inset-0 z-50 md:hidden flex"
             role="dialog"
             aria-modal="true"
             aria-label="Menu navigasi backoffice"
           >
             {/* Backdrop overlay */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"
+            <div
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
               onClick={() => setMobileOpen(false)}
               aria-hidden="true"
             />
@@ -85,7 +85,7 @@ export default function AdminShell({
                 className="w-full h-full border-r-0"
               />
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
 

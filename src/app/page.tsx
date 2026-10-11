@@ -123,9 +123,9 @@ export default async function LandingPage() {
 
                 <Link
                   href="/pengaduan"
-                  className="px-6 py-3.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95"
+                  className="px-6 py-3.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-sm shadow-red-600/20 active:scale-95"
                 >
-                  <AlertCircle className="w-4 h-4 text-slate-500" />
+                  <AlertCircle className="w-4 h-4" />
                   <span>Pengaduan Warga</span>
                 </Link>
               </div>

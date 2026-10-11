@@ -64,11 +64,15 @@ export default async function PetaPage() {
         orderBy: { nama: "asc" },
       }),
       prisma.tagihan.findMany({
-        where: scopeKelurahanId
-          ? { pelanggan: { kelurahanId: scopeKelurahanId } }
-          : petugasTanpaProfil
-            ? { id: -1 }
-            : {},
+        where: {
+          ...(scopeKelurahanId
+            ? { pelanggan: { kelurahanId: scopeKelurahanId } }
+            : petugasTanpaProfil
+              ? { id: -1 }
+              : {}),
+          // Hanya ambil data tagihan 6 bulan terakhir untuk optimasi
+          createdAt: { gte: new Date(new Date().setMonth(new Date().getMonth() - 6)) }
+        },
         select: { pelangganId: true, status: true, bulan: true, tahun: true, jatuhTempo: true, jumlah: true },
         orderBy: [{ tahun: "desc" }, { bulan: "desc" }],
       }),
@@ -142,7 +146,9 @@ export default async function PetaPage() {
         ? { petugas: { kelurahanId: scopeKelurahanId, aktif: true } }
         : petugasTanpaProfil
           ? { id: -1 }
-          : undefined,
+          : { petugas: { aktif: true } },
+      distinct: ["petugasId"],
+      orderBy: { createdAt: "desc" },
       select: {
         id: true,
         latitude: true,
@@ -152,13 +158,9 @@ export default async function PetaPage() {
         createdAt: true,
         petugas: { select: { id: true, nama: true, jabatan: true, aktif: true } },
       },
-      orderBy: { createdAt: "desc" },
     });
-    const terakhir = new Map<number, (typeof lokasiRaw)[number]>();
-    for (const t of lokasiRaw) {
-      if (t.petugas.aktif && !terakhir.has(t.petugas.id)) terakhir.set(t.petugas.id, t);
-    }
-    petugasPeta = [...terakhir.values()].map((t) => ({
+    
+    petugasPeta = lokasiRaw.map((t) => ({
       petugasId: t.petugas.id,
       nama: t.petugas.nama,
       jabatan: t.petugas.jabatan,
@@ -176,7 +178,9 @@ export default async function PetaPage() {
           ? { kendaraan: { aktif: true, petugas: { kelurahanId: scopeKelurahanId } } }
           : petugasTanpaProfil
             ? { id: -1 }
-            : undefined,
+            : { kendaraan: { aktif: true } },
+        distinct: ["kendaraanId"],
+        orderBy: { createdAt: "desc" },
         select: {
           latitude: true,
           longitude: true,
@@ -186,18 +190,14 @@ export default async function PetaPage() {
             select: { id: true, nama: true, platNomor: true, jenis: true, aktif: true, petugas: { select: { nama: true } } },
           },
         },
-        orderBy: { createdAt: "desc" },
       }),
       prisma.titikTransit.findMany({
         select: { id: true, nama: true, alamat: true, latitude: true, longitude: true, aktif: true, catatan: true },
         orderBy: { nama: "asc" },
       }),
     ]);
-    const kTerakhir = new Map<number, (typeof kendaraanRaw)[number]>();
-    for (const t of kendaraanRaw) {
-      if (t.kendaraan.aktif && !kTerakhir.has(t.kendaraan.id)) kTerakhir.set(t.kendaraan.id, t);
-    }
-    kendaraanPeta = [...kTerakhir.values()].map((t) => ({
+
+    kendaraanPeta = kendaraanRaw.map((t) => ({
       kendaraanId: t.kendaraan.id,
       nama: t.kendaraan.nama,
       platNomor: t.kendaraan.platNomor,

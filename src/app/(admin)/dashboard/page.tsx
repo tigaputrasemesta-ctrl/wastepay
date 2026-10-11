@@ -356,9 +356,9 @@ export default async function DashboardPage() {
             <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
             <h2 className="text-sm font-bold text-slate-900 tracking-tight">Butuh Perhatian Segera</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-100">
             {stats.pembayaranPending > 0 && (
-              <div className="p-4 flex flex-col justify-between hover:bg-slate-50 transition-colors">
+              <div className="bg-white p-4 flex flex-col justify-between hover:bg-slate-50 transition-colors">
                 <div className="flex items-start gap-3 mb-3">
                   <span className="text-xl shrink-0">⚠️</span>
                   <div>
@@ -373,7 +373,7 @@ export default async function DashboardPage() {
             )}
             
             {stats.klaimMenunggu > 0 && (
-              <div className="p-4 flex flex-col justify-between hover:bg-slate-50 transition-colors">
+              <div className="bg-white p-4 flex flex-col justify-between hover:bg-slate-50 transition-colors">
                 <div className="flex items-start gap-3 mb-3">
                   <span className="text-xl shrink-0">📝</span>
                   <div>
@@ -388,7 +388,7 @@ export default async function DashboardPage() {
             )}
 
             {stats.chatBelumDibaca > 0 && (
-              <div className="p-4 flex flex-col justify-between hover:bg-slate-50 transition-colors">
+              <div className="bg-white p-4 flex flex-col justify-between hover:bg-slate-50 transition-colors">
                 <div className="flex items-start gap-3 mb-3">
                   <span className="text-xl shrink-0">💬</span>
                   <div>
@@ -403,7 +403,7 @@ export default async function DashboardPage() {
             )}
 
             {stats.tidakDiangkut > 0 && (
-              <div className="p-4 flex flex-col justify-between hover:bg-slate-50 transition-colors">
+              <div className="bg-white p-4 flex flex-col justify-between hover:bg-slate-50 transition-colors">
                 <div className="flex items-start gap-3 mb-3">
                   <span className="text-xl shrink-0">🚨</span>
                   <div>
@@ -418,7 +418,7 @@ export default async function DashboardPage() {
             )}
 
             {stats.notifGagal > 0 && (
-              <div className="p-4 flex flex-col justify-between hover:bg-slate-50 transition-colors">
+              <div className="bg-white p-4 flex flex-col justify-between hover:bg-slate-50 transition-colors">
                 <div className="flex items-start gap-3 mb-3">
                   <span className="text-xl shrink-0">📵</span>
                   <div>

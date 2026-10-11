@@ -1637,7 +1637,7 @@ export default function PetaMap({
           
           {/* Legenda Indikator Peta */}
           {tampilkanPelanggan && (
-            <div className={`absolute bottom-6 left-4 z-[600] p-2.5 rounded-xl border shadow-lg backdrop-blur-md text-[9.5px] font-bold space-y-1.5 transition-all duration-300 ${isDark ? "bg-slate-900/95 border-slate-700/50 text-slate-200" : "bg-white/95 border-slate-200/80 text-slate-700"}`}>
+            <div className={`absolute bottom-6 left-4 z-[600] p-2.5 rounded-xl border shadow-lg backdrop-blur-md text-[9.5px] font-bold space-y-1.5 transition-all duration-300 ${isDark ? "bg-slate-900/95 border-slate-700/50 text-slate-200" : "bg-white/95 border-slate-200/80 text-slate-700"} ${hasInspector ? "hidden sm:block" : "block"}`}>
               <p className="mb-1 text-[8.5px] opacity-80 uppercase tracking-widest text-center border-b pb-1.5 border-slate-500/20">Warna Pelanggan</p>
               <div className="flex items-center gap-2"><div className="w-2.5 h-2.5 rounded-full bg-[#10b981] shadow-inner border border-black/10"></div> Lunas</div>
               <div className="flex items-center gap-2"><div className="w-2.5 h-2.5 rounded-full bg-[#eab308] shadow-inner border border-black/10"></div> Tunggakan 1 Bln</div>

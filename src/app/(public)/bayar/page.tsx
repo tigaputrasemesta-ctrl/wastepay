@@ -494,26 +494,28 @@ function BayarPortalContent() {
                   key={m.value}
                   type="button"
                   onClick={() => setPilihMetode(m.value)}
-                  className={`flex items-center gap-3 p-3 rounded-2xl border text-left transition ${
+                  className={`flex items-center justify-between p-3 rounded-2xl border text-left transition ${
                     pilihMetode === m.value
                       ? "border-emerald-600 bg-emerald-50/50 shadow-xs ring-2 ring-emerald-500/20"
                       : "border-slate-200 bg-white hover:border-slate-300"
                   }`}
                 >
-                  {m.imageUrl ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img src={m.imageUrl} alt={m.label} className="w-12 h-auto shrink-0 object-contain" />
-                  ) : (
-                    <span className="text-xl shrink-0">{m.icon}</span>
-                  )}
-                  <div className="flex flex-col flex-1 min-w-0">
-                    <span className="text-xs font-bold text-slate-800 truncate">{m.label}</span>
-                    {m.totalFee && (
-                      <span className="text-[10px] font-medium text-slate-500 truncate">
-                        Biaya Layanan: {m.totalFee === "0" ? "Gratis" : `Rp ${parseInt(m.totalFee).toLocaleString("id-ID")}`}
-                      </span>
+                  <div className="flex items-center gap-3 overflow-hidden">
+                    {m.imageUrl ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img src={m.imageUrl} alt={m.label} className="w-10 h-auto shrink-0 object-contain" />
+                    ) : (
+                      <span className="text-xl shrink-0">{m.icon}</span>
                     )}
+                    <span className="text-xs font-bold text-slate-800 truncate">{m.label}</span>
                   </div>
+                  {m.totalFee && (
+                    <div className="shrink-0 text-right ml-2">
+                      <span className="text-[10px] font-medium text-slate-500 block">
+                        {m.totalFee === "0" ? "Gratis" : `+Rp ${parseInt(m.totalFee).toLocaleString("id-ID")}`}
+                      </span>
+                    </div>
+                  )}
                 </button>
               ))}
             </div>
@@ -528,16 +530,19 @@ function BayarPortalContent() {
               type="button"
               disabled={bayarLoading || !pilihMetode}
               onClick={bayarOnlineDuitku}
-              className="w-full py-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white font-bold text-sm shadow-sm transition active:scale-95 flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white font-bold text-sm shadow-sm transition active:scale-95 flex flex-col items-center justify-center gap-0.5"
             >
               {(() => {
-                if (bayarLoading) return "Menghubungkan ke Gateway...";
+                if (bayarLoading) return <span>Menghubungkan ke Gateway...</span>;
                 const selected = metodeList.find((m) => m.value === pilihMetode);
                 const fee = selected?.totalFee ? parseInt(selected.totalFee) || 0 : 0;
                 const grandTotal = detail.total + fee;
-                return fee > 0
-                  ? `Bayar ${formatRupiahSkylite(grandTotal)} (termasuk admin Rp ${fee.toLocaleString("id-ID")})`
-                  : `Bayar Sekarang (${formatRupiahSkylite(detail.total)})`;
+                return (
+                  <>
+                    <span>Bayar Sekarang ({formatRupiahSkylite(grandTotal)})</span>
+                    {fee > 0 && <span className="text-[10px] font-normal opacity-80">termasuk biaya admin Rp {fee.toLocaleString("id-ID")}</span>}
+                  </>
+                );
               })()}
             </button>
           </div>
