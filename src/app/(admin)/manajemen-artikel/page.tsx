@@ -26,6 +26,7 @@ export default function ArtikelPage() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Artikel | null>(null);
   const [saving, setSaving] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   
@@ -166,6 +167,29 @@ export default function ArtikelPage() {
     }
   }
 
+  async function handleSyncSeo() {
+    if (!confirm("Sinkronkan / perbarui 5 artikel SEO unggulan (Page 1 Google) ke sistem?")) return;
+    setSyncing(true);
+    try {
+      const res = await fetch("/api/artikel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "sync" }),
+      });
+      if (res.ok) {
+        showToast("5 Artikel SEO unggulan berhasil disinkronkan ke sistem!");
+        fetchData();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        showToast(data.error || "Gagal menyinkronkan artikel", "error");
+      }
+    } catch {
+      showToast("Gagal terhubung ke server", "error");
+    } finally {
+      setSyncing(false);
+    }
+  }
+
   return (
     <div className="p-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -173,12 +197,22 @@ export default function ArtikelPage() {
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 mb-1">Artikel & Edukasi</h1>
           <p className="text-sm text-slate-500 font-medium">Kelola informasi publik dan berita UPS HERU</p>
         </div>
-        <button
-          onClick={openCreate}
-          className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2"
-        >
-          <span>✍️ Tulis Artikel Baru</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleSyncSeo}
+            disabled={syncing}
+            className="bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
+            title="Muat atau perbarui 5 artikel SEO Page 1 Google ke database"
+          >
+            <span>{syncing ? "⏳ Menyinkronkan..." : "⚡ Sinkronkan 5 Artikel SEO"}</span>
+          </button>
+          <button
+            onClick={openCreate}
+            className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2"
+          >
+            <span>✍️ Tulis Artikel Baru</span>
+          </button>
+        </div>
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm">
@@ -212,7 +246,15 @@ export default function ArtikelPage() {
                         )}
                         <div>
                           <div className="font-bold text-slate-900 max-w-sm truncate" title={a.judul}>{a.judul}</div>
-                          <div className="text-[10px] text-slate-500 font-medium">/artikel/{a.slug}</div>
+                          <a
+                            href={`/artikel/${a.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[10px] text-emerald-600 hover:underline font-medium inline-flex items-center gap-1"
+                          >
+                            <span>/artikel/{a.slug}</span>
+                            <span>↗</span>
+                          </a>
                         </div>
                       </div>
                     </td>
@@ -237,10 +279,19 @@ export default function ArtikelPage() {
                     </td>
                     <td className="px-4 py-3.5 text-center whitespace-nowrap">
                       <div className="flex items-center justify-center gap-2">
-                        <button onClick={() => openEdit(a)} className="text-slate-400 hover:text-emerald-600 transition-colors" title="Edit">
+                        <a
+                          href={`/artikel/${a.slug}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-slate-400 hover:text-blue-600 transition-colors p-1"
+                          title="Lihat Halaman Publik (Tab Baru)"
+                        >
+                          👁️
+                        </a>
+                        <button onClick={() => openEdit(a)} className="text-slate-400 hover:text-emerald-600 transition-colors p-1" title="Edit">
                           ✏️
                         </button>
-                        <button onClick={() => handleDelete(a.id)} className="text-slate-400 hover:text-rose-600 transition-colors" title="Hapus">
+                        <button onClick={() => handleDelete(a.id)} className="text-slate-400 hover:text-rose-600 transition-colors p-1" title="Hapus">
                           🗑️
                         </button>
                       </div>

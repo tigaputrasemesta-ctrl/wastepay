@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { DEFAULT_ARTIKEL } from "@/lib/default-articles";
 
 export const dynamic = "force-dynamic";
 
@@ -22,13 +23,53 @@ export async function GET(request: Request) {
       }
     : {};
 
-  const artikel = await prisma.artikel.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
-    include: { penulis: { select: { nama: true } } },
-  });
+  try {
+    let artikel = await prisma.artikel.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      include: { penulis: { select: { nama: true } } },
+    });
 
-  return NextResponse.json(artikel);
+    // Jika database belum memiliki artikel sama sekali dan tidak sedang pencarian,
+    // lakukan auto-seeding dari DEFAULT_ARTIKEL agar tabel langsung terisi artikel Page 1 SEO
+    if (artikel.length === 0 && !search) {
+      let validPenulisId: number | null = null;
+      if (session?.id) {
+        const u = await prisma.user.findUnique({
+          where: { id: session.id },
+          select: { id: true },
+        }).catch(() => null);
+        if (u) validPenulisId = u.id;
+      }
+
+      for (const item of DEFAULT_ARTIKEL) {
+        await prisma.artikel.upsert({
+          where: { slug: item.slug },
+          create: {
+            slug: item.slug,
+            judul: item.judul,
+            isi: item.isi,
+            kategori: item.kategori,
+            gambar: item.gambar,
+            diterbitkan: item.diterbitkan,
+            penulisId: validPenulisId,
+          },
+          update: {},
+        }).catch(() => null);
+      }
+
+      artikel = await prisma.artikel.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        include: { penulis: { select: { nama: true } } },
+      }).catch(() => []);
+    }
+
+    return NextResponse.json(artikel);
+  } catch {
+    // Fallback jika database belum terkoneksi / cold start
+    return NextResponse.json(DEFAULT_ARTIKEL);
+  }
 }
 
 export async function POST(request: Request) {
@@ -39,6 +80,45 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
+
+    // Dukungan 1-click sync / re-seed 5 artikel SEO unggulan
+    if (body.action === "sync") {
+      let validPenulisId: number | null = null;
+      if (session?.id) {
+        const u = await prisma.user.findUnique({
+          where: { id: session.id },
+          select: { id: true },
+        }).catch(() => null);
+        if (u) validPenulisId = u.id;
+      }
+
+      let count = 0;
+      for (const item of DEFAULT_ARTIKEL) {
+        await prisma.artikel.upsert({
+          where: { slug: item.slug },
+          create: {
+            slug: item.slug,
+            judul: item.judul,
+            isi: item.isi,
+            kategori: item.kategori,
+            gambar: item.gambar,
+            diterbitkan: item.diterbitkan,
+            penulisId: validPenulisId,
+          },
+          update: {
+            judul: item.judul,
+            isi: item.isi,
+            kategori: item.kategori,
+            gambar: item.gambar,
+            diterbitkan: item.diterbitkan,
+          },
+        }).catch(() => null);
+        count++;
+      }
+
+      return NextResponse.json({ ok: true, synced: count });
+    }
+
     const { judul, isi, kategori, gambar, diterbitkan } = body;
 
     const judulTrimmed = String(judul || "").trim();
