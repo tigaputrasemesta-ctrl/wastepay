@@ -116,17 +116,11 @@ export default function BayarPage() {
     <Suspense
       fallback={
         <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
-          <div className="relative w-16 h-16 mb-2">
-            <div className="absolute inset-0 rounded-full border-t-[3px] border-r-[3px] border-emerald-500 animate-spin opacity-50"></div>
-            <div className="absolute inset-2 rounded-full border-b-[3px] border-l-[3px] border-teal-400 animate-[spin_1.5s_linear_infinite_reverse] opacity-60"></div>
-            <div className="absolute inset-0 flex items-center justify-center animate-pulse text-emerald-600">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <rect x="3" y="5" width="18" height="14" rx="2" ry="2"></rect>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-              </svg>
-            </div>
+          <div className="relative flex flex-col items-center">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-36 h-28 bg-emerald-400/20 blur-2xl rounded-full animate-pulse"></div>
+            <AnimatedDumpTruck size="xl" theme="green" />
           </div>
-          <p className="font-bold text-xs uppercase tracking-wider text-slate-500 animate-pulse">
+          <p className="font-bold text-xs uppercase tracking-wider text-slate-500 animate-pulse mt-2">
             Memuat portal pembayaran...
           </p>
         </div>
@@ -189,7 +183,7 @@ function BayarPortalContent() {
 
       const [res] = await Promise.all([
         fetch(url),
-        new Promise((resolve) => setTimeout(resolve, 1200)) // Tambahan delay agar animasi truk keren terlihat
+        new Promise((resolve) => setTimeout(resolve, 1500)) // Delay agar animasi truk terlihat jelas dan mulus
       ]);
       const data = await res.json();
       if (!res.ok) {
@@ -239,7 +233,7 @@ function BayarPortalContent() {
     // Jika user mengetik invoice, alihkan langsung ke tampilan invoice
     if (query.toUpperCase().startsWith("INV")) {
       setMencari(true);
-      await new Promise(r => setTimeout(r, 1200)); // Tambahan delay agar animasi keren tetap terlihat
+      await new Promise(r => setTimeout(r, 1500)); // Animasi truk keren terlihat sebelum redirect
 
       let invoiceUrl = query.toUpperCase();
       // Normalisasi jika user mengetik INV- menjadi INV/
@@ -256,10 +250,10 @@ function BayarPortalContent() {
     setMencari(true);
 
     try {
-      // Pastikan animasi terlihat minimal 1.2 detik
+      // Pastikan animasi terlihat minimal 1.5 detik
       const [res] = await Promise.all([
         fetch(`/api/publik/tagihan?kode=${encodeURIComponent(query)}`),
-        new Promise((resolve) => setTimeout(resolve, 1200))
+        new Promise((resolve) => setTimeout(resolve, 1500))
       ]);
       
       const data = await res.json();
@@ -381,25 +375,27 @@ function BayarPortalContent() {
             }
           `}</style>
 
-          <div className="relative mb-4 mt-2 flex flex-col items-center">
+          <div className="relative mb-6 mt-2 flex flex-col items-center">
             {/* Glowing Aura for Truck */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-emerald-400/10 blur-2xl rounded-full animate-pulse"></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-36 bg-emerald-400/20 blur-3xl rounded-full animate-pulse"></div>
             
-            <div className="relative z-10 drop-shadow-xl animate-bounce">
-              <AnimatedDumpTruck size="xl" theme="green" />
+            <div className="relative z-10 drop-shadow-2xl">
+              <AnimatedDumpTruck size="2xl" theme="green" />
             </div>
             
             {/* Animated Road Lines */}
-            <div className="w-56 h-[3px] bg-slate-100 rounded-full mt-1 overflow-hidden relative">
-              <div className="absolute inset-0 animated-road opacity-80"></div>
+            <div className="w-64 sm:w-72 h-1 bg-slate-200 rounded-full mt-2.5 overflow-hidden relative shadow-inner">
+              <div className="absolute inset-0 animated-road opacity-90"></div>
             </div>
           </div>
           
           <div className="flex flex-col items-center gap-2">
-            <p className="font-bold text-sm tracking-wider uppercase text-emerald-800 animate-pulse">
+            <h3 className="font-display font-extrabold text-lg sm:text-xl text-slate-800 tracking-tight text-center">
               Mengangkut Dokumen Tagihan...
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-500 font-medium text-center">
+              Armada WastePay sedang mengonfirmasi data transaksi Anda
             </p>
-            <p className="text-xs text-slate-500 font-mono">Truk sedang menuju ke server</p>
           </div>
         </div>
       );
@@ -628,91 +624,96 @@ function BayarPortalContent() {
         </p>
       </div>
 
-      {/* Box Pencarian */}
-      <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-sm max-w-2xl mx-auto relative overflow-hidden">
-        <form onSubmit={cekTagihan} className="space-y-4">
-          <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-              Nomor WhatsApp / No. Invoice
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="cth: 08123456789 atau INV/..."
-                value={kode}
-                onChange={(e) => setKode(e.target.value)}
-                disabled={mencari}
-                className="w-full pl-4 pr-32 py-3.5 rounded-2xl border border-slate-200 text-slate-900 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-xs disabled:opacity-60 disabled:bg-slate-50"
-                required
-              />
-              <button
-                type="submit"
-                disabled={mencari || !kode.trim()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs active:scale-95 disabled:opacity-50"
-              >
-                {mencari ? "Memeriksa..." : "Periksa"}
-              </button>
-            </div>
-          </div>
-        </form>
-
-        {mencari && (
-          <div className="absolute inset-0 bg-white/95 backdrop-blur-xl z-20 flex flex-col items-center justify-center rounded-3xl overflow-hidden animate-in fade-in zoom-in-95 duration-300 shadow-[0_0_40px_rgba(0,0,0,0.05)] border border-slate-100">
+      {/* Box Pencarian & Animasi Truk Loading */}
+      <div className={`bg-white rounded-3xl border border-slate-200/80 shadow-sm max-w-2xl mx-auto overflow-hidden transition-all duration-300 relative ${
+        mencari
+          ? "min-h-[420px] p-6 sm:p-10 flex flex-col items-center justify-center bg-gradient-to-b from-white via-slate-50/60 to-emerald-50/20"
+          : "p-6 sm:p-8"
+      }`}>
+        {mencari ? (
+          <div className="w-full flex flex-col items-center justify-center py-4 animate-in fade-in zoom-in-95 duration-300">
             <style>{`
               @keyframes roadDrive {
-                0% { background-position: 100px 0; }
-                100% { background-position: -100px 0; }
+                0% { background-position: 120px 0; }
+                100% { background-position: -120px 0; }
               }
               .animated-road {
-                background-image: linear-gradient(90deg, transparent 0%, transparent 30%, #cbd5e1 30%, #cbd5e1 70%, transparent 70%, transparent 100%);
+                background-image: linear-gradient(90deg, transparent 0%, transparent 25%, #cbd5e1 25%, #cbd5e1 75%, transparent 75%, transparent 100%);
                 background-size: 40px 100%;
-                animation: roadDrive 0.8s linear infinite;
+                animation: roadDrive 0.7s linear infinite;
               }
             `}</style>
             
             {/* Top scanning bar */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-slate-100">
-              <div className="h-full w-full bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-75 animate-pulse"></div>
+            <div className="absolute top-0 left-0 w-full h-1 bg-slate-100 overflow-hidden">
+              <div className="h-full w-full bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-80 animate-pulse"></div>
             </div>
 
-            <div className="relative mb-8 mt-2 flex flex-col items-center">
+            {/* TRUCK CONTAINER */}
+            <div className="relative mb-6 mt-2 flex flex-col items-center">
               {/* Glowing Aura for Truck */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-emerald-400/20 blur-2xl rounded-full animate-pulse"></div>
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-36 bg-emerald-400/20 blur-3xl rounded-full animate-pulse"></div>
               
-              <div className="relative z-10 drop-shadow-xl animate-bounce">
-                <AnimatedDumpTruck size="xl" theme="green" />
+              {/* TRUCK - size="2xl" */}
+              <div className="relative z-10 drop-shadow-2xl">
+                <AnimatedDumpTruck size="2xl" theme="green" />
               </div>
               
               {/* Animated Road Lines */}
-              <div className="w-48 h-[3px] bg-slate-100 rounded-full mt-1 overflow-hidden relative">
-                <div className="absolute inset-0 animated-road opacity-80"></div>
+              <div className="w-64 sm:w-72 h-1 bg-slate-200 rounded-full mt-2.5 overflow-hidden relative shadow-inner">
+                <div className="absolute inset-0 animated-road opacity-90"></div>
               </div>
             </div>
             
-            <h3 className="font-display font-bold text-[17px] text-slate-800 tracking-tight">
-              Mencari Data Pelanggan...
+            <h3 className="font-display font-extrabold text-lg sm:text-xl text-slate-800 tracking-tight text-center">
+              Memeriksa Database Tagihan...
             </h3>
-            <p className="text-[13px] text-slate-500 font-medium mt-1">
-              Armada meluncur menyisir database
+            <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1 text-center">
+              Armada WastePay sedang menyisir data pelanggan dan riwayat tagihan
             </p>
 
-            {/* Sleek Step Indicators */}
-            <div className="mt-8 w-full max-w-[240px] space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
-                  <svg className="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"></path></svg>
-                </div>
-                <div className="text-[13px] font-semibold text-emerald-700">Koneksi Server Berhasil</div>
+            {/* Steps Status Indicators */}
+            <div className="mt-6 flex flex-col sm:flex-row items-center gap-3 sm:gap-6 bg-slate-50/90 border border-slate-200/70 px-5 py-2.5 rounded-2xl shadow-xs">
+              <div className="flex items-center gap-2">
+                <span className="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+                <span className="text-xs font-semibold text-slate-700">Koneksi Server Stabil</span>
               </div>
-              <div className="flex items-center gap-3 animate-pulse">
-                <div className="w-5 h-5 rounded-full border-[2.5px] border-emerald-500 border-r-transparent animate-spin shrink-0"></div>
-                <div className="text-[13px] font-bold text-slate-800">Menyortir Riwayat Tagihan...</div>
+              <div className="hidden sm:block w-1 h-1 rounded-full bg-slate-300"></div>
+              <div className="flex items-center gap-2">
+                <span className="w-3.5 h-3.5 border-2 border-emerald-600 border-r-transparent rounded-full animate-spin"></span>
+                <span className="text-xs font-bold text-emerald-700">Mencocokkan Data WhatsApp</span>
               </div>
             </div>
           </div>
+        ) : (
+          <form onSubmit={cekTagihan} className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                Nomor WhatsApp / No. Invoice
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="cth: 08123456789 atau INV/..."
+                  value={kode}
+                  onChange={(e) => setKode(e.target.value)}
+                  disabled={mencari}
+                  className="w-full pl-4 pr-32 py-3.5 rounded-2xl border border-slate-200 text-slate-900 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-xs disabled:opacity-60 disabled:bg-slate-50"
+                  required
+                />
+                <button
+                  type="submit"
+                  disabled={mencari || !kode.trim()}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs active:scale-95 disabled:opacity-50"
+                >
+                  Periksa
+                </button>
+              </div>
+            </div>
+          </form>
         )}
 
-        {suksesManual && (
+        {suksesManual && !mencari && (
           <div className="mt-4 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
             <span>✓</span>
             <span>{suksesManual}</span>
@@ -853,7 +854,7 @@ function BayarPortalContent() {
 
               {bukti && (
                 <div className="relative w-full h-36 rounded-xl overflow-hidden border border-slate-200">
-                  <Image src={bukti} alt="Bukti transfer" fill className="object-cover" />
+                  <Image src={bukti} alt="Bukti transfer" fill unoptimized className="object-cover" />
                 </div>
               )}
 

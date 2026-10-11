@@ -4,7 +4,7 @@ import React from "react";
 
 type Props = {
   className?: string;
-  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "hero";
   theme?: "green" | "red" | "black" | "white" | "yellow";
   animated?: boolean;
 };
@@ -15,13 +15,15 @@ export default function AnimatedDumpTruck({
   theme = "green",
   animated = true,
 }: Props) {
-  // Dimensions based on size prop
+  // Dimensions based on size prop (aspect ratio ~1.47:1 matches viewBox 110:75)
   const sizeClasses = {
-    xs: "w-5 h-5",
-    sm: "w-7 h-7",
-    md: "w-10 h-10",
-    lg: "w-16 h-16",
-    xl: "w-24 h-24",
+    xs: "w-6 h-4",
+    sm: "w-8 h-6",
+    md: "w-12 h-8",
+    lg: "w-20 h-14",
+    xl: "w-32 h-22",
+    "2xl": "w-44 h-30",
+    hero: "w-60 h-40",
   }[size];
 
   // Theme palettes
@@ -121,35 +123,34 @@ export default function AnimatedDumpTruck({
               100% { opacity: 0; transform: translate(0, 0); }
             }
             .truck-chassis-anim {
-              animation: truckBounce 1.4s ease-in-out infinite;
+              animation: truckBounce 1.2s ease-in-out infinite;
             }
             .dump-bed-anim {
+              transform-box: view-box;
               transform-origin: 14px 46px;
-              animation: dumpAction 3.6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+              animation: dumpAction 2.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
             }
-            .wheel-anim-1 {
-              transform-origin: 30px 54px;
-              animation: wheelSpin 1.6s linear infinite;
-            }
-            .wheel-anim-2 {
-              transform-origin: 70px 54px;
-              animation: wheelSpin 1.6s linear infinite;
-            }
+            .wheel-anim-1,
+            .wheel-anim-2,
             .wheel-anim-3 {
-              transform-origin: 86px 54px;
-              animation: wheelSpin 1.6s linear infinite;
+              transform-box: fill-box;
+              transform-origin: center;
+              animation: wheelSpin 0.8s linear infinite;
             }
             .smoke-puff-1 {
+              transform-box: view-box;
               transform-origin: 47px 18px;
-              animation: exhaustSmoke 2s ease-out infinite;
+              animation: exhaustSmoke 1.5s ease-out infinite;
             }
             .smoke-puff-2 {
+              transform-box: view-box;
               transform-origin: 47px 18px;
-              animation: exhaustSmoke 2s ease-out 0.8s infinite;
+              animation: exhaustSmoke 1.5s ease-out 0.6s infinite;
             }
             .trash-falling {
+              transform-box: view-box;
               transform-origin: 10px 40px;
-              animation: trashTumble 3.6s ease-in infinite;
+              animation: trashTumble 2.2s ease-in infinite;
             }
           `}</style>
         )}
