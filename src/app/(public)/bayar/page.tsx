@@ -13,7 +13,7 @@ import {
   labelMetodePembayaran,
 } from "@/lib/invoice-format";
 import { DUITKU_METHODS, duitkuChannelLabel } from "@/lib/duitku-channels";
-
+import AnimatedDumpTruck from "@/components/AnimatedDumpTruck";
 
 type TagihanPublik = {
   id: number;
@@ -358,20 +358,37 @@ function BayarPortalContent() {
     if (loadingInvoice || (!detail && !errorInvoice)) {
       return (
         <div className="min-h-[60vh] flex flex-col items-center justify-center gap-6">
-          <div className="relative w-24 h-24">
-            <div className="absolute inset-0 rounded-full border-t-[3px] border-r-[3px] border-emerald-500 animate-spin"></div>
-            <div className="absolute inset-2 rounded-full border-b-[3px] border-l-[3px] border-teal-400 animate-[spin_1.5s_linear_infinite_reverse]"></div>
-            <div className="absolute inset-0 flex items-center justify-center animate-pulse drop-shadow-sm text-emerald-600">
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-              </svg>
+          <style>{`
+            @keyframes roadDrive {
+              0% { background-position: 100px 0; }
+              100% { background-position: -100px 0; }
+            }
+            .animated-road {
+              background-image: linear-gradient(90deg, transparent 0%, transparent 30%, #cbd5e1 30%, #cbd5e1 70%, transparent 70%, transparent 100%);
+              background-size: 40px 100%;
+              animation: roadDrive 0.8s linear infinite;
+            }
+          `}</style>
+
+          <div className="relative mb-4 mt-2 flex flex-col items-center">
+            {/* Glowing Aura for Truck */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-emerald-400/10 blur-2xl rounded-full animate-pulse"></div>
+            
+            <div className="relative z-10 drop-shadow-xl animate-bounce">
+              <AnimatedDumpTruck size="xl" theme="green" />
+            </div>
+            
+            {/* Animated Road Lines */}
+            <div className="w-56 h-[3px] bg-slate-100 rounded-full mt-1 overflow-hidden relative">
+              <div className="absolute inset-0 animated-road opacity-80"></div>
             </div>
           </div>
+          
           <div className="flex flex-col items-center gap-2">
             <p className="font-bold text-sm tracking-wider uppercase text-emerald-800 animate-pulse">
-              Memuat Dokumen Invoice...
+              Mengangkut Dokumen Tagihan...
             </p>
-            <p className="text-xs text-slate-500 font-mono">Mengenkripsi jalur koneksi aman</p>
+            <p className="text-xs text-slate-500 font-mono">Truk sedang menuju ke server</p>
           </div>
         </div>
       );
@@ -630,48 +647,55 @@ function BayarPortalContent() {
 
         {mencari && (
           <div className="absolute inset-0 bg-white/95 backdrop-blur-xl z-20 flex flex-col items-center justify-center rounded-3xl overflow-hidden animate-in fade-in zoom-in-95 duration-300 shadow-[0_0_40px_rgba(0,0,0,0.05)] border border-slate-100">
+            <style>{`
+              @keyframes roadDrive {
+                0% { background-position: 100px 0; }
+                100% { background-position: -100px 0; }
+              }
+              .animated-road {
+                background-image: linear-gradient(90deg, transparent 0%, transparent 30%, #cbd5e1 30%, #cbd5e1 70%, transparent 70%, transparent 100%);
+                background-size: 40px 100%;
+                animation: roadDrive 0.8s linear infinite;
+              }
+            `}</style>
+            
             {/* Top scanning bar */}
             <div className="absolute top-0 left-0 w-full h-1 bg-slate-100">
               <div className="h-full w-full bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-75 animate-pulse"></div>
             </div>
 
-            {/* Radar Center */}
-            <div className="relative mb-6 mt-4">
-              <div className="absolute inset-0 bg-emerald-400 rounded-full animate-ping opacity-20"></div>
-              <div className="absolute -inset-4 bg-emerald-50 rounded-full animate-pulse border border-emerald-100"></div>
-              <div className="absolute -inset-8 bg-slate-50 rounded-full animate-pulse border border-slate-100 opacity-50 delay-75"></div>
+            <div className="relative mb-8 mt-2 flex flex-col items-center">
+              {/* Glowing Aura for Truck */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-emerald-400/20 blur-2xl rounded-full animate-pulse"></div>
               
-              <div className="relative flex items-center justify-center w-14 h-14 bg-gradient-to-b from-emerald-500 to-emerald-600 rounded-full shadow-lg shadow-emerald-600/30 text-white">
-                <svg className="w-6 h-6 animate-pulse" fill="none" stroke="currentColor" strokeWidth="2.3" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                </svg>
-                {/* Inner spinner around shield */}
-                <div className="absolute inset-0 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+              <div className="relative z-10 drop-shadow-xl animate-bounce">
+                <AnimatedDumpTruck size="xl" theme="green" />
+              </div>
+              
+              {/* Animated Road Lines */}
+              <div className="w-48 h-[3px] bg-slate-100 rounded-full mt-1 overflow-hidden relative">
+                <div className="absolute inset-0 animated-road opacity-80"></div>
               </div>
             </div>
             
             <h3 className="font-display font-bold text-[17px] text-slate-800 tracking-tight">
-              Otentikasi & Pemindaian Data
+              Mencari Data Pelanggan...
             </h3>
             <p className="text-[13px] text-slate-500 font-medium mt-1">
-              Mengenkripsi jalur koneksi ke server...
+              Armada meluncur menyisir database
             </p>
 
             {/* Sleek Step Indicators */}
-            <div className="mt-8 w-full max-w-[230px] space-y-4">
+            <div className="mt-8 w-full max-w-[240px] space-y-4">
               <div className="flex items-center gap-3">
                 <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
                   <svg className="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"></path></svg>
                 </div>
-                <div className="text-[13px] font-semibold text-emerald-700">Koneksi Aman Selesai</div>
+                <div className="text-[13px] font-semibold text-emerald-700">Koneksi Server Berhasil</div>
               </div>
               <div className="flex items-center gap-3 animate-pulse">
                 <div className="w-5 h-5 rounded-full border-[2.5px] border-emerald-500 border-r-transparent animate-spin shrink-0"></div>
-                <div className="text-[13px] font-bold text-slate-800">Verifikasi ID Pelanggan...</div>
-              </div>
-              <div className="flex items-center gap-3 opacity-40">
-                <div className="w-5 h-5 rounded-full border-2 border-slate-200 shrink-0"></div>
-                <div className="text-[13px] font-semibold text-slate-400">Menyiapkan Portal Tagihan</div>
+                <div className="text-[13px] font-bold text-slate-800">Menyortir Riwayat Tagihan...</div>
               </div>
             </div>
           </div>
