@@ -283,22 +283,22 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
     <form onSubmit={submit} className={`bg-white shadow-xl shadow-slate-200/50 ${isPetugas ? 'p-2 space-y-2 rounded-xl' : 'rounded-[2rem] border border-slate-200/80 p-5 sm:p-8 space-y-6 sm:space-y-8'}`}>
       
       {!isPetugas && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 gap-3 sm:gap-0">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 sm:pb-4 gap-2 sm:gap-0">
           <div>
-            <h2 className="font-extrabold text-lg text-slate-900">Formulir Pendaftaran</h2>
-            <p className="text-xs text-slate-500">Isi data lengkap lokasi penjemputan sampah Anda</p>
+            <h2 className="font-extrabold text-base sm:text-lg text-slate-900">Formulir Pendaftaran</h2>
+            <p className="text-xs text-slate-500">Lengkapi data penjemputan sampah rumah atau tempat usaha Anda</p>
           </div>
-          <span className="font-bold text-[10px] tracking-wide bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-1 rounded-full">
-            REG-2026
+          <span className="self-start sm:self-auto font-bold text-[10px] tracking-wide bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-1 rounded-full">
+            REG-2026 · Online
           </span>
         </div>
       )}
 
       {/* Referral Notification Banner if present */}
       {referal && !isPetugas && (
-        <div className="p-3.5 bg-emerald-50/90 border border-emerald-200/90 rounded-2xl flex items-center justify-between gap-2.5 shadow-xs animate-in fade-in duration-200">
+        <div className="p-3 bg-emerald-50/90 border border-emerald-200/90 rounded-2xl flex items-center justify-between gap-2.5 shadow-xs animate-in fade-in duration-200">
           <div className="flex items-center gap-2.5 min-w-0">
-            <span className="text-xl shrink-0" aria-hidden="true">🤝</span>
+            <span className="text-lg shrink-0" aria-hidden="true">🤝</span>
             <div className="min-w-0">
               <span className="text-[10px] font-extrabold text-emerald-800 uppercase tracking-wider block">
                 Kode Referral Terhubung
@@ -315,16 +315,16 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
       )}
 
       {/* --- SECTION 1: DATA DIRI --- */}
-      <div className={isPetugas ? 'space-y-1' : 'bg-slate-50/50 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/60 space-y-4 sm:space-y-5'}>
+      <div className={isPetugas ? 'space-y-1' : 'bg-slate-50/60 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-4 sm:space-y-5'}>
         {!isPetugas && (
-          <h3 className="font-extrabold text-slate-800 flex items-center gap-3 border-b border-slate-200/60 text-base pb-3 sm:pb-4 mb-3 sm:mb-4">
-            <span className="rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold w-6 h-6 text-[10px]">1</span>
-            Informasi Kontak & Pemesan
+          <h3 className="font-extrabold text-slate-800 flex items-center gap-2.5 sm:gap-3 border-b border-slate-200/60 text-sm sm:text-base pb-2.5 sm:pb-3 mb-3 sm:mb-4">
+            <span className="rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-black w-6 h-6 text-xs shrink-0">1</span>
+            <span>Informasi Kontak & Pemesan</span>
           </h3>
         )}
-      <div className={isPetugas ? 'grid grid-cols-2 gap-2' : ''}>
+      <div className={isPetugas ? 'grid grid-cols-2 gap-2' : 'space-y-4'}>
         <div>
-          <label className={`block font-bold text-slate-700 ${isPetugas ? 'text-[10px] mb-0.5' : 'text-sm mb-1.5'}`} htmlFor="d-nama">
+          <label className={`block font-bold text-slate-700 ${isPetugas ? 'text-[10px] mb-0.5' : 'text-xs sm:text-sm mb-1.5'}`} htmlFor="d-nama">
             Nama / Tempat <span className="text-rose-500">*</span>
           </label>
           <input
@@ -332,23 +332,23 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
             value={nama}
             onChange={(e) => setNama(e.target.value)}
             placeholder="Contoh: Bpk. Budi Santoso"
-            className={`w-full bg-slate-50 border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400 ${isPetugas ? 'px-2 py-1 text-[11px] rounded-lg' : 'rounded-xl px-4 text-slate-900 text-sm py-3'}`}
+            className={`w-full bg-white sm:bg-slate-50/80 border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400 ${isPetugas ? 'px-2 py-1 text-[11px] rounded-lg' : 'rounded-xl px-3.5 sm:px-4 text-slate-900 text-base sm:text-sm py-3 min-h-[46px]'}`}
             required
             minLength={3}
           />
         </div>
 
         <div>
-          <label className={`block font-bold text-slate-700 ${isPetugas ? 'text-[10px] mb-0.5' : 'text-sm mb-1.5'}`} htmlFor="d-telp">
+          <label className={`block font-bold text-slate-700 ${isPetugas ? 'text-[10px] mb-0.5' : 'text-xs sm:text-sm mb-1.5'}`} htmlFor="d-telp">
             No WhatsApp <span className="text-rose-500">*</span>
           </label>
-          <div className="flex gap-1 sm:gap-2">
+          <div className="flex gap-2">
             <input
               id="d-telp"
               value={noTelepon}
               onChange={(e) => setNoTelepon(e.target.value)}
-              placeholder="0812..."
-              className={`flex-1 bg-slate-50 border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400 ${isPetugas ? 'px-2 py-1 text-[11px] rounded-lg' : 'rounded-xl px-4 text-slate-900 text-sm py-3'}`}
+              placeholder="08123456789"
+              className={`flex-1 bg-white sm:bg-slate-50/80 border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400 ${isPetugas ? 'px-2 py-1 text-[11px] rounded-lg' : 'rounded-xl px-3.5 sm:px-4 text-slate-900 text-base sm:text-sm py-3 min-h-[46px]'}`}
               required
               inputMode="tel"
             />
@@ -356,19 +356,24 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
               type="button"
               onClick={handleCekNomor}
               disabled={cekWaLoading || !noTelepon}
-              className={`bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg border border-slate-200 transition-all disabled:opacity-50 whitespace-nowrap ${isPetugas ? 'px-2 py-1 text-[10px]' : 'px-4 py-3 text-xs rounded-xl'}`}
+              className={`font-bold transition-all disabled:opacity-50 whitespace-nowrap shrink-0 flex items-center justify-center ${
+                isPetugas 
+                  ? 'bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg border border-slate-200 px-2 py-1 text-[10px]' 
+                  : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 px-3.5 sm:px-4 py-3 text-xs sm:text-sm rounded-xl min-h-[46px] active:scale-95'
+              }`}
             >
-              {cekWaLoading ? "..." : "Cek"}
+              {cekWaLoading ? "..." : "Cek Nomor"}
             </button>
           </div>
           {cekWaPesan && (
-            <p className={`text-[10px] mt-0.5 font-medium ${cekWaPesan.terdaftar ? "text-rose-600" : "text-emerald-600"}`}>
-              {cekWaPesan.text}
+            <p className={`text-xs mt-1.5 font-semibold flex items-center gap-1.5 ${cekWaPesan.terdaftar ? "text-rose-600" : "text-emerald-700"}`}>
+              <span>{cekWaPesan.terdaftar ? "⚠️" : "✓"}</span>
+              <span>{cekWaPesan.text}</span>
             </p>
           )}
           {!isPetugas && (
-            <p className="text-xs text-slate-500 mt-1.5">
-              Nomor ini akan menjadi ID pelanggan Anda untuk cek tagihan, pelacakan live armada, dan notifikasi WhatsApp.
+            <p className="text-xs text-slate-500 mt-1.5 leading-relaxed">
+              Nomor WhatsApp akan menjadi ID pelanggan resmi untuk cek tagihan bulanan dan info penjemputan armada.
             </p>
           )}
         </div>
@@ -376,50 +381,50 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
       </div>
 
       {/* --- SECTION 2: LAYANAN --- */}
-      <div className={isPetugas ? 'space-y-1' : 'bg-slate-50/50 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/60 space-y-4 sm:space-y-5'}>
+      <div className={isPetugas ? 'space-y-1' : 'bg-slate-50/60 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-4 sm:space-y-5'}>
         {!isPetugas && (
-          <h3 className="font-extrabold text-slate-800 flex items-center gap-3 border-b border-slate-200/60 text-base pb-3 sm:pb-4 mb-3 sm:mb-4">
-            <span className="rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold w-6 h-6 text-[10px]">2</span>
-            Paket & Layanan
+          <h3 className="font-extrabold text-slate-800 flex items-center gap-2.5 sm:gap-3 border-b border-slate-200/60 text-sm sm:text-base pb-2.5 sm:pb-3 mb-3 sm:mb-4">
+            <span className="rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-black w-6 h-6 text-xs shrink-0">2</span>
+            <span>Paket & Layanan</span>
           </h3>
         )}
-      <div className={isPetugas ? 'space-y-1' : 'space-y-4'}>
+      <div className={isPetugas ? 'space-y-1' : 'space-y-3.5 sm:space-y-4'}>
         {!isPetugas && (
-          <label className="block text-sm font-bold text-slate-700">
-            Pilihan Layanan <span className="text-rose-500">*</span>
+          <label className="block text-xs sm:text-sm font-bold text-slate-700">
+            Pilihan Tipe Retribusi <span className="text-rose-500">*</span>
           </label>
         )}
         
-        <div className={`flex gap-2 ${isPetugas ? 'mb-1' : 'flex-col sm:flex-row gap-4 mb-4'}`}>
-          <label className={`flex-1 flex items-center gap-2 rounded-xl border cursor-pointer transition-all ${isPetugas ? 'p-1.5' : 'p-4 rounded-2xl'} ${jenisLayanan === 'kategori' ? 'border-emerald-500 bg-emerald-50/50 shadow-sm' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
+        <div className={isPetugas ? 'flex gap-2 mb-1' : 'grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 mb-3 sm:mb-4'}>
+          <label className={`flex items-start gap-2.5 rounded-xl border cursor-pointer transition-all ${isPetugas ? 'p-1.5' : 'p-3.5 sm:p-4 min-h-[52px]'} ${jenisLayanan === 'kategori' ? 'border-emerald-500 bg-emerald-50/60 shadow-xs ring-1 ring-emerald-500/20' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
             <input 
               type="radio" 
               name="jenis_layanan" 
-              className={`accent-emerald-600 ${isPetugas ? 'w-3 h-3' : 'w-4 h-4'}`}
+              className={`accent-emerald-600 mt-0.5 ${isPetugas ? 'w-3 h-3' : 'w-4 h-4'}`}
               checked={jenisLayanan === 'kategori'}
               onChange={() => {
                 setJenisLayanan('kategori');
                 setPaketId("");
               }}
             />
-            <div className="flex-1">
-              <span className={`block font-bold text-slate-900 ${isPetugas ? 'text-[11px]' : 'text-sm'}`}>Tarif Standar</span>
-              {!isPetugas && <span className="block text-xs text-slate-500 mt-0.5">Berdasarkan jenis bangunan / rumah</span>}
+            <div className="flex-1 min-w-0">
+              <span className={`block font-bold text-slate-900 ${isPetugas ? 'text-[11px]' : 'text-xs sm:text-sm'}`}>Tarif Standar</span>
+              {!isPetugas && <span className="block text-[11px] sm:text-xs text-slate-500 mt-0.5">Sesuai kategori rumah / tempat usaha</span>}
             </div>
           </label>
           
           {(opsi?.paket ?? []).length > 0 && (
-            <label className={`flex-1 flex items-center gap-2 rounded-xl border cursor-pointer transition-all ${isPetugas ? 'p-1.5' : 'p-4 rounded-2xl'} ${jenisLayanan === 'paket' ? 'border-emerald-500 bg-emerald-50/50 shadow-sm' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
+            <label className={`flex items-start gap-2.5 rounded-xl border cursor-pointer transition-all ${isPetugas ? 'p-1.5' : 'p-3.5 sm:p-4 min-h-[52px]'} ${jenisLayanan === 'paket' ? 'border-emerald-500 bg-emerald-50/60 shadow-xs ring-1 ring-emerald-500/20' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
               <input 
                 type="radio" 
                 name="jenis_layanan" 
-                className={`accent-emerald-600 ${isPetugas ? 'w-3 h-3' : 'w-4 h-4'}`}
+                className={`accent-emerald-600 mt-0.5 ${isPetugas ? 'w-3 h-3' : 'w-4 h-4'}`}
                 checked={jenisLayanan === 'paket'}
                 onChange={() => setJenisLayanan('paket')}
               />
-              <div className="flex-1">
-                <span className={`block font-bold text-slate-900 ${isPetugas ? 'text-[11px]' : 'text-sm'}`}>Paket Khusus</span>
-                {!isPetugas && <span className="block text-xs text-slate-500 mt-0.5">Layanan ritase & volume fleksibel</span>}
+              <div className="flex-1 min-w-0">
+                <span className={`block font-bold text-slate-900 ${isPetugas ? 'text-[11px]' : 'text-xs sm:text-sm'}`}>Paket Khusus</span>
+                {!isPetugas && <span className="block text-[11px] sm:text-xs text-slate-500 mt-0.5">Layanan ritase & volume sampah ekstra</span>}
               </div>
             </label>
           )}
@@ -428,36 +433,36 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
         {jenisLayanan === 'kategori' ? (
           <div>
             {!isPetugas && (
-              <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-kategori">
-                Pilih Kategori Pelanggan
+              <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-kategori">
+                Kategori Pelanggan
               </label>
             )}
             <div className="relative">
-              <select id="d-kategori" value={kategori} onChange={(e) => setKategori(e.target.value)} className={`w-full bg-slate-50 border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer ${isPetugas ? 'px-2 py-1 text-[11px] rounded-lg' : 'rounded-xl px-4 text-slate-900 text-sm py-3'}`}>
+              <select id="d-kategori" value={kategori} onChange={(e) => setKategori(e.target.value)} className={`w-full bg-white sm:bg-slate-50/80 border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer pr-9 ${isPetugas ? 'px-2 py-1 text-[11px] rounded-lg' : 'rounded-xl px-3.5 sm:px-4 text-slate-900 text-base sm:text-sm py-3 min-h-[46px]'}`}>
                 {(opsi?.kategoriTarif ?? []).map((k) => (
                   <option key={k.kategori} value={k.kategori}>
                     {k.label} — Rp {k.tarif.toLocaleString("id-ID")}/bulan
                   </option>
                 ))}
               </select>
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-[10px]">▼</div>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">▼</div>
             </div>
             {tarifKategori && !isPetugas && (
-              <p className="text-xs font-semibold mt-2.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 inline-block">
-                Tarif: Rp {tarifKategori.tarif.toLocaleString("id-ID")}/bulan
-                {tarifKategori.deskripsi ? ` (${tarifKategori.deskripsi})` : ""}
-              </p>
+              <div className="text-xs font-semibold mt-2 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200/80 inline-flex items-center gap-1.5 flex-wrap">
+                <span>Tarif: Rp {tarifKategori.tarif.toLocaleString("id-ID")}/bulan</span>
+                {tarifKategori.deskripsi && <span className="text-emerald-700 font-normal">({tarifKategori.deskripsi})</span>}
+              </div>
             )}
           </div>
         ) : (
           <div>
             {!isPetugas && (
-              <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-paket">
+              <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-paket">
                 Pilih Paket Khusus
               </label>
             )}
             <div className="relative">
-              <select id="d-paket" value={paketId} onChange={(e) => setPaketId(e.target.value)} className={`w-full bg-slate-50 border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer ${isPetugas ? 'px-2 py-1 text-[11px] rounded-lg' : 'rounded-xl px-4 text-slate-900 text-sm py-3'}`}>
+              <select id="d-paket" value={paketId} onChange={(e) => setPaketId(e.target.value)} className={`w-full bg-white sm:bg-slate-50/80 border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer pr-9 ${isPetugas ? 'px-2 py-1 text-[11px] rounded-lg' : 'rounded-xl px-3.5 sm:px-4 text-slate-900 text-base sm:text-sm py-3 min-h-[46px]'}`}>
                 <option value="" disabled>— Pilih Paket —</option>
                 {(opsi?.paket ?? []).map((p) => (
                   <option key={p.id} value={p.id}>
@@ -465,10 +470,10 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
                   </option>
                 ))}
               </select>
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-[10px]">▼</div>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">▼</div>
             </div>
             {paketId && !isPetugas && (opsi?.paket ?? []).find(p => p.id.toString() === paketId)?.deskripsi && (
-              <p className="text-xs font-semibold mt-2.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 inline-block">
+              <p className="text-xs font-semibold mt-2 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200/80 inline-block">
                 Info Paket: {(opsi?.paket ?? []).find(p => p.id.toString() === paketId)?.deskripsi}
               </p>
             )}
@@ -495,16 +500,16 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
 
 
       {/* --- SECTION 3: ALAMAT --- */}
-      <div className={isPetugas ? 'space-y-1' : 'bg-slate-50/50 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/60 space-y-4 sm:space-y-5'}>
+      <div className={isPetugas ? 'space-y-1' : 'bg-slate-50/60 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-4 sm:space-y-5'}>
         {!isPetugas && (
-          <h3 className="font-extrabold text-slate-800 flex items-center gap-3 border-b border-slate-200/60 text-base pb-3 sm:pb-4 mb-3 sm:mb-4">
-            <span className="rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold w-6 h-6 text-[10px]">3</span>
-            Detail Alamat Penjemputan
+          <h3 className="font-extrabold text-slate-800 flex items-center gap-2.5 sm:gap-3 border-b border-slate-200/60 text-sm sm:text-base pb-2.5 sm:pb-3 mb-3 sm:mb-4">
+            <span className="rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-black w-6 h-6 text-xs shrink-0">3</span>
+            <span>Detail Alamat Penjemputan</span>
           </h3>
         )}
-      <div className={`grid ${isPetugas ? 'grid-cols-2 gap-2' : 'grid-cols-1 sm:grid-cols-2 gap-4'}`}>
+      <div className={`grid ${isPetugas ? 'grid-cols-2 gap-2' : 'grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4'}`}>
         <div>
-          <label className={`block font-bold text-slate-700 ${isPetugas ? 'text-[10px] mb-0.5' : 'text-sm mb-1.5'}`} htmlFor="d-kecamatan">
+          <label className={`block font-bold text-slate-700 ${isPetugas ? 'text-[10px] mb-0.5' : 'text-xs sm:text-sm mb-1.5'}`} htmlFor="d-kecamatan">
             Kecamatan <span className="text-rose-500">*</span>
           </label>
           <div className="relative">
@@ -516,21 +521,21 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
                 setKelurahan("");
                 setZonaId("");
               }}
-              className={`w-full bg-slate-50 border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer ${isPetugas ? 'px-2 py-1 text-[11px] rounded-lg' : 'rounded-xl px-4 text-slate-900 text-sm py-3'}`}
+              className={`w-full bg-white sm:bg-slate-50/80 border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer pr-9 ${isPetugas ? 'px-2 py-1 text-[11px] rounded-lg' : 'rounded-xl px-3.5 sm:px-4 text-slate-900 text-base sm:text-sm py-3 min-h-[46px]'}`}
               required
             >
-              <option value="">— Pilih —</option>
+              <option value="">— Pilih Kecamatan —</option>
               {(opsi?.wilayah ?? []).map((w) => (
                 <option key={w.kecamatan} value={w.kecamatan}>
                   {w.kecamatan}
                 </option>
               ))}
             </select>
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-[10px]">▼</div>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">▼</div>
           </div>
         </div>
         <div>
-          <label className={`block font-bold text-slate-700 ${isPetugas ? 'text-[10px] mb-0.5' : 'text-sm mb-1.5'}`} htmlFor="d-kelurahan">
+          <label className={`block font-bold text-slate-700 ${isPetugas ? 'text-[10px] mb-0.5' : 'text-xs sm:text-sm mb-1.5'}`} htmlFor="d-kelurahan">
             Kelurahan <span className="text-rose-500">*</span>
           </label>
           <div className="relative">
@@ -541,18 +546,18 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
                 setKelurahan(e.target.value);
                 setZonaId("");
               }}
-              className={`w-full bg-slate-50 border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer disabled:opacity-50 ${isPetugas ? 'px-2 py-1 text-[11px] rounded-lg' : 'rounded-xl px-4 text-slate-900 text-sm py-3'}`}
+              className={`w-full bg-white sm:bg-slate-50/80 border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer disabled:opacity-50 pr-9 ${isPetugas ? 'px-2 py-1 text-[11px] rounded-lg' : 'rounded-xl px-3.5 sm:px-4 text-slate-900 text-base sm:text-sm py-3 min-h-[46px]'}`}
               required
               disabled={!kecamatan}
             >
-              <option value="">— Pilih —</option>
+              <option value="">— Pilih Kelurahan —</option>
               {kelurahanList.map((kel) => (
                 <option key={kel} value={kel}>
                   {kel}
                 </option>
               ))}
             </select>
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-[10px]">▼</div>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">▼</div>
           </div>
         </div>
       </div>
@@ -564,7 +569,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
               id="d-zona"
               value={zonaId}
               onChange={(e) => setZonaId(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-slate-900 text-[11px] font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer disabled:opacity-50"
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-slate-900 text-[11px] font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer disabled:opacity-50 pr-8"
               disabled={!kelurahan}
             >
               <option value="">{kelurahan ? "— Pilih Zona (Opsional) —" : "— Pilih Zona —"}</option>
@@ -581,7 +586,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
 
       <div>
         {!isPetugas && (
-          <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-alamat">
+          <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-alamat">
             Alamat Lengkap <span className="text-rose-500">*</span>
           </label>
         )}
@@ -589,44 +594,44 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
           id="d-alamat"
           value={alamat}
           onChange={(e) => setAlamat(e.target.value)}
-          placeholder="Alamat lengkap (Jalan, Blok, No) *"
-          className={`w-full bg-slate-50 border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all resize-none placeholder:text-slate-400 ${isPetugas ? 'px-2 py-1 text-[11px] rounded-lg h-12' : 'rounded-xl px-4 text-slate-900 text-sm py-3 min-h-[80px]'}`}
+          placeholder="Nama jalan, nomor rumah, nama perumahan, gang..."
+          className={`w-full bg-white sm:bg-slate-50/80 border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all resize-none placeholder:text-slate-400 ${isPetugas ? 'px-2 py-1 text-[11px] rounded-lg h-12' : 'rounded-xl px-3.5 sm:px-4 text-slate-900 text-base sm:text-sm py-3 min-h-[84px]'}`}
           required
           minLength={10}
         />
       </div>
 
-      <div className={`grid ${isPetugas ? 'grid-cols-4 gap-2' : 'grid-cols-2 gap-4'}`}>
+      <div className={`grid ${isPetugas ? 'grid-cols-4 gap-2' : 'grid-cols-2 gap-3 sm:gap-4'}`}>
         <div className={isPetugas ? 'col-span-1' : ''}>
-          {!isPetugas && <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-rt">RT</label>}
+          {!isPetugas && <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-rt">RT</label>}
           <input
             id="d-rt"
             value={rt}
             onChange={(e) => setRt(e.target.value)}
-            placeholder="RT"
-            className={`w-full bg-slate-50 border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400 ${isPetugas ? 'px-2 py-1 text-[11px] rounded-lg' : 'rounded-xl px-4 text-slate-900 text-sm py-3'}`}
+            placeholder="001"
+            className={`w-full bg-white sm:bg-slate-50/80 border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400 ${isPetugas ? 'px-2 py-1 text-[11px] rounded-lg' : 'rounded-xl px-3.5 sm:px-4 text-slate-900 text-base sm:text-sm py-3 min-h-[46px]'}`}
             inputMode="numeric"
           />
         </div>
         <div className={isPetugas ? 'col-span-1' : ''}>
-          {!isPetugas && <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-rw">RW</label>}
+          {!isPetugas && <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-rw">RW</label>}
           <input
             id="d-rw"
             value={rw}
             onChange={(e) => setRw(e.target.value)}
-            placeholder="RW"
-            className={`w-full bg-slate-50 border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400 ${isPetugas ? 'px-2 py-1 text-[11px] rounded-lg' : 'rounded-xl px-4 text-slate-900 text-sm py-3'}`}
+            placeholder="005"
+            className={`w-full bg-white sm:bg-slate-50/80 border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400 ${isPetugas ? 'px-2 py-1 text-[11px] rounded-lg' : 'rounded-xl px-3.5 sm:px-4 text-slate-900 text-base sm:text-sm py-3 min-h-[46px]'}`}
             inputMode="numeric"
           />
         </div>
         <div className={isPetugas ? 'col-span-2' : 'col-span-2'}>
-          {!isPetugas && <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-patokan">Patokan Lokasi</label>}
+          {!isPetugas && <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-patokan">Patokan Lokasi</label>}
           <input
             id="d-patokan"
             value={patokanLokasi}
             onChange={(e) => setPatokanLokasi(e.target.value)}
-            placeholder={isPetugas ? "Patokan Lokasi" : "Contoh: Depan Warung"}
-            className={`w-full bg-slate-50 border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400 ${isPetugas ? 'px-2 py-1 text-[11px] rounded-lg' : 'rounded-xl px-4 text-slate-900 text-sm py-3'}`}
+            placeholder={isPetugas ? "Patokan Lokasi" : "Contoh: Sebelah warung Bu RT / pagar hitam"}
+            className={`w-full bg-white sm:bg-slate-50/80 border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400 ${isPetugas ? 'px-2 py-1 text-[11px] rounded-lg' : 'rounded-xl px-3.5 sm:px-4 text-slate-900 text-base sm:text-sm py-3 min-h-[46px]'}`}
           />
         </div>
       </div>
@@ -712,29 +717,29 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
             </div>
           </div>
         ) : (
-          <div className={`grid ${isPetugas ? 'grid-cols-2 gap-2' : 'grid-cols-1 sm:grid-cols-2 gap-3'}`}>
+          <div className={`grid ${isPetugas ? 'grid-cols-2 gap-2' : 'grid-cols-2 gap-2.5 sm:gap-3'}`}>
             <button
               type="button"
               onClick={() => kameraRef.current?.click()}
               disabled={fotoLoading}
-              className={`w-full border border-slate-200 rounded-lg font-bold flex items-center justify-center gap-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 shadow-sm transition-all disabled:opacity-50 ${isPetugas ? 'py-1.5 text-[10px]' : 'py-3.5 text-sm rounded-2xl'}`}
+              className={`w-full border border-slate-200 rounded-xl font-bold flex items-center justify-center gap-1.5 bg-white sm:bg-slate-50 hover:bg-slate-100 text-slate-700 shadow-xs transition-all disabled:opacity-50 min-h-[46px] ${isPetugas ? 'py-1.5 text-[10px]' : 'py-3 text-xs sm:text-sm'}`}
             >
-              <svg className="w-3.5 h-3.5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-emerald-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-              {fotoLoading ? "..." : "Kamera"}
+              <span>{fotoLoading ? "..." : "Buka Kamera"}</span>
             </button>
             <button
               type="button"
               onClick={() => galeriRef.current?.click()}
               disabled={fotoLoading}
-              className={`w-full border border-slate-200 rounded-lg font-bold flex items-center justify-center gap-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 shadow-sm transition-all disabled:opacity-50 ${isPetugas ? 'py-1.5 text-[10px]' : 'py-3.5 text-sm rounded-2xl'}`}
+              className={`w-full border border-slate-200 rounded-xl font-bold flex items-center justify-center gap-1.5 bg-white sm:bg-slate-50 hover:bg-slate-100 text-slate-700 shadow-xs transition-all disabled:opacity-50 min-h-[46px] ${isPetugas ? 'py-1.5 text-[10px]' : 'py-3 text-xs sm:text-sm'}`}
             >
-              <svg className="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              Galeri
+              <span>{fotoLoading ? "..." : "Pilih Galeri"}</span>
             </button>
           </div>
         )}
@@ -747,7 +752,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
 
       {!isPetugas && (
         <div>
-          <label className="block text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-referal">
+          <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-referal">
             Kode / Petugas Referral (Opsional)
           </label>
           <input
@@ -758,7 +763,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
               setReferalFromUrl(false);
             }}
             placeholder="Contoh: Nama atau ID Petugas yang mengajak Anda"
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
+            className="w-full bg-white sm:bg-slate-50/80 border border-slate-200 rounded-xl px-3.5 sm:px-4 py-3 text-slate-900 text-base sm:text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400 min-h-[46px]"
           />
           <p className="text-xs text-slate-500 mt-1">
             Bila Anda diajak atau didaftarkan oleh petugas lapangan kami, pastikan nama petugas terisi agar tercatat secara akurat.
@@ -767,7 +772,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
       )}
 
       <div>
-        <label className={`block font-bold text-slate-700 ${isPetugas ? 'text-[10px] mb-0.5' : 'text-sm mb-1.5'}`}>
+        <label className={`block font-bold text-slate-700 ${isPetugas ? 'text-[10px] mb-0.5' : 'text-xs sm:text-sm mb-1.5'}`}>
           Titik Lokasi (GPS) <span className="text-rose-500">*</span>
         </label>
         <div className={isPetugas ? 'space-y-1' : 'space-y-3'}>
@@ -783,27 +788,27 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
             />
           </div>
           {gpsData ? (
-            <div className={`rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex justify-between items-center gap-2 ${isPetugas ? 'p-1.5' : 'p-3.5 flex-col sm:flex-row items-start sm:items-center gap-3'}`}>
+            <div className={`rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex justify-between items-center gap-2 ${isPetugas ? 'p-1.5' : 'p-3 sm:p-3.5 flex-col sm:flex-row items-start sm:items-center gap-3'}`}>
               <div className="min-w-0">
-                {!isPetugas && <p className="font-extrabold text-[10px] sm:text-xs">Titik Lokasi Tersimpan</p>}
-                <p className={`font-medium break-all ${isPetugas ? 'text-[9px] mt-0' : 'text-[10px] sm:text-xs text-emerald-700 mt-0.5'}`}>
-                  <span className="font-mono tabular-nums">{gpsData.lat.toFixed(5)}, {gpsData.lng.toFixed(5)}</span> · ±{Math.round(gpsData.acc)}m
+                {!isPetugas && <p className="font-extrabold text-[11px] sm:text-xs">Titik Lokasi Tersimpan ✓</p>}
+                <p className={`font-medium break-all ${isPetugas ? 'text-[9px] mt-0' : 'text-xs text-emerald-700 mt-0.5'}`}>
+                  <span className="font-mono tabular-nums">{gpsData.lat.toFixed(5)}, {gpsData.lng.toFixed(5)}</span> · Akurasi ±{Math.round(gpsData.acc)}m
                 </p>
               </div>
-              <button type="button" onClick={getGps} className={`font-bold text-emerald-700 hover:underline shrink-0 border border-emerald-200 rounded bg-white ${isPetugas ? 'text-[9px] px-1.5 py-0.5' : 'text-[10px] sm:text-xs px-2 py-1'}`}>Perbarui</button>
+              <button type="button" onClick={getGps} className={`font-bold text-emerald-700 hover:underline shrink-0 border border-emerald-200 rounded-lg bg-white ${isPetugas ? 'text-[9px] px-1.5 py-0.5' : 'text-xs px-3 py-1.5 shadow-2xs'}`}>Perbarui GPS</button>
             </div>
           ) : (
             <button
               type="button"
               onClick={getGps}
               disabled={gpsLoading}
-              className={`w-full border border-slate-200 rounded-lg font-bold flex items-center justify-center gap-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 shadow-sm transition-all disabled:opacity-50 ${isPetugas ? 'py-1.5 text-[10px]' : 'py-3.5 text-sm rounded-2xl'}`}
+              className={`w-full border border-emerald-200 rounded-xl font-bold flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 shadow-xs transition-all disabled:opacity-50 min-h-[46px] ${isPetugas ? 'py-1.5 text-[10px]' : 'py-3 text-sm'}`}
             >
-              <svg className="w-3.5 h-3.5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-emerald-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-              <span>{gpsLoading ? "..." : "Gunakan GPS"}</span>
+              <span>{gpsLoading ? "Mengambil Lokasi..." : "Gunakan Titik GPS Saat Ini"}</span>
             </button>
           )}
         </div>
@@ -846,15 +851,15 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
       <button
         type="submit"
         disabled={status === "kirim"}
-        className={`w-full bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold shadow-md active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2 ${isPetugas ? 'py-2 rounded-lg text-xs mt-2' : 'py-4 rounded-2xl text-sm'}`}
+        className={`w-full bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold shadow-md active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2 ${isPetugas ? 'py-2 rounded-lg text-xs mt-2' : 'py-3.5 sm:py-4 rounded-xl sm:rounded-2xl text-base min-h-[50px] shadow-lg shadow-emerald-700/20 active:scale-[0.98]'}`}
       >
         {status === "kirim" ? (
           <>
             <div className={`border-2 border-white border-t-transparent rounded-full animate-spin ${isPetugas ? 'w-3 h-3' : 'w-4 h-4'}`} />
-            <span>Mengirim...</span>
+            <span>Memproses Pendaftaran...</span>
           </>
         ) : (
-          <span>Kirim Data 🚀</span>
+          <span>Daftar Sekarang (Gratis) 🚀</span>
         )}
       </button>
     </form>
