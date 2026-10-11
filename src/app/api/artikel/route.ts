@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
-import { DEFAULT_ARTIKEL } from "@/lib/default-articles";
+import { DEFAULT_ARTIKEL, getArticleCoverImage } from "@/lib/default-articles";
 
 export const dynamic = "force-dynamic";
 
@@ -24,51 +24,63 @@ export async function GET(request: Request) {
     : {};
 
   try {
-    let artikel = await prisma.artikel.findMany({
+    let validPenulisId: number | null = null;
+    if (session?.id) {
+      const u = await prisma.user.findUnique({
+        where: { id: session.id },
+        select: { id: true },
+      }).catch(() => null);
+      if (u) validPenulisId = u.id;
+    }
+
+    // Pastikan seluruh 5 artikel SEO unggulan selalu tersedia di database
+    if (!search) {
+      for (const item of DEFAULT_ARTIKEL) {
+        const existing = await prisma.artikel.findUnique({
+          where: { slug: item.slug },
+          select: { id: true, gambar: true },
+        }).catch(() => null);
+
+        if (!existing) {
+          await prisma.artikel.create({
+            data: {
+              slug: item.slug,
+              judul: item.judul,
+              isi: item.isi,
+              kategori: item.kategori,
+              gambar: item.gambar,
+              diterbitkan: item.diterbitkan,
+              penulisId: validPenulisId,
+            },
+          }).catch(() => null);
+        } else if (!existing.gambar && item.gambar) {
+          await prisma.artikel.update({
+            where: { id: existing.id },
+            data: { gambar: item.gambar },
+          }).catch(() => null);
+        }
+      }
+    }
+
+    const artikel = await prisma.artikel.findMany({
       where,
       orderBy: { createdAt: "desc" },
       include: { penulis: { select: { nama: true } } },
     });
 
-    // Jika database belum memiliki artikel sama sekali dan tidak sedang pencarian,
-    // lakukan auto-seeding dari DEFAULT_ARTIKEL agar tabel langsung terisi artikel Page 1 SEO
-    if (artikel.length === 0 && !search) {
-      let validPenulisId: number | null = null;
-      if (session?.id) {
-        const u = await prisma.user.findUnique({
-          where: { id: session.id },
-          select: { id: true },
-        }).catch(() => null);
-        if (u) validPenulisId = u.id;
-      }
+    const enriched = artikel.map((a) => ({
+      ...a,
+      gambar: getArticleCoverImage(a.gambar, a.kategori),
+    }));
 
-      for (const item of DEFAULT_ARTIKEL) {
-        await prisma.artikel.upsert({
-          where: { slug: item.slug },
-          create: {
-            slug: item.slug,
-            judul: item.judul,
-            isi: item.isi,
-            kategori: item.kategori,
-            gambar: item.gambar,
-            diterbitkan: item.diterbitkan,
-            penulisId: validPenulisId,
-          },
-          update: {},
-        }).catch(() => null);
-      }
-
-      artikel = await prisma.artikel.findMany({
-        where,
-        orderBy: { createdAt: "desc" },
-        include: { penulis: { select: { nama: true } } },
-      }).catch(() => []);
-    }
-
-    return NextResponse.json(artikel);
+    return NextResponse.json(enriched);
   } catch {
     // Fallback jika database belum terkoneksi / cold start
-    return NextResponse.json(DEFAULT_ARTIKEL);
+    const enrichedDefault = DEFAULT_ARTIKEL.map((a) => ({
+      ...a,
+      gambar: getArticleCoverImage(a.gambar, a.kategori),
+    }));
+    return NextResponse.json(enrichedDefault);
   }
 }
 
@@ -102,7 +114,7 @@ export async function POST(request: Request) {
             isi: item.isi,
             kategori: item.kategori,
             gambar: item.gambar,
-            diterbitkan: item.diterbitkan,
+            diterbitkan: true,
             penulisId: validPenulisId,
           },
           update: {
@@ -110,7 +122,7 @@ export async function POST(request: Request) {
             isi: item.isi,
             kategori: item.kategori,
             gambar: item.gambar,
-            diterbitkan: item.diterbitkan,
+            diterbitkan: true,
           },
         }).catch(() => null);
         count++;
@@ -153,13 +165,17 @@ export async function POST(request: Request) {
       if (u) validPenulisId = u.id;
     }
 
+    const assignedGambar = gambar && typeof gambar === "string" && gambar.trim()
+      ? gambar.trim()
+      : getArticleCoverImage(null, kategori);
+
     const artikel = await prisma.artikel.create({
       data: {
         judul: judulTrimmed,
         slug,
         isi: isiTrimmed,
         kategori: kategori || "edukasi",
-        gambar: gambar && typeof gambar === "string" && gambar.trim() ? gambar.trim() : null,
+        gambar: assignedGambar,
         diterbitkan: Boolean(diterbitkan),
         penulisId: validPenulisId,
       },

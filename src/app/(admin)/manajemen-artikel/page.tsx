@@ -5,6 +5,7 @@ import Image from "next/image";
 import { formatDate } from "@/lib/utils";
 import { useToast } from "@/components/Toast";
 import { kompresGambar } from "@/lib/foto";
+import { getArticleCoverImage } from "@/lib/default-articles";
 
 type Artikel = {
   id: number;
@@ -237,13 +238,11 @@ export default function ArtikelPage() {
                   <tr key={a.id} className="hover:bg-slate-50/70 transition-colors">
                     <td className="px-4 py-3.5">
                       <div className="flex items-center gap-3">
-                        {a.gambar ? (
-                          <img src={a.gambar} alt={a.judul} className="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0" />
-                        ) : (
-                          <div className="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 text-slate-400 text-xs">
-                            📷
-                          </div>
-                        )}
+                        <img
+                          src={getArticleCoverImage(a.gambar, a.kategori)}
+                          alt={a.judul}
+                          className="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0 shadow-xs"
+                        />
                         <div>
                           <div className="font-bold text-slate-900 max-w-sm truncate" title={a.judul}>{a.judul}</div>
                           <a

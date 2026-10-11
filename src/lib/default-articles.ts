@@ -17,6 +17,40 @@ export interface FallbackArticle {
   createdAt: Date;
 }
 
+export function getArticleCoverImage(gambar: string | null | undefined, kategori?: string): string {
+  if (gambar && typeof gambar === "string" && gambar.trim().length > 0) {
+    return gambar.trim();
+  }
+  
+  const kat = (kategori || "").toLowerCase();
+  if (kat === "informasi") {
+    return "https://images.unsplash.com/photo-1595278069441-2cf29f8005a4?auto=format&fit=crop&w=1200&q=80";
+  }
+  if (kat === "berita") {
+    return "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80";
+  }
+  if (kat === "panduan") {
+    return "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80";
+  }
+  return "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1200&q=80";
+}
+
+export function cleanArticleSnippet(isi: string, maxLength: number = 150): string {
+  if (!isi) return "";
+  const cleaned = isi
+    .replace(/!\[.*?\]\(.*?\)/g, "")
+    .replace(/^#+\s+/gm, "")
+    .replace(/^[•\-*]\s+/gm, "")
+    .replace(/^\d+\.\s+/gm, "")
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/\*(.*?)\*/g, "$1")
+    .replace(/\n+/g, " ")
+    .trim();
+  
+  if (cleaned.length <= maxLength) return cleaned;
+  return cleaned.slice(0, maxLength).trim() + "...";
+}
+
 export const DEFAULT_ARTIKEL: FallbackArticle[] = [
   {
     id: 1,
@@ -31,6 +65,8 @@ export const DEFAULT_ARTIKEL: FallbackArticle[] = [
 
 Masalah ini dialami ribuan warga perumahan setiap minggunya. Truk dan gerobak sampah keliling harian biasanya menolak mengangkut sampah berukuran ekstra ini (*bulky waste*) karena keterbatasan kapasitas bak pengangkut. Akibatnya, barang-barang tersebut kerap menumpuk di depan pagar rumah, mengganggu estetika lingkungan, atau bahkan berakhir dibuang sembarangan di tepi jalan dan bantaran kali.
 
+![Armada Pickup & Dump Truck UPS HERU siap jemput sampah besar di lokasi perumahan Depok](https://images.unsplash.com/photo-1503596476-1c12a8ba09a9?auto=format&fit=crop&w=1000&q=80)
+
 ### Mengapa Sampah Besar Tidak Boleh Dibuang Sembarangan di Depok?
 1. **Risiko Banjir & Penyumbatan Aliran Kali**: Kasur bekas dan ranting pohon menjadi penyebab utama tersumbatnya aliran sungai di area rawan seperti Sawangan, Cilodong, dan Pancoran Mas.
 2. **Sanksi Tipiring & Denda Satpol PP**: Pemerintah Kota Depok menerapkan denda administratif dan pidana ringan bagi siapa saja yang tertangkap membuang sampah sembarangan.
@@ -39,15 +75,15 @@ Masalah ini dialami ribuan warga perumahan setiap minggunya. Truk dan gerobak sa
 ### Solusi Praktis: Jasa Angkut On-Demand Armada UPS HERU
 UPS HERU menghadirkan layanan penjemputan khusus sampah besar (*bulky waste on-demand*) yang melayani seluruh kecamatan di Kota Depok:
 
-• **Pilihan Armada Lengkap**: Dump truck dan pickup bak terbuka siap dikerahkan sesuai kubikasi sampah Anda.
+• **Pilihan Armada Lengkap**: Dump truck dan pickup bak terbuka siap dikerahkan sesuai kubikasi muatan puing atau barang bekas Anda.
 • **Tenaga Angkut Profesional**: Anda tidak perlu repot mengangkat barang berat; petugas kami siap mengangkut langsung dari depan gerbang atau halaman rumah.
 • **Pembuangan Resmi & Berizin**: Seluruh material diarahkan ke fasilitas TPS 3R Kalibaru dan pengolahan resmi tanpa mencemari alam.
-• **Tarif Transparan Tanpa Pungli**: Biaya dihitung berdasarkan estimasi muatan armada, tanpa biaya tersembunyi.
+• **Tarif Transparan Tanpa Pungli**: Biaya dihitung berdasarkan estimasi muatan armada, tanpa pungutan tersembunyi.
 
 ### Cara Memesan Layanan Jemput Sampah Besar di Depok
 1. Foto kasur, perabot, puing, atau tumpukan ranting yang ingin diangkut.
-2. Buka situs resmi **upsheru.com** atau hubungi Customer Service UPS HERU via WhatsApp.
-3. Petugas memberikan estimasi armada dan jadwal kedatangan.
+2. Hubungi Customer Service UPS HERU via WhatsApp resmi atau buka situs **upsheru.com**.
+3. Tim memberikan estimasi armada terbaik dan jadwal kedatangan.
 4. Tim armada datang tepat waktu dan area rumah Anda kembali bersih rapi!
 
 Jangan biarkan barang bekas merusak kenyamanan rumah Anda. Hubungi tim UPS HERU hari ini untuk jadwal jemput cepat!`,
@@ -65,17 +101,19 @@ Jangan biarkan barang bekas merusak kenyamanan rumah Anda. Hubungi tim UPS HERU 
 
 Berdasarkan Peraturan Daerah (Perda) Kota Depok tentang Pengelolaan Persampahan, setiap warga dilarang keras membuang sampah di jalan protokol, saluran drainase, sungai, jembatan, maupun tanah kosong tak berpenghuni.
 
+![Lingkungan perumahan dan jalan protokol Kota Depok yang asri dan bersih dari sampah liar](https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1000&q=80)
+
 ### Besaran Denda & Sanksi Pelanggaran Sampah Liar di Depok
 Satpol PP Kota Depok bersama dinas terkait secara rutin menggelar Operasi Tangkap Tangan (OTT) di titik-titik rawan:
 
-• **Denda Administratif Uang Tunai**: Pelanggar dapat dikenakan denda hingga jutaan rupiah sesuai volume pelanggaran.
-• **Sidang Tindak Pidana Ringan (Tipiring)**: Warga yang kedapatan membuang sampah sembarangan dapat langsung disidang di tempat dengan ancaman kurungan penjara maksimal 3 bulan.
-• **Penyitaan KTP**: Identitas pelaku disita sementara hingga proses denda dan sidang diselesaikan secara resmi.
+• **Denda Administratif Uang Tunai**: Pelanggar dapat dikenakan denda uang tunai hingga jutaan rupiah sesuai tingkat pelanggaran.
+• **Sidang Tindak Pidana Ringan (Tipiring)**: Pelanggar yang tertangkap membuang sampah liar berulang dapat langsung disidang di tempat dengan ancaman kurungan penjara maksimal 3 bulan.
+• **Penyitaan KTP Sementara**: Identitas pelaku disita sementara hingga proses denda dan sidang diselesaikan secara resmi.
 
 ### Solusi Permanen untuk Pengurus RT/RW dan Kompleks Perumahan
 Banyak warga nekat membuang sampah liar karena keterbatasan jadwal atau ketiadaan pengangkutan resmi di lingkungannya. Untuk mengatasi hal ini secara permanen, pengurus RT/RW dapat bermitra langsung dengan UPS HERU:
 
-1. **Jadwal Pengangkutan Rutin Terjamin**: Armada UPS HERU menjemput sampah 2–3 kali per minggu langsung dari depan rumah warga.
+1. **Jadwal Pengangkutan Rutin Terjamin**: Armada UPS HERU menjemput sampah 2–3 kali per minggu langsung dari depan tong sampah warga.
 2. **Pelacakan Armada Live GPS**: Pengurus dan warga dapat memantau posisi truk pengangkut secara real-time melalui peta digital di situs **upsheru.com**.
 3. **Sistem Iuran Digital WastePay**: Penagihan iuran bulanan terintegrasi dengan pesan otomatis WhatsApp dan pembayaran instan via QRIS.
 
@@ -93,6 +131,8 @@ Ciptakan lingkungan rukun tetangga yang asri, bersih, dan bebas dari sanksi huku
     isi: `Bagi Anda yang baru menempati hunian baru di kawasan Kota Depok (seperti Cilodong, Kalibaru, Sukmajaya, Pancoran Mas, Tapos, Beji, hingga Sawangan), pertanyaan yang paling sering dicari adalah: *"Berapa tarif retribusi sampah per bulan di Depok dan bagaimana cara membayarnya?"*
 
 Biaya retribusi kebersihan di Kota Depok disesuaikan berdasarkan zonasi, tipe bangunan, serta volume sampah yang dihasilkan.
+
+![Kemudahan pembayaran iuran retribusi sampah secara digital via scan QRIS nasional](https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1000&q=80)
 
 ### Skema Kategori Tarif Pengangkutan UPS HERU
 Melalui sistem digital terpadu WastePay, UPS HERU menawarkan tarif yang transparan dan kompetitif:
@@ -125,6 +165,8 @@ Daftarkan perumahan Anda sekarang dan nikmati layanan kebersihan yang modern, tr
 
 Sampah basah sisa dapur yang tidak segera diangkut setiap malam akan membusuk hanya dalam beberapa jam, memicu bau menyengat, serta mengundang kecoak dan lalat yang membahayakan reputasi higienitas resto Anda di mata pengunjung.
 
+![Area dapur dan dining resto tetap higienis dengan penjemputan sampah harian setiap malam](https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1000&q=80)
+
 ### Mengapa Restoran di Depok Mempercayakan Pengangkutan ke UPS HERU?
 UPS HERU menyediakan layanan kemitraan B2B resmi untuk sektor kuliner dan komersial di Depok:
 
@@ -150,6 +192,8 @@ Hubungi tim kemitraan komersial UPS HERU untuk survei lokasi dan uji coba layana
     isi: `Tahukah Anda bahwa hampir 40% isi tong sampah di rumah kita sebenarnya memiliki nilai rupiah jika dipilah dengan benar? Memilah sampah anorganik bukan hanya membantu mengurangi beban TPA Cipayung, tetapi juga dapat menjadi sumber penghasilan tambahan bagi keluarga maupun kas tabungan RT/RW.
 
 Berikut daftar jenis sampah bernilai ekonomi tinggi yang paling dicari oleh industri daur ulang di Kota Depok:
+
+![Tumpukan kardus paket, botol plastik tebal, dan kertas bekas yang siap ditimbang di bank sampah](https://images.unsplash.com/photo-1528323273322-d81458248d40?auto=format&fit=crop&w=1000&q=80)
 
 ### 1. Kardus & Kertas Bekas
 • **Kardus Cokelat Tebal**: Kardus paket belanja online, kardus mie instan, dan kardus perabot memiliki harga timbang paling stabil. Tips: Lipat pipih dan ikat dengan rapi.

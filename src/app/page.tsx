@@ -30,7 +30,7 @@ import JsonLd from "@/components/JsonLd";
 import PublicNavbar from "@/components/PublicNavbar";
 import CivicHeroWidget from "@/components/CivicHeroWidget";
 import { generateLocalBusinessJsonLd } from "@/lib/seo";
-import { DEFAULT_ARTIKEL } from "@/lib/default-articles";
+import { DEFAULT_ARTIKEL, getArticleCoverImage, cleanArticleSnippet } from "@/lib/default-articles";
 
 export const dynamic = "force-dynamic";
 
@@ -64,7 +64,9 @@ export default async function LandingPage() {
     // ignore
   }
 
-  const displayedArticles = artikelTop3.length > 0 ? artikelTop3 : DEFAULT_ARTIKEL;
+  const existingSlugs = new Set(artikelTop3.map((a) => a.slug));
+  const fallbackList = DEFAULT_ARTIKEL.filter((a) => !existingSlugs.has(a.slug));
+  const displayedArticles = [...artikelTop3, ...fallbackList].slice(0, 3);
 
   type PengumumanRingkas = {
     id: number;
@@ -742,47 +744,47 @@ export default async function LandingPage() {
             </div>
 
             <div className="grid md:grid-cols-3 gap-6">
-              {displayedArticles.map((a) => (
-                <Link
-                  key={a.id}
-                  href={`/artikel/${a.slug}`}
-                  className="group flex flex-col bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-xs hover:shadow-md hover:border-slate-300 transition-all"
-                >
-                  <div className="h-44 bg-[#f1f5f9] border-b border-slate-100 relative overflow-hidden flex items-center justify-center">
-                    {a.gambar ? (
+              {displayedArticles.map((a) => {
+                const cover = getArticleCoverImage(a.gambar, a.kategori);
+                const snippet = cleanArticleSnippet(a.isi, 130);
+                return (
+                  <Link
+                    key={a.id}
+                    href={`/artikel/${a.slug}`}
+                    className="group flex flex-col bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-xs hover:shadow-md hover:border-emerald-300 transition-all"
+                  >
+                    <div className="h-44 bg-slate-900 border-b border-slate-100 relative overflow-hidden flex items-center justify-center">
                       <img
-                        src={a.gambar}
+                        src={cover}
                         alt={a.judul}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
-                    ) : (
-                      <Recycle className="w-10 h-10 text-slate-300/70" strokeWidth={1.5} />
-                    )}
-                    <span className="absolute top-3 left-3 px-2.5 py-0.5 bg-white/95 text-[#0d7a75] text-[10px] font-extrabold uppercase rounded-md shadow-xs">
-                      {a.kategori}
-                    </span>
-                  </div>
-
-                  <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
-                    <div className="space-y-2">
-                      <h3 className="text-base font-bold text-slate-900 group-hover:text-[#0d7a75] transition-colors leading-snug">
-                        {a.judul}
-                      </h3>
-                      <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed font-normal">
-                        {a.isi}
-                      </p>
-                    </div>
-
-                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
-                      <span>{formatDate(a.createdAt)}</span>
-                      <span className="font-bold text-[#0d7a75] group-hover:underline inline-flex items-center gap-1">
-                        Baca Panduan
-                        <ChevronRight className="w-3 h-3" />
+                      <span className="absolute top-3 left-3 px-2.5 py-0.5 bg-black/60 backdrop-blur-md text-white text-[10px] font-extrabold uppercase rounded-md shadow-xs">
+                        {a.kategori}
                       </span>
                     </div>
-                  </div>
-                </Link>
-              ))}
+
+                    <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
+                      <div className="space-y-2">
+                        <h3 className="text-base font-bold text-slate-900 group-hover:text-emerald-700 transition-colors leading-snug">
+                          {a.judul}
+                        </h3>
+                        <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed font-normal">
+                          {snippet}
+                        </p>
+                      </div>
+
+                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+                        <span>{formatDate(a.createdAt)}</span>
+                        <span className="font-bold text-emerald-700 group-hover:underline inline-flex items-center gap-1">
+                          Baca Panduan
+                          <ChevronRight className="w-3 h-3" />
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </section>
