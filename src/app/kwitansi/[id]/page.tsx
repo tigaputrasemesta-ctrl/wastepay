@@ -11,6 +11,7 @@ import {
   BULAN_INDO,
   labelMetodePembayaran,
   companyInfo,
+  terbilangRupiah,
 } from "@/lib/invoice-format";
 import "../kwitansi.css";
 
@@ -116,13 +117,13 @@ export default async function KwitansiPage({
 
           {/* Judul dokumen */}
           <div className="kwitansi-doc-title">
-            KWITANSI / BUKTI PEMBAYARAN
+            KWITANSI / TANDA TERIMA PEMBAYARAN
           </div>
 
           {/* Info pihak */}
           <div className="kwitansi-info">
             <div className="kwitansi-info-row">
-              <span>Telah diterima dari</span>
+              <span>Telah terima dari</span>
               <p>
                 {p.pelanggan.nama}{" "}
                 <b className="kwitansi-code">({p.pelanggan.kodePelanggan})</b>
@@ -130,9 +131,14 @@ export default async function KwitansiPage({
             </div>
             <div className="kwitansi-info-row">
               <span>Uang sejumlah</span>
-              <p className="kwitansi-amount">
-                {formatRupiahSkylite(rincian.total)}
-              </p>
+              <div>
+                <p className="kwitansi-amount">
+                  {formatRupiahSkylite(rincian.total)}
+                </p>
+                <div className="kwitansi-terbilang-box">
+                  <span className="kwitansi-terbilang-text">{terbilangRupiah(rincian.total)}</span>
+                </div>
+              </div>
             </div>
             <div className="kwitansi-info-row">
               <span>Untuk pembayaran</span>
