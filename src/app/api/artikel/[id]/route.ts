@@ -12,19 +12,24 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
   try {
     const resolvedParams = await params;
+    const id = Number(resolvedParams.id);
+    if (!id || isNaN(id)) {
+      return NextResponse.json({ error: "ID artikel tidak valid" }, { status: 400 });
+    }
+
     const body = await req.json();
-    
-    // We only allow updating certain fields
     const { judul, isi, kategori, gambar, diterbitkan } = body;
     const updateData: any = {};
-    if (judul !== undefined) updateData.judul = judul;
-    if (isi !== undefined) updateData.isi = isi;
-    if (kategori !== undefined) updateData.kategori = kategori;
-    if (gambar !== undefined) updateData.gambar = gambar;
+    if (judul !== undefined) updateData.judul = String(judul).trim();
+    if (isi !== undefined) updateData.isi = String(isi).trim();
+    if (kategori !== undefined) updateData.kategori = String(kategori).trim();
+    if (gambar !== undefined) {
+      updateData.gambar = gambar && typeof gambar === "string" && gambar.trim() ? gambar.trim() : null;
+    }
     if (diterbitkan !== undefined) updateData.diterbitkan = Boolean(diterbitkan);
 
     const updated = await prisma.artikel.update({
-      where: { id: Number(resolvedParams.id) },
+      where: { id },
       data: updateData,
     });
     return NextResponse.json({ ok: true, data: updated });

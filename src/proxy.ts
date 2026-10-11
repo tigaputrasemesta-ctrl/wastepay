@@ -39,6 +39,7 @@ const PAGE_ROLES: Record<string, number> = {
   "/chat": 50, // admin+: chat petugas ↔ admin
   "/users": 100, // superadmin only
   "/audit-log": 100, // superadmin only
+  "/manajemen-artikel": 50, // admin+: artikel & berita edukasi
 };
 
 // API routes that require specific roles.
@@ -233,6 +234,13 @@ const API_ROLE_MAP: Record<string, number> = {
   "PUT:/api/paket/": 50,
   "DELETE:/api/paket/": 50,
   "POST:/api/paket/seed": 100,
+
+  // Artikel & Edukasi Publik
+  "GET:/api/artikel": 50,
+  "GET:/api/artikel/": 50,
+  "POST:/api/artikel": 50,
+  "PUT:/api/artikel/": 50,
+  "DELETE:/api/artikel/": 50,
 };
 
 async function verifyToken(token: string) {

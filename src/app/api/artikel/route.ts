@@ -11,14 +11,16 @@ export async function GET(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
-  const search = searchParams.get("search") || "";
+  const search = searchParams.get("search")?.trim() || "";
 
-  const where = {
-    OR: [
-      { judul: { contains: search } },
-      { isi: { contains: search } },
-    ],
-  };
+  const where = search
+    ? {
+        OR: [
+          { judul: { contains: search } },
+          { isi: { contains: search } },
+        ],
+      }
+    : {};
 
   const artikel = await prisma.artikel.findMany({
     where,
@@ -39,11 +41,21 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { judul, isi, kategori, gambar, diterbitkan } = body;
 
-    if (!judul || !isi) {
-      return NextResponse.json({ error: "Judul dan isi wajib diisi" }, { status: 400 });
+    const judulTrimmed = String(judul || "").trim();
+    const isiTrimmed = String(isi || "").trim();
+
+    if (!judulTrimmed || !isiTrimmed) {
+      return NextResponse.json({ error: "Judul dan isi artikel wajib diisi" }, { status: 400 });
     }
 
-    let baseSlug = judul.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    let baseSlug = judulTrimmed
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+    if (!baseSlug) {
+      baseSlug = `artikel-${Date.now()}`;
+    }
+
     let slug = baseSlug;
     let counter = 1;
     while (await prisma.artikel.findUnique({ where: { slug } })) {
@@ -51,15 +63,25 @@ export async function POST(request: Request) {
       counter++;
     }
 
+    // Validasi penulisId agar foreign key tidak error
+    let validPenulisId: number | null = null;
+    if (session?.id) {
+      const u = await prisma.user.findUnique({
+        where: { id: session.id },
+        select: { id: true },
+      });
+      if (u) validPenulisId = u.id;
+    }
+
     const artikel = await prisma.artikel.create({
       data: {
-        judul,
+        judul: judulTrimmed,
         slug,
-        isi,
+        isi: isiTrimmed,
         kategori: kategori || "edukasi",
-        gambar: gambar || null,
-        diterbitkan: diterbitkan || false,
-        penulisId: session.id,
+        gambar: gambar && typeof gambar === "string" && gambar.trim() ? gambar.trim() : null,
+        diterbitkan: Boolean(diterbitkan),
+        penulisId: validPenulisId,
       },
     });
 

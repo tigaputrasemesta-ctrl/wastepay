@@ -25,6 +25,9 @@ export default function ArtikelPage() {
   
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Artikel | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   
   const [form, setForm] = useState({
     judul: "",
@@ -37,12 +40,20 @@ export default function ArtikelPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchData = useCallback(async () => {
-    const res = await fetch("/api/artikel");
-    if (res.ok) {
-      setArtikel(await res.json());
+    try {
+      const res = await fetch("/api/artikel");
+      if (res.ok) {
+        setArtikel(await res.json());
+      } else {
+        const data = await res.json().catch(() => ({}));
+        showToast(data.error || "Gagal memuat daftar artikel", "error");
+      }
+    } catch {
+      showToast("Gagal menghubungi server untuk memuat artikel", "error");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  }, []);
+  }, [showToast]);
 
   useEffect(() => {
     (async () => { await fetchData(); })();
@@ -51,22 +62,27 @@ export default function ArtikelPage() {
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+    setUploadingImage(true);
     try {
       const base64 = await kompresGambar(file);
-      setForm({ ...form, gambar: base64 });
+      setForm(prev => ({ ...prev, gambar: base64 }));
     } catch (err: any) {
-      alert("Gagal memproses gambar: " + err.message);
+      showToast("Gagal memproses gambar: " + err.message, "error");
+    } finally {
+      setUploadingImage(false);
     }
   }
 
   function openCreate() {
     setEditing(null);
+    setErrorMsg("");
     setForm({ judul: "", isi: "", kategori: "edukasi", gambar: "", diterbitkan: false });
     setShowForm(true);
   }
 
   function openEdit(a: Artikel) {
     setEditing(a);
+    setErrorMsg("");
     setForm({
       judul: a.judul,
       isi: a.isi,
@@ -79,43 +95,74 @@ export default function ArtikelPage() {
 
   async function handleDelete(id: number) {
     if (!confirm("Hapus artikel ini permanen?")) return;
-    const res = await fetch(`/api/artikel/${id}`, { method: "DELETE" });
-    if (res.ok) {
-      showToast("Artikel berhasil dihapus");
-      fetchData();
+    try {
+      const res = await fetch(`/api/artikel/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        showToast("Artikel berhasil dihapus");
+        fetchData();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        showToast(data.error || "Gagal menghapus artikel", "error");
+      }
+    } catch {
+      showToast("Gagal menghubungi server", "error");
     }
   }
 
   async function togglePublish(a: Artikel) {
-    const res = await fetch(`/api/artikel/${a.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ diterbitkan: !a.diterbitkan }),
-    });
-    if (res.ok) {
-      showToast(`Artikel berhasil ${!a.diterbitkan ? "diterbitkan" : "di-draft"}`);
-      fetchData();
+    try {
+      const res = await fetch(`/api/artikel/${a.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ diterbitkan: !a.diterbitkan }),
+      });
+      if (res.ok) {
+        showToast(`Artikel berhasil ${!a.diterbitkan ? "diterbitkan" : "di-draft"}`);
+        fetchData();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        showToast(data.error || "Gagal mengubah status artikel", "error");
+      }
+    } catch {
+      showToast("Gagal menghubungi server", "error");
     }
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const url = editing ? `/api/artikel/${editing.id}` : "/api/artikel";
-    const method = editing ? "PUT" : "POST";
+    if (!form.judul.trim() || !form.isi.trim()) {
+      setErrorMsg("Judul dan isi artikel wajib diisi");
+      return;
+    }
 
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    setSaving(true);
+    setErrorMsg("");
 
-    if (res.ok) {
-      setShowForm(false);
-      showToast(editing ? "Artikel diperbarui" : "Artikel diterbitkan");
-      fetchData();
-    } else {
+    try {
+      const url = editing ? `/api/artikel/${editing.id}` : "/api/artikel";
+      const method = editing ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
       const data = await res.json().catch(() => ({}));
-      alert(data.error || "Terjadi kesalahan");
+
+      if (res.ok) {
+        setShowForm(false);
+        showToast(editing ? "Artikel berhasil diperbarui" : "Artikel berhasil diterbitkan");
+        fetchData();
+      } else {
+        setErrorMsg(data.error || "Terjadi kesalahan saat menyimpan artikel");
+        showToast(data.error || "Terjadi kesalahan", "error");
+      }
+    } catch {
+      setErrorMsg("Gagal terhubung ke server. Periksa koneksi internet Anda.");
+      showToast("Gagal terhubung ke server", "error");
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -212,14 +259,23 @@ export default function ArtikelPage() {
             <div className="flex items-center justify-between px-6 py-4.5 bg-slate-900 text-white shrink-0">
               <h2 className="font-bold text-base tracking-wide">{editing ? "Edit Artikel" : "Tulis Artikel Baru"}</h2>
               <button
+                type="button"
                 onClick={() => setShowForm(false)}
                 className="w-8 h-8 rounded-xl flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
               >
                 ×
               </button>
             </div>
-            <div className="overflow-y-auto p-6">
-              <form id="artikel-form" onSubmit={handleSubmit} className="space-y-5">
+            
+            <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+              <div className="overflow-y-auto p-6 space-y-5 flex-1">
+                {errorMsg && (
+                  <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2 animate-in fade-in">
+                    <span>⚠️</span>
+                    <span>{errorMsg}</span>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="space-y-1.5 md:col-span-2">
                     <label className="block text-xs font-bold text-slate-700">Judul Artikel <span className="text-rose-500">*</span></label>
@@ -273,10 +329,11 @@ export default function ArtikelPage() {
                     <div className="flex items-center gap-3">
                       <button
                         type="button"
+                        disabled={uploadingImage}
                         onClick={() => fileInputRef.current?.click()}
-                        className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 text-xs font-bold rounded-xl flex items-center gap-2 transition-colors"
+                        className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 text-xs font-bold rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
                       >
-                        📷 Unggah Gambar
+                        {uploadingImage ? "⏳ Memproses Gambar..." : "📷 Unggah Gambar"}
                       </button>
                       <span className="text-[10px] text-slate-500">Maks. 5MB, JPG/PNG</span>
                     </div>
@@ -300,24 +357,33 @@ export default function ArtikelPage() {
                     placeholder="Tulis konten artikel di sini. Anda bisa menggunakan spasi ganda untuk paragraf baru."
                   />
                 </div>
-              </form>
-            </div>
-            <div className="p-4 border-t border-slate-100 bg-slate-50 shrink-0 flex justify-end gap-3 rounded-b-3xl">
-              <button
-                type="button"
-                onClick={() => setShowForm(false)}
-                className="px-5 py-2.5 rounded-xl font-bold text-sm text-slate-600 hover:bg-slate-200 transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                form="artikel-form"
-                type="submit"
-                className="px-6 py-2.5 rounded-xl font-bold text-sm bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm transition-colors"
-              >
-                Simpan Artikel
-              </button>
-            </div>
+              </div>
+
+              <div className="p-4 border-t border-slate-100 bg-slate-50 shrink-0 flex justify-end gap-3 rounded-b-3xl">
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  disabled={saving}
+                  className="px-5 py-2.5 rounded-xl font-bold text-sm text-slate-600 hover:bg-slate-200 transition-colors disabled:opacity-50"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  disabled={saving || uploadingImage}
+                  className="px-6 py-2.5 rounded-xl font-bold text-sm bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm transition-colors disabled:opacity-50 flex items-center gap-2"
+                >
+                  {saving ? (
+                    <>
+                      <span className="w-4 h-4 border-2 border-white border-r-transparent rounded-full animate-spin"></span>
+                      <span>Menyimpan...</span>
+                    </>
+                  ) : (
+                    <span>Simpan Artikel</span>
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
