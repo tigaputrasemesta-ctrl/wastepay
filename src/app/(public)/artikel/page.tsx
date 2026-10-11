@@ -4,6 +4,7 @@ import { ArrowLeft, Clock, ArrowRight, BookOpen } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
 import { DEFAULT_ARTIKEL, getArticleCoverImage, cleanArticleSnippet } from "@/lib/default-articles";
+import ArticleImage from "@/components/ArticleImage";
 
 export const metadata: Metadata = {
   title: "Artikel & Edukasi Lingkungan | UPS HERU Depok",
@@ -75,12 +76,13 @@ export default async function ArtikelPage() {
                 className="group bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/90 shadow-xs flex flex-col sm:flex-row gap-6 hover:shadow-md hover:border-emerald-300 transition-all"
               >
                 <div className="w-full sm:w-56 h-48 sm:h-36 rounded-2xl overflow-hidden shrink-0 border border-slate-200/80 bg-slate-900 relative">
-                  <img
+                  <ArticleImage
                     src={cover}
                     alt={artikel.judul}
+                    fallbackCategory={artikel.kategori}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 bg-black/60 backdrop-blur-md text-white text-[10px] font-extrabold uppercase rounded-md">
+                  <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 bg-black/60 backdrop-blur-md text-white text-[10px] font-extrabold uppercase rounded-md z-10">
                     {artikel.kategori}
                   </span>
                 </div>

@@ -9,6 +9,19 @@ const nextConfig: NextConfig = {
   // Allow phone testing
   allowedDevOrigins: ["192.168.100.19"],
 
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.unsplash.com",
+      },
+    ],
+  },
+
   async headers() {
     const isProd = process.env.NODE_ENV === "production";
     return [
@@ -34,7 +47,7 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"}`,
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https://images.duitku.com https://api.qrserver.com https://*.basemaps.cartocdn.com https://*.tile.openstreetmap.org https://tile.openstreetmap.org https://server.arcgisonline.com https://*.google.com https://*.googleapis.com https://*.gstatic.com",
+              "img-src 'self' data: blob: https: https://images.unsplash.com https://*.unsplash.com https://images.duitku.com https://api.qrserver.com https://*.basemaps.cartocdn.com https://*.tile.openstreetmap.org https://tile.openstreetmap.org https://server.arcgisonline.com https://*.google.com https://*.googleapis.com https://*.gstatic.com",
               "font-src 'self' data:",
               "connect-src 'self' https://sandbox.duitku.com https://passport.duitku.com https://api.qrserver.com",
               "frame-ancestors 'none'",

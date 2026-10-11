@@ -6,6 +6,7 @@ import { formatDate } from "@/lib/utils";
 import { useToast } from "@/components/Toast";
 import { kompresGambar } from "@/lib/foto";
 import { getArticleCoverImage } from "@/lib/default-articles";
+import ArticleImage from "@/components/ArticleImage";
 
 type Artikel = {
   id: number;
@@ -238,11 +239,14 @@ export default function ArtikelPage() {
                   <tr key={a.id} className="hover:bg-slate-50/70 transition-colors">
                     <td className="px-4 py-3.5">
                       <div className="flex items-center gap-3">
-                        <img
-                          src={getArticleCoverImage(a.gambar, a.kategori)}
-                          alt={a.judul}
-                          className="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0 shadow-xs"
-                        />
+                        <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-slate-200 shadow-xs bg-slate-900">
+                          <ArticleImage
+                            src={getArticleCoverImage(a.gambar, a.kategori)}
+                            alt={a.judul}
+                            fallbackCategory={a.kategori}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
                         <div>
                           <div className="font-bold text-slate-900 max-w-sm truncate" title={a.judul}>{a.judul}</div>
                           <a
@@ -424,18 +428,21 @@ export default function ArtikelPage() {
                   {/* Preview Gambar Cover */}
                   {form.gambar && (
                     <div className="relative inline-block mt-1">
-                      <img
-                        src={form.gambar}
-                        alt="Preview Cover"
-                        className="h-36 max-w-full rounded-xl object-cover border border-slate-200 shadow-xs"
-                      />
+                      <div className="h-36 w-64 rounded-xl overflow-hidden border border-slate-200 shadow-xs bg-slate-900">
+                        <ArticleImage
+                          src={form.gambar}
+                          alt="Preview Cover"
+                          fallbackCategory={form.kategori}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                       <button
                         type="button"
                         onClick={() => {
                           setForm(prev => ({ ...prev, gambar: "" }));
                           if (fileInputRef.current) fileInputRef.current.value = "";
                         }}
-                        className="absolute -top-2 -right-2 bg-rose-600 hover:bg-rose-700 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs shadow-md transition"
+                        className="absolute -top-2 -right-2 bg-rose-600 hover:bg-rose-700 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs shadow-md transition z-10"
                         title="Hapus Gambar"
                       >
                         ×

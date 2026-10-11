@@ -5,6 +5,7 @@ import { ArrowLeft, Clock, Share2, Sparkles, CheckCircle2 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
 import { DEFAULT_ARTIKEL, getArticleCoverImage } from "@/lib/default-articles";
+import ArticleImage from "@/components/ArticleImage";
 
 export const dynamic = "force-dynamic";
 
@@ -147,13 +148,14 @@ export default async function ArtikelDetail({ params }: { params: Promise<{ slug
 
         {/* Main Cover Photo */}
         <div className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/90 shadow-xs aspect-video max-h-[440px] bg-slate-900">
-          <img
+          <ArticleImage
             src={coverImage}
             alt={artikel.judul}
+            fallbackCategory={artikel.kategori}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent pointer-events-none" />
-          <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 flex items-center justify-between text-white/95 text-[11px] font-medium backdrop-blur-md bg-black/40 px-3.5 py-1.5 rounded-xl border border-white/20">
+          <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 flex items-center justify-between text-white/95 text-[11px] font-medium backdrop-blur-md bg-black/40 px-3.5 py-1.5 rounded-xl border border-white/20 z-10">
             <span>Foto: Layanan Kebersihan & Edukasi Lingkungan UPS HERU</span>
             <span className="hidden sm:inline-block">Kota Depok</span>
           </div>
@@ -211,14 +213,14 @@ function RenderIsiArtikel({ isi }: { isi: string }) {
           const alt = imgMatch[1];
           const src = imgMatch[2];
           return (
-            <figure key={idx} className="my-8 rounded-2xl overflow-hidden border border-slate-200/90 shadow-xs bg-slate-50">
-              <img
+            <figure key={idx} className="my-8 rounded-2xl overflow-hidden border border-slate-200/90 shadow-xs bg-slate-900">
+              <ArticleImage
                 src={src}
                 alt={alt || "Foto Ilustrasi UPS HERU"}
                 className="w-full h-auto max-h-[460px] object-cover"
               />
               {alt && (
-                <figcaption className="p-3 text-center text-xs text-slate-600 font-medium bg-slate-50/90 border-t border-slate-100">
+                <figcaption className="p-3 text-center text-xs text-slate-300 font-medium bg-slate-900/95 border-t border-slate-800">
                   📸 {alt}
                 </figcaption>
               )}

@@ -31,6 +31,7 @@ import PublicNavbar from "@/components/PublicNavbar";
 import CivicHeroWidget from "@/components/CivicHeroWidget";
 import { generateLocalBusinessJsonLd } from "@/lib/seo";
 import { DEFAULT_ARTIKEL, getArticleCoverImage, cleanArticleSnippet } from "@/lib/default-articles";
+import ArticleImage from "@/components/ArticleImage";
 
 export const dynamic = "force-dynamic";
 
@@ -754,12 +755,13 @@ export default async function LandingPage() {
                     className="group flex flex-col bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-xs hover:shadow-md hover:border-emerald-300 transition-all"
                   >
                     <div className="h-44 bg-slate-900 border-b border-slate-100 relative overflow-hidden flex items-center justify-center">
-                      <img
+                      <ArticleImage
                         src={cover}
                         alt={a.judul}
+                        fallbackCategory={a.kategori}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
-                      <span className="absolute top-3 left-3 px-2.5 py-0.5 bg-black/60 backdrop-blur-md text-white text-[10px] font-extrabold uppercase rounded-md shadow-xs">
+                      <span className="absolute top-3 left-3 px-2.5 py-0.5 bg-black/60 backdrop-blur-md text-white text-[10px] font-extrabold uppercase rounded-md shadow-xs z-10">
                         {a.kategori}
                       </span>
                     </div>
