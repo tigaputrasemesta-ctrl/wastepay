@@ -119,8 +119,11 @@ export default function BayarPage() {
           <div className="relative w-16 h-16 mb-2">
             <div className="absolute inset-0 rounded-full border-t-[3px] border-r-[3px] border-emerald-500 animate-spin opacity-50"></div>
             <div className="absolute inset-2 rounded-full border-b-[3px] border-l-[3px] border-teal-400 animate-[spin_1.5s_linear_infinite_reverse] opacity-60"></div>
-            <div className="absolute inset-0 flex items-center justify-center text-2xl animate-pulse">
-              💳
+            <div className="absolute inset-0 flex items-center justify-center animate-pulse text-emerald-600">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <rect x="3" y="5" width="18" height="14" rx="2" ry="2"></rect>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
             </div>
           </div>
           <p className="font-bold text-xs uppercase tracking-wider text-slate-500 animate-pulse">
@@ -358,8 +361,10 @@ function BayarPortalContent() {
           <div className="relative w-24 h-24">
             <div className="absolute inset-0 rounded-full border-t-[3px] border-r-[3px] border-emerald-500 animate-spin"></div>
             <div className="absolute inset-2 rounded-full border-b-[3px] border-l-[3px] border-teal-400 animate-[spin_1.5s_linear_infinite_reverse]"></div>
-            <div className="absolute inset-0 flex items-center justify-center text-4xl animate-pulse drop-shadow-sm">
-              🧾
+            <div className="absolute inset-0 flex items-center justify-center animate-pulse drop-shadow-sm text-emerald-600">
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
             </div>
           </div>
           <div className="flex flex-col items-center gap-2">
@@ -624,33 +629,49 @@ function BayarPortalContent() {
         </form>
 
         {mencari && (
-          <div className="absolute inset-0 bg-white/95 backdrop-blur-md z-10 flex flex-col items-center justify-center rounded-3xl animate-in fade-in duration-300">
-            <div className="relative w-20 h-20 mb-6">
-              {/* Lingkaran luar berputar cepat */}
-              <div className="absolute inset-0 rounded-full border-t-[3px] border-r-[3px] border-emerald-500 animate-spin"></div>
-              {/* Lingkaran dalam berputar lambat arah berlawanan */}
-              <div className="absolute inset-2 rounded-full border-b-[3px] border-l-[3px] border-teal-400 animate-[spin_1.5s_linear_infinite_reverse]"></div>
-              {/* Icon tengah */}
-              <div className="absolute inset-0 flex items-center justify-center text-3xl animate-pulse drop-shadow-sm">
-                🔍
+          <div className="absolute inset-0 bg-white/95 backdrop-blur-xl z-20 flex flex-col items-center justify-center rounded-3xl overflow-hidden animate-in fade-in zoom-in-95 duration-300 shadow-[0_0_40px_rgba(0,0,0,0.05)] border border-slate-100">
+            {/* Top scanning bar */}
+            <div className="absolute top-0 left-0 w-full h-1 bg-slate-100">
+              <div className="h-full w-full bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-75 animate-pulse"></div>
+            </div>
+
+            {/* Radar Center */}
+            <div className="relative mb-6 mt-4">
+              <div className="absolute inset-0 bg-emerald-400 rounded-full animate-ping opacity-20"></div>
+              <div className="absolute -inset-4 bg-emerald-50 rounded-full animate-pulse border border-emerald-100"></div>
+              <div className="absolute -inset-8 bg-slate-50 rounded-full animate-pulse border border-slate-100 opacity-50 delay-75"></div>
+              
+              <div className="relative flex items-center justify-center w-14 h-14 bg-gradient-to-b from-emerald-500 to-emerald-600 rounded-full shadow-lg shadow-emerald-600/30 text-white">
+                <svg className="w-6 h-6 animate-pulse" fill="none" stroke="currentColor" strokeWidth="2.3" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+                {/* Inner spinner around shield */}
+                <div className="absolute inset-0 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
               </div>
             </div>
             
-            <h3 className="font-bold text-lg text-slate-800 tracking-tight mb-2">
-              Memindai Database Server
+            <h3 className="font-display font-bold text-[17px] text-slate-800 tracking-tight">
+              Otentikasi & Pemindaian Data
             </h3>
-            
-            <div className="flex flex-col items-center gap-2">
-              <div className="flex items-center gap-2 text-sm text-emerald-700 font-semibold bg-emerald-50 px-4 py-1.5 rounded-full border border-emerald-100 shadow-sm">
-                <svg className="w-4 h-4 animate-spin text-emerald-600" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="32" strokeLinecap="round" className="opacity-20"></circle>
-                  <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"></path>
-                </svg>
-                Mencocokkan ID Pelanggan
+            <p className="text-[13px] text-slate-500 font-medium mt-1">
+              Mengenkripsi jalur koneksi ke server...
+            </p>
+
+            {/* Sleek Step Indicators */}
+            <div className="mt-8 w-full max-w-[230px] space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+                  <svg className="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <div className="text-[13px] font-semibold text-emerald-700">Koneksi Aman Selesai</div>
               </div>
-              <div className="flex items-center gap-2 text-xs text-slate-500 font-mono mt-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-                Mengambil riwayat tagihan & tunggakan...
+              <div className="flex items-center gap-3 animate-pulse">
+                <div className="w-5 h-5 rounded-full border-[2.5px] border-emerald-500 border-r-transparent animate-spin shrink-0"></div>
+                <div className="text-[13px] font-bold text-slate-800">Verifikasi ID Pelanggan...</div>
+              </div>
+              <div className="flex items-center gap-3 opacity-40">
+                <div className="w-5 h-5 rounded-full border-2 border-slate-200 shrink-0"></div>
+                <div className="text-[13px] font-semibold text-slate-400">Menyiapkan Portal Tagihan</div>
               </div>
             </div>
           </div>
