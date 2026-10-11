@@ -423,13 +423,9 @@ function popupHtml(p: PelangganPeta): string {
     const waUrl = telClean ? `https://wa.me/${telClean.replace(/^0/, "62")}` : null;
     
     return `<div style="font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:13px;min-width:250px;line-height:1.5;color:#334155;">
-      ${
-        p.fotoRumah
-          ? `<div style="margin:-14px -14px 10px -14px;border-radius:12px 12px 0 0;overflow:hidden;background:#0f172a;">
-               <img src="${esc(p.fotoRumah)}" alt="Foto Rumah" style="width:100%;height:auto;max-height:250px;object-fit:contain;display:block;" onerror="this.style.display='none'" />
-             </div>`
-          : ""
-      }
+      <div id="foto-wrapper-${p.id}" style="margin:-14px -14px 10px -14px;border-radius:12px 12px 0 0;overflow:hidden;background:#0f172a;">
+        <img src="/api/pelanggan/${p.id}/foto" alt="Foto Rumah" style="width:100%;height:auto;max-height:250px;object-fit:contain;display:block;" onerror="document.getElementById('foto-wrapper-${p.id}').style.display='none'" />
+      </div>
       
       ${
         isStopAngkut
