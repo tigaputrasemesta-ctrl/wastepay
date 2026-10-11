@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import Sidebar from "@/components/Sidebar";
 import StatusBar from "@/components/StatusBar";
 import NotificationBell from "@/components/NotificationBell";
@@ -51,30 +52,42 @@ export default function AdminShell({
       <Sidebar className="hidden md:flex" />
 
       {/* Mobile Off-Canvas Drawer (Visible only when mobileOpen on < md) */}
-      {mobileOpen && (
-        <div
-          className="fixed inset-0 z-50 md:hidden flex"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Menu navigasi backoffice"
-        >
-          {/* Backdrop overlay */}
+      <AnimatePresence>
+        {mobileOpen && (
           <div
-            className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity animate-in fade-in duration-200"
-            onClick={() => setMobileOpen(false)}
-            aria-hidden="true"
-          />
-
-          {/* Slide-over panel */}
-          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white shadow-2xl z-10 animate-in slide-in-from-left duration-200">
-            <Sidebar
-              isMobileDrawer
-              onClose={() => setMobileOpen(false)}
-              className="w-full h-full border-r-0"
+            className="fixed inset-0 z-50 md:hidden flex"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menu navigasi backoffice"
+          >
+            {/* Backdrop overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"
+              onClick={() => setMobileOpen(false)}
+              aria-hidden="true"
             />
+
+            {/* Slide-over panel */}
+            <motion.div 
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+              className="relative flex-1 flex flex-col max-w-xs w-full bg-white shadow-2xl z-10"
+            >
+              <Sidebar
+                isMobileDrawer
+                onClose={() => setMobileOpen(false)}
+                className="w-full h-full border-r-0"
+              />
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
