@@ -13,7 +13,7 @@ import {
   labelMetodePembayaran,
 } from "@/lib/invoice-format";
 import { DUITKU_METHODS, duitkuChannelLabel } from "@/lib/duitku-channels";
-import AnimatedDumpTruck from "@/components/AnimatedDumpTruck";
+
 
 type TagihanPublik = {
   id: number;
@@ -116,8 +116,14 @@ export default function BayarPage() {
     <Suspense
       fallback={
         <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
-          <AnimatedDumpTruck size="md" theme="green" />
-          <p className="font-bold text-xs uppercase tracking-wider text-slate-600">
+          <div className="relative w-16 h-16 mb-2">
+            <div className="absolute inset-0 rounded-full border-t-[3px] border-r-[3px] border-emerald-500 animate-spin opacity-50"></div>
+            <div className="absolute inset-2 rounded-full border-b-[3px] border-l-[3px] border-teal-400 animate-[spin_1.5s_linear_infinite_reverse] opacity-60"></div>
+            <div className="absolute inset-0 flex items-center justify-center text-2xl animate-pulse">
+              💳
+            </div>
+          </div>
+          <p className="font-bold text-xs uppercase tracking-wider text-slate-500 animate-pulse">
             Memuat portal pembayaran...
           </p>
         </div>
@@ -348,11 +354,20 @@ function BayarPortalContent() {
   if (isInvoiceMode) {
     if (loadingInvoice || (!detail && !errorInvoice)) {
       return (
-        <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
-          <AnimatedDumpTruck size="lg" theme="green" />
-          <p className="font-bold text-sm tracking-wider uppercase text-slate-700 animate-pulse">
-            Memuat data invoice...
-          </p>
+        <div className="min-h-[60vh] flex flex-col items-center justify-center gap-6">
+          <div className="relative w-24 h-24">
+            <div className="absolute inset-0 rounded-full border-t-[3px] border-r-[3px] border-emerald-500 animate-spin"></div>
+            <div className="absolute inset-2 rounded-full border-b-[3px] border-l-[3px] border-teal-400 animate-[spin_1.5s_linear_infinite_reverse]"></div>
+            <div className="absolute inset-0 flex items-center justify-center text-4xl animate-pulse drop-shadow-sm">
+              🧾
+            </div>
+          </div>
+          <div className="flex flex-col items-center gap-2">
+            <p className="font-bold text-sm tracking-wider uppercase text-emerald-800 animate-pulse">
+              Memuat Dokumen Invoice...
+            </p>
+            <p className="text-xs text-slate-500 font-mono">Mengenkripsi jalur koneksi aman</p>
+          </div>
         </div>
       );
     }
@@ -609,12 +624,35 @@ function BayarPortalContent() {
         </form>
 
         {mencari && (
-          <div className="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 flex flex-col items-center justify-center space-y-4 rounded-3xl animate-in fade-in duration-300">
-            <AnimatedDumpTruck size="md" theme="green" />
-            <p className="font-bold text-sm tracking-wider uppercase text-emerald-700 animate-pulse">
-              Menunggu cek database...
-            </p>
-            <p className="text-xs text-slate-500">Menganalisa data pelanggan dan riwayat tagihan</p>
+          <div className="absolute inset-0 bg-white/95 backdrop-blur-md z-10 flex flex-col items-center justify-center rounded-3xl animate-in fade-in duration-300">
+            <div className="relative w-20 h-20 mb-6">
+              {/* Lingkaran luar berputar cepat */}
+              <div className="absolute inset-0 rounded-full border-t-[3px] border-r-[3px] border-emerald-500 animate-spin"></div>
+              {/* Lingkaran dalam berputar lambat arah berlawanan */}
+              <div className="absolute inset-2 rounded-full border-b-[3px] border-l-[3px] border-teal-400 animate-[spin_1.5s_linear_infinite_reverse]"></div>
+              {/* Icon tengah */}
+              <div className="absolute inset-0 flex items-center justify-center text-3xl animate-pulse drop-shadow-sm">
+                🔍
+              </div>
+            </div>
+            
+            <h3 className="font-bold text-lg text-slate-800 tracking-tight mb-2">
+              Memindai Database Server
+            </h3>
+            
+            <div className="flex flex-col items-center gap-2">
+              <div className="flex items-center gap-2 text-sm text-emerald-700 font-semibold bg-emerald-50 px-4 py-1.5 rounded-full border border-emerald-100 shadow-sm">
+                <svg className="w-4 h-4 animate-spin text-emerald-600" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="32" strokeLinecap="round" className="opacity-20"></circle>
+                  <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"></path>
+                </svg>
+                Mencocokkan ID Pelanggan
+              </div>
+              <div className="flex items-center gap-2 text-xs text-slate-500 font-mono mt-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                Mengambil riwayat tagihan & tunggakan...
+              </div>
+            </div>
           </div>
         )}
 
