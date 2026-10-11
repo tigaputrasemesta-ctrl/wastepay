@@ -187,7 +187,10 @@ function BayarPortalContent() {
         url += `?merchantOrderId=${encodeURIComponent(merchantOrderId)}`;
       }
 
-      const res = await fetch(url);
+      const [res] = await Promise.all([
+        fetch(url),
+        new Promise((resolve) => setTimeout(resolve, 1200)) // Tambahan delay agar animasi truk keren terlihat
+      ]);
       const data = await res.json();
       if (!res.ok) {
         setErrorInvoice(data.error || "Tagihan invoice tidak ditemukan");
@@ -235,6 +238,9 @@ function BayarPortalContent() {
 
     // Jika user mengetik invoice, alihkan langsung ke tampilan invoice
     if (query.toUpperCase().startsWith("INV")) {
+      setMencari(true);
+      await new Promise(r => setTimeout(r, 1200)); // Tambahan delay agar animasi keren tetap terlihat
+
       let invoiceUrl = query.toUpperCase();
       // Normalisasi jika user mengetik INV- menjadi INV/
       if (invoiceUrl.startsWith("INV-")) {
@@ -250,7 +256,12 @@ function BayarPortalContent() {
     setMencari(true);
 
     try {
-      const res = await fetch(`/api/publik/tagihan?kode=${encodeURIComponent(query)}`);
+      // Pastikan animasi terlihat minimal 1.2 detik
+      const [res] = await Promise.all([
+        fetch(`/api/publik/tagihan?kode=${encodeURIComponent(query)}`),
+        new Promise((resolve) => setTimeout(resolve, 1200))
+      ]);
+      
       const data = await res.json();
       if (!res.ok) {
         setErrorSearch(data.error || "Data pelanggan tidak ditemukan. Pastikan nomor WhatsApp sudah benar.");
