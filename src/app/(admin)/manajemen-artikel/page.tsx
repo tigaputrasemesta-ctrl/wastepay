@@ -312,32 +312,87 @@ export default function ArtikelPage() {
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-slate-700">Gambar Cover (Opsional)</label>
-                  {form.gambar ? (
-                    <div className="relative inline-block">
-                      <img src={form.gambar} alt="Cover" className="h-32 rounded-xl object-cover border border-slate-200" />
-                      <button
-                        type="button"
-                        onClick={() => { setForm({ ...form, gambar: "" }); if (fileInputRef.current) fileInputRef.current.value = ""; }}
-                        className="absolute -top-2 -right-2 bg-rose-600 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs shadow-md"
-                      >
-                        ×
-                      </button>
+                {/* GAMBAR COVER: BISA KETIK URL ATAU UNGGAH FILE */}
+                <div className="space-y-3 p-4 rounded-2xl bg-slate-50/90 border border-slate-200">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                    <label className="block text-xs font-bold text-slate-800">
+                      Gambar Cover / Sampul (Opsional)
+                    </label>
+                    <span className="text-[11px] text-slate-500">Ketik link URL atau unggah file foto</span>
+                  </div>
+
+                  {/* Input URL atau Unggah File */}
+                  <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center">
+                    <div className="flex-1 relative">
+                      <input
+                        type="url"
+                        value={form.gambar.startsWith("data:") ? "" : form.gambar}
+                        onChange={e => setForm(prev => ({ ...prev, gambar: e.target.value }))}
+                        placeholder="Ketik atau tempel link URL foto (contoh: https://...)"
+                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 shadow-2xs"
+                      />
                     </div>
-                  ) : (
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-xs text-slate-400 font-bold hidden sm:inline">atau</span>
                       <button
                         type="button"
                         disabled={uploadingImage}
                         onClick={() => fileInputRef.current?.click()}
-                        className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 text-xs font-bold rounded-xl flex items-center gap-2 transition-colors disabled:opacity-50"
+                        className="w-full sm:w-auto px-4 py-2.5 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50 shadow-2xs"
                       >
-                        {uploadingImage ? "⏳ Memproses Gambar..." : "📷 Unggah Gambar"}
+                        {uploadingImage ? "⏳ Memproses..." : "📁 Unggah File"}
                       </button>
-                      <span className="text-[10px] text-slate-500">Maks. 5MB, JPG/PNG</span>
+                    </div>
+                  </div>
+
+                  {/* Tombol Pilihan Foto Cepat UPS HERU */}
+                  <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mr-1">Rekomendasi Foto:</span>
+                    <button
+                      type="button"
+                      onClick={() => setForm(prev => ({ ...prev, gambar: "https://images.unsplash.com/photo-1595278069441-2cf29f8005a4?auto=format&fit=crop&w=800&q=80" }))}
+                      className="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[11px] font-semibold border border-emerald-200 transition-colors"
+                    >
+                      🚚 Truk Sampah
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setForm(prev => ({ ...prev, gambar: "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=800&q=80" }))}
+                      className="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[11px] font-semibold border border-emerald-200 transition-colors"
+                    >
+                      ♻️ Pemilahan Sampah
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setForm(prev => ({ ...prev, gambar: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80" }))}
+                      className="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[11px] font-semibold border border-emerald-200 transition-colors"
+                    >
+                      🌿 Lingkungan Bersih
+                    </button>
+                  </div>
+
+                  {/* Preview Gambar Cover */}
+                  {form.gambar && (
+                    <div className="relative inline-block mt-1">
+                      <img
+                        src={form.gambar}
+                        alt="Preview Cover"
+                        className="h-36 max-w-full rounded-xl object-cover border border-slate-200 shadow-xs"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setForm(prev => ({ ...prev, gambar: "" }));
+                          if (fileInputRef.current) fileInputRef.current.value = "";
+                        }}
+                        className="absolute -top-2 -right-2 bg-rose-600 hover:bg-rose-700 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs shadow-md transition"
+                        title="Hapus Gambar"
+                      >
+                        ×
+                      </button>
                     </div>
                   )}
+
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -347,14 +402,61 @@ export default function ArtikelPage() {
                   />
                 </div>
 
+                {/* ISI ARTIKEL DENGAN TOOLBAR SISIPKAN FOTO / FORMAT */}
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-slate-700">Isi Artikel <span className="text-rose-500">*</span></label>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                    <label className="block text-xs font-bold text-slate-700">
+                      Isi Konten Artikel <span className="text-rose-500">*</span>
+                    </label>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const url = prompt("Ketik / tempel link URL foto yang ingin disisipkan di dalam artikel:");
+                          if (url) {
+                            setForm(prev => ({
+                              ...prev,
+                              isi: (prev.isi ? prev.isi + "\n\n" : "") + `![Foto Kegiatan UPS HERU](${url})\n\n`
+                            }));
+                          }
+                        }}
+                        className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition flex items-center gap-1"
+                      >
+                        <span>📷</span>
+                        <span>Sisipkan Foto di Teks</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setForm(prev => ({
+                            ...prev,
+                            isi: (prev.isi ? prev.isi + "\n\n" : "") + "### Sub-Judul Baru\n"
+                          }));
+                        }}
+                        className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition"
+                      >
+                        📌 Sub-Judul
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setForm(prev => ({
+                            ...prev,
+                            isi: (prev.isi ? prev.isi + "\n" : "") + "• Poin pertama\n• Poin kedua\n"
+                          }));
+                        }}
+                        className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition"
+                      >
+                        • Poin
+                      </button>
+                    </div>
+                  </div>
                   <textarea
                     required
                     value={form.isi}
                     onChange={e => setForm({ ...form, isi: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 min-h-[250px] resize-y"
-                    placeholder="Tulis konten artikel di sini. Anda bisa menggunakan spasi ganda untuk paragraf baru."
+                    placeholder="Tulis konten berita atau edukasi di sini. Anda bisa menyisipkan foto atau sub-judul memakai tombol di atas."
                   />
                 </div>
               </div>

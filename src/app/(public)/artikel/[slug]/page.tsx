@@ -100,14 +100,69 @@ export default async function ArtikelDetail({ params }: { params: Promise<{ slug
 
         {artikel.gambar && (
           <div className="w-full">
-            <img src={artikel.gambar} alt={artikel.judul} className="w-full rounded-2xl object-cover max-h-96 border border-slate-200" />
+            <img src={artikel.gambar} alt={artikel.judul} className="w-full rounded-2xl object-cover max-h-96 border border-slate-200 shadow-xs" />
           </div>
         )}
 
-        <article className="prose prose-slate prose-emerald max-w-none text-slate-700 whitespace-pre-wrap">
-          {artikel.isi}
-        </article>
+        <RenderIsiArtikel isi={artikel.isi} />
       </div>
+    </div>
+  );
+}
+
+function RenderIsiArtikel({ isi }: { isi: string }) {
+  const blocks = isi.split(/\n\s*\n/);
+
+  return (
+    <div className="space-y-6 text-slate-700 leading-relaxed text-base sm:text-lg">
+      {blocks.map((block, idx) => {
+        const trimmed = block.trim();
+        if (!trimmed) return null;
+
+        // Cek format gambar markdown: ![alt](url)
+        const imgMatch = trimmed.match(/^!\[(.*?)\]\((.*?)\)$/);
+        if (imgMatch) {
+          const alt = imgMatch[1];
+          const src = imgMatch[2];
+          return (
+            <figure key={idx} className="my-6">
+              <img
+                src={src}
+                alt={alt || "Foto Artikel"}
+                className="w-full rounded-2xl border border-slate-200 object-cover max-h-[480px] shadow-xs"
+              />
+              {alt && (
+                <figcaption className="text-center text-xs text-slate-500 mt-2 italic font-medium">
+                  {alt}
+                </figcaption>
+              )}
+            </figure>
+          );
+        }
+
+        // Cek jika subjudul: ### atau ##
+        if (trimmed.startsWith("### ")) {
+          return (
+            <h3 key={idx} className="text-xl font-bold text-slate-900 pt-3">
+              {trimmed.replace(/^###\s+/, "")}
+            </h3>
+          );
+        }
+        if (trimmed.startsWith("## ")) {
+          return (
+            <h2 key={idx} className="text-2xl font-extrabold text-slate-900 pt-4">
+              {trimmed.replace(/^##\s+/, "")}
+            </h2>
+          );
+        }
+
+        // Paragraf biasa dengan newline support
+        return (
+          <p key={idx} className="whitespace-pre-line leading-relaxed">
+            {trimmed}
+          </p>
+        );
+      })}
     </div>
   );
 }
