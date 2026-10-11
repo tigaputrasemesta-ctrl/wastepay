@@ -281,14 +281,14 @@ export default async function DashboardPage() {
       no: "05", label: "Pengangkutan Hari Ini", value: `${stats.pickupSelesai}/${stats.pickupTotal}`,
       sub: stats.pickupTotal === 0 ? "Tidak ada jadwal hari ini" : `${stats.pickupVolume}m³ • ${stats.pickupBerat}kg`,
       iconBg: "bg-teal-50 text-teal-700 border-teal-100", badgeBg: "bg-teal-50 text-teal-700",
-      icon: <span className="text-xl">🚛</span>,
+      icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>,
       progress: pickupPersen,
     },
     {
       no: "06", label: "Petugas Lapangan", value: `${stats.petugasHadir}`,
       sub: `dari ${stats.totalPetugas} petugas terdaftar`,
       iconBg: "bg-indigo-50 text-indigo-700 border-indigo-100", badgeBg: "bg-indigo-50 text-indigo-700",
-      icon: <span className="text-xl">👷</span>,
+      icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>,
       badgeText: `🟢 ${stats.petugasBertugas} di lapangan`,
     },
     {
@@ -296,7 +296,7 @@ export default async function DashboardPage() {
       sub: `Masuk ${formatRupiah(terkumpul)} • Keluar ${formatRupiah(stats.pengeluaranBulanIni)}`,
       iconBg: saldoBersih >= 0 ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-rose-50 text-rose-700 border-rose-100",
       badgeBg: saldoBersih >= 0 ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700",
-      icon: <span className="text-xl">💰</span>,
+      icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>,
     },
     {
       no: "08", label: "Rekonsiliasi Kas", 
@@ -304,7 +304,7 @@ export default async function DashboardPage() {
       sub: !stats.rekonHariIni ? "Kas hari ini belum diaudit" : (stats.rekonHariIni.selisih === 0 || !stats.rekonHariIni.selisih ? "Kas fisik = kas sistem" : `Sistem ${formatRupiah(stats.rekonHariIni.totalTunaiSistem)} • Fisik ${formatRupiah(stats.rekonHariIni.totalTunaiFisik || 0)}`),
       iconBg: !stats.rekonHariIni ? "bg-slate-50 text-slate-600 border-slate-100" : ((stats.rekonHariIni.selisih || 0) === 0 ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-amber-50 text-amber-700 border-amber-100"),
       badgeBg: !stats.rekonHariIni ? "bg-slate-50 text-slate-600" : ((stats.rekonHariIni.selisih || 0) === 0 ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"),
-      icon: <span className="text-xl">🏦</span>,
+      icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z" /></svg>,
     }
   ];
 
@@ -346,89 +346,94 @@ export default async function DashboardPage() {
               <p className="text-sm mt-0.5">{stats.pengumumanPenting.isi}</p>
             </div>
           </div>
-          <button className="text-yellow-700 hover:text-yellow-900 text-sm font-semibold whitespace-nowrap self-start sm:self-center" onClick={() => {}} disabled>
-            [Tutup ✕]
-          </button>
         </div>
       )}
 
       {/* Action Inbox Alerts */}
-      <div className="space-y-3">
-        {stats.pembayaranPending > 0 && (
-          <div className="bg-amber-50 border border-amber-300 text-amber-800 px-4 py-3 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
-            <div className="flex items-center gap-3">
-              <span className="text-xl">⚠️</span>
-              <div>
-                <strong className="font-bold">{stats.pembayaranPending} Pembayaran Menunggu Verifikasi ({formatRupiah(stats.totalPendingNominal)})</strong>
-                <p className="text-sm mt-0.5">Pelanggan sudah upload bukti transfer.</p>
-              </div>
-            </div>
-            <Link href="/tagihan" className="text-amber-900 bg-amber-200/50 hover:bg-amber-200 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors shrink-0 text-center">
-              Verifikasi Sekarang &rarr;
-            </Link>
+      {(stats.pembayaranPending > 0 || stats.klaimMenunggu > 0 || stats.chatBelumDibaca > 0 || stats.tidakDiangkut > 0 || stats.notifGagal > 0) && (
+        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
+          <div className="px-5 py-3 border-b border-slate-100 flex items-center gap-2 bg-slate-50/60">
+            <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+            <h2 className="text-sm font-bold text-slate-900 tracking-tight">Butuh Perhatian Segera</h2>
           </div>
-        )}
-        
-        {stats.klaimMenunggu > 0 && (
-          <div className="bg-orange-50 border border-orange-300 text-orange-800 px-4 py-3 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
-            <div className="flex items-center gap-3">
-              <span className="text-xl">📝</span>
-              <div>
-                <strong className="font-bold">{stats.klaimMenunggu} Klaim Dana Petugas Menunggu ({formatRupiah(stats.totalKlaimNominal)})</strong>
-                <p className="text-sm mt-0.5">BBM & perawatan kendaraan perlu persetujuan.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+            {stats.pembayaranPending > 0 && (
+              <div className="p-4 flex flex-col justify-between hover:bg-slate-50 transition-colors">
+                <div className="flex items-start gap-3 mb-3">
+                  <span className="text-xl shrink-0">⚠️</span>
+                  <div>
+                    <strong className="font-bold text-amber-900 text-sm">{stats.pembayaranPending} Pembayaran Pending</strong>
+                    <p className="text-xs text-amber-700 mt-0.5">Menunggu verifikasi transfer</p>
+                  </div>
+                </div>
+                <Link href="/tagihan" className="text-amber-700 bg-amber-100 hover:bg-amber-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors text-center w-full block">
+                  Verifikasi Sekarang &rarr;
+                </Link>
               </div>
-            </div>
-            <Link href="/klaim" className="text-orange-900 bg-orange-200/50 hover:bg-orange-200 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors shrink-0 text-center">
-              Review Klaim &rarr;
-            </Link>
-          </div>
-        )}
+            )}
+            
+            {stats.klaimMenunggu > 0 && (
+              <div className="p-4 flex flex-col justify-between hover:bg-slate-50 transition-colors">
+                <div className="flex items-start gap-3 mb-3">
+                  <span className="text-xl shrink-0">📝</span>
+                  <div>
+                    <strong className="font-bold text-orange-900 text-sm">{stats.klaimMenunggu} Klaim Dana</strong>
+                    <p className="text-xs text-orange-700 mt-0.5">Menunggu persetujuan</p>
+                  </div>
+                </div>
+                <Link href="/klaim" className="text-orange-700 bg-orange-100 hover:bg-orange-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors text-center w-full block">
+                  Review Klaim &rarr;
+                </Link>
+              </div>
+            )}
 
-        {stats.chatBelumDibaca > 0 && (
-          <div className="bg-blue-50 border border-blue-300 text-blue-800 px-4 py-3 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
-            <div className="flex items-center gap-3">
-              <span className="text-xl">💬</span>
-              <div>
-                <strong className="font-bold">{stats.chatBelumDibaca} Pesan Petugas Belum Dibaca</strong>
-                <p className="text-sm mt-0.5">Ada laporan dari lapangan yang perlu ditanggapi.</p>
+            {stats.chatBelumDibaca > 0 && (
+              <div className="p-4 flex flex-col justify-between hover:bg-slate-50 transition-colors">
+                <div className="flex items-start gap-3 mb-3">
+                  <span className="text-xl shrink-0">💬</span>
+                  <div>
+                    <strong className="font-bold text-blue-900 text-sm">{stats.chatBelumDibaca} Pesan Baru</strong>
+                    <p className="text-xs text-blue-700 mt-0.5">Laporan petugas lapangan</p>
+                  </div>
+                </div>
+                <Link href="/chat" className="text-blue-700 bg-blue-100 hover:bg-blue-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors text-center w-full block">
+                  Buka Chat &rarr;
+                </Link>
               </div>
-            </div>
-            <Link href="/pesan" className="text-blue-900 bg-blue-200/50 hover:bg-blue-200 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors shrink-0 text-center">
-              Buka Chat &rarr;
-            </Link>
-          </div>
-        )}
+            )}
 
-        {stats.tidakDiangkut > 0 && (
-          <div className="bg-rose-50 border border-rose-300 text-rose-800 px-4 py-3 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
-            <div className="flex items-center gap-3">
-              <span className="text-xl">🚨</span>
-              <div>
-                <strong className="font-bold">{stats.tidakDiangkut} Titik Sampah Tidak Diangkut Hari Ini</strong>
-                <p className="text-sm mt-0.5">Perlu dispatch ulang atau investigasi.</p>
+            {stats.tidakDiangkut > 0 && (
+              <div className="p-4 flex flex-col justify-between hover:bg-slate-50 transition-colors">
+                <div className="flex items-start gap-3 mb-3">
+                  <span className="text-xl shrink-0">🚨</span>
+                  <div>
+                    <strong className="font-bold text-rose-900 text-sm">{stats.tidakDiangkut} Titik Terlewat</strong>
+                    <p className="text-xs text-rose-700 mt-0.5">Gagal diangkut hari ini</p>
+                  </div>
+                </div>
+                <Link href="/pengangkutan?status=tidak_diangkut" className="text-rose-700 bg-rose-100 hover:bg-rose-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors text-center w-full block">
+                  Lihat Detail &rarr;
+                </Link>
               </div>
-            </div>
-            <Link href="/pengangkutan?status=tidak_diangkut" className="text-rose-900 bg-rose-200/50 hover:bg-rose-200 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors shrink-0 text-center">
-              Lihat Detail &rarr;
-            </Link>
-          </div>
-        )}
+            )}
 
-        {stats.notifGagal > 0 && (
-          <div className="bg-red-50 border border-red-300 text-red-800 px-4 py-3 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
-            <div className="flex items-center gap-3">
-              <span className="text-xl">📵</span>
-              <div>
-                <strong className="font-bold">{stats.notifGagal} Notifikasi WA Gagal Terkirim</strong>
-                <p className="text-sm mt-0.5">Pengingat tagihan tidak sampai ke pelanggan.</p>
+            {stats.notifGagal > 0 && (
+              <div className="p-4 flex flex-col justify-between hover:bg-slate-50 transition-colors">
+                <div className="flex items-start gap-3 mb-3">
+                  <span className="text-xl shrink-0">📵</span>
+                  <div>
+                    <strong className="font-bold text-red-900 text-sm">{stats.notifGagal} Notifikasi Gagal</strong>
+                    <p className="text-xs text-red-700 mt-0.5">Pesan WA gagal dikirim</p>
+                  </div>
+                </div>
+                <Link href="/notifikasi" className="text-red-700 bg-red-100 hover:bg-red-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors text-center w-full block">
+                  Cek Riwayat &rarr;
+                </Link>
               </div>
-            </div>
-            <Link href="/notifikasi?tab=riwayat" className="text-red-900 bg-red-200/50 hover:bg-red-200 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors shrink-0 text-center">
-              Cek Riwayat &rarr;
-            </Link>
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -583,7 +588,10 @@ export default async function DashboardPage() {
 
           <div className="flex-1 space-y-4">
             {stats.pengeluaranPerKategori.length === 0 ? (
-               <div className="text-center py-10 text-slate-500 text-sm">Belum ada data pengeluaran</div>
+               <div className="text-center py-10 text-slate-500 text-sm">
+                 <p className="mb-2">Belum ada data pengeluaran</p>
+                 <Link href="/laporan" className="text-emerald-600 hover:text-emerald-700 font-semibold text-xs">+ Catat Pengeluaran Baru</Link>
+               </div>
             ) : stats.pengeluaranPerKategori.map((k, i) => {
                const catMap: Record<string, { label: string, color: string }> = {
                  bbm: { label: "BBM", color: "bg-amber-500" },
@@ -662,7 +670,10 @@ export default async function DashboardPage() {
           </div>
           <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
             {stats.performaKelurahan.length === 0 ? (
-              <div className="text-center py-10 text-slate-500 text-sm">Belum ada data performa kelurahan</div>
+              <div className="text-center py-10 text-slate-500 text-sm">
+                <p className="mb-2">Belum ada data performa kelurahan</p>
+                <Link href="/pelanggan" className="text-blue-600 hover:text-blue-700 font-semibold text-xs">Kelola Pelanggan & Wilayah</Link>
+              </div>
             ) : stats.performaKelurahan.map((k, i) => (
               <div key={k.kelurahan} className="flex items-center gap-3">
                 <div className="w-24 shrink-0 truncate text-xs font-semibold text-slate-700">{i+1}. {k.kelurahan}</div>
@@ -690,7 +701,10 @@ export default async function DashboardPage() {
           </div>
           <div className="p-4 flex-1 flex flex-col space-y-3">
             {stats.topReferral.length === 0 ? (
-              <div className="text-center py-6 text-slate-500 text-sm">Belum ada data referral</div>
+              <div className="text-center py-6 text-slate-500 text-sm">
+                 <p className="mb-2">Belum ada data referral</p>
+                 <Link href="/petugas" className="text-emerald-600 hover:text-emerald-700 font-semibold text-xs">Lihat Daftar Petugas</Link>
+              </div>
             ) : stats.topReferral.map((r, i) => (
               <div key={r.referal} className="flex items-center justify-between text-sm">
                 <span className="font-semibold text-slate-800">
@@ -712,7 +726,10 @@ export default async function DashboardPage() {
           </div>
           <div className="p-4 flex-1 flex flex-col space-y-4 justify-center">
             {stats.komposisiSampah.length === 0 ? (
-              <div className="text-center py-6 text-slate-500 text-sm">Belum ada data pengangkutan sampah</div>
+              <div className="text-center py-6 text-slate-500 text-sm">
+                 <p className="mb-2">Belum ada data pengangkutan sampah</p>
+                 <Link href="/jadwal" className="text-emerald-600 hover:text-emerald-700 font-semibold text-xs">Jadwalkan Pengangkutan</Link>
+              </div>
             ) : stats.komposisiSampah.map(k => {
               const catMap: Record<string, { label: string, color: string, icon: string }> = {
                 campuran: { label: "Campuran", color: "bg-stone-500", icon: "🟤" },

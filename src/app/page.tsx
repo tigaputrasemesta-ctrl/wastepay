@@ -123,10 +123,10 @@ export default async function LandingPage() {
 
                 <Link
                   href="/pengaduan"
-                  className="px-6 py-3.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-sm shadow-red-600/20 active:scale-95"
+                  className="px-6 py-3.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95"
                 >
-                  <AlertCircle className="w-4 h-4" />
-                  <span>Pengaduan</span>
+                  <AlertCircle className="w-4 h-4 text-slate-500" />
+                  <span>Pengaduan Warga</span>
                 </Link>
               </div>
 
@@ -475,8 +475,8 @@ export default async function LandingPage() {
 
             <div className="grid md:grid-cols-3 gap-6 items-stretch">
               {/* Tier 1: Warga Rumah Tangga */}
-              <div className="bg-white border-2 border-[#0d7a75] rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-sm relative">
-                <div className="absolute -top-3 left-6 bg-[#0d7a75] text-white text-[10px] font-extrabold uppercase px-3 py-0.5 rounded-full tracking-wider">
+              <div className="bg-white border-2 border-[#0d7a75] rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-sm relative mt-4 md:mt-0">
+                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 md:left-6 md:translate-x-0 bg-[#0d7a75] text-white text-[10px] font-extrabold uppercase px-4 py-1 rounded-full tracking-wider shadow-md border border-[#0b6460]">
                   Paling Banyak Dipilih
                 </div>
                 <div className="space-y-4">
@@ -756,7 +756,7 @@ export default async function LandingPage() {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     ) : (
-                      <span className="text-4xl opacity-40">📰</span>
+                      <Recycle className="w-10 h-10 text-slate-300/70" strokeWidth={1.5} />
                     )}
                     <span className="absolute top-3 left-3 px-2.5 py-0.5 bg-white/95 text-[#0d7a75] text-[10px] font-extrabold uppercase rounded-md shadow-xs">
                       {a.kategori}
