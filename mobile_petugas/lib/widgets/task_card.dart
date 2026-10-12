@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../core/constants/app_colors.dart';
 import '../models/tugas_model.dart';
+import '../screens/map/peta_driver_screen.dart';
 import 'status_badge.dart';
 
 class TaskCard extends StatelessWidget {
@@ -17,20 +18,6 @@ class TaskCard extends StatelessWidget {
     required this.onDetailTap,
     required this.onLewatiTap,
   });
-
-  Future<void> _openGoogleMaps() async {
-    final lat = tugas.pelanggan.latitude;
-    final lng = tugas.pelanggan.longitude;
-    Uri uri;
-    if (lat != null && lng != null) {
-      uri = Uri.parse("https://www.google.com/maps/search/?api=1&query=$lat,$lng");
-    } else {
-      uri = Uri.parse("https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(tugas.pelanggan.alamat)}");
-    }
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
-  }
 
   Future<void> _callPhone() async {
     final telp = tugas.pelanggan.noTelepon;
@@ -153,11 +140,20 @@ class TaskCard extends StatelessWidget {
             // Tombol Aksi
             Row(
               children: [
-                // Tombol Peta
+                // Tombol Peta Navigasi Mandiri
                 IconButton(
-                  onPressed: _openGoogleMaps,
-                  icon: const Icon(Icons.navigation_rounded, color: AppColors.info, size: 20),
-                  tooltip: "Buka Google Maps",
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => PetaDriverScreen(
+                          initialTargetPelangganId: tugas.pelanggan.id,
+                        ),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.map_rounded, color: AppColors.info, size: 20),
+                  tooltip: "Buka Peta Rute Driver Mandiri",
                   style: IconButton.styleFrom(
                     backgroundColor: AppColors.infoBg,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

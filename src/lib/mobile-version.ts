@@ -10,16 +10,16 @@
  * unduh nonaktif (hanya info "versi baru tersedia").
  */
 export const MOBILE_VERSION = {
-  versionName: "2.0.2",
-  versionCode: 22,
+  versionName: "2.0.3",
+  versionCode: 23,
   /** Di bawah versi ini APK dianggap terlalu lama → update wajib (blocking). */
   minVersionCode: 15,
   changelog: [
-    "Peta Interaktif Live Driver (pantau sebaran titik jemput & navigasi armada)",
-    "Perbaikan autentikasi & pemuatan rute operasional",
-    "Aplikasi 100% Native Flutter (responsif, tanpa WebView)",
-    "Navigasi rute multi-stop Google Maps menuju lokasi pelanggan",
-    "Sistem pembaruan langsung di dalam aplikasi (In-App Auto Update)",
+    "Navigasi Rute Mandiri In-App Driver Cockpit (tanpa perlu keluar ke Google Maps)",
+    "Rute jalan raya presisi OSRM & HUD belokan arah turn-by-turn",
+    "Deteksi kedatangan proximity & 1-tap angkut sampah otomatis loncat ke stop berikutnya",
+    "Monitor kapasitas muatan truk (0-100%) & timer durasi operasional",
+    "Peta Interaktif Live Driver dengan beacon truk real-time",
   ],
 };
 

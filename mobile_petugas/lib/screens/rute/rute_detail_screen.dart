@@ -109,21 +109,16 @@ class _RuteDetailScreenState extends State<RuteDetailScreen> {
     }
   }
 
-  Future<void> _openNavigationSingle(JadwalModel jadwal) async {
-    if (jadwal.hasCoordinates) {
-      final uri = Uri.parse("google.navigation:q=${jadwal.latitude},${jadwal.longitude}&mode=d");
-      final webUri = Uri.parse("https://www.google.com/maps/dir/?api=1&destination=${jadwal.latitude},${jadwal.longitude}");
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri);
-      } else {
-        await launchUrl(webUri, mode: LaunchMode.externalApplication);
-      }
-    } else {
-      // Fallback search by address
-      final encoded = Uri.encodeComponent(jadwal.pelangganAlamat);
-      final uri = Uri.parse("https://www.google.com/maps/search/?api=1&query=$encoded");
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
+  void _openNavigationSingle(JadwalModel jadwal) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PetaDriverScreen(
+          initialRuteId: widget.ruteId,
+          initialRuteNama: _rute?.nama,
+        ),
+      ),
+    );
   }
 
   Future<void> _callPhone(String? phone) async {
