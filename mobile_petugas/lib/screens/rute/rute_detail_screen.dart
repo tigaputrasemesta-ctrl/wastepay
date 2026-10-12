@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/rute_model.dart';
 import '../../services/rute_service.dart';
+import '../map/peta_driver_screen.dart';
 
 class RuteDetailScreen extends StatefulWidget {
   final int ruteId;
@@ -256,24 +257,56 @@ class _RuteDetailScreenState extends State<RuteDetailScreen> {
 
                             if (coordsCount > 0) ...[
                               const SizedBox(height: 16),
-                              SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton.icon(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blue.shade700,
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(vertical: 12),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                              Column(
+                                children: [
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: ElevatedButton.icon(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color(0xFF0F766E), // Dark Teal
+                                        foregroundColor: Colors.white,
+                                        padding: const EdgeInsets.symmetric(vertical: 12),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                      ),
+                                      icon: const Icon(Icons.map_rounded, size: 20),
+                                      label: const Text(
+                                        "Buka Peta Interaktif Driver",
+                                        style: TextStyle(fontWeight: FontWeight.w700),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => PetaDriverScreen(
+                                              initialRuteId: widget.ruteId,
+                                              initialRuteNama: _rute?.nama,
+                                            ),
+                                          ),
+                                        );
+                                      },
                                     ),
                                   ),
-                                  icon: const Icon(Icons.directions_rounded, size: 20),
-                                  label: const Text(
-                                    "Navigasi Rute di Google Maps",
-                                    style: TextStyle(fontWeight: FontWeight.w700),
+                                  const SizedBox(height: 8),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: OutlinedButton.icon(
+                                      style: OutlinedButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(vertical: 12),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                      ),
+                                      icon: const Icon(Icons.directions_rounded, size: 20),
+                                      label: const Text(
+                                        "Navigasi Turn-by-Turn (Google Maps)",
+                                        style: TextStyle(fontWeight: FontWeight.w700),
+                                      ),
+                                      onPressed: _openGoogleMapsAll,
+                                    ),
                                   ),
-                                  onPressed: _openGoogleMapsAll,
-                                ),
+                                ],
                               ),
                             ],
                           ],

@@ -10,14 +10,14 @@
  * unduh nonaktif (hanya info "versi baru tersedia").
  */
 export const MOBILE_VERSION = {
-  versionName: "2.0.1",
-  versionCode: 21,
+  versionName: "2.0.2",
+  versionCode: 22,
   /** Di bawah versi ini APK dianggap terlalu lama → update wajib (blocking). */
   minVersionCode: 15,
   changelog: [
+    "Peta Interaktif Live Driver (pantau sebaran titik jemput & navigasi armada)",
     "Perbaikan autentikasi & pemuatan rute operasional",
     "Aplikasi 100% Native Flutter (responsif, tanpa WebView)",
-    "Jadwal rute & titik jemput per hari lengkap dengan filter cerdas",
     "Navigasi rute multi-stop Google Maps menuju lokasi pelanggan",
     "Sistem pembaruan langsung di dalam aplikasi (In-App Auto Update)",
   ],

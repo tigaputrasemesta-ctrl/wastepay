@@ -34,6 +34,9 @@ class PelangganTugas {
       fotoRumah: json['fotoRumah']?.toString(),
     );
   }
+
+  bool get hasCoordinates =>
+      latitude != null && longitude != null && latitude != 0 && longitude != 0;
 }
 
 class TunggakanInfo {

@@ -14,6 +14,7 @@ import '../survei/survei_list_screen.dart';
 import '../tracking/live_tracking_screen.dart';
 import '../komplain/lapor_kendala_screen.dart';
 import '../rute/jadwal_rute_screen.dart';
+import '../map/peta_driver_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -393,7 +394,58 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
+
+              // Banner Peta Rute Driver (Live Map)
+              Card(
+                color: const Color(0xFF0F766E), // Dark Teal
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                child: InkWell(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const PetaDriverScreen()),
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.map_rounded, color: Colors.white, size: 26),
+                        ),
+                        const SizedBox(width: 14),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Peta Rute Driver (Live Map)",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(height: 2),
+                              Text(
+                                "Pantau sebaran titik jemput & navigasi armada",
+                                style: TextStyle(fontSize: 11, color: Colors.white70),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 14),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
 
               // 4. Menu Utama Grid Aksi
               const Text(
@@ -414,6 +466,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 crossAxisSpacing: 12,
                 childAspectRatio: 1.25,
                 children: [
+                  _buildMenuTile(
+                    title: "Peta Driver",
+                    subtitle: "Navigasi Live",
+                    icon: Icons.map_rounded,
+                    color: Colors.teal.shade800,
+                    bgColor: Colors.teal.shade50,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const PetaDriverScreen()),
+                    ),
+                  ),
                   _buildMenuTile(
                     title: "Tugas Pickup",
                     subtitle: "${pengangkutan.totalTerjadwal} Tertunda",
