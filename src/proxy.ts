@@ -319,8 +319,12 @@ export async function proxy(request: NextRequest) {
 
   // ---- CSRF: proteksi request mutasi pada API ber-cookie ----
   // API publik & auth di-skip: stateless (tanpa sesi), bukan target CSRF.
+  // Permintaan dengan header Authorization: Bearer (aplikasi mobile) bebas CSRF karena tidak mengandalkan cookie otomatis browser.
+  const authHeader = request.headers.get("authorization");
+  const isBearerAuth = Boolean(authHeader && authHeader.toLowerCase().startsWith("bearer "));
+
   const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
-  if (MUTATING_METHODS.has(request.method) && pathname.startsWith("/api")) {
+  if (MUTATING_METHODS.has(request.method) && pathname.startsWith("/api") && !isBearerAuth) {
     const allowedOrigins = [new URL(request.url).origin];
     const envAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
     if (envAppUrl) {
@@ -359,7 +363,11 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  const token = request.cookies.get(COOKIE_NAME)?.value || request.cookies.get("__Host-session")?.value || request.cookies.get("session")?.value;
+  const token =
+    (isBearerAuth && authHeader ? authHeader.slice(7).trim() : null) ||
+    request.cookies.get(COOKIE_NAME)?.value ||
+    request.cookies.get("__Host-session")?.value ||
+    request.cookies.get("session")?.value;
   const payload = token ? await verifyToken(token) : null;
 
   // ---- API Routes ----

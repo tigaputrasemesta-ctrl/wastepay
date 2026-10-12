@@ -1,6 +1,6 @@
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { prisma } from "./prisma";
 import { JWT_SECRET, COOKIE_NAME } from "./secret";
 
@@ -78,10 +78,42 @@ export async function verifySessionToken(token: string): Promise<SessionUser | n
   }
 }
 
-export async function getSession(): Promise<SessionUser | null> {
+export async function getSession(request?: Request): Promise<SessionUser | null> {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get(COOKIE_NAME)?.value || cookieStore.get("__Host-session")?.value || cookieStore.get("session")?.value;
+    let token: string | undefined;
+    if (request) {
+      const authHeader = request.headers.get("authorization");
+      if (authHeader && authHeader.toLowerCase().startsWith("bearer ")) {
+        token = authHeader.slice(7).trim();
+      }
+      if (!token) {
+        const cookieHeader = request.headers.get("cookie");
+        if (cookieHeader) {
+          const match = cookieHeader.match(/(?:^|;\s*)(?:session|__Host-session)\s*=\s*([^;]+)/);
+          if (match) token = match[1];
+        }
+      }
+    }
+
+    if (!token) {
+      try {
+        const cookieStore = await cookies();
+        token = cookieStore.get(COOKIE_NAME)?.value || cookieStore.get("__Host-session")?.value || cookieStore.get("session")?.value;
+      } catch {
+        // cookies() might be unavailable
+      }
+    }
+    if (!token) {
+      try {
+        const headerStore = await headers();
+        const authHeader = headerStore.get("authorization");
+        if (authHeader && authHeader.toLowerCase().startsWith("bearer ")) {
+          token = authHeader.slice(7).trim();
+        }
+      } catch {
+        // headers() might be unavailable in non-request context
+      }
+    }
     if (!token) return null;
 
     const { payload } = await jwtVerify(token, JWT_SECRET);

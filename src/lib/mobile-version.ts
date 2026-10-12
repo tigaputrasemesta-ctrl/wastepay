@@ -10,22 +10,23 @@
  * unduh nonaktif (hanya info "versi baru tersedia").
  */
 export const MOBILE_VERSION = {
-  versionName: "1.2.2",
-  versionCode: 14,
+  versionName: "2.0.1",
+  versionCode: 21,
   /** Di bawah versi ini APK dianggap terlalu lama → update wajib (blocking). */
-  minVersionCode: 11,
+  minVersionCode: 15,
   changelog: [
-    "Background GPS: posisi tetap terkirim saat aplikasi di background / layar terkunci",
-    "Logo aplikasi baru",
-    "Sistem cek & unduh versi terbaru (auto-update)",
+    "Perbaikan autentikasi & pemuatan rute operasional",
+    "Aplikasi 100% Native Flutter (responsif, tanpa WebView)",
+    "Jadwal rute & titik jemput per hari lengkap dengan filter cerdas",
+    "Navigasi rute multi-stop Google Maps menuju lokasi pelanggan",
+    "Sistem pembaruan langsung di dalam aplikasi (In-App Auto Update)",
   ],
 };
 
 export function getApkUrl(): string {
   // Default: APK di-serve publik dari folder public/apk/
-  // Gunakan relative path agar jalan di localhost maupun production.
   return (
     process.env.MOBILE_APK_URL ||
-    "/apk/O2W-Lapangan.apk"
+    "/apk/UPS-HERU-Petugas-Native.apk"
   );
 }

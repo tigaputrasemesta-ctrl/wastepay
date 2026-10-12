@@ -13,11 +13,25 @@ export async function GET(
       where: { id },
       include: {
         kelurahan: { select: { id: true, nama: true, kecamatan: true } },
+        kelurahans: { select: { id: true, nama: true, kecamatan: true } },
         zona: { select: { id: true, nama: true, kelurahanId: true } },
         zonas: { select: { id: true, nama: true, kelurahanId: true } },
         petugas: { select: { id: true, nama: true } },
         jadwal: {
-          include: { pelanggan: { select: { id: true, nama: true, alamat: true } } },
+          include: {
+            pelanggan: {
+              select: {
+                id: true,
+                nama: true,
+                alamat: true,
+                noTelepon: true,
+                fotoRumah: true,
+                patokanLokasi: true,
+                latitude: true,
+                longitude: true,
+              },
+            },
+          },
         },
       },
     });

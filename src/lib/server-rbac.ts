@@ -10,7 +10,7 @@ export async function requireRole(
   request?: Request,
   minRole: Role = "admin"
 ): Promise<{ user: SessionUser } | NextResponse> {
-  const user = await getSession();
+  const user = await getSession(request);
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
