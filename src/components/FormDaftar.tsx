@@ -96,24 +96,57 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
   // Perbaikan: Kosongkan zonaList jika kelurahan belum dipilih agar tidak global
   const zonaList = kelurahan ? (opsi?.zonas ?? []).filter((z) => z.kelurahan?.nama === kelurahan) : [];
 
-  function getGps() {
+  const [gpsDenied, setGpsDenied] = useState(false);
+
+  async function getGps() {
     if (!navigator.geolocation) {
       setPesan("BROWSER TIDAK MENDUKUNG GPS.");
       return;
     }
+
+    // Cek status permission terlebih dahulu via Permissions API (jika tersedia).
+    // Ini menghindari silent-fail saat user pernah tolak permission.
+    if (navigator.permissions) {
+      try {
+        const permStatus = await navigator.permissions.query({ name: "geolocation" });
+        if (permStatus.state === "denied") {
+          setGpsDenied(true);
+          setGpsLoading(false);
+          setPesan("");
+          return;
+        }
+      } catch {
+        // Permissions API tidak didukung di browser ini — lanjut saja ke getCurrentPosition
+      }
+    }
+
     setGpsLoading(true);
+    setGpsDenied(false);
+    setPesan("");
+
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setGpsData({ lat: pos.coords.latitude, lng: pos.coords.longitude, acc: pos.coords.accuracy });
         setKoordinatSumber("gps_perangkat");
         setGpsLoading(false);
+        setGpsDenied(false);
         setPesan("");
       },
       (err) => {
         setGpsLoading(false);
-        setPesan("GAGAL MENDAPATKAN LOKASI: " + err.message);
+        if (err.code === err.PERMISSION_DENIED) {
+          // User menolak permission — tampilkan panduan, bukan error mentah
+          setGpsDenied(true);
+          setPesan("");
+        } else if (err.code === err.POSITION_UNAVAILABLE) {
+          setPesan("SINYAL GPS TIDAK TERSEDIA. Pastikan Anda berada di luar ruangan atau aktifkan lokasi di pengaturan HP.");
+        } else if (err.code === err.TIMEOUT) {
+          setPesan("WAKTU HABIS MENUNGGU GPS. Coba lagi atau geser pin di peta secara manual.");
+        } else {
+          setPesan("GAGAL MENDAPATKAN LOKASI: " + err.message);
+        }
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
     );
   }
 
@@ -798,18 +831,56 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
               <button type="button" onClick={getGps} className={`font-bold text-emerald-700 hover:underline shrink-0 border border-emerald-200 rounded-lg bg-white ${isPetugas ? 'text-[9px] px-1.5 py-0.5' : 'text-xs px-3 py-1.5 shadow-2xs'}`}>Perbarui GPS</button>
             </div>
           ) : (
-            <button
-              type="button"
-              onClick={getGps}
-              disabled={gpsLoading}
-              className={`w-full border border-emerald-200 rounded-xl font-bold flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 shadow-xs transition-all disabled:opacity-50 min-h-[46px] ${isPetugas ? 'py-1.5 text-[10px]' : 'py-3 text-sm'}`}
-            >
-              <svg className="w-4 h-4 text-emerald-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <span>{gpsLoading ? "Mengambil Lokasi..." : "Gunakan Titik GPS Saat Ini"}</span>
-            </button>
+            <div className="space-y-2.5">
+              <button
+                type="button"
+                onClick={getGps}
+                disabled={gpsLoading}
+                className={`w-full border border-emerald-200 rounded-xl font-bold flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 shadow-xs transition-all disabled:opacity-50 min-h-[46px] ${isPetugas ? 'py-1.5 text-[10px]' : 'py-3 text-sm'}`}
+              >
+                <svg className="w-4 h-4 text-emerald-700 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span>{gpsLoading ? "Mengambil Lokasi..." : "Gunakan Titik GPS Saat Ini"}</span>
+              </button>
+
+              {gpsDenied && (
+                <div className="rounded-xl bg-amber-50 border border-amber-300 p-3.5 sm:p-4 space-y-2.5 animate-in fade-in duration-200">
+                  <div className="flex items-start gap-2">
+                    <svg className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <div>
+                      <p className="font-bold text-amber-900 text-xs sm:text-sm">Izin Lokasi Ditolak</p>
+                      <p className="text-xs text-amber-800 mt-1 leading-relaxed">
+                        Browser Anda memblokir akses lokasi. Untuk mengaktifkan kembali:
+                      </p>
+                    </div>
+                  </div>
+                  <ol className="list-decimal pl-8 text-xs text-amber-800 space-y-1 leading-relaxed">
+                    <li>Ketuk ikon <strong>🔒 gembok</strong> atau <strong>ⓘ</strong> di <strong>address bar</strong> browser Anda (samping URL)</li>
+                    <li>Cari menu <strong>&quot;Izin Situs&quot;</strong> atau <strong>&quot;Permissions&quot;</strong></li>
+                    <li>Ubah <strong>Lokasi / Location</strong> menjadi <strong>&quot;Izinkan&quot;</strong></li>
+                    <li>Muat ulang halaman ini, lalu tekan tombol GPS lagi</li>
+                  </ol>
+                  <div className="flex items-center gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => window.location.reload()}
+                      className="px-3 py-1.5 rounded-lg bg-amber-100 hover:bg-amber-200 border border-amber-300 text-amber-900 text-xs font-bold transition-colors"
+                    >
+                      🔄 Muat Ulang Halaman
+                    </button>
+                  </div>
+                  <div className="border-t border-amber-200 pt-2.5 mt-1">
+                    <p className="text-xs text-amber-800 font-semibold">
+                      💡 Atau ketuk langsung di peta di atas untuk menandai lokasi rumah Anda secara manual.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
           )}
         </div>
         {!isPetugas && (

@@ -36,7 +36,7 @@ const nextConfig: NextConfig = {
           // di konteks halaman sendiri (bukan iframe pihak ketiga).
           {
             key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=(self)",
+            value: "camera=(self), microphone=(), geolocation=(self), fullscreen=(self)",
           },
           {
             key: "Content-Security-Policy",
