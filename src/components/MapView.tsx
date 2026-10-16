@@ -719,6 +719,7 @@ function ClusterPins({
     });
     groupRef.current = group;
     markersRef.current.clear();
+    const markersToAdd: L.Marker[] = [];
 
     for (const p of pelanggan) {
       if (
@@ -751,10 +752,16 @@ function ClusterPins({
         clickedFromMapRef.current = true;
         onPilih(p.id);
       });
-      group.addLayer(m);
+      
+      markersToAdd.push(m);
       markersRef.current.set(p.id, m);
     }
+    
+    // Optimasi Kritis Frontend: Gunakan addLayers (bulk) alih-alih addLayer dalam loop
+    // agar cluster hanya dihitung 1x di akhir (mencegah browser freeze saat memuat 10.000 titik)
+    group.addLayers(markersToAdd);
     map.addLayer(group);
+    
     return () => {
       map.removeLayer(group);
       groupRef.current = null;

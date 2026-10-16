@@ -64,13 +64,12 @@ export default async function PetaPage() {
       }),
       prisma.tagihan.findMany({
         where: {
+          tahun: { gte: new Date().getFullYear() - 1 },
           ...(scopeKelurahanId
             ? { pelanggan: { kelurahanId: scopeKelurahanId } }
             : petugasTanpaProfil
               ? { id: -1 }
               : {}),
-          // Hanya ambil data tagihan 6 bulan terakhir untuk optimasi
-          createdAt: { gte: new Date(new Date().setMonth(new Date().getMonth() - 6)) }
         },
         select: { pelangganId: true, status: true, bulan: true, tahun: true, jatuhTempo: true, jumlah: true },
         orderBy: [{ tahun: "desc" }, { bulan: "desc" }],

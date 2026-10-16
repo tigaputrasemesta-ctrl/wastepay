@@ -23,7 +23,11 @@ export async function GET(request: Request) {
   // sendiri (data pribadi pelanggan kelurahan lain tidak boleh terbuka).
   // Parameter ?wilayahId dari petugas diabaikan (tidak bisa lintas kelurahan).
   const session = await getSession();
-  if (session?.role === "petugas" && !PETUGAS_SCOPE_ALL) {
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (session.role === "petugas" && !PETUGAS_SCOPE_ALL) {
     const kelurahanId = await getPetugasKelurahan(session.id);
     if (!kelurahanId) {
       return NextResponse.json(
@@ -170,6 +174,11 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const body = await request.json();
     const {
