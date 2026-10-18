@@ -14,14 +14,18 @@ BEGIN
     END LOOP;
 END $$;
 
--- 2. Berikan akses penuh untuk service_role (backend server & background tasks)
+-- 2. Berikan akses penuh untuk service_role & authenticated (Supabase Dashboard / Table Editor)
 DO $$
 DECLARE
     r RECORD;
 BEGIN
+    EXECUTE 'GRANT ALL ON ALL TABLES IN SCHEMA public TO authenticated;';
+    EXECUTE 'GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO authenticated;';
     FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
         EXECUTE format('DROP POLICY IF EXISTS "Service role bypass RLS" ON public.%I;', r.tablename);
         EXECUTE format('CREATE POLICY "Service role bypass RLS" ON public.%I FOR ALL TO service_role USING (true) WITH CHECK (true);', r.tablename);
+        EXECUTE format('DROP POLICY IF EXISTS "Authenticated dashboard access" ON public.%I;', r.tablename);
+        EXECUTE format('CREATE POLICY "Authenticated dashboard access" ON public.%I FOR ALL TO authenticated USING (true) WITH CHECK (true);', r.tablename);
     END LOOP;
 END $$;
 
