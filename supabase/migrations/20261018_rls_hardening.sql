@@ -14,13 +14,21 @@ BEGIN
     END LOOP;
 END $$;
 
--- 2. Berikan akses penuh untuk service_role & authenticated (Supabase Dashboard / Table Editor)
+-- 2. Berikan akses penuh untuk service_role, authenticated, dan database user aplikasi (wastepay_o2w)
 DO $$
 DECLARE
     r RECORD;
 BEGIN
     EXECUTE 'GRANT ALL ON ALL TABLES IN SCHEMA public TO authenticated;';
     EXECUTE 'GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO authenticated;';
+
+    -- Pastikan user aplikasi Vercel (wastepay_o2w) tidak terhalang RLS
+    IF EXISTS (SELECT FROM pg_roles WHERE rolname = 'wastepay_o2w') THEN
+        EXECUTE 'ALTER ROLE wastepay_o2w BYPASSRLS;';
+        EXECUTE 'GRANT ALL ON ALL TABLES IN SCHEMA public TO wastepay_o2w;';
+        EXECUTE 'GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO wastepay_o2w;';
+    END IF;
+
     FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
         EXECUTE format('DROP POLICY IF EXISTS "Service role bypass RLS" ON public.%I;', r.tablename);
         EXECUTE format('CREATE POLICY "Service role bypass RLS" ON public.%I FOR ALL TO service_role USING (true) WITH CHECK (true);', r.tablename);
