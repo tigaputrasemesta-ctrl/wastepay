@@ -1,12 +1,49 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Izin Jaringan & Koneksi Offline/Online -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Izin Lokasi GPS untuk Peta Pelanggan & Navigasi Driver OSRM -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+
+    <!-- Izin Kamera & Media untuk Absensi Petugas & Foto Rumah Pelanggan -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+
+    <!-- Izin Notifikasi & Alarm -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
+    <!-- Whitelist Intent Queries untuk Membuka WhatsApp & Google Maps dari APK (Android 11+) -->
+    <queries>
+        <package android:name="com.whatsapp" />
+        <package android:name="com.whatsapp.w4b" />
+        <package android:name="com.google.android.apps.maps" />
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+    </queries>
+
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:hardwareAccelerated="true">
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation"
             android:name=".MainActivity"
@@ -28,25 +65,4 @@
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths" />
         </provider>
     </application>
-
-    <!-- Permissions -->
-
-    <uses-permission android:name="android.permission.INTERNET" />
-    <!-- Kamera (survei foto rumah, foto bukti pickup, foto bukti klaim) -->
-    <uses-permission android:name="android.permission.CAMERA" />
-    <!-- GPS (absensi, survei geotag, live tracking posisi petugas & kendaraan) -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <!-- Background location (Android 11+) — GPS tetap jalan saat aplikasi di background -->
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-    <!--
-      Notifikasi lokal (pengingat absen, ringkasan tugas, pengumuman).
-      Hanya SCHEDULE_EXACT_ALARM yang dideklarasikan — bukan USE_EXACT_ALARM.
-      Pengguna tetap bisa menolak; plugin otomatis turun ke alarm tidak-eksak
-      (waktu bisa bergeser beberapa menit) tanpa error. Waktu tepat ke detik
-      tidak krusial untuk pengingat absen/tugas.
-      POST_NOTIFICATIONS, RECEIVE_BOOT_COMPLETED, dan WAKE_LOCK tidak ditulis di
-      sini karena sudah dideklarasikan plugin dan otomatis digabung saat build.
-    -->
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 </manifest>
