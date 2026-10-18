@@ -267,7 +267,9 @@ export function formatPelangganToGoogleContact(
   const nameParts = (pelanggan.nama || "").trim().split(/\s+/);
   const givenName = nameParts[0] || "Pelanggan";
   const familyName = nameParts.slice(1).join(" ") || "";
-  const displayName = `${pelanggan.nama} [${pelanggan.kodePelanggan}]`;
+  const displayName = zona
+    ? `${pelanggan.nama} - ${zona} [${pelanggan.kodePelanggan}]`
+    : `${pelanggan.nama} [${pelanggan.kodePelanggan}]`;
 
   // Alamat terformat
   const addressParts = [
@@ -326,7 +328,7 @@ export function formatPelangganToGoogleContact(
     organizations: [
       {
         name: "WastePay",
-        title: `Pelanggan - ${kategori || "Umum"}`,
+        title: zona ? `Pelanggan ${kategori} - ${zona}` : `Pelanggan - ${kategori || "Umum"}`,
         department: zona || undefined,
       },
     ],
@@ -339,6 +341,7 @@ export function formatPelangganToGoogleContact(
     userDefined: [
       { key: "WastePayKode", value: pelanggan.kodePelanggan },
       { key: "WastePayStatus", value: pelanggan.status || "aktif" },
+      ...(zona ? [{ key: "WastePayZona", value: zona }] : []),
     ],
   };
 
@@ -610,10 +613,12 @@ export function generateGoogleContactsCsv(
     const nameParts = (p.nama || "").trim().split(/\s+/);
     const givenName = nameParts[0] || "Pelanggan";
     const familyName = nameParts.slice(1).join(" ") || "";
-    const fullName = `${p.nama} [${p.kodePelanggan}]`;
-    const phone = formatPhoneE164(p.noTelepon);
     const kelurahan = p.kelurahan?.nama || "";
     const zona = p.wilayah?.zona?.nama || p.wilayah?.nama || "";
+    const fullName = zona
+      ? `${p.nama} - ${zona} [${p.kodePelanggan}]`
+      : `${p.nama} [${p.kodePelanggan}]`;
+    const phone = formatPhoneE164(p.noTelepon);
     const kategori = p.kategori ? p.kategori.replace(/_/g, " ").toUpperCase() : "";
 
     const notesLines = [
@@ -679,10 +684,12 @@ export function generateVCard(
     const nameParts = (p.nama || "").trim().split(/\s+/);
     const givenName = nameParts[0] || "Pelanggan";
     const familyName = nameParts.slice(1).join(" ") || "";
-    const fullName = `${p.nama} [${p.kodePelanggan}]`;
-    const phone = formatPhoneE164(p.noTelepon);
     const kelurahan = p.kelurahan?.nama || "";
     const zona = p.wilayah?.zona?.nama || p.wilayah?.nama || "";
+    const fullName = zona
+      ? `${p.nama} - ${zona} [${p.kodePelanggan}]`
+      : `${p.nama} [${p.kodePelanggan}]`;
+    const phone = formatPhoneE164(p.noTelepon);
     const kategori = p.kategori ? p.kategori.replace(/_/g, " ").toUpperCase() : "";
 
     const notesLines = [
@@ -707,7 +714,7 @@ export function generateVCard(
         ? `ADR;TYPE=HOME:;;${p.alamat.replace(/;/g, " ")};${kelurahan || "Depok"};Jawa Barat;;Indonesia`
         : "",
       "ORG:WastePay",
-      `TITLE:Pelanggan ${kategori}`,
+      `TITLE:${zona ? `Pelanggan ${kategori} - ${zona}` : `Pelanggan ${kategori}`}`,
       `NOTE:${notesLines.join("\\n")}`,
       `CATEGORIES:${categoryLabel}`,
       "END:VCARD",

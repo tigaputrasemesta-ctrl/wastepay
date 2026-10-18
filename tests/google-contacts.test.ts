@@ -54,7 +54,7 @@ describe("Google Contacts: formatPelangganToGoogleContact", () => {
     // Nama
     expect(contact.names?.[0].givenName).toBe("Bpk");
     expect(contact.names?.[0].familyName).toBe("Budi Santoso");
-    expect(contact.names?.[0].displayName).toBe("Bpk Budi Santoso [TES-001]");
+    expect(contact.names?.[0].displayName).toBe("Bpk Budi Santoso - Zona A [TES-001]");
 
     // Telepon
     expect(contact.phoneNumbers?.[0].value).toBe("+628121000001");
