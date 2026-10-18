@@ -129,5 +129,7 @@ test_db*.js
 *.sql.zst
 *.dump
 android/key.properties
+android/local.properties
 android/app/*.jks
 android/app/*.keystore
+public/apk/*.apk

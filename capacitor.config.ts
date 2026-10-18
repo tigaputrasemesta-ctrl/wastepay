@@ -12,7 +12,6 @@ const config: CapacitorConfig = {
   appId: "id.o2whero.lapangan",
   appName: "UPS HERU Lapangan",
   webDir: isStaticExport ? "out" : "public",
-  bundledWebRuntime: false,
   server: isStaticExport
     ? {
         androidScheme: "https",
