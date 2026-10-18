@@ -48,8 +48,8 @@ export default {
         },
       },
       fontFamily: {
-        display: ["var(--font-barlow-condensed)", "system-ui", "sans-serif"],
-        sans: ["var(--font-barlow)", "system-ui", "sans-serif"],
+        display: ["var(--font-inter)", "-apple-system", "BlinkMacSystemFont", "system-ui", "sans-serif"],
+        sans: ["var(--font-inter)", "-apple-system", "BlinkMacSystemFont", "system-ui", "sans-serif"],
         mono: ["var(--font-jetbrains)", "ui-monospace", "monospace"],
       },
       boxShadow: {

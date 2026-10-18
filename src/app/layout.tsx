@@ -1,17 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Barlow, Barlow_Condensed, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const barlow = Barlow({
-  variable: "--font-barlow",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800", "900"],
-});
-
-const barlowCondensed = Barlow_Condensed({
-  variable: "--font-barlow-condensed",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
 });
 
 const jetbrains = JetBrains_Mono({
@@ -91,7 +85,7 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${barlow.variable} ${barlowCondensed.variable} ${jetbrains.variable} h-full antialiased bg-white`}
+      className={`${inter.variable} ${jetbrains.variable} h-full antialiased bg-white`}
     >
       <body className="min-h-full flex flex-col font-sans bg-slate-50 text-slate-900 selection:bg-emerald-800 selection:text-white">
         {children}
