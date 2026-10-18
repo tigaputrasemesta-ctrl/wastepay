@@ -73,15 +73,26 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   const user = await getSession();
   if (!user || !hasRole(user, "admin")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
+  const { searchParams } = new URL(request.url);
+  const statusParam = searchParams.get("status");
+  const limitParam = parseInt(searchParams.get("limit") || "50", 10);
+  const limit = Math.min(Math.max(limitParam, 1), 100);
+
+  const where: any = {};
+  if (statusParam && statusParam !== "semua") {
+    where.status = statusParam;
+  }
+
   const notifikasi = await prisma.notifikasi.findMany({
+    where,
     orderBy: { createdAt: "desc" },
-    take: 50,
+    take: limit,
     include: {
       pelanggan: { select: { id: true, nama: true } },
       createdBy: { select: { id: true, nama: true } },

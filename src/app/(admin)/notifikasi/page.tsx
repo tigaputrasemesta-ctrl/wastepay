@@ -15,6 +15,7 @@ type Notifikasi = {
   pesan: string;
   penerima: string;
   status: string;
+  error?: string | null;
   createdAt: string;
   pelanggan?: { nama: string } | null;
 };
@@ -56,6 +57,9 @@ function NotifikasiContent() {
   const [pelangganList, setPelangganList] = useState<Pelanggan[]>([]);
   const [riwayat, setRiwayat] = useState<Notifikasi[]>([]);
   const [loadingNotif, setLoadingNotif] = useState(true);
+  const [filterStatus, setFilterStatus] = useState<"semua" | "terkirim" | "gagal">("semua");
+  const [retryingId, setRetryingId] = useState<number | null>(null);
+  const [retryingBatch, setRetryingBatch] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState<{
@@ -100,11 +104,14 @@ function NotifikasiContent() {
   }, [searchParams]);
 
   // Fetch Notifikasi data
-  const fetchNotifData = useCallback(async () => {
+  const fetchNotifData = useCallback(async (statusOverride?: string) => {
     try {
+      setLoadingNotif(true);
+      const activeFilter = statusOverride !== undefined ? statusOverride : filterStatus;
+      const query = activeFilter && activeFilter !== "semua" ? `?status=${activeFilter}&limit=100` : "?limit=100";
       const [pelRes, notifRes] = await Promise.all([
         fetch("/api/pelanggan"),
-        fetch("/api/notifikasi"),
+        fetch(`/api/notifikasi${query}`),
       ]);
       setPelangganList(await pelRes.json());
       setRiwayat(await notifRes.json());
@@ -113,7 +120,60 @@ function NotifikasiContent() {
     } finally {
       setLoadingNotif(false);
     }
-  }, [showToast]);
+  }, [filterStatus, showToast]);
+
+  async function handleRetry(n: Notifikasi) {
+    setRetryingId(n.id);
+    try {
+      const res = await fetch("/api/notifikasi/retry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: n.id }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast("Notifikasi berhasil dikirim ulang! ✅", "success");
+        setRiwayat((prev) =>
+          prev.map((item) =>
+            item.id === n.id ? { ...item, status: "terkirim", error: null } : item
+          )
+        );
+      } else {
+        const errorMsg = data.details?.[0]?.error || data.error || "Gagal mengirim ulang";
+        showToast(errorMsg, "error");
+        if (data.details?.[0]?.waLink) {
+          window.open(data.details[0].waLink, "_blank");
+        }
+      }
+    } catch {
+      showToast("Terjadi kesalahan jaringan saat kirim ulang", "error");
+    } finally {
+      setRetryingId(null);
+    }
+  }
+
+  async function handleRetryBatch() {
+    if (!confirm("Kirim ulang hingga 20 notifikasi yang gagal via gateway WhatsApp?")) return;
+    setRetryingBatch(true);
+    try {
+      const res = await fetch("/api/notifikasi/retry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ retryAllFailed: true, limit: 20 }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast(data.message || `Selesai: ${data.successCount} berhasil dikirim ulang`, data.successCount > 0 ? "success" : "info");
+        fetchNotifData();
+      } else {
+        showToast(data.error || "Gagal memproses batch kirim ulang", "error");
+      }
+    } catch {
+      showToast("Terjadi kesalahan jaringan", "error");
+    } finally {
+      setRetryingBatch(false);
+    }
+  }
 
   // Fetch Pengumuman data
   const fetchPengumumanData = useCallback(async () => {
@@ -484,42 +544,160 @@ function NotifikasiContent() {
 
       {activeTab === "riwayat" && (
         <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-          <div className="px-5 py-3.5 border-b border-slate-100 bg-slate-50/70">
-            <h2 className="font-bold text-slate-900 text-sm">Riwayat Notifikasi Lengkap</h2>
+          <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h2 className="font-bold text-slate-900 text-sm">Riwayat Notifikasi WhatsApp</h2>
+              <p className="text-xs text-slate-500 mt-0.5">Pantau status pengiriman pesan dan kirim ulang notifikasi yang gagal</p>
+            </div>
+
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* Filter Status */}
+              <div className="inline-flex rounded-xl bg-slate-100 p-0.5 border border-slate-200">
+                {(["semua", "terkirim", "gagal"] as const).map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => {
+                      setFilterStatus(s);
+                      fetchNotifData(s);
+                    }}
+                    className={`px-3 py-1 rounded-lg text-xs font-semibold capitalize transition-all ${
+                      filterStatus === s
+                        ? "bg-white text-slate-900 shadow-sm"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+
+              {/* Tombol Batch Retry */}
+              <button
+                onClick={handleRetryBatch}
+                disabled={retryingBatch}
+                className="bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm flex items-center gap-1.5 active:scale-95"
+              >
+                {retryingBatch ? (
+                  <>
+                    <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                    </svg>
+                    <span>Mengirim...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>🔄</span>
+                    <span>Kirim Ulang 20 Gagal</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
+
           <div className="divide-y divide-slate-100">
             {loadingNotif ? (
-              <div className="px-4 py-8 text-center text-slate-600 font-medium">Memuat...</div>
+              <div className="px-4 py-12 text-center text-slate-500 font-medium flex items-center justify-center gap-2">
+                <svg className="w-4 h-4 animate-spin text-emerald-600" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                </svg>
+                <span>Memuat riwayat notifikasi...</span>
+              </div>
             ) : riwayat.length === 0 ? (
-              <div className="px-4 py-8 text-center text-slate-600 font-medium">Belum ada notifikasi</div>
+              <div className="px-4 py-12 text-center text-slate-500 font-medium">
+                Tidak ada riwayat notifikasi {filterStatus !== "semua" ? `berstatus ${filterStatus}` : ""}
+              </div>
             ) : (
-              riwayat.map((n) => (
-                <div key={n.id} className="px-5 py-3.5 hover:bg-slate-50/70 transition">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-slate-900 text-sm">{n.judul}</span>
-                        <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${
-                          n.tipe === "pengumuman" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
-                          n.tipe === "tagihan_jatuh_tempo" ? "bg-rose-50 text-rose-700 border border-rose-200" :
-                          "bg-amber-50 text-amber-700 border border-amber-200"
-                        }`}>
-                          {TIPE_NOTIF.find((t) => t.value === n.tipe)?.label || n.tipe}
-                        </span>
+              riwayat.map((n) => {
+                const isGagal = n.status === "gagal";
+                const cleanPhone = (n.penerima || "").replace(/[^0-9]/g, "");
+                const waUrl = `https://wa.me/${cleanPhone.replace(/^0/, "62")}?text=${encodeURIComponent(n.pesan || "")}`;
+
+                return (
+                  <div key={n.id} className={`px-5 py-4 transition ${isGagal ? "bg-rose-50/20 hover:bg-rose-50/40" : "hover:bg-slate-50/70"}`}>
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap mb-1">
+                          <span className="font-bold text-slate-900 text-sm">{n.judul}</span>
+                          <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${
+                            n.tipe === "pengumuman" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
+                            n.tipe === "tagihan_jatuh_tempo" ? "bg-rose-50 text-rose-700 border border-rose-200" :
+                            n.tipe === "pembayaran_diterima" ? "bg-blue-50 text-blue-700 border border-blue-200" :
+                            "bg-amber-50 text-amber-700 border border-amber-200"
+                          }`}>
+                            {TIPE_NOTIF.find((t) => t.value === n.tipe)?.label || n.tipe.replace(/_/g, " ")}
+                          </span>
+                        </div>
+
+                        <p className="text-xs text-slate-700 whitespace-pre-line line-clamp-3 font-mono bg-slate-50 p-2 rounded-lg border border-slate-200/60 my-2">
+                          {n.pesan}
+                        </p>
+
+                        <div className="flex items-center gap-3 text-xs text-slate-400 flex-wrap">
+                          <span>Penerima: <strong className="text-slate-600">{n.pelanggan?.nama || n.penerima}</strong> ({n.penerima})</span>
+                          <span>•</span>
+                          <span>{formatDate(n.createdAt)}</span>
+                        </div>
+
+                        {isGagal && n.error && (
+                          <div className="mt-2 inline-flex items-center gap-1.5 text-xs text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-md">
+                            <span>⚠️</span>
+                            <span>Alasan gagal: <strong>{n.error}</strong></span>
+                          </div>
+                        )}
                       </div>
-                      <p className="text-xs text-slate-600 mt-1">{n.pesan}</p>
-                      <p className="text-xs text-slate-400 mt-1">
-                        Penerima: {n.pelanggan?.nama || n.penerima} • {formatDate(n.createdAt)}
-                      </p>
+
+                      <div className="flex sm:flex-col items-end sm:items-end justify-between sm:justify-start gap-2 shrink-0">
+                        <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${
+                          n.status === "terkirim"
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                            : "bg-rose-50 text-rose-700 border border-rose-200"
+                        }`}>
+                          {n.status === "terkirim" ? "✓ Terkirim" : "✕ Gagal"}
+                        </span>
+
+                        {isGagal && (
+                          <div className="flex items-center gap-1.5 mt-1">
+                            <button
+                              onClick={() => handleRetry(n)}
+                              disabled={retryingId === n.id}
+                              className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-bold transition flex items-center gap-1 shadow-sm"
+                              title="Kirim ulang otomatis via Gateway WhatsApp"
+                            >
+                              {retryingId === n.id ? (
+                                <>
+                                  <svg className="w-3 h-3 animate-spin" viewBox="0 0 24 24" fill="none">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                                  </svg>
+                                  <span>...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <span>🔄</span>
+                                  <span>Kirim Ulang</span>
+                                </>
+                              )}
+                            </button>
+
+                            <a
+                              href={waUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold border border-slate-200 transition flex items-center gap-1"
+                              title="Buka WhatsApp Web untuk kirim manual"
+                            >
+                              <span>💬</span>
+                              <span>WA Web</span>
+                            </a>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-semibold shrink-0 ${
-                      n.status === "terkirim" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-slate-100 border border-slate-200 text-slate-600"
-                    }`}>
-                      {n.status}
-                    </span>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>
