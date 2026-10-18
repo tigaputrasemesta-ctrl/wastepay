@@ -32,6 +32,7 @@ import CivicHeroWidget from "@/components/CivicHeroWidget";
 import { generateLocalBusinessJsonLd } from "@/lib/seo";
 import { DEFAULT_ARTIKEL, getArticleCoverImage, cleanArticleSnippet } from "@/lib/default-articles";
 import ArticleImage from "@/components/ArticleImage";
+import LandingApkBanner, { NativeGuardedLink } from "@/components/mobile/LandingApkBanner";
 
 export const dynamic = "force-dynamic";
 
@@ -93,6 +94,9 @@ export default async function LandingPage() {
 
       {/* ── Primary Public Navbar ── */}
       <PublicNavbar />
+
+      {/* ── Smart APK Download Banner (Hidden on Native APK) ── */}
+      <LandingApkBanner />
 
       <main>
         {/* ── 3. Hero Section (Editorial + Dashboard Console ala BeCycle) ── */}
@@ -993,9 +997,9 @@ export default async function LandingPage() {
               <Link href="/login" className="hover:text-white transition-colors">
                 Portal Petugas
               </Link>
-              <Link href="/unduh" className="hover:text-white transition-colors">
+              <NativeGuardedLink href="/unduh" className="hover:text-white transition-colors">
                 App Android Petugas
-              </Link>
+              </NativeGuardedLink>
               <span>
                 Didukung oleh{" "}
                 <a href="https://wastepay.id" target="_blank" rel="noreferrer" className="text-emerald-500 hover:text-emerald-400 font-semibold">

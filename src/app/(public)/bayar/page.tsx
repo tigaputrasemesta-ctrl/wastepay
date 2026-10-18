@@ -693,10 +693,18 @@ function BayarPortalContent() {
               </label>
               <div className="relative">
                 <input
-                  type="text"
-                  placeholder="cth: 08123456789 atau INV/..."
+                  type="tel"
+                  inputMode="tel"
+                  placeholder="cth: 08123456789 atau 628..."
                   value={kode}
-                  onChange={(e) => setKode(e.target.value)}
+                  onChange={(e) => {
+                    let val = e.target.value.replace(/[^0-9a-zA-Z\-/]/g, "");
+                    // Normalisasi instan: ubah 08xx menjadi 628xx
+                    if (/^08\d*/.test(val)) {
+                      val = "628" + val.slice(2);
+                    }
+                    setKode(val);
+                  }}
                   disabled={mencari}
                   className="w-full pl-4 pr-32 py-3.5 rounded-2xl border border-slate-200 text-slate-900 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-xs disabled:opacity-60 disabled:bg-slate-50"
                   required
@@ -706,7 +714,7 @@ function BayarPortalContent() {
                   disabled={mencari || !kode.trim()}
                   className="absolute right-2 top-1/2 -translate-y-1/2 px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs active:scale-95 disabled:opacity-50"
                 >
-                  Periksa
+                  {mencari ? "Memeriksa..." : "Periksa"}
                 </button>
               </div>
             </div>
@@ -721,29 +729,55 @@ function BayarPortalContent() {
         )}
       </div>
 
-      {/* Pesan Error (Tidak Ditemukan) dengan UI Laporan Analisa */}
+      {/* Pesan Error dengan UI Laporan Analisa Bento Grid 2x2 */}
       {errorSearch && !mencari && (
-        <div className="max-w-2xl mx-auto bg-white rounded-3xl border border-rose-200 shadow-sm p-6 sm:p-8 animate-in slide-in-from-bottom-4 fade-in duration-300 relative overflow-hidden">
+        <div className="max-w-2xl mx-auto bg-white rounded-3xl border border-rose-200 shadow-sm p-5 sm:p-7 animate-in slide-in-from-bottom-4 fade-in duration-300 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-2 h-full bg-rose-500"></div>
-          <div className="flex flex-col sm:flex-row gap-5 items-start">
-            <div className="w-14 h-14 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center shrink-0">
-              <span className="text-2xl">🔍</span>
-            </div>
-            <div className="space-y-3">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center shrink-0 text-xl">
+                🔍
+              </div>
               <div>
-                <div className="text-[10px] uppercase font-bold text-rose-500 tracking-wider mb-1">Hasil Analisa Pencarian</div>
-                <h3 className="text-lg font-extrabold text-slate-900">Data Tidak Ditemukan</h3>
+                <div className="text-[10px] uppercase font-bold text-rose-500 tracking-wider">Hasil Analisa Sistem</div>
+                <h3 className="text-base sm:text-lg font-extrabold text-slate-900">Data Tagihan Tidak Ditemukan</h3>
               </div>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                {errorSearch}
-              </p>
-              <div className="bg-slate-50 p-4 rounded-xl text-xs text-slate-600 border border-slate-100 space-y-2">
-                <p className="font-bold text-slate-700">Rekomendasi Tindakan:</p>
-                <ul className="list-disc pl-4 space-y-1">
-                  <li>Pastikan Anda memasukkan nomor WhatsApp yang benar (contoh: 08123456789).</li>
-                  <li>Jika Anda pelanggan baru, pastikan pendaftaran Anda sudah diverifikasi oleh admin.</li>
-                </ul>
+            </div>
+            
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              {errorSearch}
+            </p>
+
+            {/* Bento Grid 2x2 untuk Layar Mobile 360px+ */}
+            <div className="grid grid-cols-2 gap-2.5 pt-1">
+              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
+                <span className="text-xs">📱</span>
+                <h5 className="text-[11px] font-bold text-slate-800">Format Nomor</h5>
+                <p className="text-[10px] text-slate-500 leading-tight">Pastikan nomor aktif WhatsApp (08xx / 628xx).</p>
               </div>
+
+              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
+                <span className="text-xs">⏳</span>
+                <h5 className="text-[11px] font-bold text-slate-800">Status Warga</h5>
+                <p className="text-[10px] text-slate-500 leading-tight">Calon warga memerlukan approval admin pusat.</p>
+              </div>
+
+              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
+                <span className="text-xs">🧾</span>
+                <h5 className="text-[11px] font-bold text-slate-800">No. Invoice</h5>
+                <p className="text-[10px] text-slate-500 leading-tight">Bisa memasukkan no. invoice (INV/...) resmi.</p>
+              </div>
+
+              <a
+                href="https://wa.me/6281234567890?text=Halo%20Admin%20UPS%20HERU%2C%20saya%20butuh%20bantuan%20cek%20tagihan"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200/80 hover:bg-emerald-100 text-emerald-800 space-y-1 transition-colors block"
+              >
+                <span className="text-xs">💬</span>
+                <h5 className="text-[11px] font-bold text-emerald-900">Bantuan CS</h5>
+                <p className="text-[10px] text-emerald-700 leading-tight">Chat langsung petugas pelayanan Depok.</p>
+              </a>
             </div>
           </div>
         </div>

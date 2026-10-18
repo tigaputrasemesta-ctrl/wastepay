@@ -6,15 +6,47 @@
   :root {
     --background: 255 255 255;
     --foreground: 0 0 0;
+    --wp-primary: #0F3D3E;
+    --wp-emerald: #10B981;
+    --wp-amber: #F59E0B;
+    --wp-rose: #E11D48;
+    --wp-dark: #020617;
   }
   
   html, body {
     @apply bg-white text-slate-900 font-sans antialiased;
     cursor: default;
+    overscroll-behavior-y: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
   ::selection {
     @apply bg-emerald-600 text-white;
+  }
+}
+
+.wp-glass-pill {
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.wp-driving-sheet {
+  background-color: #020617;
+  color: #ffffff;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+@layer utilities {
+  /* Utilitas Anti-Scrollbar untuk Layar Sentuh APK Native & Mobile */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }
 

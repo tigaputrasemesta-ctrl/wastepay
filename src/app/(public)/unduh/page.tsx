@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Download, Smartphone } from "lucide-react";
 import { MOBILE_VERSION, getApkUrl } from "@/lib/mobile-version";
+import UnduhButtonSection from "@/components/mobile/UnduhButtonSection";
 
 export const dynamic = "force-dynamic";
 
@@ -97,19 +98,11 @@ export default function UnduhPage() {
             </ul>
           </div>
 
-          {apkUrl ? (
-            <a
-              href={apkUrl}
-              download
-              className="w-full flex items-center justify-center gap-2.5 py-4 px-6 rounded-2xl bg-emerald-700 hover:bg-emerald-800 active:scale-[0.99] text-white font-bold text-base shadow-sm transition-all"
-            >
-              <Download className="w-5 h-5" /> Unduh Berkas APK ({versionName})
-            </a>
-          ) : (
-            <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 font-medium text-xs text-center">
-              Tautan unduhan paket APK belum dikonfigurasi di server. Silakan hubungi admin teknis.
-            </div>
-          )}
+          <UnduhButtonSection
+            apkUrl={apkUrl}
+            versionName={versionName}
+            versionCode={versionCode}
+          />
 
           <p className="text-center text-[11px] text-slate-400 mt-4">
             Khusus armada operasional internal. Masuk menggunakan akun terdaftar Dinas UPS HERU.

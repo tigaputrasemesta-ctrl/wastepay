@@ -1010,18 +1010,46 @@ function TemplateSettingsForm({ showToast }: { showToast: (msg: string, type: 's
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {tpls.map(t => (
-          <div key={t.key} className="space-y-2">
-            <label className="block text-sm font-bold text-slate-700">{t.label}</label>
-            <p className="text-xs text-emerald-700 bg-emerald-50 px-2 py-1 rounded font-mono break-all">{t.vars}</p>
-            <textarea
-              className="w-full rounded-xl border-slate-200 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 p-3 text-sm h-40 font-mono bg-slate-50"
-              value={templates[t.key] || ""}
-              onChange={e => handleChange(t.key, e.target.value)}
-              placeholder="Kosongkan untuk menggunakan template default sistem..."
-            />
-          </div>
-        ))}
+        {tpls.map(t => {
+          const varChips = t.vars.split(",").map(v => v.trim()).filter(Boolean);
+          return (
+            <div key={t.key} className="space-y-2 p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+              <div className="flex items-center justify-between">
+                <label className="block text-sm font-bold text-slate-900">{t.label}</label>
+                <span className="text-[10px] text-slate-400 font-mono font-semibold">{t.key}</span>
+              </div>
+              
+              {/* Tap-to-Insert Variable Chips (Kenyamanan Keyboard Ponsel Android) */}
+              <div className="flex flex-wrap items-center gap-1.5 py-1">
+                <span className="text-[10px] uppercase font-bold text-slate-400 mr-0.5">Sisipkan:</span>
+                {varChips.map((chip) => (
+                  <button
+                    key={chip}
+                    type="button"
+                    onClick={() => {
+                      setTemplates((prev) => {
+                        const cur = prev[t.key] || "";
+                        const sep = cur.length > 0 && !cur.endsWith(" ") && !cur.endsWith("\n") ? " " : "";
+                        return { ...prev, [t.key]: cur + sep + chip };
+                      });
+                    }}
+                    className="px-2 py-0.5 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[11px] font-mono font-bold border border-emerald-300 shadow-2xs active:scale-95 transition-all"
+                    title={`Klik untuk menyisipkan ${chip} ke pesan`}
+                  >
+                    + {chip}
+                  </button>
+                ))}
+              </div>
+
+              <textarea
+                className="w-full rounded-xl border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 p-3 text-xs sm:text-sm h-36 font-mono bg-white"
+                value={templates[t.key] || ""}
+                onChange={e => handleChange(t.key, e.target.value)}
+                placeholder="Kosongkan untuk menggunakan template default sistem..."
+              />
+            </div>
+          );
+        })}
       </div>
     </div>
   );

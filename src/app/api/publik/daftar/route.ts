@@ -155,7 +155,13 @@ export async function POST(request: Request) {
     let zonaId = body.zonaId ? parseInt(body.zonaId) : null;
     const petugasId = body.petugasId ? parseInt(body.petugasId) : null;
     const ruteId = body.ruteId ? parseInt(body.ruteId) : null;
-    const tanggalPenagihanCustom = body.tanggalPenagihanCustom ? String(body.tanggalPenagihanCustom).trim() : null;
+    let tanggalPenagihanCustom = body.tanggalPenagihanCustom ? String(body.tanggalPenagihanCustom).trim() : null;
+    if (tanggalPenagihanCustom) {
+      const parsedTgl = parseInt(tanggalPenagihanCustom, 10);
+      if (!isNaN(parsedTgl)) {
+        tanggalPenagihanCustom = String(Math.min(28, Math.max(1, parsedTgl)));
+      }
+    }
     const jadwalHari = typeof body.jadwalHari === "string" && body.jadwalHari.trim() ? body.jadwalHari.trim() : null;
 
     if (!zonaId && ruteId) {

@@ -188,12 +188,13 @@ export default function ModalApprovalPelanggan({
     setCreatedAt(pelanggan.createdAt ? new Date(pelanggan.createdAt).toISOString().slice(0, 16) : "");
   }, [pelanggan]);
 
-  // Handle Rute selection change
+  // Handle Rute selection change with auto-prefill zonaId
   const handleRuteChange = (rid: string) => {
     setSelectedRute(rid);
     if (!rid) return;
     const r = ruteList.find((item) => item.id.toString() === rid);
     if (r) {
+      if (r.zonaId) setSelectedZona(r.zonaId.toString());
       if (r.petugasId) setSelectedPetugas(r.petugasId.toString());
       if (r.hari) {
         const days = r.hari
@@ -305,8 +306,8 @@ export default function ModalApprovalPelanggan({
   const hasGps = Boolean(pelanggan.latitude && pelanggan.longitude);
 
   return (
-    <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-2xl max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 animate-in fade-in duration-150">
+      <div className="bg-white rounded-t-3xl sm:rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-2xl max-h-[88dvh] sm:max-h-[90vh] flex flex-col">
         {/* Modal Header */}
         <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/70 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
@@ -768,8 +769,8 @@ export default function ModalApprovalPelanggan({
           </div>
         </div>
 
-        {/* Modal Footer */}
-        <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/70 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
+        {/* Modal Footer (Sticky di Mobile + Safe Area) */}
+        <div className="sticky bottom-0 px-6 py-4 border-t border-slate-100 bg-slate-50/95 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0 z-10 pb-safe">
           <button
             type="button"
             onClick={handleReject}

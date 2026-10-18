@@ -388,6 +388,48 @@ function PelangganContent() {
   const paginatedPelanggan = pelanggan.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
   const totalPages = Math.ceil(pelanggan.length / ITEMS_PER_PAGE);
 
+  const handleExportExcel = async () => {
+    const exportQuery = new URLSearchParams({
+      ...(filterStatus ? { status: filterStatus } : {}),
+      ...(filterKategori ? { kategori: filterKategori } : {}),
+      ...(filterKelurahan ? { kelurahanId: filterKelurahan } : {}),
+    }).toString();
+    const exportUrl = `/api/pelanggan/export?${exportQuery}`;
+
+    try {
+      const { Capacitor } = await import("@capacitor/core");
+      if (Capacitor.isNativePlatform()) {
+        const { Share } = await import("@capacitor/share");
+        await Share.share({
+          title: "Ekspor Data Pelanggan UPS HERU",
+          text: `Data ${pelanggan.length} pelanggan UPS HERU Kota Depok`,
+          url: window.location.origin + exportUrl,
+          dialogTitle: "Bagikan atau Simpan File Data Pelanggan",
+        });
+        showToast("Dialog bagikan file terbuka", "success");
+        return;
+      }
+    } catch {
+      // Fallback ke web share API
+    }
+
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({
+          title: "Ekspor Data Pelanggan UPS HERU",
+          url: window.location.origin + exportUrl,
+        });
+        showToast("Tautan ekspor dibagikan", "success");
+        return;
+      } catch {
+        // Abaikan pembatalan share oleh pengguna
+      }
+    }
+
+    window.open(exportUrl, "_blank");
+    showToast("Mengunduh berkas data pelanggan...", "success");
+  };
+
   return (
     <div className="p-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 border-b border-slate-200 pb-4">
@@ -406,18 +448,29 @@ function PelangganContent() {
           >
             <span>📝 Formulir Lengkap</span>
           </Link>
+          <button
+            type="button"
+            onClick={handleExportExcel}
+            className="px-3.5 py-2.5 rounded-xl border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold transition flex items-center gap-1.5 shadow-xs active:scale-95"
+            title="Ekspor ke Excel / CSV (Mendukung Android Native Share Sheet)"
+          >
+            <svg className="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span>Ekspor Excel</span>
+          </button>
           <Link
             href={`/pelanggan-cetak?${new URLSearchParams({
               ...(filterStatus ? { status: filterStatus } : {}),
               ...(filterKategori ? { kategori: filterKategori } : {}),
               ...(filterKelurahan ? { kelurahanId: filterKelurahan } : {}),
             }).toString()}`}
-            className="px-3.5 py-2.5 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
+            className="px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
             </svg>
-            Cetak / Ekspor
+            Cetak
           </Link>
           <button
             onClick={openCreate}
@@ -793,9 +846,11 @@ function PelangganContent() {
         )}
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 overflow-x-auto shadow-sm">
-        <table className="w-full text-sm text-left">
+      {/* Adaptive Dual-View: Desktop Table (hidden md:block) & Mobile Smart Cards (md:hidden) */}
+      <div className="space-y-4">
+        {/* DESKTOP TABLE VIEW (>= md: 768px) */}
+        <div className="hidden md:block bg-white rounded-2xl border border-slate-200/80 overflow-x-auto shadow-sm">
+          <table className="w-full text-sm text-left">
           <thead>
             <tr className="bg-slate-50 text-slate-600 font-bold text-xs border-b border-slate-200">
               <th className="px-4 py-3.5 whitespace-nowrap">Kode</th>
@@ -1017,23 +1072,134 @@ function PelangganContent() {
             )}
           </tbody>
         </table>
-        
-        {/* Pagination Controls */}
+        </div>
+
+        {/* MOBILE SMART CARDS VIEW (< md: 768px, Bebas Scroll Horizontal) */}
+        <div className="md:hidden space-y-3">
+          {paginatedPelanggan.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-8 text-center text-xs font-semibold text-slate-500 shadow-sm">
+              Belum ada data pelanggan
+            </div>
+          ) : (
+            paginatedPelanggan.map((p) => (
+              <div key={p.id} className="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-sm space-y-3">
+                {/* Header Card */}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    {p.fotoRumah ? (
+                      <Image
+                        src={p.fotoRumah}
+                        alt={`Foto ${p.nama}`}
+                        unoptimized
+                        width={42}
+                        height={42}
+                        className="w-10 h-10 object-cover rounded-xl border border-slate-200 shrink-0"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-500 text-xs shrink-0">
+                        ?
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <h4 className="font-extrabold text-slate-900 text-sm truncate">{p.nama}</h4>
+                      <span className="inline-block text-[10px] font-mono font-bold text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded">
+                        {p.kodePelanggan}
+                      </span>
+                    </div>
+                  </div>
+                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold shrink-0 ${
+                    p.status === "aktif" ? "bg-emerald-50 text-emerald-800 border border-emerald-200" :
+                    p.status === "calon" ? "bg-amber-50 text-amber-800 border border-amber-200" :
+                    p.status === "libur" ? "bg-amber-50 text-amber-800 border border-amber-200" :
+                    "bg-slate-100 text-slate-700 border border-slate-300"
+                  }`}>
+                    {p.status === "aktif" ? "Aktif" : p.status === "calon" ? "Calon" : p.status}
+                  </span>
+                </div>
+
+                {/* Info Card */}
+                <div className="space-y-1.5 text-xs text-slate-600 border-t border-slate-100 pt-2">
+                  <p className="line-clamp-2 text-slate-800">{p.alamat} {p.rtRw ? `(RT/RW: ${p.rtRw})` : ""}</p>
+                  <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+                    <span className="px-2 py-0.5 rounded-md bg-slate-100 text-[10px] font-semibold text-slate-700">
+                      {p.kelurahan?.nama || "—"}
+                    </span>
+                    {p.wilayah?.zona && (
+                      <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 text-[10px] font-bold border border-emerald-200">
+                        🏷️ {p.wilayah.zona.nama}
+                      </span>
+                    )}
+                    <span className="px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-bold border border-purple-200">
+                      💰 {formatRupiah(p.customTarif || p.paket?.harga || 0)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Mobile Quick Actions (One-Thumb Target) */}
+                <div className="grid grid-cols-3 gap-2 pt-1 border-t border-slate-100">
+                  {p.noTelepon ? (
+                    <a
+                      href={`https://wa.me/${p.noTelepon.replace(/^0/, "62")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="py-2.5 px-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center gap-1 border border-emerald-200 active:scale-95 transition-all"
+                    >
+                      <span>💬</span>
+                      <span>Chat WA</span>
+                    </a>
+                  ) : (
+                    <div className="py-2 text-center text-xs text-slate-400 bg-slate-50 rounded-xl">No WA</div>
+                  )}
+
+                  {p.status === "calon" ? (
+                    <button
+                      type="button"
+                      onClick={() => setApprovalTarget(p)}
+                      className="py-2.5 px-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs flex items-center justify-center gap-1 shadow-xs active:scale-95 transition-all"
+                    >
+                      <span>🛡️</span>
+                      <span>Setujui</span>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => openEdit(p)}
+                      className="py-2.5 px-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1 active:scale-95 transition-all"
+                    >
+                      <span>✏️</span>
+                      <span>Atur Rute</span>
+                    </button>
+                  )}
+
+                  <Link
+                    href={`/pelanggan/${p.id}`}
+                    className="py-2.5 px-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center justify-center gap-1 border border-slate-200 active:scale-95 transition-all"
+                  >
+                    <span>👁️</span>
+                    <span>Detail</span>
+                  </Link>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Pagination Controls Terpadu */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 bg-slate-50 text-xs font-medium text-slate-600">
+          <div className="flex items-center justify-between px-4 py-3 border border-slate-200 rounded-2xl bg-white shadow-xs text-xs font-medium text-slate-600">
             <div>
               Halaman {page} dari {totalPages}
             </div>
             <div className="flex gap-2">
               <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
                 className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 disabled:opacity-40 hover:bg-slate-100 transition-colors shadow-sm"
               >
                 Prev
               </button>
               <button
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
                 className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 disabled:opacity-40 hover:bg-slate-100 transition-colors shadow-sm"
               >

@@ -18,6 +18,16 @@ export async function getDendaKeterlambatanRate(): Promise<number> {
   return getPengaturanNumber("DENDA_KETERLAMBATAN_RATE", 0);
 }
 
+export async function getPengaturanString(key: string, defaultValue: string): Promise<string> {
+  try {
+    const val = await prisma.pengaturan.findUnique({ where: { key } });
+    if (val && val.value !== undefined && val.value !== null) return val.value;
+  } catch (e) {
+    console.error(e);
+  }
+  return defaultValue;
+}
+
 export async function setPengaturan(key: string, value: string) {
   return prisma.pengaturan.upsert({
     where: { key },
@@ -25,3 +35,4 @@ export async function setPengaturan(key: string, value: string) {
     create: { key, value },
   });
 }
+

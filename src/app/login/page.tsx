@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Truck, LogIn, Smartphone, ShieldCheck, Loader2 } from "lucide-react";
+import { NativeGuardedLink } from "@/components/mobile/LandingApkBanner";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -146,13 +147,13 @@ export default function LoginPage() {
         </div>
 
         <div className="mt-6 flex justify-center">
-          <Link
+          <NativeGuardedLink
             href="/unduh"
             className="group flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 hover:text-emerald-700 transition-colors"
           >
             <Smartphone className="w-4 h-4 text-slate-400 group-hover:text-emerald-800 transition-colors" />
             <span>Unduh Aplikasi Mobile</span>
-          </Link>
+          </NativeGuardedLink>
         </div>
       </div>
     </main>

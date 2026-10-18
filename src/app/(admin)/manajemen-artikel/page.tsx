@@ -31,6 +31,7 @@ export default function ArtikelPage() {
   const [syncing, setSyncing] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [editorTab, setEditorTab] = useState<"edit" | "preview">("edit");
   
   const [form, setForm] = useState({
     judul: "",
@@ -79,6 +80,7 @@ export default function ArtikelPage() {
   function openCreate() {
     setEditing(null);
     setErrorMsg("");
+    setEditorTab("edit");
     setForm({ judul: "", isi: "", kategori: "edukasi", gambar: "", diterbitkan: false });
     setShowForm(true);
   }
@@ -86,6 +88,7 @@ export default function ArtikelPage() {
   function openEdit(a: Artikel) {
     setEditing(a);
     setErrorMsg("");
+    setEditorTab("edit");
     setForm({
       judul: a.judul,
       isi: a.isi,
@@ -308,10 +311,40 @@ export default function ArtikelPage() {
       </div>
 
       {showForm && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-3xl max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between px-6 py-4.5 bg-slate-900 text-white shrink-0">
-              <h2 className="font-bold text-base tracking-wide">{editing ? "Edit Artikel" : "Tulis Artikel Baru"}</h2>
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 animate-in fade-in duration-150">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-3xl max-h-[88dvh] sm:max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 bg-slate-900 text-white shrink-0">
+              <div className="flex items-center gap-3">
+                <h2 className="font-bold text-sm sm:text-base tracking-wide">
+                  {editing ? "Edit Artikel" : "Tulis Artikel Baru"}
+                </h2>
+                {/* Segmented Toggle Tab Mobile */}
+                <div className="flex items-center gap-1 bg-slate-800 p-1 rounded-xl">
+                  <button
+                    type="button"
+                    onClick={() => setEditorTab("edit")}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                      editorTab === "edit"
+                        ? "bg-emerald-600 text-white shadow-xs"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    ✏️ Editor
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditorTab("preview")}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                      editorTab === "preview"
+                        ? "bg-emerald-600 text-white shadow-xs"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    👁️ Pratinjau
+                  </button>
+                </div>
+              </div>
+
               <button
                 type="button"
                 onClick={() => setShowForm(false)}
@@ -322,13 +355,44 @@ export default function ArtikelPage() {
             </div>
             
             <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
-              <div className="overflow-y-auto p-6 space-y-5 flex-1">
-                {errorMsg && (
-                  <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2 animate-in fade-in">
-                    <span>⚠️</span>
-                    <span>{errorMsg}</span>
+              <div className="overflow-y-auto p-4 sm:p-6 space-y-5 flex-1">
+                {editorTab === "preview" ? (
+                  <div className="space-y-4 max-w-2xl mx-auto py-2">
+                    <div className="space-y-2">
+                      <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800">
+                        {form.kategori}
+                      </span>
+                      <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                        {form.judul || "Judul Artikel (Pratinjau)"}
+                      </h1>
+                      <p className="text-xs text-slate-400">
+                        Status: {form.diterbitkan ? "Diterbitkan (Publik)" : "Draft"} · Pratinjau Tampilan
+                      </p>
+                    </div>
+
+                    {form.gambar && (
+                      <div className="h-44 sm:h-60 w-full rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 relative">
+                        <ArticleImage
+                          src={getArticleCoverImage(form.gambar, form.kategori)}
+                          alt={form.judul}
+                          fallbackCategory={form.kategori}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+
+                    <div className="prose prose-sm max-w-none text-slate-700 whitespace-pre-wrap leading-relaxed border-t border-slate-100 pt-4 text-xs sm:text-sm">
+                      {form.isi || "Belum ada konten artikel."}
+                    </div>
                   </div>
-                )}
+                ) : (
+                  <>
+                    {errorMsg && (
+                      <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2 animate-in fade-in">
+                        <span>⚠️</span>
+                        <span>{errorMsg}</span>
+                      </div>
+                    )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="space-y-1.5 md:col-span-2">
@@ -516,7 +580,9 @@ export default function ArtikelPage() {
                     placeholder="Tulis konten berita atau edukasi di sini. Anda bisa menyisipkan foto atau sub-judul memakai tombol di atas."
                   />
                 </div>
-              </div>
+              </>
+            )}
+          </div>
 
               <div className="p-4 border-t border-slate-100 bg-slate-50 shrink-0 flex justify-end gap-3 rounded-b-3xl">
                 <button

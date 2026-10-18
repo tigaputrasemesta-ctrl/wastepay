@@ -38,7 +38,14 @@ export default {
           DEFAULT: '#0f172a',
           muted: '#475569',
           faint: '#94a3b8',
-        }
+        },
+        wp: {
+          primary: '#0F3D3E',
+          emerald: '#10B981',
+          amber: '#F59E0B',
+          rose: '#E11D48',
+          dark: '#020617',
+        },
       },
       fontFamily: {
         display: ["var(--font-outfit)", "system-ui", "sans-serif"],

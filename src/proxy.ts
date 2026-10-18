@@ -248,6 +248,22 @@ const API_ROLE_MAP: Record<string, number> = {
   "POST:/api/artikel": 50,
   "PUT:/api/artikel/": 50,
   "DELETE:/api/artikel/": 50,
+
+  // Admin Artikel Namespace
+  "GET:/api/admin/artikel": 50,
+  "POST:/api/admin/artikel": 50,
+  "PUT:/api/admin/artikel/": 50,
+  "DELETE:/api/admin/artikel/": 50,
+
+  // Peta Pins Ringan (Petugas+)
+  "GET:/api/peta": 10,
+  "GET:/api/peta/": 10,
+
+  // Protected Seeding & Batch Import (Superadmin only)
+  "POST:/api/fill": 100,
+
+  // Ekspor Rekapitulasi Pelanggan (Kasir+)
+  "GET:/api/pelanggan/export": 20,
 };
 
 async function verifyToken(token: string) {
@@ -320,6 +336,8 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/publik") ||
     pathname.startsWith("/api/mobile") ||
+    pathname.startsWith("/api/pembayaran/search") ||
+    pathname.startsWith("/api/peta/foto-rumah") ||
     pathname.startsWith("/api/integrasi/google-contacts/callback")
   ) {
     return NextResponse.next();
@@ -333,7 +351,12 @@ export async function proxy(request: NextRequest) {
 
   const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
   if (MUTATING_METHODS.has(request.method) && pathname.startsWith("/api") && !isBearerAuth) {
-    const allowedOrigins = [new URL(request.url).origin];
+    const allowedOrigins = [
+      new URL(request.url).origin,
+      "https://localhost",
+      "http://localhost",
+      "capacitor://localhost",
+    ];
     const envAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
     if (envAppUrl) {
       const envOrigin = extractOrigin(envAppUrl);

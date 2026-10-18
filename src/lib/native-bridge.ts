@@ -178,3 +178,31 @@ export async function exportExcelFileNative(filename: string, base64Data: string
     dialogTitle: 'Simpan atau Bagikan File Excel',
   });
 }
+
+/**
+ * 6. Helper WhatsApp Chat Driver Lapangan
+ */
+export function openWhatsAppChat(phone: string, text?: string): void {
+  if (!phone) return;
+  const cleanPhone = phone.replace(/\D/g, '').replace(/^0/, '62');
+  const url = `https://wa.me/${cleanPhone}${text ? `?text=${encodeURIComponent(text)}` : ''}`;
+  if (typeof window !== 'undefined') {
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
+}
+
+/**
+ * 7. Alias Navigasi GPS Driver
+ */
+export const getDriverHighAccuracyLocation = getNativeHighAccuracyLocation;
+
+/**
+ * 8. Alias Kamera Kompresi WebP untuk Bukti Pengangkutan Lapangan
+ */
+export async function captureCompressedWebPPhoto(
+  source: 'CAMERA' | 'PROMPT' = 'CAMERA'
+): Promise<{ blob: Blob }> {
+  const blob = await captureAndCompressPhoto(source);
+  return { blob };
+}
+

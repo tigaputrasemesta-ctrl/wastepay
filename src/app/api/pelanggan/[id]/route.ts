@@ -153,9 +153,20 @@ export async function PUT(
     }
     if (paketId !== undefined) data.paketId = paketId ? parseInt(paketId) : null;
 
-    // Penentuan Zona Area Pickup oleh Admin Pusat
-    if (body.zonaId) {
-      const zid = parseInt(body.zonaId);
+    // Penentuan Zona Area Pickup oleh Admin Pusat (dengan auto-resolusi server-side dari Rute)
+    let resolvedZonaId = body.zonaId ? parseInt(body.zonaId) : null;
+    if (!resolvedZonaId && body.ruteId) {
+      const matchedRoute = await prisma.rute.findUnique({
+        where: { id: parseInt(body.ruteId) },
+        select: { zonaId: true },
+      });
+      if (matchedRoute?.zonaId) {
+        resolvedZonaId = matchedRoute.zonaId;
+      }
+    }
+
+    if (resolvedZonaId) {
+      const zid = resolvedZonaId;
       const currentPel = await prisma.pelanggan.findUnique({
         where: { id },
         select: { wilayahId: true, kelurahanId: true, rtRw: true },
@@ -195,7 +206,7 @@ export async function PUT(
       await tetapkanJadwalDanPetugasPelanggan({
         pelangganId: id,
         kelurahanId: data.kelurahanId !== undefined ? (data.kelurahanId as number | null) : null,
-        zonaId: body.zonaId ? parseInt(body.zonaId) : null,
+        zonaId: resolvedZonaId,
         petugasId: body.petugasId ? parseInt(body.petugasId) : null,
         ruteId: body.ruteId ? parseInt(body.ruteId) : null,
         hari: body.hari || body.jadwalHari,

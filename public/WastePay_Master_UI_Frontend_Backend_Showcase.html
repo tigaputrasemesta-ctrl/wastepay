@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>WastePay Master UI Showcase — Frontend & Backend Prototype</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            wp: {
+              primary: '#0F3D3E',
+              emerald: '#10B981',
+              amber: '#F59E0B',
+              rose: '#E11D48',
+              surface: '#F8FAFC',
+              dark: '#020617',
+              wablue: '#34B7F1',
+              wabubble: '#DCF8C6',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap');
+    
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .wp-glass-pill {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(226, 232, 240, 0.85);
+    }
+
+    .wp-phone-mockup {
+      width: 390px;
+      height: 844px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.35), 0 0 0 12px #0f172a, 0 0 0 14px #334155;
+      border-radius: 48px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    @keyframes pulseRoute {
+      0% { stroke-dashoffset: 24; }
+      100% { stroke-dashoffset: 0; }
+    }
+
+    .dashed-queue-line {
+      stroke-dasharray: 6 6;
+      animation: pulseRoute 1.2s linear infinite;
+    }
+
+    @keyframes ripple {
+      0% { transform: scale(0.8); opacity: 1; }
+      100% { transform: scale(2.4); opacity: 0; }
+    }
+    .gps-ripple {
+      animation: ripple 2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- =========================================================================
+       TOP GLOBAL CONTROL BAR (PORTAL SWITCHER & VIEWPORT MODE)
+       ========================================================================= -->
+  <header class="bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-50 px-4 py-2.5 shadow-lg">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+      
+      <!-- Brand & Version -->
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-[#0F3D3E] flex items-center justify-center font-black text-white text-base shadow-sm border border-emerald-400/30">
+          WP
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-sm text-white tracking-tight">WastePay Master UI Showcase</h1>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              v1.2.2 Build 14
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-400">CV Tiga Putra Semesta • UPS HERU & Tim O2W</p>
+        </div>
+      </div>
+
+      <!-- Center: 3 Portal Switchers -->
+      <div class="flex items-center bg-slate-800/90 p-1 rounded-xl border border-slate-700/80 shadow-inner">
+        <button 
+          id="btn-portal-warga" 
+          onclick="switchPortal('warga')"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-700 text-white shadow-xs"
+        >
+          <span>🌐</span> Portal Warga
+        </button>
+        <button 
+          id="btn-portal-driver" 
+          onclick="switchPortal('driver')"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-300 hover:text-white"
+        >
+          <span>🚛</span> App Driver OSRM
+        </button>
+        <button 
+          id="btn-portal-admin" 
+          onclick="switchPortal('admin')"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-300 hover:text-white"
+        >
+          <span>⚙️</span> Dashboard Admin
+        </button>
+      </div>
+
+      <!-- Right: Responsive vs Mobile Simulation Toggle -->
+      <div class="flex items-center gap-2">
+        <span class="text-[11px] text-slate-400 font-medium hidden md:inline">Tampilan:</span>
+        <div class="flex items-center bg-slate-800 p-0.5 rounded-lg border border-slate-700 text-xs font-medium">
+          <button 
+            id="btn-view-desktop" 
+            onclick="switchViewMode('desktop')"
+            class="px-2.5 py-1 rounded-md transition-all bg-slate-700 text-white font-semibold flex items-center gap-1"
+          >
+            <span>🖥️</span> Responsif
+          </button>
+          <button 
+            id="btn-view-mobile" 
+            onclick="switchViewMode('mobile')"
+            class="px-2.5 py-1 rounded-md transition-all text-slate-400 hover:text-white flex items-center gap-1"
+          >
+            <span>📱</span> Frame HP (390px)
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       MAIN SHOWCASE WORKSPACE CONTAINER
+       ========================================================================= -->
+  <main id="showcase-container" class="flex-1 flex justify-center items-start p-0 md:p-6 bg-slate-900/60 overflow-y-auto">
+    
+    <!-- WRAPPER (Switches between Desktop full-width & Mobile 390px phone container) -->
+    <div id="viewport-wrapper" class="w-full max-w-7xl transition-all duration-300">
+      
+      <!-- =====================================================================
+           PORTAL 1: PORTAL WARGA (LANDING, CEK WA, WIZARD 3-LANGKAH)
+           ===================================================================== -->
+      <section id="portal-warga" class="portal-pane space-y-6">
+        
+        <!-- APK Context Banner Toggle Bar -->
+        <div class="bg-slate-800/80 rounded-2xl p-3.5 border border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-300">
+          <div class="flex items-center gap-2.5">
+            <span class="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold">APK Mode</span>
+            <span>Uji coba bagaimana tampilan Hero beradaptasi saat dibuka dari APK Android vs Web Browser:</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button 
+              id="btn-toggle-apk" 
+              onclick="toggleNativeApkMode()" 
+              class="px-3 py-1.5 rounded-xl font-bold bg-slate-700 hover:bg-slate-600 text-white transition-all flex items-center gap-1.5"
+            >
+              <span id="apk-indicator-dot" class="w-2 h-2 rounded-full bg-slate-400"></span>
+              <span id="apk-indicator-text">Simulasi: Web Browser (Download Banner Aktif)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- HERO DUAL-ACTION SECTION -->
+        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0F3D3E] via-[#124d4e] to-slate-900 text-white p-6 sm:p-10 shadow-xl border border-teal-700/40">
+          <!-- Decorative circles -->
+          <div class="absolute -right-20 -top-20 w-80 h-80 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none"></div>
+          
+          <div class="relative z-10 max-w-3xl space-y-4">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold">
+              🌱 Retribusi Sampah Ramah Lingkungan CV Tiga Putra Semesta
+            </div>
+            
+            <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight text-white">
+              Cek Tagihan Instan & Layanan Pengangkutan Sampah Terpadu
+            </h2>
+            
+            <p class="text-sm sm:text-base text-teal-100/90 leading-relaxed max-w-2xl">
+              Cukup masukkan nomor WhatsApp rumah Anda untuk melihat status kelayakan angkut armada, transparansi tarif pajak daerah, dan riwayat pembayaran digital.
+            </p>
+
+            <!-- Dynamic Banner: Only shows when NOT in APK Native Mode -->
+            <div id="hero-apk-download-card" class="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/30 flex items-center justify-center text-xl shrink-0">
+                  📲
+                </div>
+                <div>
+                  <p class="font-bold text-white">Unduh Aplikasi Android WastePay APK v1.2.2</p>
+                  <p class="text-teal-200/80 text-[11px]">Nikmati notifikasi jadwal angkut otomatis & bayar via QRIS tanpa lemot.</p>
+                </div>
+              </div>
+              <a href="/apk/wastepay-app.apk" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 font-bold text-slate-950 transition-all shrink-0">
+                Unduh APK (14 MB)
+              </a>
+            </div>
+
+            <!-- Native Quick Launcher (Visible only when APK mode simulated) -->
+            <div id="hero-quick-launcher" class="hidden p-4 rounded-2xl bg-emerald-950/60 backdrop-blur-md border border-emerald-500/30 text-xs space-y-2">
+              <p class="font-bold text-emerald-300 flex items-center gap-1.5">
+                <span>⚡</span> Terdeteksi Dalam Paket APK Android — Quick Launcher:
+              </p>
+              <div class="grid grid-cols-3 gap-2">
+                <button onclick="switchPortal('warga')" class="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-center font-bold text-white">
+                  🏠 Portal Warga
+                </button>
+                <button onclick="switchPortal('driver')" class="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-center font-bold text-white">
+                  🚛 Mode Driver
+                </button>
+                <button onclick="switchPortal('admin')" class="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-center font-bold text-white">
+                  ⚙️ Admin Back-Office
+                </button>
+              </div>
+            </div>
+
+            <!-- Instant WhatsApp Search Box -->
+            <div class="pt-2">
+              <div class="bg-white rounded-2xl p-2 sm:p-2.5 shadow-2xl flex flex-col sm:flex-row items-stretch sm:items-center gap-2 border border-slate-200">
+                <div class="flex items-center gap-2 px-3 flex-1">
+                  <span class="text-slate-400 text-lg">💬</span>
+                  <input 
+                    id="input-wa-warga"
+                    type="tel" 
+                    placeholder="Masukkan No. WhatsApp (contoh: 0812-3456-7890)" 
+                    class="w-full py-2.5 text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none placeholder:text-slate-400 placeholder:font-normal"
+                    value="0812-3456-7890"
+                  />
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <button 
+                    onclick="checkCustomerBill()"
+                    class="w-full sm:w-auto px-5 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 shadow-sm"
+                  >
+                    <span>🔍</span> Cek Tagihan Sekarang
+                  </button>
+                  <button 
+                    onclick="openRegisterWizard()"
+                    class="hidden sm:inline-flex px-4 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all whitespace-nowrap"
+                  >
+                    + Daftar Baru
+                  </button>
+                </div>
+              </div>
+
+              <!-- Quick Demo Badges -->
+              <div class="flex items-center gap-2 mt-2.5 flex-wrap text-xs text-teal-200/90">
+                <span class="text-[11px]">Uji Coba Cepat:</span>
+                <button onclick="fillWa('0812-3456-7890')" class="px-2 py-0.5 rounded-md bg-white/10 hover:bg-white/20 font-mono text-[11px] underline">
+                  0812-3456-7890 (Lunas)
+                </button>
+                <button onclick="fillWa('0857-9988-7766')" class="px-2 py-0.5 rounded-md bg-white/10 hover:bg-white/20 font-mono text-[11px] underline text-amber-300">
+                  0857-9988-7766 (Menunggak)
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- E-STATEMENT DIGITAL BILL REPORT CARD (ANIMATED SHIMMER / RESULT) -->
+        <div id="bill-result-card" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm transition-all duration-300">
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-100 gap-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-xl">📄</span>
+                <h3 class="font-extrabold text-slate-900 text-lg sm:text-xl">Laporan Analisa Pembayaran & Retribusi</h3>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">E-Statement Digital Resmi Pelanggan UPS HERU WastePay</p>
+            </div>
+            
+            <div id="bill-pickup-badge" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 shrink-0">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+              Status Angkut: Aktif & Terjadwal
+            </div>
+          </div>
+
+          <!-- Pelanggan Profile Overview -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+              <p class="text-[11px] uppercase tracking-wider font-extrabold text-slate-400">Nama Pelanggan</p>
+              <p id="bill-cust-name" class="font-bold text-slate-900 text-base mt-1">Bpk. Rahmat Santoso</p>
+              <p class="text-xs text-slate-500 mt-0.5 font-mono">Kode: WP-0821 · RW 05 / RT 02</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+              <p class="text-[11px] uppercase tracking-wider font-extrabold text-slate-400">Zona & Rute Armada</p>
+              <p id="bill-cust-zone" class="font-bold text-emerald-800 text-base mt-1">Zona A (Cilodong)</p>
+              <p class="text-xs text-slate-500 mt-0.5">Rute 01 - Pengangkutan: Senin & Kamis</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+              <p class="text-[11px] uppercase tracking-wider font-extrabold text-slate-400">Status Tagihan</p>
+              <p id="bill-cust-status" class="font-bold text-emerald-600 text-base mt-1">Lunas (Bulan Oktober)</p>
+              <p class="text-xs text-slate-500 mt-0.5">Jatuh Tempo: 20 Oktober 2026</p>
+            </div>
+          </div>
+
+          <!-- 3-Column Breakdown (Pokok, Pajak Daerah, Denda) -->
+          <div class="bg-gradient-to-br from-slate-50 to-emerald-50/30 rounded-2xl p-5 border border-slate-200 space-y-4">
+            <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-600">Rincian Komponen Tagihan:</h4>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div class="bg-white p-3.5 rounded-xl border border-slate-200/70 shadow-2xs">
+                <p class="text-xs text-slate-500 font-medium">1. Tarif Retribusi Pokok</p>
+                <p id="bill-nominal-pokok" class="text-lg font-black text-slate-900 mt-1">Rp 50.000</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Tarif flat rumah tangga standar</p>
+              </div>
+              <div class="bg-white p-3.5 rounded-xl border border-slate-200/70 shadow-2xs">
+                <p class="text-xs text-slate-500 font-medium">2. Pajak Daerah (10%)</p>
+                <p id="bill-nominal-pajak" class="text-lg font-black text-emerald-700 mt-1">Rp 5.000</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Disetor ke Kas Daerah Kota Depok</p>
+              </div>
+              <div class="bg-white p-3.5 rounded-xl border border-slate-200/70 shadow-2xs">
+                <p class="text-xs text-slate-500 font-medium">3. Denda Keterlambatan</p>
+                <p id="bill-nominal-denda" class="text-lg font-black text-slate-400 mt-1">Rp 0</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">2%/bln (Maksimal 50% dari pokok)</p>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <span class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Total Tagihan Periode Ini</span>
+                <p id="bill-total-tagihan" class="text-2xl font-black text-emerald-800 mt-0.5">Rp 55.000</p>
+              </div>
+              
+              <div class="flex items-center gap-2">
+                <button onclick="alert('Membuka Gateway Duitku Sandbox...')" class="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs transition-all flex items-center gap-1.5">
+                  <span>⚡</span> Bayar Online Sekarang
+                </button>
+                <button onclick="openWhatsAppChatWithBill()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center gap-1.5">
+                  <span>💬</span> Konfirmasi WA
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6-Month Timeline -->
+          <div class="mt-6 pt-5 border-t border-slate-100 space-y-3">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-slate-500">
+              Riwayat Pembayaran 6 Bulan Terakhir:
+            </span>
+            <div class="grid grid-cols-6 gap-2 text-center text-xs">
+              <div class="p-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800">
+                <p class="text-[10px] text-slate-500">Mei</p>
+                <p class="font-bold">LUNAS</p>
+              </div>
+              <div class="p-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800">
+                <p class="text-[10px] text-slate-500">Jun</p>
+                <p class="font-bold">LUNAS</p>
+              </div>
+              <div class="p-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800">
+                <p class="text-[10px] text-slate-500">Jul</p>
+                <p class="font-bold">LUNAS</p>
+              </div>
+              <div class="p-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800">
+                <p class="text-[10px] text-slate-500">Agu</p>
+                <p class="font-bold">LUNAS</p>
+              </div>
+              <div class="p-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800">
+                <p class="text-[10px] text-slate-500">Sep</p>
+                <p class="font-bold">LUNAS</p>
+              </div>
+              <div id="timeline-current-month" class="p-2 rounded-xl bg-emerald-600 text-white font-bold shadow-xs">
+                <p class="text-[10px] text-emerald-100">Okt</p>
+                <p>LUNAS</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 3-STEP REGISTRATION WIZARD CARD -->
+        <div id="registration-wizard" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div>
+              <h3 class="font-extrabold text-slate-900 text-lg sm:text-xl">Pendaftaran Warga Baru (3-Step Wizard)</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Daftarkan rumah Anda untuk penjadwalan armada pickup UPS HERU</p>
+            </div>
+            <div class="flex items-center gap-1.5 text-xs font-bold text-slate-500">
+              <span id="wizard-step-indicator" class="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full">
+                Langkah 1 dari 3
+              </span>
+            </div>
+          </div>
+
+          <!-- Wizard Step Content -->
+          <div id="wizard-step-1" class="wizard-pane space-y-4">
+            <h4 class="font-bold text-sm text-slate-800">Langkah 1: Identitas & Kontak Warga</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap Kepala Keluarga</label>
+                <input id="wiz-nama" type="text" placeholder="Contoh: Bpk. Bambang Pamungkas" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm" value="Bpk. Hendra Gunawan" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">No. WhatsApp Aktif (Untuk Notifikasi)</label>
+                <input id="wiz-wa" type="tel" placeholder="08xxxxxxxxxx" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm font-mono" value="0813-8899-7711" />
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Alamat Rumah Lengkap</label>
+              <textarea id="wiz-alamat" rows="2" class="w-full p-3 border border-slate-200 rounded-xl text-sm" placeholder="Nama Jalan, Nomor Rumah, RT/RW...">Jl. Bakung Raya No. 45, RT 03 / RW 04</textarea>
+            </div>
+            <div class="flex justify-end pt-2">
+              <button onclick="nextWizardStep(2)" class="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs">
+                Lanjut ke Lokasi & Blok →
+              </button>
+            </div>
+          </div>
+
+          <div id="wizard-step-2" class="wizard-pane hidden space-y-4">
+            <h4 class="font-bold text-sm text-slate-800">Langkah 2: Pemilihan Wilayah & Blok Pickup (Auto-Resolved Zona)</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Kecamatan</label>
+                <select id="wiz-kecamatan" onchange="resolveWizardZone()" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm bg-white">
+                  <option value="Cilodong">Cilodong</option>
+                  <option value="Sukmajaya">Sukmajaya</option>
+                  <option value="Pancoran Mas">Pancoran Mas</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Kelurahan</label>
+                <select id="wiz-kelurahan" onchange="resolveWizardZone()" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm bg-white">
+                  <option value="Kalimulya">Kalimulya</option>
+                  <option value="Cilodong">Cilodong</option>
+                  <option value="Jatimulya">Jatimulya</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200 flex items-center justify-between">
+              <div>
+                <p class="text-xs font-bold text-emerald-950">Resolusi Zona Logistik Otomatis di Sisi Server:</p>
+                <p id="wiz-resolved-zone" class="text-sm font-black text-emerald-800 mt-0.5">Zona A - Cilodong (Rute 01 Terpilih)</p>
+              </div>
+              <span class="text-xs font-mono font-bold text-emerald-700 bg-white px-2.5 py-1 rounded-lg border border-emerald-300">
+                Fallback Safe ✓
+              </span>
+            </div>
+
+            <div class="flex justify-between pt-2">
+              <button onclick="nextWizardStep(1)" class="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs">
+                ← Kembali
+              </button>
+              <button onclick="nextWizardStep(3)" class="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs">
+                Lanjut ke Verifikasi Foto →
+              </button>
+            </div>
+          </div>
+
+          <div id="wizard-step-3" class="wizard-pane hidden space-y-4">
+            <h4 class="font-bold text-sm text-slate-800">Langkah 3: Foto Lokasi Rumah (Kompresi WebP & Anti-Egress Bloat)</h4>
+            
+            <div class="p-6 rounded-2xl border-2 border-dashed border-slate-300 text-center bg-slate-50">
+              <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto mb-2 text-2xl">
+                📸
+              </div>
+              <p class="font-bold text-sm text-slate-800">Ambil / Unggah Foto Pagar Depan Rumah</p>
+              <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                Foto dikompresi otomatis via WebP (maks 150 KB) sebelum dikirim, menjaga kuota database & memori cloud tetap hemat.
+              </p>
+              <div class="mt-4">
+                <span class="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200 inline-block">
+                  ✓ Foto Terunggah: rumah-blok-bakung.webp (84 KB)
+                </span>
+              </div>
+            </div>
+
+            <div class="flex justify-between pt-2">
+              <button onclick="nextWizardStep(2)" class="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs">
+                ← Kembali
+              </button>
+              <button onclick="submitWizardRegistration()" class="px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-sm">
+                ✓ Selesaikan & Kirim Pendaftaran
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================================
+           PORTAL 2: APLIKASI DRIVER OSRM (PETA DUAL-LINE & MOUNTED DRIVING VIEW)
+           ===================================================================== -->
+      <section id="portal-driver" class="portal-pane hidden space-y-5">
+        
+        <!-- Attendance Pill Bar (Asia/Jakarta WIB UTC+7) -->
+        <div class="bg-slate-900 text-white rounded-2xl p-4 border border-slate-800 shadow-md flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-bold text-base">
+              🚛
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-extrabold text-sm text-white">Armada Truk 03 (Cilodong)</span>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold">
+                  🟢 Hadir: 06:15 WIB
+                </span>
+              </div>
+              <p class="text-slate-400 text-[11px] mt-0.5">Driver: Budi Santoso · Rute 01 Kalimulya</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <div class="text-right">
+              <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Progres Rute</p>
+              <p class="font-extrabold text-emerald-400 text-sm">24 / 45 Rumah (53%)</p>
+            </div>
+            <button onclick="toggleMountedDrivingView()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold text-white text-xs shadow-sm transition-all flex items-center gap-1.5">
+              <span>🚗</span> Mode Mounted Stang
+            </button>
+          </div>
+        </div>
+
+        <!-- INTERACTIVE MAP CONTAINER (SVG/CANVAS SIMULATOR) -->
+        <div class="relative bg-slate-950 rounded-3xl overflow-hidden border border-slate-800 shadow-2xl h-[520px]">
+          
+          <!-- Floating Glass Filter Pills -->
+          <div class="absolute top-4 left-4 z-20 flex items-center gap-2">
+            <button onclick="filterMapPins('ALL')" class="wp-glass-pill px-3 py-1.5 rounded-full text-xs font-bold text-slate-800 shadow-sm active:scale-95 transition-all">
+              Semua (45)
+            </button>
+            <button onclick="filterMapPins('UNPICKED')" class="wp-glass-pill px-3 py-1.5 rounded-full text-xs font-bold text-amber-800 bg-amber-50/90 border-amber-200 shadow-sm active:scale-95 transition-all">
+              Antrean (21)
+            </button>
+            <button onclick="filterMapPins('PICKED')" class="wp-glass-pill px-3 py-1.5 rounded-full text-xs font-bold text-emerald-800 bg-emerald-50/90 border-emerald-200 shadow-sm active:scale-95 transition-all">
+              Selesai (24)
+            </button>
+          </div>
+
+          <!-- GPS Debounce Status Indicator -->
+          <div class="absolute top-4 right-4 z-20 bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded-full text-[11px] font-mono text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5 shadow-sm">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            Debounce GPS: 25m Safe
+          </div>
+
+          <!-- SVG Simulated Road Map Canvas with Dual-Line Routing -->
+          <svg class="w-full h-full" viewBox="0 0 800 520" preserveAspectRatio="none">
+            <!-- Background Roads -->
+            <rect width="800" height="520" fill="#0B132B" />
+            
+            <!-- Road grids -->
+            <path d="M 0,150 L 800,150" stroke="#1C2541" stroke-width="28" stroke-linecap="round" />
+            <path d="M 0,380 L 800,380" stroke="#1C2541" stroke-width="28" stroke-linecap="round" />
+            <path d="M 220,0 L 220,520" stroke="#1C2541" stroke-width="28" stroke-linecap="round" />
+            <path d="M 540,0 L 540,520" stroke="#1C2541" stroke-width="28" stroke-linecap="round" />
+            
+            <!-- Road Center Line -->
+            <path d="M 0,150 L 800,150" stroke="#253258" stroke-width="2" stroke-dasharray="8 8" />
+            <path d="M 0,380 L 800,380" stroke="#253258" stroke-width="2" stroke-dasharray="8 8" />
+
+            <!-- DUAL-LINE OSRM ROUTING:
+                 1. Solid Emerald Line: Active Route from Driver Truck (220, 260) to Target Customer 1 (220, 150 -> 400, 150)
+                 2. Dashed Queue Line: Next Queue Stops (400, 150 -> 540, 150 -> 540, 380)
+            -->
+            <!-- 1. Solid Navigation Path to Active Customer -->
+            <path d="M 220,260 L 220,150 L 400,150" fill="none" stroke="#10B981" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+            
+            <!-- 2. Dashed Amber Queue Line to Next Stops -->
+            <path class="dashed-queue-line" d="M 400,150 L 540,150 L 540,300 L 540,380 L 320,380" fill="none" stroke="#F59E0B" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+
+            <!-- Driver Truck GPS Indicator (220, 260) -->
+            <circle cx="220" cy="260" r="18" fill="#10B981" opacity="0.25" class="gps-ripple" />
+            <circle cx="220" cy="260" r="9" fill="#10B981" stroke="#ffffff" stroke-width="2.5" />
+
+            <!-- PINS: Gojek Clean Style Markers -->
+            <!-- Customer Pin 1: TARGET AKTIF (400, 150) -->
+            <g onclick="selectMapCustomer('Bpk. Rahmat Santoso', 'Jl. Bakung No. 12', 'BELUM_DIANGKUT', 1)" class="cursor-pointer group">
+              <circle cx="400" cy="150" r="16" fill="#10B981" stroke="#ffffff" stroke-width="3" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.5))" />
+              <text x="400" y="155" font-size="12" font-weight="900" fill="#ffffff" text-anchor="middle">1</text>
+              <rect x="340" y="105" width="120" height="26" rx="8" fill="#0F3D3E" stroke="#10B981" stroke-width="1.5" />
+              <text x="400" y="122" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">🎯 Bpk. Rahmat (Aktif)</text>
+            </g>
+
+            <!-- Customer Pin 2: QUEUE 2 (540, 150) -->
+            <g onclick="selectMapCustomer('Ibu Siti Maryam', 'Jl. Bakung No. 18', 'BELUM_DIANGKUT', 2)" class="cursor-pointer">
+              <circle cx="540" cy="150" r="14" fill="#F59E0B" stroke="#ffffff" stroke-width="2.5" />
+              <text x="540" y="154" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">2</text>
+            </g>
+
+            <!-- Customer Pin 3: QUEUE 3 (540, 300) -->
+            <g onclick="selectMapCustomer('Bpk. Joko Susilo', 'Jl. Mawar No. 04', 'BELUM_DIANGKUT', 3)" class="cursor-pointer">
+              <circle cx="540" cy="300" r="14" fill="#F59E0B" stroke="#ffffff" stroke-width="2.5" />
+              <text x="540" y="304" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">3</text>
+            </g>
+
+            <!-- Customer Pin 4: COMPLETED (220, 380) -->
+            <g onclick="selectMapCustomer('Bpk. Ahmad Dahlan', 'Jl. Melati No. 09', 'SELESAI_DIANGKUT', 4)" class="cursor-pointer opacity-70">
+              <circle cx="220" cy="380" r="13" fill="#64748B" stroke="#ffffff" stroke-width="2" />
+              <text x="220" y="384" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">✓</text>
+            </g>
+          </svg>
+
+          <!-- SWIPEABLE BOTTOM SHEET (LAZY-LOAD FOTORUMAH ON TAP) -->
+          <div id="driver-bottom-sheet" class="absolute bottom-3 left-3 right-3 sm:left-6 sm:right-6 bg-slate-900/95 backdrop-blur-xl border border-slate-700 p-4 sm:p-5 rounded-2xl shadow-2xl text-white transition-all transform translate-y-0">
+            <div class="w-12 h-1 bg-slate-600 rounded-full mx-auto mb-3"></div>
+            
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <!-- Lazy loaded house photo placeholder -->
+                <div id="lazy-photo-box" class="w-16 h-16 rounded-xl bg-slate-800 border border-slate-700 flex flex-col items-center justify-center text-center p-1 shrink-0 overflow-hidden relative">
+                  <span class="text-xl">🏠</span>
+                  <span class="text-[9px] text-emerald-400 font-mono">WebP 85KB</span>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span id="sheet-urutan-badge" class="px-2 py-0.5 rounded-md bg-emerald-500 text-slate-950 font-black text-xs font-mono">
+                      STOP #1
+                    </span>
+                    <h4 id="sheet-cust-name" class="font-extrabold text-white text-base">Bpk. Rahmat Santoso</h4>
+                  </div>
+                  <p id="sheet-cust-address" class="text-xs text-slate-300 mt-0.5">Jl. Bakung No. 12, RT 02 / RW 05</p>
+                  <p class="text-[11px] text-emerald-400 mt-0.5 font-medium">Jarak Navigasi: 140 meter · Estimasi Tiba: 2 Menit</p>
+                </div>
+              </div>
+
+              <!-- Driver Action Buttons -->
+              <div class="flex items-center gap-2 w-full sm:w-auto">
+                <button onclick="openWhatsAppChatWithBill()" class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-600 flex items-center justify-center gap-1.5">
+                  <span>💬</span> Chat WA
+                </button>
+                <button onclick="markCurrentStopDone()" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md flex items-center justify-center gap-1.5">
+                  <span>✓</span> Selesai Angkut
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- MOUNTED DRIVING VIEW MODAL / SHEET OVERLAY (#020617) -->
+        <div id="mounted-driving-view-modal" class="hidden fixed inset-0 z-50 bg-[#020617] text-white p-5 flex flex-col justify-between">
+          <!-- Top Bar -->
+          <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div class="flex items-center gap-2">
+              <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-mono text-xs font-bold">
+                🔒 SCREEN WAKELOCK AKTIF (LAYAR ANTI-MATI)
+              </span>
+            </div>
+            <button onclick="toggleMountedDrivingView()" class="px-4 py-2 rounded-xl bg-slate-800 text-white font-bold text-xs">
+              ✕ Tutup Mode Stang
+            </button>
+          </div>
+
+          <!-- Big Center Info (22px-24px for High Sunlight Contrast) -->
+          <div class="my-auto text-center space-y-4">
+            <span class="px-4 py-1.5 rounded-full bg-emerald-600 text-white font-mono font-black text-sm tracking-widest uppercase">
+              TARGET ANGKUT BERIKUTNYA
+            </span>
+            <h2 class="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight">
+              Bpk. Rahmat Santoso
+            </h2>
+            <p class="text-xl sm:text-2xl text-emerald-300 font-extrabold">
+              Jl. Bakung No. 12 (RT 02 / RW 05)
+            </p>
+            <p class="text-base text-slate-400 font-mono">
+              Petunjuk: Rumah pagar hitam samping musholla Al-Ikhlas
+            </p>
+          </div>
+
+          <!-- Bottom 54px Thumb-Friendly Big Buttons -->
+          <div class="space-y-3 pt-4 border-t border-slate-800">
+            <button onclick="markCurrentStopDone(); toggleMountedDrivingView();" class="w-full h-14 rounded-2xl bg-emerald-600 hover:bg-emerald-500 font-black text-lg text-white shadow-xl flex items-center justify-center gap-2">
+              <span>✓</span> TANDAI SELESAI ANGKUT (FOTO BUKTI)
+            </button>
+            <button onclick="openWhatsAppChatWithBill()" class="w-full h-14 rounded-2xl bg-slate-800 hover:bg-slate-700 font-bold text-base text-slate-200 border border-slate-700 flex items-center justify-center gap-2">
+              <span>💬</span> HUBUNGI WARGA VIA WHATSAPP
+            </button>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================================
+           PORTAL 3: DASHBOARD ADMIN & BACK-OFFICE (BENTO, APPROVAL & STUDIO WA)
+           ===================================================================== -->
+      <section id="portal-admin" class="portal-pane hidden space-y-6">
+        
+        <!-- 4-COLUMN BENTO KPI GRID -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+          
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+            <div class="flex items-center justify-between text-slate-400">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Pelanggan Aktif</span>
+              <span class="text-lg">👥</span>
+            </div>
+            <p class="text-2xl font-black text-slate-900 mt-2">1.482</p>
+            <p class="text-xs text-emerald-600 font-semibold mt-1 flex items-center gap-1">
+              <span>↑ +12</span> <span class="text-slate-400 font-normal">warga minggu ini</span>
+            </p>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+            <div class="flex items-center justify-between text-slate-400">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Realisasi Pajak Daerah</span>
+              <span class="text-lg">🏛️</span>
+            </div>
+            <p class="text-2xl font-black text-emerald-700 mt-2">Rp 7.410.000</p>
+            <p class="text-xs text-slate-500 font-medium mt-1">PPN 10% Kasda Depok</p>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+            <div class="flex items-center justify-between text-slate-400">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Progres Pengangkutan</span>
+              <span class="text-lg">🚛</span>
+            </div>
+            <p class="text-2xl font-black text-teal-800 mt-2">87%</p>
+            <p class="text-xs text-teal-600 font-medium mt-1">4 Armada Selesai Tugas</p>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+            <div class="flex items-center justify-between text-slate-400">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Kehadiran Petugas</span>
+              <span class="text-lg">⏰</span>
+            </div>
+            <p class="text-2xl font-black text-emerald-600 mt-2">8 / 8 Hadir</p>
+            <p class="text-xs text-slate-500 font-medium mt-1">Terkunci WIB (UTC+7)</p>
+          </div>
+
+        </div>
+
+        <!-- QUICK CUSTOMER APPROVAL CARD (AUTO PRE-FILL ZONAID) -->
+        <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-xs space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-2">
+            <div>
+              <h3 class="font-bold text-slate-900 text-base">Antrean Approval Pendaftaran Warga Baru</h3>
+              <p class="text-xs text-slate-500">Resolusi otomatis relasi zonaId & ruteId di sisi server</p>
+            </div>
+            <span class="text-xs font-bold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200 self-start sm:self-auto">
+              1 Menunggu Verifikasi
+            </span>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="font-extrabold text-slate-900 text-sm">Ibu Siti Aminah</span>
+                <span class="text-xs font-mono text-slate-500">· 0812-9922-3344</span>
+              </div>
+              <p class="text-xs text-slate-600">Alamat: Jl. Bakung II No. 18, Kel. Kalimulya, Kec. Cilodong</p>
+              
+              <!-- Auto Pre-Fill Badge -->
+              <div class="flex items-center gap-2 pt-1">
+                <span class="text-[11px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md">
+                  Rute Terpilih: Rute 01 Kalimulya
+                </span>
+                <span class="text-[11px] font-bold text-slate-700 bg-slate-200 px-2 py-0.5 rounded-md">
+                  Zona Auto-Filled: Zona A (Cilodong)
+                </span>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 w-full md:w-auto">
+              <button onclick="approveCustomerRegistration()" class="w-full md:w-auto px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-1.5">
+                <span>✓</span> Setujui & Beri Jadwal Angkut
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 60/40 STUDIO PAJAK DAERAH, DENDA & TEMPLATE WHATSAPP -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-slate-100 mb-6">
+            <div class="flex items-center gap-3">
+              <span class="p-2.5 bg-emerald-50 text-emerald-800 rounded-2xl border border-emerald-100 flex items-center justify-center text-xl">
+                💬
+              </span>
+              <div>
+                <h3 class="font-extrabold text-slate-900 text-lg sm:text-xl">
+                  Studio Pajak Daerah, Denda & Template Notifikasi WA
+                </h3>
+                <p class="text-xs text-slate-500 mt-0.5">
+                  Atur persentase tarif retribusi dan kustomisasi pesan tagihan dengan Live WhatsApp Bubble Preview
+                </p>
+              </div>
+            </div>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 shrink-0 self-start sm:self-auto">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              Live Preview Aktif
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            <!-- KOLOM KIRI (60%): FORM & TEMPLATE EDITOR -->
+            <div class="lg:col-span-7 space-y-4">
+              
+              <!-- Pajak & Denda Parameter -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                  <div class="flex items-center justify-between">
+                    <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-700">Pajak Daerah (%)</label>
+                    <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">PPN Daerah</span>
+                  </div>
+                  <input 
+                    id="admin-pajak-rate" 
+                    type="number" 
+                    value="10" 
+                    min="0" 
+                    max="100" 
+                    oninput="updateStudioWaPreview()" 
+                    class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  />
+                  <p class="text-[11px] text-slate-500">Simulasi: Pokok Rp 50.000 + Pajak <span id="admin-calc-pajak" class="font-bold text-slate-700">Rp 5.000</span></p>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                  <div class="flex items-center justify-between">
+                    <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-700">Denda Keterlambatan (%/bln)</label>
+                    <span class="text-[11px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded">Akumulatif</span>
+                  </div>
+                  <input 
+                    id="admin-denda-rate" 
+                    type="number" 
+                    value="2" 
+                    min="0" 
+                    max="100" 
+                    oninput="updateStudioWaPreview()" 
+                    class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  />
+                  <p class="text-[11px] text-slate-500">Simulasi: Denda 1 bln <span id="admin-calc-denda" class="font-bold text-slate-700">Rp 1.000</span></p>
+                </div>
+              </div>
+
+              <!-- Template Editor & Variable Chips -->
+              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                <div class="flex items-center justify-between">
+                  <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-800">
+                    Template Teks Pesan WhatsApp
+                  </label>
+                  <button type="button" onclick="resetStudioTemplate()" class="text-[11px] font-semibold text-slate-600 hover:text-emerald-700 underline">
+                    ↺ Reset Template Default
+                  </button>
+                </div>
+
+                <!-- Chips bar -->
+                <div class="space-y-1.5">
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Klik Chip Variabel Untuk Menyisipkan:</span>
+                  <div class="flex flex-wrap gap-1.5">
+                    <button type="button" onclick="insertStudioChip('{nama}')" class="px-2 py-1 rounded-md bg-white border border-slate-200 hover:border-emerald-300 font-mono text-xs font-medium text-slate-700 active:scale-95 transition-all">+ {nama}</button>
+                    <button type="button" onclick="insertStudioChip('{kode_pelanggan}')" class="px-2 py-1 rounded-md bg-white border border-slate-200 hover:border-emerald-300 font-mono text-xs font-medium text-slate-700 active:scale-95 transition-all">+ {kode_pelanggan}</button>
+                    <button type="button" onclick="insertStudioChip('{bulan}')" class="px-2 py-1 rounded-md bg-white border border-slate-200 hover:border-emerald-300 font-mono text-xs font-medium text-slate-700 active:scale-95 transition-all">+ {bulan}</button>
+                    <button type="button" onclick="insertStudioChip('{nominal_pokok}')" class="px-2 py-1 rounded-md bg-white border border-slate-200 hover:border-emerald-300 font-mono text-xs font-medium text-slate-700 active:scale-95 transition-all">+ {nominal_pokok}</button>
+                    <button type="button" onclick="insertStudioChip('{pajak_daerah}')" class="px-2 py-1 rounded-md bg-white border border-slate-200 hover:border-emerald-300 font-mono text-xs font-medium text-slate-700 active:scale-95 transition-all">+ {pajak_daerah}</button>
+                    <button type="button" onclick="insertStudioChip('{denda}')" class="px-2 py-1 rounded-md bg-white border border-slate-200 hover:border-emerald-300 font-mono text-xs font-medium text-slate-700 active:scale-95 transition-all">+ {denda}</button>
+                    <button type="button" onclick="insertStudioChip('{total_tagihan}')" class="px-2 py-1 rounded-md bg-white border border-slate-200 hover:border-emerald-300 font-mono text-xs font-medium text-slate-700 active:scale-95 transition-all">+ {total_tagihan}</button>
+                    <button type="button" onclick="insertStudioChip('{jatuh_tempo}')" class="px-2 py-1 rounded-md bg-white border border-slate-200 hover:border-emerald-300 font-mono text-xs font-medium text-slate-700 active:scale-95 transition-all">+ {jatuh_tempo}</button>
+                    <button type="button" onclick="insertStudioChip('{link_pembayaran}')" class="px-2 py-1 rounded-md bg-white border border-slate-200 hover:border-emerald-300 font-mono text-xs font-medium text-slate-700 active:scale-95 transition-all">+ {link_pembayaran}</button>
+                  </div>
+                </div>
+
+                <textarea 
+                  id="admin-wa-template-input"
+                  rows="8"
+                  oninput="updateStudioWaPreview()"
+                  class="w-full p-3.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 leading-relaxed"
+                >Halo Bpk/Ibu *{nama}* ({kode_pelanggan}),
+
+Berikut rincian tagihan retribusi sampah CV Tiga Putra Semesta (UPS HERU) untuk periode *{bulan}*:
+
+• Tarif Pokok: *{nominal_pokok}*
+• Pajak Daerah ({pajak_persen}%): *{pajak_daerah}*
+• Denda Keterlambatan: *{denda}*
+----------------------------------
+*Total Tagihan: {total_tagihan}*
+
+Jatuh tempo: *{jatuh_tempo}*
+Link pembayaran: {link_pembayaran}
+
+Terima kasih atas partisipasi Anda dalam menjaga kebersihan lingkungan.</textarea>
+              </div>
+
+              <button onclick="alert('Pengaturan tarif & template WA berhasil disimpan ke database!')" class="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs transition-all">
+                💾 Simpan Parameter & Template WA
+              </button>
+
+            </div>
+
+            <!-- KOLOM KANAN (40%): LIVE WHATSAPP BUBBLE PREVIEW -->
+            <div class="lg:col-span-5 w-full">
+              <div class="bg-slate-900/5 p-4 rounded-3xl border border-slate-200 shadow-xs">
+                
+                <div class="flex items-center justify-between mb-3 px-1">
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm">📱</span>
+                    <span class="text-xs font-bold text-slate-800 uppercase tracking-wider">Live WhatsApp Bubble Preview</span>
+                  </div>
+                  <span class="text-[10px] font-mono text-slate-500 bg-white px-2 py-0.5 rounded-md border border-slate-200">#DCF8C6</span>
+                </div>
+
+                <!-- Phone Chat Frame -->
+                <div class="w-full bg-[#EFEAE2] rounded-2xl overflow-hidden border border-slate-300 shadow-md">
+                  
+                  <!-- Top WhatsApp Bar -->
+                  <div class="bg-[#075E54] text-white px-3.5 py-2.5 flex items-center justify-between shadow-sm">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                      <div class="w-8 h-8 rounded-full bg-emerald-600 border border-emerald-400 flex items-center justify-center font-bold text-xs shrink-0 shadow-inner">
+                        UPS
+                      </div>
+                      <div class="min-w-0">
+                        <div class="flex items-center gap-1">
+                          <span class="font-bold text-xs truncate">UPS HERU WastePay</span>
+                          <span class="text-emerald-300 text-xs font-bold">✓</span>
+                        </div>
+                        <p class="text-[10px] text-emerald-100 truncate">Official Business Account</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Date Pill -->
+                  <div class="py-2.5 flex justify-center">
+                    <span class="bg-white/90 text-[10px] font-bold text-slate-600 px-3 py-0.5 rounded-lg border border-slate-200/50">
+                      HARI INI
+                    </span>
+                  </div>
+
+                  <!-- WhatsApp Chat Bubble (#DCF8C6) -->
+                  <div class="px-3 pb-3 flex justify-end">
+                    <div class="relative max-w-[94%] bg-[#DCF8C6] border border-[#bbf7d0] rounded-2xl rounded-tr-xs p-3 shadow-sm">
+                      <div id="studio-rendered-bubble" class="text-[12px] sm:text-[13px] text-slate-900 leading-relaxed font-sans whitespace-pre-wrap select-none">
+                        <!-- Rendered dynamically -->
+                      </div>
+                      <div class="flex items-center justify-end gap-1 mt-2 text-[10px] text-slate-500 font-medium">
+                        <span>09:42</span>
+                        <span class="text-[#34B7F1] font-bold tracking-tighter">✓✓</span>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="mt-3 bg-white/80 border border-slate-200/70 rounded-xl p-2.5 text-[11px] text-slate-600 flex items-start gap-2">
+                  <span class="text-base shrink-0">💡</span>
+                  <p class="leading-snug">
+                    Setiap penyesuaian angka persentase atau teks template langsung dihitung ulang secara real-time pada balon chat WhatsApp di atas.
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- =========================================================================
+       SHOWCASE INTERACTIVE SCRIPTS
+       ========================================================================= -->
+  <script>
+    // 1. Portal Switcher
+    function switchPortal(portalName) {
+      document.querySelectorAll('.portal-pane').forEach(el => el.classList.add('hidden'));
+      document.getElementById('portal-' + portalName).classList.remove('hidden');
+
+      // Update Header Tab styling
+      const tabs = ['warga', 'driver', 'admin'];
+      tabs.forEach(t => {
+        const btn = document.getElementById('btn-portal-' + t);
+        if (t === portalName) {
+          btn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-700 text-white shadow-xs';
+        } else {
+          btn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-300 hover:text-white';
+        }
+      });
+    }
+
+    // 2. View Mode Switcher (Desktop Responsif vs 390px Smartphone Frame)
+    let currentViewMode = 'desktop';
+    function switchViewMode(mode) {
+      currentViewMode = mode;
+      const container = document.getElementById('showcase-container');
+      const wrapper = document.getElementById('viewport-wrapper');
+      const btnDesk = document.getElementById('btn-view-desktop');
+      const btnMob = document.getElementById('btn-view-mobile');
+
+      if (mode === 'mobile') {
+        container.classList.add('items-center', 'py-8');
+        wrapper.className = 'wp-phone-mockup bg-slate-900 border-4 border-slate-700 overflow-y-auto max-w-[390px] shadow-2xl';
+        btnMob.className = 'px-2.5 py-1 rounded-md transition-all bg-slate-700 text-white font-semibold flex items-center gap-1';
+        btnDesk.className = 'px-2.5 py-1 rounded-md transition-all text-slate-400 hover:text-white flex items-center gap-1';
+      } else {
+        container.classList.remove('items-center', 'py-8');
+        wrapper.className = 'w-full max-w-7xl transition-all duration-300';
+        btnDesk.className = 'px-2.5 py-1 rounded-md transition-all bg-slate-700 text-white font-semibold flex items-center gap-1';
+        btnMob.className = 'px-2.5 py-1 rounded-md transition-all text-slate-400 hover:text-white flex items-center gap-1';
+      }
+    }
+
+    // 3. APK Context Detection Simulation
+    let isApkSimulated = false;
+    function toggleNativeApkMode() {
+      isApkSimulated = !isApkSimulated;
+      const dot = document.getElementById('apk-indicator-dot');
+      const text = document.getElementById('apk-indicator-text');
+      const dlCard = document.getElementById('hero-apk-download-card');
+      const quickLaunch = document.getElementById('hero-quick-launcher');
+
+      if (isApkSimulated) {
+        dot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-ping';
+        text.innerText = 'Simulasi: APK Android Native (Download disembunyikan)';
+        dlCard.classList.add('hidden');
+        quickLaunch.classList.remove('hidden');
+      } else {
+        dot.className = 'w-2 h-2 rounded-full bg-slate-400';
+        text.innerText = 'Simulasi: Web Browser (Download Banner Aktif)';
+        dlCard.classList.remove('hidden');
+        quickLaunch.classList.add('hidden');
+      }
+    }
+
+    // 4. Cek Tagihan WhatsApp Demo Simulation
+    function fillWa(number) {
+      document.getElementById('input-wa-warga').value = number;
+      checkCustomerBill();
+    }
+
+    function checkCustomerBill() {
+      const wa = document.getElementById('input-wa-warga').value.trim();
+      const card = document.getElementById('bill-result-card');
+      
+      // Temporary shimmer feedback
+      card.classList.add('opacity-50', 'scale-[0.99]');
+      setTimeout(() => {
+        card.classList.remove('opacity-50', 'scale-[0.99]');
+        
+        if (wa.includes('9988') || wa.includes('7766')) {
+          // Menunggak simulation
+          document.getElementById('bill-cust-name').innerText = 'Ibu Dewi Sartika';
+          document.getElementById('bill-pickup-badge').className = 'inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-rose-50 text-rose-800 border border-rose-200 shrink-0';
+          document.getElementById('bill-pickup-badge').innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-500"></span> Status Angkut: Ditangguhkan (Tunggakan > 2 Bln)';
+          document.getElementById('bill-cust-status').className = 'font-bold text-rose-600 text-base mt-1';
+          document.getElementById('bill-cust-status').innerText = 'Menunggak 3 Bulan';
+          document.getElementById('bill-nominal-pokok').innerText = 'Rp 150.000';
+          document.getElementById('bill-nominal-pajak').innerText = 'Rp 15.000';
+          document.getElementById('bill-nominal-denda').className = 'text-lg font-black text-rose-600 mt-1';
+          document.getElementById('bill-nominal-denda').innerText = 'Rp 9.000';
+          document.getElementById('bill-total-tagihan').innerText = 'Rp 174.000';
+          document.getElementById('timeline-current-month').className = 'p-2 rounded-xl bg-rose-600 text-white font-bold shadow-xs';
+          document.getElementById('timeline-current-month').innerHTML = '<p class="text-[10px] text-rose-200">Okt</p><p>BELUM</p>';
+        } else {
+          // Normal Lunas simulation
+          document.getElementById('bill-cust-name').innerText = 'Bpk. Rahmat Santoso';
+          document.getElementById('bill-pickup-badge').className = 'inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 shrink-0';
+          document.getElementById('bill-pickup-badge').innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> Status Angkut: Aktif & Terjadwal';
+          document.getElementById('bill-cust-status').className = 'font-bold text-emerald-600 text-base mt-1';
+          document.getElementById('bill-cust-status').innerText = 'Lunas (Bulan Oktober)';
+          document.getElementById('bill-nominal-pokok').innerText = 'Rp 50.000';
+          document.getElementById('bill-nominal-pajak').innerText = 'Rp 5.000';
+          document.getElementById('bill-nominal-denda').className = 'text-lg font-black text-slate-400 mt-1';
+          document.getElementById('bill-nominal-denda').innerText = 'Rp 0';
+          document.getElementById('bill-total-tagihan').innerText = 'Rp 55.000';
+          document.getElementById('timeline-current-month').className = 'p-2 rounded-xl bg-emerald-600 text-white font-bold shadow-xs';
+          document.getElementById('timeline-current-month').innerHTML = '<p class="text-[10px] text-emerald-100">Okt</p><p>LUNAS</p>';
+        }
+      }, 350);
+    }
+
+    function openWhatsAppChatWithBill() {
+      const waUrl = 'https://wa.me/6281234567890?text=' + encodeURIComponent('Halo Admin UPS HERU WastePay, saya ingin konfirmasi tagihan sampah rumah saya.');
+      window.open(waUrl, '_blank');
+    }
+
+    // 5. 3-Step Wizard Navigation
+    function nextWizardStep(step) {
+      document.querySelectorAll('.wizard-pane').forEach(el => el.classList.add('hidden'));
+      document.getElementById('wizard-step-' + step).classList.remove('hidden');
+      document.getElementById('wizard-step-indicator').innerText = 'Langkah ' + step + ' dari 3';
+    }
+
+    function resolveWizardZone() {
+      const kec = document.getElementById('wiz-kecamatan').value;
+      const kel = document.getElementById('wiz-kelurahan').value;
+      const zoneBadge = document.getElementById('wiz-resolved-zone');
+      zoneBadge.innerText = 'Zona A (' + kec + ' - Kel. ' + kel + ') · Rute 01 Otomatis';
+    }
+
+    function submitWizardRegistration() {
+      alert('✓ Pendaftaran berhasil dikirim! Menunggu approval koordinator lapangan.');
+      nextWizardStep(1);
+    }
+
+    function openRegisterWizard() {
+      const wiz = document.getElementById('registration-wizard');
+      wiz.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // 6. Driver OSRM Map Interactions
+    function selectMapCustomer(nama, alamat, status, stopNo) {
+      document.getElementById('sheet-urutan-badge').innerText = 'STOP #' + stopNo;
+      document.getElementById('sheet-cust-name').innerText = nama;
+      document.getElementById('sheet-cust-address').innerText = alamat;
+      
+      // Simulate dynamic photo lazy loading
+      const photoBox = document.getElementById('lazy-photo-box');
+      photoBox.innerHTML = '<span class="text-xs text-emerald-400 animate-spin">⏳</span><span class="text-[8px] text-slate-400">Loading...</span>';
+      setTimeout(() => {
+        photoBox.innerHTML = '<span class="text-xl">🏠</span><span class="text-[9px] text-emerald-400 font-mono">WebP 85KB</span>';
+      }, 300);
+    }
+
+    function filterMapPins(type) {
+      alert('Filter pin peta: ' + type);
+    }
+
+    function markCurrentStopDone() {
+      alert('✓ Rumah berhasil ditandai SELESAI ANGKUT! Rute dilanjutkan ke antrean berikutnya.');
+    }
+
+    function toggleMountedDrivingView() {
+      const modal = document.getElementById('mounted-driving-view-modal');
+      modal.classList.toggle('hidden');
+    }
+
+    // 7. Admin Customer Approval
+    function approveCustomerRegistration() {
+      alert('✓ Pelanggan disetujui! Akun diaktifkan dengan ruteId dan zonaId terkunci secara atomik.');
+    }
+
+    // 8. Admin Studio Pajak & Template WA Live Preview
+    const defaultTemplateText = `Halo Bpk/Ibu *{nama}* ({kode_pelanggan}),
+
+Berikut rincian tagihan retribusi sampah CV Tiga Putra Semesta (UPS HERU) untuk periode *{bulan}*:
+
+• Tarif Pokok: *{nominal_pokok}*
+• Pajak Daerah ({pajak_persen}%): *{pajak_daerah}*
+• Denda Keterlambatan: *{denda}*
+----------------------------------
+*Total Tagihan: {total_tagihan}*
+
+Jatuh tempo: *{jatuh_tempo}*
+Link pembayaran: {link_pembayaran}
+
+Terima kasih atas partisipasi Anda dalam menjaga kebersihan lingkungan.`;
+
+    function resetStudioTemplate() {
+      document.getElementById('admin-wa-template-input').value = defaultTemplateText;
+      updateStudioWaPreview();
+    }
+
+    function insertStudioChip(chipTag) {
+      const textarea = document.getElementById('admin-wa-template-input');
+      textarea.value += ' ' + chipTag;
+      updateStudioWaPreview();
+    }
+
+    function updateStudioWaPreview() {
+      const pajakRate = parseFloat(document.getElementById('admin-pajak-rate').value) || 0;
+      const dendaRate = parseFloat(document.getElementById('admin-denda-rate').value) || 0;
+      const template = document.getElementById('admin-wa-template-input').value;
+
+      const pokok = 50000;
+      const pajakRp = Math.round(pokok * (pajakRate / 100));
+      const dendaRp = Math.round(pokok * (dendaRate / 100));
+      const total = pokok + pajakRp + dendaRp;
+
+      document.getElementById('admin-calc-pajak').innerText = 'Rp ' + pajakRp.toLocaleString('id-ID');
+      document.getElementById('admin-calc-denda').innerText = 'Rp ' + dendaRp.toLocaleString('id-ID');
+
+      let parsed = template
+        .replace(/\{nama\}/g, 'Bpk. Rahmat Santoso')
+        .replace(/\{kode_pelanggan\}/g, 'WP-0821')
+        .replace(/\{bulan\}/g, 'Oktober 2026')
+        .replace(/\{nominal_pokok\}/g, 'Rp ' + pokok.toLocaleString('id-ID'))
+        .replace(/\{pajak_persen\}/g, String(pajakRate))
+        .replace(/\{pajak_daerah\}/g, 'Rp ' + pajakRp.toLocaleString('id-ID'))
+        .replace(/\{denda\}/g, 'Rp ' + dendaRp.toLocaleString('id-ID'))
+        .replace(/\{total_tagihan\}/g, 'Rp ' + total.toLocaleString('id-ID'))
+        .replace(/\{jatuh_tempo\}/g, '20 Oktober 2026')
+        .replace(/\{link_pembayaran\}/g, 'https://wastepay.vercel.app/bayar?ref=WP-0821');
+
+      // Convert *bold* to <strong>bold</strong> safely
+      const boldFormatted = parsed.replace(/\*([^*]+)\*/g, '<strong class="font-bold text-slate-900">$1</strong>');
+      document.getElementById('studio-rendered-bubble').innerHTML = boldFormatted;
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      updateStudioWaPreview();
+    });
+  </script>
+</body>
+</html>

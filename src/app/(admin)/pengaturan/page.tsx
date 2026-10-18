@@ -75,7 +75,18 @@ export default function PengaturanPage() {
   const [googleStatus, setGoogleStatus] = useState<GoogleContactsStatus | null>(null);
   const [googleSyncing, setGoogleSyncing] = useState(false);
   const [googleDisconnecting, setGoogleDisconnecting] = useState(false);
-  const [tarifSettings, setTarifSettings] = useState({ PAJAK_DAERAH_RATE: 0, DENDA_KETERLAMBATAN_RATE: 0 });
+  const [tarifSettings, setTarifSettings] = useState<{
+    PAJAK_DAERAH_RATE: number;
+    DENDA_KETERLAMBATAN_RATE: number;
+    BATAS_BULAN_STOP_ANGKUT?: number;
+    BIAYA_ADMIN?: number;
+    WA_TEMPLATE_TAGIHAN?: string;
+  }>({
+    PAJAK_DAERAH_RATE: 0,
+    DENDA_KETERLAMBATAN_RATE: 0,
+    WA_TEMPLATE_TAGIHAN:
+      'Halo Bpk/Ibu *{nama}* ({kode_pelanggan}),\n\nBerikut rincian tagihan retribusi sampah CV Tiga Putra Semesta (UPS HERU) untuk periode *{bulan}*:\n\n• Tarif Pokok: *{nominal_pokok}*\n• Pajak Daerah ({pajak_persen}%): *{pajak_daerah}*\n• Denda Keterlambatan: *{denda}*\n----------------------------------\n*Total Tagihan: {total_tagihan}*\n\nJatuh tempo: *{jatuh_tempo}*\nLink pembayaran & rincian: {link_pembayaran}\n\nTerima kasih atas partisipasi Anda dalam menjaga kebersihan lingkungan.',
+  });
   const [tarifSaving, setTarifSaving] = useState(false);
   const { showToast } = useToast();
 
@@ -482,13 +493,93 @@ export default function PengaturanPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(tarifSettings),
       });
-      if (res.ok) showToast("Pengaturan tarif & pajak berhasil disimpan");
+      if (res.ok) showToast("Pengaturan tarif, pajak, & template WA berhasil disimpan");
       else showToast("Gagal menyimpan pengaturan tarif", "error");
     } catch {
       showToast("Terjadi kesalahan jaringan", "error");
     } finally {
       setTarifSaving(false);
     }
+  }
+
+  const waVariableChips = [
+    { label: "{nama}", desc: "Nama Pelanggan" },
+    { label: "{kode_pelanggan}", desc: "Kode Warga (WP-xxxx)" },
+    { label: "{bulan}", desc: "Bulan Periode" },
+    { label: "{nominal_pokok}", desc: "Tarif Pokok (Rp)" },
+    { label: "{pajak_persen}", desc: "Persen Pajak (%)" },
+    { label: "{pajak_daerah}", desc: "Pajak Daerah (Rp)" },
+    { label: "{denda}", desc: "Denda Keterlambatan (Rp)" },
+    { label: "{total_tagihan}", desc: "Total Tagihan Akhir (Rp)" },
+    { label: "{jatuh_tempo}", desc: "Jatuh Tempo" },
+    { label: "{link_pembayaran}", desc: "URL Cek/Bayar Online" },
+  ];
+
+  function insertWaChip(tag: string) {
+    const current = tarifSettings.WA_TEMPLATE_TAGIHAN || "";
+    setTarifSettings((prev) => ({
+      ...prev,
+      WA_TEMPLATE_TAGIHAN: current ? `${current} ${tag}` : tag,
+    }));
+  }
+
+  const simulatedWaMessage = useMemo(() => {
+    const rawTemplate =
+      tarifSettings.WA_TEMPLATE_TAGIHAN ||
+      'Halo Bpk/Ibu *{nama}* ({kode_pelanggan}),\n\nBerikut rincian tagihan retribusi sampah CV Tiga Putra Semesta (UPS HERU) untuk periode *{bulan}*:\n\n• Tarif Pokok: *{nominal_pokok}*\n• Pajak Daerah ({pajak_persen}%): *{pajak_daerah}*\n• Denda Keterlambatan: *{denda}*\n----------------------------------\n*Total Tagihan: {total_tagihan}*\n\nJatuh tempo: *{jatuh_tempo}*\nLink pembayaran & rincian: {link_pembayaran}\n\nTerima kasih atas partisipasi Anda dalam menjaga kebersihan lingkungan.';
+
+    const pokok = 50000;
+    const pajakPct = tarifSettings.PAJAK_DAERAH_RATE || 0;
+    const pajakRp = Math.round(pokok * (pajakPct / 100));
+    const dendaPct = tarifSettings.DENDA_KETERLAMBATAN_RATE || 0;
+    const dendaRp = Math.round(pokok * (dendaPct / 100));
+    const total = pokok + pajakRp + dendaRp;
+
+    return rawTemplate
+      .replace(/\{nama\}/g, "Bpk. Rahmat Santoso")
+      .replace(/\{kode_pelanggan\}/g, "WP-0821")
+      .replace(/\{bulan\}/g, "Oktober 2026")
+      .replace(/\{nominal_pokok\}/g, `Rp ${pokok.toLocaleString("id-ID")}`)
+      .replace(/\{pajak_persen\}/g, String(pajakPct))
+      .replace(/\{pajak_daerah\}/g, `Rp ${pajakRp.toLocaleString("id-ID")}`)
+      .replace(/\{denda\}/g, `Rp ${dendaRp.toLocaleString("id-ID")}`)
+      .replace(/\{total_tagihan\}/g, `Rp ${total.toLocaleString("id-ID")}`)
+      .replace(/\{jatuh_tempo\}/g, "20 Oktober 2026")
+      .replace(/\{link_pembayaran\}/g, "https://wastepay.vercel.app/bayar?ref=WP-0821");
+  }, [tarifSettings]);
+
+  function renderWhatsAppFormattedText(text: string) {
+    const lines = text.split("\n");
+    return lines.map((line, li) => {
+      const parts = line.split(/(\*[^*]+\*)/g);
+      return (
+        <span key={li} className="block min-h-[1.25rem]">
+          {parts.map((part, pi) => {
+            if (part.startsWith("*") && part.endsWith("*") && part.length >= 2) {
+              return (
+                <strong key={pi} className="font-bold text-slate-900">
+                  {part.slice(1, -1)}
+                </strong>
+              );
+            }
+            if (part.includes("http://") || part.includes("https://")) {
+              const urlParts = part.split(/(https?:\/\/[^\s]+)/g);
+              return urlParts.map((u, ui) => {
+                if (u.startsWith("http://") || u.startsWith("https://")) {
+                  return (
+                    <span key={ui} className="text-emerald-700 underline underline-offset-2 break-all">
+                      {u}
+                    </span>
+                  );
+                }
+                return <span key={ui}>{u}</span>;
+              });
+            }
+            return <span key={pi}>{part}</span>;
+          })}
+        </span>
+      );
+    });
   }
 
   return (
@@ -946,43 +1037,260 @@ export default function PengaturanPage() {
         )}
       </div>
 
-      {/* Tarif & Pajak */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
-        <h2 className="font-semibold text-slate-900 mb-1">Tarif & Pajak</h2>
-        <p className="text-sm text-slate-500 mb-4">Pengaturan persentase pajak daerah dan denda keterlambatan</p>
-        <form onSubmit={handleSaveTarif} className="space-y-4 max-w-md">
-          <div>
-            <label htmlFor="pajak" className="block text-sm font-medium text-slate-700 mb-1.5">Pajak Daerah (%)</label>
-            <input
-              id="pajak"
-              type="number"
-              min="0"
-              max="100"
-              step="any"
-              value={tarifSettings.PAJAK_DAERAH_RATE}
-              onChange={(e) => setTarifSettings({ ...tarifSettings, PAJAK_DAERAH_RATE: parseFloat(e.target.value) || 0 })}
-              className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
-            />
-            <p className="text-xs text-slate-500 mt-1">Ganti nilai PPN 11% default. Isi 0 jika tidak ada pajak.</p>
+      {/* STUDIO PAJAK DAERAH, DENDA & TEMPLATE NOTIFIKASI WHATSAPP (60/40 LAYOUT) */}
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-slate-100 mb-6">
+          <div className="flex items-center gap-3">
+            <span className="p-2.5 bg-emerald-50 text-emerald-800 rounded-2xl border border-emerald-100 flex items-center justify-center text-xl">
+              💬
+            </span>
+            <div>
+              <h2 className="font-extrabold text-slate-900 text-lg sm:text-xl tracking-tight">
+                Studio Pajak Daerah, Denda & Template Notifikasi WA
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Konfigurasi persentase tarif, aturan denda, dan kustomisasi template pesan WhatsApp dengan pratinjau balon interaktif
+              </p>
+            </div>
           </div>
-          <div>
-            <label htmlFor="denda" className="block text-sm font-medium text-slate-700 mb-1.5">Denda Keterlambatan (% per bulan)</label>
-            <input
-              id="denda"
-              type="number"
-              min="0"
-              max="100"
-              step="any"
-              value={tarifSettings.DENDA_KETERLAMBATAN_RATE}
-              onChange={(e) => setTarifSettings({ ...tarifSettings, DENDA_KETERLAMBATAN_RATE: parseFloat(e.target.value) || 0 })}
-              className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
-            />
-            <p className="text-xs text-slate-500 mt-1">Denda berjalan setiap bulan per tagihan tertunggak. Isi 0 jika tidak ada denda.</p>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 shrink-0 self-start sm:self-auto">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            Live Preview Aktif
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* KOLOM KIRI (60%): FORM KONFIGURASI & EDITOR TEMPLATE */}
+          <div className="lg:col-span-7 space-y-5">
+            <form onSubmit={handleSaveTarif} className="space-y-5">
+              {/* Parameter Angka: Pajak Daerah & Denda */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-4 rounded-2xl bg-slate-50/90 border border-slate-200/80 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="pajak" className="block text-xs font-extrabold uppercase tracking-wider text-slate-700">
+                      Pajak Daerah (%)
+                    </label>
+                    <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100/70 px-2 py-0.5 rounded-md">
+                      PPN Daerah
+                    </span>
+                  </div>
+                  <div className="relative">
+                    <input
+                      id="pajak"
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="any"
+                      value={tarifSettings.PAJAK_DAERAH_RATE}
+                      onChange={(e) =>
+                        setTarifSettings({
+                          ...tarifSettings,
+                          PAJAK_DAERAH_RATE: parseFloat(e.target.value) || 0,
+                        })
+                      }
+                      className="w-full pl-3.5 pr-8 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-xs"
+                    />
+                    <span className="absolute right-3 top-2.5 text-xs font-bold text-slate-400 pointer-events-none">
+                      %
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 leading-snug">
+                    Simulasi: Tarif pokok Rp 50.000 + Pajak Rp{" "}
+                    <span className="font-bold text-slate-700">
+                      {Math.round(50000 * ((tarifSettings.PAJAK_DAERAH_RATE || 0) / 100)).toLocaleString("id-ID")}
+                    </span>
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-slate-50/90 border border-slate-200/80 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="denda" className="block text-xs font-extrabold uppercase tracking-wider text-slate-700">
+                      Denda Keterlambatan (%/bln)
+                    </label>
+                    <span className="text-[11px] font-bold text-amber-800 bg-amber-100/70 px-2 py-0.5 rounded-md">
+                      Akumulatif
+                    </span>
+                  </div>
+                  <div className="relative">
+                    <input
+                      id="denda"
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="any"
+                      value={tarifSettings.DENDA_KETERLAMBATAN_RATE}
+                      onChange={(e) =>
+                        setTarifSettings({
+                          ...tarifSettings,
+                          DENDA_KETERLAMBATAN_RATE: parseFloat(e.target.value) || 0,
+                        })
+                      }
+                      className="w-full pl-3.5 pr-8 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-xs"
+                    />
+                    <span className="absolute right-3 top-2.5 text-xs font-bold text-slate-400 pointer-events-none">
+                      %
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 leading-snug">
+                    Simulasi: Denda keterlambatan 1 bulan Rp{" "}
+                    <span className="font-bold text-slate-700">
+                      {Math.round(50000 * ((tarifSettings.DENDA_KETERLAMBATAN_RATE || 0) / 100)).toLocaleString("id-ID")}
+                    </span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Editor Template WhatsApp & Tap-to-Insert Chips */}
+              <div className="p-4 rounded-2xl bg-slate-50/90 border border-slate-200/80 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-800">
+                      Template Pesan Tagihan WhatsApp
+                    </label>
+                    <p className="text-[11px] text-slate-500">
+                      Gunakan format WhatsApp seperti <code className="bg-slate-200/70 text-slate-800 px-1 py-0.5 rounded font-mono text-[10px]">*tebal*</code> dan klik chip variabel di bawah untuk menyisipkan data secara instan
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setTarifSettings((prev) => ({
+                        ...prev,
+                        WA_TEMPLATE_TAGIHAN:
+                          'Halo Bpk/Ibu *{nama}* ({kode_pelanggan}),\n\nBerikut rincian tagihan retribusi sampah CV Tiga Putra Semesta (UPS HERU) untuk periode *{bulan}*:\n\n• Tarif Pokok: *{nominal_pokok}*\n• Pajak Daerah ({pajak_persen}%): *{pajak_daerah}*\n• Denda Keterlambatan: *{denda}*\n----------------------------------\n*Total Tagihan: {total_tagihan}*\n\nJatuh tempo: *{jatuh_tempo}*\nLink pembayaran & rincian: {link_pembayaran}\n\nTerima kasih atas partisipasi Anda dalam menjaga kebersihan lingkungan.',
+                      }))
+                    }
+                    className="text-[11px] font-semibold text-slate-600 hover:text-emerald-700 underline underline-offset-2 shrink-0 self-start sm:self-auto"
+                  >
+                    ↺ Reset Template Standar
+                  </button>
+                </div>
+
+                {/* Variable Chips Bar */}
+                <div className="space-y-1.5">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    Tap to Insert Variable Chip:
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {waVariableChips.map((chip) => (
+                      <button
+                        key={chip.label}
+                        type="button"
+                        onClick={() => insertWaChip(chip.label)}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white hover:bg-emerald-50 hover:text-emerald-800 hover:border-emerald-300 border border-slate-200 text-xs font-mono font-medium text-slate-700 active:scale-95 transition-all shadow-2xs group"
+                        title={chip.desc}
+                      >
+                        <span className="text-emerald-600 font-bold group-hover:scale-110 transition-transform">+</span>
+                        <span>{chip.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Textarea */}
+                <textarea
+                  rows={9}
+                  value={tarifSettings.WA_TEMPLATE_TAGIHAN || ""}
+                  onChange={(e) =>
+                    setTarifSettings({ ...tarifSettings, WA_TEMPLATE_TAGIHAN: e.target.value })
+                  }
+                  placeholder="Ketik template pesan WhatsApp di sini..."
+                  className="w-full p-3.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-inner leading-relaxed"
+                />
+              </div>
+
+              {/* Submit Button */}
+              <div className="flex items-center gap-3">
+                <button
+                  type="submit"
+                  disabled={tarifSaving}
+                  className="bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-xs hover:shadow transition-all flex items-center justify-center gap-2 disabled:opacity-50 w-full sm:w-auto"
+                >
+                  {tarifSaving ? "Menyimpan Perubahan..." : "💾 Simpan Parameter Tarif & Template WA"}
+                </button>
+              </div>
+            </form>
           </div>
-          <button type="submit" disabled={tarifSaving} className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all w-full flex justify-center disabled:opacity-50">
-            {tarifSaving ? "Menyimpan..." : "Simpan Pengaturan Tarif"}
-          </button>
-        </form>
+
+          {/* KOLOM KANAN (40%): LIVE WHATSAPP BUBBLE PREVIEW (#DCF8C6) */}
+          <div className="lg:col-span-5 w-full">
+            <div className="bg-slate-900/5 p-4 rounded-3xl border border-slate-200/80 shadow-xs">
+              <div className="flex items-center justify-between mb-3 px-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm">📱</span>
+                  <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                    Live WhatsApp Bubble Preview
+                  </span>
+                </div>
+                <span className="text-[10px] font-mono text-slate-500 bg-white px-2 py-0.5 rounded-md border border-slate-200">
+                  #DCF8C6
+                </span>
+              </div>
+
+              {/* SIMULATED PHONE CHAT SCREEN */}
+              <div className="w-full bg-[#EFEAE2] rounded-2xl overflow-hidden border border-slate-300 shadow-md">
+                {/* Chat Top App Bar */}
+                <div className="bg-[#075E54] text-white px-3.5 py-2.5 flex items-center justify-between shadow-sm">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <svg className="w-4 h-4 shrink-0 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+                    </svg>
+                    <div className="w-8 h-8 rounded-full bg-emerald-600 border border-emerald-400 flex items-center justify-center font-bold text-xs shrink-0 shadow-inner">
+                      UPS
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1">
+                        <span className="font-bold text-xs truncate">UPS HERU WastePay</span>
+                        <svg className="w-3.5 h-3.5 text-emerald-300 shrink-0 fill-current" viewBox="0 0 24 24">
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                        </svg>
+                      </div>
+                      <p className="text-[10px] text-emerald-100/90 truncate">Akun Bisnis Resmi CV Tiga Putra Semesta</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0 opacity-80">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Date Pill Divider */}
+                <div className="py-2.5 flex justify-center">
+                  <span className="bg-white/90 shadow-2xs text-[10px] font-bold text-slate-600 px-3 py-0.5 rounded-lg border border-slate-200/50">
+                    HARI INI
+                  </span>
+                </div>
+
+                {/* Simulated Outbound WhatsApp Bubble (#DCF8C6) */}
+                <div className="px-3 pb-3 flex justify-end">
+                  <div className="relative max-w-[94%] bg-[#DCF8C6] border border-[#bbf7d0] rounded-2xl rounded-tr-xs p-3 shadow-sm">
+                    {/* Bubble Content */}
+                    <div className="text-[12px] sm:text-[13px] text-slate-900 leading-relaxed font-sans select-none">
+                      {renderWhatsAppFormattedText(simulatedWaMessage)}
+                    </div>
+
+                    {/* Timestamp & Double Blue Checkmark */}
+                    <div className="flex items-center justify-end gap-1 mt-2 text-[10px] text-slate-500 font-medium">
+                      <span>09:42</span>
+                      <span className="text-[#34B7F1] font-bold tracking-tighter" title="Terkirim & Dibaca (Read Receipts)">
+                        ✓✓
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Informative Footer Box */}
+              <div className="mt-3 bg-white/80 border border-slate-200/70 rounded-xl p-2.5 text-[11px] text-slate-600 flex items-start gap-2">
+                <span className="text-base shrink-0">💡</span>
+                <p className="leading-snug">
+                  Balon pratinjau merender pesan secara langsung dengan angka simulasi: pokok <span className="font-bold text-slate-800">Rp 50.000</span>, Pajak Daerah <span className="font-bold text-emerald-800">{tarifSettings.PAJAK_DAERAH_RATE || 0}%</span>, dan denda <span className="font-bold text-amber-800">{tarifSettings.DENDA_KETERLAMBATAN_RATE || 0}%</span>.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Keamanan Akun */}

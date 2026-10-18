@@ -24,6 +24,7 @@ export default function AbsensiPage() {
     waktuSelesai: string | null;
     status: string;
   } | null>(null);
+  const [gpsAkurasi, setGpsAkurasi] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState("");
@@ -44,10 +45,14 @@ export default function AbsensiPage() {
   };
 
   useEffect(() => {
-    // Data fetch on mount: semua setState terjadi setelah await fetch (async),
-    // bukan sinkron di body effect — rule ini false-positive untuk pola ini.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
+    if (typeof navigator !== "undefined" && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => setGpsAkurasi(pos.coords.accuracy),
+        () => {},
+        { enableHighAccuracy: true, timeout: 6000 }
+      );
+    }
   }, []);
 
   const handleAbsen = (action: "masuk" | "selesai") => {
@@ -62,6 +67,7 @@ export default function AbsensiPage() {
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         try {
+          setGpsAkurasi(pos.coords.accuracy);
           const res = await fetch("/api/absensi", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -114,6 +120,75 @@ export default function AbsensiPage() {
           {error}
         </div>
       )}
+
+      {/* Hero Attendance Banner (Menonjol di Layar Ponsel & Dashboard) */}
+      <div className="bg-gradient-to-br from-slate-900 to-slate-950 text-white rounded-3xl p-5 sm:p-6 shadow-xl border border-slate-800 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className={`px-3 py-1 rounded-full text-xs font-black inline-flex items-center gap-1.5 shadow-xs ${
+                hasSelesai
+                  ? "bg-blue-500/20 text-blue-300 border border-blue-500/40"
+                  : hasMasuk
+                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 animate-pulse"
+                  : "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+              }`}>
+                <span className={`w-2 h-2 rounded-full ${hasSelesai ? "bg-blue-400" : hasMasuk ? "bg-emerald-400" : "bg-amber-400"}`} />
+                <span>
+                  {hasSelesai
+                    ? "🎉 Selesai Bertugas Hari Ini"
+                    : hasMasuk
+                    ? `✓ Sedang Bertugas (Masuk ${statusHariIni?.waktuMasuk ? format(new Date(statusHariIni.waktuMasuk), "HH:mm") : ""})`
+                    : "⏳ Belum Absen Masuk"}
+                </span>
+              </span>
+
+              {gpsAkurasi !== null && (
+                <span className="px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700 text-slate-300 text-xs font-mono font-bold">
+                  📍 GPS ±{Math.round(gpsAkurasi)}m
+                </span>
+              )}
+            </div>
+
+            <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white">
+              Presensi Kerja Lapangan
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-400">
+              {format(new Date(), "EEEE, dd MMMM yyyy", { locale: id })} · UPS HERU Kota Depok
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            {!hasMasuk ? (
+              <button
+                type="button"
+                onClick={() => handleAbsen("masuk")}
+                disabled={actionLoading}
+                className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-extrabold text-xs shadow-lg shadow-emerald-900/40 transition-all flex items-center justify-center gap-2"
+              >
+                <span>▶</span>
+                <span>{actionLoading ? "Memproses GPS..." : "Absen Masuk Sekarang"}</span>
+              </button>
+            ) : !hasSelesai ? (
+              <button
+                type="button"
+                onClick={() => handleAbsen("selesai")}
+                disabled={actionLoading}
+                className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-rose-600 hover:bg-rose-500 active:scale-95 text-white font-extrabold text-xs shadow-lg shadow-rose-900/40 transition-all flex items-center justify-center gap-2"
+              >
+                <span>⏹</span>
+                <span>{actionLoading ? "Memproses GPS..." : "Selesai Bertugas (Clock Out)"}</span>
+              </button>
+            ) : (
+              <div className="w-full sm:w-auto px-4 py-2.5 rounded-2xl bg-slate-800/90 border border-slate-700 text-emerald-400 font-bold text-xs flex items-center justify-center gap-1.5">
+                <span>✓</span>
+                <span>Presensi Hari Ini Lengkap</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
 
       {/* Panel Clock In/Out */}
       <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
