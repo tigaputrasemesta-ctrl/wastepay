@@ -43,6 +43,16 @@ type DuitkuStatus = {
   webhookUrl: string;
 };
 
+type GoogleContactsStatus = {
+  configured: boolean;
+  authorized: boolean;
+  targetEmail?: string | null;
+  lastSyncAt?: string | null;
+  authUrl?: string | null;
+  redirectUri?: string | null;
+  totalPelanggan?: number;
+};
+
 const KECAMATAN_DEPOK = [
   "Cilodong",
   "Pancoran Mas",
@@ -62,6 +72,9 @@ export default function PengaturanPage() {
   const [kelurahanList, setKelurahanList] = useState<Kelurahan[]>([]);
   const [zonaList, setZonaList] = useState<Zona[]>([]);
   const [duitkuStatus, setDuitkuStatus] = useState<DuitkuStatus | null>(null);
+  const [googleStatus, setGoogleStatus] = useState<GoogleContactsStatus | null>(null);
+  const [googleSyncing, setGoogleSyncing] = useState(false);
+  const [googleDisconnecting, setGoogleDisconnecting] = useState(false);
   const [tarifSettings, setTarifSettings] = useState({ PAJAK_DAERAH_RATE: 0, DENDA_KETERLAMBATAN_RATE: 0 });
   const [tarifSaving, setTarifSaving] = useState(false);
   const { showToast } = useToast();
@@ -140,8 +153,76 @@ export default function PengaturanPage() {
     }
   }, []);
 
+  const fetchGoogleStatus = useCallback(async () => {
+    try {
+      const res = await fetch("/api/integrasi/google-contacts");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) setGoogleStatus(data.data);
+      }
+    } catch {
+      /* abaikan */
+    }
+  }, []);
+
+  async function handleGoogleSync() {
+    setGoogleSyncing(true);
+    try {
+      const res = await fetch("/api/integrasi/google-contacts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ updateExisting: false }),
+      });
+      const result = await res.json();
+      if (res.ok && result.success) {
+        showToast(
+          `✓ Sinkronisasi selesai: ${result.data.created} baru dibuat, ${result.data.skipped} dilewati, ${result.data.updated} diperbarui.`,
+          "success"
+        );
+        fetchGoogleStatus();
+      } else {
+        showToast(result.error || "Gagal sinkronisasi kontak ke Google", "error");
+      }
+    } catch (err: any) {
+      showToast(err?.message || "Terjadi kesalahan saat sinkronisasi", "error");
+    } finally {
+      setGoogleSyncing(false);
+    }
+  }
+
+  async function handleGoogleDisconnect() {
+    if (!confirm("Apakah Anda yakin ingin memutuskan akun Google ini?")) return;
+    setGoogleDisconnecting(true);
+    try {
+      const res = await fetch("/api/integrasi/google-contacts", { method: "DELETE" });
+      if (res.ok) {
+        showToast("Koneksi akun Google berhasil diputuskan.", "info");
+        fetchGoogleStatus();
+      }
+    } catch {
+      showToast("Gagal memutuskan koneksi", "error");
+    } finally {
+      setGoogleDisconnecting(false);
+    }
+  }
+
   useEffect(() => {
     (async () => { await fetchWilayah(); })();
+    fetchGoogleStatus();
+
+    // Feedback dari redirect OAuth Google
+    if (typeof window !== "undefined") {
+      const sp = new URLSearchParams(window.location.search);
+      const googleStatusParam = sp.get("google_status");
+      if (googleStatusParam === "success") {
+        const email = sp.get("email") || "Google";
+        showToast(`✓ Akun Google (${email}) berhasil dihubungkan!`, "success");
+        window.history.replaceState({}, "", "/pengaturan");
+      } else if (googleStatusParam === "error") {
+        showToast(`Gagal menghubungkan Google: ${sp.get("error_msg") || "Terjadi kesalahan"}`, "error");
+        window.history.replaceState({}, "", "/pengaturan");
+      }
+    }
     (async () => {
       try {
         const [zonaRes, kelurahanRes] = await Promise.all([
@@ -734,6 +815,133 @@ export default function PengaturanPage() {
               <li>Restart server, lalu tombol <b>⚡ Bayar Online</b> otomatis muncul di halaman publik /bayar & /bayar-tagihan.</li>
               <li>Pembayaran yang sukses diverifikasi otomatis via callback Duitku (tanpa perlu verifikasi admin).</li>
             </ol>
+          </div>
+        )}
+      </div>
+
+      {/* Integrasi Google Contacts (Google People API) */}
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">📇</span>
+            <div>
+              <h2 className="font-semibold text-slate-900">Google Contacts (Google People API)</h2>
+              <p className="text-xs text-slate-500">Sinkronisasi otomatis seluruh data kontak pelanggan ke akun Google / Gmail</p>
+            </div>
+          </div>
+          {googleStatus && (
+            <span
+              className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
+                googleStatus.authorized
+                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                  : googleStatus.configured
+                  ? "bg-amber-50 text-amber-700 border border-amber-200"
+                  : "bg-slate-100 border border-slate-200 text-slate-600"
+              }`}
+            >
+              {googleStatus.authorized
+                ? `✓ Terhubung (${googleStatus.targetEmail || "Google"})`
+                : googleStatus.configured
+                ? "Siap Otorisasi"
+                : "Belum Dikonfigurasi"}
+            </span>
+          )}
+        </div>
+
+        {!googleStatus ? (
+          <p className="text-sm text-slate-600">Memuat status integrasi Google Contacts...</p>
+        ) : (
+          <div className="space-y-4 text-sm">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="bg-slate-50/80 rounded-xl p-3.5 border border-slate-200/70">
+                <p className="text-xs text-slate-500 font-medium mb-1">Email Google Tujuan</p>
+                <p className="font-semibold text-slate-900 break-all">
+                  {googleStatus.targetEmail || <span className="text-slate-400 italic font-normal">Belum terhubung</span>}
+                </p>
+              </div>
+              <div className="bg-slate-50/80 rounded-xl p-3.5 border border-slate-200/70">
+                <p className="text-xs text-slate-500 font-medium mb-1">Terakhir Sinkronisasi</p>
+                <p className="font-semibold text-slate-900">
+                  {googleStatus.lastSyncAt
+                    ? new Date(googleStatus.lastSyncAt).toLocaleString("id-ID", {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      })
+                    : "Belum pernah"}
+                </p>
+              </div>
+              <div className="bg-slate-50/80 rounded-xl p-3.5 border border-slate-200/70">
+                <p className="text-xs text-slate-500 font-medium mb-1">Total Pelanggan Aktif</p>
+                <p className="font-semibold text-emerald-700">
+                  {googleStatus.totalPelanggan ?? 0} Kontak
+                </p>
+              </div>
+            </div>
+
+            {/* Tombol Aksi Otorisasi & Sinkronisasi */}
+            <div className="flex items-center gap-3 flex-wrap pt-2 border-t border-slate-100">
+              {!googleStatus.authorized ? (
+                googleStatus.authUrl ? (
+                  <a
+                    href={googleStatus.authUrl}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-all"
+                  >
+                    <span>🔗</span> Hubungkan Akun Google
+                  </a>
+                ) : (
+                  <div className="text-xs text-amber-800 bg-amber-50 px-3.5 py-2.5 rounded-xl border border-amber-200">
+                    Isi <code>GOOGLE_CLIENT_ID</code> dan <code>GOOGLE_CLIENT_SECRET</code> di file <code>.env</code> terlebih dahulu untuk mengaktifkan sinkronisasi otomatis.
+                  </div>
+                )
+              ) : (
+                <>
+                  <button
+                    onClick={handleGoogleSync}
+                    disabled={googleSyncing}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs shadow-sm transition-all"
+                  >
+                    <span>{googleSyncing ? "⏳" : "🔄"}</span>
+                    {googleSyncing ? "Sedang Sinkronisasi..." : "Sinkronkan Kontak ke Google Sekarang"}
+                  </button>
+                  <button
+                    onClick={handleGoogleDisconnect}
+                    disabled={googleDisconnecting}
+                    className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold transition-all"
+                  >
+                    <span>✕</span> Putuskan Akun
+                  </button>
+                </>
+              )}
+
+              {/* Unduh File Cadangan Langsung */}
+              <a
+                href="/api/pelanggan/export-google-contacts?format=csv"
+                download
+                className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-bold transition-all ml-auto"
+                title="Unduh format CSV resmi Google Contacts untuk diimpor manual"
+              >
+                <span>📥</span> Unduh CSV Google Contacts
+              </a>
+              <a
+                href="/api/pelanggan/export-google-contacts?format=vcf"
+                download
+                className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold transition-all"
+                title="Unduh format vCard .vcf universal"
+              >
+                <span>📱</span> Unduh vCard (.vcf)
+              </a>
+            </div>
+
+            {/* Info Panduan & Callback */}
+            <div className="bg-sky-50 rounded-xl p-3.5 border border-sky-200 text-xs">
+              <p className="font-semibold text-sky-900 mb-1">🔗 Authorized Redirect URI (isi di Google Cloud Console → Credentials → OAuth 2.0 Client ID):</p>
+              <code className="text-xs text-sky-800 break-all bg-white px-2.5 py-1 rounded-lg border border-sky-100 font-mono block">
+                {googleStatus.redirectUri || "http://localhost:3000/api/integrasi/google-contacts/callback"}
+              </code>
+              <p className="mt-2 text-sky-700">
+                💡 Semua kontak yang disinkronkan akan diberi label grup <b>Pelanggan WastePay</b> dan diformat rapi dengan nomor telepon, alamat, catatan status, serta kode pelanggan unik.
+              </p>
+            </div>
           </div>
         )}
       </div>

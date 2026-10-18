@@ -73,6 +73,13 @@ const API_ROLE_MAP: Record<string, number> = {
   // Duitku status (admin+)
   "GET:/api/duitku/status": 50,
 
+  // Integrasi Google Contacts (admin+)
+  "GET:/api/integrasi/google-contacts": 50,
+  "POST:/api/integrasi/google-contacts": 50,
+  "PUT:/api/integrasi/google-contacts": 50,
+  "DELETE:/api/integrasi/google-contacts": 50,
+  "GET:/api/pelanggan/export-google-contacts": 10,
+
   // Pelanggan — PUT dibuka utk petugas survei (guard jabatan di handler)
   "GET:/api/pelanggan": 10,
   "GET:/api/pelanggan/": 10,
@@ -312,7 +319,8 @@ export async function proxy(request: NextRequest) {
   if (
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/publik") ||
-    pathname.startsWith("/api/mobile")
+    pathname.startsWith("/api/mobile") ||
+    pathname.startsWith("/api/integrasi/google-contacts/callback")
   ) {
     return NextResponse.next();
   }

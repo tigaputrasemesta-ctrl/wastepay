@@ -114,6 +114,32 @@ export default async function PelangganCetakPage({
             >
               📊 Ekspor Excel
             </a>
+            <a 
+              href={`/api/pelanggan/export-google-contacts?${new URLSearchParams({
+                format: "csv",
+                ...(params.status ? { status: params.status } : {}),
+                ...(params.kategori ? { kategori: params.kategori } : {}),
+                ...(params.kelurahanId ? { kelurahanId: params.kelurahanId } : {})
+              }).toString()}`}
+              className="pl-toolbar-btn"
+              style={{ backgroundColor: "#2563eb", color: "white", padding: "8px 16px", borderRadius: "6px", textDecoration: "none", fontSize: "14px", fontWeight: "bold" }}
+              title="Ekspor CSV siap impor di contacts.google.com"
+            >
+              📇 Google Contacts (.csv)
+            </a>
+            <a 
+              href={`/api/pelanggan/export-google-contacts?${new URLSearchParams({
+                format: "vcf",
+                ...(params.status ? { status: params.status } : {}),
+                ...(params.kategori ? { kategori: params.kategori } : {}),
+                ...(params.kelurahanId ? { kelurahanId: params.kelurahanId } : {})
+              }).toString()}`}
+              className="pl-toolbar-btn"
+              style={{ backgroundColor: "#4f46e5", color: "white", padding: "8px 16px", borderRadius: "6px", textDecoration: "none", fontSize: "14px", fontWeight: "bold" }}
+              title="Ekspor vCard untuk HP / Kontak"
+            >
+              📱 vCard (.vcf)
+            </a>
             <Link href="/pelanggan" className="pl-toolbar-link">
               &larr; Kembali ke Data Pelanggan
             </Link>
