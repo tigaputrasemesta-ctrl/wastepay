@@ -108,10 +108,10 @@ export async function POST(request: Request) {
     // (lihat hitungRincian di src/lib/invoice.ts)
     const totalTagihan = hitungRincian(tagihan.jumlah, tagihan.denda).total;
 
-    // Biaya admin Rp 1.000 untuk pembayaran QRIS — dibebankan ke pelanggan
+    // Biaya admin Rp 1.500 untuk pembayaran QRIS — dibebankan ke pelanggan
     const metodeUpper = String(paymentMethod).trim().toUpperCase();
     const isQris = metodeUpper === "QR" || metodeUpper === "SQ" || metodeUpper === "SP";
-    const biayaAdmin = isQris ? 1000 : 0;
+    const biayaAdmin = isQris ? 1500 : 0;
     const total = totalTagihan + biayaAdmin;
 
     // OrderId acak (tidak dapat ditebak/enumerasi) — hindari IDOR via endpoint status publik

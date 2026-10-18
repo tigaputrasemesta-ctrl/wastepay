@@ -4,7 +4,7 @@ import { channelAllowed, DUITKU_METHODS } from "@/lib/duitku-channels";
 import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
 
 const FEE_CODES = new Set<string>(["SP", "SQ"]);
-const BIAYA_ADMIN = 1000;
+const BIAYA_ADMIN = 1500;
 
 /**
  * GET /api/publik/duitku/methods?amount=50000

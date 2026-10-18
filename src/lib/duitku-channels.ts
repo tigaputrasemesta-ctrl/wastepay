@@ -66,6 +66,6 @@ export type DuitkuPaymentMethod = {
  * belum aktif/gagal. id dipakai sebagai paymentMethod Duitku.
  */
 export const DUITKU_METHODS: any[] = [
-  { value: "SP", label: "ShopeePay", icon: "📱", imageUrl: "https://images.duitku.com/hotlink-ok/SP.PNG", totalFee: "1000" },
-  { value: "SQ", label: "NusaPay QRIS", icon: "📱", imageUrl: "https://images.duitku.com/hotlink-ok/SQ.PNG", totalFee: "1000" },
+  { value: "SP", label: "ShopeePay", icon: "📱", imageUrl: "https://images.duitku.com/hotlink-ok/SP.PNG", totalFee: "1500" },
+  { value: "SQ", label: "NusaPay QRIS", icon: "📱", imageUrl: "https://images.duitku.com/hotlink-ok/SQ.PNG", totalFee: "1500" },
 ];
