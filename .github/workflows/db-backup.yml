@@ -31,7 +31,10 @@ jobs:
           TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
           echo "Memulai backup database ke wastepay_backup_${TIMESTAMP}.sql.zst..."
 
-          pg_dump "$SUPABASE_DB_URL" \
+          # Otomatis alihkan port 6543 (transaction) ke 5432 (session pooler) agar pg_dump tidak error
+          TARGET_URL=$(echo "$SUPABASE_DB_URL" | sed 's/:6543/:5432/' | sed 's/[?&]pgbouncer=true//g')
+
+          pg_dump "$TARGET_URL" \
             --schema=public \
             --no-owner \
             --no-privileges \
