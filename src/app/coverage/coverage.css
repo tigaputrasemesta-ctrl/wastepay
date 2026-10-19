@@ -1,60 +1,58 @@
 /* Clean Municipal & Community Coverage Map Styles — UPS HERU Depok */
 
-/* Leaflet container full size and neutral background */
+/* Leaflet container */
 .clean-coverage-map .leaflet-container {
-  background-color: #f1f5f9;
+  background-color: #f8fafc;
   font-family: inherit;
+  width: 100%;
+  height: 100%;
 }
 
-/* Cluster Badges (Area Warga Terdaftar) */
-.cluster-badge-container {
+/* Cluster Pins (Area Warga Terdaftar) */
+.clean-cluster-pin {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  cursor: pointer;
 }
 
-.cluster-badge {
+.clean-cluster-pin-inner {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   background: #ffffff;
   color: #0f172a;
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: 9999px;
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 11px;
-  font-weight: 700;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12), 0 1px 3px rgba(15, 23, 42, 0.08);
-  border: 1.5px solid #10b981;
+  font-weight: 800;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.12), 0 1px 3px rgba(15, 23, 42, 0.08);
+  border: 1.5px solid #059669;
   white-space: nowrap;
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
   user-select: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
 
-.cluster-badge:hover {
-  transform: translateY(-2px) scale(1.04);
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.28);
-  border-color: #059669;
+.clean-cluster-pin-inner:hover {
+  transform: translateY(-2px) scale(1.06);
+  box-shadow: 0 6px 16px rgba(5, 150, 105, 0.3);
+  border-color: #047857;
 }
 
-.cluster-badge-selected {
+.clean-cluster-pin-selected .clean-cluster-pin-inner {
   background: #059669 !important;
   color: #ffffff !important;
   border-color: #047857 !important;
-  box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4) !important;
+  box-shadow: 0 6px 20px rgba(5, 150, 105, 0.45) !important;
 }
 
-.cluster-badge-amber {
+.clean-cluster-pin-amber .clean-cluster-pin-inner {
   border-color: #f59e0b;
 }
 
-.cluster-badge-amber:hover {
-  border-color: #d97706;
-  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.28);
-}
-
-.cluster-badge-count {
+.clean-cluster-pin-count {
   background: #ecfdf5;
   color: #047857;
   padding: 1px 6px;
@@ -64,12 +62,12 @@
   letter-spacing: -0.2px;
 }
 
-.cluster-badge-amber .cluster-badge-count {
+.clean-cluster-pin-amber .clean-cluster-pin-count {
   background: #fef3c7;
   color: #b45309;
 }
 
-.cluster-badge-selected .cluster-badge-count {
+.clean-cluster-pin-selected .clean-cluster-pin-count {
   background: rgba(255, 255, 255, 0.25);
   color: #ffffff;
 }
@@ -77,8 +75,8 @@
 /* User Location GPS Dot (Clean Blue Pin with Gentle Ripple) */
 .clean-user-marker {
   position: relative;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -90,34 +88,34 @@
   background: #2563eb;
   border: 2.5px solid #ffffff;
   border-radius: 9999px;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.45);
   position: relative;
   z-index: 2;
 }
 
-.clean-user-ripple {
+.clean-user-halo {
   position: absolute;
   width: 32px;
   height: 32px;
   background: rgba(37, 99, 235, 0.2);
-  border: 1px solid rgba(37, 99, 235, 0.4);
+  border: 1px solid rgba(37, 99, 235, 0.35);
   border-radius: 9999px;
-  animation: clean-ripple 2.2s infinite ease-out;
+  animation: clean-halo 2.2s infinite ease-out;
 }
 
-@keyframes clean-ripple {
+@keyframes clean-halo {
   0% {
-    transform: scale(0.7);
+    transform: scale(0.6);
     opacity: 0.9;
   }
   100% {
-    transform: scale(2.0);
+    transform: scale(1.8);
     opacity: 0;
   }
 }
 
-/* Leaflet Modern Clean Tooltips */
-.clean-map-tooltip {
+/* Leaflet Clean Tooltips */
+.clean-tooltip {
   background: #ffffff !important;
   border: 1px solid #e2e8f0 !important;
   border-radius: 12px !important;
@@ -126,17 +124,17 @@
   font-size: 11px !important;
   font-weight: 600 !important;
   padding: 6px 10px !important;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1) !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12) !important;
 }
 
-.clean-map-tooltip::before {
+.clean-tooltip::before {
   display: none !important;
 }
 
 /* Custom Scrollbar for HUD / Sidebar */
 .clean-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 .clean-scrollbar::-webkit-scrollbar-track {
   background: #f1f5f9;
