@@ -4,7 +4,7 @@ import "leaflet/dist/leaflet.css";
 import "@/lib/leaflet-setup";
 import "@/app/(public)/coverage/coverage.css";
 
-import { useEffect, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import L from "leaflet";
 import {
   MapContainer,
@@ -17,6 +17,7 @@ import {
 } from "react-leaflet";
 import { Plus, Minus, RotateCcw } from "lucide-react";
 import { type ActiveBlock } from "@/lib/coverage-shared";
+import { getMapTileConfig, type MapTileType } from "@/lib/map-tile";
 
 // Icon generator untuk pin klaster warga terdaftar
 function createClusterPin(block: ActiveBlock, isSelected = false) {
@@ -143,18 +144,33 @@ export default function CoverageLeafletMap({
   onBlockClick,
   onResetCamera,
 }: CoverageLeafletMapProps) {
-  // Tile URL: Jika ada NEXT_PUBLIC_MAPBOX_TOKEN gunakan Mapbox; default ke CartoDB Voyager / OpenStreetMap (100% Free & No API Key Required)
-  const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
-  const tileUrl = mapboxToken
-    ? `https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/256/{z}/{x}/{y}@2x?access_token=${mapboxToken}`
-    : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png";
-
-  const tileAttribution = mapboxToken
-    ? '&copy; <a href="https://www.mapbox.com/">Mapbox</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
+  const [tileMode, setTileMode] = useState<MapTileType>("osm");
+  const tileConfig = getMapTileConfig(tileMode);
 
   return (
     <div className="relative w-full h-full min-h-[380px] lg:min-h-[540px] clean-coverage-map">
+      {/* Map Tile Switcher */}
+      <div className="absolute right-3 top-3 z-30 pointer-events-auto bg-white/95 backdrop-blur-md border border-slate-200 p-1 rounded-xl shadow-md flex items-center gap-1 text-xs font-bold">
+        <button
+          type="button"
+          onClick={() => setTileMode("osm")}
+          className={`px-2.5 py-1 rounded-lg transition-colors ${
+            tileMode === "osm" ? "bg-emerald-700 text-white font-extrabold shadow-sm" : "text-slate-600 hover:text-slate-900"
+          }`}
+        >
+          🗺️ Peta Jalan
+        </button>
+        <button
+          type="button"
+          onClick={() => setTileMode("esri-satellite")}
+          className={`px-2.5 py-1 rounded-lg transition-colors ${
+            tileMode === "esri-satellite" ? "bg-emerald-700 text-white font-extrabold shadow-sm" : "text-slate-600 hover:text-slate-900"
+          }`}
+        >
+          🛰️ Satelit
+        </button>
+      </div>
+
       <MapContainer
         center={[-6.4385, 106.8355]}
         zoom={14}
@@ -164,10 +180,11 @@ export default function CoverageLeafletMap({
         className="w-full h-full"
       >
         <TileLayer
-          attribution={tileAttribution}
-          url={tileUrl}
-          subdomains={mapboxToken ? [] : "abcd"}
-          maxZoom={19}
+          key={tileMode}
+          attribution={tileConfig.attribution}
+          url={tileConfig.url}
+          subdomains={tileConfig.subdomains}
+          maxZoom={tileConfig.maxZoom}
         />
 
         <MapCameraController target={cameraTarget} onMapClick={onMapClick} />
