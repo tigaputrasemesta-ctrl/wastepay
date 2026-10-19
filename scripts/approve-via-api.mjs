@@ -88,6 +88,17 @@ async function runApproval({ dryRun = false } = {}) {
     console.log(`${progress} Memproses "${p.nama}" (${p.kodePelanggan}) - Zona: ${zonaNama}...`);
 
     try {
+      // 1. Ubah status perantara ke 'libur' agar backend tidak auto-generate tagihan Oktober
+      await fetch(`${BASE_URL}/api/pelanggan/${p.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: COOKIE,
+        },
+        body: JSON.stringify({ status: "libur" }),
+      });
+
+      // 2. Aktifkan pelanggan & set siklus tagihan perdana ke 1 November 2026
       const updateRes = await fetch(`${BASE_URL}/api/pelanggan/${p.id}`, {
         method: "PUT",
         headers: {
@@ -99,12 +110,32 @@ async function runApproval({ dryRun = false } = {}) {
           kelurahanId: p.kelurahanId,
           wilayahId: p.wilayahId,
           zonaId: p.wilayah?.zonaId || p.wilayah?.zona?.id,
+          createdAt: "2026-11-01T00:00:00.000Z",
         }),
       });
 
       if (updateRes.ok) {
-        console.log(`       ✅ Sukses di-approve & diaktifkan.`);
+        console.log(`       ✅ Sukses di-approve & diaktifkan (Siklus Perdana: 1 November 2026).`);
         successCount++;
+
+        // 3. Kirim WhatsApp konfirmasi persetujuan (tagihan mulai 1 November)
+        try {
+          await fetch(`${BASE_URL}/api/notifikasi`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Cookie: COOKIE,
+            },
+            body: JSON.stringify({
+              tipe: "approval",
+              judul: "Pendaftaran Disetujui — UPS HERU DEPOK",
+              pesan: `Halo ${p.nama},\n\nSelamat! Pendaftaran layanan pengangkutan sampah Anda telah disetujui dan telah aktif.\n\n🆔 Kode Pelanggan: ${p.kodePelanggan || p.noTelepon}\n📍 Zona: ${zonaNama}\n📅 Siklus Tagihan: Tagihan perdana Anda akan diterbitkan pada tanggal 1 November 2026 secara otomatis.\n\nTerima kasih telah bergabung bersama UPS HERU Depok.`,
+              pelangganId: p.id,
+            }),
+          });
+        } catch {
+          // Abaikan jika notifikasi WA gagal/skip
+        }
       } else {
         const err = await updateRes.json().catch(() => ({}));
         console.error(`       ❌ Gagal:`, err.error || updateRes.statusText);
