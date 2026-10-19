@@ -33,6 +33,21 @@ const nextConfig: NextConfig = {
     ],
   },
 
+  async redirects() {
+    return [
+      {
+        source: "/jangkauan",
+        destination: "/coverage",
+        permanent: true,
+      },
+      {
+        source: "/peta-coverage",
+        destination: "/coverage",
+        permanent: true,
+      },
+    ];
+  },
+
   async headers() {
     const isProd = process.env.NODE_ENV === "production";
     return [

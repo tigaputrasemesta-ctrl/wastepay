@@ -16,6 +16,7 @@ import {
   X,
   MessageCircle,
   ChevronRight,
+  Compass,
 } from "lucide-react";
 
 interface NavItem {
@@ -26,6 +27,12 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
+  {
+    label: "Cek Jangkauan",
+    href: "/coverage",
+    description: "Peta area terlayani & cek alamat Anda (Starlink Style)",
+    icon: <Compass className="w-5 h-5" />,
+  },
   {
     label: "Lacak Armada",
     href: "/lacak",

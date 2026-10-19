@@ -1,0 +1,138 @@
+/* Starlink Coverage Map Styles */
+
+/* Base map tile styling */
+.dark-starlink-tiles .leaflet-tile-pane {
+  filter: invert(100%) hue-rotate(180deg) brightness(92%) contrast(140%) saturate(75%);
+}
+
+/* Starlink Radar Beacon Animation */
+@keyframes starlink-radar-wave {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.starlink-radar-container {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.starlink-radar-core {
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background-color: #10b981;
+  box-shadow: 0 0 12px #10b981, 0 0 20px rgba(16, 185, 129, 0.6);
+  border: 2px solid #ffffff;
+  position: relative;
+  z-index: 2;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.starlink-radar-container:hover .starlink-radar-core {
+  transform: scale(1.4);
+}
+
+.starlink-radar-wave {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  background: rgba(16, 185, 129, 0.4);
+  border: 1.5px solid rgba(52, 211, 153, 0.8);
+  animation: starlink-radar-wave 2.2s infinite ease-out;
+  pointer-events: none;
+}
+
+.starlink-radar-amber .starlink-radar-core {
+  background-color: #f59e0b;
+  box-shadow: 0 0 12px #f59e0b, 0 0 20px rgba(245, 158, 11, 0.6);
+}
+
+.starlink-radar-amber .starlink-radar-wave {
+  background: rgba(245, 158, 11, 0.4);
+  border-color: rgba(251, 191, 36, 0.8);
+}
+
+/* User Target Pin Marker (Crosshair GPS) */
+.user-target-marker {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-target-pulse {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  border-radius: 9999px;
+  background: rgba(56, 189, 248, 0.25);
+  border: 2px solid #38bdf8;
+  animation: starlink-radar-wave 1.8s infinite ease-out;
+}
+
+.user-target-center {
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: #38bdf8;
+  border: 3px solid #ffffff;
+  box-shadow: 0 0 16px #38bdf8;
+  position: relative;
+  z-index: 3;
+}
+
+/* Sleek Leaflet Tooltip for Starlink */
+.starlink-tooltip {
+  background: rgba(10, 15, 29, 0.92) !important;
+  border: 1px solid rgba(16, 185, 129, 0.5) !important;
+  border-radius: 8px !important;
+  color: #f8fafc !important;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  padding: 4px 8px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 10px rgba(16, 185, 129, 0.3) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+.starlink-tooltip::before {
+  display: none !important;
+}
+
+.starlink-tooltip-amber {
+  border-color: rgba(245, 158, 11, 0.6) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 10px rgba(245, 158, 11, 0.3) !important;
+}
+
+/* Custom Scrollbar for HUD */
+.hud-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.hud-scrollbar::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.4);
+}
+.hud-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(51, 65, 85, 0.8);
+  border-radius: 9999px;
+}
+.hud-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.6);
+}

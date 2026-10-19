@@ -57,6 +57,7 @@ export default function PublicLayout({
             <div className="space-y-2.5">
               <p className="font-bold text-slate-900 uppercase tracking-wider text-[11px]">Layanan Warga</p>
               <ul className="space-y-2 text-slate-600">
+                <li><Link href="/coverage" className="hover:text-emerald-800 text-emerald-700 font-bold">Peta Jangkauan (Coverage)</Link></li>
                 <li><Link href="/lacak" className="hover:text-emerald-800">Lacak Truk Sampah</Link></li>
                 <li><Link href="/bayar" className="hover:text-emerald-800">Cek Tagihan Bulanan</Link></li>
                 <li><Link href="/tarif" className="hover:text-emerald-800">Daftar Paket Retribusi</Link></li>
