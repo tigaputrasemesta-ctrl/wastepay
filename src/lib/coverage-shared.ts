@@ -37,6 +37,21 @@ export type KelurahanCoverage = {
   lng: number;
 };
 
+export type NearbyClusterRecommendation = {
+  id: string;
+  nama: string;
+  kelurahan: string;
+  kecamatan: string;
+  lat: number;
+  lng: number;
+  pelangganCount: number;
+  jarakMeter: number;
+  jadwal: string;
+  armada: string;
+  status: "AKTIF" | "PERLUASAN";
+  alasanRekomendasi: string;
+};
+
 export type CoverageCheckResult = {
   status: CoverageStatus;
   statusLabel: string;
@@ -51,6 +66,7 @@ export type CoverageCheckResult = {
   ctaText: string;
   ctaUrl: string;
   whatsappUrl: string;
+  rekomendasiSekitar: NearbyClusterRecommendation[];
 };
 
 // 23 Blok & Zona Aktif Operasional UPS HERU Kota Depok
@@ -473,22 +489,41 @@ export function checkCoverageLocation(lat: number, lng: number): CoverageCheckRe
   const namaKecamatan = kec?.nama || zonaDeteksi?.kecamatan || "Kota Depok";
   const namaKelurahan = zonaDeteksi?.kelurahan || (kec?.nama === "CILODONG" ? "Cilodong" : "Depok");
 
-  // Cari blok operasional terdekat & jaraknya
-  let blokTerdekat: ActiveBlock = BLOK_OPERASIONAL_AKTIF[0];
-  let jarakTerkecil = jarakMeter(p, [blokTerdekat.lat, blokTerdekat.lng]);
-
-  for (const b of BLOK_OPERASIONAL_AKTIF) {
-    const d = jarakMeter(p, [b.lat, b.lng]);
-    if (d < jarakTerkecil) {
-      jarakTerkecil = d;
-      blokTerdekat = b;
+  // Hitung jarak ke seluruh 23 blok operasional & urutkan dari yang terdekat
+  const sortedBlocks: NearbyClusterRecommendation[] = BLOK_OPERASIONAL_AKTIF.map((b) => {
+    const d = Math.round(jarakMeter(p, [b.lat, b.lng]));
+    let alasan = "Klaster rute operasional terdekat di wilayah ini.";
+    if (d <= 250) {
+      alasan = `Sangat dekat (±${d}m)! Truk armada sudah rutin melintasi jalan ini (${b.jadwal}).`;
+    } else if (d <= 650) {
+      alasan = `Dalam lingkar rute aktif (±${d}m). Pendaftaran rumah baru langsung diintegrasikan dengan jadwal warga sekitar.`;
+    } else if (d <= 1500) {
+      alasan = `Berjarak ±${(d / 1000).toFixed(1)} km dari ${b.nama}. Rute penjemputan mudah disambungkan ke jalan rumah Anda.`;
+    } else {
+      alasan = `Klaster aktif terdekat di Kel. ${b.kelurahan} (±${(d / 1000).toFixed(1)} km).`;
     }
-  }
+    return {
+      id: b.id,
+      nama: b.nama,
+      kelurahan: b.kelurahan,
+      kecamatan: b.kecamatan,
+      lat: b.lat,
+      lng: b.lng,
+      pelangganCount: b.pelangganCount,
+      jarakMeter: d,
+      jadwal: b.jadwal,
+      armada: b.armada,
+      status: b.status,
+      alasanRekomendasi: alasan,
+    };
+  }).sort((a, b) => a.jarakMeter - b.jarakMeter);
 
-  const jarakRound = Math.round(jarakTerkecil);
+  const blokTerdekat = sortedBlocks[0];
+  const jarakRound = blokTerdekat.jarakMeter;
+  const rekomendasiSekitar = sortedBlocks.slice(0, 4);
 
   // Jika di luar batas Kota Depok dan sangat jauh dari blok terdekat (> 7 km)
-  if (!dalamBboxDepok && jarakTerkecil > 7000) {
+  if (!dalamBboxDepok && jarakRound > 7000) {
     const waText = encodeURIComponent(
       `Halo CS UPS HERU, saya ingin menanyakan cakupan layanan sampah untuk area di luar Depok (Koordinat: ${lat.toFixed(5)}, ${lng.toFixed(5)}). Apakah ada rencana ekspansi armada ke area kami?`
     );
@@ -502,20 +537,21 @@ export function checkCoverageLocation(lat: number, lng: number): CoverageCheckRe
       terlayani: false,
       jadwalPengangkutan: "-",
       armada: "-",
-      pesan: `Koordinat ini berada di luar batas operasional Kota Depok (berjarak ±${(jarakRound / 1000).toFixed(1)} km dari hub terdekat). Saat ini layanan UPS HERU berfokus di Kota Depok.`,
+      pesan: `Koordinat ini berada di luar batas operasional Kota Depok (berjarak ±${(jarakRound / 1000).toFixed(1)} km dari klaster warga terdaftar terdekat: ${blokTerdekat.nama}).`,
       ctaText: "Konsultasi Wilayah Khusus via WA",
       ctaUrl: `https://wa.me/6281400782617?text=${waText}`,
       whatsappUrl: `https://wa.me/6281400782617?text=${waText}`,
+      rekomendasiSekitar,
     };
   }
 
   // A. TERLAYANI AKTIF:
   // Masuk radius blok operasional aktif (di Cilodong/Kalibaru/Kalimulya/Jatimulya)
   const isInsideActiveBlockRadius =
-    blokTerdekat.status === "AKTIF" && jarakTerkecil <= (blokTerdekat.radiusMeter || 650);
+    blokTerdekat.status === "AKTIF" && jarakRound <= 750;
   const isNearActiveHub =
     blokTerdekat.status === "AKTIF" &&
-    jarakTerkecil <= 1200 &&
+    jarakRound <= 1200 &&
     ["Kalibaru", "Cilodong", "Kalimulya", "Jatimulya"].includes(blokTerdekat.kelurahan);
 
   if (isInsideActiveBlockRadius || isNearActiveHub) {
@@ -526,7 +562,7 @@ export function checkCoverageLocation(lat: number, lng: number): CoverageCheckRe
 
     return {
       status: "AKTIF",
-      statusLabel: "Terlayani Aktif (Available Now)",
+      statusLabel: "Terlayani Aktif (Jalur Sudah Lewat)",
       kelurahan: blokTerdekat.kelurahan,
       kecamatan: blokTerdekat.kecamatan,
       zonaTerdekat: blokTerdekat.nama,
@@ -534,16 +570,17 @@ export function checkCoverageLocation(lat: number, lng: number): CoverageCheckRe
       terlayani: true,
       jadwalPengangkutan: blokTerdekat.jadwal,
       armada: blokTerdekat.armada,
-      pesan: `Kabar baik! Lokasi Anda berada tepat di dalam jaringan pengangkutan aktif UPS HERU (${blokTerdekat.nama}). Armada kami melayani penjemputan rutin ${blokTerdekat.jadwal}.`,
+      pesan: `Kabar baik! Lokasi Anda berada di sekitar area warga terdaftar (${blokTerdekat.nama} — ${blokTerdekat.pelangganCount} KK aktif). Armada kami melayani penjemputan rutin ${blokTerdekat.jadwal}.`,
       ctaText: "Daftar Berlangganan Sekarang",
       ctaUrl: regUrl,
       whatsappUrl: `https://wa.me/6281400782617?text=${waText}`,
+      rekomendasiSekitar,
     };
   }
 
   // B. AREA PERLUASAN:
   // Jarak 1.2 km – 3.5 km dari hub aktif atau berada di Kecamatan Sukmajaya / Sukamaju
-  if (jarakTerkecil <= 3500 || namaKecamatan.toUpperCase() === "SUKMAJAYA" || namaKelurahan.toLowerCase() === "sukamaju") {
+  if (jarakRound <= 3500 || namaKecamatan.toUpperCase() === "SUKMAJAYA" || namaKelurahan.toLowerCase() === "sukamaju") {
     const regUrl = `/daftar?status=calon&kelurahan=${encodeURIComponent(namaKelurahan)}&lat=${lat.toFixed(5)}&lng=${lng.toFixed(5)}`;
     const waText = encodeURIComponent(
       `Halo Tim UPS HERU, saya ingin mendaftarkan lingkungan/rumah saya di Kel. ${namaKelurahan}, Kec. ${namaKecamatan} (berjarak ±${(jarakRound / 1000).toFixed(1)} km dari ${blokTerdekat.nama}) untuk prioritas PERLUASAN RUTE pengangkutan sampah.`
@@ -551,7 +588,7 @@ export function checkCoverageLocation(lat: number, lng: number): CoverageCheckRe
 
     return {
       status: "PERLUASAN",
-      statusLabel: "Area Rencana Perluasan (Expanding Soon)",
+      statusLabel: "Area Rencana Perluasan",
       kelurahan: namaKelurahan,
       kecamatan: namaKecamatan,
       zonaTerdekat: blokTerdekat.nama,
@@ -559,10 +596,11 @@ export function checkCoverageLocation(lat: number, lng: number): CoverageCheckRe
       terlayani: false,
       jadwalPengangkutan: "Persiapan Jalur Armada",
       armada: "Rute Perluasan Bertahap",
-      pesan: `Lokasi Anda berjarak ±${(jarakRound / 1000).toFixed(1)} km dari rute aktif (${blokTerdekat.nama}). Daftarkan alamat Anda atau lingkungan RT/RW Anda sekarang untuk mempercepat pembukaan jadwal penjemputan resmi!`,
+      pesan: `Lokasi Anda berjarak ±${(jarakRound / 1000).toFixed(1)} km dari rute aktif (${blokTerdekat.nama} - ${blokTerdekat.pelangganCount} KK terdaftar). Daftarkan alamat Anda sekarang untuk mempercepat pembukaan jadwal penjemputan resmi!`,
       ctaText: "Ajukan Pembukaan Rute Baru",
       ctaUrl: regUrl,
       whatsappUrl: `https://wa.me/6281400782617?text=${waText}`,
+      rekomendasiSekitar,
     };
   }
 
@@ -583,9 +621,10 @@ export function checkCoverageLocation(lat: number, lng: number): CoverageCheckRe
     terlayani: false,
     jadwalPengangkutan: "Menunggu Kuota Kolektif",
     armada: "Armada Survey Wilayah",
-    pesan: `Wilayah ${namaKelurahan} (${namaKecamatan}) dapat dilayani dengan skema kolektif perumahan atau pengurus RT/RW. Daftarkan minat warga Anda untuk penjadwalan survei langsung oleh koordinator lapangan.`,
+    pesan: `Wilayah ${namaKelurahan} (${namaKecamatan}) dapat dilayani dengan skema kolektif perumahan atau pengurus RT/RW. Klaster warga terdaftar terdekat berada di ${blokTerdekat.nama} (±${(jarakRound / 1000).toFixed(1)} km).`,
     ctaText: "Ajukan Survei Kolektif RT/RW",
     ctaUrl: regUrl,
     whatsappUrl: `https://wa.me/6281400782617?text=${waText}`,
+    rekomendasiSekitar,
   };
 }

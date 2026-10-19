@@ -18,6 +18,9 @@ describe("coverage-service: checkCoverageLocation", () => {
     expect(res.ctaText).toBe("Daftar Berlangganan Sekarang");
     expect(res.ctaUrl).toContain("/daftar?kelurahan=Kalibaru");
     expect(res.jadwalPengangkutan).toContain("Senin");
+    expect(res.rekomendasiSekitar.length).toBeGreaterThan(0);
+    expect(res.rekomendasiSekitar[0].pelangganCount).toBeGreaterThan(0);
+    expect(res.rekomendasiSekitar[0].alasanRekomendasi).toBeDefined();
   });
 
   it("titik di Blok Bakung Cilodong terdeteksi AKTIF", () => {
