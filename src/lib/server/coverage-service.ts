@@ -98,7 +98,7 @@ export async function getCoverageData() {
 
   return {
     meta: {
-      title: "Starlink-Style Coverage Area Map — UPS HERU Depok",
+      title: "Peta Wilayah Layanan 23 Blok — UPS HERU Depok",
       updatedAt: new Date().toISOString(),
       coverageArea: "Kota Depok, Jawa Barat",
     },
