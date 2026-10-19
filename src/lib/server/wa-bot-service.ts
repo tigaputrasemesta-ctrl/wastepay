@@ -12,7 +12,7 @@ export interface IncomingWaPayload {
 
 export interface BotProcessResult {
   reply: string;
-  intent: "MENU" | "TAGIHAN" | "JADWAL" | "KOMPLAIN" | "DAFTAR" | "ADMIN" | "FAQ";
+  intent: "MENU" | "TAGIHAN" | "JADWAL" | "KOMPLAIN" | "DAFTAR" | "ADMIN" | "COVERAGE" | "FAQ";
   pelangganId?: number;
   komplainId?: number;
 }
@@ -88,6 +88,50 @@ export async function processIncomingWaMessage(
     ].join("\n");
 
     return { reply, intent: "DAFTAR", pelangganId: pelanggan?.id };
+  }
+
+  // Intent: COVERAGE AREA / JANGKAUAN WILAYAH
+  if (
+    lowerMsg.includes("coverage") ||
+    lowerMsg.includes("jangkauan") ||
+    lowerMsg.includes("area") ||
+    lowerMsg.includes("wilayah") ||
+    lowerMsg.includes("daerah") ||
+    lowerMsg.includes("lokasi") ||
+    lowerMsg.includes("bisa diangkut gak") ||
+    lowerMsg.includes("melayani mana") ||
+    lowerMsg.includes("apakah melayani")
+  ) {
+    const reply = [
+      `📍 *WILAYAH JANGKAUAN LAYANAN (COVERAGE AREA) — UPS HERU DEPOK* 🚛`,
+      ``,
+      `Halo ${sapaanNama},`,
+      `Saat ini armada UPS HERU aktif melayani pengangkutan sampah di wilayah *Kota Depok*, khususnya:`,
+      ``,
+      `🏙 *Kelurahan Utama Terlayani (Kecamatan Cilodong):*`,
+      `• Kelurahan Kalibaru`,
+      `• Kelurahan Kalimulya`,
+      `• Kelurahan Cilodong`,
+      `• Kelurahan Jatimulya`,
+      ``,
+      `🏘 *Blok & Zona Perumahan Aktif:*`,
+      `• Blok Bawah Dmiles + SMP 6`,
+      `• Blok H Puah & Blok Gg Niman`,
+      `• Blok Bakung & Jl. Raya Bakung`,
+      `• Blok Jalan Raya Cilodong`,
+      `• Blok Kebon Duren & Kp Bulak`,
+      `• Blok Sasak & Gg Umar`,
+      `• Blok Setu + Rafael Pete`,
+      `• Blok THR & YKP Kelapa`,
+      ``,
+      `🔍 *Lihat Peta Rute & Titik Live:*`,
+      `👉 *https://upsheru.com/peta*`,
+      ``,
+      `Ingin mendaftar atau memastikan apakah rumah Anda terjangkau?`,
+      `Ketik *DAFTAR* untuk registrasi online mandiri, atau ketik *ADMIN* untuk berbicara dengan tim survei kami. 🙏`,
+    ].join("\n");
+
+    return { reply, intent: "COVERAGE", pelangganId: pelanggan?.id };
   }
 
   // Intent B: BICARA DENGAN ADMIN / CS

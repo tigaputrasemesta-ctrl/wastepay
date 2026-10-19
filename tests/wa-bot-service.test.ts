@@ -194,4 +194,17 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
     expect(res.intent).toBe("ADMIN");
     expect(res.reply).toContain("Helpdesk & Admin Pusat");
   });
+
+  it("8. Menampilkan daftar coverage area saat pengguna menanyakan jangkauan/wilayah", async () => {
+    const res = await processIncomingWaMessage({
+      sender: "081299997777",
+      message: "apakah melayani area kalibaru?",
+    });
+
+    expect(res.intent).toBe("COVERAGE");
+    expect(res.reply).toContain("COVERAGE AREA");
+    expect(res.reply).toContain("Kelurahan Kalibaru");
+    expect(res.reply).toContain("Kelurahan Kalimulya");
+    expect(res.reply).toContain("https://upsheru.com/peta");
+  });
 });
