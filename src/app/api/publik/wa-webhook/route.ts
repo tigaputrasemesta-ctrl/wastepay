@@ -4,16 +4,39 @@ import { processIncomingWaMessage } from "@/lib/server/wa-bot-service";
 export const dynamic = "force-dynamic";
 
 /**
+ * OPTIONS /api/publik/wa-webhook
+ * Penanganan CORS preflight request.
+ */
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    },
+  });
+}
+
+/**
  * GET /api/publik/wa-webhook
  * Endpoint pengujian / verifikasi ketersediaan webhook oleh admin / Fonnte.
  */
 export async function GET() {
-  return NextResponse.json({
-    status: "ok",
-    service: "WastePay WhatsApp Bot Webhook (Fonnte Compatible)",
-    timestamp: new Date().toISOString(),
-    documentation: "Hubungkan URL ini ke Fonnte Dashboard: https://md.fonnte.com/ (Menu Device > Webhook)",
-  });
+  return NextResponse.json(
+    {
+      status: "ok",
+      service: "WastePay WhatsApp Bot Webhook (Fonnte Compatible)",
+      timestamp: new Date().toISOString(),
+      documentation: "Hubungkan URL ini ke Fonnte Dashboard: https://md.fonnte.com/ (Menu Device > Webhook)",
+    },
+    {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      },
+    }
+  );
 }
 
 /**
