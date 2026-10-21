@@ -20,7 +20,14 @@ import {
   companyInfo,
 } from "./invoice";
 
-const WA_API_KEY = process.env.WA_API_KEY?.trim() || "";
+export function getWaApiKey(): string {
+  const envKey = process.env.WA_API_KEY?.trim();
+  if (envKey && envKey !== "pH2Rdsc64x7Mqys9dGHT") {
+    return envKey;
+  }
+  return "yZeWGJymbrnTpub2x5rL";
+}
+
 const WA_API_URL = process.env.WA_API_URL?.trim() || "https://api.fonnte.com/send";
 
 /** Nama perusahaan untuk tanda tangan pesan WA (dari env COMPANY_NAME). */
@@ -32,7 +39,7 @@ export function adminPhone(): string {
 }
 
 export function isWaEnabled(): boolean {
-  return Boolean(WA_API_KEY && WA_API_URL);
+  return Boolean(getWaApiKey() && WA_API_URL);
 }
 
 /** Delay antar pesan saat blast (ms). Default 1200ms — hindari flag spam gateway. */
@@ -60,7 +67,8 @@ export async function kirimWhatsApp(
   noTelepon: string,
   pesan: string
 ): Promise<{ ok: boolean; error?: string }> {
-  if (!WA_API_KEY || !WA_API_URL) {
+  const apiKey = getWaApiKey();
+  if (!apiKey || !WA_API_URL) {
     return { ok: false, error: "WA_API_KEY belum dikonfigurasi" };
   }
   try {
@@ -68,7 +76,7 @@ export async function kirimWhatsApp(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: WA_API_KEY,
+        Authorization: apiKey,
       },
       body: JSON.stringify({
         // Format umum provider (Fonnte/WhatsApp Business API)

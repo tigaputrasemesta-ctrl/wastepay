@@ -68,10 +68,13 @@ export async function processIncomingWaMessage(
   // Intent A: DAFTAR BARU
   if (
     lowerMsg === "daftar" ||
-    lowerMsg === "registrasi" ||
+    lowerMsg.startsWith("daftar") ||
+    lowerMsg.includes("registrasi") ||
     lowerMsg.includes("pasang baru") ||
     lowerMsg.includes("daftar baru") ||
-    lowerMsg.includes("mau berlangganan")
+    lowerMsg.includes("mau langganan") ||
+    lowerMsg.includes("mau berlangganan") ||
+    lowerMsg.includes("cara daftar")
   ) {
     const reply = [
       `Halo ${sapaanNama}, selamat datang di layanan pengangkutan sampah resmi *UPS HERU Depok*! 🚛`,
@@ -161,8 +164,11 @@ export async function processIncomingWaMessage(
   // Intent C: JADWAL PENGANGKUTAN
   if (
     lowerMsg === "2" ||
-    lowerMsg === "jadwal" ||
+    lowerMsg.includes("jadwal") ||
     lowerMsg.includes("kapan diangkut") ||
+    lowerMsg.includes("kapan diambil") ||
+    lowerMsg.includes("diambil kapan") ||
+    lowerMsg.includes("diangkut kapan") ||
     lowerMsg.includes("hari apa") ||
     lowerMsg.includes("jadwal angkut") ||
     lowerMsg.includes("jadwal sampah")
@@ -221,12 +227,10 @@ export async function processIncomingWaMessage(
   // Intent D: CEK TAGIHAN & PEMBAYARAN
   if (
     lowerMsg === "1" ||
-    lowerMsg === "tagihan" ||
-    lowerMsg === "bayar" ||
-    lowerMsg === "iuran" ||
-    lowerMsg === "invoice" ||
-    lowerMsg.includes("cek tagihan") ||
-    lowerMsg.includes("mau bayar") ||
+    lowerMsg.includes("tagihan") ||
+    lowerMsg.includes("bayar") ||
+    lowerMsg.includes("iuran") ||
+    lowerMsg.includes("invoice") ||
     lowerMsg.includes("rekening") ||
     lowerMsg.includes("transfer")
   ) {
@@ -299,12 +303,17 @@ export async function processIncomingWaMessage(
   const isKomplainTrigger =
     lowerMsg === "3" ||
     lowerMsg.startsWith("komplain") ||
+    lowerMsg.includes("komplain") ||
     lowerMsg.startsWith("lapor") ||
+    lowerMsg.includes("lapor") ||
     lowerMsg.startsWith("keluhan") ||
+    lowerMsg.includes("keluhan") ||
     lowerMsg.includes("belum diangkut") ||
     lowerMsg.includes("belum diambil") ||
     lowerMsg.includes("sampah menumpuk") ||
     lowerMsg.includes("sampah numpuk") ||
+    lowerMsg.includes("numpuk") ||
+    lowerMsg.includes("menumpuk") ||
     lowerMsg.includes("terlewat");
 
   if (isKomplainTrigger) {

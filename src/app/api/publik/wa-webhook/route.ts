@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { processIncomingWaMessage } from "@/lib/server/wa-bot-service";
+import { kirimWhatsApp } from "@/lib/wa";
 
 export const dynamic = "force-dynamic";
 
@@ -85,9 +86,28 @@ export async function POST(request: Request) {
       url,
     });
 
-    // Fonnte mengenali key "reply" untuk membalas pesan WhatsApp secara instan
+    // Kirim pesan balasan secara langsung via API Fonnte (POST https://api.fonnte.com/send)
+    let sent = false;
+    let sendError: string | undefined;
+
+    if (result.reply) {
+      try {
+        const sendRes = await kirimWhatsApp(sender, result.reply);
+        sent = sendRes.ok;
+        sendError = sendRes.error;
+        if (!sendRes.ok) {
+          console.error("Gagal mengirim balasan WA via Fonnte:", sendRes.error);
+        }
+      } catch (err: any) {
+        console.error("Exception saat kirim balasan WA:", err);
+        sendError = err instanceof Error ? err.message : String(err);
+      }
+    }
+
     return NextResponse.json({
       status: true,
+      sent,
+      error: sendError,
       reply: result.reply,
       intent: result.intent,
       pelangganId: result.pelangganId,

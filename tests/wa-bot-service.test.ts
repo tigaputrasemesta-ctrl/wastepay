@@ -207,4 +207,41 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
     expect(res.reply).toContain("Kelurahan Kalimulya");
     expect(res.reply).toContain("https://upsheru.com/peta");
   });
+
+  it("9. Menangani variasi kalimat natural seperti 'Tagihan saya berapa ha'", async () => {
+    (prisma.pelanggan.findFirst as any).mockResolvedValue({
+      id: 105,
+      nama: "Rohmat Eko",
+      noTelepon: "6285716251003",
+      kodePelanggan: "6285716251003",
+      alamat: "Cilodong",
+    });
+
+    (prisma.tagihan.findMany as any).mockResolvedValue([]);
+
+    const res = await processIncomingWaMessage({
+      sender: "6285716251003",
+      message: "Tagihan saya berapa ha",
+    });
+
+    expect(res.intent).toBe("TAGIHAN");
+    expect(res.pelangganId).toBe(105);
+  });
+
+  it("10. Menangani pertanyaan jadwal natural 'om sampah diambil kapan,, dah numpuk'", async () => {
+    (prisma.pelanggan.findFirst as any).mockResolvedValue({
+      id: 106,
+      nama: "A.P.A",
+      noTelepon: "6285220289917",
+      alamat: "Kalibaru",
+      jadwal: [],
+    });
+
+    const res = await processIncomingWaMessage({
+      sender: "6285220289917",
+      message: "om sampah diambil kapan,, dah numpuk",
+    });
+
+    expect(res.intent).toBe("JADWAL");
+  });
 });
