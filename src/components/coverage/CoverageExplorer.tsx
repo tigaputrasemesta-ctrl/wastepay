@@ -40,7 +40,7 @@ const CoverageLeafletMap = dynamic(
           Memuat Peta Wilayah Layanan Depok...
         </p>
         <p className="text-xs text-slate-500 mt-1 max-w-xs">
-          Menginisialisasi 23 blok operasional dan titik armada.
+          Menginisialisasi 23 ruas jalan operasional dan titik armada.
         </p>
       </div>
     ),
@@ -73,6 +73,9 @@ export default function CoverageExplorer() {
   // Filter kelurahan untuk daftar blok di kolom kiri
   const [selectedKelurahan, setSelectedKelurahan] = useState<string>("SEMUA");
   const [filterBlockQuery, setFilterBlockQuery] = useState("");
+
+  // Tab switch khusus layar mobile (peta vs daftar)
+  const [mobileTab, setMobileTab] = useState<"map" | "list">("map");
 
   // Debounced real geocoding search menggunakan Nominatim OSM Depok
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -228,39 +231,44 @@ export default function CoverageExplorer() {
 
           {/* Search & GPS Bar */}
           <div className="relative max-w-2xl mx-auto">
-            <div className="flex items-center bg-slate-50 border border-slate-300 rounded-2xl shadow-sm focus-within:border-emerald-600 focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all p-1">
-              <div className="pl-3 pr-2 text-slate-400">
-                {isSearchingGeocode ? (
-                  <RefreshCw className="w-5 h-5 animate-spin text-emerald-600" />
-                ) : (
-                  <Search className="w-5 h-5 text-emerald-600" />
+            <div className="flex flex-col sm:flex-row items-stretch gap-2">
+              <div className="flex-1 flex items-center bg-slate-50 border border-slate-300 rounded-2xl shadow-sm focus-within:border-emerald-600 focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all p-1">
+                <div className="pl-3 pr-2 text-slate-400">
+                  {isSearchingGeocode ? (
+                    <RefreshCw className="w-5 h-5 animate-spin text-emerald-600" />
+                  ) : (
+                    <Search className="w-5 h-5 text-emerald-600" />
+                  )}
+                </div>
+
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setIsSearchFocused(true)}
+                  placeholder="Cari perumahan, gang, atau kelurahan..."
+                  aria-label="Cari alamat atau perumahan di Depok"
+                  className="w-full py-2.5 bg-transparent text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none font-medium"
+                />
+
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    aria-label="Hapus kata kunci"
+                    className="p-1.5 text-slate-400 hover:text-slate-700 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
                 )}
               </div>
-
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setIsSearchFocused(true)}
-                placeholder="Cari nama perumahan, gang, atau kelurahan di Depok..."
-                className="w-full py-2.5 bg-transparent text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none font-medium"
-              />
-
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery("")}
-                  className="p-1.5 text-slate-400 hover:text-slate-700 transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
 
               <button
                 type="button"
                 onClick={handleUseGps}
                 disabled={isGpsLoading}
-                className="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-extrabold rounded-xl flex items-center gap-1.5 transition-all active:scale-95 shrink-0 shadow-sm"
+                aria-label="Deteksi posisi GPS saat ini"
+                className="w-full sm:w-auto px-4 py-3 sm:py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-extrabold rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] shrink-0 shadow-sm"
               >
                 {isGpsLoading ? (
                   <RefreshCw className="w-4 h-4 animate-spin" />
@@ -323,10 +331,10 @@ export default function CoverageExplorer() {
           <div className="flex flex-wrap items-center justify-center gap-1.5 pt-1 text-xs text-slate-500">
             <span className="font-semibold text-[11px]">Area Populer:</span>
             {[
-              { label: "Blok Setu Kalibaru", lat: -6.44081, lng: 106.83624 },
-              { label: "Perumahan Dmiles", lat: -6.43687, lng: 106.83186 },
-              { label: "Blok Bakung Cilodong", lat: -6.43454, lng: 106.83601 },
-              { label: "Blok Sasak Kalimulya", lat: -6.43476, lng: 106.82466 },
+              { label: "Jl. Berkah Raya", lat: -6.44081, lng: 106.83624 },
+              { label: "Jl. SMPN 6 Depok", lat: -6.43687, lng: 106.83186 },
+              { label: "Jl. Bakung Raya", lat: -6.43454, lng: 106.83601 },
+              { label: "Jl. Raya Kalimulya", lat: -6.43476, lng: 106.82466 },
               { label: "Jl. Raya Kebon Duren", lat: -6.43338, lng: 106.82212 },
             ].map((sc) => (
               <button
@@ -441,14 +449,14 @@ export default function CoverageExplorer() {
               <span>Split-View Explorer</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
-              Peta & Direktori 23 Blok Wilayah Terlayani
+              Peta & Direktori 23 Ruas Jalan Terlayani
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 mt-1">
-              Klik nama blok di daftar kiri untuk menyorot lokasinya di peta, atau klik pin peta untuk melihat rincian jadwal.
+              Klik nama jalan di daftar kiri untuk menyorot lokasinya di peta, atau klik pin peta untuk melihat rincian jadwal.
             </p>
           </div>
 
-          <div className="flex items-center gap-2 text-xs font-bold text-slate-600">
+          <div className="flex flex-wrap items-center gap-2 text-xs font-bold text-slate-600">
             <span className="inline-flex items-center gap-1">
               <span className="w-3 h-3 rounded-full bg-emerald-600" />
               Rute Reguler Aktif
@@ -460,10 +468,40 @@ export default function CoverageExplorer() {
           </div>
         </div>
 
-        {/* Grid Split-View: Kiri 5 Kolom (Daftar Blok), Kanan 7 Kolom (Peta Leaflet) */}
+        {/* ── MOBILE VIEW SWITCHER (KHUSUS LAYAR HP) ── */}
+        <div className="flex lg:hidden bg-slate-200/80 p-1 rounded-2xl gap-1">
+          <button
+            type="button"
+            onClick={() => setMobileTab("map")}
+            className={`flex-1 py-2 text-xs font-black rounded-xl flex items-center justify-center gap-1.5 transition-all ${
+              mobileTab === "map"
+                ? "bg-white text-emerald-800 shadow-sm"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <span>🗺️ Peta Interaktif</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileTab("list")}
+            className={`flex-1 py-2 text-xs font-black rounded-xl flex items-center justify-center gap-1.5 transition-all ${
+              mobileTab === "list"
+                ? "bg-white text-emerald-800 shadow-sm"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <span>📋 Daftar Ruas Jalan ({filteredBlocks.length})</span>
+          </button>
+        </div>
+
+        {/* Grid Split-View: Kiri 5 Kolom (Daftar Jalan), Kanan 7 Kolom (Peta Leaflet) */}
         <div className="grid lg:grid-cols-12 gap-6 items-start">
-          {/* SISI KIRI: DAFTAR 23 BLOK OPERASIONAL (5 cols) */}
-          <div className="lg:col-span-5 order-2 lg:order-1 bg-white border border-slate-200 rounded-3xl p-4 sm:p-5 shadow-sm space-y-3 flex flex-col max-h-[580px]">
+          {/* SISI KIRI: DAFTAR 23 RUAS JALAN OPERASIONAL (5 cols) */}
+          <div
+            className={`lg:col-span-5 order-2 lg:order-1 bg-white border border-slate-200 rounded-3xl p-4 sm:p-5 shadow-sm space-y-3 flex flex-col max-h-[580px] ${
+              mobileTab === "list" ? "block" : "hidden lg:flex"
+            }`}
+          >
             {/* Filter Sub-Kecamatan & Search */}
             <div className="space-y-2">
               <input
@@ -550,7 +588,7 @@ export default function CoverageExplorer() {
             {/* Footer Summary */}
             <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
               <span className="text-slate-500 text-[11px] font-semibold">
-                Menampilkan {filteredBlocks.length} dari 23 Blok
+                Menampilkan {filteredBlocks.length} dari 23 Ruas Jalan
               </span>
               <Link
                 href="/daftar"
@@ -563,7 +601,11 @@ export default function CoverageExplorer() {
           </div>
 
           {/* SISI KANAN: PETA INTERAKTIF LEAFLET (7 cols) */}
-          <div className="lg:col-span-7 order-1 lg:order-2 bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm h-[380px] lg:h-[580px]">
+          <div
+            className={`lg:col-span-7 order-1 lg:order-2 bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm h-[420px] sm:h-[460px] lg:h-[580px] ${
+              mobileTab === "map" ? "block" : "hidden lg:block"
+            }`}
+          >
             <CoverageLeafletMap
               blocks={BLOK_OPERASIONAL_AKTIF}
               selectedBlock={selectedBlock}

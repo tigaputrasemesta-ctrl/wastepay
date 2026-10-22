@@ -89,7 +89,7 @@ export default async function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8fafb] text-slate-900 font-sans selection:bg-[#0d7a75] selection:text-white">
+    <div className="min-h-screen bg-[#f8fafb] text-slate-900 font-sans selection:bg-[#0d7a75] selection:text-white overflow-x-hidden">
       <JsonLd data={generateLocalBusinessJsonLd()} />
 
       {/* ── Primary Public Navbar ── */}
@@ -97,45 +97,45 @@ export default async function LandingPage() {
 
       <main>
         {/* ── 3. Hero Section (Editorial + Dashboard Console ala BeCycle) ── */}
-        <section className="bg-white border-b border-slate-200 py-12 md:py-20 px-4 sm:px-6">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-12 gap-10 lg:gap-14 items-center">
+        <section className="bg-white border-b border-slate-200 py-10 sm:py-16 md:py-20 px-4 sm:px-6">
+          <div className="max-w-6xl mx-auto grid md:grid-cols-12 gap-8 lg:gap-14 items-center">
             {/* Left Column: Editorial Value Proposition (7 cols) */}
-            <div className="md:col-span-7 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#e8f5f4] border border-[#d1ecea] text-[#0d7a75] text-xs font-bold">
-                <span className="w-2 h-2 rounded-full bg-[#0d7a75]" />
-                <span>Pengelolaan Sampah Terpadu • Kota Depok 2026</span>
+            <div className="md:col-span-7 space-y-5 sm:space-y-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#e8f5f4] border border-[#d1ecea] text-[#0d7a75] text-[11px] sm:text-xs font-bold max-w-full">
+                <span className="w-2 h-2 rounded-full bg-[#0d7a75] shrink-0" />
+                <span className="truncate">Pengelolaan Sampah Terpadu • Kota Depok 2026</span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.18]">
+              <h1 className="text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.2] sm:leading-[1.18]">
                 Solusi Pengelolaan Sampah yang{" "}
                 <span className="text-[#0d7a75]">Memudahkan Warga</span> & Menjaga Lingkungan.
               </h1>
 
-              <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal max-w-xl">
+              <p className="text-xs sm:text-base text-slate-600 leading-relaxed font-normal max-w-xl">
                 Platform operasional resmi UPS HERU (TPS 3R Kalibaru Kota Depok). Kami menghubungkan ribuan rumah tangga dan unit usaha di Depok dengan kepastian jadwal angkut, pelacakan armada live GPS, dan kemudahan pembayaran retribusi digital via QRIS.
               </p>
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 pt-1 sm:pt-2">
                 <Link
                   href="/daftar"
-                  className="px-6 py-3.5 bg-[#0d7a75] hover:bg-[#0b6460] text-white rounded-xl font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2 active:scale-95"
+                  className="w-full sm:w-auto px-6 py-3.5 bg-[#0d7a75] hover:bg-[#0b6460] text-white rounded-xl font-bold text-xs sm:text-sm shadow-sm transition-all flex items-center justify-center gap-2 active:scale-95"
                 >
-                  <Home className="w-4 h-4" />
+                  <Home className="w-4 h-4 shrink-0" />
                   <span>Daftar Langganan Baru</span>
                 </Link>
 
                 <Link
                   href="/pengaduan"
-                  className="px-6 py-3.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-sm shadow-red-600/20 active:scale-95"
+                  className="w-full sm:w-auto px-6 py-3.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-sm shadow-red-600/20 active:scale-95"
                 >
-                  <AlertCircle className="w-4 h-4" />
+                  <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>Pengaduan Warga</span>
                 </Link>
               </div>
 
               {/* Metadata strip (Inspired by BeCycle specs row) */}
-              <div className="pt-4 border-t border-slate-100 flex flex-wrap gap-x-6 gap-y-2 text-xs text-slate-500 font-medium">
+              <div className="pt-4 border-t border-slate-100 grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-x-6 sm:gap-y-2 text-xs text-slate-500 font-medium">
                 <div>
                   <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Fasilitas</span>
                   <span className="text-slate-800 font-semibold">UPS HERU Kalibaru</span>
@@ -402,44 +402,44 @@ export default async function LandingPage() {
 
               {/* Right Column: Key Operational Statistics (7 cols) */}
               <div className="lg:col-span-7 space-y-6">
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="p-5 rounded-2xl bg-[#f8fafb] border border-slate-200/90 space-y-2">
-                    <div className="w-9 h-9 rounded-xl bg-emerald-50 text-[#0d7a75] flex items-center justify-center font-bold text-xs">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                  <div className="p-4 sm:p-5 rounded-2xl bg-[#f8fafb] border border-slate-200/90 space-y-1.5 sm:space-y-2">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-50 text-[#0d7a75] flex items-center justify-center font-bold text-xs">
                       <TrendingUp className="w-4 h-4" />
                     </div>
-                    <span className="text-2xl font-extrabold text-slate-900 block">15.4 Ton</span>
-                    <p className="text-xs text-slate-500 leading-relaxed">
-                      Kapasitas harian sampah domestik yang diolah di fasilitas TPS 3R Kalibaru per hari kerja.
+                    <span className="text-xl sm:text-2xl font-extrabold text-slate-900 block">15.4 Ton</span>
+                    <p className="text-[11px] sm:text-xs text-slate-500 leading-relaxed">
+                      Kapasitas harian sampah domestik diolah di fasilitas TPS 3R Kalibaru.
                     </p>
                   </div>
 
-                  <div className="p-5 rounded-2xl bg-[#f8fafb] border border-slate-200/90 space-y-2">
-                    <div className="w-9 h-9 rounded-xl bg-sky-50 text-sky-700 flex items-center justify-center font-bold text-xs">
+                  <div className="p-4 sm:p-5 rounded-2xl bg-[#f8fafb] border border-slate-200/90 space-y-1.5 sm:space-y-2">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-sky-50 text-sky-700 flex items-center justify-center font-bold text-xs">
                       <Users className="w-4 h-4" />
                     </div>
-                    <span className="text-2xl font-extrabold text-slate-900 block">2.450+ KK</span>
-                    <p className="text-xs text-slate-500 leading-relaxed">
-                      Kepala keluarga & unit usaha terdaftar di wilayah Cilodong, Kalibaru, Jatimulya, Sukamaju & sekitarnya.
+                    <span className="text-xl sm:text-2xl font-extrabold text-slate-900 block">2.450+ KK</span>
+                    <p className="text-[11px] sm:text-xs text-slate-500 leading-relaxed">
+                      Kepala keluarga & unit usaha terdaftar di wilayah Cilodong & sekitarnya.
                     </p>
                   </div>
 
-                  <div className="p-5 rounded-2xl bg-[#f8fafb] border border-slate-200/90 space-y-2">
-                    <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold text-xs">
+                  <div className="p-4 sm:p-5 rounded-2xl bg-[#f8fafb] border border-slate-200/90 space-y-1.5 sm:space-y-2">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold text-xs">
                       <Truck className="w-4 h-4" />
                     </div>
-                    <span className="text-2xl font-extrabold text-slate-900 block">6 Unit</span>
-                    <p className="text-xs text-slate-500 leading-relaxed">
-                      Armada truk pickup & motor roda tiga pengangkut kebersihan aktif melayani rute pagi dan siang.
+                    <span className="text-xl sm:text-2xl font-extrabold text-slate-900 block">6 Unit</span>
+                    <p className="text-[11px] sm:text-xs text-slate-500 leading-relaxed">
+                      Armada truk pickup & motor roda tiga pengangkut kebersihan aktif.
                     </p>
                   </div>
 
-                  <div className="p-5 rounded-2xl bg-[#f8fafb] border border-slate-200/90 space-y-2">
-                    <div className="w-9 h-9 rounded-xl bg-teal-50 text-[#0d7a75] flex items-center justify-center font-bold text-xs">
+                  <div className="p-4 sm:p-5 rounded-2xl bg-[#f8fafb] border border-slate-200/90 space-y-1.5 sm:space-y-2">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-teal-50 text-[#0d7a75] flex items-center justify-center font-bold text-xs">
                       <FileCheck2 className="w-4 h-4" />
                     </div>
-                    <span className="text-2xl font-extrabold text-slate-900 block">100% Legal</span>
-                    <p className="text-xs text-slate-500 leading-relaxed">
-                      Dikelola resmi oleh UPS HERU dengan perizinan operasional pengelolaan sampah di Kota Depok.
+                    <span className="text-xl sm:text-2xl font-extrabold text-slate-900 block">100% Legal</span>
+                    <p className="text-[11px] sm:text-xs text-slate-500 leading-relaxed">
+                      Dikelola resmi oleh UPS HERU dengan izin operasional di Kota Depok.
                     </p>
                   </div>
                 </div>
@@ -452,7 +452,7 @@ export default async function LandingPage() {
                   </div>
                   <Link
                     href="/tarif"
-                    className="px-4 py-2.5 bg-[#0d7a75] hover:bg-[#0b6460] text-white text-xs font-bold rounded-xl transition-all shadow-xs shrink-0"
+                    className="w-full sm:w-auto text-center px-4 py-2.5 bg-[#0d7a75] hover:bg-[#0b6460] text-white text-xs font-bold rounded-xl transition-all shadow-xs flex items-center justify-center shrink-0"
                   >
                     Buka Daftar Tarif
                   </Link>
@@ -479,7 +479,7 @@ export default async function LandingPage() {
 
             <div className="grid md:grid-cols-3 gap-6 items-stretch">
               {/* Tier 1: Warga Rumah Tangga */}
-              <div className="bg-white border-2 border-[#0d7a75] rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-sm relative mt-4 md:mt-0">
+              <div className="bg-white border-2 border-[#0d7a75] rounded-2xl p-5 sm:p-8 flex flex-col justify-between shadow-sm relative mt-5 md:mt-0">
                 <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 md:left-6 md:translate-x-0 bg-[#0d7a75] text-white text-[10px] font-extrabold uppercase px-4 py-1 rounded-full tracking-wider shadow-md border border-[#0b6460]">
                   Paling Banyak Dipilih
                 </div>
@@ -526,7 +526,7 @@ export default async function LandingPage() {
               </div>
 
               {/* Tier 2: Niaga & Toko */}
-              <div className="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-xs">
+              <div className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-8 flex flex-col justify-between shadow-xs">
                 <div className="space-y-4">
                   <div>
                     <h3 className="text-lg font-extrabold text-slate-900">Niaga, Ruko & Usaha</h3>
@@ -570,7 +570,7 @@ export default async function LandingPage() {
               </div>
 
               {/* Tier 3: RT/RW & Kolektif */}
-              <div className="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 flex flex-col justify-between shadow-xs">
+              <div className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-8 flex flex-col justify-between shadow-xs">
                 <div className="space-y-4">
                   <div>
                     <h3 className="text-lg font-extrabold text-slate-900">Kerjasama Pengurus RT/RW</h3>
@@ -632,45 +632,53 @@ export default async function LandingPage() {
               </p>
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="p-6 rounded-2xl border border-slate-200/90 bg-[#f8fafb] space-y-3">
-                <span className="w-8 h-8 rounded-lg bg-[#0d7a75] text-white font-extrabold text-sm flex items-center justify-center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              <div className="p-4 sm:p-6 rounded-2xl border border-slate-200/90 bg-[#f8fafb] flex sm:flex-col items-start gap-3.5 sm:gap-0 sm:space-y-3">
+                <span className="w-8 h-8 rounded-lg bg-[#0d7a75] text-white font-extrabold text-sm flex items-center justify-center shrink-0">
                   1
                 </span>
-                <h3 className="text-sm font-bold text-slate-900">Pendaftaran Online</h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                  Isi formulir pendaftaran dengan nama, alamat rumah/usaha, RT/RW, dan nomor WhatsApp aktif Anda.
-                </p>
+                <div className="space-y-1">
+                  <h3 className="text-sm font-bold text-slate-900">Pendaftaran Online</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                    Isi formulir pendaftaran dengan nama, alamat rumah/usaha, RT/RW, dan nomor WhatsApp aktif Anda.
+                  </p>
+                </div>
               </div>
 
-              <div className="p-6 rounded-2xl border border-slate-200/90 bg-[#f8fafb] space-y-3">
-                <span className="w-8 h-8 rounded-lg bg-[#0d7a75] text-white font-extrabold text-sm flex items-center justify-center">
+              <div className="p-4 sm:p-6 rounded-2xl border border-slate-200/90 bg-[#f8fafb] flex sm:flex-col items-start gap-3.5 sm:gap-0 sm:space-y-3">
+                <span className="w-8 h-8 rounded-lg bg-[#0d7a75] text-white font-extrabold text-sm flex items-center justify-center shrink-0">
                   2
                 </span>
-                <h3 className="text-sm font-bold text-slate-900">Verifikasi & Penentuan Rute</h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                  Petugas operasional memvalidasi lokasi penjemputan dan menetapkan hari jadwal rute yang melintas.
-                </p>
+                <div className="space-y-1">
+                  <h3 className="text-sm font-bold text-slate-900">Verifikasi & Penentuan Rute</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                    Petugas operasional memvalidasi lokasi penjemputan dan menetapkan hari jadwal rute yang melintas.
+                  </p>
+                </div>
               </div>
 
-              <div className="p-6 rounded-2xl border border-slate-200/90 bg-[#f8fafb] space-y-3">
-                <span className="w-8 h-8 rounded-lg bg-[#0d7a75] text-white font-extrabold text-sm flex items-center justify-center">
+              <div className="p-4 sm:p-6 rounded-2xl border border-slate-200/90 bg-[#f8fafb] flex sm:flex-col items-start gap-3.5 sm:gap-0 sm:space-y-3">
+                <span className="w-8 h-8 rounded-lg bg-[#0d7a75] text-white font-extrabold text-sm flex items-center justify-center shrink-0">
                   3
                 </span>
-                <h3 className="text-sm font-bold text-slate-900">Penjemputan Rutin</h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                  Letakkan wadah sampah di depan pagar pada hari jadwal; armada kami akan mengangkut sampah secara teratur.
-                </p>
+                <div className="space-y-1">
+                  <h3 className="text-sm font-bold text-slate-900">Penjemputan Rutin</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                    Letakkan wadah sampah di depan pagar pada hari jadwal; armada kami akan mengangkut sampah secara teratur.
+                  </p>
+                </div>
               </div>
 
-              <div className="p-6 rounded-2xl border border-slate-200/90 bg-[#f8fafb] space-y-3">
-                <span className="w-8 h-8 rounded-lg bg-[#0d7a75] text-white font-extrabold text-sm flex items-center justify-center">
+              <div className="p-4 sm:p-6 rounded-2xl border border-slate-200/90 bg-[#f8fafb] flex sm:flex-col items-start gap-3.5 sm:gap-0 sm:space-y-3">
+                <span className="w-8 h-8 rounded-lg bg-[#0d7a75] text-white font-extrabold text-sm flex items-center justify-center shrink-0">
                   4
                 </span>
-                <h3 className="text-sm font-bold text-slate-900">Tagihan WhatsApp & QRIS</h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                  Terima rincian tagihan via WhatsApp di awal bulan dan selesaikan pembayaran instan via QRIS kapan saja.
-                </p>
+                <div className="space-y-1">
+                  <h3 className="text-sm font-bold text-slate-900">Tagihan WhatsApp & QRIS</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                    Terima rincian tagihan via WhatsApp di awal bulan dan selesaikan pembayaran instan via QRIS kapan saja.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -738,7 +746,7 @@ export default async function LandingPage() {
               </div>
               <Link
                 href="/artikel"
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-slate-200 hover:border-slate-300 text-slate-800 rounded-xl text-xs font-bold transition-colors shrink-0 shadow-xs"
+                className="inline-flex items-center justify-center w-full sm:w-auto gap-1.5 px-4 py-2 bg-white border border-slate-200 hover:border-slate-300 text-slate-800 rounded-xl text-xs font-bold transition-colors shrink-0 shadow-xs"
               >
                 <span>Lihat Semua Artikel</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -809,7 +817,7 @@ export default async function LandingPage() {
 
             <div className="space-y-3">
               <details className="group bg-[#f8fafb] border border-slate-200 rounded-xl p-4 sm:p-5 transition-all open:bg-white open:ring-1 open:ring-[#0d7a75]">
-                <summary className="font-bold text-sm text-slate-900 cursor-pointer list-none flex items-center justify-between gap-3">
+                <summary className="font-bold text-xs sm:text-sm text-slate-900 cursor-pointer list-none flex items-center justify-between gap-3">
                   <span>1. Berapa kali dalam seminggu sampah rumah tangga saya dijemput?</span>
                   <ChevronRight className="w-4 h-4 text-slate-400 group-open:rotate-90 transition-transform shrink-0" />
                 </summary>
@@ -819,7 +827,7 @@ export default async function LandingPage() {
               </details>
 
               <details className="group bg-[#f8fafb] border border-slate-200 rounded-xl p-4 sm:p-5 transition-all open:bg-white open:ring-1 open:ring-[#0d7a75]">
-                <summary className="font-bold text-sm text-slate-900 cursor-pointer list-none flex items-center justify-between gap-3">
+                <summary className="font-bold text-xs sm:text-sm text-slate-900 cursor-pointer list-none flex items-center justify-between gap-3">
                   <span>2. Bagaimana jika sampah saya terlewat dan belum terangkut oleh petugas?</span>
                   <ChevronRight className="w-4 h-4 text-slate-400 group-open:rotate-90 transition-transform shrink-0" />
                 </summary>
@@ -829,7 +837,7 @@ export default async function LandingPage() {
               </details>
 
               <details className="group bg-[#f8fafb] border border-slate-200 rounded-xl p-4 sm:p-5 transition-all open:bg-white open:ring-1 open:ring-[#0d7a75]">
-                <summary className="font-bold text-sm text-slate-900 cursor-pointer list-none flex items-center justify-between gap-3">
+                <summary className="font-bold text-xs sm:text-sm text-slate-900 cursor-pointer list-none flex items-center justify-between gap-3">
                   <span>3. Apakah UPS HERU melayani sampah skala besar (puing renovasi / tebangan pohon)?</span>
                   <ChevronRight className="w-4 h-4 text-slate-400 group-open:rotate-90 transition-transform shrink-0" />
                 </summary>
@@ -839,7 +847,7 @@ export default async function LandingPage() {
               </details>
 
               <details className="group bg-[#f8fafb] border border-slate-200 rounded-xl p-4 sm:p-5 transition-all open:bg-white open:ring-1 open:ring-[#0d7a75]">
-                <summary className="font-bold text-sm text-slate-900 cursor-pointer list-none flex items-center justify-between gap-3">
+                <summary className="font-bold text-xs sm:text-sm text-slate-900 cursor-pointer list-none flex items-center justify-between gap-3">
                   <span>4. Bagaimana cara pembayaran tagihan jika warga tidak memiliki mobile banking?</span>
                   <ChevronRight className="w-4 h-4 text-slate-400 group-open:rotate-90 transition-transform shrink-0" />
                 </summary>
@@ -849,7 +857,7 @@ export default async function LandingPage() {
               </details>
 
               <details className="group bg-[#f8fafb] border border-slate-200 rounded-xl p-4 sm:p-5 transition-all open:bg-white open:ring-1 open:ring-[#0d7a75]">
-                <summary className="font-bold text-sm text-slate-900 cursor-pointer list-none flex items-center justify-between gap-3">
+                <summary className="font-bold text-xs sm:text-sm text-slate-900 cursor-pointer list-none flex items-center justify-between gap-3">
                   <span>5. Bagaimana prosedur pendaftaran kolektif satu lingkungan RT atau perumahan?</span>
                   <ChevronRight className="w-4 h-4 text-slate-400 group-open:rotate-90 transition-transform shrink-0" />
                 </summary>
@@ -901,7 +909,7 @@ export default async function LandingPage() {
       {/* ── 13. Comprehensive Municipal Footer ── */}
       <footer className="bg-slate-950 text-white pt-14 pb-10 px-4 sm:px-6 border-t border-slate-800">
         <div className="max-w-6xl mx-auto space-y-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-xs">
             {/* Col 1: Brand & Bio */}
             <div className="space-y-3 md:col-span-1">
               <div className="flex items-center gap-2.5">
@@ -988,9 +996,9 @@ export default async function LandingPage() {
             </div>
           </div>
 
-          <div className="pt-6 border-t border-slate-800 text-slate-500 text-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="pt-6 border-t border-slate-800 text-slate-500 text-xs flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
             <span>© {new Date().getFullYear()} UPS HERU Kota Depok. Hak Cipta Dilindungi.</span>
-            <div className="flex items-center gap-5">
+            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
               <Link href="/login" className="hover:text-white transition-colors">
                 Portal Petugas
               </Link>

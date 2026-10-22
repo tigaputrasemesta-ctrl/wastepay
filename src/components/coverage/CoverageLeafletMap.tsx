@@ -22,7 +22,7 @@ import { getMapTileConfig, type MapTileType } from "@/lib/map-tile";
 // Icon generator untuk pin klaster warga terdaftar
 function createClusterPin(block: ActiveBlock, isSelected = false) {
   const isAmber = block.status === "PERLUASAN";
-  const cleanName = block.nama.replace("Blok ", "");
+  const cleanName = block.nama;
   const html = `
     <div class="clean-cluster-pin ${isAmber ? "clean-cluster-pin-amber" : ""} ${isSelected ? "clean-cluster-pin-selected" : ""}">
       <div class="clean-cluster-pin-inner">
@@ -177,6 +177,7 @@ export default function CoverageLeafletMap({
         minZoom={11}
         maxZoom={18}
         zoomControl={false}
+        scrollWheelZoom={false}
         className="w-full h-full"
       >
         <TileLayer

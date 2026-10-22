@@ -30,7 +30,7 @@ const NAV_ITEMS: NavItem[] = [
   {
     label: "Cek Jangkauan",
     href: "/coverage",
-    description: "Peta wilayah layanan 23 blok & jadwal pengangkutan Depok",
+    description: "Peta wilayah layanan & jadwal pengangkutan Depok",
     icon: <Compass className="w-5 h-5" />,
   },
   {
@@ -97,7 +97,7 @@ export default function PublicNavbar() {
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-sm select-none">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
+        <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group min-w-0 flex-1 md:flex-initial">
           <img src="/ups-heru-logo.jpg" alt="UPS HERU Logo" className="h-10 w-10 sm:h-12 sm:w-12 object-contain rounded-xl shadow-sm group-hover:scale-105 transition-transform shrink-0" />
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
@@ -181,13 +181,13 @@ export default function PublicNavbar() {
         <div id="mobile-public-menu" className="md:hidden">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 top-[57px] bg-slate-900/50 backdrop-blur-sm z-30 transition-opacity"
+            className="fixed inset-0 top-[65px] bg-slate-900/50 backdrop-blur-sm z-30 transition-opacity"
             onClick={() => setIsOpen(false)}
             aria-hidden="true"
           />
 
           {/* Drawer Menu Panel */}
-          <div className="relative z-40 bg-white border-b border-slate-200 shadow-xl max-h-[calc(100vh-57px)] overflow-y-auto px-4 py-4 space-y-4">
+          <div className="relative z-40 bg-white border-b border-slate-200 shadow-xl max-h-[calc(100vh-65px)] overflow-y-auto px-4 py-4 space-y-4">
             {/* Nav Items */}
             <div className="space-y-1">
               <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-2 block mb-1">

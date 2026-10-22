@@ -1,7 +1,7 @@
 "use client";
 
 import "leaflet/dist/leaflet.css";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import L from "leaflet";
 import {
   MapContainer,
@@ -28,7 +28,11 @@ import {
 } from "@/lib/driver-actions";
 import { playSound, speakText, vibrate } from "@/lib/mobile-feedback";
 import type { ProximityTugas } from "@/hooks/useProximityPickup";
-import { useRoadRoute } from "@/hooks/useRoadRoute";
+import {
+  useDetailedRoadRoute,
+  formatDistance,
+  formatDuration,
+} from "@/hooks/useRoadRoute";
 
 export type GojekTugas = {
   id: number;
@@ -229,12 +233,14 @@ function MapCamera({
   centerTrigger,
   fitTrigger,
   focusPos,
+  isNavigating,
 }: {
   points: [number, number][];
   driverPos: [number, number] | null;
   centerTrigger: number;
   fitTrigger: number;
   focusPos: [number, number] | null;
+  isNavigating?: boolean;
 }) {
   const map = useMap();
   const initDone = useRef(false);
@@ -259,6 +265,13 @@ function MapCamera({
       map.flyTo(driverPos, 17, { animate: true, duration: 0.7 });
     }
   }, [centerTrigger, driverPos, map]);
+
+  // Saat navigasi mandiri aktif, kamera otomatis memusatkan dan mengikuti GPS armada
+  useEffect(() => {
+    if (isNavigating && driverPos) {
+      map.panTo(driverPos, { animate: true, duration: 0.5 });
+    }
+  }, [isNavigating, driverPos, map]);
 
   useEffect(() => {
     if (fitTrigger > 0) {
@@ -375,25 +388,50 @@ export default function GojekDriverCockpit({
       ? Math.round((totalCompleted / validTasks.length) * 100)
       : 0;
 
-  // 1. Tentukan tujuan berikutnya (pelanggan teratas di antrean)
-  const nextDestination = pendingTasks[0] 
-    ? [pendingTasks[0].latitude, pendingTasks[0].longitude] as [number, number] 
-    : undefined;
+  // 1. Tentukan tujuan rute mandiri (prioritaskan currentTask yang dipilih atau antrean teratas)
+  const targetDestination = useMemo(() => {
+    if (currentTask) {
+      return [currentTask.latitude, currentTask.longitude] as [number, number];
+    }
+    if (pendingTasks[0]) {
+      return [pendingTasks[0].latitude, pendingTasks[0].longitude] as [number, number];
+    }
+    return undefined;
+  }, [currentTask, pendingTasks]);
 
-  // 2. Ambil rute jalan raya nyata via OSRM
-  const realRoadRoute = useRoadRoute(driverCoords || undefined, nextDestination);
+  // 2. Ambil detail rute jalan raya OSRM (Turn-by-turn guidance, distance, duration)
+  const roadRouteDetail = useDetailedRoadRoute(driverCoords || undefined, targetDestination);
 
-  // Polyline rute dinamis (In-App Navigation) ke pelanggan pertama
+  // Polyline rute dinamis (In-App Navigation) ke pelanggan
   const routePoints = useMemo(() => {
-    if (realRoadRoute.length > 0) {
-      return realRoadRoute; // Gunakan rute jalan raya OSRM
+    return roadRouteDetail.coordinates;
+  }, [roadRouteDetail.coordinates]);
+
+  // Mode Navigasi Mandiri In-App (tanpa lempar ke Google Maps)
+  const [isNavigating, setIsNavigating] = useState(false);
+
+  const toggleInAppNavigation = useCallback(() => {
+    setIsNavigating((prev) => {
+      const next = !prev;
+      if (next) {
+        setCenterTrigger((p) => p + 1);
+        if (currentTask) {
+          speakText(`Navigasi mandiri aktif menuju ${currentTask.nama}. Jarak ${roadRouteDetail.distanceFormatted}.`);
+        }
+      } else {
+        speakText("Navigasi mandiri ditutup.");
+      }
+      return next;
+    });
+  }, [currentTask, roadRouteDetail.distanceFormatted]);
+
+  // Suara pengingat saat tiba di radius pelanggan ketika navigasi aktif
+  useEffect(() => {
+    if (isNavigating && isWithinRadius && currentTask) {
+      speakText(`Anda telah tiba di depan rumah ${currentTask.nama}.`);
+      playSound("pickup");
     }
-    // Fallback: Garis lurus biasa (as the crow flies)
-    if (driverCoords && nextDestination) {
-      return [driverCoords, nextDestination];
-    }
-    return [];
-  }, [realRoadRoute, driverCoords, nextDestination]);
+  }, [isNavigating, isWithinRadius, currentTask]);
 
   // 3. Garis rute sisa antrean (Pelanggan 1 -> 2 -> 3 dst)
   const queuePoints = useMemo(() => {
@@ -454,8 +492,74 @@ export default function GojekDriverCockpit({
           : "h-full flex-1 w-full bg-slate-950 flex flex-col"
       }`}
     >
+      {/* ── 1.5. IN-APP TURN-BY-TURN NAVIGATION HUD (MANDIRI) ── */}
+      {isNavigating && currentTask && (
+        <div className="absolute top-2 left-2 right-14 sm:right-16 z-[420] pointer-events-none animate-in slide-in-from-top-2 duration-200">
+          <div className="pointer-events-auto bg-slate-950/95 backdrop-blur-md rounded-2xl p-3 border border-emerald-500/50 shadow-2xl space-y-2 ring-2 ring-emerald-500/20">
+            <div className="flex items-start justify-between gap-2.5">
+              <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                {/* Maneuver Icon */}
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-2xl shadow-lg shadow-emerald-600/30 shrink-0 font-black">
+                  {roadRouteDetail.currentStep?.icon || "⬆️"}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[9px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-950/90 px-1.5 py-0.5 rounded border border-emerald-800/80">
+                      Rute Mandiri
+                    </span>
+                    <span className="text-[11px] font-extrabold text-teal-300 font-mono">
+                      {roadRouteDetail.currentStep ? formatDistance(roadRouteDetail.currentStep.distance) : roadRouteDetail.distanceFormatted}
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm font-black text-white truncate leading-tight mt-0.5">
+                    {roadRouteDetail.currentStep?.instruction || `Menuju ${currentTask.nama}`}
+                  </p>
+                  <p className="text-[10px] text-slate-400 truncate">
+                    {currentTask.alamat}
+                  </p>
+                </div>
+              </div>
+
+              {/* Exit Navigation */}
+              <button
+                type="button"
+                onClick={() => setIsNavigating(false)}
+                className="w-7 h-7 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 flex items-center justify-center text-xs font-bold shrink-0 transition-all active:scale-95 border border-slate-700"
+                title="Keluar dari Navigasi"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Metrics: Distance, ETA, and Center Driver */}
+            <div className="pt-2 border-t border-slate-800/90 flex items-center justify-between text-[11px] font-bold">
+              <div className="flex items-center gap-3">
+                <span className="text-emerald-400 flex items-center gap-1 font-mono">
+                  <span>📍</span> {roadRouteDetail.distanceFormatted}
+                </span>
+                <span className="text-teal-300 flex items-center gap-1 font-mono">
+                  <span>⏱️</span> {roadRouteDetail.durationFormatted}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  if (driverCoords) {
+                    setCenterTrigger((p) => p + 1);
+                  }
+                }}
+                className="text-xs text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1 active:scale-95"
+              >
+                <span>🎯</span>
+                <span>Fokus Truk</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── 1. GOJEK FLOATING DESTINATION GUIDANCE PILL (Hide / Open & Compact Toggle) ── */}
-      {currentTask && sheetMode !== "expanded" && (
+      {currentTask && sheetMode !== "expanded" && !isNavigating && (
         <>
           {/* Mode 1: Hidden Mini-Button (Restorable with 1 tap) */}
           {guidanceMode === "hidden" && (

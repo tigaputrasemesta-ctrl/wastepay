@@ -74,7 +74,7 @@ export const BLOK_OPERASIONAL_AKTIF: ActiveBlock[] = [
   // Kelurahan Kalibaru (Pusat Hub Operasional)
   {
     id: "kal-setu",
-    nama: "Blok Setu + Rafael Pete",
+    nama: "Jl. Berkah Raya",
     kelurahan: "Kalibaru",
     kecamatan: "Cilodong",
     lat: -6.44081,
@@ -88,7 +88,7 @@ export const BLOK_OPERASIONAL_AKTIF: ActiveBlock[] = [
   },
   {
     id: "kal-dmiles",
-    nama: "Blok Bawah Dmiles + SMP 6",
+    nama: "Jl. SMPN 6 Depok",
     kelurahan: "Kalibaru",
     kecamatan: "Cilodong",
     lat: -6.43687,
@@ -102,7 +102,7 @@ export const BLOK_OPERASIONAL_AKTIF: ActiveBlock[] = [
   },
   {
     id: "kal-santri",
-    nama: "Blok Perumahan Santri",
+    nama: "Jl. Santri Kalibaru",
     kelurahan: "Kalibaru",
     kecamatan: "Cilodong",
     lat: -6.44071,
@@ -116,7 +116,7 @@ export const BLOK_OPERASIONAL_AKTIF: ActiveBlock[] = [
   },
   {
     id: "kal-ykp",
-    nama: "Blok YKP Kelapa",
+    nama: "Jl. H. Nirun",
     kelurahan: "Kalibaru",
     kecamatan: "Cilodong",
     lat: -6.43745,
@@ -130,7 +130,7 @@ export const BLOK_OPERASIONAL_AKTIF: ActiveBlock[] = [
   },
   {
     id: "kal-cilodong-raya",
-    nama: "Blok Jl. Raya Cilodong",
+    nama: "Jl. Raya Cilodong",
     kelurahan: "Kalibaru",
     kecamatan: "Cilodong",
     lat: -6.44018,
@@ -144,7 +144,7 @@ export const BLOK_OPERASIONAL_AKTIF: ActiveBlock[] = [
   },
   {
     id: "kal-bulak",
-    nama: "Blok Kampung Bulak",
+    nama: "Jl. Rajawali",
     kelurahan: "Kalibaru",
     kecamatan: "Cilodong",
     lat: -6.44554,
@@ -158,7 +158,7 @@ export const BLOK_OPERASIONAL_AKTIF: ActiveBlock[] = [
   },
   {
     id: "kal-niman",
-    nama: "Blok Gang Niman",
+    nama: "Gang Niman",
     kelurahan: "Kalibaru",
     kecamatan: "Cilodong",
     lat: -6.43599,
@@ -186,7 +186,7 @@ export const BLOK_OPERASIONAL_AKTIF: ActiveBlock[] = [
   },
   {
     id: "kal-hpuah",
-    nama: "Blok H Puah",
+    nama: "Gang H. Puah",
     kelurahan: "Kalibaru",
     kecamatan: "Cilodong",
     lat: -6.43922,
@@ -200,7 +200,7 @@ export const BLOK_OPERASIONAL_AKTIF: ActiveBlock[] = [
   },
   {
     id: "kal-umar",
-    nama: "Blok Gang Umar",
+    nama: "Gang H. Umar",
     kelurahan: "Kalibaru",
     kecamatan: "Cilodong",
     lat: -6.43725,
@@ -214,7 +214,7 @@ export const BLOK_OPERASIONAL_AKTIF: ActiveBlock[] = [
   },
   {
     id: "kal-menteng",
-    nama: "Blok Gang Menteng",
+    nama: "Gang Menteng",
     kelurahan: "Kalibaru",
     kecamatan: "Cilodong",
     lat: -6.4379,
@@ -228,7 +228,7 @@ export const BLOK_OPERASIONAL_AKTIF: ActiveBlock[] = [
   },
   {
     id: "kal-thr",
-    nama: "Blok THR",
+    nama: "Jl. THR",
     kelurahan: "Kalibaru",
     kecamatan: "Cilodong",
     lat: -6.438,
@@ -242,7 +242,7 @@ export const BLOK_OPERASIONAL_AKTIF: ActiveBlock[] = [
   },
   {
     id: "kal-bmk",
-    nama: "Blok Perumahan BMK",
+    nama: "Jl. Masjid Nurul Yaqin",
     kelurahan: "Kalibaru",
     kecamatan: "Cilodong",
     lat: -6.435,
@@ -258,7 +258,7 @@ export const BLOK_OPERASIONAL_AKTIF: ActiveBlock[] = [
   // Kelurahan Cilodong
   {
     id: "cil-bakung",
-    nama: "Blok Bakung",
+    nama: "Jl. Bakung Raya",
     kelurahan: "Cilodong",
     kecamatan: "Cilodong",
     lat: -6.43454,
@@ -272,7 +272,7 @@ export const BLOK_OPERASIONAL_AKTIF: ActiveBlock[] = [
   },
   {
     id: "cil-raya-bakung",
-    nama: "Blok Jl. Raya Bakung",
+    nama: "Jl. Kemang Raya",
     kelurahan: "Cilodong",
     kecamatan: "Cilodong",
     lat: -6.43689,
@@ -288,7 +288,7 @@ export const BLOK_OPERASIONAL_AKTIF: ActiveBlock[] = [
   // Kelurahan Kalimulya
   {
     id: "klm-sasak",
-    nama: "Blok Sasak",
+    nama: "Jl. Raya Kalimulya",
     kelurahan: "Kalimulya",
     kecamatan: "Cilodong",
     lat: -6.43476,
@@ -302,7 +302,7 @@ export const BLOK_OPERASIONAL_AKTIF: ActiveBlock[] = [
   },
   {
     id: "klm-tabroni",
-    nama: "Blok Tabroni",
+    nama: "Jl. Tabroni",
     kelurahan: "Kalimulya",
     kecamatan: "Cilodong",
     lat: -6.43013,
@@ -318,7 +318,7 @@ export const BLOK_OPERASIONAL_AKTIF: ActiveBlock[] = [
   // Kelurahan Jatimulya
   {
     id: "jtm-kebon-duren",
-    nama: "Blok Jl. Raya Kebon Duren",
+    nama: "Jl. Raya Kebon Duren",
     kelurahan: "Jatimulya",
     kecamatan: "Cilodong",
     lat: -6.43338,
@@ -332,7 +332,7 @@ export const BLOK_OPERASIONAL_AKTIF: ActiveBlock[] = [
   },
   {
     id: "jtm-kp-sawah",
-    nama: "Blok Kampung Sawah",
+    nama: "Jl. Raya Kampung Sawah",
     kelurahan: "Jatimulya",
     kecamatan: "Cilodong",
     lat: -6.44648,
@@ -346,7 +346,7 @@ export const BLOK_OPERASIONAL_AKTIF: ActiveBlock[] = [
   },
   {
     id: "jtm-samit",
-    nama: "Blok Samit Jatimulya",
+    nama: "Jl. Samit",
     kelurahan: "Jatimulya",
     kecamatan: "Cilodong",
     lat: -6.445,
@@ -362,7 +362,7 @@ export const BLOK_OPERASIONAL_AKTIF: ActiveBlock[] = [
   // Area Perluasan: Sukmajaya (Mekar Jaya)
   {
     id: "skm-mekar-jaya",
-    nama: "Blok Mekar Jaya (Rintisan)",
+    nama: "Jl. Griya Asri Utara",
     kelurahan: "Mekar Jaya",
     kecamatan: "Sukmajaya",
     lat: -6.402,
@@ -398,7 +398,7 @@ export const KELURAHAN_COVERAGE_LIST: KelurahanCoverage[] = [
     zonaCount: 2,
     jadwal: "Selasa, Kamis, Minggu",
     armada: "Truk Armada 02",
-    deskripsi: "Cakupan aktif meliputi Jl. Raya Cilodong, Blok Bakung, dan lingkungan sekitarnya.",
+    deskripsi: "Cakupan aktif meliputi Jl. Raya Cilodong, Jl. Bakung Raya, dan lingkungan sekitarnya.",
     lat: -6.4345,
     lng: 106.836,
   },
@@ -410,7 +410,7 @@ export const KELURAHAN_COVERAGE_LIST: KelurahanCoverage[] = [
     zonaCount: 2,
     jadwal: "Senin & Kamis",
     armada: "Pick-Up Hidrolik 03",
-    deskripsi: "Cakupan aktif mencakup Blok Sasak, Blok Tabroni, dan perumahan area Kalimulya.",
+    deskripsi: "Cakupan aktif mencakup Jl. Raya Kalimulya (Sasak), Jl. Tabroni, dan perumahan area Kalimulya.",
     lat: -6.4335,
     lng: 106.823,
   },
@@ -422,7 +422,7 @@ export const KELURAHAN_COVERAGE_LIST: KelurahanCoverage[] = [
     zonaCount: 3,
     jadwal: "Rabu & Sabtu",
     armada: "Pick-Up Hidrolik 03",
-    deskripsi: "Cakupan aktif meliputi Jl. Raya Kebon Duren, Kampung Sawah, dan sekitarnya.",
+    deskripsi: "Cakupan aktif meliputi Jl. Raya Kebon Duren, Jl. Raya Kampung Sawah, dan sekitarnya.",
     lat: -6.442,
     lng: 106.827,
   },
@@ -455,10 +455,10 @@ export const KELURAHAN_COVERAGE_LIST: KelurahanCoverage[] = [
 // Landmark & Shortcut Pencarian Cepat Depok
 export const QUICK_SEARCH_LOCATIONS = [
   { label: "Kalibaru (Pusat UPS HERU)", lat: -6.4385, lng: 106.8355, kelurahan: "Kalibaru", status: "AKTIF" },
-  { label: "Perumahan Dmiles & SMPN 6", lat: -6.43687, lng: 106.83186, kelurahan: "Kalibaru", status: "AKTIF" },
-  { label: "Blok Bakung & Jl. Raya Bakung", lat: -6.43454, lng: 106.83601, kelurahan: "Cilodong", status: "AKTIF" },
-  { label: "Setu Cilodong & Sekitarnya", lat: -6.44081, lng: 106.83624, kelurahan: "Kalibaru", status: "AKTIF" },
-  { label: "Blok Sasak Kalimulya", lat: -6.43476, lng: 106.82466, kelurahan: "Kalimulya", status: "AKTIF" },
+  { label: "Jl. SMPN 6 Depok & Dmiles", lat: -6.43687, lng: 106.83186, kelurahan: "Kalibaru", status: "AKTIF" },
+  { label: "Jl. Bakung Raya & Jl. Kemang Raya", lat: -6.43454, lng: 106.83601, kelurahan: "Cilodong", status: "AKTIF" },
+  { label: "Setu Cilodong & Jl. Berkah Raya", lat: -6.44081, lng: 106.83624, kelurahan: "Kalibaru", status: "AKTIF" },
+  { label: "Jl. Raya Kalimulya (Sasak)", lat: -6.43476, lng: 106.82466, kelurahan: "Kalimulya", status: "AKTIF" },
   { label: "Jl. Raya Kebon Duren Jatimulya", lat: -6.43338, lng: 106.82212, kelurahan: "Jatimulya", status: "AKTIF" },
   { label: "Grand Depok City (GDC) Sektor Timur", lat: -6.425, lng: 106.828, kelurahan: "Kalimulya", status: "PERLUASAN" },
   { label: "Alun-Alun Kota Depok (GDC)", lat: -6.431, lng: 106.831, kelurahan: "Kalibaru", status: "AKTIF" },

@@ -17,7 +17,7 @@ import { BLOK_OPERASIONAL_AKTIF } from "@/lib/coverage-shared";
 export const metadata: Metadata = {
   title: "Peta Wilayah Layanan & Jadwal Angkut Sampah — UPS HERU Kota Depok",
   description:
-    "Cek jangkauan rute truk sampah UPS HERU di Kota Depok. Pemetaan 23 blok operasional terlayani rutin 2-3x seminggu di Kalibaru, Cilodong, Kalimulya, Jatimulya, dan Sukmajaya.",
+    "Cek jangkauan rute truk sampah UPS HERU di Kota Depok. Pemetaan wilayah operasional terlayani rutin 2-3x seminggu di Kalibaru, Cilodong, Kalimulya, Jatimulya, dan Sukmajaya.",
   alternates: {
     canonical: "https://upsheru.com/coverage",
   },
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Peta Wilayah Layanan & Jadwal Angkut Sampah — UPS HERU Kota Depok",
     description:
-      "Cek jangkauan rute truk sampah UPS HERU di Kota Depok. Pemetaan 23 blok operasional terlayani rutin 2-3x seminggu di Kalibaru, Cilodong, Kalimulya, dan Jatimulya.",
+      "Cek jangkauan rute truk sampah UPS HERU di Kota Depok. Pemetaan wilayah operasional terlayani rutin 2-3x seminggu di Kalibaru, Cilodong, Kalimulya, dan Jatimulya.",
     url: "https://upsheru.com/coverage",
     type: "website",
   },
@@ -50,11 +50,11 @@ const FAQ_ITEMS = [
   },
   {
     q: "Hari apa saja dan jam berapa sampah dijemput?",
-    a: "Pengangkutan dilakukan 2 hingga 3 kali setiap pekan pada pagi hari (antara pukul 07.30 s/d 11.30 WIB) sesuai jadwal tetap tiap blok.",
+    a: "Pengangkutan dilakukan 2 hingga 3 kali setiap pekan pada pagi hari (antara pukul 07.30 s/d 11.30 WIB) sesuai jadwal tetap tiap wilayah jalan.",
   },
   {
     q: "Apakah pendaftaran baru langsung aktif diangkut?",
-    a: "Ya! Jika rumah Anda berada di dalam salah satu dari 23 blok aktif, pendaftaran Anda langsung otomatis masuk ke daftar manifest rute truk pada jadwal penjemputan berikutnya.",
+    a: "Ya! Jika rumah Anda berada di dalam wilayah jalan terlayani aktif, pendaftaran Anda langsung otomatis masuk ke daftar manifest rute truk pada jadwal penjemputan berikutnya.",
   },
 ];
 
@@ -74,7 +74,7 @@ export default function CoveragePage() {
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold mb-3">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>23 Blok Operasional Aktif • Kota Depok</span>
+            <span>Wilayah Layanan Aktif • Kota Depok</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight">
@@ -90,7 +90,7 @@ export default function CoveragePage() {
       {/* ── INTERACTIVE EXPLORER (ADDRESS CHECKER + SPLIT-VIEW MAP) ── */}
       <CoverageExplorer />
 
-      {/* ── DIREKTORI STATIS 23 BLOK (SEO BOOSTER & ACCESSIBILITY) ── */}
+      {/* ── DIREKTORI STATIS RUAS JALAN & WILAYAH (SEO BOOSTER & ACCESSIBILITY) ── */}
       <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
           <div>
@@ -99,7 +99,7 @@ export default function CoveragePage() {
               <span>Direktori Resmi</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Daftar 23 Blok Operasional UPS HERU Kota Depok
+              Daftar Ruas Jalan & Wilayah Layanan UPS HERU Kota Depok
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 mt-1">
               Rincian jadwal penjemputan berkala, armada penjemput, dan status retribusi per kelurahan.
@@ -115,12 +115,63 @@ export default function CoveragePage() {
           </Link>
         </div>
 
-        {/* Semantic HTML Table rendered Server-Side */}
-        <div className="overflow-x-auto rounded-2xl border border-slate-200">
+        {/* ── TAMPILAN MOBILE: KARTU RESPONSIF UNTUK SMARTPHONE (md:hidden) ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:hidden">
+          {BLOK_OPERASIONAL_AKTIF.map((b) => (
+            <div
+              key={`mob-${b.id}`}
+              className="bg-slate-50 border border-slate-200/90 rounded-2xl p-4 space-y-2.5 shadow-sm"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-1.5">
+                    <span>🏡</span>
+                    <span>{b.nama}</span>
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium mt-0.5">
+                    Kel. {b.kelurahan} • Kec. {b.kecamatan}
+                  </p>
+                </div>
+                <span
+                  className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold shrink-0 ${
+                    b.status === "AKTIF"
+                      ? "bg-emerald-100 text-emerald-800"
+                      : "bg-amber-100 text-amber-800"
+                  }`}
+                >
+                  {b.pelangganCount} KK
+                </span>
+              </div>
+
+              <div className="pt-2 border-t border-slate-200/80 flex items-center justify-between text-xs">
+                <div className="space-y-0.5 text-slate-600">
+                  <p className="font-bold text-slate-900 flex items-center gap-1 text-[11px]">
+                    <Calendar className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>{b.jadwal}</span>
+                  </p>
+                  <p className="text-[10px] text-slate-500">
+                    Armada: {b.armada}
+                  </p>
+                </div>
+
+                <Link
+                  href={`/daftar?kelurahan=${encodeURIComponent(b.kelurahan)}&zona=${encodeURIComponent(b.nama)}`}
+                  className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs rounded-xl flex items-center gap-1 shadow-sm active:scale-95 transition-all"
+                >
+                  <span>Daftar</span>
+                  <ArrowRight className="w-3 h-3" />
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* ── TAMPILAN DESKTOP/TABLET: TABEL LENGKAP (hidden md:block) ── */}
+        <div className="hidden md:block overflow-x-auto rounded-2xl border border-slate-200">
           <table className="w-full text-left text-xs sm:text-sm divide-y divide-slate-200">
             <thead className="bg-slate-50 text-slate-700 font-extrabold text-xs">
               <tr>
-                <th className="py-3 px-4">Nama Blok & Area</th>
+                <th className="py-3 px-4">Nama Jalan / Wilayah</th>
                 <th className="py-3 px-4">Kelurahan & Kecamatan</th>
                 <th className="py-3 px-4">Hari Penjemputan</th>
                 <th className="py-3 px-4">Armada</th>

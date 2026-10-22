@@ -87,11 +87,11 @@ export default function CivicHeroWidget() {
             <span className="w-2.5 h-2.5 rounded-full bg-slate-300" />
             <span className="w-2.5 h-2.5 rounded-full bg-slate-300" />
           </div>
-          <span className="text-[11px] font-semibold text-slate-500 pl-2 border-l border-slate-200">
-            UPS HERU • Control Console
+          <span className="text-[11px] font-semibold text-slate-500 pl-2 border-l border-slate-200 truncate">
+            UPS HERU <span className="hidden sm:inline">• Control Console</span>
           </span>
         </div>
-        <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#0d7a75] bg-[#e6f5f4] px-2 py-0.5 rounded-md">
+        <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#0d7a75] bg-[#e6f5f4] px-2 py-0.5 rounded-md shrink-0">
           <span className="w-1.5 h-1.5 rounded-full bg-[#0d7a75] animate-pulse" />
           <span>Sistem Aktif</span>
         </div>
@@ -99,17 +99,17 @@ export default function CivicHeroWidget() {
 
       {/* Mini KPI Highlights Row (Inspired by BeCycle Dashboard) */}
       <div className="grid grid-cols-3 divide-x divide-slate-100 border-b border-slate-100 bg-[#fbfdfd] px-2 py-2.5 text-center">
-        <div className="px-2">
+        <div className="px-1.5 sm:px-2">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Olah Harian</span>
-          <span className="text-sm font-extrabold text-slate-800">15.4 Ton</span>
+          <span className="text-xs sm:text-sm font-extrabold text-slate-800">15.4 Ton</span>
         </div>
-        <div className="px-2">
+        <div className="px-1.5 sm:px-2">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Daur Ulang</span>
-          <span className="text-sm font-extrabold text-[#0d7a75]">82.4%</span>
+          <span className="text-xs sm:text-sm font-extrabold text-[#0d7a75]">82.4%</span>
         </div>
-        <div className="px-2">
+        <div className="px-1.5 sm:px-2">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Pelanggan</span>
-          <span className="text-sm font-extrabold text-slate-800">2.450+ KK</span>
+          <span className="text-xs sm:text-sm font-extrabold text-slate-800">2.450+ KK</span>
         </div>
       </div>
 
@@ -118,26 +118,26 @@ export default function CivicHeroWidget() {
         <button
           type="button"
           onClick={() => setTab("tagihan")}
-          className={`flex-1 py-2 px-3 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 py-2 px-2.5 sm:px-3 text-[11px] sm:text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1 sm:gap-1.5 ${
             tab === "tagihan"
               ? "bg-white text-[#0d7a75] shadow-xs border border-slate-200/80"
               : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
           }`}
         >
-          <Search className="w-3.5 h-3.5 text-[#0d7a75]" />
-          <span>Cek Tagihan Warga</span>
+          <Search className="w-3.5 h-3.5 text-[#0d7a75] shrink-0" />
+          <span>Cek Tagihan<span className="hidden sm:inline"> Warga</span></span>
         </button>
         <button
           type="button"
           onClick={() => setTab("jadwal")}
-          className={`flex-1 py-2 px-3 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 py-2 px-2.5 sm:px-3 text-[11px] sm:text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1 sm:gap-1.5 ${
             tab === "jadwal"
               ? "bg-white text-[#0d7a75] shadow-xs border border-slate-200/80"
               : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
           }`}
         >
-          <Calendar className="w-3.5 h-3.5 text-[#0d7a75]" />
-          <span>Jadwal Angkut Wilayah</span>
+          <Calendar className="w-3.5 h-3.5 text-[#0d7a75] shrink-0" />
+          <span>Jadwal Angkut<span className="hidden sm:inline"> Wilayah</span></span>
         </button>
       </div>
 
@@ -222,15 +222,15 @@ export default function CivicHeroWidget() {
 
             {/* Schedule Details Card */}
             <div className="bg-[#f8fafb] border border-slate-200/90 rounded-xl p-3.5 space-y-2 text-xs">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-0.5 xs:gap-2">
                 <span className="text-slate-500 font-medium">Hari Penjemputan:</span>
                 <span className="text-[#0d7a75] font-extrabold">{currentJadwal.hari}</span>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-0.5 xs:gap-2">
                 <span className="text-slate-500 font-medium">Estimasi Jam Melintas:</span>
                 <span className="text-slate-900 font-bold">{currentJadwal.waktu}</span>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-0.5 xs:gap-2">
                 <span className="text-slate-500 font-medium">Jenis Armada:</span>
                 <span className="text-slate-700 font-medium">{currentJadwal.armada}</span>
               </div>
