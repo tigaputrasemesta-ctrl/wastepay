@@ -86,14 +86,13 @@ export async function sinkronkanPelangganRute(ruteId: number): Promise<SyncRuteR
     };
   }
 
-  // Buat query OR untuk mencocokkan pelanggan
+  // Buat query untuk mencocokkan pelanggan: prioritaskan spesifikasi zona/blok jika dipilih
   const orConditions: any[] = [];
   if (zonaIdArr.length > 0) {
     orConditions.push({
       wilayah: { zonaId: { in: zonaIdArr } },
     });
-  }
-  if (kelIdArr.length > 0) {
+  } else if (kelIdArr.length > 0) {
     orConditions.push({
       kelurahanId: { in: kelIdArr },
     });
@@ -168,6 +167,21 @@ export async function sinkronkanPelangganRute(ruteId: number): Promise<SyncRuteR
         pelangganId: { in: pelangganIds },
         hari: { notIn: hariList },
       },
+      data: { aktif: false },
+    });
+
+    // 5. Nonaktifkan pelanggan yang tidak lagi berada di cakupan rute ini
+    await prisma.jadwal.updateMany({
+      where: {
+        ruteId: rute.id,
+        pelangganId: { notIn: pelangganIds },
+      },
+      data: { aktif: false },
+    });
+  } else {
+    // Jika tidak ada pelanggan di cakupan rute ini, nonaktifkan seluruh jadwal rute
+    await prisma.jadwal.updateMany({
+      where: { ruteId: rute.id },
       data: { aktif: false },
     });
   }
@@ -281,8 +295,7 @@ export async function getPelangganRuteDetail(ruteId: number) {
   const orConditions: any[] = [];
   if (zonaIdArr.length > 0) {
     orConditions.push({ wilayah: { zonaId: { in: zonaIdArr } } });
-  }
-  if (kelIdArr.length > 0) {
+  } else if (kelIdArr.length > 0) {
     orConditions.push({ kelurahanId: { in: kelIdArr } });
   }
 
