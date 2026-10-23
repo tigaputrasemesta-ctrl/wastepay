@@ -116,38 +116,56 @@ export async function sinkronkanPelangganRute(ruteId: number): Promise<SyncRuteR
   });
 
   const finalJam = rute.jam && rute.jam.trim() ? rute.jam.trim() : "08:00";
-  let jadwalCreated = 0;
+  const pelangganIds = pelangganList.map((p) => p.id);
 
-  for (const p of pelangganList) {
-    for (const h of hariList) {
-      await prisma.jadwal.upsert({
-        where: {
-          pelangganId_ruteId_hari: {
-            pelangganId: p.id,
-            ruteId: rute.id,
-            hari: h,
-          },
-        },
-        create: {
+  if (pelangganIds.length > 0) {
+    // 1. Siapkan seluruh jadwal penjemputan untuk pelanggan dan hari aktif
+    const jadwalRecords: Array<{
+      pelangganId: number;
+      ruteId: number;
+      hari: string;
+      jam: string;
+      aktif: boolean;
+    }> = [];
+
+    for (const p of pelangganList) {
+      for (const h of hariList) {
+        jadwalRecords.push({
           pelangganId: p.id,
           ruteId: rute.id,
           hari: h,
           jam: finalJam,
           aktif: true,
+        });
+      }
+    }
+
+    // 2. Batch insert dengan skipDuplicates (1 query super cepat)
+    if (jadwalRecords.length > 0) {
+      await prisma.jadwal.createMany({
+        data: jadwalRecords,
+        skipDuplicates: true,
+      });
+
+      // 3. Pastikan record yang sudah ada diaktifkan kembali
+      await prisma.jadwal.updateMany({
+        where: {
+          ruteId: rute.id,
+          pelangganId: { in: pelangganIds },
+          hari: { in: hariList },
         },
-        update: {
+        data: {
           aktif: true,
           jam: finalJam,
         },
       });
-      jadwalCreated++;
     }
 
-    // Nonaktifkan hari yang tidak lagi masuk dalam rute ini
+    // 4. Nonaktifkan hari yang tidak lagi masuk dalam layanan rute ini
     await prisma.jadwal.updateMany({
       where: {
-        pelangganId: p.id,
         ruteId: rute.id,
+        pelangganId: { in: pelangganIds },
         hari: { notIn: hariList },
       },
       data: { aktif: false },
@@ -159,7 +177,7 @@ export async function sinkronkanPelangganRute(ruteId: number): Promise<SyncRuteR
     ruteId: rute.id,
     ruteNama: rute.nama,
     pelangganCount: pelangganList.length,
-    jadwalCreated,
+    jadwalCreated: pelangganList.length * hariList.length,
     hari: hariList,
   };
 }
