@@ -41,7 +41,15 @@ export async function GET(
     } catch {
       const ruteBase = await prisma.rute.findUnique({
         where: { id },
-        include: {
+        select: {
+          id: true,
+          nama: true,
+          hari: true,
+          jam: true,
+          aktif: true,
+          kelurahanId: true,
+          zonaId: true,
+          petugasId: true,
           kelurahan: { select: { id: true, nama: true, kecamatan: true } },
           kelurahans: { select: { id: true, nama: true, kecamatan: true } },
           zona: { select: { id: true, nama: true, kelurahanId: true } },

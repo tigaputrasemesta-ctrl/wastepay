@@ -24,7 +24,15 @@ export async function GET() {
     console.warn("Primary rute query error, attempting resilient fallback:", err);
     try {
       const ruteBase = await prisma.rute.findMany({
-        include: {
+        select: {
+          id: true,
+          nama: true,
+          hari: true,
+          jam: true,
+          aktif: true,
+          kelurahanId: true,
+          zonaId: true,
+          petugasId: true,
           kelurahan: { select: { id: true, nama: true, kecamatan: true } },
           kelurahans: { select: { id: true, nama: true, kecamatan: true } },
           zona: { select: { id: true, nama: true, kelurahanId: true } },
