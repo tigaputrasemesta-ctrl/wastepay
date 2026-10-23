@@ -124,12 +124,15 @@ const API_ROLE_MAP: Record<string, number> = {
   "GET:/api/rute": 10,
   "GET:/api/rute/": 10,
   "POST:/api/rute": 50,
+  "POST:/api/rute/": 50,
   "PUT:/api/rute/": 50,
   "DELETE:/api/rute/": 50,
 
   // Jadwal
   "GET:/api/jadwal": 10,
+  "GET:/api/jadwal/": 10,
   "POST:/api/jadwal": 50,
+  "POST:/api/jadwal/": 50,
   "PUT:/api/jadwal/": 50,
   "DELETE:/api/jadwal/": 50,
 
