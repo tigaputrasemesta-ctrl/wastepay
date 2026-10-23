@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { logAudit } from "@/lib/audit";
 import { toBoolean } from "@/lib/utils";
 import { ensureArmadaRuteSchema } from "@/lib/db-patch";
+import { sinkronkanPelangganRute } from "@/lib/rute-sync";
 
 export async function GET(
   request: Request,
@@ -320,6 +321,15 @@ export async function PUT(
         });
       } catch (syncErr) {
         console.warn("Sync ZonaPetugas notice (non-fatal):", syncErr);
+      }
+    }
+
+    // Auto-sync pelanggan di cakupan rute ini ke Jadwal (non-blocking / resilient)
+    if (body.autoSync !== false) {
+      try {
+        await sinkronkanPelangganRute(rute.id);
+      } catch (syncPelangganErr) {
+        console.warn("Auto-sync pelanggan rute notice (non-fatal):", syncPelangganErr);
       }
     }
 

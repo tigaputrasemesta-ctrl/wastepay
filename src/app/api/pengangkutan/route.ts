@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 import { namaHari } from "@/lib/utils";
+import { sinkronkanPelangganRute } from "@/lib/rute-sync";
 
 /**
  * Materialisasi tugas "terjadwal" dari Jadwal harian milik rute armada / petugas.
@@ -32,7 +33,7 @@ async function materializeTugasTerjadwal(opts: {
     ];
   }
 
-  const jadwal = await prisma.jadwal.findMany({
+  let jadwal = await prisma.jadwal.findMany({
     where: {
       hari,
       aktif: true,
@@ -54,6 +55,47 @@ async function materializeTugasTerjadwal(opts: {
       } 
     },
   });
+
+  // Self-healing: jika jadwal penjemputan masih kosong, cek rute aktif yang melayani hari ini dan auto-sync pelanggan
+  if (jadwal.length === 0) {
+    try {
+      const activeRoutes = await prisma.rute.findMany({
+        where: {
+          ...ruteWhere,
+          hari: { contains: hari },
+        },
+        select: { id: true },
+      });
+      for (const r of activeRoutes) {
+        await sinkronkanPelangganRute(r.id);
+      }
+      // Re-query setelah sinkronisasi otomatis
+      jadwal = await prisma.jadwal.findMany({
+        where: {
+          hari,
+          aktif: true,
+          rute: ruteWhere,
+          pelanggan: { deletedAt: null, status: "aktif" },
+        },
+        select: { 
+          id: true, 
+          pelangganId: true, 
+          pelanggan: { select: { wilayah: { select: { zonaId: true } } } },
+          rute: { 
+            select: { 
+              zonaId: true, 
+              zonas: { select: { id: true } },
+              kendaraanId: true,
+              petugasId: true,
+              kendaraan: { select: { id: true, petugasId: true } },
+            } 
+          } 
+        },
+      });
+    } catch (syncNotice) {
+      console.warn("Self-healing auto-sync notice:", syncNotice);
+    }
+  }
 
   if (jadwal.length === 0) return;
 
@@ -136,6 +178,9 @@ export async function GET(request: Request) {
     where.kendaraanId = kId;
     // Materialisasi tugas rute armada ini untuk hari tersebut
     await materializeTugasTerjadwal({ kendaraanId: kId, tanggal: tanggalTugas });
+  } else if (!saya && !pelangganId) {
+    // Admin melihat penjemputan hari ini tanpa filter armada: materialisasi seluruh rute aktif hari ini
+    await materializeTugasTerjadwal({ tanggal: tanggalTugas });
   }
 
   if (petugasId) where.petugasId = parseInt(petugasId);

@@ -48,40 +48,61 @@ export async function POST(request: Request) {
       );
     }
 
-    // Cek duplikat
-    const existing = await prisma.jadwal.findUnique({
-      where: {
-        pelangganId_ruteId_hari: {
-          pelangganId: parseInt(pelangganId),
-          ruteId: parseInt(ruteId),
-          hari,
-        },
-      },
-    });
-
-    if (existing) {
-      return NextResponse.json(
-        { error: "Jadwal sudah ada untuk pelanggan, rute, dan hari yang sama" },
-        { status: 400 }
-      );
+    const pId = parseInt(String(pelangganId));
+    const rId = parseInt(String(ruteId));
+    if (isNaN(pId) || isNaN(rId)) {
+      return NextResponse.json({ error: "ID pelanggan atau rute tidak valid" }, { status: 400 });
     }
 
-    const jadwal = await prisma.jadwal.create({
-      data: {
-        hari,
-        jam,
-        pelangganId: parseInt(pelangganId),
-        ruteId: parseInt(ruteId),
-      },
-      include: {
-        pelanggan: { select: { id: true, nama: true } },
-        rute: { select: { id: true, nama: true, hari: true } },
-      },
+    let hariList: string[] = [];
+    if (Array.isArray(hari)) {
+      hariList = hari.map((h) => String(h).trim()).filter(Boolean);
+    } else if (typeof hari === "string") {
+      hariList = hari.split(",").map((h) => h.trim()).filter(Boolean);
+    }
+
+    if (hariList.length === 0) {
+      return NextResponse.json({ error: "Pilih minimal satu hari" }, { status: 400 });
+    }
+
+    const results = [];
+    for (const h of hariList) {
+      const res = await prisma.jadwal.upsert({
+        where: {
+          pelangganId_ruteId_hari: {
+            pelangganId: pId,
+            ruteId: rId,
+            hari: h,
+          },
+        },
+        create: {
+          pelangganId: pId,
+          ruteId: rId,
+          hari: h,
+          jam: jam ? String(jam).trim() : null,
+          aktif: true,
+        },
+        update: {
+          aktif: true,
+          jam: jam ? String(jam).trim() : undefined,
+        },
+        include: {
+          pelanggan: { select: { id: true, nama: true } },
+          rute: { select: { id: true, nama: true, hari: true } },
+        },
+      });
+      results.push(res);
+    }
+
+    await logAudit("create", "Jadwal", results[0].id, undefined, {
+      pelangganId: pId,
+      ruteId: rId,
+      hari: hariList,
     });
 
-    await logAudit("create", "Jadwal", jadwal.id, undefined, { pelangganId: jadwal.pelangganId, ruteId: jadwal.ruteId });
-    return NextResponse.json(jadwal, { status: 201 });
-  } catch {
+    return NextResponse.json(results.length === 1 ? results[0] : results, { status: 201 });
+  } catch (err: unknown) {
+    console.error("POST /api/jadwal error:", err);
     return NextResponse.json({ error: "Gagal menambah jadwal" }, { status: 500 });
   }
 }

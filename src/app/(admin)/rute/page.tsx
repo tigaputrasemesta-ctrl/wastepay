@@ -23,6 +23,8 @@ import {
   Edit2,
   ChevronDown,
   Info,
+  RefreshCw,
+  Settings,
 } from "lucide-react";
 
 type Kelurahan = { id: number; nama: string; kecamatan?: string | null };
@@ -146,10 +148,42 @@ function RuteContent() {
   const [showJadwalForm, setShowJadwalForm] = useState(false);
   const [filterHari, setFilterHari] = useState("");
   const [filterRute, setFilterRute] = useState("");
-  const [jadwalForm, setJadwalForm] = useState({ hari: "Senin", jam: "", pelangganId: "", ruteId: "" });
+  const [jadwalForm, setJadwalForm] = useState({
+    hari: "Senin",
+    selectedHariList: ["Senin"] as string[],
+    jam: "",
+    pelangganId: "",
+    ruteId: "",
+  });
   const [editingJadwal, setEditingJadwal] = useState<JadwalPelanggan | null>(null);
   const [deleteTargetJadwal, setDeleteTargetJadwal] = useState<JadwalPelanggan | null>(null);
   const [deletingJadwal, setDeletingJadwal] = useState(false);
+
+  // === STATE SINKRONISASI & SETTING HARI PELANGGAN ===
+  const [syncingAll, setSyncingAll] = useState(false);
+  const [syncingRuteId, setSyncingRuteId] = useState<number | null>(null);
+  const [savingPelangganHariId, setSavingPelangganHariId] = useState<number | null>(null);
+  const [modalPelangganRute, setModalPelangganRute] = useState<{
+    isOpen: boolean;
+    rute: Rute | null;
+    loading: boolean;
+    pelanggan: Array<{
+      id: number;
+      nama: string;
+      alamat: string;
+      noTelepon: string;
+      kelurahan?: { id: number; nama: string } | null;
+      wilayah?: { id: number; nama: string; zona?: { id: number; nama: string } | null } | null;
+      jadwal: Array<{ id: number; hari: string; jam?: string; aktif: boolean }>;
+    }>;
+    search: string;
+  }>({
+    isOpen: false,
+    rute: null,
+    loading: false,
+    pelanggan: [],
+    search: "",
+  });
 
   // Search & Filter Zona inside modal
   const [zonaSearch, setZonaSearch] = useState("");
@@ -191,6 +225,20 @@ function RuteContent() {
     }
     return list;
   }, [zonaList, selectedKelurahanFilter, zonaSearch, kelurahanList]);
+
+  // Pelanggan rute yang difilter di modal setting hari
+  const displayedPelangganRute = useMemo(() => {
+    if (!modalPelangganRute.search.trim()) return modalPelangganRute.pelanggan;
+    const q = modalPelangganRute.search.toLowerCase();
+    return modalPelangganRute.pelanggan.filter(
+      (p) =>
+        p.nama.toLowerCase().includes(q) ||
+        p.alamat.toLowerCase().includes(q) ||
+        (p.noTelepon && p.noTelepon.includes(q)) ||
+        (p.wilayah?.zona?.nama && p.wilayah.zona.nama.toLowerCase().includes(q)) ||
+        (p.kelurahan?.nama && p.kelurahan.nama.toLowerCase().includes(q))
+    );
+  }, [modalPelangganRute.pelanggan, modalPelangganRute.search]);
 
   // Sync tab with URL if changed
   useEffect(() => {
@@ -485,10 +533,186 @@ function RuteContent() {
     }
   }
 
+  // === HANDLERS SINKRONISASI & SETTING HARI PELANGGAN ===
+  async function handleSyncAll() {
+    setSyncingAll(true);
+    try {
+      const res = await fetch("/api/rute/sync", { method: "POST" });
+      const data = await res.json();
+      if (res.ok) {
+        showToast(
+          `Sinkronisasi tuntas! ${data.totalPelangganLinked || 0} warga terhubung ke ${data.rutesProcessed || 0} armada.`,
+          "success"
+        );
+        fetchRuteData();
+        if (activeTab === "jadwal") fetchJadwalData();
+      } else {
+        showToast(data.error || "Gagal menyinkronkan rute", "error");
+      }
+    } catch {
+      showToast("Terjadi gangguan jaringan saat sinkronisasi", "error");
+    } finally {
+      setSyncingAll(false);
+    }
+  }
+
+  async function handleSyncSingleRute(ruteId: number, ruteNama: string) {
+    setSyncingRuteId(ruteId);
+    try {
+      const res = await fetch(`/api/rute/${ruteId}/sync`, { method: "POST" });
+      const data = await res.json();
+      if (res.ok) {
+        showToast(
+          `Berhasil menyinkronkan ${data.pelangganCount || 0} warga untuk "${ruteNama}".`,
+          "success"
+        );
+        fetchRuteData();
+        if (modalPelangganRute.isOpen && modalPelangganRute.rute?.id === ruteId) {
+          openDetailPelangganRute(modalPelangganRute.rute);
+        }
+      } else {
+        showToast(data.error || "Gagal menyinkronkan rute", "error");
+      }
+    } catch {
+      showToast("Gagal menyinkronkan rute", "error");
+    } finally {
+      setSyncingRuteId(null);
+    }
+  }
+
+  async function openDetailPelangganRute(r: Rute) {
+    setModalPelangganRute({
+      isOpen: true,
+      rute: r,
+      loading: true,
+      pelanggan: [],
+      search: "",
+    });
+    try {
+      const res = await fetch(`/api/rute/${r.id}/sync`);
+      const data = await res.json();
+      if (res.ok && data.pelanggan) {
+        setModalPelangganRute((prev) => ({
+          ...prev,
+          loading: false,
+          pelanggan: data.pelanggan,
+        }));
+      } else {
+        showToast(data.error || "Gagal memuat detail pelanggan rute", "error");
+        setModalPelangganRute((prev) => ({ ...prev, loading: false }));
+      }
+    } catch {
+      showToast("Gagal memuat data pelanggan", "error");
+      setModalPelangganRute((prev) => ({ ...prev, loading: false }));
+    }
+  }
+
+  async function handleToggleHariPelanggan(
+    ruteId: number,
+    pelangganId: number,
+    currentDays: string[],
+    dayToToggle: string
+  ) {
+    setSavingPelangganHariId(pelangganId);
+    const nextDays = currentDays.includes(dayToToggle)
+      ? currentDays.filter((d) => d !== dayToToggle)
+      : [...currentDays, dayToToggle];
+
+    // Optimistic UI update
+    setModalPelangganRute((prev) => ({
+      ...prev,
+      pelanggan: prev.pelanggan.map((p) => {
+        if (p.id !== pelangganId) return p;
+        return {
+          ...p,
+          jadwal: nextDays.map((d) => ({
+            id: p.jadwal.find((j) => j.hari === d)?.id || 0,
+            hari: d,
+            jam: "08:00",
+            aktif: true,
+          })),
+        };
+      }),
+    }));
+
+    try {
+      const res = await fetch(`/api/rute/${ruteId}/sync`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pelangganId,
+          hariList: nextDays,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        showToast(data.error || "Gagal memperbarui hari", "error");
+        if (modalPelangganRute.rute) {
+          openDetailPelangganRute(modalPelangganRute.rute);
+        }
+      } else {
+        fetchRuteData();
+      }
+    } catch {
+      showToast("Terjadi gangguan saat menyimpan hari", "error");
+    } finally {
+      setSavingPelangganHariId(null);
+    }
+  }
+
+  async function handleApplyDefaultRouteDays(
+    ruteId: number,
+    pelangganId: number,
+    defaultDaysString: string
+  ) {
+    const days = defaultDaysString
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    setSavingPelangganHariId(pelangganId);
+    try {
+      const res = await fetch(`/api/rute/${ruteId}/sync`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pelangganId, hariList: days }),
+      });
+      if (res.ok) {
+        setModalPelangganRute((prev) => ({
+          ...prev,
+          pelanggan: prev.pelanggan.map((p) => {
+            if (p.id !== pelangganId) return p;
+            return {
+              ...p,
+              jadwal: days.map((d) => ({ id: 0, hari: d, aktif: true })),
+            };
+          }),
+        }));
+        showToast("Setting hari disesuaikan dengan master rute", "success");
+        fetchRuteData();
+      } else {
+        showToast("Gagal menerapkan hari", "error");
+      }
+    } catch {
+      showToast("Terjadi gangguan saat menyimpan", "error");
+    } finally {
+      setSavingPelangganHariId(null);
+    }
+  }
+
   // === HANDLERS JADWAL PELANGGAN ===
   function openCreateJadwal() {
     setEditingJadwal(null);
-    setJadwalForm({ hari: "Senin", jam: "", pelangganId: "", ruteId: rute[0]?.id.toString() || "" });
+    const firstRute = rute[0];
+    const defaultDays = firstRute && firstRute.hari
+      ? firstRute.hari.split(",").map((s) => s.trim()).filter(Boolean)
+      : ["Senin"];
+    setJadwalForm({
+      hari: defaultDays[0] || "Senin",
+      selectedHariList: defaultDays,
+      jam: "",
+      pelangganId: "",
+      ruteId: firstRute ? firstRute.id.toString() : "",
+    });
     setShowJadwalForm(true);
   }
 
@@ -496,6 +720,7 @@ function RuteContent() {
     setEditingJadwal(j);
     setJadwalForm({
       hari: j.hari,
+      selectedHariList: [j.hari],
       jam: j.jam || "",
       pelangganId: j.pelanggan.id.toString(),
       ruteId: j.rute.id.toString(),
@@ -505,19 +730,53 @@ function RuteContent() {
 
   async function handleJadwalSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!jadwalForm.pelangganId) {
+      showToast("Pilih pelanggan terlebih dahulu", "error");
+      return;
+    }
+    if (!jadwalForm.ruteId) {
+      showToast("Pilih rute armada", "error");
+      return;
+    }
+    const daysToSubmit = editingJadwal
+      ? [jadwalForm.hari]
+      : jadwalForm.selectedHariList.length > 0
+      ? jadwalForm.selectedHariList
+      : [jadwalForm.hari];
+
+    if (daysToSubmit.length === 0) {
+      showToast("Pilih minimal satu hari penjemputan", "error");
+      return;
+    }
+
     const url = editingJadwal ? `/api/jadwal/${editingJadwal.id}` : "/api/jadwal";
     const method = editingJadwal ? "PUT" : "POST";
+
+    const payload = editingJadwal
+      ? {
+          pelangganId: jadwalForm.pelangganId,
+          ruteId: jadwalForm.ruteId,
+          hari: daysToSubmit[0],
+          jam: jadwalForm.jam,
+        }
+      : {
+          pelangganId: jadwalForm.pelangganId,
+          ruteId: jadwalForm.ruteId,
+          hari: daysToSubmit,
+          jam: jadwalForm.jam,
+        };
 
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(jadwalForm),
+      body: JSON.stringify(payload),
     });
 
     if (res.ok) {
       setShowJadwalForm(false);
       showToast(editingJadwal ? "Jadwal berhasil diperbarui" : "Jadwal berhasil ditambahkan");
       fetchJadwalData();
+      fetchRuteData();
     } else {
       const data = await res.json();
       showToast(data.error || "Gagal menyimpan", "error");
@@ -552,15 +811,27 @@ function RuteContent() {
         </div>
 
         {activeTab === "rute" ? (
-          <button
-            onClick={openCreateRute}
-            className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-2 self-start sm:self-auto"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Tambah Rute Armada
-          </button>
+          <div className="flex items-center gap-2.5 flex-wrap self-start sm:self-auto">
+            <button
+              type="button"
+              disabled={syncingAll}
+              onClick={handleSyncAll}
+              className="px-3.5 py-2.5 rounded-xl text-sm font-bold border border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 transition-all flex items-center gap-2 shadow-xs disabled:opacity-60"
+              title="Sinkronkan seluruh pelanggan di zona/kelurahan ke master rute dan jadwal penjemputan"
+            >
+              <RefreshCw className={`w-4 h-4 ${syncingAll ? "animate-spin" : ""}`} />
+              <span>{syncingAll ? "Menyinkronkan..." : "Sinkronkan Semua Rute"}</span>
+            </button>
+            <button
+              onClick={openCreateRute}
+              className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Tambah Rute Armada
+            </button>
+          </div>
         ) : (
           <button
             onClick={openCreateJadwal}
@@ -671,7 +942,29 @@ function RuteContent() {
                           )}
                         </td>
                         <td className="px-4 py-3 text-slate-600">{r.petugas?.nama || "-"}</td>
-                        <td className="px-4 py-3 text-center text-slate-600 text-xs font-medium">{r._count.jadwal}</td>
+                        <td className="px-4 py-3 text-center">
+                          <div className="flex flex-col items-center justify-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => openDetailPelangganRute(r)}
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold bg-sky-50 text-sky-800 border border-sky-200 hover:bg-sky-100 transition shadow-xs"
+                              title="Lihat warga dan atur hari layanan pickup"
+                            >
+                              <User className="w-3.5 h-3.5" />
+                              <span>{r._count.jadwal} Warga</span>
+                            </button>
+                            <button
+                              type="button"
+                              disabled={syncingRuteId === r.id}
+                              onClick={() => handleSyncSingleRute(r.id, r.nama)}
+                              className="text-[11px] text-emerald-700 hover:text-emerald-800 font-semibold inline-flex items-center gap-1 disabled:opacity-50"
+                              title="Sinkronkan warga baru di cakupan rute ini"
+                            >
+                              <RefreshCw className={`w-3 h-3 ${syncingRuteId === r.id ? "animate-spin" : ""}`} />
+                              <span>{syncingRuteId === r.id ? "Sync..." : "Sync"}</span>
+                            </button>
+                          </div>
+                        </td>
                         <td className="px-4 py-3 text-center">
                           <button
                             onClick={() => toggleAktifRute(r)}
@@ -753,7 +1046,31 @@ function RuteContent() {
                   {r.jam && <p>⏰ {r.jam}</p>}
                   <p>🚛 {r.kendaraan ? `${r.kendaraan.nama}${r.kendaraan.platNomor ? ` (${r.kendaraan.platNomor})` : ""}` : "Belum ada armada"}</p>
                   <p>👤 {r.petugas?.nama || "Belum ada petugas"}</p>
-                  <p>👥 {r._count.jadwal} pelanggan</p>
+                </div>
+                <div className="flex items-center justify-between text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 mt-3">
+                  <div>
+                    <span className="text-slate-500">Pelanggan:</span>{" "}
+                    <strong className="text-slate-900">{r._count.jadwal} Warga</strong>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => openDetailPelangganRute(r)}
+                      className="px-2.5 py-1 bg-sky-50 text-sky-800 border border-sky-200 rounded-lg text-xs font-bold hover:bg-sky-100 flex items-center gap-1"
+                    >
+                      <Settings className="w-3 h-3" />
+                      <span>Setting Hari</span>
+                    </button>
+                    <button
+                      type="button"
+                      disabled={syncingRuteId === r.id}
+                      onClick={() => handleSyncSingleRute(r.id, r.nama)}
+                      className="p-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-lg text-xs hover:bg-emerald-100 disabled:opacity-50"
+                      title="Sinkronkan Warga"
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 ${syncingRuteId === r.id ? "animate-spin" : ""}`} />
+                    </button>
+                  </div>
                 </div>
                 <div className="flex gap-2 mt-3 pt-3 border-t border-slate-100">
                   <button onClick={() => bukaMap(r)} className="flex-1 text-center text-xs font-semibold bg-emerald-50 border border-emerald-200 text-emerald-700 py-2 rounded-xl hover:bg-emerald-100 transition">🗺️ Map</button>
@@ -1402,7 +1719,19 @@ function RuteContent() {
                 <label className="block text-sm font-medium text-slate-700 mb-1.5">Rute Armada <span className="text-red-500">*</span></label>
                 <select
                   value={jadwalForm.ruteId}
-                  onChange={(e) => setJadwalForm({ ...jadwalForm, ruteId: e.target.value })}
+                  onChange={(e) => {
+                    const newRuteId = e.target.value;
+                    const targetR = rute.find((r) => r.id.toString() === newRuteId);
+                    const routeDays = targetR && targetR.hari
+                      ? targetR.hari.split(",").map((s) => s.trim()).filter(Boolean)
+                      : ["Senin"];
+                    setJadwalForm((prev) => ({
+                      ...prev,
+                      ruteId: newRuteId,
+                      hari: routeDays[0] || "Senin",
+                      selectedHariList: routeDays,
+                    }));
+                  }}
                   className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white"
                   required
                 >
@@ -1413,9 +1742,29 @@ function RuteContent() {
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Hari <span className="text-red-500">*</span></label>
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700">
+                    Hari Layanan Pickup <span className="text-red-500">*</span>
+                  </label>
+                  {!editingJadwal && jadwalForm.ruteId && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const targetR = rute.find((r) => r.id.toString() === jadwalForm.ruteId);
+                        if (targetR && targetR.hari) {
+                          const days = targetR.hari.split(",").map((s) => s.trim()).filter(Boolean);
+                          setJadwalForm((prev) => ({ ...prev, selectedHariList: days }));
+                        }
+                      }}
+                      className="text-[11px] text-emerald-700 hover:text-emerald-800 font-semibold"
+                    >
+                      Ikuti Hari Rute
+                    </button>
+                  )}
+                </div>
+
+                {editingJadwal ? (
                   <select
                     value={jadwalForm.hari}
                     onChange={(e) => setJadwalForm({ ...jadwalForm, hari: e.target.value })}
@@ -1426,17 +1775,52 @@ function RuteContent() {
                       <option key={h} value={h}>{h}</option>
                     ))}
                   </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Estimasi Jam</label>
-                  <input
-                    type="text"
-                    value={jadwalForm.jam}
-                    onChange={(e) => setJadwalForm({ ...jadwalForm, jam: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white"
-                    placeholder="09:00"
-                  />
-                </div>
+                ) : (
+                  <div>
+                    <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5 mb-2">
+                      {HARI_LIST.map((h) => {
+                        const selected = jadwalForm.selectedHariList.includes(h);
+                        return (
+                          <button
+                            key={h}
+                            type="button"
+                            onClick={() => {
+                              const next = selected
+                                ? jadwalForm.selectedHariList.filter((x) => x !== h)
+                                : [...jadwalForm.selectedHariList, h];
+                              setJadwalForm((prev) => ({
+                                ...prev,
+                                selectedHariList: next,
+                                hari: next[0] || "Senin",
+                              }));
+                            }}
+                            className={`py-2 px-1 text-xs rounded-xl font-bold transition border text-center ${
+                              selected
+                                ? "bg-emerald-700 border-emerald-800 text-white shadow-xs"
+                                : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+                            }`}
+                          >
+                            {h.slice(0, 3)}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <p className="text-[11px] text-slate-500">
+                      Pilih satu atau beberapa hari sekaligus untuk jadwal penjemputan warga ini.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Estimasi Jam</label>
+                <input
+                  type="text"
+                  value={jadwalForm.jam}
+                  onChange={(e) => setJadwalForm({ ...jadwalForm, jam: e.target.value })}
+                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white"
+                  placeholder="08:00"
+                />
               </div>
 
               <div className="flex gap-2 pt-2">
@@ -1471,6 +1855,200 @@ function RuteContent() {
         onConfirm={confirmDeleteJadwal}
         onCancel={() => setDeleteTargetJadwal(null)}
       />
+
+      {/* ========================================================================= */}
+      {/* MODAL SETTING HARI PELANGGAN PER RUTE */}
+      {/* ========================================================================= */}
+      {modalPelangganRute.isOpen && modalPelangganRute.rute && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+          <div className="w-full max-w-3xl bg-white rounded-3xl border border-slate-200/80 shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/80">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">👥</span>
+                  <h2 className="text-base font-bold text-slate-900">
+                    Setting Hari Layanan Warga — {modalPelangganRute.rute.nama}
+                  </h2>
+                </div>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Sesuaikan hari penjemputan warga di cakupan rute ini agar otomatis masuk ke tugas pickup armada
+                </p>
+              </div>
+              <button
+                onClick={() => setModalPelangganRute((prev) => ({ ...prev, isOpen: false, rute: null }))}
+                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition"
+                aria-label="Tutup"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Info & Sync Action Bar */}
+            <div className="bg-emerald-50/70 border-b border-emerald-100/80 px-6 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs">
+              <div className="space-y-0.5 text-emerald-950">
+                <div className="flex items-center gap-1.5 font-semibold flex-wrap">
+                  <span>🚛 Armada: {modalPelangganRute.rute.kendaraan ? `${modalPelangganRute.rute.kendaraan.nama} (${modalPelangganRute.rute.kendaraan.platNomor || "-"})` : "Belum ditentukan"}</span>
+                  <span>•</span>
+                  <span>📅 Master Hari: <strong className="font-bold text-emerald-900">{modalPelangganRute.rute.hari}</strong></span>
+                </div>
+                <div className="text-[11px] text-emerald-800">
+                  Wilayah/Zona: {modalPelangganRute.rute.zonas && modalPelangganRute.rute.zonas.length > 0
+                    ? modalPelangganRute.rute.zonas.map((z) => z.nama).join(", ")
+                    : modalPelangganRute.rute.kelurahans && modalPelangganRute.rute.kelurahans.length > 0
+                    ? modalPelangganRute.rute.kelurahans.map((k) => k.nama).join(", ")
+                    : "Semua cakupan"}
+                </div>
+              </div>
+              <button
+                type="button"
+                disabled={syncingRuteId === modalPelangganRute.rute.id}
+                onClick={() => handleSyncSingleRute(modalPelangganRute.rute!.id, modalPelangganRute.rute!.nama)}
+                className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-bold shadow-xs flex items-center gap-1.5 shrink-0 self-start sm:self-auto transition disabled:opacity-50"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${syncingRuteId === modalPelangganRute.rute.id ? "animate-spin" : ""}`} />
+                <span>Sinkronkan Warga Baru</span>
+              </button>
+            </div>
+
+            {/* Search Bar */}
+            <div className="px-6 py-3 border-b border-slate-100 bg-white">
+              <div className="relative">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={modalPelangganRute.search}
+                  onChange={(e) => setModalPelangganRute((prev) => ({ ...prev, search: e.target.value }))}
+                  placeholder="Cari nama warga, nomor telepon, alamat, atau zona..."
+                  className="w-full pl-9 pr-4 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 font-medium transition"
+                />
+              </div>
+            </div>
+
+            {/* List Pelanggan */}
+            <div className="p-6 overflow-y-auto space-y-3 flex-1 bg-slate-50/50">
+              {modalPelangganRute.loading ? (
+                <div className="py-12 text-center text-slate-500 text-xs flex flex-col items-center justify-center gap-2">
+                  <RefreshCw className="w-5 h-5 animate-spin text-emerald-700" />
+                  <span>Memuat data pelanggan rute ini...</span>
+                </div>
+              ) : displayedPelangganRute.length === 0 ? (
+                <div className="py-10 text-center bg-white rounded-2xl border border-dashed border-slate-200 p-6 text-xs text-slate-500">
+                  {modalPelangganRute.pelanggan.length === 0 ? (
+                    <div className="space-y-2">
+                      <p className="font-semibold text-slate-700">Belum ada pelanggan aktif di cakupan rute ini.</p>
+                      <p className="text-[11px] text-slate-400">
+                        Pastikan pelanggan di kelurahan atau zona terkait berstatus aktif, lalu klik tombol <strong>"Sinkronkan Warga Baru"</strong> di atas.
+                      </p>
+                    </div>
+                  ) : (
+                    <p>Tidak ada warga yang sesuai dengan kata kunci pencarian.</p>
+                  )}
+                </div>
+              ) : (
+                displayedPelangganRute.map((p) => {
+                  const activeDays = p.jadwal.filter((j) => j.aktif).map((j) => j.hari);
+                  const isSavingThis = savingPelangganHariId === p.id;
+                  const zonaName = p.wilayah?.zona?.nama || (p.wilayah as any)?.nama || null;
+                  const kelName = p.kelurahan?.nama || null;
+
+                  return (
+                    <div
+                      key={p.id}
+                      className="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-2xs hover:border-slate-300 transition"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3">
+                        <div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-bold text-sm text-slate-900">{p.nama}</span>
+                            {zonaName && (
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                                Zona: {zonaName}
+                              </span>
+                            )}
+                            {kelName && (
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-sky-700 border border-sky-200">
+                                {kelName}
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-xs text-slate-500 mt-0.5 flex items-center gap-3 flex-wrap">
+                            <span>📍 {p.alamat}</span>
+                            {p.noTelepon && <span>📞 {p.noTelepon}</span>}
+                          </div>
+                        </div>
+
+                        {/* Quick Action Button */}
+                        <div className="flex items-center gap-1.5 shrink-0 self-start">
+                          <button
+                            type="button"
+                            disabled={isSavingThis}
+                            onClick={() => handleApplyDefaultRouteDays(modalPelangganRute.rute!.id, p.id, modalPelangganRute.rute!.hari)}
+                            className="text-[11px] px-2.5 py-1 font-semibold rounded-lg border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 transition disabled:opacity-50"
+                            title="Set hari sesuai master rute"
+                          >
+                            Ikuti Rute
+                          </button>
+                          <button
+                            type="button"
+                            disabled={isSavingThis}
+                            onClick={() => handleApplyDefaultRouteDays(modalPelangganRute.rute!.id, p.id, "")}
+                            className="text-[11px] px-2 py-1 font-semibold rounded-lg border border-slate-200 text-rose-600 hover:bg-rose-50 transition disabled:opacity-50"
+                            title="Kosongkan hari (jangan dijemput)"
+                          >
+                            Kosongkan
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Day Selector Chips */}
+                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
+                        <span className="text-[11px] font-semibold text-slate-500">
+                          Hari Penjemputan:
+                        </span>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          {HARI_LIST.map((h) => {
+                            const isSelected = activeDays.includes(h);
+                            return (
+                              <button
+                                key={h}
+                                type="button"
+                                disabled={isSavingThis}
+                                onClick={() => handleToggleHariPelanggan(modalPelangganRute.rute!.id, p.id, activeDays, h)}
+                                className={`px-2.5 py-1 rounded-xl text-xs font-bold transition border ${
+                                  isSelected
+                                    ? "bg-emerald-700 border-emerald-800 text-white shadow-xs"
+                                    : "bg-white border-slate-200 text-slate-600 hover:bg-slate-100"
+                                } disabled:opacity-50`}
+                              >
+                                {h.slice(0, 3)}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-3.5 border-t border-slate-100 bg-slate-50/80 flex items-center justify-between text-xs">
+              <span className="text-slate-500">
+                Menampilkan <strong>{displayedPelangganRute.length}</strong> dari <strong>{modalPelangganRute.pelanggan.length}</strong> warga aktif di cakupan rute ini.
+              </span>
+              <button
+                type="button"
+                onClick={() => setModalPelangganRute((prev) => ({ ...prev, isOpen: false, rute: null }))}
+                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-xs transition"
+              >
+                Selesai
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
