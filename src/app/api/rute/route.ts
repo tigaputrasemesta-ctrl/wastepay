@@ -2,8 +2,10 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { logAudit } from "@/lib/audit";
 import { toBoolean } from "@/lib/utils";
+import { ensureArmadaRuteSchema } from "@/lib/db-patch";
 
 export async function GET() {
+  await ensureArmadaRuteSchema();
   const rute = await prisma.rute.findMany({
     include: {
       kelurahan: { select: { id: true, nama: true, kecamatan: true } },

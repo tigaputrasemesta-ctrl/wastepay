@@ -8,8 +8,10 @@ import { generateNoInvoice } from "@/lib/invoice";
 import { hitungJatuhTempoKonsumen } from "@/lib/tagihan";
 import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 import { tetapkanJadwalDanPetugasPelanggan } from "@/lib/penugasan-jadwal";
+import { ensureArmadaRuteSchema } from "@/lib/db-patch";
 
 export async function GET(request: Request) {
+  await ensureArmadaRuteSchema();
   const { searchParams } = new URL(request.url);
   const search = searchParams.get("search") || "";
   const wilayahId = searchParams.get("wilayahId");

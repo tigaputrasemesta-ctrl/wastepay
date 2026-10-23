@@ -1,15 +1,40 @@
 "use client";
 
-import { useState, useEffect, useCallback, Suspense } from "react";
+import { useState, useEffect, useCallback, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { useToast } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import {
+  Truck,
+  Calendar,
+  Clock,
+  MapPin,
+  Layers,
+  User,
+  Plus,
+  X,
+  Search,
+  Check,
+  CheckCircle2,
+  AlertCircle,
+  Sparkles,
+  Trash2,
+  Edit2,
+  ChevronDown,
+  Info,
+} from "lucide-react";
 
 type Kelurahan = { id: number; nama: string; kecamatan?: string | null };
-type Zona = { id: number; nama: string; kelurahanId: number };
+type Zona = {
+  id: number;
+  nama: string;
+  warna?: string | null;
+  kelurahanId: number;
+  kelurahan?: { id: number; nama: string; kecamatan?: string | null } | null;
+};
 type Petugas = { id: number; nama: string; aktif?: boolean; jabatan?: string | null };
-type Kendaraan = { id: number; nama: string; platNomor: string | null; jenis: string; aktif?: boolean };
+type Kendaraan = { id: number; nama: string; platNomor: string | null; jenis: string; kapasitas?: number | null; aktif?: boolean };
 type Rute = {
   id: number;
   nama: string;
@@ -126,6 +151,47 @@ function RuteContent() {
   const [deleteTargetJadwal, setDeleteTargetJadwal] = useState<JadwalPelanggan | null>(null);
   const [deletingJadwal, setDeletingJadwal] = useState(false);
 
+  // Search & Filter Zona inside modal
+  const [zonaSearch, setZonaSearch] = useState("");
+  const [selectedKelurahanFilter, setSelectedKelurahanFilter] = useState<string>("all_with_zones");
+
+  const PRESET_HARI = [
+    { label: "Sen, Rab, Jum", value: "Senin,Rabu,Jumat" },
+    { label: "Sel, Kam, Sab", value: "Selasa,Kamis,Sabtu" },
+    { label: "Senin - Jumat", value: "Senin,Selasa,Rabu,Kamis,Jumat" },
+    { label: "Setiap Hari", value: "Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu" },
+  ];
+
+  // Kelurahan yang memiliki zona
+  const kelurahansWithZones = useMemo(() => {
+    const counts: Record<number, number> = {};
+    zonaList.forEach((z) => {
+      counts[z.kelurahanId] = (counts[z.kelurahanId] || 0) + 1;
+    });
+    return kelurahanList
+      .filter((k) => (counts[k.id] || 0) > 0)
+      .map((k) => ({ ...k, countZona: counts[k.id] || 0 }))
+      .sort((a, b) => b.countZona - a.countZona);
+  }, [kelurahanList, zonaList]);
+
+  // Zona yang difilter berdasarkan tab & pencarian
+  const displayedZonas = useMemo(() => {
+    let list = zonaList;
+    if (selectedKelurahanFilter !== "all" && selectedKelurahanFilter !== "all_with_zones") {
+      const kelId = parseInt(selectedKelurahanFilter);
+      list = list.filter((z) => z.kelurahanId === kelId);
+    }
+    if (zonaSearch.trim()) {
+      const q = zonaSearch.toLowerCase();
+      list = list.filter((z) => {
+        const matchNama = z.nama.toLowerCase().includes(q);
+        const kelNama = z.kelurahan?.nama || kelurahanList.find((k) => k.id === z.kelurahanId)?.nama || "";
+        return matchNama || kelNama.toLowerCase().includes(q);
+      });
+    }
+    return list;
+  }, [zonaList, selectedKelurahanFilter, zonaSearch, kelurahanList]);
+
   // Sync tab with URL if changed
   useEffect(() => {
     const tabParam = searchParams.get("tab");
@@ -193,7 +259,19 @@ function RuteContent() {
   // === HANDLERS RUTE ===
   function openCreateRute() {
     setEditingRute(null);
-    setRuteForm({ nama: "", hari: "Senin,Rabu,Jumat", jam: "", kelurahanId: "", kelurahanIds: [], zonaId: "", zonaIds: [], kendaraanId: "", petugasId: "" });
+    setRuteForm({
+      nama: "",
+      hari: "Senin,Rabu,Jumat",
+      jam: "",
+      kelurahanId: "",
+      kelurahanIds: [],
+      zonaId: "",
+      zonaIds: [],
+      kendaraanId: kendaraanList.length > 0 ? kendaraanList[0].id.toString() : "",
+      petugasId: "",
+    });
+    setZonaSearch("");
+    setSelectedKelurahanFilter("all_with_zones");
     setShowRuteForm(true);
   }
 
@@ -224,7 +302,75 @@ function RuteContent() {
       kendaraanId: r.kendaraan?.id?.toString() || r.kendaraanId?.toString() || "",
       petugasId: r.petugas?.id?.toString() || "",
     });
+    setZonaSearch("");
+    if (currentKelurahanIds.length === 1) {
+      setSelectedKelurahanFilter(currentKelurahanIds[0]);
+    } else {
+      setSelectedKelurahanFilter("all_with_zones");
+    }
     setShowRuteForm(true);
+  }
+
+  function toggleZona(z: Zona) {
+    const zId = z.id.toString();
+    const kelIdStr = z.kelurahanId.toString();
+    const isChecked = ruteForm.zonaIds.includes(zId) || ruteForm.zonaId === zId;
+
+    let nextZonaIds = isChecked
+      ? ruteForm.zonaIds.filter((id) => id !== zId)
+      : [...ruteForm.zonaIds, zId];
+
+    let nextKelIds = [...ruteForm.kelurahanIds];
+    if (!isChecked && !nextKelIds.includes(kelIdStr)) {
+      nextKelIds.push(kelIdStr);
+    }
+
+    let nextNama = ruteForm.nama;
+    if (!nextNama.trim()) {
+      const kel = z.kelurahan?.nama || kelurahanList.find((k) => k.id === z.kelurahanId)?.nama || "";
+      nextNama = `Rute ${kel} - ${z.nama}`;
+    }
+
+    setRuteForm((f) => ({
+      ...f,
+      zonaId: "",
+      zonaIds: nextZonaIds,
+      kelurahanIds: nextKelIds,
+      nama: nextNama,
+    }));
+  }
+
+  function selectAllZonasInKelurahan(kelId: number) {
+    const targetZonas = zonaList.filter((z) => z.kelurahanId === kelId);
+    const targetIds = targetZonas.map((z) => z.id.toString());
+    const kelIdStr = kelId.toString();
+
+    const nextZonaIds = Array.from(new Set([...ruteForm.zonaIds, ...targetIds]));
+    const nextKelIds = Array.from(new Set([...ruteForm.kelurahanIds, kelIdStr]));
+
+    let nextNama = ruteForm.nama;
+    if (!nextNama.trim()) {
+      const kel = kelurahanList.find((k) => k.id === kelId)?.nama || "";
+      nextNama = `Rute ${kel} (Semua Zona)`;
+    }
+
+    setRuteForm((f) => ({
+      ...f,
+      zonaId: "",
+      zonaIds: nextZonaIds,
+      kelurahanIds: nextKelIds,
+      nama: nextNama,
+    }));
+  }
+
+  function deselectAllZonasInKelurahan(kelId: number) {
+    const targetZonas = zonaList.filter((z) => z.kelurahanId === kelId);
+    const targetIds = new Set(targetZonas.map((z) => z.id.toString()));
+
+    setRuteForm((f) => ({
+      ...f,
+      zonaIds: f.zonaIds.filter((id) => !targetIds.has(id)),
+    }));
   }
 
   function toggleKelurahan(id: string) {
@@ -247,8 +393,6 @@ function RuteContent() {
       ...f,
       kelurahanId: "",
       kelurahanIds: newKelurahanIds,
-      zonaId: "",
-      zonaIds: [],
       nama,
     }));
   }
@@ -745,154 +889,447 @@ function RuteContent() {
       )}
 
       {/* ========================================================================= */}
-      {/* MODAL FORM RUTE */}
+      {/* MODAL FORM RUTE (MODERN & ERGONOMIC) */}
       {/* ========================================================================= */}
       {showRuteForm && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-md max-h-[85vh] overflow-y-auto bg-white rounded-3xl border border-slate-200/80 shadow-2xl">
-            <div className="sticky top-0 flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/80 backdrop-blur-sm z-10">
-              <h2 className="text-base font-semibold text-slate-900">{editingRute ? "Edit Rute" : "Tambah Rute"}</h2>
-              <button onClick={() => { setShowRuteForm(false); setEditingRute(null); }} className="p-1.5 text-slate-600 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition" aria-label="Tutup">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            <form onSubmit={handleRuteSubmit} className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Nama Rute <span className="text-red-500">*</span></label>
-                <input type="text" value={ruteForm.nama} onChange={(e) => setRuteForm({ ...ruteForm, nama: e.target.value })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white" placeholder="cth: Rute Sukmajaya 1" required />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                  Kelurahan <span className="text-red-500">*</span>
-                  <span className="ml-1 text-xs font-normal text-slate-600">(bisa pilih lebih dari satu)</span>
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  {kelurahanList.map((k) => {
-                    const idStr = k.id.toString();
-                    const checked = ruteForm.kelurahanIds.includes(idStr) || ruteForm.kelurahanId === idStr;
-                    return (
-                      <label
-                        key={k.id}
-                        className={`${chipCls(checked)} text-xs cursor-pointer transition`}
-                        title={k.kecamatan ?? ""}
-                      >
-                        <input
-                          type="checkbox"
-                          className="hidden"
-                          checked={checked}
-                          onChange={() => toggleKelurahan(idStr)}
-                        />
-                        <ChipCheck checked={checked} />
-                        <span className="truncate">{k.nama}</span>
-                      </label>
-                    );
-                  })}
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-6 animate-in fade-in duration-150">
+          <div className="w-full max-w-2xl max-h-[92vh] bg-white rounded-3xl border border-slate-200/80 shadow-2xl flex flex-col overflow-hidden">
+            {/* Header Modal */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/80">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold shadow-xs">
+                  <Truck className="w-5 h-5 text-emerald-700" />
+                </div>
+                <div>
+                  <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-tight">
+                    {editingRute ? "Edit Rute Armada" : "Tambah Rute Armada Baru"}
+                  </h2>
+                  <p className="text-xs text-slate-500">
+                    Atur jadwal, armada penjemput, serta cakupan zona operasional
+                  </p>
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                  Zona Angkut
-                  <span className="ml-1 text-xs font-normal text-slate-600">(bisa pilih lebih dari satu)</span>
-                </label>
-                {ruteForm.kelurahanIds.length === 0 && !ruteForm.kelurahanId ? (
-                  <div className="border border-dashed border-slate-200 rounded-xl px-3 py-4 text-center text-xs text-slate-600 bg-slate-50/50">
-                    Pilih kelurahan terlebih dahulu.
+              <button
+                type="button"
+                onClick={() => { setShowRuteForm(false); setEditingRute(null); }}
+                className="p-2 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100 transition"
+                aria-label="Tutup"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Scrollable Form Body */}
+            <form onSubmit={handleRuteSubmit} className="flex-1 overflow-y-auto p-6 space-y-6">
+              
+              {/* BAGIAN 1: IDENTITAS RUTE & JADWAL */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 pb-1 border-b border-slate-100">
+                  <Calendar className="w-4 h-4 text-emerald-700" />
+                  <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                    1. Identitas & Hari Layanan
+                  </h3>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">
+                    Nama Rute <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={ruteForm.nama}
+                    onChange={(e) => setRuteForm({ ...ruteForm, nama: e.target.value })}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 text-sm font-medium bg-white"
+                    placeholder="cth: Rute Kalibaru - Dump Truck 01"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="text-sm font-semibold text-slate-700">
+                      Hari Pengangkutan <span className="text-red-500">*</span>
+                    </label>
                   </div>
-                ) : zonaList.filter((z) => ruteForm.kelurahanIds.includes(z.kelurahanId.toString()) || z.kelurahanId.toString() === ruteForm.kelurahanId).length === 0 ? (
-                  <div className="border border-dashed border-slate-200 rounded-xl px-3 py-4 text-center text-xs text-slate-600 bg-slate-50/50">
-                    Kelurahan ini belum memiliki zona angkut.
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 gap-2">
-                    {zonaList.filter((z) => ruteForm.kelurahanIds.includes(z.kelurahanId.toString()) || z.kelurahanId.toString() === ruteForm.kelurahanId).map((z) => {
-                      const idStr = z.id.toString();
-                      const checked = ruteForm.zonaIds.includes(idStr) || ruteForm.zonaId === idStr;
+
+                  {/* Preset Cepat Hari */}
+                  <div className="flex flex-wrap items-center gap-1.5 mb-2.5">
+                    <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mr-1">
+                      Pilihan Cepat:
+                    </span>
+                    {PRESET_HARI.map((p) => {
+                      const isCurrent = ruteForm.hari === p.value;
                       return (
-                        <label
-                          key={z.id}
-                          className={`${chipCls(checked)} text-xs cursor-pointer transition`}
+                        <button
+                          key={p.label}
+                          type="button"
+                          onClick={() => setRuteForm((f) => ({ ...f, hari: p.value }))}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+                            isCurrent
+                              ? "bg-emerald-700 text-white shadow-xs"
+                              : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                          }`}
                         >
-                          <input
-                            type="checkbox"
-                            className="hidden"
-                            checked={checked}
-                            onChange={() => {
-                              const newZonas = checked
-                                ? ruteForm.zonaIds.filter((x) => x !== idStr)
-                                : [...ruteForm.zonaIds, idStr];
-                              setRuteForm((f) => ({ ...f, zonaIds: newZonas, zonaId: "" }));
-                            }}
-                          />
-                          <ChipCheck checked={checked} />
-                          <span className="truncate">{z.nama}</span>
-                        </label>
+                          {p.label}
+                        </button>
                       );
                     })}
                   </div>
-                )}
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Hari Pengangkutan <span className="text-red-500">*</span></label>
-                <div className="grid grid-cols-4 gap-1.5">
-                  {HARI_LIST.map((h) => {
-                    const activeDays = ruteForm.hari.split(",").map((s) => s.trim()).filter(Boolean);
-                    const isSelected = activeDays.includes(h);
-                    return (
-                      <button
-                        type="button"
-                        key={h}
-                        onClick={() => {
-                          const updated = isSelected ? activeDays.filter((x) => x !== h) : [...activeDays, h];
-                          setRuteForm({ ...ruteForm, hari: updated.join(",") });
-                        }}
-                        className={`py-1.5 text-xs font-semibold rounded-lg border transition ${
-                          isSelected ? "bg-emerald-700 text-white border-emerald-700" : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
-                        }`}
-                      >
-                        {h.slice(0, 3)}
-                      </button>
-                    );
-                  })}
+                  {/* Tombol 7 Hari */}
+                  <div className="grid grid-cols-7 gap-1.5">
+                    {HARI_LIST.map((h) => {
+                      const activeDays = ruteForm.hari.split(",").map((s) => s.trim()).filter(Boolean);
+                      const isSelected = activeDays.includes(h);
+                      return (
+                        <button
+                          type="button"
+                          key={h}
+                          onClick={() => {
+                            const updated = isSelected
+                              ? activeDays.filter((x) => x !== h)
+                              : [...activeDays, h];
+                            setRuteForm({ ...ruteForm, hari: updated.join(",") });
+                          }}
+                          className={`py-2 text-xs font-bold rounded-xl border transition flex flex-col items-center justify-center gap-0.5 ${
+                            isSelected
+                              ? "bg-emerald-700 text-white border-emerald-700 shadow-xs"
+                              : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50 hover:border-slate-300"
+                          }`}
+                        >
+                          <span>{h.slice(0, 3)}</span>
+                          <span className={`text-[9px] ${isSelected ? "text-emerald-100" : "text-slate-400"}`}>
+                            {isSelected ? "✓" : "—"}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-slate-400" />
+                    Estimasi Jam Operasional (Opsional)
+                  </label>
+                  <input
+                    type="text"
+                    value={ruteForm.jam}
+                    onChange={(e) => setRuteForm({ ...ruteForm, jam: e.target.value })}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 text-sm bg-white"
+                    placeholder="cth: 08:00 - 11:00 (Pagi)"
+                  />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Estimasi Jam</label>
-                <input type="text" value={ruteForm.jam} onChange={(e) => setRuteForm({ ...ruteForm, jam: e.target.value })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white" placeholder="cth: 08:00 - 11:00" />
+              {/* BAGIAN 2: MOBIL ARMADA & PENGEMUDI */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 pb-1 border-b border-slate-100">
+                  <Truck className="w-4 h-4 text-emerald-700" />
+                  <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                    2. Unit Armada Pickup & Supir
+                  </h3>
+                </div>
+
+                <div className="bg-emerald-50/70 border border-emerald-200/80 rounded-2xl p-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                      Mobil Armada Pickup <span className="text-red-500">*</span>
+                    </label>
+                    <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded-full">
+                      Armada-Centric
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-600">
+                    Pilih unit kendaraan operasional yang bertugas mengeksekusi penjemputan sampah di zona rute ini.
+                  </p>
+                  <select
+                    value={ruteForm.kendaraanId}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      const k = kendaraanList.find((x) => x.id.toString() === v);
+                      let newNama = ruteForm.nama;
+                      if (!newNama.trim() && k) {
+                        newNama = `Rute ${k.nama}`;
+                      }
+                      setRuteForm({ ...ruteForm, kendaraanId: v, nama: newNama });
+                    }}
+                    className="w-full px-3.5 py-2.5 bg-white border border-emerald-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 text-sm font-medium text-slate-900"
+                    required
+                  >
+                    <option value="">-- Pilih Mobil Armada --</option>
+                    {kendaraanList.map((k) => (
+                      <option key={k.id} value={k.id}>
+                        {k.jenis === "dump_truck" ? "🚛 Dump Truck" : k.jenis === "pickup" ? "🛺 Pickup" : "🛞 Gerobak"} — {k.nama} {k.platNomor ? `(${k.platNomor})` : ""} {k.kapasitas ? `[${k.kapasitas} kg]` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
+                    <User className="w-3.5 h-3.5 text-slate-400" />
+                    Petugas / Supir Utama (Opsional)
+                  </label>
+                  <select
+                    value={ruteForm.petugasId}
+                    onChange={(e) => setRuteForm({ ...ruteForm, petugasId: e.target.value })}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 text-sm bg-white"
+                  >
+                    <option value="">-- Pilih Petugas / Supir (Opsional) --</option>
+                    {petugasList.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        👤 {p.nama} {p.jabatan ? `(${p.jabatan})` : ""}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-[11px] text-slate-500 mt-1">
+                    Bisa dikosongkan. Pengemudi shift di lapangan dapat memilih kendaraan ini langsung dari aplikasi mobile.
+                  </p>
+                </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Mobil Armada Pickup</label>
-                <select
-                  value={ruteForm.kendaraanId}
-                  onChange={(e) => setRuteForm({ ...ruteForm, kendaraanId: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white"
+              {/* BAGIAN 3: CAKUPAN ZONA LAYANAN */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 pb-1 border-b border-slate-100">
+                  <MapPin className="w-4 h-4 text-emerald-700" />
+                  <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                    3. Cakupan Zona Angkut
+                  </h3>
+                </div>
+
+                <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50/60 space-y-3.5">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div>
+                      <div className="text-xs font-bold text-slate-900">
+                        Pilih Zona yang Disisir Armada Ini
+                      </div>
+                      <p className="text-[11px] text-slate-500">
+                        Klik kartu zona di bawah. Kelurahan asal otomatis terhubung ke rute.
+                      </p>
+                    </div>
+
+                    {/* Quick Search Zona */}
+                    <div className="relative w-full sm:w-56">
+                      <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        value={zonaSearch}
+                        onChange={(e) => setZonaSearch(e.target.value)}
+                        placeholder="Cari zona atau kelurahan..."
+                        className="w-full pl-8 pr-7 py-1.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 font-medium"
+                      />
+                      {zonaSearch && (
+                        <button
+                          type="button"
+                          onClick={() => setZonaSearch("")}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Filter Tabs Kelurahan */}
+                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedKelurahanFilter("all_with_zones")}
+                      className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition ${
+                        selectedKelurahanFilter === "all_with_zones"
+                          ? "bg-emerald-700 text-white shadow-xs"
+                          : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-100"
+                      }`}
+                    >
+                      ✨ Semua Zona ({zonaList.length})
+                    </button>
+                    {kelurahansWithZones.map((k) => (
+                      <button
+                        key={k.id}
+                        type="button"
+                        onClick={() => setSelectedKelurahanFilter(k.id.toString())}
+                        className={`px-3 py-1.5 rounded-xl font-semibold whitespace-nowrap transition flex items-center gap-1.5 ${
+                          selectedKelurahanFilter === k.id.toString()
+                            ? "bg-emerald-700 text-white shadow-xs"
+                            : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-100"
+                        }`}
+                      >
+                        <span>{k.nama}</span>
+                        <span
+                          className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                            selectedKelurahanFilter === k.id.toString()
+                              ? "bg-emerald-800 text-white"
+                              : "bg-slate-100 text-slate-600"
+                          }`}
+                        >
+                          {k.countZona}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Bulk Actions when filtered */}
+                  {selectedKelurahanFilter !== "all_with_zones" && (
+                    <div className="flex items-center justify-between text-xs pt-0.5">
+                      <span className="text-slate-600 font-medium text-[11px]">
+                        Kelurahan: <strong className="text-slate-900">{kelurahanList.find((k) => k.id.toString() === selectedKelurahanFilter)?.nama}</strong>
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => selectAllZonasInKelurahan(parseInt(selectedKelurahanFilter))}
+                          className="text-emerald-700 hover:text-emerald-800 font-bold text-xs flex items-center gap-1"
+                        >
+                          <Check className="w-3.5 h-3.5" /> Pilih Semua
+                        </button>
+                        <span className="text-slate-300">|</span>
+                        <button
+                          type="button"
+                          onClick={() => deselectAllZonasInKelurahan(parseInt(selectedKelurahanFilter))}
+                          className="text-slate-500 hover:text-rose-600 font-medium text-xs"
+                        >
+                          Batal Pilih
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Selected Zona Summary Chips */}
+                  {ruteForm.zonaIds.length > 0 && (
+                    <div className="bg-emerald-50 border border-emerald-200/80 rounded-xl p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-bold text-emerald-900 flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                          {ruteForm.zonaIds.length} Zona Terpilih untuk Rute Ini:
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setRuteForm((f) => ({ ...f, zonaIds: [], zonaId: "" }))}
+                          className="text-[11px] text-rose-600 hover:text-rose-700 font-semibold"
+                        >
+                          Hapus Semua
+                        </button>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
+                        {ruteForm.zonaIds.map((zId) => {
+                          const z = zonaList.find((x) => x.id.toString() === zId);
+                          if (!z) return null;
+                          const kelNama = z.kelurahan?.nama || kelurahanList.find((k) => k.id === z.kelurahanId)?.nama || "";
+                          return (
+                            <span
+                              key={zId}
+                              className="inline-flex items-center gap-1 pl-2 pr-1.5 py-0.5 rounded-lg text-xs font-semibold bg-white border border-emerald-300 text-emerald-900 shadow-xs"
+                            >
+                              <span className="text-[10px] text-slate-500 font-normal">[{kelNama}]</span>
+                              <span>{z.nama}</span>
+                              <button
+                                type="button"
+                                onClick={() => toggleZona(z)}
+                                className="p-0.5 hover:bg-emerald-100 rounded text-emerald-700"
+                                title="Hapus zona ini"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Zona Grid */}
+                  {displayedZonas.length === 0 ? (
+                    <div className="border border-dashed border-slate-300 rounded-xl p-6 text-center text-xs text-slate-500 bg-white">
+                      Tidak ada zona yang cocok dengan filter atau pencarian Anda.
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-56 overflow-y-auto pr-1">
+                      {displayedZonas.map((z) => {
+                        const idStr = z.id.toString();
+                        const checked = ruteForm.zonaIds.includes(idStr) || ruteForm.zonaId === idStr;
+                        const kelNama = z.kelurahan?.nama || kelurahanList.find((k) => k.id === z.kelurahanId)?.nama || "";
+                        return (
+                          <div
+                            key={z.id}
+                            onClick={() => toggleZona(z)}
+                            className={`p-2.5 rounded-xl border text-xs cursor-pointer transition flex items-center justify-between gap-2 ${
+                              checked
+                                ? "bg-emerald-50/90 border-emerald-400 text-emerald-950 font-semibold shadow-xs"
+                                : "bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+                            }`}
+                          >
+                            <div className="flex items-center gap-2 truncate">
+                              <span
+                                className="w-2.5 h-2.5 rounded-full shrink-0"
+                                style={{ backgroundColor: z.warna || "#10b981" }}
+                              />
+                              <div className="truncate">
+                                <div className="truncate text-slate-900 font-semibold">{z.nama}</div>
+                                <div className="text-[10px] text-slate-500 font-normal truncate">
+                                  Kel. {kelNama}
+                                </div>
+                              </div>
+                            </div>
+                            <ChipCheck checked={checked} />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Accordion Kelurahan Tambahan */}
+                  <details className="text-xs group border border-slate-200 bg-white rounded-xl p-3">
+                    <summary className="font-semibold text-slate-700 cursor-pointer flex items-center justify-between">
+                      <span>Cakupan Kelurahan Tanpa Zona / Wilayah Luas (Opsional)</span>
+                      <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-open:rotate-180 transition" />
+                    </summary>
+                    <div className="mt-3 pt-3 border-t border-slate-100">
+                      <p className="text-[11px] text-slate-500 mb-2">
+                        Centang jika rute ini melayani seluruh kelurahan tanpa membatasi pada blok zona khusus:
+                      </p>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 max-h-36 overflow-y-auto pr-1">
+                        {kelurahanList.map((k) => {
+                          const idStr = k.id.toString();
+                          const checked = ruteForm.kelurahanIds.includes(idStr) || ruteForm.kelurahanId === idStr;
+                          return (
+                            <label
+                              key={k.id}
+                              className={`${chipCls(checked)} text-xs cursor-pointer transition`}
+                            >
+                              <input
+                                type="checkbox"
+                                className="hidden"
+                                checked={checked}
+                                onChange={() => toggleKelurahan(idStr)}
+                              />
+                              <ChipCheck checked={checked} />
+                              <span className="truncate">{k.nama}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </details>
+                </div>
+              </div>
+
+              {/* Action Buttons Sticky Footer */}
+              <div className="pt-2 border-t border-slate-100 flex items-center justify-end gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => { setShowRuteForm(false); setEditingRute(null); }}
+                  className="px-5 py-2.5 border border-slate-200 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-50 transition"
                 >
-                  <option value="">-- Pilih Mobil Armada --</option>
-                  {kendaraanList.map((k) => (
-                    <option key={k.id} value={k.id}>
-                      {k.jenis === "dump_truck" ? "🚛" : k.jenis === "pickup" ? "🛺" : "🛞"} {k.nama} {k.platNomor ? `(${k.platNomor})` : ""}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Petugas / Supir (Opsional)</label>
-                <select value={ruteForm.petugasId} onChange={(e) => setRuteForm({ ...ruteForm, petugasId: e.target.value })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white">
-                  <option value="">-- Pilih Petugas --</option>
-                  {petugasList.map((p) => (
-                    <option key={p.id} value={p.id}>{p.nama}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex gap-2 pt-2">
-                <button type="button" onClick={() => { setShowRuteForm(false); setEditingRute(null); }} className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-50 transition">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow transition">{editingRute ? "Simpan Perubahan" : "Tambah Rute"}</button>
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-bold shadow-sm hover:shadow active:scale-[0.98] transition flex items-center gap-2"
+                >
+                  <Truck className="w-4 h-4" />
+                  <span>{editingRute ? "Simpan Perubahan Rute" : "Buat Rute Armada"}</span>
+                </button>
               </div>
             </form>
           </div>
