@@ -16,20 +16,22 @@ export type PenugasanJadwalInput = {
   pelangganId: number;
   kelurahanId?: number | null;
   zonaId?: number | null;
-  petugasId?: number | null;
+  kendaraanId?: number | null; // Mobil armada penjemput utama
+  petugasId?: number | null;   // Petugas supir / personil (opsional)
   ruteId?: number | null;
   hari?: string[] | string | null;
   jam?: string | null;
 };
 
 /**
- * Menghubungkan pelanggan dengan Petugas Pickup, Zona, dan Jadwal Pengangkutan.
- * Mendukung pemilihan multi-hari penjemputan (lebih dari satu hari).
+ * Menghubungkan pelanggan dengan Mobil Armada Pickup (dan Petugas supir),
+ * Zona Layanan, serta Jadwal Pengangkutan multi-hari.
  */
 export async function tetapkanJadwalDanPetugasPelanggan({
   pelangganId,
   kelurahanId,
   zonaId,
+  kendaraanId,
   petugasId,
   ruteId,
   hari,
@@ -47,12 +49,13 @@ export async function tetapkanJadwalDanPetugasPelanggan({
     .map((h) => h.trim())
     .filter((h): h is string => DAFTAR_HARI.includes(h as NamaHari));
 
-  // Jika tidak ada hari dan tidak ada rute/petugas, lewati
-  if (hariList.length === 0 && !ruteId && !petugasId) {
+  // Jika tidak ada hari dan tidak ada rute/kendaraan/petugas, lewati
+  if (hariList.length === 0 && !ruteId && !kendaraanId && !petugasId) {
     return;
   }
 
   const finalJam = jam && jam.trim() ? jam.trim() : "08:00";
+  const kidArmada = kendaraanId ? Number(kendaraanId) : null;
   const pid = petugasId ? Number(petugasId) : null;
   const zid = zonaId ? Number(zonaId) : null;
   const kid = kelurahanId ? Number(kelurahanId) : null;
@@ -65,11 +68,18 @@ export async function tetapkanJadwalDanPetugasPelanggan({
       where: { id: targetRuteId },
     });
     if (existingRute) {
-      // Jika admin menetapkan petugasId pada rute ini
+      // Sinkronisasi armada atau petugas jika berbeda
+      const updateData: Record<string, unknown> = {};
+      if (kidArmada && existingRute.kendaraanId !== kidArmada) {
+        updateData.kendaraanId = kidArmada;
+      }
       if (pid && existingRute.petugasId !== pid) {
+        updateData.petugasId = pid;
+      }
+      if (Object.keys(updateData).length > 0) {
         await prisma.rute.update({
           where: { id: targetRuteId },
-          data: { petugasId: pid },
+          data: updateData,
         });
       }
     } else {
@@ -77,8 +87,80 @@ export async function tetapkanJadwalDanPetugasPelanggan({
     }
   }
 
-  // Jika targetRuteId belum ditentukan, cari rute aktif milik petugas
+  // Jika targetRuteId belum ditentukan dan kendaraanId (Armada) dipilih (prioritas utama)
+  if (!targetRuteId && kidArmada) {
+    let ruteMatch = await prisma.rute.findFirst({
+      where: {
+        kendaraanId: kidArmada,
+        aktif: true,
+        ...(zid ? { zonaId: zid } : {}),
+        ...(kid ? { kelurahanId: kid } : {}),
+      },
+    });
+
+    if (!ruteMatch) {
+      ruteMatch = await prisma.rute.findFirst({
+        where: { kendaraanId: kidArmada, aktif: true },
+      });
+    }
+
+    if (ruteMatch) {
+      targetRuteId = ruteMatch.id;
+    } else {
+      // Auto-generate rute untuk mobil armada ini
+      const [armada, zona, kel] = await Promise.all([
+        prisma.kendaraan?.findUnique
+          ? prisma.kendaraan.findUnique({
+              where: { id: kidArmada },
+              select: { nama: true, platNomor: true, petugasId: true },
+            })
+          : null,
+        zid
+          ? prisma.zona.findUnique({
+              where: { id: zid },
+              select: { nama: true },
+            })
+          : null,
+        kid
+          ? prisma.kelurahan.findUnique({
+              where: { id: kid },
+              select: { nama: true },
+            })
+          : null,
+      ]);
+
+      const platSuffix = armada?.platNomor ? ` (${armada.platNomor})` : "";
+      const ruteNama = `Rute Armada ${armada?.nama || "Armada"}${platSuffix}${
+        zona ? ` - ${zona.nama}` : kel ? ` - ${kel.nama}` : ""
+      }`;
+
+      const newRute = await prisma.rute.create({
+        data: {
+          nama: ruteNama,
+          hari: hariList.length > 0 ? hariList.join(", ") : "Senin, Kamis",
+          jam: finalJam,
+          kendaraanId: kidArmada,
+          petugasId: pid || armada?.petugasId || null,
+          zonaId: zid,
+          kelurahanId: kid,
+          aktif: true,
+        },
+      });
+      targetRuteId = newRute.id;
+    }
+  }
+
+  // Jika targetRuteId belum ditentukan dan hanya petugasId yang ada (fallback kompatibilitas)
   if (!targetRuteId && pid) {
+    // Coba deteksi mobil armada yang dikemudikan oleh petugas ini
+    const armadaPetugas = prisma.kendaraan?.findFirst
+      ? await prisma.kendaraan.findFirst({
+          where: { petugasId: pid, aktif: true, deletedAt: null },
+          select: { id: true },
+        })
+      : null;
+    const autoKidArmada = armadaPetugas?.id || null;
+
     let ruteMatch = await prisma.rute.findFirst({
       where: {
         petugasId: pid,
@@ -124,6 +206,7 @@ export async function tetapkanJadwalDanPetugasPelanggan({
           nama: ruteNama,
           hari: hariList.length > 0 ? hariList.join(", ") : "Senin, Kamis",
           jam: finalJam,
+          kendaraanId: autoKidArmada,
           petugasId: pid,
           zonaId: zid,
           kelurahanId: kid,

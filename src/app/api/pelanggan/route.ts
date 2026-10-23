@@ -110,6 +110,8 @@ export async function GET(request: Request) {
               select: {
                 id: true,
                 nama: true,
+                kendaraanId: true,
+                kendaraan: { select: { id: true, nama: true, platNomor: true, jenis: true } },
                 petugasId: true,
                 petugas: { select: { id: true, nama: true } },
               },
@@ -278,12 +280,13 @@ export async function POST(request: Request) {
       throw e;
     }
 
-    // Penugasan Petugas Pickup, Rute Armada, dan Jadwal Pengangkutan (bisa multi-hari)
-    if (body.ruteId || body.petugasId || body.hari || body.jadwalHari) {
+    // Penugasan Mobil Armada Pickup, Rute, dan Jadwal Pengangkutan (bisa multi-hari)
+    if (body.ruteId || body.kendaraanId || body.petugasId || body.hari || body.jadwalHari) {
       await tetapkanJadwalDanPetugasPelanggan({
         pelangganId: pelanggan.id,
         kelurahanId: pelanggan.kelurahanId,
         zonaId: zonaId ? parseInt(zonaId) : null,
+        kendaraanId: body.kendaraanId ? parseInt(body.kendaraanId) : null,
         petugasId: body.petugasId ? parseInt(body.petugasId) : null,
         ruteId: body.ruteId ? parseInt(body.ruteId) : null,
         hari: body.hari || body.jadwalHari,

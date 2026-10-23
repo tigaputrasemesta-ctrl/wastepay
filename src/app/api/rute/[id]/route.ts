@@ -16,6 +16,7 @@ export async function GET(
         kelurahans: { select: { id: true, nama: true, kecamatan: true } },
         zona: { select: { id: true, nama: true, kelurahanId: true } },
         zonas: { select: { id: true, nama: true, kelurahanId: true } },
+        kendaraan: { select: { id: true, nama: true, platNomor: true, jenis: true } },
         petugas: { select: { id: true, nama: true } },
         jadwal: {
           include: {
@@ -51,10 +52,9 @@ export async function PUT(
   try {
     const id = parseInt((await params).id);
     const body = await request.json();
-    const { nama, hari, jam, aktif, kelurahanId, kelurahanIds, petugasId, zonaId, zonaIds } = body;
+    const { nama, hari, jam, aktif, kelurahanId, kelurahanIds, kendaraanId, petugasId, zonaId, zonaIds } = body;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const data: any = {};
+    const data: Record<string, unknown> = {};
     if (nama !== undefined) data.nama = nama;
     if (hari !== undefined) data.hari = hari;
     if (jam !== undefined) data.jam = jam;
@@ -74,6 +74,7 @@ export async function PUT(
       data.wilayahId = null; // wilayahId is deprecated for route scopes
     }
     
+    if (kendaraanId !== undefined) data.kendaraanId = kendaraanId ? parseInt(kendaraanId) : null;
     if (petugasId !== undefined) data.petugasId = petugasId ? parseInt(petugasId) : null;
     
     if (zonaIds !== undefined || zonaId !== undefined) {
@@ -111,6 +112,7 @@ export async function PUT(
         kelurahan: { select: { id: true, nama: true, kecamatan: true } },
         zona: { select: { id: true, nama: true } },
         zonas: { select: { id: true, nama: true } },
+        kendaraan: { select: { id: true, nama: true, platNomor: true, jenis: true } },
         petugas: { select: { id: true, nama: true } },
       },
     });

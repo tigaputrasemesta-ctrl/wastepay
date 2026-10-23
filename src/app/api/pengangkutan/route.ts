@@ -6,31 +6,52 @@ import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 import { namaHari } from "@/lib/utils";
 
 /**
- * Materialisasi tugas "terjadwal" dari Jadwal harian milik rute petugas.
+ * Materialisasi tugas "terjadwal" dari Jadwal harian milik rute armada / petugas.
  *
- * Mobile petugas membaca daftar tugas dari tabel Pengangkutan, tetapi tidak
- * ada proses yang membuatkan catatan Pengangkutan status "terjadwal" dari
- * Jadwal. Akibatnya saat petugas login, daftar tugas selalu kosong walaupun
- * dia punya rute & jadwal untuk hari itu. Fungsi ini dibuat idempotent:
- * hanya membuat catatan yang belum ada (per pelanggan + tanggal).
+ * Logika penjemputan kini berbasis mobil armada (kendaraanId):
+ * Rute penjemputan warga terikat ke mobil armada yang bertugas menyisir area.
+ * Fungsi ini idempotent: hanya membuat catatan yang belum ada (per pelanggan + tanggal).
  */
-async function materializeTugasTerjadwal(petugasId: number, tanggal: Date): Promise<void> {
+async function materializeTugasTerjadwal(opts: {
+  kendaraanId?: number;
+  petugasId?: number;
+  tanggal: Date;
+}): Promise<void> {
+  const { kendaraanId, petugasId, tanggal } = opts;
   const hari = namaHari(tanggal);
   const start = new Date(tanggal.getFullYear(), tanggal.getMonth(), tanggal.getDate());
   const end = new Date(tanggal.getFullYear(), tanggal.getMonth(), tanggal.getDate() + 1);
+
+  const ruteWhere: Prisma.RuteWhereInput = { aktif: true };
+  if (kendaraanId) {
+    ruteWhere.kendaraanId = kendaraanId;
+  } else if (petugasId) {
+    ruteWhere.OR = [
+      { petugasId },
+      { kendaraan: { petugasId } },
+    ];
+  }
 
   const jadwal = await prisma.jadwal.findMany({
     where: {
       hari,
       aktif: true,
-      rute: { aktif: true, petugasId },
+      rute: ruteWhere,
       pelanggan: { deletedAt: null, status: "aktif" },
     },
     select: { 
       id: true, 
       pelangganId: true, 
       pelanggan: { select: { wilayah: { select: { zonaId: true } } } },
-      rute: { select: { zonaId: true, zonas: { select: { id: true } } } } 
+      rute: { 
+        select: { 
+          zonaId: true, 
+          zonas: { select: { id: true } },
+          kendaraanId: true,
+          petugasId: true,
+          kendaraan: { select: { id: true, petugasId: true } },
+        } 
+      } 
     },
   });
 
@@ -66,18 +87,22 @@ async function materializeTugasTerjadwal(petugasId: number, tanggal: Date): Prom
     
     // Tentukan zona angkut: 
     // 1. Zona dari wilayah pelanggan (paling akurat)
-    // 2. Jika tidak ada, cek apakah rute punya zonas (multiple). Jika ya, fallback ke rute.zonaId (first).
+    // 2. Jika tidak ada, fallback ke rute.zonaId
     let targetZonaId = j.pelanggan.wilayah?.zonaId || null;
     if (!targetZonaId) {
        targetZonaId = j.rute.zonaId;
     }
+
+    const targetKendaraanId = j.rute.kendaraanId || kendaraanId || j.rute.kendaraan?.id || null;
+    const targetPetugasId = petugasId || j.rute.petugasId || j.rute.kendaraan?.petugasId || null;
 
     await prisma.pengangkutan.create({
       data: {
         tanggal: start,
         status: "terjadwal",
         pelangganId: j.pelangganId,
-        petugasId,
+        kendaraanId: targetKendaraanId,
+        petugasId: targetPetugasId,
         jadwalId: j.id,
         zonaId: targetZonaId,
       },
@@ -89,12 +114,15 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const tanggal = searchParams.get("tanggal");
   const petugasId = searchParams.get("petugasId");
+  const kendaraanId = searchParams.get("kendaraanId");
   const status = searchParams.get("status");
   const pelangganId = searchParams.get("pelangganId");
   // ?saya=1 → petugas login: hanya tugas miliknya (resolve via link userId)
   const saya = searchParams.get("saya") === "1";
 
   const where: Prisma.PengangkutanWhereInput = { deletedAt: null };
+  const tanggalTugas = tanggal ? new Date(tanggal) : new Date();
+
   if (tanggal) {
     const d = new Date(tanggal);
     where.tanggal = {
@@ -102,7 +130,16 @@ export async function GET(request: Request) {
       lt: new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1),
     };
   }
+
+  if (kendaraanId) {
+    const kId = parseInt(kendaraanId);
+    where.kendaraanId = kId;
+    // Materialisasi tugas rute armada ini untuk hari tersebut
+    await materializeTugasTerjadwal({ kendaraanId: kId, tanggal: tanggalTugas });
+  }
+
   if (petugasId) where.petugasId = parseInt(petugasId);
+
   if (saya) {
     const session = await getSession();
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -113,14 +150,33 @@ export async function GET(request: Request) {
     if (!profil) {
       return NextResponse.json({ error: "Akun belum ter-link ke profil petugas" }, { status: 403 });
     }
-    where.petugasId = profil.id;
 
-    // Materialisasi tugas dari jadwal hari tsb agar petugas langsung melihat
-    // daftar pickup setelah login (tanpa menunggu admin membuat catatan manual).
-    const tanggalTugas = tanggal
-      ? new Date(tanggal)
-      : new Date();
-    await materializeTugasTerjadwal(profil.id, tanggalTugas);
+    if (kendaraanId) {
+      // Driver memilih/menjalankan armada spesifik
+      const kId = parseInt(kendaraanId);
+      where.kendaraanId = kId;
+      await materializeTugasTerjadwal({ kendaraanId: kId, petugasId: profil.id, tanggal: tanggalTugas });
+    } else {
+      // Cek armada yang ditugaskan ke petugas ini
+      const armadaList = await prisma.kendaraan.findMany({
+        where: { petugasId: profil.id, aktif: true, deletedAt: null },
+        select: { id: true },
+      });
+      const armadaIds = armadaList.map((a) => a.id);
+
+      if (armadaIds.length > 0) {
+        where.OR = [
+          { petugasId: profil.id },
+          { kendaraanId: { in: armadaIds } },
+        ];
+        for (const aId of armadaIds) {
+          await materializeTugasTerjadwal({ kendaraanId: aId, petugasId: profil.id, tanggal: tanggalTugas });
+        }
+      } else {
+        where.petugasId = profil.id;
+        await materializeTugasTerjadwal({ petugasId: profil.id, tanggal: tanggalTugas });
+      }
+    }
   }
   if (status) where.status = status;
   if (pelangganId) where.pelangganId = parseInt(pelangganId);
@@ -236,14 +292,14 @@ export async function POST(request: Request) {
         }
       }
 
-      // Kendaraan yang dipakai harus milik petugas ini (pengemudi)
+      // Kendaraan yang dipakai harus armada yang terdaftar dan aktif
       if (kendaraanIdAkhir) {
         const k = await prisma.kendaraan.findFirst({
-          where: { id: kendaraanIdAkhir, deletedAt: null, petugasId: profil.id },
+          where: { id: kendaraanIdAkhir, deletedAt: null, aktif: true },
           select: { id: true },
         });
         if (!k) {
-          return NextResponse.json({ error: "Kendaraan bukan milik Anda" }, { status: 403 });
+          return NextResponse.json({ error: "Kendaraan tidak ditemukan atau tidak aktif" }, { status: 404 });
         }
       }
     }

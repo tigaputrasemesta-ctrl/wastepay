@@ -59,14 +59,14 @@ export async function PUT(
           );
         }
       }
-      // Kendaraan yang dipakai harus milik petugas ini (pengemudi)
+      // Kendaraan yang dipakai harus armada yang terdaftar dan aktif
       if (kendaraanId !== undefined && kendaraanId) {
         const k = await prisma.kendaraan.findFirst({
-          where: { id: parseInt(kendaraanId), deletedAt: null, petugasId: profil.id },
+          where: { id: parseInt(kendaraanId), deletedAt: null, aktif: true },
           select: { id: true },
         });
         if (!k) {
-          return NextResponse.json({ error: "Kendaraan bukan milik Anda" }, { status: 403 });
+          return NextResponse.json({ error: "Kendaraan tidak ditemukan atau tidak aktif" }, { status: 404 });
         }
       }
     }

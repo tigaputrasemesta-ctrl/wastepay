@@ -5,9 +5,10 @@ import { prisma } from "./prisma";
  * Dipakai halaman /surat-jalan untuk mencetak daftar pickup harian petugas.
  */
 
-/** Ambil daftar tugas pengangkutan untuk satu tanggal (opsional per petugas). */
+/** Ambil daftar tugas pengangkutan untuk satu tanggal (opsional per armada / petugas). */
 export async function getManifestPengangkutan(opts: {
   tanggal: Date;
+  kendaraanId?: number;
   petugasId?: number;
 }) {
   const start = new Date(
@@ -25,7 +26,8 @@ export async function getManifestPengangkutan(opts: {
     where: {
       deletedAt: null,
       tanggal: { gte: start, lt: end },
-      ...(opts.petugasId ? { petugasId: opts.petugasId } : {}),
+      ...(opts.kendaraanId ? { kendaraanId: opts.kendaraanId } : {}),
+      ...(opts.petugasId && !opts.kendaraanId ? { petugasId: opts.petugasId } : {}),
     },
     include: {
       pelanggan: {
@@ -38,10 +40,47 @@ export async function getManifestPengangkutan(opts: {
         },
       },
       petugas: { select: { nama: true } },
-      kendaraan: { select: { nama: true, platNomor: true } },
+      kendaraan: { select: { nama: true, platNomor: true, jenis: true } },
     },
-    orderBy: [{ petugasId: "asc" }, { pelanggan: { nama: "asc" } }],
+    orderBy: [
+      { kendaraanId: "asc" },
+      { petugasId: "asc" },
+      { pelanggan: { nama: "asc" } },
+    ],
   });
+}
+
+/** Info armada kendaraan + driver + rute aktif pada hari tertentu (untuk kepala surat jalan berbasis armada). */
+export async function getSuratJalanHeaderArmada(kendaraanId: number, hari: string) {
+  const kendaraan = await prisma.kendaraan.findUnique({
+    where: { id: kendaraanId, deletedAt: null },
+    select: {
+      id: true,
+      nama: true,
+      platNomor: true,
+      jenis: true,
+      kapasitas: true,
+      petugas: {
+        select: {
+          id: true,
+          nama: true,
+          noTelepon: true,
+        },
+      },
+      rute: {
+        where: { aktif: true, hari: { contains: hari } },
+        select: { nama: true },
+        orderBy: { nama: "asc" },
+      },
+    },
+  });
+
+  if (!kendaraan) return null;
+
+  return {
+    ...kendaraan,
+    ruteNama: kendaraan.rute.map((r) => r.nama),
+  };
 }
 
 /** Info petugas + kendaraan utama + rute aktif pada hari tertentu (untuk kepala surat jalan). */

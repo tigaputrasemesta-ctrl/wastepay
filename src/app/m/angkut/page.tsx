@@ -61,6 +61,7 @@ function mapsUrl(t: Tugas) {
 
 export default function MobileAngkut() {
   const [kendaraanSaya, setKendaraanSaya] = useState<Kendaraan[]>([]);
+  const [selectedArmadaId, setSelectedArmadaId] = useState<string>("");
   const [data, setData] = useState<Tugas[]>([]);
   const [loading, setLoading] = useState(true);
   const [tanggal, setTanggal] = useState(todayLocalISO());
@@ -125,7 +126,7 @@ export default function MobileAngkut() {
 
   // Handler Ceklis Hijau Cepat (1-Tap Pickup)
   async function handleQuickPickup(taskId: number) {
-    const kId = kendaraanSaya.length > 0 ? kendaraanSaya[0].id : null;
+    const kId = selectedArmadaId ? Number(selectedArmadaId) : (kendaraanSaya.length > 0 ? kendaraanSaya[0].id : null);
     const body = {
       status: "diambil",
       catatan: "Pickup cepat via Proximity GPS (1-Tap)",
@@ -200,21 +201,25 @@ export default function MobileAngkut() {
   });
 
   const fetchData = useCallback(async () => {
-    const res = await fetch(`/api/pengangkutan?saya=1&tanggal=${tanggal}`);
+    const kParam = selectedArmadaId ? `&kendaraanId=${selectedArmadaId}` : "";
+    const res = await fetch(`/api/pengangkutan?saya=1&tanggal=${tanggal}${kParam}`);
     if (res.ok) setData(await res.json());
     setLoading(false);
-  }, [tanggal]);
+  }, [tanggal, selectedArmadaId]);
 
   useEffect(() => {
     (async () => {
       const [pRes, kRes] = await Promise.all([fetch("/api/petugas/me"), fetch("/api/kendaraan")]);
-      // BUG FIX: `pRes.clone()` setelah body `pRes.json()` dibaca akan throw
-      // ("Body has already been consumed") — akibatnya kendaraanSaya tidak pernah
-      // terisi dan dropdown kendaraan selalu kosong. Baca json sekali saja.
       const profil = pRes.ok ? ((await pRes.json()) as Profil) : null;
       if (kRes.ok) {
         const semua: Kendaraan[] = await kRes.json();
-        setKendaraanSaya(semua.filter((k) => k.petugas?.id === profil?.id));
+        const aktif = semua.filter((k: any) => k.aktif !== false);
+        const milikSaya = aktif.filter((k) => k.petugas?.id === profil?.id);
+        const daftar = milikSaya.length > 0 ? milikSaya : aktif;
+        setKendaraanSaya(daftar);
+        if (daftar.length > 0) {
+          setSelectedArmadaId((prev) => prev || String(daftar[0].id));
+        }
       }
     })();
   }, []);
@@ -321,7 +326,7 @@ export default function MobileAngkut() {
       berat: "",
       jenisSampah: "campuran",
       catatan: "",
-      kendaraanId: kendaraanSaya.length > 0 ? String(kendaraanSaya[0].id) : "",
+      kendaraanId: selectedArmadaId || (kendaraanSaya.length > 0 ? String(kendaraanSaya[0].id) : ""),
       fotoBukti: "",
       latitude: t.pelanggan.latitude?.toString() || "",
       longitude: t.pelanggan.longitude?.toString() || "",
@@ -392,22 +397,44 @@ export default function MobileAngkut() {
     <div className="flex-1 w-full h-full flex flex-col overflow-hidden relative pb-[calc(58px+env(safe-area-inset-bottom,0px))]">
       {/* ── UNIFIED COMPACT DRIVER DASHBOARD (Persistent & Visible across Map & List) ── */}
       <div className="shrink-0 bg-slate-900 border-b border-slate-800 p-2 sm:p-2.5 space-y-2 shadow-md z-30">
-        {/* Tier 1: System Date + Operational Trip Controls + Options Toggle */}
-        <div className="flex items-center justify-between gap-2">
-          {/* Date Picker Badge (Clickable overlay) */}
-          <div className="relative shrink-0">
-            <input
-              type="date"
-              value={tanggal}
-              onChange={(e) => setTanggal(e.target.value)}
-              aria-label="Pilih tanggal jadwal rute"
-              className="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10"
-            />
-            <div className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-white rounded-xl border border-slate-700 flex items-center gap-1.5 text-xs font-bold transition-colors whitespace-nowrap shadow-sm">
-              <span aria-hidden="true">📅</span>
-              <span>{format(new Date(tanggal), "d MMM", { locale: id })}</span>
-              <span className="text-[9px] text-slate-400">▾</span>
+        {/* Tier 1: System Date + Armada Selector + Operational Trip Controls + Options Toggle */}
+        <div className="flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
+          <div className="flex items-center gap-1.5 shrink-0">
+            {/* Date Picker Badge (Clickable overlay) */}
+            <div className="relative shrink-0">
+              <input
+                type="date"
+                value={tanggal}
+                onChange={(e) => setTanggal(e.target.value)}
+                aria-label="Pilih tanggal jadwal rute"
+                className="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10"
+              />
+              <div className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-white rounded-xl border border-slate-700 flex items-center gap-1.5 text-xs font-bold transition-colors whitespace-nowrap shadow-sm">
+                <span aria-hidden="true">📅</span>
+                <span>{format(new Date(tanggal), "d MMM", { locale: id })}</span>
+                <span className="text-[9px] text-slate-400">▾</span>
+              </div>
             </div>
+
+            {/* Armada Selector */}
+            {kendaraanSaya.length > 0 && (
+              <div className="relative shrink-0">
+                <select
+                  value={selectedArmadaId}
+                  onChange={(e) => setSelectedArmadaId(e.target.value)}
+                  aria-label="Pilih mobil armada yang dikemudikan"
+                  className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-emerald-300 font-bold rounded-xl border border-slate-700 text-xs shadow-sm appearance-none pr-5 cursor-pointer focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                >
+                  <option value="">Semua Armada</option>
+                  {kendaraanSaya.map((k) => (
+                    <option key={k.id} value={k.id}>
+                      {k.jenis === "dump_truck" ? "🚛" : k.jenis === "pickup" ? "🛺" : "🛞"} {k.nama}
+                    </option>
+                  ))}
+                </select>
+                <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[9px] text-slate-400 pointer-events-none">▾</span>
+              </div>
+            )}
           </div>
 
           {/* Operational Trip Controls & Duration Timer */}
@@ -1163,7 +1190,7 @@ export default function MobileAngkut() {
         <ProximityPickupModal
           tugas={activeTask}
           jarakMeter={activeDistance}
-          kendaraanNama={kendaraanSaya[0]?.nama}
+          kendaraanNama={kendaraanSaya.find((k) => String(k.id) === selectedArmadaId)?.nama || kendaraanSaya[0]?.nama}
           onConfirmPickup={handleQuickPickup}
           onSkipOverdue={handleSkipOverdue}
           onOpenFullForm={(task) => {

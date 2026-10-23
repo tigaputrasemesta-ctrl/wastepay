@@ -10,7 +10,8 @@ import GeotagPhoto from "@/components/GeotagPhoto";
 type Kelurahan = { id: number; nama: string; kecamatan?: string | null; kota?: string | null };
 type Zona = { id: number; nama: string; warna?: string | null; kelurahanId: number };
 type Petugas = { id: number; nama: string; jabatan?: string | null; aktif?: boolean };
-type Rute = { id: number; nama: string; hari: string; jam?: string | null; kelurahanId?: number | null; zonaId?: number | null; petugasId?: number | null };
+type Kendaraan = { id: number; nama: string; platNomor: string | null; jenis: string; aktif?: boolean };
+type Rute = { id: number; nama: string; hari: string; jam?: string | null; kelurahanId?: number | null; zonaId?: number | null; kendaraanId?: number | null; petugasId?: number | null };
 type Paket = { id: number; nama: string; harga: number | null; deskripsi?: string };
 type KategoriTarif = { id: number; kategori: string; label: string; tarif: number; deskripsi?: string };
 
@@ -66,6 +67,7 @@ export default function DaftarPelangganPage() {
   const [kelurahanList, setKelurahanList] = useState<Kelurahan[]>([]);
   const [zonaList, setZonaList] = useState<Zona[]>([]);
   const [petugasList, setPetugasList] = useState<Petugas[]>([]);
+  const [kendaraanList, setKendaraanList] = useState<Kendaraan[]>([]);
   const [ruteList, setRuteList] = useState<Rute[]>([]);
   const [paketList, setPaketList] = useState<Paket[]>([]);
   const [kategoriTarifList, setKategoriTarifList] = useState<KategoriTarif[]>([]);
@@ -90,7 +92,8 @@ export default function DaftarPelangganPage() {
     koordinatSumber: "",
     koordinatAkurasi: "",
     fotoRumah: "",
-    // Jadwal, Petugas & Operasional
+    // Jadwal, Armada, Petugas & Operasional
+    kendaraanId: "",
     petugasId: "",
     ruteId: "",
     hari: ["Senin", "Kamis"] as string[],
@@ -105,6 +108,7 @@ export default function DaftarPelangganPage() {
   // ── Data turunan ──
   const kelurahanTerpilih = kelurahanList.find((k) => k.id.toString() === form.kelurahanId);
   const zonaTerpilih = zonaList.find((z) => z.id.toString() === form.zonaId);
+  const kendaraanTerpilih = kendaraanList.find((k) => k.id.toString() === form.kendaraanId);
   const petugasTerpilih = petugasList.find((p) => p.id.toString() === form.petugasId);
   const ruteTerpilih = ruteList.find((r) => r.id.toString() === form.ruteId);
   const kategoriTarifTerpilih = kategoriTarifList.find((k) => k.kategori === form.kategori);
@@ -128,13 +132,14 @@ export default function DaftarPelangganPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [kelurahanRes, zonaRes, petugasRes, ruteRes, paketRes, tarifRes] = await Promise.all([
+        const [kelurahanRes, zonaRes, petugasRes, ruteRes, paketRes, tarifRes, kenRes] = await Promise.all([
           fetch("/api/kelurahan"),
           fetch("/api/zona"),
           fetch("/api/petugas"),
           fetch("/api/rute"),
           fetch("/api/paket"),
           fetch("/api/kategori-tarif"),
+          fetch("/api/kendaraan"),
         ]);
         setKelurahanList(await kelurahanRes.json());
         setZonaList(await zonaRes.json());
@@ -143,6 +148,8 @@ export default function DaftarPelangganPage() {
         setRuteList(await ruteRes.json());
         setPaketList(await paketRes.json());
         setKategoriTarifList(await tarifRes.json());
+        const rawKen = await kenRes.json();
+        setKendaraanList(Array.isArray(rawKen) ? rawKen : []);
       } catch {
         setError("Gagal memuat data");
       }
@@ -163,6 +170,7 @@ export default function DaftarPelangganPage() {
       if (!rid) return updated;
       const r = ruteList.find((item) => item.id.toString() === rid);
       if (r) {
+        if (r.kendaraanId) updated.kendaraanId = r.kendaraanId.toString();
         if (r.petugasId) updated.petugasId = r.petugasId.toString();
         if (r.hari) {
           const days = r.hari
@@ -228,6 +236,7 @@ export default function DaftarPelangganPage() {
         fotoRumah: form.fotoRumah,
         kelurahanId: form.kelurahanId,
         zonaId: form.zonaId,
+        kendaraanId: form.kendaraanId,
         petugasId: form.petugasId,
         ruteId: form.ruteId,
         hari: form.hari,
@@ -264,7 +273,7 @@ export default function DaftarPelangganPage() {
       nama: "", noTelepon: "", kategori: "level_1", penanggungjawab: "",
       kelurahanId: "", zonaId: "", alamat: "", rt: "", rw: "",
       patokanLokasi: "", latitude: "", longitude: "", koordinatSumber: "", koordinatAkurasi: "", fotoRumah: "",
-      petugasId: "", ruteId: "", hari: ["Senin", "Kamis"], jam: "08:00",
+      kendaraanId: "", petugasId: "", ruteId: "", hari: ["Senin", "Kamis"], jam: "08:00",
       paketId: "", customTarif: "", status: "aktif", catatan: "",
     });
     setUseCustomTarif(false);
@@ -621,23 +630,23 @@ export default function DaftarPelangganPage() {
                 </span>
                 <div>
                   <h3 className="text-sm font-bold text-slate-900">Operasional Penjemputan Sampah</h3>
-                  <p className="text-xs text-slate-500">Pilih petugas pickup armada dan jadwal penjemputan warga (bisa multi-hari)</p>
+                  <p className="text-xs text-slate-500">Pilih mobil armada pickup dan jadwal penjemputan warga (bisa multi-hari)</p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-                {/* Petugas Pickup */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-1">
+                {/* Mobil Armada Pickup */}
                 <div>
-                  <label className="label">Petugas Pickup / Supir</label>
+                  <label className="label">Mobil Armada Pickup</label>
                   <select
-                    value={form.petugasId}
-                    onChange={(e) => setForm({ ...form, petugasId: e.target.value })}
+                    value={form.kendaraanId}
+                    onChange={(e) => setForm({ ...form, kendaraanId: e.target.value })}
                     className="input bg-white font-semibold text-slate-800"
                   >
-                    <option value="">— Pilih Petugas —</option>
-                    {petugasList.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.nama} {p.jabatan ? `(${p.jabatan})` : ""}
+                    <option value="">— Pilih Mobil Armada —</option>
+                    {kendaraanList.map((k) => (
+                      <option key={k.id} value={k.id}>
+                        {k.jenis === "dump_truck" ? "🚛" : k.jenis === "pickup" ? "🛺" : "🛞"} {k.nama} {k.platNomor ? `(${k.platNomor})` : ""}
                       </option>
                     ))}
                   </select>
@@ -669,6 +678,23 @@ export default function DaftarPelangganPage() {
                     onChange={(e) => setForm({ ...form, jam: e.target.value })}
                     className="input bg-white"
                   />
+                </div>
+
+                {/* Petugas Pickup / Supir */}
+                <div>
+                  <label className="label">Supir / Petugas (Opsional)</label>
+                  <select
+                    value={form.petugasId}
+                    onChange={(e) => setForm({ ...form, petugasId: e.target.value })}
+                    className="input bg-white font-medium text-slate-800"
+                  >
+                    <option value="">— Pilih Petugas —</option>
+                    {petugasList.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.nama} {p.jabatan ? `(${p.jabatan})` : ""}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
@@ -967,11 +993,11 @@ export default function DaftarPelangganPage() {
               {/* Konfirmasi Operasional Penjemputan */}
               <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 shadow-xs">
                 <p className="label !mb-2 text-xs font-semibold text-slate-500">OPERASIONAL &amp; PENJEMPUTAN</p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
                   <div>
-                    <span className="text-slate-600 font-bold block text-[11px]">Petugas Pickup:</span>
+                    <span className="text-slate-600 font-bold block text-[11px]">Mobil Armada:</span>
                     <span className="font-bold text-slate-800">
-                      {petugasTerpilih ? `${petugasTerpilih.nama} ${petugasTerpilih.jabatan ? `(${petugasTerpilih.jabatan})` : ""}` : "—"}
+                      {kendaraanTerpilih ? `${kendaraanTerpilih.nama} ${kendaraanTerpilih.platNomor ? `(${kendaraanTerpilih.platNomor})` : ""}` : "—"}
                     </span>
                   </div>
                   <div>
@@ -984,6 +1010,12 @@ export default function DaftarPelangganPage() {
                     <span className="text-slate-600 font-bold block text-[11px]">Jam Estimasi / Rute:</span>
                     <span className="font-medium text-slate-800">
                       {form.jam} {ruteTerpilih ? `· ${ruteTerpilih.nama}` : ""}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-slate-600 font-bold block text-[11px]">Petugas / Supir:</span>
+                    <span className="font-medium text-slate-700">
+                      {petugasTerpilih ? petugasTerpilih.nama : "—"}
                     </span>
                   </div>
                 </div>

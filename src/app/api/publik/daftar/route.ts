@@ -153,6 +153,7 @@ export async function POST(request: Request) {
     }
 
     let zonaId = body.zonaId ? parseInt(body.zonaId) : null;
+    const kendaraanId = body.kendaraanId ? parseInt(body.kendaraanId) : null;
     const petugasId = body.petugasId ? parseInt(body.petugasId) : null;
     const ruteId = body.ruteId ? parseInt(body.ruteId) : null;
     let tanggalPenagihanCustom = body.tanggalPenagihanCustom ? String(body.tanggalPenagihanCustom).trim() : null;
@@ -269,11 +270,12 @@ export async function POST(request: Request) {
       throw e;
     }
 
-    if (zonaId || petugasId || jadwalHari || ruteId) {
+    if (zonaId || kendaraanId || petugasId || jadwalHari || ruteId) {
       await tetapkanJadwalDanPetugasPelanggan({
         pelangganId: pelanggan.id,
         kelurahanId: pelanggan.kelurahanId,
         zonaId,
+        kendaraanId,
         petugasId,
         ruteId,
         hari: jadwalHari,

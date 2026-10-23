@@ -14,6 +14,10 @@ vi.mock("../src/lib/prisma", () => {
         create: vi.fn(),
         update: vi.fn(),
       },
+      kendaraan: {
+        findUnique: vi.fn(),
+        findFirst: vi.fn(),
+      },
       petugas: {
         findUnique: vi.fn(),
       },
@@ -136,5 +140,71 @@ describe("penugasan-jadwal", () => {
         },
       })
     );
+  });
+
+  it("tetapkanJadwalDanPetugasPelanggan: berhasil auto-link ke rute armada mobil bila kendaraanId dipilih", async () => {
+    (prisma.rute.findFirst as any).mockResolvedValue({
+      id: 12,
+      nama: "Rute Armada Dump Truck 01",
+      hari: "Senin, Kamis",
+      kendaraanId: 7,
+    });
+
+    await tetapkanJadwalDanPetugasPelanggan({
+      pelangganId: 20,
+      kendaraanId: 7,
+      zonaId: 1,
+      hari: ["Senin", "Kamis"],
+    });
+
+    expect(prisma.jadwal.upsert).toHaveBeenCalledTimes(2);
+    expect(prisma.jadwal.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          pelangganId_ruteId_hari: {
+            pelangganId: 20,
+            ruteId: 12,
+            hari: "Senin",
+          },
+        },
+      })
+    );
+  });
+
+  it("tetapkanJadwalDanPetugasPelanggan: auto-generate rute armada baru jika armada belum memiliki rute", async () => {
+    (prisma.rute.findFirst as any).mockResolvedValue(null);
+    (prisma.kendaraan.findUnique as any).mockResolvedValue({
+      id: 9,
+      nama: "Pickup 02",
+      platNomor: "B 1234 CD",
+      petugasId: 4,
+    });
+    (prisma.zona.findUnique as any).mockResolvedValue({
+      id: 3,
+      nama: "Zona Beji Barat",
+    });
+    (prisma.rute.create as any).mockResolvedValue({
+      id: 99,
+      nama: "Rute Armada Pickup 02 (B 1234 CD) - Zona Beji Barat",
+      kendaraanId: 9,
+      hari: "Rabu, Sabtu",
+    });
+
+    await tetapkanJadwalDanPetugasPelanggan({
+      pelangganId: 25,
+      kendaraanId: 9,
+      zonaId: 3,
+      hari: ["Rabu", "Sabtu"],
+    });
+
+    expect(prisma.rute.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          kendaraanId: 9,
+          nama: expect.stringContaining("Pickup 02 (B 1234 CD) - Zona Beji Barat"),
+        }),
+      })
+    );
+    expect(prisma.jadwal.upsert).toHaveBeenCalledTimes(2);
   });
 });

@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import {
   getManifestPengangkutan,
   getSuratJalanHeader,
+  getSuratJalanHeaderArmada,
 } from "@/lib/surat-jalan";
 import TombolCetak from "@/components/TombolCetak";
 import { companyInfo } from "@/lib/invoice-format";
@@ -26,7 +27,7 @@ const STATUS_CEKLIS = [
 export default async function SuratJalanPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tanggal?: string; petugasId?: string }>;
+  searchParams: Promise<{ tanggal?: string; petugasId?: string; kendaraanId?: string }>;
 }) {
   const session = await getSession();
   if (!session) redirect("/login");
@@ -44,8 +45,14 @@ export default async function SuratJalanPage({
     if (Number.isInteger(pid)) petugasId = pid;
   }
 
-  // Petugas lapangan → paksa ke profilnya sendiri
-  if (session.role === "petugas") {
+  let kendaraanId: number | undefined;
+  if (sp.kendaraanId) {
+    const kid = parseInt(sp.kendaraanId, 10);
+    if (Number.isInteger(kid)) kendaraanId = kid;
+  }
+
+  // Petugas lapangan → paksa ke profilnya sendiri jika belum memilih armada
+  if (session.role === "petugas" && !kendaraanId) {
     const profil = await prisma.petugas.findUnique({
       where: { userId: session.id },
       select: { id: true },
@@ -55,17 +62,32 @@ export default async function SuratJalanPage({
   }
 
   const hari = namaHari(tanggal);
-  const tasks = await getManifestPengangkutan({ tanggal, petugasId });
-  const header = petugasId ? await getSuratJalanHeader(petugasId, hari) : null;
+  const tasks = await getManifestPengangkutan({ tanggal, kendaraanId, petugasId });
+  const headerPetugas = petugasId ? await getSuratJalanHeader(petugasId, hari) : null;
+  const headerArmada = kendaraanId ? await getSuratJalanHeaderArmada(kendaraanId, hari) : null;
 
   const perusahaan = companyInfo();
-  const kendaraan = header?.kendaraan[0];
-  const judulPetugas = header
-    ? header.nama
+  const kendaraan = headerPetugas?.kendaraan[0];
+  const judulPetugas = headerArmada?.petugas?.nama
+    ? headerArmada.petugas.nama
+    : headerPetugas
+    ? headerPetugas.nama
     : "Semua Petugas";
-  const judulKendaraan = kendaraan
+
+  const judulKendaraan = headerArmada
+    ? `${headerArmada.nama}${headerArmada.platNomor ? ` (${headerArmada.platNomor})` : ""}`
+    : kendaraan
     ? `${kendaraan.nama}${kendaraan.platNomor ? ` (${kendaraan.platNomor})` : ""}`
     : "-";
+
+  const daftarRute = headerArmada
+    ? headerArmada.ruteNama
+    : headerPetugas
+    ? headerPetugas.ruteNama
+    : [];
+
+  const teleponPetugas = headerPetugas?.noTelepon || headerArmada?.petugas?.noTelepon || null;
+  const namaPenandatangan = headerPetugas?.nama || headerArmada?.petugas?.nama || "................";
 
   return (
     <div className="sj-page-bg">
@@ -108,7 +130,7 @@ export default async function SuratJalanPage({
             </div>
             <div className="sj-info-row">
               <span>Petugas</span>
-              <p>{judulPetugas}{header?.noTelepon ? ` · ${header.noTelepon}` : ""}</p>
+              <p>{judulPetugas}{teleponPetugas ? ` · ${teleponPetugas}` : ""}</p>
             </div>
             <div className="sj-info-row">
               <span>Kendaraan</span>
@@ -116,7 +138,7 @@ export default async function SuratJalanPage({
             </div>
             <div className="sj-info-row">
               <span>Rute</span>
-              <p>{header?.ruteNama.length ? header.ruteNama.join(", ") : "-"}</p>
+              <p>{daftarRute.length ? daftarRute.join(", ") : "-"}</p>
             </div>
             <div className="sj-info-row">
               <span>Jumlah Titik</span>
@@ -183,7 +205,7 @@ export default async function SuratJalanPage({
             <div className="sj-sign-box">
               <p>Petugas,</p>
               <div className="sj-sign-space" />
-              <p className="sj-sign-name">({header?.nama || "................"})</p>
+              <p className="sj-sign-name">({namaPenandatangan})</p>
             </div>
             <div className="sj-sign-box">
               <p>Mengetahui,</p>

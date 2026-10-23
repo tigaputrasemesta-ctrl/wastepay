@@ -9,6 +9,7 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 type Kelurahan = { id: number; nama: string; kecamatan?: string | null };
 type Zona = { id: number; nama: string; kelurahanId: number };
 type Petugas = { id: number; nama: string; aktif?: boolean; jabatan?: string | null };
+type Kendaraan = { id: number; nama: string; platNomor: string | null; jenis: string; aktif?: boolean };
 type Rute = {
   id: number;
   nama: string;
@@ -19,6 +20,8 @@ type Rute = {
   kelurahans?: Kelurahan[];
   zona?: { id: number; nama: string; kelurahanId: number } | null;
   zonas?: { id: number; nama: string; kelurahanId: number }[];
+  kendaraanId?: number | null;
+  kendaraan?: Kendaraan | null;
   petugas?: Petugas;
   _count: { jadwal: number };
 };
@@ -92,6 +95,7 @@ function RuteContent() {
   const [rute, setRute] = useState<Rute[]>([]);
   const [kelurahanList, setKelurahanList] = useState<Kelurahan[]>([]);
   const [zonaList, setZonaList] = useState<Zona[]>([]);
+  const [kendaraanList, setKendaraanList] = useState<Kendaraan[]>([]);
   const [petugasList, setPetugasList] = useState<Petugas[]>([]);
   const [loadingRute, setLoadingRute] = useState(true);
   const [showRuteForm, setShowRuteForm] = useState(false);
@@ -106,6 +110,7 @@ function RuteContent() {
     kelurahanIds: [] as string[],
     zonaId: "",
     zonaIds: [] as string[],
+    kendaraanId: "",
     petugasId: "",
   });
 
@@ -134,17 +139,20 @@ function RuteContent() {
   // Fetch Master Data Rute
   const fetchRuteData = useCallback(async () => {
     try {
-      const [ruteRes, kelurahanRes, zonaRes, petugasRes] = await Promise.all([
+      const [ruteRes, kelurahanRes, zonaRes, petugasRes, kendaraanRes] = await Promise.all([
         fetch("/api/rute"),
         fetch("/api/kelurahan"),
         fetch("/api/zona"),
         fetch("/api/petugas"),
+        fetch("/api/kendaraan"),
       ]);
       setRute(await ruteRes.json());
       setKelurahanList(await kelurahanRes.json());
       setZonaList(await zonaRes.json());
       const petugasData = await petugasRes.json();
       setPetugasList(Array.isArray(petugasData) ? petugasData : []);
+      const kendaraanData = await kendaraanRes.json();
+      setKendaraanList(Array.isArray(kendaraanData) ? kendaraanData : []);
     } catch {
       showToast("Gagal memuat data rute", "error");
     } finally {
@@ -185,7 +193,7 @@ function RuteContent() {
   // === HANDLERS RUTE ===
   function openCreateRute() {
     setEditingRute(null);
-    setRuteForm({ nama: "", hari: "Senin,Rabu,Jumat", jam: "", kelurahanId: "", kelurahanIds: [], zonaId: "", zonaIds: [], petugasId: "" });
+    setRuteForm({ nama: "", hari: "Senin,Rabu,Jumat", jam: "", kelurahanId: "", kelurahanIds: [], zonaId: "", zonaIds: [], kendaraanId: "", petugasId: "" });
     setShowRuteForm(true);
   }
 
@@ -213,6 +221,7 @@ function RuteContent() {
       kelurahanIds: currentKelurahanIds,
       zonaId: r.zona?.id ? r.zona.id.toString() : "",
       zonaIds: currentZonaIds,
+      kendaraanId: r.kendaraan?.id?.toString() || r.kendaraanId?.toString() || "",
       petugasId: r.petugas?.id?.toString() || "",
     });
     setShowRuteForm(true);
@@ -450,6 +459,7 @@ function RuteContent() {
                     <th className="text-left px-4 py-3 font-semibold text-slate-600">Zona</th>
                     <th className="text-left px-4 py-3 font-semibold text-slate-600">Hari Layanan</th>
                     <th className="text-left px-4 py-3 font-semibold text-slate-600">Jam</th>
+                    <th className="text-left px-4 py-3 font-semibold text-slate-600">Mobil Armada</th>
                     <th className="text-left px-4 py-3 font-semibold text-slate-600">Petugas</th>
                     <th className="text-center px-4 py-3 font-semibold text-slate-600">Pelanggan</th>
                     <th className="text-center px-4 py-3 font-semibold text-slate-600">Status</th>
@@ -458,9 +468,9 @@ function RuteContent() {
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {loadingRute ? (
-                    <tr><td colSpan={9} className="px-4 py-8 text-center text-slate-600">Memuat rute...</td></tr>
+                    <tr><td colSpan={10} className="px-4 py-8 text-center text-slate-600">Memuat rute...</td></tr>
                   ) : rute.length === 0 ? (
-                    <tr><td colSpan={9} className="px-4 py-8 text-center text-slate-600">Belum ada rute</td></tr>
+                    <tr><td colSpan={10} className="px-4 py-8 text-center text-slate-600">Belum ada rute</td></tr>
                   ) : (
                     rute.map((r) => (
                       <tr key={r.id} className="hover:bg-slate-50/60 transition">
@@ -487,6 +497,17 @@ function RuteContent() {
                           </div>
                         </td>
                         <td className="px-4 py-3 text-slate-600 text-xs font-medium">{r.jam || "-"}</td>
+                        <td className="px-4 py-3 text-slate-700">
+                          {r.kendaraan ? (
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                              <span>{r.kendaraan.jenis === "dump_truck" ? "🚛" : r.kendaraan.jenis === "pickup" ? "🛺" : "🛞"}</span>
+                              <span>{r.kendaraan.nama}</span>
+                              {r.kendaraan.platNomor && <span className="text-[10px] text-emerald-600 font-mono">({r.kendaraan.platNomor})</span>}
+                            </span>
+                          ) : (
+                            <span className="text-slate-400 text-xs">—</span>
+                          )}
+                        </td>
                         <td className="px-4 py-3 text-slate-600">{r.petugas?.nama || "-"}</td>
                         <td className="px-4 py-3 text-center text-slate-600 text-xs font-medium">{r._count.jadwal}</td>
                         <td className="px-4 py-3 text-center">
@@ -568,6 +589,7 @@ function RuteContent() {
                   ) : null}
                   <p>📅 {r.hari}</p>
                   {r.jam && <p>⏰ {r.jam}</p>}
+                  <p>🚛 {r.kendaraan ? `${r.kendaraan.nama}${r.kendaraan.platNomor ? ` (${r.kendaraan.platNomor})` : ""}` : "Belum ada armada"}</p>
                   <p>👤 {r.petugas?.nama || "Belum ada petugas"}</p>
                   <p>👥 {r._count.jadwal} pelanggan</p>
                 </div>
@@ -843,7 +865,23 @@ function RuteContent() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Petugas Armada</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Mobil Armada Pickup</label>
+                <select
+                  value={ruteForm.kendaraanId}
+                  onChange={(e) => setRuteForm({ ...ruteForm, kendaraanId: e.target.value })}
+                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white"
+                >
+                  <option value="">-- Pilih Mobil Armada --</option>
+                  {kendaraanList.map((k) => (
+                    <option key={k.id} value={k.id}>
+                      {k.jenis === "dump_truck" ? "🚛" : k.jenis === "pickup" ? "🛺" : "🛞"} {k.nama} {k.platNomor ? `(${k.platNomor})` : ""}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Petugas / Supir (Opsional)</label>
                 <select value={ruteForm.petugasId} onChange={(e) => setRuteForm({ ...ruteForm, petugasId: e.target.value })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white">
                   <option value="">-- Pilih Petugas --</option>
                   {petugasList.map((p) => (

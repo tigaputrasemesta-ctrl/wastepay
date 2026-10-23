@@ -74,6 +74,8 @@ export async function GET(request: Request) {
           select: {
             nama: true,
             jam: true,
+            kendaraanId: true,
+            kendaraan: { select: { id: true, nama: true, platNomor: true, jenis: true } },
             petugas: { select: { id: true, nama: true, jabatan: true } },
           },
         },
@@ -94,58 +96,64 @@ export async function GET(request: Request) {
       select: { status: true, petugasId: true, kendaraanId: true },
     });
 
-    // Armada yang ditugaskan: dari kendaraan pengangkutan hari ini (paling akurat)
-    // → kalau belum ada, dari kendaraan milik petugas rute.
-    const petugasId = jadwal?.rute?.petugas?.id ?? angkut?.petugasId ?? null;
-
+    // Mobil armada yang ditugaskan:
+    // 1. Dari catatan pengangkutan hari ini (angkut.kendaraanId)
+    // 2. Atau dari mobil armada rute jadwal warga (jadwal.rute.kendaraan)
+    // 3. Fallback: kendaraan milik petugas rute
     let kendaraan: { id: number; nama: string; platNomor: string | null; jenis: string } | null = null;
     let trukLokasi: { latitude: number; longitude: number; akurasi: number | null; updatedAt: string } | null = null;
     let petugasLokasi: { latitude: number; longitude: number; akurasi: number | null; updatedAt: string } | null = null;
 
+    const kendaraanIds: number[] = [];
+
+    if (angkut?.kendaraanId) {
+      const k = await prisma.kendaraan.findFirst({
+        where: { id: angkut.kendaraanId, aktif: true, deletedAt: null },
+        select: { id: true, nama: true, platNomor: true, jenis: true },
+      });
+      if (k) {
+        kendaraan = k;
+        kendaraanIds.push(k.id);
+      }
+    }
+
+    if (!kendaraan && jadwal?.rute?.kendaraan) {
+      kendaraan = jadwal.rute.kendaraan;
+      kendaraanIds.push(jadwal.rute.kendaraan.id);
+    }
+
+    const petugasId = jadwal?.rute?.petugas?.id ?? angkut?.petugasId ?? null;
+
+    if (!kendaraan && petugasId) {
+      const kendaraanList = await prisma.kendaraan.findMany({
+        where: { petugasId, aktif: true, deletedAt: null },
+        select: { id: true, nama: true, platNomor: true, jenis: true },
+      });
+      if (kendaraanList.length > 0) {
+        kendaraan = kendaraanList[0];
+        for (const k of kendaraanList) kendaraanIds.push(k.id);
+      }
+    }
+
+    // Lokasi realtime kendaraan (prioritas armada yang benar-benar berjalan).
+    if (kendaraanIds.length > 0) {
+      const lok = await prisma.lokasiKendaraan.findFirst({
+        where: { kendaraanId: { in: kendaraanIds } },
+        orderBy: { createdAt: "desc" },
+        select: { latitude: true, longitude: true, akurasi: true, createdAt: true },
+      });
+      if (lok) {
+        trukLokasi = {
+          latitude: lok.latitude,
+          longitude: lok.longitude,
+          akurasi: lok.akurasi,
+          updatedAt: lok.createdAt.toISOString(),
+        };
+      }
+    }
+
+    // Lokasi realtime petugas (jika armada tidak mengirim posisi).
     if (petugasId) {
-      const kendaraanIds: number[] = [];
-
-      if (angkut?.kendaraanId) {
-        const k = await prisma.kendaraan.findFirst({
-          where: { id: angkut.kendaraanId, aktif: true, deletedAt: null },
-          select: { id: true, nama: true, platNomor: true, jenis: true },
-        });
-        if (k) {
-          kendaraan = k;
-          kendaraanIds.push(k.id);
-        }
-      }
-
-      // Fallback / tambahan: kendaraan milik petugas rute.
-      if (!kendaraan) {
-        const kendaraanList = await prisma.kendaraan.findMany({
-          where: { petugasId, aktif: true, deletedAt: null },
-          select: { id: true, nama: true, platNomor: true, jenis: true },
-        });
-        if (kendaraanList.length > 0) {
-          kendaraan = kendaraanList[0];
-          for (const k of kendaraanList) kendaraanIds.push(k.id);
-        }
-      }
-
-      // Lokasi realtime kendaraan (prioritas armada yang benar-benar berjalan).
-      if (kendaraanIds.length > 0) {
-        const lok = await prisma.lokasiKendaraan.findFirst({
-          where: { kendaraanId: { in: kendaraanIds } },
-          orderBy: { createdAt: "desc" },
-          select: { latitude: true, longitude: true, akurasi: true, createdAt: true },
-        });
-        if (lok) {
-          trukLokasi = {
-            latitude: lok.latitude,
-            longitude: lok.longitude,
-            akurasi: lok.akurasi,
-            updatedAt: lok.createdAt.toISOString(),
-          };
-        }
-      }
-
-      // Lokasi realtime petugas (jika armada tidak mengirim posisi).
       const lokPetugas = await prisma.lokasiPetugas.findFirst({
         where: { petugasId },
         orderBy: { createdAt: "desc" },

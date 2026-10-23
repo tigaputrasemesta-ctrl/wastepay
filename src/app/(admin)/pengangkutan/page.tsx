@@ -43,10 +43,12 @@ export default function PengangkutanPage() {
   const { user } = useUser();
   const [profil, setProfil] = useState<ProfilPetugas | null>(null);
   const [kendaraanSaya, setKendaraanSaya] = useState<KendaraanSaya[]>([]);
+  const [semuaKendaraan, setSemuaKendaraan] = useState<KendaraanSaya[]>([]);
   const [data, setData] = useState<Pengangkutan[]>([]);
   const [loading, setLoading] = useState(true);
   const [tanggal, setTanggal] = useState(todayLocalISO());
   const [statusFilter, setStatusFilter] = useState("");
+  const [kendaraanFilter, setKendaraanFilter] = useState("");
   const [updating, setUpdating] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<{
     status: string;
@@ -61,13 +63,14 @@ export default function PengangkutanPage() {
     const params = new URLSearchParams();
     if (tanggal) params.set("tanggal", tanggal);
     if (statusFilter) params.set("status", statusFilter);
+    if (kendaraanFilter) params.set("kendaraanId", kendaraanFilter);
     // Petugas login → hanya tugas miliknya (server resolve via link userId → petugasId)
     if (user?.role === "petugas") params.set("saya", "1");
 
     const res = await fetch(`/api/pengangkutan?${params}`);
     setData(await res.json());
     setLoading(false);
-  }, [tanggal, statusFilter, user]);
+  }, [tanggal, statusFilter, kendaraanFilter, user]);
 
   useEffect(() => {
     (async () => { await fetchData(); })();
@@ -75,31 +78,36 @@ export default function PengangkutanPage() {
 
   // Profil petugas yang login → tampilkan tombol Mulai Lacak GPS
   useEffect(() => {
-    if (user?.role !== "petugas") return;
     (async () => {
       try {
-        const res = await fetch("/api/petugas/me");
-        if (res.ok) {
-          const d = await res.json();
-          setProfil({ id: d.id, nama: d.nama, jabatan: d.jabatan, wilayahId: d.wilayahId });
-          // Kendaraan yang dikemudikan petugas ini
-          const kRes = await fetch("/api/kendaraan");
-          if (kRes.ok) {
-            const ks = await kRes.json();
-            setKendaraanSaya(
-              (Array.isArray(ks) ? ks : [])
-                .filter((k: { petugas?: { id: number } | null }) => k.petugas?.id === d.id)
-                .map((k: { id: number; nama: string; platNomor: string | null; jenis: string }) => ({
-                  id: k.id,
-                  nama: k.nama,
-                  platNomor: k.platNomor,
-                  jenis: k.jenis,
-                }))
-            );
+        const kRes = await fetch("/api/kendaraan");
+        let allVehicles: KendaraanSaya[] = [];
+        if (kRes.ok) {
+          const ks = await kRes.json();
+          allVehicles = (Array.isArray(ks) ? ks : [])
+            .map((k: { id: number; nama: string; platNomor: string | null; jenis: string; petugas?: { id: number } | null }) => ({
+              id: k.id,
+              nama: k.nama,
+              platNomor: k.platNomor,
+              jenis: k.jenis,
+              petugas: k.petugas,
+            }));
+          setSemuaKendaraan(allVehicles);
+        }
+
+        if (user?.role === "petugas") {
+          const res = await fetch("/api/petugas/me");
+          if (res.ok) {
+            const d = await res.json();
+            setProfil({ id: d.id, nama: d.nama, jabatan: d.jabatan, wilayahId: d.wilayahId });
+            const milik = allVehicles.filter((k: any) => k.petugas?.id === d.id);
+            setKendaraanSaya(milik.length > 0 ? milik : allVehicles);
           }
+        } else {
+          setKendaraanSaya(allVehicles);
         }
       } catch {
-        // diam
+        // non-fatal
       }
     })();
   }, [user]);
@@ -184,6 +192,19 @@ export default function PengangkutanPage() {
           className="px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-medium text-slate-800 flex-1 min-w-[140px] shadow-sm outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
         />
         <select
+          value={kendaraanFilter}
+          onChange={(e) => setKendaraanFilter(e.target.value)}
+          aria-label="Filter mobil armada"
+          className="px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-medium text-slate-800 flex-1 min-w-[140px] shadow-sm outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+        >
+          <option value="">Semua Armada</option>
+          {semuaKendaraan.map((k) => (
+            <option key={k.id} value={k.id}>
+              {k.jenis === "dump_truck" ? "🚛" : k.jenis === "pickup" ? "🛺" : "🛞"} {k.nama} {k.platNomor ? `(${k.platNomor})` : ""}
+            </option>
+          ))}
+        </select>
+        <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
           className="px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-medium text-slate-800 flex-1 min-w-[120px] shadow-sm outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
@@ -194,7 +215,7 @@ export default function PengangkutanPage() {
           ))}
         </select>
         <Link
-          href={`/surat-jalan?tanggal=${tanggal}`}
+          href={`/surat-jalan?tanggal=${tanggal}${kendaraanFilter ? `&kendaraanId=${kendaraanFilter}` : ""}`}
           target="_blank"
           className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition shadow-sm"
         >
@@ -213,6 +234,7 @@ export default function PengangkutanPage() {
                 <th className="text-left px-4 py-3.5 whitespace-nowrap">Pelanggan</th>
                 <th className="text-left px-4 py-3.5 whitespace-nowrap">Volume</th>
                 <th className="text-left px-4 py-3.5 whitespace-nowrap">Jenis</th>
+                <th className="text-left px-4 py-3.5 whitespace-nowrap">Mobil Armada</th>
                 <th className="text-left px-4 py-3.5 whitespace-nowrap">Petugas</th>
                 <th className="text-center px-4 py-3.5 whitespace-nowrap">Status</th>
                 <th className="text-left px-4 py-3.5">Catatan</th>
@@ -223,9 +245,9 @@ export default function PengangkutanPage() {
             </thead>
             <tbody className="text-slate-800 divide-y divide-slate-100">
               {loading ? (
-                <tr><td colSpan={9} className="px-4 py-8 text-center text-slate-600 text-xs font-medium">Memuat data...</td></tr>
+                <tr><td colSpan={10} className="px-4 py-8 text-center text-slate-600 text-xs font-medium">Memuat data...</td></tr>
               ) : data.length === 0 ? (
-                <tr><td colSpan={9} className="px-4 py-8 text-center text-slate-600 text-xs font-medium">Belum ada data pengangkutan</td></tr>
+                <tr><td colSpan={10} className="px-4 py-8 text-center text-slate-600 text-xs font-medium">Belum ada data pengangkutan</td></tr>
               ) : (
                 data.map((d) => (
                   <tr key={d.id} className="hover:bg-slate-50/70 transition-colors">
@@ -242,6 +264,14 @@ export default function PengangkutanPage() {
                     </td>
                     <td className="px-4 py-3.5 text-slate-600 text-xs whitespace-nowrap">
                       {d.jenisSampah ? JENIS_SAMPAH.find((j) => j.value === d.jenisSampah)?.label || d.jenisSampah : "-"}
+                    </td>
+                    <td className="px-4 py-3.5 text-slate-700 text-xs whitespace-nowrap font-medium">
+                      {d.kendaraan ? (
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200">
+                          <span>{d.kendaraan.jenis === "dump_truck" ? "🚛" : d.kendaraan.jenis === "pickup" ? "🛺" : "🛞"}</span>
+                          <span>{d.kendaraan.nama}</span>
+                        </span>
+                      ) : "-"}
                     </td>
                     <td className="px-4 py-3.5 text-slate-600 text-xs whitespace-nowrap">{d.petugas?.nama || "-"}</td>
                     <td className="px-4 py-3.5 text-center whitespace-nowrap">
@@ -297,6 +327,7 @@ export default function PengangkutanPage() {
                     {JENIS_SAMPAH.find((j) => j.value === d.jenisSampah)?.label}
                   </span>
                 )}
+                {d.kendaraan && <span className="font-semibold text-emerald-800">Armada: {d.kendaraan.nama}</span>}
                 {d.petugas && <span>Petugas: {d.petugas.nama}</span>}
               </div>
               {d.catatan && <p className="text-xs text-slate-500 italic mt-2">{d.catatan}</p>}

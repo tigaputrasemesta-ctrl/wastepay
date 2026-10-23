@@ -21,7 +21,8 @@ type Kelurahan = { id: number; nama: string; kecamatan?: string | null };
 type Zona = { id: number; nama: string; warna?: string | null; kelurahanId: number };
 type Wilayah = { id: number; nama: string; rt?: string | null; rw?: string | null; kelurahanId?: number | null; zonaId?: number | null };
 type Petugas = { id: number; nama: string; jabatan?: string | null; aktif?: boolean };
-type Rute = { id: number; nama: string; hari: string; jam?: string | null; kelurahanId?: number | null; zonaId?: number | null; petugasId?: number | null; petugas?: { id: number; nama: string } | null };
+type Kendaraan = { id: number; nama: string; platNomor: string | null; jenis: string; aktif?: boolean };
+type Rute = { id: number; nama: string; hari: string; jam?: string | null; kelurahanId?: number | null; zonaId?: number | null; kendaraanId?: number | null; kendaraan?: { id: number; nama: string; platNomor: string | null; jenis: string } | null; petugasId?: number | null; petugas?: { id: number; nama: string } | null };
 type Paket = { id: number; nama: string; harga: number | null };
 
 export type ApprovalPelangganTarget = {
@@ -82,6 +83,7 @@ export default function ModalApprovalPelanggan({
   const [zonaList, setZonaList] = useState<Zona[]>([]);
   const [wilayahList, setWilayahList] = useState<Wilayah[]>([]);
   const [ruteList, setRuteList] = useState<Rute[]>([]);
+  const [kendaraanList, setKendaraanList] = useState<Kendaraan[]>([]);
   const [paketList, setPaketList] = useState<Paket[]>([]);
   const [petugasList, setPetugasList] = useState<Petugas[]>([]);
   const [loadingData, setLoadingData] = useState(false);
@@ -92,6 +94,7 @@ export default function ModalApprovalPelanggan({
   const [selectedKelurahan, setSelectedKelurahan] = useState("");
   const [selectedZona, setSelectedZona] = useState("");
   const [selectedWilayah, setSelectedWilayah] = useState("");
+  const [selectedKendaraan, setSelectedKendaraan] = useState("");
   const [selectedPetugas, setSelectedPetugas] = useState("");
   const [selectedRute, setSelectedRute] = useState("");
   const [selectedHari, setSelectedHari] = useState<string[]>([]);
@@ -109,13 +112,14 @@ export default function ModalApprovalPelanggan({
     async function loadResources() {
       setLoadingData(true);
       try {
-        const [kelRes, zonaRes, wilRes, ruteRes, pakRes, petRes] = await Promise.all([
+        const [kelRes, zonaRes, wilRes, ruteRes, pakRes, petRes, kenRes] = await Promise.all([
           fetch("/api/kelurahan"),
           fetch("/api/zona"),
           fetch("/api/wilayah"),
           fetch("/api/rute"),
           fetch("/api/paket"),
           fetch("/api/petugas"),
+          fetch("/api/kendaraan"),
         ]);
         if (cancelled) return;
         setKelurahanList(await kelRes.json());
@@ -125,6 +129,8 @@ export default function ModalApprovalPelanggan({
         setPaketList(await pakRes.json());
         const rawPet = await petRes.json();
         setPetugasList(Array.isArray(rawPet) ? rawPet : []);
+        const rawKen = await kenRes.json();
+        setKendaraanList(Array.isArray(rawKen) ? rawKen : []);
       } catch (err) {
         console.error("Gagal memuat master data approval:", err);
       } finally {
@@ -173,12 +179,15 @@ export default function ModalApprovalPelanggan({
     const initialHari = initialJadwal ? initialJadwal.map((j) => j.hari) : ["Senin", "Kamis"];
     const initialJam = initialJadwal?.[0]?.jam || "08:00";
     const initialRuteId = initialJadwal?.[0]?.ruteId ? initialJadwal[0].ruteId.toString() : "";
-    const initialPetugasId = initialJadwal?.[0]?.rute?.petugasId ? initialJadwal[0].rute.petugasId.toString() : "";
+    const firstRute = initialJadwal?.[0]?.rute as any;
+    const initialKendaraanId = firstRute?.kendaraanId ? firstRute.kendaraanId.toString() : "";
+    const initialPetugasId = firstRute?.petugasId ? firstRute.petugasId.toString() : "";
 
     setSelectedKelurahan(initialKelId);
     setSelectedZona(initialZonaId);
     setSelectedWilayah(initialWilId);
     setSelectedRute(initialRuteId);
+    setSelectedKendaraan(initialKendaraanId);
     setSelectedPetugas(initialPetugasId);
     setSelectedHari(initialHari);
     setSelectedJam(initialJam);
@@ -195,6 +204,7 @@ export default function ModalApprovalPelanggan({
     const r = ruteList.find((item) => item.id.toString() === rid);
     if (r) {
       if (r.zonaId) setSelectedZona(r.zonaId.toString());
+      if (r.kendaraanId) setSelectedKendaraan(r.kendaraanId.toString());
       if (r.petugasId) setSelectedPetugas(r.petugasId.toString());
       if (r.hari) {
         const days = r.hari
@@ -242,6 +252,7 @@ export default function ModalApprovalPelanggan({
         kelurahanId: selectedKelurahan ? parseInt(selectedKelurahan) : null,
         zonaId: selectedZona ? parseInt(selectedZona) : null,
         wilayahId: selectedWilayah ? parseInt(selectedWilayah) : null,
+        kendaraanId: selectedKendaraan ? parseInt(selectedKendaraan) : null,
         petugasId: selectedPetugas ? parseInt(selectedPetugas) : null,
         ruteId: selectedRute ? parseInt(selectedRute) : null,
         hari: selectedHari,
@@ -576,28 +587,28 @@ export default function ModalApprovalPelanggan({
               </div>
             </div>
 
-            {/* Bagian 2: Petugas Pickup & Jadwal Multi-Hari */}
+            {/* Bagian 2: Mobil Armada Pickup & Jadwal Multi-Hari */}
             <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 shadow-xs space-y-3.5">
               <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">
-                2. Petugas Pickup &amp; Jadwal Penjemputan (Bisa &gt; 1 Hari)
+                2. Mobil Armada Pickup &amp; Jadwal Penjemputan (Bisa &gt; 1 Hari)
               </span>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {/* Petugas Pickup */}
+                {/* Mobil Armada Pickup */}
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
-                    <User className="w-3 h-3 text-emerald-700" />
-                    <span>Petugas Pickup / Supir</span>
+                    <Truck className="w-3 h-3 text-emerald-700" />
+                    <span>Mobil Armada Pickup</span>
                   </label>
                   <select
-                    value={selectedPetugas}
-                    onChange={(e) => setSelectedPetugas(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    value={selectedKendaraan}
+                    onChange={(e) => setSelectedKendaraan(e.target.value)}
+                    className="w-full px-3 py-2 border-2 border-emerald-500 rounded-xl text-xs font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
-                    <option value="">— Pilih Petugas Pengangkut —</option>
-                    {petugasList.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.nama} {p.jabatan ? `(${p.jabatan})` : ""}
+                    <option value="">— Pilih Mobil Armada —</option>
+                    {kendaraanList.map((k) => (
+                      <option key={k.id} value={k.id}>
+                        {k.jenis === "dump_truck" ? "🚛" : k.jenis === "pickup" ? "🛺" : "🛞"} {k.nama} {k.platNomor ? `(${k.platNomor})` : ""}
                       </option>
                     ))}
                   </select>
@@ -635,6 +646,26 @@ export default function ModalApprovalPelanggan({
                     className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
+              </div>
+
+              {/* Supir / Petugas (Opsional) */}
+              <div className="pt-1">
+                <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+                  <User className="w-3 h-3 text-slate-500" />
+                  <span>Petugas / Supir (Opsional)</span>
+                </label>
+                <select
+                  value={selectedPetugas}
+                  onChange={(e) => setSelectedPetugas(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  <option value="">— Pilih Petugas / Supir (Opsional) —</option>
+                  {petugasList.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.nama} {p.jabatan ? `(${p.jabatan})` : ""}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {/* Multi-Select Hari Pengangkutan */}

@@ -55,7 +55,7 @@ type PelangganDetail = {
     hari: string;
     jam?: string;
     aktif: boolean;
-    rute: { id: number; nama: string; jam?: string; petugasId?: number | null };
+    rute: { id: number; nama: string; jam?: string; kendaraanId?: number | null; kendaraan?: { id: number; nama: string; platNomor: string | null; jenis: string } | null; petugasId?: number | null };
   }[];
   tagihan: {
     id: number;
@@ -560,7 +560,12 @@ export default function DetailPelangganPage() {
                       <span className="font-semibold text-slate-900">{j.hari}</span>
                       {j.jam && <span className="text-slate-500 font-normal">• {j.jam}</span>}
                     </div>
-                    <p className="text-xs text-slate-500 font-normal mt-0.5">{j.rute.nama}</p>
+                    <p className="text-xs text-slate-500 font-normal mt-0.5">
+                      {j.rute.nama}
+                      {j.rute.kendaraan && (
+                        <span className="text-emerald-700 font-medium"> • 🚛 {j.rute.kendaraan.nama}{j.rute.kendaraan.platNomor ? ` (${j.rute.kendaraan.platNomor})` : ""}</span>
+                      )}
+                    </p>
                   </div>
                 ))}
               </div>

@@ -237,6 +237,7 @@ model Kendaraan {
 
   pengangkutan Pengangkutan[]
   lokasi       LokasiKendaraan[]
+  rute         Rute[]
 }
 
 model LokasiKendaraan {
@@ -278,12 +279,17 @@ model Rute {
   zonaId      Int?
   zona        Zona?     @relation(fields: [zonaId], references: [id])
   zonas       Zona[]    @relation("RuteZonas")
+  kendaraanId Int? // armada mobil penjemput rute ini
+  kendaraan   Kendaraan? @relation(fields: [kendaraanId], references: [id])
   petugasId   Int?
   petugas     Petugas? @relation(fields: [petugasId], references: [id])
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
   jadwal Jadwal[]
+
+  @@index([kendaraanId])
+  @@index([petugasId])
 }
 
 model Jadwal {

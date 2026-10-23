@@ -10,6 +10,7 @@ export async function GET() {
       kelurahans: { select: { id: true, nama: true, kecamatan: true } },
       zona: { select: { id: true, nama: true, kelurahanId: true } },
       zonas: { select: { id: true, nama: true, kelurahanId: true } },
+      kendaraan: { select: { id: true, nama: true, platNomor: true, jenis: true } },
       petugas: { select: { id: true, nama: true, jabatan: true } },
       _count: { select: { jadwal: true } },
     },
@@ -21,7 +22,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { nama, hari, jam, kelurahanId, kelurahanIds, petugasId, zonaId, zonaIds, aktif } = body;
+    const { nama, hari, jam, kelurahanId, kelurahanIds, kendaraanId, petugasId, zonaId, zonaIds, aktif } = body;
 
     // Support single kelurahanId or multiple kelurahanIds
     const parsedKelurahanIds: number[] = [];
@@ -65,12 +66,14 @@ export async function POST(request: Request) {
         kelurahans: parsedKelurahanIds.length > 0 ? { connect: parsedKelurahanIds.map((id) => ({ id })) } : undefined,
         zonaId: zonaIdAkhir,
         zonas: parsedZonaIds.length > 0 ? { connect: parsedZonaIds.map((id) => ({ id })) } : undefined,
+        kendaraanId: kendaraanId ? parseInt(kendaraanId) : null,
         petugasId: petugasId ? parseInt(petugasId) : null,
       },
       include: {
         kelurahan: { select: { id: true, nama: true, kecamatan: true } },
         kelurahans: { select: { id: true, nama: true, kecamatan: true } },
         zona: { select: { id: true, nama: true } },
+        kendaraan: { select: { id: true, nama: true, platNomor: true, jenis: true } },
         petugas: { select: { id: true, nama: true } },
       },
     });

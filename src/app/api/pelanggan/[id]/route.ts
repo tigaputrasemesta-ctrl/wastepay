@@ -25,7 +25,7 @@ export async function GET(
       paket: true,
       jadwal: {
         where: { aktif: true },
-        include: { rute: { include: { petugas: true } } },
+        include: { rute: { include: { kendaraan: true, petugas: true } } },
       },
       tagihan: { orderBy: [{ tahun: "desc" }, { bulan: "desc" }], take: 12 },
       pembayaran: { orderBy: { createdAt: "desc" }, take: 12 },
@@ -201,12 +201,13 @@ export async function PUT(
       }
     }
 
-    // Penugasan Petugas Pickup, Rute Armada, dan Jadwal Pengangkutan (bisa memilih lebih dari 1 hari)
-    if (body.ruteId || body.petugasId || body.hari || body.jadwalHari) {
+    // Penugasan Mobil Armada Pickup, Rute, dan Jadwal Pengangkutan (bisa memilih lebih dari 1 hari)
+    if (body.ruteId || body.kendaraanId || body.petugasId || body.hari || body.jadwalHari) {
       await tetapkanJadwalDanPetugasPelanggan({
         pelangganId: id,
         kelurahanId: data.kelurahanId !== undefined ? (data.kelurahanId as number | null) : null,
         zonaId: resolvedZonaId,
+        kendaraanId: body.kendaraanId ? parseInt(body.kendaraanId) : null,
         petugasId: body.petugasId ? parseInt(body.petugasId) : null,
         ruteId: body.ruteId ? parseInt(body.ruteId) : null,
         hari: body.hari || body.jadwalHari,
@@ -228,7 +229,7 @@ export async function PUT(
         paket: true,
         jadwal: {
           where: { aktif: true },
-          include: { rute: { include: { petugas: true } } },
+          include: { rute: { include: { kendaraan: true, petugas: true } } },
         },
       },
     });
