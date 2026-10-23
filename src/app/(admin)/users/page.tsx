@@ -138,20 +138,21 @@ export default function UsersPage() {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 sm:p-6 pb-12 w-full">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Pengguna Sistem</h1>
-          <p className="text-sm text-slate-500 font-medium">Kelola akses pengguna (Super Admin)</p>
+          <p className="text-xs sm:text-sm text-slate-500 font-medium">Kelola hak akses pengguna & peran staf (Super Admin)</p>
         </div>
-        <button onClick={() => setShowForm(true)} className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-2">
+        <button onClick={() => setShowForm(true)} className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center justify-center gap-2">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
           Tambah Pengguna
         </button>
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
@@ -225,6 +226,76 @@ export default function UsersPage() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden divide-y divide-slate-100">
+          {loading ? (
+            <div className="p-8 text-center text-xs text-slate-500 font-medium">Memuat data pengguna...</div>
+          ) : users.length === 0 ? (
+            <div className="p-8 text-center text-xs text-slate-500 font-medium">Belum ada pengguna</div>
+          ) : (
+            users.map((u) => (
+              <div key={u.id} className="p-4 space-y-3 text-xs">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="font-bold text-slate-900 text-sm">{u.nama}</p>
+                    <p className="text-slate-500 text-xs mt-0.5">{u.email}</p>
+                  </div>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                    u.role === "superadmin" ? "bg-purple-50 text-purple-700 border border-purple-200" :
+                    u.role === "admin" ? "bg-sky-50 text-sky-700 border border-sky-200" :
+                    u.role === "kasir" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
+                    "bg-amber-50 text-amber-700 border border-amber-200"
+                  }`}>
+                    {ROLE_LABELS[u.role as keyof typeof ROLE_LABELS] || u.role}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                  <div>
+                    <span className="text-[11px] text-slate-400 block">No. Telepon:</span>
+                    <span className="font-medium text-slate-800">{u.noTelepon || "—"}</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[11px] text-slate-400 block">Status:</span>
+                    <button
+                      onClick={async () => {
+                        if (!confirm(`Nonaktifkan ${u.nama}?`)) return;
+                        const res = await fetch(`/api/users`, {
+                          method: "PUT",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ id: u.id, aktif: !u.aktif }),
+                        });
+                        if (res.ok) {
+                          showToast(u.aktif ? "Pengguna dinonaktifkan" : "Pengguna diaktifkan");
+                          fetchData();
+                        }
+                      }}
+                      className={`font-bold text-xs ${u.aktif ? "text-emerald-700 hover:underline" : "text-slate-500 hover:underline"}`}
+                    >
+                      {u.aktif ? "🟢 Aktif (Ubah)" : "⚪ Nonaktif (Ubah)"}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-1">
+                  <span className="text-[11px] text-slate-400">Dibuat: {formatDate(u.createdAt)}</span>
+                  <div className="flex items-center gap-1.5">
+                    <button onClick={() => openEdit(u)} className="px-2.5 py-1 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-lg text-xs font-semibold">
+                      Edit
+                    </button>
+                    <button onClick={() => setEditingUser(u)} className="px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg text-xs font-semibold">
+                      Password
+                    </button>
+                    <button onClick={() => handleDelete(u.id, u.nama)} className="px-2.5 py-1 bg-rose-50 text-rose-700 border border-rose-200 rounded-lg text-xs font-semibold">
+                      Hapus
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 

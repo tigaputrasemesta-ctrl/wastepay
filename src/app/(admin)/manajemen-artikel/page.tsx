@@ -196,24 +196,24 @@ export default function ArtikelPage() {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6 pb-12 w-full">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 mb-1">Artikel & Edukasi</h1>
-          <p className="text-sm text-slate-500 font-medium">Kelola informasi publik dan berita UPS HERU</p>
+          <p className="text-xs sm:text-sm text-slate-500 font-medium">Kelola informasi publik dan berita UPS HERU</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
           <button
             onClick={handleSyncSeo}
             disabled={syncing}
-            className="bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
+            className="flex-1 sm:flex-none bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
             title="Muat atau perbarui 5 artikel SEO Page 1 Google ke database"
           >
             <span>{syncing ? "⏳ Menyinkronkan..." : "⚡ Sinkronkan 5 Artikel SEO"}</span>
           </button>
           <button
             onClick={openCreate}
-            className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2"
+            className="flex-1 sm:flex-none bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2"
           >
             <span>✍️ Tulis Artikel Baru</span>
           </button>
@@ -221,7 +221,8 @@ export default function ArtikelPage() {
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="bg-slate-50 text-slate-600 font-bold text-xs border-b border-slate-200">
@@ -242,7 +243,7 @@ export default function ArtikelPage() {
                   <tr key={a.id} className="hover:bg-slate-50/70 transition-colors">
                     <td className="px-4 py-3.5">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-slate-200 shadow-xs bg-slate-900">
+                        <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-slate-200 shadow-sm bg-slate-900">
                           <ArticleImage
                             src={getArticleCoverImage(a.gambar, a.kategori)}
                             alt={a.judul}
@@ -308,6 +309,82 @@ export default function ArtikelPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden divide-y divide-slate-100">
+          {loading ? (
+            <div className="p-8 text-center text-xs text-slate-500 font-medium">Memuat artikel...</div>
+          ) : artikel.length === 0 ? (
+            <div className="p-8 text-center text-xs text-slate-500 font-medium">Belum ada artikel</div>
+          ) : (
+            artikel.map((a) => (
+              <div key={a.id} className="p-4 space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0 border border-slate-200 bg-slate-900">
+                    <ArticleImage
+                      src={getArticleCoverImage(a.gambar, a.kategori)}
+                      alt={a.judul}
+                      fallbackCategory={a.kategori}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-slate-900 text-sm line-clamp-2 leading-snug">{a.judul}</p>
+                    <a
+                      href={`/artikel/${a.slug}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[11px] text-emerald-600 hover:underline font-medium inline-flex items-center gap-0.5 mt-1"
+                    >
+                      <span>/artikel/{a.slug}</span>
+                      <span>↗</span>
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-50 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-full text-[10px] font-bold">
+                      {a.kategori.charAt(0).toUpperCase() + a.kategori.slice(1)}
+                    </span>
+                    <button
+                      onClick={() => togglePublish(a)}
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border transition-colors ${
+                        a.diterbitkan ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-100 text-slate-600 border-slate-300"
+                      }`}
+                    >
+                      {a.diterbitkan ? "✅ Terbit" : "Draft"}
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <a
+                      href={`/artikel/${a.slug}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-1.5 text-slate-500 hover:text-blue-600 bg-slate-50 rounded-lg border border-slate-200"
+                      title="Lihat"
+                    >
+                      👁️
+                    </a>
+                    <button
+                      onClick={() => openEdit(a)}
+                      className="px-2.5 py-1 text-xs font-bold text-emerald-700 bg-emerald-50 rounded-lg border border-emerald-200"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(a.id)}
+                      className="p-1.5 text-rose-600 hover:text-rose-700 bg-rose-50 rounded-lg border border-rose-200"
+                      title="Hapus"
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
       {showForm && (
@@ -325,7 +402,7 @@ export default function ArtikelPage() {
                     onClick={() => setEditorTab("edit")}
                     className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
                       editorTab === "edit"
-                        ? "bg-emerald-600 text-white shadow-xs"
+                        ? "bg-emerald-600 text-white shadow-sm"
                         : "text-slate-400 hover:text-white"
                     }`}
                   >
@@ -336,7 +413,7 @@ export default function ArtikelPage() {
                     onClick={() => setEditorTab("preview")}
                     className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
                       editorTab === "preview"
-                        ? "bg-emerald-600 text-white shadow-xs"
+                        ? "bg-emerald-600 text-white shadow-sm"
                         : "text-slate-400 hover:text-white"
                     }`}
                   >
@@ -447,7 +524,7 @@ export default function ArtikelPage() {
                         value={form.gambar.startsWith("data:") ? "" : form.gambar}
                         onChange={e => setForm(prev => ({ ...prev, gambar: e.target.value }))}
                         placeholder="Ketik atau tempel link URL foto (contoh: https://...)"
-                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 shadow-2xs"
+                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 shadow-sm"
                       />
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
@@ -456,7 +533,7 @@ export default function ArtikelPage() {
                         type="button"
                         disabled={uploadingImage}
                         onClick={() => fileInputRef.current?.click()}
-                        className="w-full sm:w-auto px-4 py-2.5 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50 shadow-2xs"
+                        className="w-full sm:w-auto px-4 py-2.5 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50 shadow-sm"
                       >
                         {uploadingImage ? "⏳ Memproses..." : "📁 Unggah File"}
                       </button>
@@ -492,7 +569,7 @@ export default function ArtikelPage() {
                   {/* Preview Gambar Cover */}
                   {form.gambar && (
                     <div className="relative inline-block mt-1">
-                      <div className="h-36 w-64 rounded-xl overflow-hidden border border-slate-200 shadow-xs bg-slate-900">
+                      <div className="h-36 w-64 rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-slate-900">
                         <ArticleImage
                           src={form.gambar}
                           alt="Preview Cover"

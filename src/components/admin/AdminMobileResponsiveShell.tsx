@@ -28,6 +28,14 @@ import {
   FileSpreadsheet,
   ChevronRight,
   LogOut,
+  Route,
+  Trash2,
+  MessageSquare,
+  BarChart3,
+  Wallet,
+  MessageCircle,
+  ShieldAlert,
+  UserCog,
 } from "lucide-react";
 
 export type AdminMobileResponsiveShellProps = {
@@ -74,32 +82,45 @@ const PRIMARY_MOBILE_TABS = [
   },
 ];
 
-// Menu Sekunder di dalam Slide-Up Drawer Mobile
+// Menu Sekunder di dalam Slide-Up Drawer Mobile (Lengkap Backoffice)
 const SECONDARY_MENU_ITEMS = [
   {
-    title: "Operasional Lapangan",
+    title: "Operasional & Penjemputan",
     items: [
+      { label: "Pengangkutan Sampah", href: "/pengangkutan", icon: Trash2, desc: "Log ritase, volume m³ & penjemputan warga", badge: "Live" },
+      { label: "Rute & Jadwal Armada", href: "/rute", icon: Route, desc: "Penjadwalan zona armada pickup & dump truck", badge: "Armada" },
       { label: "Absensi Petugas", href: "/absensi", icon: Clock, desc: "Presensi GPS & status kerja hari ini", badge: "Live GPS" },
-      { label: "Survei Pendaftar", href: "/survei", icon: ClipboardCheck, desc: "Verifikasi lapangan calon warga", badge: null },
-      { label: "Petugas & Armada", href: "/petugas", icon: UserCheck, desc: "Penugasan & referral driver", badge: null },
-      { label: "Armada Kendaraan", href: "/kendaraan", icon: Truck, desc: "Status truk & kapasitas angkut", badge: null },
+      { label: "Survei Pendaftar", href: "/survei", icon: ClipboardCheck, desc: "Verifikasi lapangan calon warga baru", badge: null },
+      { label: "Petugas & Supir", href: "/petugas", icon: UserCheck, desc: "Penugasan tim lapangan & referral driver", badge: null },
+      { label: "Armada Kendaraan", href: "/kendaraan", icon: Truck, desc: "Status truk, pickup & kapasitas angkut", badge: null },
     ],
   },
   {
-    title: "Konten & Regulasi",
+    title: "Keuangan & Pelayanan Warga",
     items: [
-      { label: "CMS Artikel & Edukasi", href: "/manajemen-artikel", icon: Newspaper, desc: "Publikasi edukasi sampah Kota Depok", badge: "SEO" },
-      { label: "Broadcast WhatsApp", href: "/notifikasi", icon: BellRing, desc: "Template & blast notifikasi tagihan", badge: "WA Blast" },
-      { label: "Zonasi & Wilayah", href: "/zona", icon: Layers, desc: "Pembagian wilayah rute RT/RW", badge: null },
+      { label: "Komplain & Masalah", href: "/komplain", icon: MessageSquare, desc: "Tiket keluhan & aduan warga", badge: null },
+      { label: "Laporan & Rekapitulasi", href: "/laporan", icon: BarChart3, desc: "Analitik retribusi, tonase & performa", badge: "Laporan" },
+      { label: "Pengeluaran Operasional", href: "/pengeluaran", icon: Wallet, desc: "Biaya solar, tol & pemeliharaan armada", badge: null },
+      { label: "Rekonsiliasi Transaksi", href: "/rekonsiliasi", icon: Scale, desc: "Audit arus kas & mutasi payment gateway", badge: null },
       { label: "Manajemen Tarif", href: "/manajemen-tarif", icon: Tag, desc: "Paket retribusi & kategori sampah", badge: null },
     ],
   },
   {
-    title: "Pembuangan & Rekonsiliasi",
+    title: "Komunikasi & Zonasi",
     items: [
+      { label: "Chat Petugas", href: "/chat", icon: MessageCircle, desc: "Pesan & koordinasi tim lapangan", badge: null },
+      { label: "Broadcast WhatsApp", href: "/notifikasi", icon: BellRing, desc: "Template & blast notifikasi tagihan warga", badge: "WA Blast" },
+      { label: "Zonasi & Wilayah", href: "/zona", icon: Layers, desc: "Pembagian wilayah rute RT/RW & kelurahan", badge: null },
+      { label: "CMS Artikel & Edukasi", href: "/manajemen-artikel", icon: Newspaper, desc: "Publikasi edukasi sampah Kota Depok", badge: "SEO" },
       { label: "Transit TPS & TPA", href: "/transit", icon: Landmark, desc: "Monitoring residu TPA Cipayung", badge: null },
-      { label: "Rekonsiliasi Transaksi", href: "/rekonsiliasi", icon: Scale, desc: "Audit arus kas & mutasi Duitku", badge: null },
       { label: "Peta Monitor TV Kiosk", href: "/peta/tv", icon: MapPin, desc: "Layar monitor display armada publik", badge: "TV" },
+    ],
+  },
+  {
+    title: "Sistem & Keamanan",
+    items: [
+      { label: "Kelola Akun Admin", href: "/users", icon: UserCog, desc: "Manajemen user & hak akses role", badge: "Superadmin" },
+      { label: "Log Audit Sistem", href: "/audit-log", icon: ShieldAlert, desc: "Histori audit trail & keamanan server", badge: "Audit" },
     ],
   },
 ];
@@ -150,7 +171,7 @@ export default function AdminMobileResponsiveShell({
       {/* ── MAIN CONTENT CONTAINER ── */}
       <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative">
         {/* ── TOPBAR RESPONSIVE ── */}
-        <header className="h-14 sm:h-16 flex items-center justify-between px-3 sm:px-6 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs shrink-0 select-none z-30">
+        <header className="h-14 sm:h-16 flex items-center justify-between px-3 sm:px-6 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-sm shrink-0 select-none z-30">
           <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
             {/* Tombol Menu ≡ Mobile untuk Membuka Slide-Up Drawer */}
             <button
@@ -165,7 +186,7 @@ export default function AdminMobileResponsiveShell({
 
             {/* Logo UPS HERU Mini di Mobile */}
             <div className="md:hidden flex items-center gap-2">
-              <span className="w-7 h-7 rounded-lg bg-emerald-700 text-white font-extrabold flex items-center justify-center text-xs shadow-xs">
+              <span className="w-7 h-7 rounded-lg bg-emerald-700 text-white font-extrabold flex items-center justify-center text-xs shadow-sm">
                 W
               </span>
               <span className="font-extrabold text-xs tracking-tight text-slate-900">
@@ -252,7 +273,7 @@ export default function AdminMobileResponsiveShell({
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
                 onClick={() => setDrawerOpen(false)}
-                className="absolute inset-0 bg-slate-950/60 backdrop-blur-xs"
+                className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
               />
 
               {/* Drawer Sheet */}
@@ -299,14 +320,14 @@ export default function AdminMobileResponsiveShell({
                               onClick={() => setDrawerOpen(false)}
                               className={`flex items-center justify-between p-3 rounded-2xl transition-all ${
                                 isItemActive
-                                  ? "bg-emerald-50 border border-emerald-200/80 text-emerald-900 shadow-xs"
+                                  ? "bg-emerald-50 border border-emerald-200/80 text-emerald-900 shadow-sm"
                                   : "bg-slate-50/60 hover:bg-slate-100 border border-slate-100 text-slate-800"
                               }`}
                             >
                               <div className="flex items-center gap-3 min-w-0">
                                 <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
                                   isItemActive
-                                    ? "bg-emerald-600 text-white shadow-xs"
+                                    ? "bg-emerald-600 text-white shadow-sm"
                                     : "bg-white text-slate-600 border border-slate-200"
                                 }`}>
                                   <Icon className="w-4 h-4" />

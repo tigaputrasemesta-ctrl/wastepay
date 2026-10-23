@@ -404,57 +404,117 @@ function ArmadaFasilitasContent() {
           </div>
 
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-slate-50 text-slate-700 text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
-                  <th className="text-left px-4 py-3">Nama Armada</th>
-                  <th className="text-left px-4 py-3">Jenis</th>
-                  <th className="text-left px-4 py-3">Plat Nomor</th>
-                  <th className="text-left px-4 py-3">Kapasitas</th>
-                  <th className="text-left px-4 py-3">Petugas Penanggung Jawab</th>
-                  <th className="text-center px-4 py-3">Status</th>
-                  <th className="text-center px-4 py-3">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {loadingKendaraan ? (
-                  <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-500 text-xs">Memuat armada...</td></tr>
-                ) : filteredKendaraan.length === 0 ? (
-                  <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-500 text-xs">Belum ada armada terdaftar</td></tr>
-                ) : (
-                  filteredKendaraan.map((k) => (
-                    <tr key={k.id} className="hover:bg-slate-50/70 transition">
-                      <td className="px-4 py-3 font-semibold text-slate-900">{k.nama}</td>
-                      <td className="px-4 py-3 text-xs">
-                        {JENIS_KENDARAAN.find((j) => j.value === k.jenis)?.ikon}{" "}
-                        {JENIS_KENDARAAN.find((j) => j.value === k.jenis)?.label || k.jenis}
-                      </td>
-                      <td className="px-4 py-3 font-mono text-xs text-slate-700">{k.platNomor || "—"}</td>
-                      <td className="px-4 py-3 text-xs text-slate-600">{k.kapasitas ? `${k.kapasitas} m³` : "—"}</td>
-                      <td className="px-4 py-3 text-xs text-slate-700">{k.petugas?.nama || "—"}</td>
-                      <td className="px-4 py-3 text-center">
-                        <button
-                          onClick={() => toggleAktifKendaraan(k)}
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold transition ${
-                            k.aktif ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-slate-100 text-slate-500 border border-slate-200"
-                          }`}
-                        >
-                          {k.aktif ? "Aktif" : "Nonaktif"}
-                        </button>
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <button
-                          onClick={() => openKendaraanForm(k)}
-                          className="px-3 py-1 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition"
-                        >
-                          Edit
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+            {/* Desktop Table View (>= md: 768px) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-slate-50 text-slate-700 text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
+                    <th className="text-left px-4 py-3">Nama Armada</th>
+                    <th className="text-left px-4 py-3">Jenis</th>
+                    <th className="text-left px-4 py-3">Plat Nomor</th>
+                    <th className="text-left px-4 py-3">Kapasitas</th>
+                    <th className="text-left px-4 py-3">Petugas Penanggung Jawab</th>
+                    <th className="text-center px-4 py-3">Status</th>
+                    <th className="text-center px-4 py-3">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {loadingKendaraan ? (
+                    <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-500 text-xs">Memuat armada...</td></tr>
+                  ) : filteredKendaraan.length === 0 ? (
+                    <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-500 text-xs">Belum ada armada terdaftar</td></tr>
+                  ) : (
+                    filteredKendaraan.map((k) => (
+                      <tr key={k.id} className="hover:bg-slate-50/70 transition">
+                        <td className="px-4 py-3 font-semibold text-slate-900">{k.nama}</td>
+                        <td className="px-4 py-3 text-xs">
+                          {JENIS_KENDARAAN.find((j) => j.value === k.jenis)?.ikon}{" "}
+                          {JENIS_KENDARAAN.find((j) => j.value === k.jenis)?.label || k.jenis}
+                        </td>
+                        <td className="px-4 py-3 font-mono text-xs text-slate-700">{k.platNomor || "—"}</td>
+                        <td className="px-4 py-3 text-xs text-slate-600">{k.kapasitas ? `${k.kapasitas} m³` : "—"}</td>
+                        <td className="px-4 py-3 text-xs text-slate-700">{k.petugas?.nama || "—"}</td>
+                        <td className="px-4 py-3 text-center">
+                          <button
+                            onClick={() => toggleAktifKendaraan(k)}
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold transition ${
+                              k.aktif ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-slate-100 text-slate-500 border border-slate-200"
+                            }`}
+                          >
+                            {k.aktif ? "Aktif" : "Nonaktif"}
+                          </button>
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <button
+                            onClick={() => openKendaraanForm(k)}
+                            className="px-3 py-1 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition"
+                          >
+                            Edit
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Smart Cards View (< md: 768px) */}
+            <div className="md:hidden divide-y divide-slate-100">
+              {loadingKendaraan ? (
+                <div className="p-6 text-center text-slate-500 text-xs font-medium">Memuat armada...</div>
+              ) : filteredKendaraan.length === 0 ? (
+                <div className="p-6 text-center text-slate-500 text-xs font-medium">Belum ada armada terdaftar</div>
+              ) : (
+                filteredKendaraan.map((k) => (
+                  <div key={k.id} className="p-4 space-y-2.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <div className="font-bold text-sm text-slate-900 flex items-center gap-1.5">
+                          <span>{JENIS_KENDARAAN.find((j) => j.value === k.jenis)?.ikon}</span>
+                          <span>{k.nama}</span>
+                        </div>
+                        <div className="font-mono text-xs text-slate-500 mt-0.5">
+                          {k.platNomor || "Tanpa plat nomor"}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => toggleAktifKendaraan(k)}
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition ${
+                          k.aktif ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-100 text-slate-500 border-slate-200"
+                        }`}
+                      >
+                        {k.aktif ? "Aktif" : "Nonaktif"}
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 p-2 bg-slate-50 rounded-xl border border-slate-200/60 text-xs">
+                      <div>
+                        <span className="text-[10px] text-slate-400 block uppercase font-semibold">Jenis & Muatan</span>
+                        <span className="font-medium text-slate-700">
+                          {JENIS_KENDARAAN.find((j) => j.value === k.jenis)?.label || k.jenis} • {k.kapasitas ? `${k.kapasitas} m³` : "—"}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-slate-400 block uppercase font-semibold">Petugas / Supir</span>
+                        <span className="font-medium text-slate-700 truncate block">
+                          👤 {k.petugas?.nama || "Belum ditugaskan"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="pt-1 flex items-center justify-end">
+                      <button
+                        onClick={() => openKendaraanForm(k)}
+                        className="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition text-center"
+                      >
+                        Edit Armada
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
       )}

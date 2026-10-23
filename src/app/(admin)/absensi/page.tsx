@@ -127,7 +127,7 @@ export default function AbsensiPage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className={`px-3 py-1 rounded-full text-xs font-black inline-flex items-center gap-1.5 shadow-xs ${
+              <span className={`px-3 py-1 rounded-full text-xs font-black inline-flex items-center gap-1.5 shadow-sm ${
                 hasSelesai
                   ? "bg-blue-500/20 text-blue-300 border border-blue-500/40"
                   : hasMasuk
@@ -250,48 +250,88 @@ export default function AbsensiPage() {
         {loading ? (
           <div className="p-8 text-center text-slate-600 font-medium text-xs">Memuat data absensi...</div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50/80 text-slate-600 font-semibold text-xs border-b border-slate-200 uppercase tracking-wider">
-                  <th className="px-6 py-3.5">Petugas</th>
-                  <th className="px-6 py-3.5">Waktu Masuk</th>
-                  <th className="px-6 py-3.5">Waktu Selesai</th>
-                  <th className="px-6 py-3.5">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {data.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="px-6 py-8 text-center text-xs text-slate-600 font-medium">
-                      Belum ada data absensi
-                    </td>
+          <>
+            {/* Desktop Table View (>= md: 768px) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/80 text-slate-600 font-semibold text-xs border-b border-slate-200 uppercase tracking-wider">
+                    <th className="px-6 py-3.5">Petugas</th>
+                    <th className="px-6 py-3.5">Waktu Masuk</th>
+                    <th className="px-6 py-3.5">Waktu Selesai</th>
+                    <th className="px-6 py-3.5">Status</th>
                   </tr>
-                ) : (
-                  data.map((row) => (
-                    <tr key={row.id} className="hover:bg-slate-50/80 transition-colors text-xs">
-                      <td className="px-6 py-3.5 font-semibold text-slate-900">{row.petugas.nama}</td>
-                      <td className="px-6 py-3.5 text-slate-600 font-medium">
-                        {format(new Date(row.waktuMasuk), "dd MMM yyyy, HH:mm", { locale: id })}
-                      </td>
-                      <td className="px-6 py-3.5 text-slate-600 font-medium">
-                        {row.waktuSelesai 
-                          ? format(new Date(row.waktuSelesai), "dd MMM yyyy, HH:mm", { locale: id })
-                          : <span className="text-slate-600 italic">Sedang bertugas</span>}
-                      </td>
-                      <td className="px-6 py-3.5">
-                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold inline-block ${
-                          row.status === 'hadir' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60' : 'bg-slate-100 text-slate-600'
-                        }`}>
-                          {row.status}
-                        </span>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {data.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="px-6 py-8 text-center text-xs text-slate-600 font-medium">
+                        Belum ada data absensi
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                  ) : (
+                    data.map((row) => (
+                      <tr key={row.id} className="hover:bg-slate-50/80 transition-colors text-xs">
+                        <td className="px-6 py-3.5 font-semibold text-slate-900">{row.petugas.nama}</td>
+                        <td className="px-6 py-3.5 text-slate-600 font-medium">
+                          {format(new Date(row.waktuMasuk), "dd MMM yyyy, HH:mm", { locale: id })}
+                        </td>
+                        <td className="px-6 py-3.5 text-slate-600 font-medium">
+                          {row.waktuSelesai 
+                            ? format(new Date(row.waktuSelesai), "dd MMM yyyy, HH:mm", { locale: id })
+                            : <span className="text-slate-600 italic">Sedang bertugas</span>}
+                        </td>
+                        <td className="px-6 py-3.5">
+                          <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold inline-block ${
+                            row.status === 'hadir' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60' : 'bg-slate-100 text-slate-600'
+                          }`}>
+                            {row.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Smart Cards View (< md: 768px) */}
+            <div className="md:hidden divide-y divide-slate-100">
+              {data.length === 0 ? (
+                <div className="p-6 text-center text-xs text-slate-500 font-medium">Belum ada data absensi</div>
+              ) : (
+                data.map((row) => (
+                  <div key={row.id} className="p-4 space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-bold text-sm text-slate-900">{row.petugas.nama}</span>
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                        row.status === 'hadir' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-600'
+                      }`}>
+                        {row.status}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200/60">
+                      <div>
+                        <span className="text-[10px] text-slate-400 block uppercase font-semibold">Mulai (Clock In)</span>
+                        <span className="font-semibold text-slate-700">
+                          {format(new Date(row.waktuMasuk), "dd MMM, HH:mm", { locale: id })}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-slate-400 block uppercase font-semibold">Selesai (Clock Out)</span>
+                        <span className="font-semibold text-slate-700">
+                          {row.waktuSelesai
+                            ? format(new Date(row.waktuSelesai), "dd MMM, HH:mm", { locale: id })
+                            : <span className="text-amber-600 italic">Sedang bertugas</span>}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>

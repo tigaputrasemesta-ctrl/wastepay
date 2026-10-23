@@ -14,21 +14,21 @@ export default async function LaporanPage({
   const NAMA_BULAN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6 pb-12 w-full">
       <div className="mb-6">
         <div className="flex items-start justify-between flex-wrap gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Laporan Keuangan & Operasional</h1>
-            <p className="text-sm text-slate-500 font-medium">
+            <p className="text-xs sm:text-sm text-slate-500 font-medium">
               Ringkasan {NAMA_BULAN[bulan - 1]} {tahun}
             </p>
           </div>
-          <div className="flex items-center gap-3 flex-wrap">
-            <form method="GET" className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5 flex-wrap w-full sm:w-auto">
+            <form method="GET" className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
               <select
                 name="bulan"
                 defaultValue={bulan}
-                className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                className="px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 shadow-sm"
               >
                 {NAMA_BULAN.map((b, i) => (
                   <option key={i + 1} value={i + 1}>{b}</option>
@@ -37,7 +37,7 @@ export default async function LaporanPage({
               <select
                 name="tahun"
                 defaultValue={tahun}
-                className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                className="px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 shadow-sm"
               >
                 {[2024, 2025, 2026, 2027, 2028].map((t) => (
                   <option key={t} value={t}>{t}</option>
@@ -45,7 +45,7 @@ export default async function LaporanPage({
               </select>
               <button
                 type="submit"
-                className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all"
+                className="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-sm hover:shadow active:scale-[0.98] transition-all"
               >
                 Tampilkan
               </button>
@@ -53,14 +53,14 @@ export default async function LaporanPage({
             <a
               href={`/laporan-cetak?bulan=${bulan}&tahun=${tahun}`}
               target="_blank"
-              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5"
+              className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5"
             >
               <span>🖨</span>
               <span>Cetak PDF</span>
             </a>
             <a
               href={`/api/laporan/export?bulan=${bulan}&tahun=${tahun}`}
-              className="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl text-xs font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5"
+              className="px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5"
             >
               <span>⬇</span>
               <span>Ekspor CSV</span>
@@ -224,7 +224,9 @@ export default async function LaporanPage({
         {data.sampahByTpa.length > 0 && (
           <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
             <h3 className="font-bold text-slate-900 text-base mb-3">Pembuangan per TPA</h3>
-            <div className="overflow-x-auto">
+            
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
@@ -246,6 +248,22 @@ export default async function LaporanPage({
                 </tbody>
               </table>
             </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden divide-y divide-slate-100">
+              {data.sampahByTpa.map((s) => (
+                <div key={s.tpaId} className="py-3.5 first:pt-0 last:pb-0 flex items-center justify-between gap-3 text-xs">
+                  <div>
+                    <p className="font-bold text-slate-900 text-sm">{s.nama}</p>
+                    <p className="text-slate-500 mt-0.5">{s.count} kali pengangkutan</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-slate-900 tabular-nums">{s.volume.toFixed(1)} m³</p>
+                    <p className="text-slate-500 tabular-nums">{s.berat.toFixed(1)} kg</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -256,28 +274,59 @@ export default async function LaporanPage({
         {data.tagihanMenunggak.length === 0 ? (
           <p className="text-sm text-slate-400 font-medium">Tidak ada tagihan menunggak</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
-                  <th className="text-left px-3 py-2 font-semibold">Pelanggan</th>
-                  <th className="text-left px-3 py-2 font-semibold">No. Telepon</th>
-                  <th className="text-left px-3 py-2 font-semibold">Periode</th>
-                  <th className="text-right px-3 py-2 font-semibold">Jumlah</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.tagihanMenunggak.map((t) => (
-                  <tr key={t.id} className="border-b border-slate-100 hover:bg-slate-50/50">
-                    <td className="px-3 py-2.5 font-medium text-slate-900">{t.pelanggan.nama}</td>
-                    <td className="px-3 py-2.5 text-slate-500 text-xs">{t.pelanggan.noTelepon}</td>
-                    <td className="px-3 py-2.5 text-slate-600">{["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"][t.bulan - 1]} {t.tahun}</td>
-                    <td className="px-3 py-2.5 text-right text-rose-600 font-bold tabular-nums">{formatRupiah(t.jumlah)}</td>
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
+                    <th className="text-left px-3 py-2 font-semibold">Pelanggan</th>
+                    <th className="text-left px-3 py-2 font-semibold">No. Telepon</th>
+                    <th className="text-left px-3 py-2 font-semibold">Periode</th>
+                    <th className="text-right px-3 py-2 font-semibold">Jumlah</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {data.tagihanMenunggak.map((t) => (
+                    <tr key={t.id} className="border-b border-slate-100 hover:bg-slate-50/50">
+                      <td className="px-3 py-2.5 font-medium text-slate-900">{t.pelanggan.nama}</td>
+                      <td className="px-3 py-2.5 text-slate-500 text-xs">{t.pelanggan.noTelepon}</td>
+                      <td className="px-3 py-2.5 text-slate-600">{["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"][t.bulan - 1]} {t.tahun}</td>
+                      <td className="px-3 py-2.5 text-right text-rose-600 font-bold tabular-nums">{formatRupiah(t.jumlah)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden divide-y divide-slate-100">
+              {data.tagihanMenunggak.map((t) => (
+                <div key={t.id} className="py-3.5 first:pt-0 last:pb-0 flex flex-col gap-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-bold text-slate-900 text-sm">{t.pelanggan.nama}</p>
+                      <p className="text-xs text-slate-500 font-mono mt-0.5">{t.pelanggan.noTelepon}</p>
+                    </div>
+                    <span className="font-bold text-rose-600 text-sm tabular-nums">
+                      {formatRupiah(t.jumlah)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-50">
+                    <span className="text-slate-500 font-medium">
+                      Periode: {["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"][t.bulan - 1]} {t.tahun}
+                    </span>
+                    <a
+                      href={`/tagihan?search=${encodeURIComponent(t.pelanggan.nama)}`}
+                      className="text-emerald-700 font-bold hover:underline"
+                    >
+                      Buka Tagihan &rarr;
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
 
@@ -290,7 +339,7 @@ export default async function LaporanPage({
               Jumlah pelanggan yang didaftarkan melalui kode referral petugas & mitra
             </p>
           </div>
-          <span className="px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-xs">
+          <span className="px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm">
             <span>🤝</span>
             <span>{data.rekapReferral.reduce((acc, curr) => acc + curr.total, 0)} Pelanggan Tereferensikan</span>
           </span>
@@ -299,40 +348,68 @@ export default async function LaporanPage({
         {data.rekapReferral.length === 0 ? (
           <p className="text-sm text-slate-400 font-medium">Belum ada pelanggan yang terdaftar melalui referral</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
-                  <th className="text-left px-3 py-2 font-semibold">Nama Petugas / Kode Referral</th>
-                  <th className="text-right px-3 py-2 font-semibold">Jumlah Pelanggan</th>
-                  <th className="text-center px-3 py-2 font-semibold">Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.rekapReferral.map((r) => (
-                  <tr key={r.referal} className="border-b border-slate-100 hover:bg-slate-50/50">
-                    <td className="px-3 py-2.5 font-bold text-slate-900 flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-black shrink-0">
-                        🤝
-                      </span>
-                      <span>{r.referal}</span>
-                    </td>
-                    <td className="px-3 py-2.5 text-right font-mono font-bold text-emerald-700 text-sm">
-                      {r.total} Orang
-                    </td>
-                    <td className="px-3 py-2.5 text-center">
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
+                    <th className="text-left px-3 py-2 font-semibold">Nama Petugas / Kode Referral</th>
+                    <th className="text-right px-3 py-2 font-semibold">Jumlah Pelanggan</th>
+                    <th className="text-center px-3 py-2 font-semibold">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.rekapReferral.map((r) => (
+                    <tr key={r.referal} className="border-b border-slate-100 hover:bg-slate-50/50">
+                      <td className="px-3 py-2.5 font-bold text-slate-900 flex items-center gap-2">
+                        <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-black shrink-0">
+                          🤝
+                        </span>
+                        <span>{r.referal}</span>
+                      </td>
+                      <td className="px-3 py-2.5 text-right font-mono font-bold text-emerald-700 text-sm">
+                        {r.total} Orang
+                      </td>
+                      <td className="px-3 py-2.5 text-center">
+                        <a
+                          href={`/pelanggan?search=${encodeURIComponent(r.referal)}`}
+                          className="text-xs font-bold text-emerald-700 hover:text-emerald-800 hover:underline inline-flex items-center gap-1"
+                        >
+                          Lihat Pelanggan →
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden divide-y divide-slate-100">
+              {data.rekapReferral.map((r) => (
+                <div key={r.referal} className="py-3.5 first:pt-0 last:pb-0 flex items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-sm font-black shrink-0">
+                      🤝
+                    </span>
+                    <div>
+                      <p className="font-bold text-slate-900 text-sm">{r.referal}</p>
                       <a
                         href={`/pelanggan?search=${encodeURIComponent(r.referal)}`}
-                        className="text-xs font-bold text-emerald-700 hover:text-emerald-800 hover:underline inline-flex items-center gap-1"
+                        className="text-[11px] font-bold text-emerald-700 hover:underline"
                       >
-                        Lihat Pelanggan →
+                        Lihat Pelanggan &rarr;
                       </a>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </div>
+                  </div>
+                  <span className="px-2.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200/60 rounded-xl font-mono font-bold text-xs shrink-0">
+                    {r.total} Orang
+                  </span>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>

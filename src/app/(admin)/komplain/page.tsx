@@ -57,7 +57,8 @@ export default function KomplainPage() {
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
+        {/* Desktop Table View (>= md: 768px) */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-slate-50 text-slate-600 font-bold text-xs border-b border-slate-200">
@@ -117,6 +118,57 @@ export default function KomplainPage() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Smart Cards View (< md: 768px) */}
+        <div className="md:hidden divide-y divide-slate-100">
+          {loading ? (
+            <div className="p-6 text-center text-slate-500 text-xs font-medium">Memuat komplain...</div>
+          ) : komplain.length === 0 ? (
+            <div className="p-6 text-center text-slate-500 text-xs font-medium">Belum ada komplain</div>
+          ) : (
+            komplain.map((k) => (
+              <div key={k.id} className="p-4 space-y-2.5">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                    {k.jenis === "tidak_diangkut" ? "Tidak Diangkut" : k.jenis === "sampah_menumpuk" ? "Sampah Menumpuk" : "Lainnya"}
+                  </span>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                    k.status === "baru" ? "bg-rose-50 text-rose-700 border border-rose-200" :
+                    k.status === "diproses" ? "bg-amber-50 text-amber-700 border border-amber-200" :
+                    "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                  }`}>
+                    {k.status.charAt(0).toUpperCase() + k.status.slice(1)}
+                  </span>
+                </div>
+
+                <div>
+                  <div className="font-bold text-sm text-slate-900">{k.pelanggan.nama}</div>
+                  <div className="text-xs text-slate-500 font-mono mt-0.5">{k.pelanggan.noTelepon}</div>
+                  <div className="text-xs text-slate-600 mt-1 leading-relaxed bg-slate-50 p-2.5 rounded-xl border border-slate-200/60">
+                    {k.deskripsi}
+                  </div>
+                  {k.foto && (
+                    <div className="mt-2">
+                      <img src={k.foto} alt="Bukti" className="w-full max-h-40 object-cover rounded-xl border border-slate-200" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between pt-1 text-xs">
+                  <span className="text-[11px] text-slate-400">{formatDate(k.createdAt)}</span>
+                  {k.status !== "selesai" && (
+                    <button
+                      onClick={() => setShowResolve(k)}
+                      className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-bold text-xs shadow-sm transition"
+                    >
+                      Proses Komplain
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 

@@ -56,22 +56,22 @@ export default function AuditLogPage() {
   const entitasList = [...new Set(logs.map((l) => l.entitas))].sort();
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6 pb-12 w-full">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Audit Log</h1>
-          <p className="text-sm text-slate-500 font-medium">
+          <p className="text-xs sm:text-sm text-slate-500 font-medium">
             Jejak perubahan data oleh pengguna (hanya superadmin)
           </p>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="flex gap-3 mb-4 flex-wrap">
+      <div className="flex gap-2.5 mb-4 flex-wrap">
         <select
           value={filterEntitas}
           onChange={(e) => setFilterEntitas(e.target.value)}
-          className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+          className="px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 shadow-sm"
         >
           <option value="">Semua Entitas</option>
           {entitasList.map((e) => (
@@ -81,7 +81,7 @@ export default function AuditLogPage() {
         <select
           value={filterAksi}
           onChange={(e) => setFilterAksi(e.target.value)}
-          className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+          className="px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 shadow-sm"
         >
           <option value="">Semua Aksi</option>
           <option value="create">Buat</option>
@@ -90,15 +90,16 @@ export default function AuditLogPage() {
         </select>
         <button
           onClick={() => fetchData()}
-          className="px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 shadow-sm hover:shadow active:scale-[0.98] transition-all"
+          className="px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 shadow-sm hover:shadow active:scale-[0.98] transition-all"
         >
           Muat Ulang
         </button>
       </div>
 
-      {/* Table */}
+      {/* Table & Cards */}
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-slate-50/80 text-slate-600 font-semibold text-xs border-b border-slate-200 uppercase tracking-wider">
@@ -133,7 +134,7 @@ export default function AuditLogPage() {
                       <td className="px-4 py-3 text-slate-500 font-mono">{log.entitasId}</td>
                       <td className="px-4 py-3">
                         <details className="text-xs">
-                          <summary className="cursor-pointer text-emerald-700 hover:text-emerald-700 font-medium">Lihat detail</summary>
+                          <summary className="cursor-pointer text-emerald-700 hover:text-emerald-800 font-medium">Lihat detail</summary>
                           <pre className="mt-2 bg-slate-50 text-slate-700 border border-slate-200 rounded-xl p-3 text-[11px] font-mono overflow-x-auto max-h-40">
                             {detail || "—"}
                           </pre>
@@ -145,6 +146,51 @@ export default function AuditLogPage() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden divide-y divide-slate-100">
+          {loading ? (
+            <div className="p-8 text-center text-xs text-slate-500 font-medium">Memuat log audit...</div>
+          ) : logs.length === 0 ? (
+            <div className="p-8 text-center text-xs text-slate-500 font-medium">Belum ada log aktivitas</div>
+          ) : (
+            logs.map((log) => {
+              const aksi = AKSI_LABEL[log.aksi] ?? { label: log.aksi, cls: "bg-slate-100 border border-slate-200 text-slate-700" };
+              let detail = log.dataBaru;
+              if (!detail && log.dataLama) detail = log.dataLama;
+              return (
+                <div key={log.id} className="p-4 space-y-2.5 text-xs">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <span className="text-[11px] text-slate-400 tabular-nums block font-mono">{formatWaktu(log.createdAt)}</span>
+                      <p className="font-bold text-slate-900 text-sm mt-0.5">{log.user?.nama || "Sistem / Otomatis"}</p>
+                    </div>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${aksi.cls}`}>
+                      {aksi.label}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-xs">
+                    <span className="font-semibold text-slate-700">Entitas:</span>
+                    <span className="bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200 font-medium text-slate-800">
+                      {log.entitas}
+                    </span>
+                    <span className="font-mono text-slate-400 text-[11px]">ID #{log.entitasId}</span>
+                  </div>
+
+                  <details className="text-xs pt-1 border-t border-slate-100">
+                    <summary className="cursor-pointer text-emerald-700 hover:text-emerald-800 font-bold py-1">
+                      Data Payload & Detail ▾
+                    </summary>
+                    <pre className="mt-1 bg-slate-50 text-slate-700 border border-slate-200 rounded-xl p-2.5 text-[11px] font-mono overflow-x-auto max-h-48 whitespace-pre-wrap break-all">
+                      {detail || "—"}
+                    </pre>
+                  </details>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
     </div>

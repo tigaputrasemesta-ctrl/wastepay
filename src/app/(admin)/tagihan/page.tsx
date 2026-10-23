@@ -785,7 +785,7 @@ export default function TagihanPage() {
               <button
                 onClick={cekSemuaGateway}
                 disabled={cekSemuaLoading}
-                className="text-xs bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-semibold px-3 py-1.5 rounded-xl transition-all shadow-xs flex items-center gap-1.5 disabled:opacity-50"
+                className="text-xs bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-semibold px-3 py-1.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5 disabled:opacity-50"
               >
                 <span>{cekSemuaLoading ? "⟳ Memeriksa Semua..." : "⟳ Cek Semua Status Live"}</span>
               </button>
@@ -1023,7 +1023,8 @@ export default function TagihanPage() {
 
         return (
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
+            {/* Desktop Table View (>= md: 768px) */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
@@ -1170,6 +1171,138 @@ export default function TagihanPage() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Smart Cards View (< md: 768px) */}
+        <div className="md:hidden divide-y divide-slate-100 bg-white">
+          {loading ? (
+            <div className="p-8 text-center text-slate-500 font-medium text-xs">Memuat data tagihan...</div>
+          ) : displayedTagihan.length === 0 ? (
+            <div className="p-8 text-center text-slate-500 font-medium text-xs">Belum ada tagihan</div>
+          ) : (
+            displayedTagihan.map((t) => {
+              const nominalTotal = t.jumlah + (t.denda || 0);
+              const statusBadgeCls =
+                t.status === "lunas"
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                  : t.status === "tunggakan"
+                  ? "bg-rose-50 text-rose-700 border-rose-200"
+                  : "bg-amber-50 text-amber-700 border-amber-200";
+
+              return (
+                <div key={t.id} className="p-4 space-y-2.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <code className="text-xs font-mono font-bold text-slate-800 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-md">
+                        {t.pelanggan.kodePelanggan}
+                      </code>
+                      {t.noInvoice && (
+                        <Link
+                          href={`/invoice-tagihan?invoice=${encodeURIComponent(t.noInvoice)}`}
+                          target="_blank"
+                          className="text-[11px] font-mono text-emerald-700 font-semibold truncate hover:underline"
+                        >
+                          #{t.noInvoice}
+                        </Link>
+                      )}
+                    </div>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${statusBadgeCls}`}>
+                      {t.status === "belum_bayar" ? "Belum Bayar" : t.status === "lunas" ? "Lunas" : "Tunggakan"}
+                    </span>
+                  </div>
+
+                  <div>
+                    <div className="font-bold text-sm text-slate-900">{t.pelanggan.nama}</div>
+                    <div className="text-xs text-slate-500 font-mono mt-0.5">{t.pelanggan.noTelepon || "—"}</div>
+                    {t.pelanggan.alamat && (
+                      <div className="text-xs text-slate-600 line-clamp-1 mt-0.5">
+                        {t.pelanggan.alamat}
+                      </div>
+                    )}
+                    <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                      <span className="inline-flex items-center px-2 py-0.5 bg-slate-100 rounded-md text-[10px] font-semibold text-slate-600">
+                        Kel. {t.pelanggan.kelurahan?.nama ?? "—"}
+                      </span>
+                      {t.pelanggan.wilayah?.zona && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 border border-emerald-200/80 rounded-md text-[10px] font-bold text-emerald-800">
+                          <span
+                            className="w-1.5 h-1.5 rounded-full shrink-0"
+                            style={{ backgroundColor: t.pelanggan.wilayah.zona.warna || "#10b981" }}
+                          />
+                          <span>{t.pelanggan.wilayah.zona.nama}</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200/60 text-xs">
+                    <div>
+                      <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
+                        Periode & Jatuh Tempo
+                      </div>
+                      <div className="font-bold text-slate-700">
+                        {bulanList.find((b) => b.value === t.bulan.toString())?.label} {t.tahun}
+                      </div>
+                      <div className="text-[10px] text-slate-500">
+                        Jatuh tempo: {formatDate(t.jatuhTempo)}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
+                        Total Tagihan
+                      </div>
+                      <div className="font-extrabold text-sm text-slate-900 tabular-nums">
+                        {formatRupiah(nominalTotal)}
+                      </div>
+                      {t.denda ? (
+                        <div className="text-[10px] text-rose-600 font-medium">
+                          + denda {formatRupiah(t.denda)}
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  <div className="pt-1 flex items-center justify-end gap-2">
+                    {t.status !== "lunas" ? (
+                      <button
+                        onClick={() => {
+                          setFormBayar({
+                            metode: isPetugas ? "tunai" : "transfer",
+                            catatan: isPetugas ? "Bayar tunai via petugas tagih" : "",
+                            buktiBayar: "",
+                          });
+                          setShowBayar({
+                            tagihanId: t.id,
+                            pelangganId: t.pelanggan.id,
+                            jumlah: hitungRincian(t.jumlah, t.denda).total,
+                          });
+                        }}
+                        className="w-full text-center text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white py-2.5 rounded-xl shadow-sm active:scale-[0.98] transition flex items-center justify-center gap-1.5"
+                      >
+                        <span>💳</span>
+                        <span>Input Pembayaran</span>
+                      </button>
+                    ) : (
+                      <div className="w-full flex items-center justify-between gap-2 text-xs">
+                        <span className="text-slate-500 font-medium">
+                          Lunas: <b>{t.tanggalLunas ? formatDate(t.tanggalLunas) : "-"}</b>
+                        </span>
+                        {t.pembayaran.filter((pb) => pb.status === "terverifikasi").length > 0 && (
+                          <Link
+                            href={`/kwitansi/${t.pembayaran.find((pb) => pb.status === "terverifikasi")?.id}`}
+                            target="_blank"
+                            className="px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 font-bold transition"
+                          >
+                            📄 Kwitansi
+                          </Link>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
 
         {/* Pagination Controls */}

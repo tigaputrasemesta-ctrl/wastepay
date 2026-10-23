@@ -204,7 +204,8 @@ export default function TarifPage() {
               + Tambah
             </button>
           </div>
-          <div className="p-0 overflow-x-auto">
+          {/* Desktop Table View */}
+          <div className="hidden md:block p-0 overflow-x-auto">
             <table className="w-full text-sm text-left">
               <thead>
                 <tr className="bg-slate-50/80 text-slate-600 font-semibold text-xs border-b border-slate-200 uppercase tracking-wider">
@@ -237,6 +238,40 @@ export default function TarifPage() {
               </tbody>
             </table>
           </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden divide-y divide-slate-100">
+            {kategoris.length === 0 ? (
+              <div className="p-6 text-center text-xs text-slate-500 font-medium">Belum ada kategori</div>
+            ) : (
+              kategoris.map((k) => (
+                <div key={k.id} className="p-4 space-y-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-bold text-slate-900 text-sm">{k.label}</p>
+                      <span className="font-mono text-[11px] text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200 mt-1 inline-block">
+                        {k.kategori}
+                      </span>
+                    </div>
+                    <p className="font-bold text-emerald-700 text-sm tabular-nums">
+                      Rp {k.tarif.toLocaleString("id-ID")}
+                    </p>
+                  </div>
+                  {k.deskripsi && (
+                    <p className="text-xs text-slate-500">{k.deskripsi}</p>
+                  )}
+                  <div className="flex justify-end gap-2 pt-1 border-t border-slate-50">
+                    <button onClick={() => openKat(k)} className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold">
+                      Edit
+                    </button>
+                    <button onClick={() => setDeleteKat(k)} className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-semibold">
+                      Hapus
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
 
         {/* Paket Langganan */}
@@ -253,7 +288,9 @@ export default function TarifPage() {
               + Tambah
             </button>
           </div>
-          <div className="p-0 overflow-x-auto">
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block p-0 overflow-x-auto">
             <table className="w-full text-sm text-left">
               <thead>
                 <tr className="bg-slate-50/80 text-slate-600 font-semibold text-xs border-b border-slate-200 uppercase tracking-wider">
@@ -287,6 +324,40 @@ export default function TarifPage() {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden divide-y divide-slate-100">
+            {pakets.length === 0 ? (
+              <div className="p-6 text-center text-xs text-slate-500 font-medium">Belum ada paket</div>
+            ) : (
+              pakets.map((p) => (
+                <div key={p.id} className="p-4 space-y-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-bold text-slate-900 text-sm">{p.nama}</p>
+                      <span className="font-mono text-[11px] text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200 mt-1 inline-block">
+                        {p.kode || "—"}
+                      </span>
+                    </div>
+                    <p className="font-bold text-emerald-700 text-sm tabular-nums">
+                      {p.harga != null ? `Rp ${p.harga.toLocaleString("id-ID")}` : "Variabel"}
+                    </p>
+                  </div>
+                  {p.deskripsi && (
+                    <p className="text-xs text-slate-500">{p.deskripsi}</p>
+                  )}
+                  <div className="flex justify-end gap-2 pt-1 border-t border-slate-50">
+                    <button onClick={() => openPaket(p)} className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold">
+                      Edit
+                    </button>
+                    <button onClick={() => setDeletePaket(p)} className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-semibold">
+                      Hapus
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
