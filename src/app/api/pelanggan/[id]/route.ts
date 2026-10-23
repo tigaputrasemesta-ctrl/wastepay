@@ -7,11 +7,13 @@ import { generateNoInvoice } from "@/lib/invoice";
 import { hitungJatuhTempoKonsumen } from "@/lib/tagihan";
 import { tetapkanJadwalDanPetugasPelanggan } from "@/lib/penugasan-jadwal";
 import { kirimNotifikasi, templatePendaftaranDisetujui } from "@/lib/wa";
+import { ensureArmadaRuteSchema } from "@/lib/db-patch";
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  await ensureArmadaRuteSchema();
   const id = parseInt((await params).id);
   const pelanggan = await prisma.pelanggan.findUnique({
     where: { id },

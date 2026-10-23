@@ -9,21 +9,8 @@ let isPatchDone = false;
 export async function ensureArmadaRuteSchema() {
   if (isPatchDone) return;
   try {
-    await prisma.$executeRawUnsafe(`
-      ALTER TABLE public."Rute" ADD COLUMN IF NOT EXISTS "kendaraanId" INTEGER;
-      CREATE INDEX IF NOT EXISTS "Rute_kendaraanId_idx" ON public."Rute"("kendaraanId");
-      DO $$
-      BEGIN
-        IF NOT EXISTS (
-          SELECT 1 FROM pg_constraint WHERE conname = 'Rute_kendaraanId_fkey'
-        ) THEN
-          ALTER TABLE public."Rute"
-          ADD CONSTRAINT "Rute_kendaraanId_fkey"
-          FOREIGN KEY ("kendaraanId") REFERENCES public."Kendaraan"("id")
-          ON DELETE SET NULL ON UPDATE CASCADE;
-        END IF;
-      END $$;
-    `);
+    await prisma.$executeRawUnsafe(`ALTER TABLE public."Rute" ADD COLUMN IF NOT EXISTS "kendaraanId" INTEGER;`);
+    await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "Rute_kendaraanId_idx" ON public."Rute"("kendaraanId");`);
     isPatchDone = true;
   } catch (err) {
     console.warn("[ensureArmadaRuteSchema] notice:", err);

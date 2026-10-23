@@ -112,8 +112,6 @@ export async function GET(request: Request) {
               select: {
                 id: true,
                 nama: true,
-                kendaraanId: true,
-                kendaraan: { select: { id: true, nama: true, platNomor: true, jenis: true } },
                 petugasId: true,
                 petugas: { select: { id: true, nama: true } },
               },
