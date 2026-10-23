@@ -20,7 +20,14 @@ export type SyncRuteResult = {
 export async function sinkronkanPelangganRute(ruteId: number): Promise<SyncRuteResult> {
   const rute = await prisma.rute.findUnique({
     where: { id: ruteId },
-    include: {
+    select: {
+      id: true,
+      nama: true,
+      hari: true,
+      jam: true,
+      aktif: true,
+      zonaId: true,
+      kelurahanId: true,
       kelurahans: { select: { id: true, nama: true } },
       zonas: { select: { id: true, nama: true, kelurahanId: true } },
       kelurahan: { select: { id: true, nama: true } },
@@ -194,17 +201,45 @@ export async function sinkronkanSemuaRute() {
  * Ambil daftar pelanggan yang berada di cakupan rute ini beserta jadwal aktifnya.
  */
 export async function getPelangganRuteDetail(ruteId: number) {
-  const rute = await prisma.rute.findUnique({
-    where: { id: ruteId },
-    include: {
-      kelurahans: { select: { id: true, nama: true } },
-      zonas: { select: { id: true, nama: true, kelurahanId: true } },
-      kelurahan: { select: { id: true, nama: true } },
-      zona: { select: { id: true, nama: true, kelurahanId: true } },
-      kendaraan: { select: { id: true, nama: true, platNomor: true, jenis: true } },
-      petugas: { select: { id: true, nama: true } },
-    },
-  });
+  let rute: any;
+  try {
+    rute = await prisma.rute.findUnique({
+      where: { id: ruteId },
+      select: {
+        id: true,
+        nama: true,
+        hari: true,
+        jam: true,
+        aktif: true,
+        zonaId: true,
+        kelurahanId: true,
+        kelurahans: { select: { id: true, nama: true } },
+        zonas: { select: { id: true, nama: true, kelurahanId: true } },
+        kelurahan: { select: { id: true, nama: true } },
+        zona: { select: { id: true, nama: true, kelurahanId: true } },
+        petugas: { select: { id: true, nama: true } },
+        kendaraan: { select: { id: true, nama: true, platNomor: true, jenis: true } },
+      },
+    });
+  } catch {
+    rute = await prisma.rute.findUnique({
+      where: { id: ruteId },
+      select: {
+        id: true,
+        nama: true,
+        hari: true,
+        jam: true,
+        aktif: true,
+        zonaId: true,
+        kelurahanId: true,
+        kelurahans: { select: { id: true, nama: true } },
+        zonas: { select: { id: true, nama: true, kelurahanId: true } },
+        kelurahan: { select: { id: true, nama: true } },
+        zona: { select: { id: true, nama: true, kelurahanId: true } },
+        petugas: { select: { id: true, nama: true } },
+      },
+    });
+  }
 
   if (!rute) {
     throw new Error(`Rute #${ruteId} tidak ditemukan`);
