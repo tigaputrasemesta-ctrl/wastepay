@@ -212,9 +212,12 @@ function RuteContent() {
         fetch("/api/petugas"),
         fetch("/api/kendaraan"),
       ]);
-      setRute(await ruteRes.json());
-      setKelurahanList(await kelurahanRes.json());
-      setZonaList(await zonaRes.json());
+      const ruteData = await ruteRes.json();
+      setRute(Array.isArray(ruteData) ? ruteData : []);
+      const kelData = await kelurahanRes.json();
+      setKelurahanList(Array.isArray(kelData) ? kelData : []);
+      const zonaData = await zonaRes.json();
+      setZonaList(Array.isArray(zonaData) ? zonaData : []);
       const petugasData = await petugasRes.json();
       setPetugasList(Array.isArray(petugasData) ? petugasData : []);
       const kendaraanData = await kendaraanRes.json();
@@ -399,6 +402,21 @@ function RuteContent() {
 
   async function handleRuteSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!ruteForm.nama.trim()) {
+      showToast("Nama rute wajib diisi", "error");
+      return;
+    }
+    if (!ruteForm.hari.trim()) {
+      showToast("Pilih minimal satu hari layanan", "error");
+      return;
+    }
+    const hasKelurahan = ruteForm.kelurahanIds.length > 0 || !!ruteForm.kelurahanId;
+    const hasZona = ruteForm.zonaIds.length > 0 || !!ruteForm.zonaId;
+    if (!hasKelurahan && !hasZona) {
+      showToast("Pilih minimal satu kelurahan atau zona cakupan rute", "error");
+      return;
+    }
+
     const url = editingRute ? `/api/rute/${editingRute.id}` : "/api/rute";
     const method = editingRute ? "PUT" : "POST";
 
@@ -1034,10 +1052,10 @@ function RuteContent() {
                 <div className="bg-emerald-50/70 border border-emerald-200/80 rounded-2xl p-4 space-y-2">
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                      Mobil Armada Pickup <span className="text-red-500">*</span>
+                      Mobil Armada Pickup (Opsional)
                     </label>
                     <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded-full">
-                      Armada-Centric
+                      Armada
                     </span>
                   </div>
                   <p className="text-xs text-slate-600">
@@ -1055,15 +1073,19 @@ function RuteContent() {
                       setRuteForm({ ...ruteForm, kendaraanId: v, nama: newNama });
                     }}
                     className="w-full px-3.5 py-2.5 bg-white border border-emerald-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 text-sm font-medium text-slate-900"
-                    required
                   >
-                    <option value="">-- Pilih Mobil Armada --</option>
+                    <option value="">-- Tanpa Armada / Pilih Nanti --</option>
                     {kendaraanList.map((k) => (
                       <option key={k.id} value={k.id}>
                         {k.jenis === "dump_truck" ? "🚛 Dump Truck" : k.jenis === "pickup" ? "🛺 Pickup" : "🛞 Gerobak"} — {k.nama} {k.platNomor ? `(${k.platNomor})` : ""} {k.kapasitas ? `[${k.kapasitas} kg]` : ""}
                       </option>
                     ))}
                   </select>
+                  {kendaraanList.length === 0 && (
+                    <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200/70 rounded-lg p-2">
+                      💡 Belum ada armada mobil yang didaftarkan. Anda tetap dapat menyimpan rute ini dan menugaskan armada nanti via menu Armada / Kendaraan.
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -1279,14 +1301,24 @@ function RuteContent() {
                   )}
 
                   {/* Accordion Kelurahan Tambahan */}
-                  <details className="text-xs group border border-slate-200 bg-white rounded-xl p-3">
+                  <details
+                    open={zonaList.length === 0 || ruteForm.kelurahanIds.length > 0}
+                    className="text-xs group border border-slate-200 bg-white rounded-xl p-3"
+                  >
                     <summary className="font-semibold text-slate-700 cursor-pointer flex items-center justify-between">
-                      <span>Cakupan Kelurahan Tanpa Zona / Wilayah Luas (Opsional)</span>
+                      <span className="flex items-center gap-2">
+                        <span className="text-slate-900 font-bold">Cakupan Kelurahan Wilayah Layanan</span>
+                        <span className="text-[11px] font-semibold text-emerald-700">
+                          {ruteForm.kelurahanIds.length > 0
+                            ? `(${ruteForm.kelurahanIds.length} Terpilih)`
+                            : "(Wajib minimal 1 jika tanpa zona)"}
+                        </span>
+                      </span>
                       <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-open:rotate-180 transition" />
                     </summary>
                     <div className="mt-3 pt-3 border-t border-slate-100">
                       <p className="text-[11px] text-slate-500 mb-2">
-                        Centang jika rute ini melayani seluruh kelurahan tanpa membatasi pada blok zona khusus:
+                        Pilih kelurahan yang dilayani oleh rute ini:
                       </p>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 max-h-36 overflow-y-auto pr-1">
                         {kelurahanList.map((k) => {
