@@ -5,20 +5,47 @@ import { toBoolean } from "@/lib/utils";
 import { ensureArmadaRuteSchema } from "@/lib/db-patch";
 
 export async function GET() {
-  await ensureArmadaRuteSchema();
-  const rute = await prisma.rute.findMany({
-    include: {
-      kelurahan: { select: { id: true, nama: true, kecamatan: true } },
-      kelurahans: { select: { id: true, nama: true, kecamatan: true } },
-      zona: { select: { id: true, nama: true, kelurahanId: true } },
-      zonas: { select: { id: true, nama: true, kelurahanId: true } },
-      kendaraan: { select: { id: true, nama: true, platNomor: true, jenis: true } },
-      petugas: { select: { id: true, nama: true, jabatan: true } },
-      _count: { select: { jadwal: true } },
-    },
-    orderBy: [{ nama: "asc" }], // Changed orderBy since kelurahan is no longer 1:1
-  });
-  return NextResponse.json(rute);
+  try {
+    await ensureArmadaRuteSchema();
+    const rute = await prisma.rute.findMany({
+      include: {
+        kelurahan: { select: { id: true, nama: true, kecamatan: true } },
+        kelurahans: { select: { id: true, nama: true, kecamatan: true } },
+        zona: { select: { id: true, nama: true, kelurahanId: true } },
+        zonas: { select: { id: true, nama: true, kelurahanId: true } },
+        kendaraan: { select: { id: true, nama: true, platNomor: true, jenis: true } },
+        petugas: { select: { id: true, nama: true, jabatan: true } },
+        _count: { select: { jadwal: true } },
+      },
+      orderBy: [{ nama: "asc" }],
+    });
+    return NextResponse.json(rute);
+  } catch (err: unknown) {
+    console.warn("Primary rute query error, attempting resilient fallback:", err);
+    try {
+      const ruteBase = await prisma.rute.findMany({
+        include: {
+          kelurahan: { select: { id: true, nama: true, kecamatan: true } },
+          kelurahans: { select: { id: true, nama: true, kecamatan: true } },
+          zona: { select: { id: true, nama: true, kelurahanId: true } },
+          zonas: { select: { id: true, nama: true, kelurahanId: true } },
+          petugas: { select: { id: true, nama: true, jabatan: true } },
+          _count: { select: { jadwal: true } },
+        },
+        orderBy: [{ nama: "asc" }],
+      });
+      return NextResponse.json(
+        ruteBase.map((r) => ({
+          ...r,
+          kendaraanId: null,
+          kendaraan: null,
+        }))
+      );
+    } catch (fallbackErr: unknown) {
+      const msg = fallbackErr instanceof Error ? fallbackErr.message : "Gagal memuat rute";
+      return NextResponse.json({ error: msg }, { status: 500 });
+    }
+  }
 }
 
 export async function POST(request: Request) {
@@ -58,27 +85,50 @@ export async function POST(request: Request) {
       }
     }
 
-    const rute = await prisma.rute.create({
-      data: {
-        nama,
-        hari,
-        jam,
-        aktif: aktif == null ? true : toBoolean(aktif),
-        kelurahanId: kelurahanIdAkhir,
-        kelurahans: parsedKelurahanIds.length > 0 ? { connect: parsedKelurahanIds.map((id) => ({ id })) } : undefined,
-        zonaId: zonaIdAkhir,
-        zonas: parsedZonaIds.length > 0 ? { connect: parsedZonaIds.map((id) => ({ id })) } : undefined,
-        kendaraanId: kendaraanId ? parseInt(kendaraanId) : null,
-        petugasId: petugasId ? parseInt(petugasId) : null,
-      },
-      include: {
-        kelurahan: { select: { id: true, nama: true, kecamatan: true } },
-        kelurahans: { select: { id: true, nama: true, kecamatan: true } },
-        zona: { select: { id: true, nama: true } },
-        kendaraan: { select: { id: true, nama: true, platNomor: true, jenis: true } },
-        petugas: { select: { id: true, nama: true } },
-      },
-    });
+    let rute;
+    try {
+      rute = await prisma.rute.create({
+        data: {
+          nama,
+          hari,
+          jam,
+          aktif: aktif == null ? true : toBoolean(aktif),
+          kelurahanId: kelurahanIdAkhir,
+          kelurahans: parsedKelurahanIds.length > 0 ? { connect: parsedKelurahanIds.map((id) => ({ id })) } : undefined,
+          zonaId: zonaIdAkhir,
+          zonas: parsedZonaIds.length > 0 ? { connect: parsedZonaIds.map((id) => ({ id })) } : undefined,
+          kendaraanId: kendaraanId ? parseInt(kendaraanId) : null,
+          petugasId: petugasId ? parseInt(petugasId) : null,
+        },
+        include: {
+          kelurahan: { select: { id: true, nama: true, kecamatan: true } },
+          kelurahans: { select: { id: true, nama: true, kecamatan: true } },
+          zona: { select: { id: true, nama: true } },
+          kendaraan: { select: { id: true, nama: true, platNomor: true, jenis: true } },
+          petugas: { select: { id: true, nama: true } },
+        },
+      });
+    } catch {
+      rute = await prisma.rute.create({
+        data: {
+          nama,
+          hari,
+          jam,
+          aktif: aktif == null ? true : toBoolean(aktif),
+          kelurahanId: kelurahanIdAkhir,
+          kelurahans: parsedKelurahanIds.length > 0 ? { connect: parsedKelurahanIds.map((id) => ({ id })) } : undefined,
+          zonaId: zonaIdAkhir,
+          zonas: parsedZonaIds.length > 0 ? { connect: parsedZonaIds.map((id) => ({ id })) } : undefined,
+          petugasId: petugasId ? parseInt(petugasId) : null,
+        },
+        include: {
+          kelurahan: { select: { id: true, nama: true, kecamatan: true } },
+          kelurahans: { select: { id: true, nama: true, kecamatan: true } },
+          zona: { select: { id: true, nama: true } },
+          petugas: { select: { id: true, nama: true } },
+        },
+      });
+    }
 
     await logAudit("create", "Rute", rute.id, undefined, { nama: rute.nama });
 

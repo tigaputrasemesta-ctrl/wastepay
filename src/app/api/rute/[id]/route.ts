@@ -9,33 +9,67 @@ export async function GET(
 ) {
   try {
     const id = parseInt((await params).id);
-    const rute = await prisma.rute.findUnique({
-      where: { id },
-      include: {
-        kelurahan: { select: { id: true, nama: true, kecamatan: true } },
-        kelurahans: { select: { id: true, nama: true, kecamatan: true } },
-        zona: { select: { id: true, nama: true, kelurahanId: true } },
-        zonas: { select: { id: true, nama: true, kelurahanId: true } },
-        kendaraan: { select: { id: true, nama: true, platNomor: true, jenis: true } },
-        petugas: { select: { id: true, nama: true } },
-        jadwal: {
-          include: {
-            pelanggan: {
-              select: {
-                id: true,
-                nama: true,
-                alamat: true,
-                noTelepon: true,
-                fotoRumah: true,
-                patokanLokasi: true,
-                latitude: true,
-                longitude: true,
+    let rute;
+    try {
+      rute = await prisma.rute.findUnique({
+        where: { id },
+        include: {
+          kelurahan: { select: { id: true, nama: true, kecamatan: true } },
+          kelurahans: { select: { id: true, nama: true, kecamatan: true } },
+          zona: { select: { id: true, nama: true, kelurahanId: true } },
+          zonas: { select: { id: true, nama: true, kelurahanId: true } },
+          kendaraan: { select: { id: true, nama: true, platNomor: true, jenis: true } },
+          petugas: { select: { id: true, nama: true } },
+          jadwal: {
+            include: {
+              pelanggan: {
+                select: {
+                  id: true,
+                  nama: true,
+                  alamat: true,
+                  noTelepon: true,
+                  fotoRumah: true,
+                  patokanLokasi: true,
+                  latitude: true,
+                  longitude: true,
+                },
               },
             },
           },
         },
-      },
-    });
+      });
+    } catch {
+      const ruteBase = await prisma.rute.findUnique({
+        where: { id },
+        include: {
+          kelurahan: { select: { id: true, nama: true, kecamatan: true } },
+          kelurahans: { select: { id: true, nama: true, kecamatan: true } },
+          zona: { select: { id: true, nama: true, kelurahanId: true } },
+          zonas: { select: { id: true, nama: true, kelurahanId: true } },
+          petugas: { select: { id: true, nama: true } },
+          jadwal: {
+            include: {
+              pelanggan: {
+                select: {
+                  id: true,
+                  nama: true,
+                  alamat: true,
+                  noTelepon: true,
+                  fotoRumah: true,
+                  patokanLokasi: true,
+                  latitude: true,
+                  longitude: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      if (ruteBase) {
+        rute = { ...ruteBase, kendaraan: null, kendaraanId: null };
+      }
+    }
+
     if (!rute) {
       return NextResponse.json({ error: "Rute tidak ditemukan" }, { status: 404 });
     }
