@@ -65,7 +65,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Pilih minimal satu hari" }, { status: 400 });
     }
 
-    const results = [];
+    const results: any[] = [];
     for (const h of hariList) {
       const res = await prisma.jadwal.upsert({
         where: {
