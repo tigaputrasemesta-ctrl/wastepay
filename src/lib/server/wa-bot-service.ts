@@ -306,6 +306,8 @@ export async function processIncomingWaMessage(
     lowerMsg.includes("komplain") ||
     lowerMsg.startsWith("lapor") ||
     lowerMsg.includes("lapor") ||
+    lowerMsg.startsWith("pengaduan") ||
+    lowerMsg.includes("pengaduan") ||
     lowerMsg.startsWith("keluhan") ||
     lowerMsg.includes("keluhan") ||
     lowerMsg.includes("belum diangkut") ||
@@ -317,33 +319,40 @@ export async function processIncomingWaMessage(
     lowerMsg.includes("terlewat");
 
   if (isKomplainTrigger) {
-    if (!pelanggan) {
+    const linkWebPengaduan = pelanggan?.noTelepon
+      ? `https://upsheru.com/pengaduan?kode=${pelanggan.noTelepon}`
+      : `https://upsheru.com/pengaduan`;
+
+    // Jika pesan hanya pemicu menu (3 / lapor / komplain / pengaduan / keluhan)
+    const isSimpleTrigger =
+      lowerMsg === "3" ||
+      lowerMsg === "komplain" ||
+      lowerMsg === "lapor" ||
+      lowerMsg === "pengaduan" ||
+      lowerMsg === "keluhan" ||
+      lowerMsg === "laporan";
+
+    if (isSimpleTrigger || !pelanggan) {
       const reply = [
+        `📢 *PUSAT PENGADUAN LAYANAN SAMPAH — UPS HERU* 🚛`,
+        ``,
         `Halo ${sapaanNama},`,
         ``,
-        `Untuk menyampaikan keluhan/pengaduan layanan sampah, mohon sertakan informasi alamat lengkap dan nomor HP aktif.`,
-        `Atau gunakan formulir pengaduan publik resmi kami di:`,
-        `👉 *https://upsheru.com/pengaduan*`,
+        `Untuk menyampaikan laporan sampah belum diangkut, sampah menumpuk, atau kendala layanan lainnya, silakan isi formulir pengaduan online resmi kami di:`,
+        `👉 *${linkWebPengaduan}*`,
         ``,
-        `Petugas kami akan segera menindaklanjuti laporan Anda.`,
+        `✨ *Keunggulan Pengaduan Online di Website:*`,
+        `• Laporan otomatis terhubung langsung ke tablet navigasi petugas armada yang bertugas hari ini`,
+        `• Dapat melampirkan foto bukti kondisi sampah di lokasi`,
+        `• Memperoleh nomor tiket resmi untuk memantau status penanganan secara real-time`,
+        ``,
+        `Silakan klik link di atas untuk menyampaikan laporan Anda. Tim kami siap segera menindaklanjuti ke lokasi. Terima kasih! 🙏`,
       ].join("\n");
-      return { reply, intent: "KOMPLAIN" };
+      return { reply, intent: "KOMPLAIN", pelangganId: pelanggan?.id };
     }
 
-    // Jika pesan hanya sekadar "3" atau "komplain" tanpa isi
-    if (lowerMsg === "3" || lowerMsg === "komplain" || lowerMsg === "lapor") {
-      const reply = [
-        `📢 *PUSAT PENGADUAN LAYANAN SAMPAH*`,
-        ``,
-        `Halo ${sapaanNama},`,
-        `Silakan ketikkan detail kendala sampah Anda (misal: *"Sampah di depan rumah terlewat belum diangkut sejak kemarin"*).`,
-        ``,
-        `📸 Anda juga dapat melampirkan foto tumpukan sampah pada pesan WhatsApp ini agar petugas kami dapat menindaklanjuti dengan cepat.`,
-      ].join("\n");
-      return { reply, intent: "KOMPLAIN", pelangganId: pelanggan.id };
-    }
-
-    // Buat tiket komplain di database
+    // Jika pelanggan mengetikkan pesan kendala lengkap langsung di WhatsApp:
+    // Tetap catat tiket di database agar tidak ada laporan warga yang tercecer
     const jenis =
       lowerMsg.includes("numpuk") || lowerMsg.includes("menumpuk")
         ? "sampah_menumpuk"
@@ -368,6 +377,7 @@ export async function processIncomingWaMessage(
         `📍 Zona: ${namaZona}`,
         `🏠 Alamat: ${pelanggan.alamat}`,
         `📝 Isi: ${rawMessage.slice(0, 200)}`,
+        `🌐 Link Web: https://upsheru.com/pengaduan`,
       ].join("\n");
       kirimWhatsApp(adminPhone(), pesanAdmin).catch(() => {});
     }
@@ -376,12 +386,14 @@ export async function processIncomingWaMessage(
       `✅ *PENGADUAN BERHASIL DICATAT*`,
       ``,
       `Halo ${sapaanNama},`,
-      `Laporan Anda telah resmi masuk ke sistem kami dengan nomor tiket:`,
+      `Laporan Anda telah tercatat di sistem dengan nomor tiket:`,
       `🆔 *Tiket Pengaduan: #KMP-${komplain.id}*`,
       `📍 *Zona Wilayah:* ${namaZona}`,
       ``,
-      `Petugas koordinator armada telah menerima laporan ini dan akan segera melakukan pengecekan ke lokasi.`,
-      `Terima kasih atas kerja samanya menjaga lingkungan tetap bersih. 🙏`,
+      `📋 Untuk melampirkan foto bukti sampah atau memantau status penanganan armada, silakan buka link pengaduan online:`,
+      `👉 *${linkWebPengaduan}*`,
+      ``,
+      `Petugas armada telah menerima laporan ini dan akan segera melakukan pengecekan ke lokasi. Terima kasih atas kerja samanya! 🙏`,
     ].join("\n");
 
     return {
@@ -401,7 +413,7 @@ export async function processIncomingWaMessage(
     `Silakan pilih menu bantuan dengan membalas angka atau kata kunci:`,
     `1️⃣ *Cek Tagihan & Bayar Online* (Ketik: 1 / Tagihan)`,
     `2️⃣ *Jadwal Penjemputan Sampah* (Ketik: 2 / Jadwal)`,
-    `3️⃣ *Lapor Sampah Belum Diangkut* (Ketik: 3 / Lapor)`,
+    `3️⃣ *Pusat Pengaduan / Lapor Sampah* (Akses: https://upsheru.com/pengaduan)`,
     `4️⃣ *Bicara dengan Admin/CS* (Ketik: 4 / Admin)`,
     ``,
     `Atau akses langsung portal resmi kami di:`,

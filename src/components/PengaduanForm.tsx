@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { kompresGambar } from "@/lib/foto";
 
 const JENIS: { value: string; label: string }[] = [
@@ -18,6 +18,17 @@ export default function PengaduanForm() {
   const [status, setStatus] = useState<"idle" | "kirim" | "ok" | "gagal">("idle");
   const [pesan, setPesan] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const sp = new URLSearchParams(window.location.search);
+      const k = sp.get("kode") || sp.get("noWa") || sp.get("telp");
+      if (k) {
+        setKodePelanggan(k);
+        setNoWa(k);
+      }
+    }
+  }, []);
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
