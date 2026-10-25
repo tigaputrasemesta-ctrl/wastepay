@@ -17,7 +17,9 @@ export default function PengaduanForm() {
   const [foto, setFoto] = useState("");
   const [status, setStatus] = useState<"idle" | "kirim" | "ok" | "gagal">("idle");
   const [pesan, setPesan] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [compressing, setCompressing] = useState(false);
+  const kameraInputRef = useRef<HTMLInputElement>(null);
+  const galeriInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -33,11 +35,16 @@ export default function PengaduanForm() {
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+    setCompressing(true);
     try {
       const base64 = await kompresGambar(file);
       setFoto(base64);
     } catch (err: any) {
-      alert("Gagal memproses gambar: " + err.message);
+      alert("Gagal memproses gambar: " + (err?.message || "Format gambar tidak didukung"));
+    } finally {
+      setCompressing(false);
+      if (kameraInputRef.current) kameraInputRef.current.value = "";
+      if (galeriInputRef.current) galeriInputRef.current.value = "";
     }
   }
 
@@ -131,38 +138,82 @@ export default function PengaduanForm() {
         />
       </div>
 
-      <div className="space-y-1.5">
-        <label className="block text-xs font-bold text-slate-700">
-          Foto Bukti / Dokumentasi (Opsional)
-        </label>
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <label className="block text-xs font-bold text-slate-700">
+            Foto Bukti / Dokumentasi (Opsional)
+          </label>
+          <span className="text-[10px] text-slate-400">Maks. 5MB (JPG/PNG)</span>
+        </div>
+
         {foto ? (
-          <div className="relative inline-block">
-            <img src={foto} alt="Preview" className="h-32 rounded-xl object-cover border border-slate-200" />
+          <div className="relative inline-block rounded-2xl overflow-hidden border border-slate-200 group shadow-xs">
+            <img src={foto} alt="Preview Bukti" className="h-36 sm:h-44 w-auto object-cover rounded-2xl" />
             <button
               type="button"
-              onClick={() => { setFoto(""); if (fileInputRef.current) fileInputRef.current.value = ""; }}
-              className="absolute -top-2 -right-2 bg-rose-600 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs shadow-md"
+              onClick={() => setFoto("")}
+              className="absolute top-2 right-2 bg-slate-900/70 hover:bg-rose-600 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold text-xs shadow-md transition-colors"
+              title="Hapus Foto"
             >
-              ×
+              ✕
             </button>
+            <div className="p-2 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-2">
+              <span className="text-[11px] font-semibold text-emerald-700 flex items-center gap-1">
+                <span>✓</span> Foto terlampir
+              </span>
+              <button
+                type="button"
+                onClick={() => setFoto("")}
+                className="text-[11px] font-semibold text-rose-600 hover:text-rose-700"
+              >
+                Hapus
+              </button>
+            </div>
           </div>
         ) : (
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 text-xs font-bold rounded-xl flex items-center gap-2 transition-colors"
-            >
-              <span>📷 Ambil Foto</span>
-            </button>
-            <span className="text-[10px] text-slate-500">Maks. 5MB, format JPG/PNG</span>
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <button
+                type="button"
+                onClick={() => kameraInputRef.current?.click()}
+                disabled={compressing}
+                className="px-4 py-2.5 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-800 text-xs font-bold rounded-xl flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50 shadow-xs"
+              >
+                <span>📷 Ambil Foto Kamera</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => galeriInputRef.current?.click()}
+                disabled={compressing}
+                className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 text-xs font-bold rounded-xl flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50 shadow-xs"
+              >
+                <span>🖼️ Pilih dari Galeri</span>
+              </button>
+            </div>
+            {compressing && (
+              <p className="text-xs text-rose-600 font-medium flex items-center gap-1.5 animate-pulse">
+                <span>⏳ Mengompres & memproses foto...</span>
+              </p>
+            )}
           </div>
         )}
+
+        {/* Input file tersembunyi: Kamera */}
         <input
-          ref={fileInputRef}
+          ref={kameraInputRef}
           type="file"
           accept="image/*"
           capture="environment"
+          onChange={handleFileChange}
+          className="hidden"
+        />
+
+        {/* Input file tersembunyi: Galeri */}
+        <input
+          ref={galeriInputRef}
+          type="file"
+          accept="image/*"
           onChange={handleFileChange}
           className="hidden"
         />
