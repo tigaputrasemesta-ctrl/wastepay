@@ -6,6 +6,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/constants/app_colors.dart';
+import '../../models/rute_model.dart';
 import '../../models/tugas_model.dart';
 import '../../providers/pengangkutan_provider.dart';
 import '../../providers/tracking_provider.dart';
@@ -15,12 +16,14 @@ class PetaDriverScreen extends StatefulWidget {
   final int? initialRuteId;
   final String? initialRuteNama;
   final int? initialTargetPelangganId;
+  final List<JadwalModel>? initialJadwalList;
 
   const PetaDriverScreen({
     super.key,
     this.initialRuteId,
     this.initialRuteNama,
     this.initialTargetPelangganId,
+    this.initialJadwalList,
   });
 
   @override
@@ -325,7 +328,30 @@ class _PetaDriverScreenState extends State<PetaDriverScreen> {
         ? LatLng(driverGeo.latitude, driverGeo.longitude)
         : _defaultCenter;
 
-    final allTasks = pengangkutan.tugasList;
+    List<TugasModel> allTasks = pengangkutan.tugasList;
+    if (allTasks.isEmpty && widget.initialJadwalList != null && widget.initialJadwalList!.isNotEmpty) {
+      allTasks = widget.initialJadwalList!.map((j) {
+        return TugasModel(
+          id: j.id,
+          tanggal: DateTime.now().toIso8601String().substring(0, 10),
+          status: 'terjadwal',
+          urutan: j.urutan,
+          pelanggan: PelangganTugas(
+            id: j.pelangganId,
+            nama: j.pelangganNama,
+            kodePelanggan: j.pelangganKode,
+            alamat: j.alamat,
+            latitude: j.latitude,
+            longitude: j.longitude,
+          ),
+          tunggakan: TunggakanInfo(
+            isMenunggak: false,
+            jumlahBulan: 0,
+            totalNominal: 0,
+          ),
+        );
+      }).toList();
+    }
     final pendingTasks = allTasks.where((t) => t.isTerjadwal).toList();
     final completedCount = pengangkutan.totalSelesai;
     final totalCount = pengangkutan.totalTugas;

@@ -23,9 +23,9 @@ class _AbsensiScreenState extends State<AbsensiScreen> {
       final photo = await _picker.pickImage(
         source: ImageSource.camera,
         preferredCameraDevice: CameraDevice.front,
-        maxWidth: 1024,
-        maxHeight: 1024,
-        imageQuality: 75,
+        maxWidth: 800,
+        maxHeight: 800,
+        imageQuality: 65,
       );
       if (photo != null) {
         setState(() {

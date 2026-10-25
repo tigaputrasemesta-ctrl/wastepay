@@ -115,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 CustomTextField(
                   controller: _emailController,
                   label: "Email Petugas",
-                  hint: "contoh: petugas@o2whero.com",
+                  hint: "contoh: raka@hero.com",
                   prefixIcon: Icons.email_outlined,
                   keyboardType: TextInputType.emailAddress,
                 ),
@@ -176,7 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         CustomTextField(
                           controller: _urlController,
                           label: "Alamat Server Backend",
-                          hint: "https://o2whero.com",
+                          hint: "https://upsheru.com",
                         ),
                         const SizedBox(height: 12),
                         Row(
@@ -184,8 +184,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             Expanded(
                               child: OutlinedButton(
                                 onPressed: () {
-                                  _urlController.text = "https://o2whero.com";
-                                  auth.updateServerUrl("https://o2whero.com");
+                                  _urlController.text = "https://upsheru.com";
+                                  auth.updateServerUrl("https://upsheru.com");
                                 },
                                 child: const Text("Production", style: TextStyle(fontSize: 11)),
                               ),

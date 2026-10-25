@@ -61,7 +61,19 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { jenis, deskripsi, foto, pelangganId } = body;
 
-    if (!deskripsi || !pelangganId) {
+    let targetPelangganId = pelangganId ? parseInt(pelangganId) : null;
+    if (!targetPelangganId && session.role === "petugas") {
+      const kelurahanId = await getPetugasKelurahan(session.id);
+      const fallbackPelanggan = await prisma.pelanggan.findFirst({
+        where: kelurahanId ? { kelurahanId, deletedAt: null } : { deletedAt: null },
+        select: { id: true },
+      });
+      if (fallbackPelanggan) {
+        targetPelangganId = fallbackPelanggan.id;
+      }
+    }
+
+    if (!deskripsi || !targetPelangganId) {
       return NextResponse.json({ error: "Deskripsi dan pelanggan harus diisi" }, { status: 400 });
     }
 
@@ -75,7 +87,7 @@ export async function POST(request: Request) {
     if (session.role === "petugas" && !PETUGAS_SCOPE_ALL) {
       const kelurahanId = await getPetugasKelurahan(session.id);
       const target = await prisma.pelanggan.findUnique({
-        where: { id: parseInt(pelangganId) },
+        where: { id: targetPelangganId },
         select: { kelurahanId: true },
       });
       if (!kelurahanId || !target || target.kelurahanId !== kelurahanId) {
@@ -92,7 +104,7 @@ export async function POST(request: Request) {
         deskripsi,
         foto,
         status: "baru",
-        pelangganId: parseInt(pelangganId),
+        pelangganId: targetPelangganId,
       },
       include: {
         pelanggan: { select: { id: true, nama: true } },

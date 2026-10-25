@@ -116,6 +116,8 @@ class _RuteDetailScreenState extends State<RuteDetailScreen> {
         builder: (_) => PetaDriverScreen(
           initialRuteId: widget.ruteId,
           initialRuteNama: _rute?.nama,
+          initialTargetPelangganId: jadwal.pelangganId,
+          initialJadwalList: _jadwalList,
         ),
       ),
     );
@@ -277,6 +279,7 @@ class _RuteDetailScreenState extends State<RuteDetailScreen> {
                                             builder: (_) => PetaDriverScreen(
                                               initialRuteId: widget.ruteId,
                                               initialRuteNama: _rute?.nama,
+                                              initialJadwalList: _jadwalList,
                                             ),
                                           ),
                                         );

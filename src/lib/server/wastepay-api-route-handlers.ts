@@ -172,7 +172,7 @@ export async function handleAbsensiPost(request: Request): Promise<NextResponse>
   }
 
   const body = await request.json();
-  const action = body.action; // 'masuk' | 'selesai'
+  const action = body.action || body.tipe; // 'masuk' | 'selesai'
 
   // Menolak payload foto Base64 mentah > 150 KB untuk mencegah pemborosan memori Vercel & Supabase
   const rawPhoto = body.foto || body.fotoBukti || body.fotoMasuk || body.fotoSelesai;

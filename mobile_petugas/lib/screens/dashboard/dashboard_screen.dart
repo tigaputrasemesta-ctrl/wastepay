@@ -6,6 +6,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/absensi_provider.dart';
 import '../../providers/pengangkutan_provider.dart';
 import '../../providers/rute_provider.dart';
+import '../../providers/tracking_provider.dart';
 import '../../providers/update_provider.dart';
 import '../../widgets/update_dialog.dart';
 import '../absensi/absensi_screen.dart';
@@ -28,6 +29,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final auth = context.read<AuthProvider>();
+      if (auth.petugas != null) {
+        context.read<TrackingProvider>().setContextIds(petugasId: auth.petugas!.id);
+      }
       context.read<AbsensiProvider>().loadStatus();
       context.read<PengangkutanProvider>().loadTugas();
       context.read<RuteProvider>().loadRute();

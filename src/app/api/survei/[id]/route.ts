@@ -57,3 +57,39 @@ export async function GET(
 
   return NextResponse.json(pelanggan);
 }
+
+export async function PUT(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const id = parseInt((await params).id);
+    const session = await getSession(request);
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { fotoRumah, patokanLokasi, latitude, longitude, koordinatSumber, status, kategori, customTarif } = body;
+
+    const data: Record<string, unknown> = {};
+    if (fotoRumah !== undefined) data.fotoRumah = fotoRumah;
+    if (patokanLokasi !== undefined) data.patokanLokasi = patokanLokasi;
+    if (latitude !== undefined) data.latitude = latitude ? parseFloat(latitude) : null;
+    if (longitude !== undefined) data.longitude = longitude ? parseFloat(longitude) : null;
+    if (koordinatSumber !== undefined) data.koordinatSumber = koordinatSumber;
+    if (status !== undefined) data.status = status;
+    if (kategori !== undefined) data.kategori = kategori;
+    if (customTarif !== undefined) data.customTarif = customTarif ? parseFloat(customTarif) : null;
+
+    const updated = await prisma.pelanggan.update({
+      where: { id },
+      data,
+    });
+
+    return NextResponse.json(updated);
+  } catch (error) {
+    return NextResponse.json({ error: "Gagal menyimpan hasil survei" }, { status: 500 });
+  }
+}
+

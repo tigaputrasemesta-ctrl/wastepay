@@ -36,7 +36,9 @@ class CalonPelangganModel {
       noTelepon: json['noTelepon']?.toString(),
       alamat: json['alamat']?.toString() ?? '',
       rtRw: json['rtRw']?.toString(),
-      kelurahan: json['kelurahan']?.toString() ?? json['wilayah']?['nama']?.toString(),
+      kelurahan: json['kelurahan'] is Map
+          ? json['kelurahan']['nama']?.toString()
+          : (json['kelurahan']?.toString() ?? json['wilayah']?['nama']?.toString()),
       kategori: json['kategori']?.toString(),
       status: json['status']?.toString() ?? 'calon',
       latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,

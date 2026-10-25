@@ -7,12 +7,20 @@ class SurveiService {
   static Future<List<CalonPelangganModel>> getCalonList({String? kelurahan}) async {
     String url = ApiEndpoints.survei;
     if (kelurahan != null && kelurahan.isNotEmpty) {
-      url += "?kelurahan=${Uri.encodeComponent(kelurahan)}";
+      url += (url.contains('?') ? '&' : '?') + "kelurahan=${Uri.encodeComponent(kelurahan)}";
     }
 
     final res = await ApiClient.get(url);
     if (res is List) {
-      return res.map((item) => CalonPelangganModel.fromJson(item as Map<String, dynamic>)).toList();
+      return res
+          .whereType<Map<String, dynamic>>()
+          .map((item) => CalonPelangganModel.fromJson(item))
+          .toList();
+    } else if (res is Map && res['data'] is List) {
+      return (res['data'] as List)
+          .whereType<Map<String, dynamic>>()
+          .map((item) => CalonPelangganModel.fromJson(item))
+          .toList();
     }
     return [];
   }

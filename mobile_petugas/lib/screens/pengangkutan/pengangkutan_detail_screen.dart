@@ -61,9 +61,9 @@ class _PengangkutanDetailScreenState extends State<PengangkutanDetailScreen> {
     try {
       final img = await _picker.pickImage(
         source: ImageSource.camera,
-        maxWidth: 1024,
-        maxHeight: 1024,
-        imageQuality: 75,
+        maxWidth: 800,
+        maxHeight: 800,
+        imageQuality: 70,
       );
       if (img != null) {
         setState(() => _fotoBukti = img);

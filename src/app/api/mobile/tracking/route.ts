@@ -1,26 +1,35 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 /**
- * Menerima posisi GPS dari service background (native) aplikasi Android.
- * Autentikasi via header `x-tracking-token` (token per petugas), karena service
- * native tidak membawa cookie session webview.
+ * Menerima posisi GPS dari service background (native) aplikasi Android maupun sesi aktif Flutter.
+ * Autentikasi via header `x-tracking-token` (token per petugas) atau sesi login petugas.
  */
 export async function POST(request: Request) {
   try {
+    const session = await getSession(request);
     const token = request.headers.get("x-tracking-token");
-    if (!token) {
-      return NextResponse.json({ error: "Token tidak ada" }, { status: 401 });
+    let targetPetugasId: number | null = null;
+
+    if (token) {
+      const petugas = await prisma.petugas.findUnique({
+        where: { trackingToken: token },
+        select: { id: true, aktif: true },
+      });
+      if (petugas?.aktif) targetPetugasId = petugas.id;
+    } else if (session && session.role === "petugas") {
+      const petugas = await prisma.petugas.findUnique({
+        where: { userId: session.id },
+        select: { id: true, aktif: true },
+      });
+      if (petugas?.aktif) targetPetugasId = petugas.id;
     }
 
-    const petugas = await prisma.petugas.findUnique({
-      where: { trackingToken: token },
-      select: { id: true, aktif: true },
-    });
-    if (!petugas || !petugas.aktif) {
-      return NextResponse.json({ error: "Token tidak valid" }, { status: 401 });
+    if (!targetPetugasId) {
+      return NextResponse.json({ error: "Token atau sesi tidak valid" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -32,17 +41,17 @@ export async function POST(request: Request) {
 
     await prisma.lokasiPetugas.create({
       data: {
-        petugasId: petugas.id,
+        petugasId: targetPetugasId,
         latitude: lat,
         longitude: lng,
-        akurasi: body.akurasi ? parseFloat(body.akurasi) : null,
-        sumber: body.sumber || "background",
+        akurasi: body.akurasi ? parseFloat(body.akurasi) : (body.accuracy ? parseFloat(body.accuracy) : null),
+        sumber: body.sumber || "flutter_native",
       },
     });
 
     // Pruning: sisakan maks 500 titik per petugas.
     const lama = await prisma.lokasiPetugas.findMany({
-      where: { petugasId: petugas.id },
+      where: { petugasId: targetPetugasId },
       select: { id: true },
       orderBy: { createdAt: "desc" },
       skip: 500,

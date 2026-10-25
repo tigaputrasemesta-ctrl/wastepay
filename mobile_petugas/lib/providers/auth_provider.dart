@@ -25,7 +25,12 @@ class AuthProvider with ChangeNotifier {
   Future<void> initSession() async {
     final savedBaseUrl = await TokenStorage.getSavedBaseUrl();
     if (savedBaseUrl != null && savedBaseUrl.isNotEmpty) {
-      ApiEndpoints.setBaseUrl(savedBaseUrl);
+      if (savedBaseUrl.contains("o2whero.com") || savedBaseUrl.contains("o2w.vercel.app")) {
+        ApiEndpoints.setBaseUrl("https://upsheru.com");
+        await TokenStorage.saveBaseUrl("https://upsheru.com");
+      } else {
+        ApiEndpoints.setBaseUrl(savedBaseUrl);
+      }
     }
 
     final token = await TokenStorage.getToken();

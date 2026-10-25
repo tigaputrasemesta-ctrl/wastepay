@@ -6,8 +6,16 @@ class AbsensiService {
   /// Ambil status absensi hari ini
   static Future<AbsensiModel?> getStatusHariIni() async {
     final res = await ApiClient.get(ApiEndpoints.absensi);
-    if (res is Map && res['statusHariIni'] != null) {
-      return AbsensiModel.fromJson(res['statusHariIni'] as Map<String, dynamic>);
+    if (res is Map) {
+      if (res['statusHariIniRecord'] != null && res['statusHariIniRecord'] is Map<String, dynamic>) {
+        return AbsensiModel.fromJson(res['statusHariIniRecord'] as Map<String, dynamic>);
+      }
+      if (res['absensi'] is List && (res['absensi'] as List).isNotEmpty) {
+        final first = (res['absensi'] as List).first;
+        if (first is Map<String, dynamic>) {
+          return AbsensiModel.fromJson(first);
+        }
+      }
     }
     return null;
   }
@@ -23,6 +31,7 @@ class AbsensiService {
     final res = await ApiClient.post(
       ApiEndpoints.absensi,
       body: {
+        'action': tipe, // Backend WastePay expects action: 'masuk' | 'selesai'
         'tipe': tipe,
         'latitude': latitude,
         'longitude': longitude,
@@ -31,10 +40,14 @@ class AbsensiService {
       },
     );
 
-    if (res is Map && res['data'] != null) {
-      return AbsensiModel.fromJson(res['data'] as Map<String, dynamic>);
-    } else if (res is Map && res['id'] != null) {
-      return AbsensiModel.fromJson(res as Map<String, dynamic>);
+    if (res is Map) {
+      if (res['absensi'] != null && res['absensi'] is Map<String, dynamic>) {
+        return AbsensiModel.fromJson(res['absensi'] as Map<String, dynamic>);
+      } else if (res['data'] != null && res['data'] is Map<String, dynamic>) {
+        return AbsensiModel.fromJson(res['data'] as Map<String, dynamic>);
+      } else if (res['id'] != null) {
+        return AbsensiModel.fromJson(res as Map<String, dynamic>);
+      }
     }
 
     throw ApiException("Berhasil absen, gagal membaca status.");
