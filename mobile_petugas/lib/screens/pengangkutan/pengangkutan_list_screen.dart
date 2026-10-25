@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/tugas_model.dart';
@@ -173,10 +174,91 @@ class _PengangkutanListScreenState extends State<PengangkutanListScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text("Tugas Pengangkutan Hari Ini"),
+        title: const Text("Tugas Pengangkutan"),
+        actions: [
+          if (!provider.isToday)
+            TextButton.icon(
+              onPressed: () => provider.setHariIni(),
+              icon: const Icon(Icons.today_rounded, size: 16, color: Colors.white),
+              label: const Text("Hari Ini", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            ),
+          IconButton(
+            icon: const Icon(Icons.refresh_rounded),
+            tooltip: "Muat Ulang",
+            onPressed: () => provider.loadTugas(),
+          ),
+        ],
       ),
       body: Column(
         children: [
+          // Date Selector Bar
+          Container(
+            color: AppColors.primarySurface,
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.chevron_left_rounded, color: AppColors.primaryDark),
+                  tooltip: "Hari Sebelumnya",
+                  onPressed: () => provider.prevDay(),
+                ),
+                Expanded(
+                  child: InkWell(
+                    onTap: () async {
+                      final current = DateTime.tryParse(provider.currentDateISO) ?? DateTime.now();
+                      final picked = await showDatePicker(
+                        context: context,
+                        initialDate: current,
+                        firstDate: DateTime(2025),
+                        lastDate: DateTime(2030),
+                      );
+                      if (picked != null) {
+                        provider.setTanggal(DateFormat('yyyy-MM-dd').format(picked));
+                      }
+                    },
+                    borderRadius: BorderRadius.circular(10),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.calendar_today_rounded, size: 15, color: AppColors.primaryDark),
+                          const SizedBox(width: 6),
+                          Text(
+                            provider.formattedDateTitle,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.primaryDark,
+                            ),
+                          ),
+                          if (provider.isToday) ...[
+                            const SizedBox(width: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryDark,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: const Text(
+                                "Hari Ini",
+                                style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.chevron_right_rounded, color: AppColors.primaryDark),
+                  tooltip: "Hari Berikutnya",
+                  onPressed: () => provider.nextDay(),
+                ),
+              ],
+            ),
+          ),
           // Search & Filter Box
           Container(
             color: Colors.white,
@@ -231,25 +313,49 @@ class _PengangkutanListScreenState extends State<PengangkutanListScreen> {
                   ? const Center(child: CircularProgressIndicator())
                   : list.isEmpty
                       ? ListView(
-                          children: const [
-                            SizedBox(height: 80),
+                          padding: const EdgeInsets.all(24),
+                          children: [
+                            const SizedBox(height: 40),
                             Center(
                               child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.inbox_outlined, size: 48, color: AppColors.textMuted),
-                                  SizedBox(height: 12),
-                                  Text(
+                                  const Icon(Icons.inbox_outlined, size: 54, color: AppColors.textMuted),
+                                  const SizedBox(height: 14),
+                                  const Text(
                                     "Tidak ada tugas pengangkutan",
                                     style: TextStyle(
                                       fontSize: 15,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.textSecondary,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.textPrimary,
                                     ),
                                   ),
-                                  SizedBox(height: 4),
+                                  const SizedBox(height: 6),
                                   Text(
-                                    "Semua tugas pada rute ini sudah selesai atau belum dijadwalkan",
-                                    style: TextStyle(fontSize: 12, color: AppColors.textMuted),
+                                    provider.isToday
+                                        ? "Hari ini (${provider.formattedDateTitle}) belum ada penjemputan terjadwal atau hari standby armada."
+                                        : "Tidak ada jadwal tugas penjemputan untuk tanggal ini.",
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  Wrap(
+                                    spacing: 10,
+                                    runSpacing: 10,
+                                    alignment: WrapAlignment.center,
+                                    children: [
+                                      ElevatedButton.icon(
+                                        onPressed: () => provider.setBesok(),
+                                        icon: const Icon(Icons.arrow_forward_rounded, size: 18),
+                                        label: Text("Lihat Tugas Besok (${provider.besokDayName})"),
+                                      ),
+                                      if (!provider.isToday)
+                                        OutlinedButton.icon(
+                                          onPressed: () => provider.setHariIni(),
+                                          icon: const Icon(Icons.today_rounded, size: 18),
+                                          label: const Text("Kembali ke Hari Ini"),
+                                        ),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -264,6 +370,7 @@ class _PengangkutanListScreenState extends State<PengangkutanListScreen> {
                             final tugas = list[idx];
                             return TaskCard(
                               tugas: tugas,
+                              index: idx,
                               onQuickPickup: () => _handleQuickPickup(tugas),
                               onDetailTap: () => Navigator.push(
                                 context,

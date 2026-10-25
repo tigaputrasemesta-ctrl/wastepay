@@ -1,6 +1,6 @@
 class ApiEndpoints {
-  // URL default produksi. Bisa diubah dari layar login (misal untuk testing dev).
-  static String baseUrl = "https://o2whero.com";
+  // URL default produksi UPS HERU (WastePay)
+  static String baseUrl = "https://upsheru.com";
 
   static void setBaseUrl(String url) {
     // Pastikan tidak ada trailing slash

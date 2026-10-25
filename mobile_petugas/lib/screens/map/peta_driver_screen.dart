@@ -349,8 +349,8 @@ class _PetaDriverScreenState extends State<PetaDriverScreen> {
         : null;
     final isArrived = distanceMeters != null && distanceMeters <= _arrivalThresholdMeters;
 
-    // Siapkan daftar koordinat antrean rute (Polyline Antrean Sisa)
-    final queuePoints = <LatLng>[];
+    // Siapkan daftar koordinat antrean rute (Polyline Antrean Sisa, berawal dari posisi truk)
+    final queuePoints = <LatLng>[driverPos];
     for (final t in pendingTasks) {
       if (t.pelanggan.hasCoordinates) {
         queuePoints.add(LatLng(t.pelanggan.latitude!, t.pelanggan.longitude!));
@@ -414,6 +414,7 @@ class _PetaDriverScreenState extends State<PetaDriverScreen> {
       final isSelesai = t.isSelesai;
       final isMenunggak = t.tunggakan.isMenunggak;
 
+      final seqNum = t.urutan ?? (i + 1);
       Color pinBg;
       String pinIcon;
       if (isSelesai) {
@@ -424,10 +425,10 @@ class _PetaDriverScreenState extends State<PetaDriverScreen> {
         pinIcon = "⛔";
       } else if (isTarget) {
         pinBg = const Color(0xFF00AA13); // Gojek Green
-        pinIcon = "#${i + 1}";
+        pinIcon = "#$seqNum";
       } else {
         pinBg = const Color(0xFF0284C7); // Sky Blue
-        pinIcon = "#${i + 1}";
+        pinIcon = "#$seqNum";
       }
 
       markers.add(
@@ -986,6 +987,87 @@ class _PetaDriverScreenState extends State<PetaDriverScreen> {
                             style: TextStyle(color: Colors.white54, fontSize: 10),
                           ),
                         ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+          if (allTasks.isEmpty)
+            Positioned(
+              left: 14,
+              right: 14,
+              bottom: 24,
+              child: Card(
+                elevation: 12,
+                color: const Color(0xFF0F172A),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  side: const BorderSide(color: Color(0xFF334155)),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF00AA13).withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Text("🚛", style: TextStyle(fontSize: 22)),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "Tidak Ada Rute Aktif Hari Ini",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  provider.isToday
+                                      ? "Hari ini (${provider.formattedDateTitle}) adalah jadwal standby armada."
+                                      : "Tidak ada jadwal tugas pengangkutan pada tanggal ini.",
+                                  style: const TextStyle(color: Colors.white70, fontSize: 11),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                provider.setBesok();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF00AA13),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                              ),
+                              icon: const Icon(Icons.arrow_forward_rounded, size: 18),
+                              label: Text(
+                                "Muat Rute Besok (${provider.besokDayName})",
+                                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

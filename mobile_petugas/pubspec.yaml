@@ -1,7 +1,7 @@
 name: o2w_petugas_lapangan
 description: "Aplikasi Android Flutter Native Petugas Lapangan UPS HERU (O2W WastePay)"
 publish_to: "none"
-version: 2.0.3+23
+version: 2.0.4+24
 
 environment:
   sdk: ">=3.0.0 <4.0.0"

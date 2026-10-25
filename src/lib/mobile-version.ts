@@ -10,16 +10,17 @@
  * unduh nonaktif (hanya info "versi baru tersedia").
  */
 export const MOBILE_VERSION = {
-  versionName: "2.0.3",
-  versionCode: 23,
+  versionName: "2.0.4",
+  versionCode: 24,
   /** Di bawah versi ini APK dianggap terlalu lama → update wajib (blocking). */
   minVersionCode: 15,
   changelog: [
-    "Navigasi Rute Mandiri In-App Driver Cockpit (tanpa perlu keluar ke Google Maps)",
-    "Rute jalan raya presisi OSRM & HUD belokan arah turn-by-turn",
-    "Deteksi kedatangan proximity & 1-tap angkut sampah otomatis loncat ke stop berikutnya",
-    "Monitor kapasitas muatan truk (0-100%) & timer durasi operasional",
-    "Peta Interaktif Live Driver dengan beacon truk real-time",
+    "Urutan rute fisik searah jalur jalan terdekat Nearest Neighbor (#1, #2, dst.)",
+    "Integrasi jadwal 3 armada (Ago, Piat, Raka) mencakup 23 blok lengkap",
+    "Navigasi rute hari standby / hari libur dengan tombol pintas muat tugas besok",
+    "Badge armada mobil dan plat nomor pada daftar rute driver",
+    "Koneksi backend canonical upsheru.com dan autentikasi case-insensitive",
+    "Navigasi Rute Mandiri In-App Driver Cockpit dengan OSRM & proximity arrival",
   ],
 };
 

@@ -17,6 +17,76 @@ class PengangkutanProvider with ChangeNotifier {
   String get searchQuery => _searchQuery;
   String get selectedFilter => _selectedFilter;
   String get currentDateISO => _currentDateISO;
+  bool get isToday => _currentDateISO == DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+  String get besokISO {
+    final d = DateTime.now().add(const Duration(days: 1));
+    return DateFormat('yyyy-MM-dd').format(d);
+  }
+
+  String get besokDayName {
+    final d = DateTime.now().add(const Duration(days: 1));
+    return _getDayName(d.weekday);
+  }
+
+  String get formattedDateTitle {
+    try {
+      final parsed = DateTime.parse(_currentDateISO);
+      final dayName = _getDayName(parsed.weekday);
+      final monthName = _getMonthName(parsed.month);
+      return "$dayName, ${parsed.day} $monthName ${parsed.year}";
+    } catch (_) {
+      return _currentDateISO;
+    }
+  }
+
+  static String _getDayName(int weekday) {
+    switch (weekday) {
+      case DateTime.monday:
+        return 'Senin';
+      case DateTime.tuesday:
+        return 'Selasa';
+      case DateTime.wednesday:
+        return 'Rabu';
+      case DateTime.thursday:
+        return 'Kamis';
+      case DateTime.friday:
+        return 'Jumat';
+      case DateTime.saturday:
+        return 'Sabtu';
+      case DateTime.sunday:
+        return 'Minggu';
+      default:
+        return 'Senin';
+    }
+  }
+
+  static String _getMonthName(int month) {
+    const m = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    return (month >= 1 && month <= 12) ? m[month - 1] : '';
+  }
+
+  void nextDay() {
+    try {
+      final d = DateTime.parse(_currentDateISO).add(const Duration(days: 1));
+      setTanggal(DateFormat('yyyy-MM-dd').format(d));
+    } catch (_) {}
+  }
+
+  void prevDay() {
+    try {
+      final d = DateTime.parse(_currentDateISO).subtract(const Duration(days: 1));
+      setTanggal(DateFormat('yyyy-MM-dd').format(d));
+    } catch (_) {}
+  }
+
+  void setHariIni() {
+    setTanggal(DateFormat('yyyy-MM-dd').format(DateTime.now()));
+  }
+
+  void setBesok() {
+    setTanggal(besokISO);
+  }
 
   // Statistik
   int get totalTugas => _tugasList.length;

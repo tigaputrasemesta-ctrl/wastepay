@@ -73,6 +73,10 @@ class RuteModel {
   final String? zonaNama;
   final int? petugasId;
   final String? petugasNama;
+  final int? kendaraanId;
+  final String? kendaraanNama;
+  final String? kendaraanJenis;
+  final String? platNomor;
   final int totalJadwal;
   final List<JadwalModel> jadwal;
 
@@ -89,6 +93,10 @@ class RuteModel {
     this.zonaNama,
     this.petugasId,
     this.petugasNama,
+    this.kendaraanId,
+    this.kendaraanNama,
+    this.kendaraanJenis,
+    this.platNomor,
     this.totalJadwal = 0,
     this.jadwal = const [],
   });
@@ -99,6 +107,7 @@ class RuteModel {
     final zona = json['zona'] as Map<String, dynamic>?;
     final zonas = json['zonas'] as List?;
     final petugas = json['petugas'] as Map<String, dynamic>?;
+    final kendaraan = json['kendaraan'] as Map<String, dynamic>?;
     final count = json['_count'] as Map<String, dynamic>?;
 
     String? kelurahanNama = kelurahan?['nama']?.toString();
@@ -146,6 +155,10 @@ class RuteModel {
       zonaNama: zonaNama,
       petugasId: petugas != null && petugas['id'] is int ? petugas['id'] : null,
       petugasNama: petugas?['nama']?.toString(),
+      kendaraanId: kendaraan != null && kendaraan['id'] is int ? kendaraan['id'] : null,
+      kendaraanNama: kendaraan?['nama']?.toString(),
+      kendaraanJenis: kendaraan?['jenis']?.toString(),
+      platNomor: kendaraan?['platNomor']?.toString(),
       totalJadwal: count != null && count['jadwal'] is int
           ? count['jadwal']
           : (jadwalList.isNotEmpty ? jadwalList.length : 0),

@@ -78,6 +78,7 @@ class TugasModel {
   final double? berat;
   final String? jenisSampah;
   final String? catatan;
+  final int? urutan;
   final PelangganTugas pelanggan;
   final TunggakanInfo tunggakan;
 
@@ -89,6 +90,7 @@ class TugasModel {
     this.berat,
     this.jenisSampah,
     this.catatan,
+    this.urutan,
     required this.pelanggan,
     required this.tunggakan,
   });
@@ -102,6 +104,7 @@ class TugasModel {
       berat: json['berat'] != null ? double.tryParse(json['berat'].toString()) : null,
       jenisSampah: json['jenisSampah']?.toString(),
       catatan: json['catatan']?.toString(),
+      urutan: json['urutan'] != null ? int.tryParse(json['urutan'].toString()) : null,
       pelanggan: PelangganTugas.fromJson(json['pelanggan'] is Map ? json['pelanggan'] : {}),
       tunggakan: TunggakanInfo.fromJson(json['tunggakan'] is Map ? json['tunggakan'] : null),
     );

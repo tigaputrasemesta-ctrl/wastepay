@@ -250,7 +250,7 @@ class _JadwalRuteScreenState extends State<JadwalRuteScreen> {
                                     const SizedBox(height: 14),
                                     Text(
                                       provider.selectedHari == 'Hari Ini'
-                                          ? "Tidak ada jadwal rute untuk hari $todayName"
+                                          ? "Tidak ada jadwal rute untuk hari $todayName (Standby)"
                                           : "Tidak ada rute ditemukan",
                                       style: const TextStyle(
                                         fontSize: 14,
@@ -261,17 +261,31 @@ class _JadwalRuteScreenState extends State<JadwalRuteScreen> {
                                     const SizedBox(height: 6),
                                     Text(
                                       provider.allRute.isNotEmpty
-                                          ? "Tersedia ${provider.allRute.length} rute di hari lain. Ketuk tombol di bawah untuk melihat."
+                                          ? (todayName == 'Minggu'
+                                              ? "Hari Minggu adalah jadwal libur/standby armada rutin. Rute operasional aktif Senin - Sabtu."
+                                              : "Tersedia ${provider.allRute.length} rute di hari lain. Ketuk tombol di bawah untuk melihat.")
                                           : "Belum ada rute pengangkutan yang terdaftar di sistem.",
                                       textAlign: TextAlign.center,
                                       style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
                                     ),
-                                    if (provider.selectedHari != 'Semua' && provider.allRute.isNotEmpty) ...[
+                                    if (provider.allRute.isNotEmpty) ...[
                                       const SizedBox(height: 14),
-                                      OutlinedButton.icon(
-                                        onPressed: () => provider.setSelectedHari('Semua'),
-                                        icon: const Icon(Icons.visibility_outlined, size: 16),
-                                        label: Text("Lihat Semua Rute (${provider.allRute.length})"),
+                                      Wrap(
+                                        spacing: 10,
+                                        runSpacing: 10,
+                                        alignment: WrapAlignment.center,
+                                        children: [
+                                          ElevatedButton.icon(
+                                            onPressed: () => provider.setSelectedHari('Besok'),
+                                            icon: const Icon(Icons.arrow_forward_rounded, size: 16),
+                                            label: Text("Lihat Rute Besok (${RuteProvider.getNamaBesok()})"),
+                                          ),
+                                          OutlinedButton.icon(
+                                            onPressed: () => provider.setSelectedHari('Semua'),
+                                            icon: const Icon(Icons.visibility_outlined, size: 16),
+                                            label: Text("Semua Rute (${provider.allRute.length})"),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ],
@@ -410,6 +424,47 @@ class _JadwalRuteScreenState extends State<JadwalRuteScreen> {
                                               ],
                                             ],
                                           ),
+
+                                          if (rute.kendaraanNama != null && rute.kendaraanNama!.isNotEmpty) ...[
+                                            const SizedBox(height: 8),
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                              decoration: BoxDecoration(
+                                                color: AppColors.primarySurface,
+                                                borderRadius: BorderRadius.circular(8),
+                                                border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Text(
+                                                    rute.kendaraanJenis == 'dump_truck' ? '🚛' : '🛺',
+                                                    style: const TextStyle(fontSize: 14),
+                                                  ),
+                                                  const SizedBox(width: 6),
+                                                  Text(
+                                                    rute.kendaraanNama!,
+                                                    style: const TextStyle(
+                                                      fontSize: 12,
+                                                      fontWeight: FontWeight.w700,
+                                                      color: AppColors.primaryDark,
+                                                    ),
+                                                  ),
+                                                  if (rute.platNomor != null && rute.platNomor!.isNotEmpty) ...[
+                                                    const SizedBox(width: 6),
+                                                    Text(
+                                                      "• ${rute.platNomor!}",
+                                                      style: const TextStyle(
+                                                        fontSize: 11,
+                                                        fontWeight: FontWeight.w600,
+                                                        color: AppColors.textSecondary,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ],
+                                              ),
+                                            ),
+                                          ],
 
                                           const SizedBox(height: 8),
 

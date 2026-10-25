@@ -7,6 +7,7 @@ import 'status_badge.dart';
 
 class TaskCard extends StatelessWidget {
   final TugasModel tugas;
+  final int? index;
   final VoidCallback onQuickPickup;
   final VoidCallback onDetailTap;
   final void Function(String status, String alasan) onLewatiTap;
@@ -14,6 +15,7 @@ class TaskCard extends StatelessWidget {
   const TaskCard({
     super.key,
     required this.tugas,
+    this.index,
     required this.onQuickPickup,
     required this.onDetailTap,
     required this.onLewatiTap,
@@ -47,13 +49,37 @@ class TaskCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        p.nama,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
-                        ),
+                      Row(
+                        children: [
+                          if (tugas.urutan != null || index != null) ...[
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                              margin: const EdgeInsets.only(right: 8),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF00AA13), // Gojek green
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                "#${tugas.urutan ?? (index! + 1)}",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                            ),
+                          ],
+                          Expanded(
+                            child: Text(
+                              p.nama,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 2),
                       Text(

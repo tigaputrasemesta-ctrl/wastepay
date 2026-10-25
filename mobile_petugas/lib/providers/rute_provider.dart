@@ -11,7 +11,9 @@ class RuteProvider extends ChangeNotifier {
   String _searchQuery = '';
 
   RuteProvider() {
-    _selectedHari = getNamaHariIni();
+    final today = getNamaHariIni();
+    // Jika hari ini Minggu (libur rutin), default tampilkan "Semua" agar rute langsung terlihat
+    _selectedHari = today == 'Minggu' ? 'Semua' : 'Hari Ini';
   }
 
   List<RuteModel> get allRute => _allRute;
@@ -19,9 +21,12 @@ class RuteProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   String get selectedHari => _selectedHari;
   String get searchQuery => _searchQuery;
+  bool get isHariIniMinggu => getNamaHariIni() == 'Minggu';
 
   static const List<String> daftarHari = [
     'Hari Ini',
+    'Besok',
+    'Semua',
     'Senin',
     'Selasa',
     'Rabu',
@@ -29,12 +34,33 @@ class RuteProvider extends ChangeNotifier {
     'Jumat',
     'Sabtu',
     'Minggu',
-    'Semua',
   ];
 
   static String getNamaHariIni() {
     final now = DateTime.now();
     switch (now.weekday) {
+      case DateTime.monday:
+        return 'Senin';
+      case DateTime.tuesday:
+        return 'Selasa';
+      case DateTime.wednesday:
+        return 'Rabu';
+      case DateTime.thursday:
+        return 'Kamis';
+      case DateTime.friday:
+        return 'Jumat';
+      case DateTime.saturday:
+        return 'Sabtu';
+      case DateTime.sunday:
+        return 'Minggu';
+      default:
+        return 'Senin';
+    }
+  }
+
+  static String getNamaBesok() {
+    final tomorrow = DateTime.now().add(const Duration(days: 1));
+    switch (tomorrow.weekday) {
       case DateTime.monday:
         return 'Senin';
       case DateTime.tuesday:
@@ -65,7 +91,11 @@ class RuteProvider extends ChangeNotifier {
   }
 
   List<RuteModel> get filteredRute {
-    final targetHari = _selectedHari == 'Hari Ini' ? getNamaHariIni() : _selectedHari;
+    final targetHari = _selectedHari == 'Hari Ini'
+        ? getNamaHariIni()
+        : _selectedHari == 'Besok'
+            ? getNamaBesok()
+            : _selectedHari;
 
     return _allRute.where((r) {
       // 1. Filter Hari
