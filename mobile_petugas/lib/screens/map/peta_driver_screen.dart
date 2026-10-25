@@ -335,12 +335,12 @@ class _PetaDriverScreenState extends State<PetaDriverScreen> {
           id: j.id,
           tanggal: DateTime.now().toIso8601String().substring(0, 10),
           status: 'terjadwal',
-          urutan: j.urutan,
+          urutan: null,
           pelanggan: PelangganTugas(
             id: j.pelangganId,
             nama: j.pelangganNama,
-            kodePelanggan: j.pelangganKode,
-            alamat: j.alamat,
+            kodePelanggan: '${j.pelangganId}',
+            alamat: j.pelangganAlamat,
             latitude: j.latitude,
             longitude: j.longitude,
           ),
@@ -348,6 +348,7 @@ class _PetaDriverScreenState extends State<PetaDriverScreen> {
             isMenunggak: false,
             jumlahBulan: 0,
             totalNominal: 0,
+            bolehPickup: true,
           ),
         );
       }).toList();
@@ -1062,8 +1063,8 @@ class _PetaDriverScreenState extends State<PetaDriverScreen> {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  provider.isToday
-                                      ? "Hari ini (${provider.formattedDateTitle}) adalah jadwal standby armada."
+                                  pengangkutan.isToday
+                                      ? "Hari ini (${pengangkutan.formattedDateTitle}) adalah jadwal standby armada."
                                       : "Tidak ada jadwal tugas pengangkutan pada tanggal ini.",
                                   style: const TextStyle(color: Colors.white70, fontSize: 11),
                                 ),
@@ -1078,7 +1079,7 @@ class _PetaDriverScreenState extends State<PetaDriverScreen> {
                           Expanded(
                             child: ElevatedButton.icon(
                               onPressed: () {
-                                provider.setBesok();
+                                pengangkutan.setBesok();
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF00AA13),
@@ -1088,7 +1089,7 @@ class _PetaDriverScreenState extends State<PetaDriverScreen> {
                               ),
                               icon: const Icon(Icons.arrow_forward_rounded, size: 18),
                               label: Text(
-                                "Muat Rute Besok (${provider.besokDayName})",
+                                "Muat Rute Besok (${pengangkutan.besokDayName})",
                                 style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
                               ),
                             ),
