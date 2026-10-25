@@ -77,6 +77,13 @@ type JadwalPelanggan = {
     nama: string;
     hari: string;
     jam?: string;
+    kendaraanId?: number | null;
+    kendaraan?: {
+      id: number;
+      nama: string;
+      platNomor?: string | null;
+      jenis?: string;
+    } | null;
     kelurahan?: { nama: string } | null;
     zona?: { nama: string } | null;
   };
@@ -149,6 +156,7 @@ function RuteContent() {
   const [showJadwalForm, setShowJadwalForm] = useState(false);
   const [filterHari, setFilterHari] = useState("");
   const [filterRute, setFilterRute] = useState("");
+  const [filterArmada, setFilterArmada] = useState("");
   const [jadwalForm, setJadwalForm] = useState({
     hari: "Senin",
     selectedHariList: ["Senin"] as string[],
@@ -284,6 +292,7 @@ function RuteContent() {
       const params = new URLSearchParams();
       if (filterHari) params.set("hari", filterHari);
       if (filterRute) params.set("ruteId", filterRute);
+      if (filterArmada) params.set("kendaraanId", filterArmada);
 
       const [jadwalRes, pelangganRes] = await Promise.all([
         fetch(`/api/jadwal?${params}`),
@@ -296,7 +305,7 @@ function RuteContent() {
     } finally {
       setLoadingJadwal(false);
     }
-  }, [filterHari, filterRute, showToast]);
+  }, [filterHari, filterRute, filterArmada, showToast]);
 
   useEffect(() => {
     fetchRuteData();
@@ -1091,8 +1100,20 @@ function RuteContent() {
       {/* ========================================================================= */}
       {activeTab === "jadwal" && (
         <>
-          {/* Filters */}
-          <div className="flex gap-3 mb-4 flex-wrap">
+          {/* Filters & Fleet Picker */}
+          <div className="flex gap-3 mb-4 flex-wrap items-center">
+            <select
+              value={filterArmada}
+              onChange={(e) => setFilterArmada(e.target.value)}
+              className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 shadow-xs"
+            >
+              <option value="">Semua Armada / Mobil</option>
+              {kendaraanList.map((k) => (
+                <option key={k.id} value={k.id}>
+                  {k.jenis === "dump_truck" ? "🚛" : "🛺"} {k.nama} {k.platNomor ? `(${k.platNomor})` : ""}
+                </option>
+              ))}
+            </select>
             <select
               value={filterHari}
               onChange={(e) => setFilterHari(e.target.value)}
@@ -1113,6 +1134,43 @@ function RuteContent() {
                 <option key={r.id} value={r.id}>{r.nama}</option>
               ))}
             </select>
+            {filterArmada && (
+              <button
+                onClick={() => setFilterArmada("")}
+                className="text-xs text-rose-600 hover:text-rose-700 font-semibold inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-rose-200 bg-rose-50"
+              >
+                ✕ Reset Armada
+              </button>
+            )}
+          </div>
+
+          {/* Quick Armada Tabs */}
+          <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
+            <button
+              onClick={() => setFilterArmada("")}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 border ${
+                filterArmada === ""
+                  ? "bg-slate-900 text-white border-slate-900 shadow-xs"
+                  : "bg-white text-slate-600 hover:bg-slate-50 border-slate-200"
+              }`}
+            >
+              Semua Armada
+            </button>
+            {kendaraanList.map((k) => (
+              <button
+                key={k.id}
+                onClick={() => setFilterArmada(filterArmada === k.id.toString() ? "" : k.id.toString())}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 border flex items-center gap-1.5 ${
+                  filterArmada === k.id.toString()
+                    ? "bg-emerald-700 text-white border-emerald-700 shadow-xs"
+                    : "bg-white text-slate-700 hover:bg-emerald-50/50 border-slate-200"
+                }`}
+              >
+                <span>{k.jenis === "dump_truck" ? "🚛" : "🛺"}</span>
+                <span>{k.nama}</span>
+                {k.platNomor && <span className="opacity-75 text-[10px]">({k.platNomor})</span>}
+              </button>
+            ))}
           </div>
 
           {/* Table */}
@@ -1123,6 +1181,7 @@ function RuteContent() {
                   <tr className="bg-slate-50/80 text-slate-600 font-semibold text-xs border-b border-slate-200 uppercase tracking-wider">
                     <th className="text-left px-4 py-3.5">Hari</th>
                     <th className="text-left px-4 py-3.5">Pelanggan</th>
+                    <th className="text-left px-4 py-3.5">Armada</th>
                     <th className="text-left px-4 py-3.5">Rute</th>
                     <th className="text-left px-4 py-3.5">Jam</th>
                     <th className="text-center px-4 py-3.5">Pengangkutan</th>
@@ -1132,9 +1191,9 @@ function RuteContent() {
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {loadingJadwal ? (
-                    <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-600 font-medium text-xs">Memuat jadwal pelanggan...</td></tr>
+                    <tr><td colSpan={8} className="px-4 py-8 text-center text-slate-600 font-medium text-xs">Memuat jadwal pelanggan...</td></tr>
                   ) : jadwal.length === 0 ? (
-                    <tr><td colSpan={7} className="px-4 py-8 text-center text-slate-600 font-medium text-xs">Belum ada jadwal pelanggan</td></tr>
+                    <tr><td colSpan={8} className="px-4 py-8 text-center text-slate-600 font-medium text-xs">Belum ada jadwal pelanggan</td></tr>
                   ) : (
                     jadwal.map((j) => (
                       <tr key={j.id} className="hover:bg-slate-50/80 transition-colors text-xs">
@@ -1178,6 +1237,19 @@ function RuteContent() {
                               )}
                             </div>
                           </div>
+                        </td>
+                        <td className="px-4 py-3 text-slate-700 font-medium">
+                          {j.rute.kendaraan ? (
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-bold bg-amber-50 text-amber-900 border border-amber-200/80 shadow-xs">
+                              <span>{j.rute.kendaraan.jenis === "dump_truck" ? "🚛" : "🛺"}</span>
+                              <span>{j.rute.kendaraan.nama}</span>
+                              {j.rute.kendaraan.platNomor && (
+                                <span className="text-[10px] text-amber-700 font-normal">({j.rute.kendaraan.platNomor})</span>
+                              )}
+                            </span>
+                          ) : (
+                            <span className="text-[11px] text-slate-400 font-medium italic">Belum diset</span>
+                          )}
                         </td>
                         <td className="px-4 py-3 text-slate-700 font-medium">
                           {j.rute.nama}

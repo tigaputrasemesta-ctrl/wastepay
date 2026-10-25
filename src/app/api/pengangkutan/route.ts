@@ -6,11 +6,12 @@ import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 import { namaHari } from "@/lib/utils";
 import { sinkronkanPelangganRute } from "@/lib/rute-sync";
 import { ensureArmadaRuteSchema } from "@/lib/db-patch";
+import { urutkanItemRute } from "@/lib/geo";
 
 /**
- * Materialisasi tugas "terjadwal" dari Jadwal harian milik rute armada / petugas.
+ * Materialisasi tugas "terjadwal" dari Jadwal harian milik rute armada / mobil.
  *
- * Logika penjemputan berbasis rute & armada:
+ * Logika penjemputan berbasis armada & rute:
  * Mengambil pelanggan aktif yang memiliki jadwal pada hari layanan ini,
  * lalu mendaftarkannya ke tugas pengangkutan hari ini secara idempotent & batch.
  */
@@ -24,7 +25,15 @@ async function materializeTugasTerjadwal(opts: {
   const start = new Date(tanggal.getFullYear(), tanggal.getMonth(), tanggal.getDate());
   const end = new Date(tanggal.getFullYear(), tanggal.getMonth(), tanggal.getDate() + 1);
 
-  // Jika kendaraanId diberikan, cari petugasId pengemudinya jika ada
+  // Kunci Utama: ARMADA / KENDARAAN (Akun Mobil)
+  const ruteWhere: Prisma.RuteWhereInput = { aktif: true };
+  if (kendaraanId) {
+    ruteWhere.kendaraanId = kendaraanId;
+  } else if (petugasId) {
+    ruteWhere.petugasId = petugasId;
+  }
+
+  // Jika kendaraanId diberikan, cari petugasId pengemudinya jika ada (sebagai penanggungjawab default)
   let effectivePetugasId = petugasId;
   if (kendaraanId && !effectivePetugasId) {
     try {
@@ -36,11 +45,6 @@ async function materializeTugasTerjadwal(opts: {
     } catch {
       // fallback
     }
-  }
-
-  const ruteWhere: Prisma.RuteWhereInput = { aktif: true };
-  if (effectivePetugasId) {
-    ruteWhere.petugasId = effectivePetugasId;
   }
 
   let jadwal = await prisma.jadwal.findMany({
@@ -60,6 +64,7 @@ async function materializeTugasTerjadwal(opts: {
           zonaId: true, 
           zonas: { select: { id: true } },
           petugasId: true,
+          kendaraanId: true,
         } 
       } 
     },
@@ -154,7 +159,7 @@ async function materializeTugasTerjadwal(opts: {
       targetZonaId = j.rute.zonaId;
     }
 
-    const targetKendaraanId = kendaraanId || null;
+    const targetKendaraanId = kendaraanId || j.rute.kendaraanId || null;
     const targetPetugasId = effectivePetugasId || j.rute.petugasId || null;
 
     toCreate.push({
@@ -247,10 +252,8 @@ export async function GET(request: Request) {
         const armadaIds = armadaList.map((a) => a.id);
 
         if (armadaIds.length > 0) {
-          where.OR = [
-            { petugasId: profil.id },
-            { kendaraanId: { in: armadaIds } },
-          ];
+          // Prioritaskan akun Armada/Mobil: ambil tugas milik armada yang ditugaskan
+          where.kendaraanId = { in: armadaIds };
           for (const aId of armadaIds) {
             try {
               await materializeTugasTerjadwal({ kendaraanId: aId, petugasId: profil.id, tanggal: tanggalTugas });
@@ -312,8 +315,20 @@ export async function GET(request: Request) {
       orderBy: [{ tanggal: "desc" }, { pelanggan: { nama: "asc" } }],
     });
 
+    // Optimalkan urutan rute penjemputan fisik lapangan (Nearest Neighbor TSP per zona)
+    // agar supir tidak loncat-loncat dan urutan jalan konsisten searah jalur fisik
+    type PengangkutanItem = (typeof pengangkutan)[number];
+    const terurut = urutkanItemRute<PengangkutanItem>(
+      pengangkutan,
+      (p: PengangkutanItem) =>
+        p.pelanggan.latitude && p.pelanggan.longitude
+          ? [p.pelanggan.latitude, p.pelanggan.longitude]
+          : null,
+      (p: PengangkutanItem) => p.zonaId
+    );
+
     const now = new Date();
-    const hasil = pengangkutan.map((p) => {
+    const hasil = terurut.map((p: PengangkutanItem, idx: number) => {
       const unpaid = p.pelanggan.tagihan || [];
       const tunggakanList = unpaid.filter(
         (t) => t.status === "tunggakan" || new Date(t.jatuhTempo) < now
@@ -327,6 +342,7 @@ export async function GET(request: Request) {
 
       return {
         ...p,
+        urutan: idx + 1,
         tunggakan: {
           isMenunggak,
           jumlahBulan: tunggakanList.length,

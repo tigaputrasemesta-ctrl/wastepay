@@ -572,7 +572,7 @@ export default function MapAngkut({
             <Marker
               key={`tugas-${t.id}`}
               position={[t.latitude, t.longitude]}
-              icon={buatPinTugas(t, idx + 1, selectedTask?.id === t.id)}
+              icon={buatPinTugas(t, t.urutan ?? (idx + 1), selectedTask?.id === t.id)}
               eventHandlers={{
                 click: () => handlePinClick(t),
               }}

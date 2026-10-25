@@ -1,4 +1,5 @@
 import { prisma } from "./prisma";
+import { urutkanItemRute } from "./geo";
 
 /**
  * Modul surat jalan / manifest pengangkutan — server-only (import prisma).
@@ -22,7 +23,7 @@ export async function getManifestPengangkutan(opts: {
     opts.tanggal.getDate() + 1
   );
 
-  return prisma.pengangkutan.findMany({
+  const rawTasks = await prisma.pengangkutan.findMany({
     where: {
       deletedAt: null,
       tanggal: { gte: start, lt: end },
@@ -37,10 +38,13 @@ export async function getManifestPengangkutan(opts: {
           kodePelanggan: true,
           patokanLokasi: true,
           noTelepon: true,
+          latitude: true,
+          longitude: true,
         },
       },
       petugas: { select: { nama: true } },
       kendaraan: { select: { nama: true, platNomor: true, jenis: true } },
+      zona: { select: { id: true, nama: true } },
     },
     orderBy: [
       { kendaraanId: "asc" },
@@ -48,6 +52,17 @@ export async function getManifestPengangkutan(opts: {
       { pelanggan: { nama: "asc" } },
     ],
   });
+
+  // Urutkan manifest secara logis spasial (Nearest Neighbor TSP) searah jalur jalan fisik
+  type ManifestTask = (typeof rawTasks)[number];
+  return urutkanItemRute<ManifestTask>(
+    rawTasks,
+    (t: ManifestTask) =>
+      t.pelanggan.latitude && t.pelanggan.longitude
+        ? [t.pelanggan.latitude, t.pelanggan.longitude]
+        : null,
+    (t: ManifestTask) => t.zonaId
+  );
 }
 
 /** Info armada kendaraan + driver + rute aktif pada hari tertentu (untuk kepala surat jalan berbasis armada). */

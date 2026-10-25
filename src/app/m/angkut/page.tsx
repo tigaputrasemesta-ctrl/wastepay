@@ -22,6 +22,7 @@ type Tugas = {
   berat?: number;
   jenisSampah?: string;
   catatan?: string;
+  urutan?: number;
   pelanggan: {
     id: number;
     nama: string;
@@ -680,8 +681,9 @@ export default function MobileAngkut() {
           <GojekDriverCockpit
             tugas={data
               .filter((t) => t.pelanggan.latitude && t.pelanggan.longitude)
-              .map((t) => ({
+              .map((t, idx) => ({
                 id: t.id,
+                urutan: t.urutan ?? idx + 1,
                 nama: t.pelanggan.nama,
                 alamat: t.pelanggan.alamat,
                 kodePelanggan: t.pelanggan.kodePelanggan,
@@ -762,7 +764,7 @@ export default function MobileAngkut() {
 
                     {/* Quick Action Buttons */}
                     <div className="flex items-center gap-2 pt-0.5">
-                      {tanggal !== todayLocalISO() && (
+                      {tanggal !== todayLocalISO() ? (
                         <button
                           type="button"
                           onClick={() => setTanggal(todayLocalISO())}
@@ -770,11 +772,24 @@ export default function MobileAngkut() {
                         >
                           <span>📅 Hari Ini</span>
                         </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const d = new Date();
+                            d.setDate(d.getDate() + 1);
+                            const nextISO = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+                            setTanggal(nextISO);
+                          }}
+                          className="flex-1 py-1.5 px-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-[11px] font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-1"
+                        >
+                          <span>🚚 Lihat Rute Besok (Senin)</span>
+                        </button>
                       )}
                       <button
                         type="button"
                         onClick={() => setHideEmptyScheduleAlert(true)}
-                        className="flex-1 py-1.5 px-2.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-[11px] font-bold rounded-xl border border-slate-700 transition-all flex items-center justify-center gap-1"
+                        className="py-1.5 px-2.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-[11px] font-bold rounded-xl border border-slate-700 transition-all flex items-center justify-center gap-1"
                       >
                         <span>Tutup ✕</span>
                       </button>
@@ -906,6 +921,11 @@ export default function MobileAngkut() {
               <div className="flex items-start justify-between gap-2.5">
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
+                    {t.urutan && (
+                      <span className="w-5 h-5 rounded-full bg-emerald-700 text-white text-[10px] font-black flex items-center justify-center shrink-0 shadow-xs">
+                        #{t.urutan}
+                      </span>
+                    )}
                     <span className="font-extrabold text-sm text-slate-900 truncate">
                       {t.pelanggan.nama}
                     </span>

@@ -149,7 +149,12 @@ export async function login(
   email: string,
   password: string
 ): Promise<{ user: SessionUser; token: string } | { error: string }> {
-  const user = await prisma.user.findUnique({ where: { email } });
+  const cleanEmail = email.trim();
+  const user = await prisma.user.findFirst({
+    where: {
+      email: { equals: cleanEmail, mode: "insensitive" },
+    },
+  });
   if (!user) return { error: "Email tidak ditemukan" };
 
   const valid = await verifyPassword(password, user.password);

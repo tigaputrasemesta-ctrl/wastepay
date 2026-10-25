@@ -5,11 +5,13 @@
 
 export function getSiteUrl(): string {
   const envUrl = process.env.NEXT_PUBLIC_APP_URL?.trim() || process.env.APP_URL?.trim();
-  if (process.env.NODE_ENV === "development" && envUrl?.includes("localhost")) {
-    return envUrl.replace(/\/+$/, "");
-  }
-  if (envUrl && !envUrl.includes("vercel.app") && !envUrl.includes("localhost")) {
-    return envUrl.replace(/\/+$/, "");
+  if (envUrl && /^https?:\/\//i.test(envUrl)) {
+    if (process.env.NODE_ENV === "development" && envUrl.includes("localhost")) {
+      return envUrl.replace(/\/+$/, "");
+    }
+    if (!envUrl.includes("vercel.app") && !envUrl.includes("localhost")) {
+      return envUrl.replace(/\/+$/, "");
+    }
   }
   return "https://upsheru.com";
 }

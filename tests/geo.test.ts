@@ -6,6 +6,7 @@ import {
   jarakMeter,
   panjangRute,
   titikDalamPoligon,
+  urutkanItemRute,
   urutkanRute,
 } from "../src/lib/geo";
 import { KECAMATAN_DEPOK } from "../src/lib/kecamatan-depok";
@@ -105,5 +106,30 @@ describe("geo: urutan & panjang rute", () => {
   it("formatJarak", () => {
     expect(formatJarak(500)).toBe("500 m");
     expect(formatJarak(1500)).toBe("1.5 km");
+  });
+
+  it("urutkanItemRute mengurutkan objek pelanggan secara spasial tetangga terdekat", () => {
+    const list = [
+      { id: 1, nama: "Rumah A (Jauh)", lat: -6.42, lng: 106.82, zonaId: 10 },
+      { id: 2, nama: "Rumah B (Dekat)", lat: -6.401, lng: 106.801, zonaId: 10 },
+      { id: 3, nama: "Rumah C (Tanpa GPS)", lat: null, lng: null, zonaId: 10 },
+      { id: 4, nama: "Rumah D (Sedang)", lat: -6.41, lng: 106.81, zonaId: 10 },
+    ];
+
+    const sorted = urutkanItemRute(
+      list,
+      (item) => (item.lat && item.lng ? [item.lat, item.lng] : null),
+      (item) => item.zonaId,
+      [-6.4, 106.8] // Titik awal mobil / depot
+    );
+
+    // Rumah B (-6.401) paling dekat dengan start (-6.4)
+    expect(sorted[0].id).toBe(2);
+    // Rumah D (-6.41) terdekat berikutnya
+    expect(sorted[1].id).toBe(4);
+    // Rumah A (-6.42) terdekat berikutnya
+    expect(sorted[2].id).toBe(1);
+    // Rumah C (tanpa GPS) ditaruh di akhir antrean
+    expect(sorted[3].id).toBe(3);
   });
 });

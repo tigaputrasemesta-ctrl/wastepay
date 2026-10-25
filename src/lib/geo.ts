@@ -120,6 +120,86 @@ export function panjangRute(points: Titik[]): number {
   return total;
 }
 
+/**
+ * Urutkan item pengangkutan / pelanggan secara spasial (Nearest Neighbor TSP).
+ * Mengelompokkan per zona rute (jika ada) dan mengurutkan titik koordinat
+ * secara berurutan agar alur mengemudi searah jalur tanpa bolak-balik.
+ */
+export function urutkanItemRute<T>(
+  items: T[],
+  getCoords: (item: T) => [number, number] | null | undefined,
+  getZonaId?: (item: T) => number | null | undefined,
+  startPoint?: [number, number]
+): T[] {
+  if (items.length <= 1) return [...items];
+
+  // Pisahkan yang punya koordinat valid dan yang tidak
+  const withCoords: { item: T; coords: Titik; zonaId?: number | null }[] = [];
+  const withoutCoords: T[] = [];
+
+  for (const item of items) {
+    const coords = getCoords(item);
+    if (
+      coords &&
+      typeof coords[0] === "number" &&
+      typeof coords[1] === "number" &&
+      !isNaN(coords[0]) &&
+      !isNaN(coords[1]) &&
+      coords[0] !== 0 &&
+      coords[1] !== 0
+    ) {
+      const zonaId = getZonaId ? getZonaId(item) : null;
+      withCoords.push({ item, coords: [coords[0], coords[1]], zonaId });
+    } else {
+      withoutCoords.push(item);
+    }
+  }
+
+  if (withCoords.length === 0) return [...items];
+
+  // Kumpulkan kelompok per zona (menjaga urutan blok yang muncul)
+  const zonaOrder: (number | null)[] = [];
+  const byZona = new Map<number | null, typeof withCoords>();
+
+  for (const entry of withCoords) {
+    const z = entry.zonaId ?? null;
+    if (!byZona.has(z)) {
+      byZona.set(z, []);
+      zonaOrder.push(z);
+    }
+    byZona.get(z)!.push(entry);
+  }
+
+  const result: T[] = [];
+  let currentRefPoint: Titik = startPoint || withCoords[0].coords;
+
+  for (const z of zonaOrder) {
+    const cluster = byZona.get(z)!;
+    const remaining = [...cluster];
+
+    while (remaining.length > 0) {
+      let nearestIdx = 0;
+      let minDistance = Infinity;
+
+      for (let i = 0; i < remaining.length; i++) {
+        const d = jarakMeter(currentRefPoint, remaining[i].coords);
+        if (d < minDistance) {
+          minDistance = d;
+          nearestIdx = i;
+        }
+      }
+
+      const next = remaining.splice(nearestIdx, 1)[0];
+      result.push(next.item);
+      currentRefPoint = next.coords;
+    }
+  }
+
+  // Masukkan item tanpa koordinat di baris terakhir
+  result.push(...withoutCoords);
+  return result;
+}
+
 export function formatJarak(m: number): string {
   if (m >= 1000) return `${(m / 1000).toFixed(1)} km`;
   return `${Math.round(m)} m`;

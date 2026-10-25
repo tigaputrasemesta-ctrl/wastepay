@@ -42,6 +42,7 @@ export type GojekTugas = {
   latitude: number;
   longitude: number;
   status: string;
+  urutan?: number;
   patokanLokasi?: string | null;
   noTelepon?: string | null;
   fotoRumah?: string | null;
@@ -142,7 +143,7 @@ function buatPinRumah(t: GojekTugas, index: number, isTarget: boolean) {
   let bgColor = "#00880C"; // Gojek Forest Green
   let border = "border: 2.5px solid #ffffff;";
   let pulseHtml = "";
-  let icon = `#${index + 1}`;
+  let icon = typeof t.urutan === "number" ? `#${t.urutan}` : `#${index + 1}`;
 
   if (isMenunggak && t.status === "terjadwal") {
     bgColor = "#DC2626"; // Red
@@ -1346,7 +1347,7 @@ export default function GojekDriverCockpit({
                                   : "bg-emerald-700 text-white shadow-[0_0_10px_rgba(4,120,87,0.3)]"
                               }`}
                             >
-                              {i + 1}
+                              {t.urutan ?? (i + 1)}
                             </span>
                             <div className="min-w-0">
                               <p className="text-xs font-bold text-white truncate">

@@ -7,11 +7,18 @@ export async function GET(request: Request) {
   const ruteId = searchParams.get("ruteId");
   const pelangganId = searchParams.get("pelangganId");
   const hari = searchParams.get("hari");
+  const kendaraanId = searchParams.get("kendaraanId");
 
   const where: Record<string, unknown> = {};
   if (ruteId) where.ruteId = parseInt(ruteId);
   if (pelangganId) where.pelangganId = parseInt(pelangganId);
   if (hari) where.hari = hari;
+  if (kendaraanId) {
+    where.rute = {
+      ...(typeof where.rute === "object" && where.rute !== null ? (where.rute as Record<string, unknown>) : {}),
+      kendaraanId: parseInt(kendaraanId),
+    };
+  }
 
   const jadwal = await prisma.jadwal.findMany({
     where,
@@ -23,6 +30,15 @@ export async function GET(request: Request) {
           nama: true,
           hari: true,
           jam: true,
+          kendaraanId: true,
+          kendaraan: {
+            select: {
+              id: true,
+              nama: true,
+              platNomor: true,
+              jenis: true,
+            },
+          },
           kelurahan: { select: { id: true, nama: true } },
           zona: { select: { id: true, nama: true } },
           zonas: { select: { id: true, nama: true } },

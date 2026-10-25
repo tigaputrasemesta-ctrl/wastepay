@@ -155,7 +155,7 @@ export default async function SuratJalanPage({
             <table className="sj-table">
               <thead>
                 <tr>
-                  <th className="col-no">No</th>
+                  <th className="col-no">No. Urut (Rute)</th>
                   <th className="col-kode">Kode</th>
                   <th className="col-nama">Nama Pelanggan</th>
                   <th className="col-alamat">Alamat / Patokan</th>
