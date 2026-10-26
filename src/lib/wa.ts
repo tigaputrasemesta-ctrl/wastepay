@@ -15,6 +15,7 @@ import { prisma } from "./prisma";
 import {
   formatRupiahSkylite,
   formatTanggalIndo,
+  formatTanggalWaktuIndo,
   BULAN_INDO,
   hitungRincian,
   companyInfo,
@@ -56,6 +57,31 @@ export function getInternalReportPhones(): string[] {
     // Default: Nomor Owner & Superadmin selalu terdaftar
     "081532843224",
     "085716251003",
+  ].filter(Boolean) as string[];
+
+  const cleaned = new Set<string>();
+  for (const src of sources) {
+    const parts = src.split(/[,;\s]+/);
+    for (const part of parts) {
+      const num = part.replace(/[^\d]/g, "").replace(/^62/, "0");
+      if (num.length >= 9) {
+        cleaned.add(num);
+      }
+    }
+  }
+  return Array.from(cleaned);
+}
+
+/**
+ * Mendapatkan daftar nomor WhatsApp untuk penerima laporan pengaduan masuk
+ * (Owner, Superadmin, dan Petugas Lapangan Pengaduan: 0895-3850-58054).
+ */
+export function getPengaduanReportPhones(): string[] {
+  const sources = [
+    process.env.REPORT_PENGADUAN_PHONES?.trim(),
+    process.env.PETUGAS_PENGADUAN_PHONE?.trim(),
+    ...getInternalReportPhones(),
+    "0895385058054",
   ].filter(Boolean) as string[];
 
   const cleaned = new Set<string>();
@@ -490,6 +516,69 @@ export async function templatePendaftaranAdmin(p: PendaftaranAdmin): Promise<{ j
   return { judul: `Pendaftaran Baru: ${p.nama}`, pesan: baris.join("\n") };
 }
 
+export type LaporanPengaduan = {
+  idKomplain?: number;
+  namaPelanggan: string;
+  kodePelanggan: string;
+  noTelepon: string;
+  alamat: string;
+  patokanLokasi?: string | null;
+  googleMapsUrl?: string | null;
+  zonaAngkut?: string | null;
+  statusTagihan?: string | null;
+  jenisPengaduan?: string | null;
+  deskripsi: string;
+  waktu: Date | string;
+};
+
+export async function templatePengaduanAdmin(
+  p: LaporanPengaduan
+): Promise<{ judul: string; pesan: string }> {
+  const waktuStr = formatTanggalWaktuIndo(p.waktu) + " WIB";
+
+  const baris = [
+    `📢 *PENGADUAN BARU — ${NAMA().toUpperCase()}*`,
+    ``,
+    `👤 *Nama*: ${p.namaPelanggan}`,
+    `🆔 *Kode*: ${p.kodePelanggan}`,
+    `📱 *WhatsApp*: ${p.noTelepon}`,
+    `📍 *Alamat*: ${p.alamat}`,
+  ];
+
+  if (p.patokanLokasi) {
+    baris.push(`🧭 *Patokan*: ${p.patokanLokasi}`);
+  }
+  if (p.zonaAngkut) {
+    baris.push(`🚛 *Zona Angkut*: ${p.zonaAngkut}`);
+  }
+  if (p.googleMapsUrl) {
+    baris.push(`🗺️ *Titik Maps*: ${p.googleMapsUrl}`);
+  }
+  if (p.statusTagihan) {
+    baris.push(`💳 *Status Tagihan*: ${p.statusTagihan}`);
+  }
+  if (p.jenisPengaduan) {
+    baris.push(`⚠️ *Jenis*: ${p.jenisPengaduan}`);
+  }
+
+  baris.push(
+    `🗓️ *Waktu Lapor*: ${waktuStr}`,
+    ``,
+    `📝 *Isi Keluhan*:`,
+    `"${p.deskripsi}"`,
+    ``,
+    `📋 *Tindak Lanjuti di Dashboard*:`,
+    `👉 ${appBaseUrl()}/pengaduan`,
+    ``,
+    `— Sistem Operasional ${NAMA()}`
+  );
+
+  return {
+    judul: `Pengaduan: ${p.namaPelanggan} (${p.kodePelanggan})`,
+    pesan: baris.join("\n"),
+  };
+}
+
 /* ------------------------------------------------------------------ */
 /* Kirim + record                                                      */
 /* ------------------------------------------------------------------ */
@@ -589,6 +678,33 @@ export async function kirimReportOwner(params: {
       });
     } catch (err) {
       console.error(`[WA Report Owner] Gagal kirim ke ${noHp}:`, err);
+    }
+  }
+}
+
+/**
+ * Kirim notifikasi / report pengaduan ke Owner, Superadmin, dan Petugas Lapangan Pengaduan.
+ */
+export async function kirimReportPengaduan(params: {
+  tipe: string;
+  judul: string;
+  pesan: string;
+  pelangganId?: number | null;
+  createdById?: number | null;
+}): Promise<void> {
+  const targets = getPengaduanReportPhones();
+  for (const noHp of targets) {
+    try {
+      await kirimNotifikasi({
+        tipe: params.tipe,
+        judul: params.judul,
+        pesan: params.pesan,
+        noTelepon: noHp,
+        pelangganId: params.pelangganId ?? null,
+        createdById: params.createdById ?? null,
+      });
+    } catch (err) {
+      console.error(`[WA Report Pengaduan] Gagal kirim ke ${noHp}:`, err);
     }
   }
 }
