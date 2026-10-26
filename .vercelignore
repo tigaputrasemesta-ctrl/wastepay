@@ -1,0 +1,7 @@
+# Ignore heavy non-web assets from Vercel deployments (prevents 50MB file size limits)
+public/apk/
+android/
+ios/
+mobile_petugas/
+*.apk
+*.aab

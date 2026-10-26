@@ -84,21 +84,6 @@ jobs:
           echo "versionCode=$VERSION_CODE" >> "$GITHUB_OUTPUT"
           echo "Version: $VERSION_NAME ($VERSION_CODE)"
 
-      - name: Commit APK to repo (Auto-Deploy via Vercel)
-        run: |
-          git config user.email "cv.tigaputrasemesta@gmail.com"
-          git config user.name "tigaputrasemesta-ctrl"
-          git fetch origin master
-          git checkout -B master origin/master
-          git add -f public/apk/UPS-HERU-Petugas-Native.apk public/apk/O2W-Lapangan.apk
-          if ! git diff --staged --quiet; then
-            git commit -m "build(apk): auto-update native APK v${{ steps.ver.outputs.versionName }} binary"
-            git push origin master
-            git push origin master:main
-          else
-            echo "Tidak ada perubahan pada binary APK."
-          fi
-
       - name: Upload APK Artifact (Retensi 30 Hari)
         uses: actions/upload-artifact@v4
         with:

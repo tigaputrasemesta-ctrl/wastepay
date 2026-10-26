@@ -132,6 +132,5 @@ android/key.properties
 android/local.properties
 android/app/*.jks
 android/app/*.keystore
-# public/apk release binary for Vercel CDN auto-deploy
-!public/apk/UPS-HERU-Petugas-Native.apk
-!public/apk/O2W-Lapangan.apk
+# public/apk release binary excluded from git to prevent 50MB Vercel limit
+/public/apk/*.apk
