@@ -253,6 +253,27 @@ export async function processIncomingWaMessage(
       take: 6,
     });
 
+    // Jika belum pernah ada tagihan yang diterbitkan (misal calon pelanggan / pendaftar baru)
+    if (tagihanList.length === 0) {
+      const isCalon = pelanggan.status === "calon";
+      const reply = [
+        `📋 *INFORMASI STATUS PELANGGAN*`,
+        ``,
+        `Halo ${sapaanNama},`,
+        isCalon
+          ? `Status pendaftaran akun Anda saat ini masih dalam tahap *Verifikasi / Calon Pelanggan* dan belum ada tagihan iuran yang diterbitkan.`
+          : `Saat ini belum ada tagihan iuran yang diterbitkan untuk akun Anda.`,
+        ``,
+        `ID Pelanggan: *${pelanggan.kodePelanggan || pelanggan.noTelepon}*`,
+        `Zona: *${namaZona}*`,
+        ``,
+        `💡 _Untuk konfirmasi aktivasi layanan pengangkutan sampah atau jadwal survei, silakan balas pesan ini dengan mengetik *ADMIN*._ 🙏`,
+        `🌐 Portal: https://upsheru.com/bayar?kode=${pelanggan.noTelepon}`,
+      ].join("\n");
+
+      return { reply, intent: "TAGIHAN", pelangganId: pelanggan.id };
+    }
+
     const unpaid = tagihanList.filter(
       (t) => t.status === "belum_bayar" || t.status === "tunggakan"
     );

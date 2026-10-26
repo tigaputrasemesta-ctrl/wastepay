@@ -28,7 +28,7 @@ type TagihanPublik = {
 };
 
 type HasilCek = {
-  pelanggan: { nama: string; kodePelanggan: string; alamat: string };
+  pelanggan: { nama: string; kodePelanggan: string; alamat: string; status?: string };
   tagihan: TagihanPublik[];
 };
 
@@ -801,9 +801,28 @@ function BayarPortalContent() {
 
           <div className="space-y-3.5">
             {hasil.tagihan.length === 0 ? (
-              <div className="bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-2">
-                <p className="font-bold text-slate-900">Tidak Ada Tagihan Tertunggak</p>
-                <p className="text-xs text-slate-500">Semua iuran retribusi sampah Anda sudah lunas. Terima kasih!</p>
+              <div className="bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-3">
+                {hasil.pelanggan.status === "calon" ? (
+                  <>
+                    <div className="w-12 h-12 mx-auto rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center text-xl">
+                      ⏳
+                    </div>
+                    <p className="font-bold text-slate-900">Pendaftaran Dalam Proses Verifikasi</p>
+                    <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
+                      Status akun Anda saat ini masih dalam tahap calon pelanggan / survei lokasi. Tagihan iuran sampah belum diterbitkan oleh admin.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-12 h-12 mx-auto rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center text-xl">
+                      🎉
+                    </div>
+                    <p className="font-bold text-slate-900">Tidak Ada Tagihan Tertunggak</p>
+                    <p className="text-xs text-slate-500">
+                      Semua iuran retribusi sampah Anda saat ini sudah lunas. Terima kasih atas partisipasi aktif Anda!
+                    </p>
+                  </>
+                )}
               </div>
             ) : (
               hasil.tagihan.map((t) => (

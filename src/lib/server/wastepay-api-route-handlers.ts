@@ -372,6 +372,7 @@ export async function handlePublicSearchPayment(request: Request): Promise<NextR
         kodePelanggan: pelanggan.kodePelanggan,
         alamat: maskAddressForPublicView(pelanggan.alamat), // ALAMAT DISAMARKAN UNTUK PUBLIK
         kategori: pelanggan.kategori,
+        status: pelanggan.status,
       },
       tagihan: tagihanWithRincian,
       analysisReport,
