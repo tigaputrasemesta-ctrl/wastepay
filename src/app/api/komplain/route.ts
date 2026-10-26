@@ -40,6 +40,24 @@ export async function GET(request: Request) {
           kodePelanggan: true,
           latitude: true,
           longitude: true,
+          patokanLokasi: true,
+          rtRw: true,
+          kelurahan: { select: { id: true, nama: true } },
+          wilayah: { select: { id: true, nama: true, zona: { select: { id: true, nama: true } } } },
+          jadwal: {
+            where: { aktif: true },
+            take: 1,
+            select: {
+              hari: true,
+              rute: {
+                select: {
+                  id: true,
+                  nama: true,
+                  petugas: { select: { id: true, nama: true, noTelepon: true } },
+                },
+              },
+            },
+          },
         },
       },
       resolvedBy: { select: { id: true, nama: true } },

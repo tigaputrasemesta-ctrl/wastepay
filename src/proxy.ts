@@ -154,6 +154,7 @@ const API_ROLE_MAP: Record<string, number> = {
   // Komplain
   "GET:/api/komplain": 10,
   "POST:/api/komplain": 10,
+  "POST:/api/komplain/teruskan": 20,
   "PUT:/api/komplain/": 20,
   "DELETE:/api/komplain/": 50,
 

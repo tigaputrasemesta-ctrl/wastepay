@@ -127,6 +127,8 @@ export function getPendaftaranReportTargets(): string[] {
   return Array.from(cleaned);
 }
 
+export const DEFAULT_GROUP_PENGADUAN_ID = "120363430666363149@g.us";
+
 /**
  * Target penerima Laporan Pengaduan Masuk:
  * - Grup WhatsApp: "UPS HERU PENGADUAN" (120363430666363149@g.us)
@@ -632,6 +634,83 @@ export async function templatePengaduanAdmin(
 
   return {
     judul: `Pengaduan: ${p.namaPelanggan} (${p.kodePelanggan})`,
+    pesan: baris.join("\n"),
+  };
+}
+
+export type DisposisiKomplain = {
+  idKomplain: number;
+  namaPetugas: string;
+  namaPelanggan: string;
+  kodePelanggan?: string | null;
+  noTeleponPelanggan?: string | null;
+  alamatPelanggan: string;
+  patokanLokasi?: string | null;
+  zonaWilayah?: string | null;
+  googleMapsUrl?: string | null;
+  jenisKomplain: string;
+  deskripsi: string;
+  catatanAdmin?: string | null;
+  waktuKomplain?: Date | string;
+};
+
+export function templateDisposisiKomplainPetugas(
+  p: DisposisiKomplain
+): { judul: string; pesan: string } {
+  const waktuStr = p.waktuKomplain
+    ? formatTanggalWaktuIndo(p.waktuKomplain) + " WIB"
+    : formatTanggalWaktuIndo(new Date()) + " WIB";
+
+  const baris = [
+    `🚨 *DISPOSISI PENGADUAN SAMPAH — ${NAMA().toUpperCase()}*`,
+    `ID Tiket: *#KMP-${p.idKomplain}*`,
+    ``,
+    `Kepada Yth. Petugas: *${p.namaPetugas}*`,
+    `Mohon segera ditindaklanjuti laporan kendala sampah warga berikut:`,
+    ``,
+    `👤 *Pelanggan* : ${p.namaPelanggan}${p.kodePelanggan ? ` (${p.kodePelanggan})` : ""}`,
+  ];
+
+  if (p.noTeleponPelanggan) {
+    const cleanNo = p.noTeleponPelanggan.replace(/[^\d]/g, "").replace(/^0/, "62");
+    baris.push(`📱 *Kontak Warga* : https://wa.me/${cleanNo}`);
+  }
+  baris.push(`📍 *Alamat* : ${p.alamatPelanggan}`);
+  if (p.patokanLokasi) {
+    baris.push(`🧭 *Patokan* : ${p.patokanLokasi}`);
+  }
+  if (p.zonaWilayah) {
+    baris.push(`🚛 *Zona / Wilayah* : ${p.zonaWilayah}`);
+  }
+  if (p.googleMapsUrl) {
+    baris.push(`🗺️ *Titik Navigasi Maps* : ${p.googleMapsUrl}`);
+  }
+
+  baris.push(
+    ``,
+    `⚠️ *Jenis Masalah* : ${p.jenisKomplain}`,
+    `📝 *Isi Keluhan Warga*:`,
+    `"${p.deskripsi}"`
+  );
+
+  if (p.catatanAdmin && p.catatanAdmin.trim()) {
+    baris.push(
+      ``,
+      `💬 *Instruksi Khusus Admin*:`,
+      `*${p.catatanAdmin.trim()}*`
+    );
+  }
+
+  baris.push(
+    ``,
+    `🗓️ *Waktu Lapor* : ${waktuStr}`,
+    ``,
+    `Mohon kirimkan foto bukti atau update status setelah penanganan selesai di lokasi. Terima kasih! 🙏`,
+    `— *Operasional ${NAMA()}*`
+  );
+
+  return {
+    judul: `Disposisi Komplain #KMP-${p.idKomplain} ke ${p.namaPetugas}`,
     pesan: baris.join("\n"),
   };
 }
