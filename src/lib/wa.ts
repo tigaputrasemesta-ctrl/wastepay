@@ -44,10 +44,17 @@ export function adminPhone(): string {
   return process.env.ADMIN_PHONE?.trim() || "085716251003";
 }
 
+/** Bersihkan target: jika WhatsApp Group (@g.us), pertahankan; jika no HP, bersihkan digit */
+function cleanTarget(target: string): string {
+  const trimmed = target.trim();
+  if (trimmed.includes("@g.us")) {
+    return trimmed;
+  }
+  return trimmed.replace(/[^\d]/g, "").replace(/^62/, "0");
+}
+
 /**
  * Mendapatkan daftar nomor WhatsApp internal (Owner & Superadmin) untuk penerima report.
- * Format nomor dibersihkan dari spasi, tanda strip, atau awalan +62 -> 08.
- * Mendukung multiple nomor (dipisah koma) pada OWNER_PHONE, ADMIN_PHONE, atau REPORT_PHONES.
  */
 export function getInternalReportPhones(): string[] {
   const sources = [
@@ -63,9 +70,9 @@ export function getInternalReportPhones(): string[] {
   for (const src of sources) {
     const parts = src.split(/[,;\s]+/);
     for (const part of parts) {
-      const num = part.replace(/[^\d]/g, "").replace(/^62/, "0");
-      if (num.length >= 9) {
-        cleaned.add(num);
+      const target = cleanTarget(part);
+      if (target.length >= 9) {
+        cleaned.add(target);
       }
     }
   }
@@ -73,11 +80,61 @@ export function getInternalReportPhones(): string[] {
 }
 
 /**
- * Mendapatkan daftar nomor WhatsApp untuk penerima laporan pengaduan masuk
- * (Owner, Superadmin, dan Petugas Lapangan Pengaduan: 0895-3850-58054).
+ * Target penerima Laporan Pembayaran:
+ * - Grup WhatsApp: "Laporan Iuran via Transfer" (120363275305497489@g.us)
+ * - Japri: Owner (081532843224) & Superadmin (085716251003)
+ */
+export function getPembayaranReportTargets(): string[] {
+  const sources = [
+    process.env.WA_GROUP_PEMBAYARAN_ID?.trim() || "120363275305497489@g.us",
+    ...getInternalReportPhones(),
+  ].filter(Boolean) as string[];
+
+  const cleaned = new Set<string>();
+  for (const src of sources) {
+    const parts = src.split(/[,;\s]+/);
+    for (const part of parts) {
+      const target = cleanTarget(part);
+      if (target.length >= 9) {
+        cleaned.add(target);
+      }
+    }
+  }
+  return Array.from(cleaned);
+}
+
+/**
+ * Target penerima Laporan Pendaftaran Baru:
+ * - Grup WhatsApp: "Hala Kita Sude" (6281532843224-1614736180@g.us)
+ * - Japri: Owner (081532843224) & Superadmin (085716251003)
+ */
+export function getPendaftaranReportTargets(): string[] {
+  const sources = [
+    process.env.WA_GROUP_PENDAFTARAN_ID?.trim() || "6281532843224-1614736180@g.us",
+    ...getInternalReportPhones(),
+  ].filter(Boolean) as string[];
+
+  const cleaned = new Set<string>();
+  for (const src of sources) {
+    const parts = src.split(/[,;\s]+/);
+    for (const part of parts) {
+      const target = cleanTarget(part);
+      if (target.length >= 9) {
+        cleaned.add(target);
+      }
+    }
+  }
+  return Array.from(cleaned);
+}
+
+/**
+ * Target penerima Laporan Pengaduan Masuk:
+ * - Grup WhatsApp: "Hala Kita Sude" (6281532843224-1614736180@g.us)
+ * - Japri: Owner (081532843224), Superadmin (085716251003), Petugas (0895385058054)
  */
 export function getPengaduanReportPhones(): string[] {
   const sources = [
+    process.env.WA_GROUP_PENGADUAN_ID?.trim() || "6281532843224-1614736180@g.us",
     process.env.REPORT_PENGADUAN_PHONES?.trim(),
     process.env.PETUGAS_PENGADUAN_PHONE?.trim(),
     ...getInternalReportPhones(),
@@ -88,9 +145,9 @@ export function getPengaduanReportPhones(): string[] {
   for (const src of sources) {
     const parts = src.split(/[,;\s]+/);
     for (const part of parts) {
-      const num = part.replace(/[^\d]/g, "").replace(/^62/, "0");
-      if (num.length >= 9) {
-        cleaned.add(num);
+      const target = cleanTarget(part);
+      if (target.length >= 9) {
+        cleaned.add(target);
       }
     }
   }
@@ -656,7 +713,61 @@ export async function kirimNotifikasi(
 }
 
 /**
- * Kirim notifikasi / report ke Owner & Admin internal.
+ * Kirim notifikasi / report pembayaran ke Grup WA "Laporan Iuran via Transfer", Owner, dan Superadmin.
+ */
+export async function kirimReportPembayaran(params: {
+  tipe: string;
+  judul: string;
+  pesan: string;
+  pelangganId?: number | null;
+  createdById?: number | null;
+}): Promise<void> {
+  const targets = getPembayaranReportTargets();
+  for (const target of targets) {
+    try {
+      await kirimNotifikasi({
+        tipe: params.tipe,
+        judul: params.judul,
+        pesan: params.pesan,
+        noTelepon: target,
+        pelangganId: params.pelangganId ?? null,
+        createdById: params.createdById ?? null,
+      });
+    } catch (err) {
+      console.error(`[WA Report Pembayaran] Gagal kirim ke ${target}:`, err);
+    }
+  }
+}
+
+/**
+ * Kirim notifikasi / report pendaftaran ke Grup WA "Hala Kita Sude", Owner, dan Superadmin.
+ */
+export async function kirimReportPendaftaran(params: {
+  tipe: string;
+  judul: string;
+  pesan: string;
+  pelangganId?: number | null;
+  createdById?: number | null;
+}): Promise<void> {
+  const targets = getPendaftaranReportTargets();
+  for (const target of targets) {
+    try {
+      await kirimNotifikasi({
+        tipe: params.tipe,
+        judul: params.judul,
+        pesan: params.pesan,
+        noTelepon: target,
+        pelangganId: params.pelangganId ?? null,
+        createdById: params.createdById ?? null,
+      });
+    } catch (err) {
+      console.error(`[WA Report Pendaftaran] Gagal kirim ke ${target}:`, err);
+    }
+  }
+}
+
+/**
+ * Kirim notifikasi / report ke Owner & Admin internal (serta grup pembayaran terkait).
  */
 export async function kirimReportOwner(params: {
   tipe: string;
@@ -665,21 +776,7 @@ export async function kirimReportOwner(params: {
   pelangganId?: number | null;
   createdById?: number | null;
 }): Promise<void> {
-  const targets = getInternalReportPhones();
-  for (const noHp of targets) {
-    try {
-      await kirimNotifikasi({
-        tipe: params.tipe,
-        judul: params.judul,
-        pesan: params.pesan,
-        noTelepon: noHp,
-        pelangganId: params.pelangganId ?? null,
-        createdById: params.createdById ?? null,
-      });
-    } catch (err) {
-      console.error(`[WA Report Owner] Gagal kirim ke ${noHp}:`, err);
-    }
-  }
+  return kirimReportPembayaran(params);
 }
 
 /**

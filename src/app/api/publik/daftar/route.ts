@@ -6,7 +6,7 @@ import { generateKodePelanggan } from "@/lib/kode-pelanggan";
 import {
   adminPhone,
   kirimNotifikasi,
-  kirimReportOwner,
+  kirimReportPendaftaran,
   templatePendaftaranAdmin,
   templatePendaftaranDiterima,
   templatePendaftaranPelangganOlehPetugas,
@@ -334,7 +334,7 @@ export async function POST(request: Request) {
         tanggalPenagihanCustom: tanggalPenagihanCustom || undefined,
         jadwalHari: jadwalHari || undefined,
       });
-      await kirimReportOwner({
+      await kirimReportPendaftaran({
         tipe: "pendaftaran_masuk",
         judul: tAdmin.judul,
         pesan: tAdmin.pesan,
