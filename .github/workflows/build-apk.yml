@@ -92,7 +92,7 @@ jobs:
           git checkout -B master origin/master
           git add -f public/apk/UPS-HERU-Petugas-Native.apk public/apk/O2W-Lapangan.apk
           if ! git diff --staged --quiet; then
-            git commit -m "build(apk): auto-update native APK v${{ steps.ver.outputs.versionName }} binary [skip ci]"
+            git commit -m "build(apk): auto-update native APK v${{ steps.ver.outputs.versionName }} binary"
             git push origin master
             git push origin master:main
           else
