@@ -101,6 +101,7 @@ async function materializeTugasTerjadwal(opts: {
               zonaId: true, 
               zonas: { select: { id: true } },
               petugasId: true,
+              kendaraanId: true,
             } 
           } 
         },
