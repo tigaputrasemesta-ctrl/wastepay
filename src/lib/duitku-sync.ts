@@ -16,7 +16,9 @@ import {
   buildTagihanWa,
   isWaEnabled,
   kirimNotifikasi,
+  kirimReportOwner,
   sudahKirimWa,
+  templateLaporanPembayaranOwner,
   templatePembayaranDiterima,
   templatePembayaranGagal,
 } from "@/lib/wa";
@@ -107,9 +109,9 @@ export async function syncDuitkuPayment(
     try {
       const tagihan = await prisma.tagihan.findUnique({
         where: { id: pembayaran.tagihanId },
-        include: { pelanggan: { select: { id: true, nama: true, noTelepon: true } } },
+        include: { pelanggan: { select: { id: true, nama: true, noTelepon: true, kodePelanggan: true } } },
       });
-      if (tagihan?.pelanggan.noTelepon) {
+      if (tagihan?.pelanggan) {
         const wa = buildTagihanWa(
           {
             noInvoice: tagihan.noInvoice,
@@ -122,21 +124,41 @@ export async function syncDuitkuPayment(
           tagihan.pelanggan.nama
         );
         const kataKunci = tagihan.noInvoice || `#${tagihan.id}`;
+        const labelMetode = labelMetodePembayaran(dt.paymentMethod || pembayaran.metode);
 
         if (isSuccessStatusCode(result.statusCode) && !wasVerified) {
           if (!(await sudahKirimWa("pembayaran_diterima", tagihan.pelanggan.id, kataKunci))) {
-            await kirimNotifikasi({
-              tipe: "pembayaran_diterima",
-              ...await templatePembayaranDiterima(
-                wa,
-                labelMetodePembayaran(dt.paymentMethod || pembayaran.metode)
-              ),
+            // 1. Kirim WA ke pelanggan (jika punya no telepon)
+            if (tagihan.pelanggan.noTelepon) {
+              await kirimNotifikasi({
+                tipe: "pembayaran_diterima",
+                ...await templatePembayaranDiterima(
+                  wa,
+                  labelMetode
+                ),
+                pelangganId: tagihan.pelanggan.id,
+                noTelepon: tagihan.pelanggan.noTelepon,
+              });
+            }
+
+            // 2. Kirim laporan pembayaran masuk ke Owner & Admin
+            const tOwner = await templateLaporanPembayaranOwner({
+              noInvoice: tagihan.noInvoice || `#${tagihan.id}`,
+              namaPelanggan: tagihan.pelanggan.nama,
+              kodePelanggan: tagihan.pelanggan.kodePelanggan,
+              nominal: pembayaran.jumlah,
+              metode: labelMetode,
+              waktu: new Date(),
+            });
+            await kirimReportOwner({
+              tipe: "laporan_pembayaran_owner",
+              judul: tOwner.judul,
+              pesan: tOwner.pesan,
               pelangganId: tagihan.pelanggan.id,
-              noTelepon: tagihan.pelanggan.noTelepon,
             });
           }
         } else if (isFinalFailedStatusCode(result.statusCode, source) && pembayaran.status === "pending") {
-          if (!(await sudahKirimWa("pembayaran_gagal", tagihan.pelanggan.id, kataKunci))) {
+          if (tagihan.pelanggan.noTelepon && !(await sudahKirimWa("pembayaran_gagal", tagihan.pelanggan.id, kataKunci))) {
             await kirimNotifikasi({
               tipe: "pembayaran_gagal",
               ...await templatePembayaranGagal(wa),

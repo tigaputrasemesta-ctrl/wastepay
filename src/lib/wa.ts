@@ -33,9 +33,42 @@ const WA_API_URL = process.env.WA_API_URL?.trim() || "https://api.fonnte.com/sen
 /** Nama perusahaan untuk tanda tangan pesan WA (dari env COMPANY_NAME). */
 export const NAMA = () => companyInfo().nama;
 
-/** Nomor WhatsApp admin/helpdesk untuk notifikasi internal (format 08xx atau 628xx). */
+/** Nomor WhatsApp owner untuk notifikasi & laporan utama */
+export function ownerPhone(): string {
+  return process.env.OWNER_PHONE?.trim() || "081532843224";
+}
+
+/** Nomor WhatsApp admin/superadmin untuk notifikasi internal (format 08xx atau 628xx). */
 export function adminPhone(): string {
-  return process.env.ADMIN_PHONE?.trim() || "";
+  return process.env.ADMIN_PHONE?.trim() || "085716251003";
+}
+
+/**
+ * Mendapatkan daftar nomor WhatsApp internal (Owner & Superadmin) untuk penerima report.
+ * Format nomor dibersihkan dari spasi, tanda strip, atau awalan +62 -> 08.
+ * Mendukung multiple nomor (dipisah koma) pada OWNER_PHONE, ADMIN_PHONE, atau REPORT_PHONES.
+ */
+export function getInternalReportPhones(): string[] {
+  const sources = [
+    process.env.REPORT_PHONES?.trim(),
+    process.env.OWNER_PHONE?.trim(),
+    process.env.ADMIN_PHONE?.trim(),
+    // Default: Nomor Owner & Superadmin selalu terdaftar
+    "081532843224",
+    "085716251003",
+  ].filter(Boolean) as string[];
+
+  const cleaned = new Set<string>();
+  for (const src of sources) {
+    const parts = src.split(/[,;\s]+/);
+    for (const part of parts) {
+      const num = part.replace(/[^\d]/g, "").replace(/^62/, "0");
+      if (num.length >= 9) {
+        cleaned.add(num);
+      }
+    }
+  }
+  return Array.from(cleaned);
 }
 
 export function isWaEnabled(): boolean {
@@ -282,6 +315,76 @@ export async function templatePembayaranGagal(t: TagihanWa): Promise<{ judul: st
   };
 }
 
+export type LaporanPembayaranOwner = {
+  noInvoice: string;
+  namaPelanggan: string;
+  kodePelanggan?: string | null;
+  nominal: number;
+  metode: string;
+  waktu?: Date | string;
+  keterangan?: string | null;
+};
+
+export async function templateLaporanPembayaranOwner(
+  p: LaporanPembayaranOwner
+): Promise<{ judul: string; pesan: string }> {
+  const waktuStr = p.waktu ? formatTanggalIndo(p.waktu) : formatTanggalIndo(new Date());
+  const baris = [
+    `💰 *LAPORAN PEMBAYARAN MASUK — ${NAMA().toUpperCase()}*`,
+    ``,
+    `Halo Pengelola / Owner,`,
+    `Pembayaran tagihan pelanggan telah berhasil diterima & tercatat di sistem:`,
+    ``,
+    `📄 *No. Invoice*   : ${p.noInvoice}`,
+    `👤 *Pelanggan*     : ${p.namaPelanggan}${p.kodePelanggan ? ` (${p.kodePelanggan})` : ""}`,
+    `💵 *Total Diterima* : *${formatRupiahSkylite(p.nominal)}*`,
+    `💳 *Metode*        : ${p.metode}`,
+    `📅 *Waktu*         : ${waktuStr}`,
+  ];
+  if (p.keterangan) {
+    baris.push(`📝 *Catatan*       : ${p.keterangan}`);
+  }
+  baris.push(
+    ``,
+    `📊 *Pantau Dashboard*:`,
+    `👉 ${appBaseUrl()}/pembayaran`,
+    ``,
+    `— Sistem Notifikasi ${NAMA()}`
+  );
+  return {
+    judul: `Laporan Pembayaran: ${p.noInvoice} - ${p.namaPelanggan}`,
+    pesan: baris.join("\n"),
+  };
+}
+
+export async function templateBuktiBayarBaruOwner(p: {
+  noInvoice: string;
+  namaPelanggan: string;
+  kodePelanggan?: string | null;
+  nominal: number;
+  metode: string;
+}): Promise<{ judul: string; pesan: string }> {
+  const baris = [
+    `🔔 *BUKTI PEMBAYARAN BARU — ${NAMA().toUpperCase()}*`,
+    ``,
+    `Pelanggan telah mengunggah bukti transfer baru dan menunggu verifikasi admin:`,
+    ``,
+    `📄 *No. Invoice*   : ${p.noInvoice}`,
+    `👤 *Pelanggan*     : ${p.namaPelanggan}${p.kodePelanggan ? ` (${p.kodePelanggan})` : ""}`,
+    `💵 *Nominal*       : *${formatRupiahSkylite(p.nominal)}*`,
+    `💳 *Metode*        : ${p.metode}`,
+    ``,
+    `Silakan verifikasi pembayaran ini di dashboard:`,
+    `👉 ${appBaseUrl()}/pembayaran`,
+    ``,
+    `— Sistem Notifikasi ${NAMA()}`,
+  ];
+  return {
+    judul: `Bukti Bayar Baru Menunggu Verifikasi: ${p.noInvoice}`,
+    pesan: baris.join("\n"),
+  };
+}
+
 export async function templatePendaftaranDiterima(nama: string, kode: string): Promise<{ judul: string; pesan: string }> {
   return {
     judul: `Pendaftaran Diterima — ${NAMA()}`,
@@ -376,7 +479,14 @@ export async function templatePendaftaranAdmin(p: PendaftaranAdmin): Promise<{ j
   if (p.jadwalHari) baris.push(`🗓 Req Hari Jemput: ${p.jadwalHari}`);
   if (p.patokanLokasi) baris.push(`🧭 Patokan: ${p.patokanLokasi}`);
   if (p.referal) baris.push(`🤝 Referal: ${p.referal}`);
-  baris.push("", `Segera konfirmasi di aplikasi ${NAMA()}.`, `— ${NAMA()}`);
+  baris.push(
+    "",
+    `📋 Kelola & Konfirmasi di Dashboard:`,
+    `👉 ${appBaseUrl()}/pelanggan`,
+    "",
+    `Segera konfirmasi di aplikasi ${NAMA()}.`,
+    `— ${NAMA()}`
+  );
   return { judul: `Pendaftaran Baru: ${p.nama}`, pesan: baris.join("\n") };
 }
 
@@ -454,6 +564,33 @@ export async function kirimNotifikasi(
   });
 
   return { status, error, link };
+}
+
+/**
+ * Kirim notifikasi / report ke Owner & Admin internal.
+ */
+export async function kirimReportOwner(params: {
+  tipe: string;
+  judul: string;
+  pesan: string;
+  pelangganId?: number | null;
+  createdById?: number | null;
+}): Promise<void> {
+  const targets = getInternalReportPhones();
+  for (const noHp of targets) {
+    try {
+      await kirimNotifikasi({
+        tipe: params.tipe,
+        judul: params.judul,
+        pesan: params.pesan,
+        noTelepon: noHp,
+        pelangganId: params.pelangganId ?? null,
+        createdById: params.createdById ?? null,
+      });
+    } catch (err) {
+      console.error(`[WA Report Owner] Gagal kirim ke ${noHp}:`, err);
+    }
+  }
 }
 
 export type TargetWa = {

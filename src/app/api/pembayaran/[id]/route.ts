@@ -7,6 +7,8 @@ import {
   buildTagihanWa,
   isWaEnabled,
   kirimNotifikasi,
+  kirimReportOwner,
+  templateLaporanPembayaranOwner,
   templatePembayaranDiterima,
   templatePembayaranGagal,
 } from "@/lib/wa";
@@ -112,13 +114,14 @@ export async function PUT(request: Request, { params }: Params) {
     await logAudit("update", "Pembayaran", pembayaran.id, { status: pembayaran.status }, { status });
 
     // Auto-kirim WA konfirmasi ke pelanggan saat pembayaran diproses (skylite pattern)
+    // dan laporan pembayaran masuk ke Owner & Admin
     if ((status === "terverifikasi" || status === "ditolak") && isWaEnabled()) {
       try {
         const tagihan = await prisma.tagihan.findUnique({
           where: { id: pembayaran.tagihanId },
-          include: { pelanggan: { select: { id: true, nama: true, noTelepon: true } } },
+          include: { pelanggan: { select: { id: true, nama: true, noTelepon: true, kodePelanggan: true } } },
         });
-        if (tagihan?.pelanggan.noTelepon) {
+        if (tagihan?.pelanggan) {
           const tWa = buildTagihanWa(
             {
               noInvoice: tagihan.noInvoice,
@@ -131,16 +134,39 @@ export async function PUT(request: Request, { params }: Params) {
             tagihan.pelanggan.nama
           );
           
-          const templateData = status === "terverifikasi" 
-            ? await templatePembayaranDiterima(tWa, labelMetodePembayaran(pembayaran.metode))
-            : await templatePembayaranGagal(tWa);
+          const labelMetode = labelMetodePembayaran(pembayaran.metode);
 
-          await kirimNotifikasi({
-            tipe: status === "terverifikasi" ? "pembayaran_diterima" : "pembayaran_gagal",
-            ...templateData,
-            pelangganId: tagihan.pelanggan.id,
-            noTelepon: tagihan.pelanggan.noTelepon,
-          });
+          if (tagihan.pelanggan.noTelepon) {
+            const templateData = status === "terverifikasi" 
+              ? await templatePembayaranDiterima(tWa, labelMetode)
+              : await templatePembayaranGagal(tWa);
+
+            await kirimNotifikasi({
+              tipe: status === "terverifikasi" ? "pembayaran_diterima" : "pembayaran_gagal",
+              ...templateData,
+              pelangganId: tagihan.pelanggan.id,
+              noTelepon: tagihan.pelanggan.noTelepon,
+            });
+          }
+
+          // Jika status terverifikasi, kirim laporan ke Owner & Admin
+          if (status === "terverifikasi") {
+            const tOwner = await templateLaporanPembayaranOwner({
+              noInvoice: tagihan.noInvoice || `#${tagihan.id}`,
+              namaPelanggan: tagihan.pelanggan.nama,
+              kodePelanggan: tagihan.pelanggan.kodePelanggan,
+              nominal: pembayaran.jumlah,
+              metode: labelMetode,
+              waktu: new Date(),
+              keterangan: catatan || pembayaran.catatan || undefined,
+            });
+            await kirimReportOwner({
+              tipe: "laporan_pembayaran_owner",
+              judul: tOwner.judul,
+              pesan: tOwner.pesan,
+              pelangganId: tagihan.pelanggan.id,
+            });
+          }
         }
       } catch {
         // Kegagalan kirim WA tidak menggagalkan verifikasi

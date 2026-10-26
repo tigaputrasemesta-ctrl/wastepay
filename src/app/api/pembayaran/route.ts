@@ -2,9 +2,17 @@ import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { logAudit } from "@/lib/audit";
-import { hitungRincian } from "@/lib/invoice";
+import { hitungRincian, labelMetodePembayaran } from "@/lib/invoice";
 import { getSession } from "@/lib/auth";
 import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
+import {
+  buildTagihanWa,
+  isWaEnabled,
+  kirimNotifikasi,
+  kirimReportOwner,
+  templateLaporanPembayaranOwner,
+  templatePembayaranDiterima,
+} from "@/lib/wa";
 
 export async function POST(request: Request) {
   try {
@@ -42,7 +50,17 @@ export async function POST(request: Request) {
 
     const tagihan = await prisma.tagihan.findUnique({
       where: { id: parseInt(tagihanId) },
-      include: { pelanggan: { select: { kelurahanId: true } } },
+      include: {
+        pelanggan: {
+          select: {
+            id: true,
+            nama: true,
+            noTelepon: true,
+            kodePelanggan: true,
+            kelurahanId: true,
+          },
+        },
+      },
     });
 
     if (!tagihan) {
@@ -126,6 +144,51 @@ export async function POST(request: Request) {
       metode: pembayaran.metode,
       status: pembayaran.status,
     });
+
+    // Jika admin mencatat pembayaran tunai langsung lunas, kirim WA ke pelanggan & report owner
+    if (autoApproveTunai && isWaEnabled()) {
+      try {
+        const labelMetode = labelMetodePembayaran(pembayaran.metode);
+        if (tagihan.pelanggan.noTelepon) {
+          const tWa = buildTagihanWa(
+            {
+              noInvoice: tagihan.noInvoice,
+              bulan: tagihan.bulan,
+              tahun: tagihan.tahun,
+              jumlah: tagihan.jumlah,
+              denda: tagihan.denda,
+              jatuhTempo: tagihan.jatuhTempo,
+            },
+            tagihan.pelanggan.nama
+          );
+          const tPelanggan = await templatePembayaranDiterima(tWa, labelMetode);
+          await kirimNotifikasi({
+            tipe: "pembayaran_diterima",
+            ...tPelanggan,
+            pelangganId: tagihan.pelanggan.id,
+            noTelepon: tagihan.pelanggan.noTelepon,
+          });
+        }
+
+        const tOwner = await templateLaporanPembayaranOwner({
+          noInvoice: tagihan.noInvoice || `#${tagihan.id}`,
+          namaPelanggan: tagihan.pelanggan.nama,
+          kodePelanggan: tagihan.pelanggan.kodePelanggan,
+          nominal: pembayaran.jumlah,
+          metode: labelMetode,
+          waktu: new Date(),
+          keterangan: catatan || "Pembayaran tunai dicatat admin di kantor",
+        });
+        await kirimReportOwner({
+          tipe: "laporan_pembayaran_owner",
+          judul: tOwner.judul,
+          pesan: tOwner.pesan,
+          pelangganId: tagihan.pelanggan.id,
+        });
+      } catch (err) {
+        console.error("[Pembayaran Tunai] Gagal kirim WA:", err);
+      }
+    }
 
     return NextResponse.json(
       {

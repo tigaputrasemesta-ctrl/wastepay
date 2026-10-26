@@ -6,6 +6,7 @@ import { generateKodePelanggan } from "@/lib/kode-pelanggan";
 import {
   adminPhone,
   kirimNotifikasi,
+  kirimReportOwner,
   templatePendaftaranAdmin,
   templatePendaftaranDiterima,
   templatePendaftaranPelangganOlehPetugas,
@@ -319,9 +320,8 @@ export async function POST(request: Request) {
       pelangganId: pelanggan.id,
     });
 
-    // WA ke helpdesk: pendaftaran baru masuk (jika ADMIN_PHONE diisi)
-    const adm = adminPhone();
-    if (adm) {
+    // WA report ke Owner & Helpdesk: pendaftaran baru masuk
+    try {
       const tAdmin = await templatePendaftaranAdmin({
         nama: pelanggan.nama,
         kodePelanggan: pelanggan.kodePelanggan,
@@ -334,13 +334,14 @@ export async function POST(request: Request) {
         tanggalPenagihanCustom: tanggalPenagihanCustom || undefined,
         jadwalHari: jadwalHari || undefined,
       });
-      await kirimNotifikasi({
+      await kirimReportOwner({
         tipe: "pendaftaran_masuk",
         judul: tAdmin.judul,
         pesan: tAdmin.pesan,
-        noTelepon: adm,
         pelangganId: pelanggan.id,
       });
+    } catch (err) {
+      console.error("[Pendaftaran] Gagal kirim WA ke owner/admin:", err);
     }
 
     return NextResponse.json({

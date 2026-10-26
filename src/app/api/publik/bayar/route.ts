@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { hitungRincian } from "@/lib/invoice";
+import { hitungRincian, labelMetodePembayaran } from "@/lib/invoice";
 import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
+import { isWaEnabled, kirimReportOwner, templateBuktiBayarBaruOwner } from "@/lib/wa";
 
 const METODE_VALID = ["transfer", "ewallet", "qris", "virtual_account"];
 
@@ -33,7 +34,7 @@ export async function POST(request: Request) {
 
     const pelanggan = await prisma.pelanggan.findUnique({
       where: { kodePelanggan: kode.trim() },
-      select: { id: true, deletedAt: true },
+      select: { id: true, nama: true, kodePelanggan: true, deletedAt: true },
     });
     if (!pelanggan || pelanggan.deletedAt) {
       return NextResponse.json({ error: "Kode pelanggan tidak ditemukan" }, { status: 404 });
@@ -41,7 +42,7 @@ export async function POST(request: Request) {
 
     const tagihan = await prisma.tagihan.findUnique({
       where: { id: parseInt(tagihanId) },
-      select: { id: true, pelangganId: true, jumlah: true, denda: true, status: true },
+      select: { id: true, pelangganId: true, noInvoice: true, jumlah: true, denda: true, status: true },
     });
     if (!tagihan || tagihan.pelangganId !== pelanggan.id) {
       return NextResponse.json({ error: "Tagihan tidak ditemukan" }, { status: 404 });
@@ -76,6 +77,27 @@ export async function POST(request: Request) {
         status: "pending",
       },
     });
+
+    // Alert ke Owner & Admin: Ada bukti pembayaran baru yang diunggah
+    if (isWaEnabled()) {
+      try {
+        const tAlert = await templateBuktiBayarBaruOwner({
+          noInvoice: tagihan.noInvoice || `#${tagihan.id}`,
+          namaPelanggan: pelanggan.nama,
+          kodePelanggan: pelanggan.kodePelanggan,
+          nominal: total,
+          metode: labelMetodePembayaran(metode),
+        });
+        await kirimReportOwner({
+          tipe: "bukti_bayar_masuk",
+          judul: tAlert.judul,
+          pesan: tAlert.pesan,
+          pelangganId: pelanggan.id,
+        });
+      } catch (err) {
+        console.error("[Publik Bayar] Gagal kirim alert ke owner:", err);
+      }
+    }
 
     return NextResponse.json(
       {
