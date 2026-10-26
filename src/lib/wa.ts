@@ -81,12 +81,12 @@ export function getInternalReportPhones(): string[] {
 
 /**
  * Target penerima Laporan Pembayaran:
- * - Grup WhatsApp: "Laporan Iuran via Transfer" (120363275305497489@g.us)
+ * - Grup WhatsApp: "UPS HERU PEMBAYARAN VIA APP" (120363432695009362@g.us)
  * - Japri: Owner (081532843224) & Superadmin (085716251003)
  */
 export function getPembayaranReportTargets(): string[] {
   const sources = [
-    process.env.WA_GROUP_PEMBAYARAN_ID?.trim() || "120363275305497489@g.us",
+    process.env.WA_GROUP_PEMBAYARAN_ID?.trim() || "120363432695009362@g.us",
     ...getInternalReportPhones(),
   ].filter(Boolean) as string[];
 
@@ -105,12 +105,12 @@ export function getPembayaranReportTargets(): string[] {
 
 /**
  * Target penerima Laporan Pendaftaran Baru:
- * - Grup WhatsApp: "Hala Kita Sude" (6281532843224-1614736180@g.us)
+ * - Grup WhatsApp: "UPS HERU PELANGGAN DAFTAR BARU" (120363432214955370@g.us)
  * - Japri: Owner (081532843224) & Superadmin (085716251003)
  */
 export function getPendaftaranReportTargets(): string[] {
   const sources = [
-    process.env.WA_GROUP_PENDAFTARAN_ID?.trim() || "6281532843224-1614736180@g.us",
+    process.env.WA_GROUP_PENDAFTARAN_ID?.trim() || "120363432214955370@g.us",
     ...getInternalReportPhones(),
   ].filter(Boolean) as string[];
 
@@ -129,12 +129,12 @@ export function getPendaftaranReportTargets(): string[] {
 
 /**
  * Target penerima Laporan Pengaduan Masuk:
- * - Grup WhatsApp: "Hala Kita Sude" (6281532843224-1614736180@g.us)
+ * - Grup WhatsApp: "UPS HERU PENGADUAN" (120363430666363149@g.us)
  * - Japri: Owner (081532843224), Superadmin (085716251003), Petugas (0895385058054)
  */
 export function getPengaduanReportPhones(): string[] {
   const sources = [
-    process.env.WA_GROUP_PENGADUAN_ID?.trim() || "6281532843224-1614736180@g.us",
+    process.env.WA_GROUP_PENGADUAN_ID?.trim() || "120363430666363149@g.us",
     process.env.REPORT_PENGADUAN_PHONES?.trim(),
     process.env.PETUGAS_PENGADUAN_PHONE?.trim(),
     ...getInternalReportPhones(),
