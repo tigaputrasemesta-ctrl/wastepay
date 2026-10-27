@@ -256,8 +256,8 @@ export async function GET(request: Request) {
         select: {
           id: true,
           nama: true,
-          hariOperasional: true,
-          warna: true,
+          hari: true,
+          jam: true,
           aktif: true,
           petugasId: true,
           petugas: { select: { id: true, nama: true } },
