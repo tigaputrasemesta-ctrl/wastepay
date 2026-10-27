@@ -51,6 +51,11 @@ const nextConfig: NextConfig = {
         permanent: false,
       },
       {
+        source: "/apk/UPS-HERU-Admin.apk",
+        destination: "https://github.com/tigaputrasemesta-ctrl/wastepay/releases/download/apk-latest/UPS-HERU-Admin.apk",
+        permanent: false,
+      },
+      {
         source: "/apk/O2W-Lapangan.apk",
         destination: "https://github.com/tigaputrasemesta-ctrl/wastepay/releases/download/apk-latest/O2W-Lapangan.apk",
         permanent: false,

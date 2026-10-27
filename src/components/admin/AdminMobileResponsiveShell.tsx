@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Sidebar from "@/components/Sidebar";
 import StatusBar from "@/components/StatusBar";
 import NotificationBell from "@/components/NotificationBell";
+import AdminSyncIndicator from "@/components/admin/AdminSyncIndicator";
 import {
   LayoutDashboard,
   MapPin,
@@ -201,8 +202,9 @@ export default function AdminMobileResponsiveShell({
             </div>
           </div>
 
-          {/* Notifikasi & Status Sesi */}
+          {/* Notifikasi, Sinkronisasi Offline & Status Sesi */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <AdminSyncIndicator />
             <NotificationBell />
             <StatusBar />
           </div>

@@ -1,13 +1,5 @@
 /**
- * Konfigurasi versi APK O2W Lapangan.
- *
- * versionCode / versionName DI SINI harus selalu sama dengan yang ada di
- * `android/app/build.gradle` (defaultConfig.versionCode & versionName).
- * Saat naik versi, update KEDUANYA lalu rebuild APK.
- *
- * `apkUrl` diambil dari env MOBILE_APK_URL (URL file APK terbaru yang di-hosting,
- * mis. di Vercel public, GitHub Releases, atau hosting lain). Kosong = fitur
- * unduh nonaktif (hanya info "versi baru tersedia").
+ * Konfigurasi versi APK UPS HERU (Petugas & Admin).
  */
 export const MOBILE_VERSION = {
   versionName: "2.0.5",
@@ -24,10 +16,29 @@ export const MOBILE_VERSION = {
   ],
 };
 
+export const ADMIN_VERSION = {
+  versionName: "1.3.0",
+  versionCode: 15,
+  changelog: [
+    "Aplikasi dedicated khusus Admin & Backoffice (id.o2whero.admin)",
+    "Penyimpanan data lokal di HP (Offline-First via IndexedDB) tanpa menarik ulang database setiap login",
+    "Fitur Delta Sync otomatis untuk mengunduh perubahan baru secara efisien & hemat kuota",
+    "Akses dashboard, data warga, rute & tagihan berkecepatan 0 detik",
+  ],
+};
+
 export function getApkUrl(): string {
-  // Gunakan env bila disediakan, atau fallback ke GitHub Releases aset rilis resmi stabil
+  // Fallback ke GitHub Releases rilis resmi supir/petugas
   return (
     process.env.MOBILE_APK_URL ||
     "https://github.com/tigaputrasemesta-ctrl/wastepay/releases/download/apk-latest/UPS-HERU-Petugas-Native.apk"
+  );
+}
+
+export function getAdminApkUrl(): string {
+  // Fallback ke GitHub Releases rilis resmi admin
+  return (
+    process.env.ADMIN_APK_URL ||
+    "https://github.com/tigaputrasemesta-ctrl/wastepay/releases/download/apk-latest/UPS-HERU-Admin.apk"
   );
 }

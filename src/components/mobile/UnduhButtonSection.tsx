@@ -8,10 +8,14 @@ export default function UnduhButtonSection({
   apkUrl,
   versionName,
   versionCode,
+  label,
+  colorClass,
 }: {
   apkUrl: string | null;
   versionName: string;
   versionCode: number;
+  label?: string;
+  colorClass?: string;
 }) {
   const [isNative, setIsNative] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -42,10 +46,12 @@ export default function UnduhButtonSection({
       <a
         href={apkUrl}
         download
-        className="w-full flex items-center justify-center gap-2.5 py-4 px-6 rounded-2xl bg-emerald-700 hover:bg-emerald-800 active:scale-[0.99] text-white font-bold text-base shadow-sm transition-all"
+        className={`w-full flex items-center justify-center gap-2.5 py-4 px-6 rounded-2xl active:scale-[0.99] text-white font-bold text-base shadow-sm transition-all ${
+          colorClass || "bg-emerald-700 hover:bg-emerald-800"
+        }`}
       >
         <Download className="w-5 h-5" />
-        <span>Unduh Berkas APK ({versionName})</span>
+        <span>{label || `Unduh Berkas APK (${versionName})`}</span>
       </a>
     );
   }

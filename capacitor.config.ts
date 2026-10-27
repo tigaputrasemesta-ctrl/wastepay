@@ -1,16 +1,18 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 const isStaticExport = process.env.CAPACITOR_BUILD === "true";
+const appTarget = process.env.APP_TARGET || "admin";
+const isAdmin = appTarget === "admin";
 
 /**
- * Konfigurasi APK Native & Hybrid O2W Lapangan / WastePay.
- * Mendukung dual-mode:
- * 1. Static Native Bundle (offline-first, assets di folder out/)
- * 2. Live Hybrid Shell (memuat server https://upsheru.com dengan native bridge)
+ * Konfigurasi APK Native & Hybrid WastePay / UPS HERU
+ * Target build dapat diset via variabel env APP_TARGET:
+ * - APP_TARGET=admin   -> APK Khusus Admin (id.o2whero.admin, appStartPath: /dashboard)
+ * - APP_TARGET=lapangan -> APK Petugas Lapangan (id.o2whero.lapangan, appStartPath: /m)
  */
 const config: CapacitorConfig = {
-  appId: "id.o2whero.lapangan",
-  appName: "UPS HERU Lapangan",
+  appId: isAdmin ? "id.o2whero.admin" : "id.o2whero.lapangan",
+  appName: isAdmin ? "UPS HERU Admin" : "UPS HERU Lapangan",
   webDir: isStaticExport ? "out" : "public",
   server: isStaticExport
     ? {
@@ -27,7 +29,7 @@ const config: CapacitorConfig = {
     : {
         url: process.env.CAPACITOR_URL || "https://upsheru.com",
         cleartext: true,
-        appStartPath: "/m",
+        appStartPath: isAdmin ? "/dashboard" : "/m",
       },
   android: {
     allowMixedContent: true,
@@ -35,12 +37,12 @@ const config: CapacitorConfig = {
   },
   plugins: {
     LocalNotifications: {
-      iconColor: "#047857",
+      iconColor: isAdmin ? "#0284C7" : "#047857",
     },
     SplashScreen: {
-      launchShowDuration: 2000,
+      launchShowDuration: 1800,
       launchAutoHide: true,
-      backgroundColor: "#0F3D3E",
+      backgroundColor: isAdmin ? "#0B192C" : "#0F3D3E",
       showSpinner: false,
     },
   },

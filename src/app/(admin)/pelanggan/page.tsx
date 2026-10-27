@@ -11,6 +11,7 @@ import ModalApprovalPelanggan from "@/components/ModalApprovalPelanggan";
 import ModalStatusPelanggan from "@/components/ModalStatusPelanggan";
 import ModalHapusPelanggan from "@/components/ModalHapusPelanggan";
 import { Play, Pause } from "lucide-react";
+import { getAllCached } from "@/lib/offline-storage";
 
 type Kelurahan = { id: number; nama: string; kecamatan?: string | null };
 type Paket = { id: number; nama: string; harga: number | null };
@@ -203,6 +204,39 @@ function PelangganContent() {
   });
 
   const fetchData = useCallback(async () => {
+    // 1. Coba muat instan dari cache memori HP (IndexedDB) jika belum ada data
+    try {
+      const cached = await getAllCached<Pelanggan>("pelanggan");
+      if (cached && cached.length > 0) {
+        let list = cached;
+        if (search) {
+          const q = search.toLowerCase();
+          list = list.filter(
+            (p) =>
+              p.nama?.toLowerCase().includes(q) ||
+              p.kodePelanggan?.toLowerCase().includes(q) ||
+              p.noTelepon?.includes(q) ||
+              p.alamat?.toLowerCase().includes(q)
+          );
+        }
+        if (filterStatus) list = list.filter((p) => p.status === filterStatus);
+        if (filterZona) list = list.filter((p) => p.wilayah?.zonaId === parseInt(filterZona));
+        if (filterKelurahan) list = list.filter((p) => p.kelurahanId === parseInt(filterKelurahan));
+
+        setPelanggan(list);
+        setStatusCounts({
+          total: cached.length,
+          aktif: cached.filter((p) => p.status === "aktif").length,
+          calon: cached.filter((p) => p.status === "calon").length,
+          nonaktif: cached.filter((p) => p.status === "nonaktif").length,
+          libur: cached.filter((p) => p.status === "libur").length,
+        });
+        setLoading(false);
+      }
+    } catch {
+      // Abaikan jika IndexedDB belum diisi
+    }
+
     try {
       const params = new URLSearchParams();
       if (search) params.set("search", search);
@@ -255,8 +289,8 @@ function PelangganContent() {
       setKelurahanList(Array.isArray(kelurahanData) ? kelurahanData : []);
       setZonaList(Array.isArray(zonaData) ? zonaData : []);
     } catch (error) {
-      showToast("Gagal memuat data", "error");
-      console.error(error);
+      console.warn("[Pelanggan] Jaringan offline/gagal, tetap menggunakan data HP:", error);
+      showToast("Menggunakan data tersimpan di HP (Mode Offline)", "info");
     } finally {
       setLoading(false);
     }

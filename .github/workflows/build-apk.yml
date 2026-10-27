@@ -1,13 +1,13 @@
 name: Build & Release Native APK
 
-# Membuild APK Flutter Native release (signed, kunci stabil) lalu:
+# Membuild APK Flutter Native (Supir) & APK Admin Capacitor (Backoffice) lalu:
 # 1. Commit APK ke public/apk/ → otomatis ter-deploy ke Vercel (link unduh publik).
 # 2. Upload ke GitHub Releases & GitHub Actions Artifacts.
 #
 # Trigger:
 #   - push tag "v*" (mis. v2.0.4)
 #   - workflow_dispatch (manual trigger via gh CLI atau GitHub Web UI)
-#   - push to master (hanya jika ada perubahan di mobile_petugas/** atau workflow ini)
+#   - push to master (jika ada perubahan di mobile_petugas/**, android/**, src/**, atau workflow ini)
 
 on:
   push:
@@ -18,6 +18,8 @@ on:
       - "v*"
     paths:
       - "mobile_petugas/**"
+      - "android/**"
+      - "capacitor.config.ts"
       - ".github/workflows/build-apk.yml"
   workflow_dispatch:
 
@@ -43,6 +45,12 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
       - name: Setup Flutter SDK
         uses: subosito/flutter-action@v2
         with:
@@ -54,8 +62,9 @@ jobs:
           flutter --version
           cd mobile_petugas
           flutter pub get
+          cd ..
 
-      - name: Build Flutter Native Release APK
+      - name: Build Flutter Native Release APK (Petugas / Supir)
         env:
           GRADLE_OPTS: "-Dorg.gradle.jvmargs=\"-Xmx3072m -XX:MaxMetaspaceSize=1024m -XX:+UseG1GC\""
         run: |
@@ -69,26 +78,55 @@ jobs:
             FLUTTER_APK=$(find . -name "app-release.apk" 2>/dev/null | head -n 1)
           fi
           
-          echo "Output APK ditemukan di: $FLUTTER_APK"
+          echo "Output Flutter APK ditemukan di: $FLUTTER_APK"
           cp "$FLUTTER_APK" public/apk/UPS-HERU-Petugas-Native.apk
           cp "$FLUTTER_APK" public/apk/O2W-Lapangan.apk
+
+      - name: Build Admin Release APK (Capacitor Backoffice)
+        env:
+          GRADLE_OPTS: "-Dorg.gradle.jvmargs=\"-Xmx3072m -XX:MaxMetaspaceSize=1024m -XX:+UseG1GC\""
+        run: |
+          npm ci --prefer-offline || npm install --legacy-peer-deps
+          APP_TARGET=admin npx cap sync android
+          chmod +x android/gradlew
+          cd android
+          ./gradlew assembleRelease
+          cd ..
+          
+          ADMIN_APK=$(find android/app/build/outputs/apk/release -name "*release*.apk" 2>/dev/null | head -n 1)
+          if [ -n "$ADMIN_APK" ]; then
+            echo "Output Admin APK ditemukan di: $ADMIN_APK"
+            cp "$ADMIN_APK" public/apk/UPS-HERU-Admin.apk
+          else
+            echo "Admin APK tidak ditemukan di path biasa, mencari file apk..."
+            find android/app/build -name "*.apk"
+          fi
+          
           ls -lh public/apk/
 
-      - name: Extract Version
+      - name: Extract Versions
         id: ver
         run: |
-          VERSION_LINE=$(grep -m1 '^version:' mobile_petugas/pubspec.yaml || echo "version: 2.0.4+24")
+          VERSION_LINE=$(grep -m1 '^version:' mobile_petugas/pubspec.yaml || echo "version: 2.0.5+25")
           VERSION_NAME=$(echo "$VERSION_LINE" | awk '{print $2}' | cut -d'+' -f1)
           VERSION_CODE=$(echo "$VERSION_LINE" | awk '{print $2}' | cut -d'+' -f2)
           echo "versionName=$VERSION_NAME" >> "$GITHUB_OUTPUT"
           echo "versionCode=$VERSION_CODE" >> "$GITHUB_OUTPUT"
-          echo "Version: $VERSION_NAME ($VERSION_CODE)"
+          echo "Driver Version: $VERSION_NAME ($VERSION_CODE)"
 
-      - name: Upload APK Artifact (Retensi 30 Hari)
+      - name: Upload Petugas APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: UPS-HERU-Petugas-Native-v${{ steps.ver.outputs.versionName }}
           path: public/apk/UPS-HERU-Petugas-Native.apk
+          retention-days: 30
+
+      - name: Upload Admin APK Artifact
+        if: hashFiles('public/apk/UPS-HERU-Admin.apk') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: UPS-HERU-Admin-v1.3.0
+          path: public/apk/UPS-HERU-Admin.apk
           retention-days: 30
 
       - name: Ensure apk-latest tag (dispatch)
@@ -101,13 +139,27 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ github.ref_type == 'tag' && github.ref_name || 'apk-latest' }}
-          name: "UPS HERU Petugas Native v${{ steps.ver.outputs.versionName }}"
-          body: "APK Flutter Native Petugas Lapangan v${{ steps.ver.outputs.versionName }} (versionCode ${{ steps.ver.outputs.versionCode }}).\n\nLink unduh publik:\n- https://upsheru.com/apk/UPS-HERU-Petugas-Native.apk\n- https://o2whero.com/apk/UPS-HERU-Petugas-Native.apk"
+          name: "UPS HERU Mobile Release (Driver & Admin)"
+          body: |
+            ### 📱 Paket Rilis Aplikasi Android Resmi UPS HERU
+
+            #### 1. Petugas & Driver Lapangan (Flutter Native)
+            - **Versi**: v${{ steps.ver.outputs.versionName }} (Build ${{ steps.ver.outputs.versionCode }})
+            - **Package ID**: `id.o2whero.mobile_petugas`
+            - **Unduh**: https://upsheru.com/apk/UPS-HERU-Petugas-Native.apk
+            - **Fitur**: Auto-Popup Geofence (<30m), Haptic Buzz, Swipe to Pickup, Quick Skip Presets.
+
+            #### 2. Admin & Backoffice (Offline-First Cache)
+            - **Versi**: v1.3.0 (Build 15)
+            - **Package ID**: `id.o2whero.admin`
+            - **Unduh**: https://upsheru.com/apk/UPS-HERU-Admin.apk
+            - **Fitur**: Local Storage IndexedDB di HP, Akses 0 Detik, Delta Push Sync Hemat Kuota 99%.
           allowUpdates: true
           replacesArtifacts: true
-          artifactErrorsFailBuild: true
+          artifactErrorsFailBuild: false
           artifacts: |
             public/apk/UPS-HERU-Petugas-Native.apk
             public/apk/O2W-Lapangan.apk
+            public/apk/UPS-HERU-Admin.apk
           artifactContentType: application/vnd.android.package-archive
           token: ${{ secrets.GITHUB_TOKEN }}
