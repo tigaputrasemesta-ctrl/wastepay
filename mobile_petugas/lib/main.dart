@@ -9,8 +9,10 @@ import 'providers/survei_provider.dart';
 import 'providers/tracking_provider.dart';
 import 'providers/rute_provider.dart';
 import 'providers/update_provider.dart';
+import 'providers/admin_provider.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/dashboard/dashboard_screen.dart';
+import 'screens/admin/admin_dashboard_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,6 +33,7 @@ class WastePayPetugasApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => TrackingProvider()),
         ChangeNotifierProvider(create: (_) => RuteProvider()),
         ChangeNotifierProvider(create: (_) => UpdateProvider()),
+        ChangeNotifierProvider(create: (_) => AdminProvider()),
       ],
       child: MaterialApp(
         title: 'UPS HERU Lapangan',
@@ -79,6 +82,9 @@ class AuthGate extends StatelessWidget {
           ),
         );
       case AuthStatus.authenticated:
+        if (auth.user?.role == 'admin' || auth.user?.role == 'superadmin') {
+          return const AdminDashboardScreen();
+        }
         return const DashboardScreen();
       case AuthStatus.unauthenticated:
         return const LoginScreen();

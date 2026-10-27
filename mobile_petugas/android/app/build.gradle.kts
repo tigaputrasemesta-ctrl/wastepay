@@ -15,7 +15,10 @@ android {
     }
 
     defaultConfig {
-        applicationId = "id.o2whero.lapangan"
+        val customAppId = (project.findProperty("customAppId") as String?) ?: "id.o2whero.lapangan"
+        val customAppName = (project.findProperty("customAppName") as String?) ?: "UPS HERU Lapangan"
+        applicationId = customAppId
+        manifestPlaceholders["appName"] = customAppName
         // Target Android 14 (API 34) with minSdk 24 for 100% Android device compatibility
         minSdk = 24
         targetSdk = 34

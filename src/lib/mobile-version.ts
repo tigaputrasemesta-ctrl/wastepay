@@ -17,13 +17,13 @@ export const MOBILE_VERSION = {
 };
 
 export const ADMIN_VERSION = {
-  versionName: "1.3.0",
-  versionCode: 15,
+  versionName: "2.0.5",
+  versionCode: 25,
   changelog: [
-    "Aplikasi dedicated khusus Admin & Backoffice (id.o2whero.admin)",
-    "Penyimpanan data lokal di HP (Offline-First via IndexedDB) tanpa menarik ulang database setiap login",
+    "Aplikasi dedicated Flutter Native khusus Admin & Backoffice (id.o2whero.admin)",
+    "Penyimpanan data lokal di HP (Offline-First via SharedPreferences/Cache) tanpa menarik ulang database setiap login",
     "Fitur Delta Sync otomatis untuk mengunduh perubahan baru secara efisien & hemat kuota",
-    "Akses dashboard, data warga, rute & tagihan berkecepatan 0 detik",
+    "Akses dashboard, data warga, rute & peta armada berkecepatan 0 milidetik",
   ],
 };
 

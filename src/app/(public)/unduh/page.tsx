@@ -155,10 +155,10 @@ export default function UnduhPage() {
                   </div>
                   <div>
                     <span className="text-[11px] font-bold text-blue-700 uppercase tracking-wider block">
-                      Khusus Pengelola Backoffice
+                      Khusus Pengelola Backoffice (Flutter Native)
                     </span>
                     <h2 className="text-lg font-extrabold text-slate-900">
-                      UPS HERU Admin
+                      UPS HERU Admin Native
                     </h2>
                   </div>
                 </div>
@@ -205,7 +205,7 @@ export default function UnduhPage() {
                 apkUrl={adminApkUrl}
                 versionName={ADMIN_VERSION.versionName}
                 versionCode={ADMIN_VERSION.versionCode}
-                label="Unduh APK Admin (Offline Cache)"
+                label="Unduh APK Admin (Flutter Native)"
                 colorClass="bg-blue-600 hover:bg-blue-700"
               />
               <p className="text-center text-[10px] text-slate-400 mt-3">
