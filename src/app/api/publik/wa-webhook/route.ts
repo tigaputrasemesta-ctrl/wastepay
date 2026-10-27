@@ -51,6 +51,8 @@ export async function POST(request: Request) {
     let message = "";
     let name = "";
     let url = "";
+    let isGroup = false;
+    let fromMe = false;
 
     const contentType = request.headers.get("content-type") || "";
 
@@ -60,6 +62,8 @@ export async function POST(request: Request) {
       message = String(body.message || body.text || body.msg || "");
       name = String(body.name || body.pushname || "");
       url = String(body.url || body.media_url || body.image || "");
+      isGroup = Boolean(body.isGroup || body.group || sender.includes("-") || sender.includes("@g.us"));
+      fromMe = Boolean(body.fromMe || body.from_me || (body.device && sender === String(body.device)));
     } else {
       // Form-data atau x-www-form-urlencoded
       const formData = await request.formData().catch(() => null);
@@ -68,6 +72,9 @@ export async function POST(request: Request) {
         message = String(formData.get("message") || formData.get("text") || formData.get("msg") || "");
         name = String(formData.get("name") || formData.get("pushname") || "");
         url = String(formData.get("url") || formData.get("media_url") || formData.get("image") || "");
+        const rawDevice = formData.get("device") ? String(formData.get("device")) : "";
+        isGroup = Boolean(formData.get("isGroup") || formData.get("group") || sender.includes("-") || sender.includes("@g.us"));
+        fromMe = Boolean(formData.get("fromMe") || formData.get("from_me") || (rawDevice && sender === rawDevice));
       }
     }
 
@@ -78,6 +85,23 @@ export async function POST(request: Request) {
       );
     }
 
+    // Abaikan pesan grup atau pesan keluar dari perangkat sendiri agar bot tidak spam
+    if (isGroup) {
+      return NextResponse.json({
+        status: true,
+        sent: false,
+        message: "Pesan grup diabaikan oleh bot",
+      });
+    }
+
+    if (fromMe) {
+      return NextResponse.json({
+        status: true,
+        sent: false,
+        message: "Pesan keluar dari perangkat sendiri diabaikan",
+      });
+    }
+
     // Eksekusi kecerdasan bot berbasis database WastePay
     const result = await processIncomingWaMessage({
       sender,
@@ -86,7 +110,7 @@ export async function POST(request: Request) {
       url,
     });
 
-    // Kirim pesan balasan secara langsung via API Fonnte (POST https://api.fonnte.com/send)
+    // Kirim pesan balasan secara langsung via API Fonnte jika reply tidak kosong
     let sent = false;
     let sendError: string | undefined;
 
@@ -108,7 +132,7 @@ export async function POST(request: Request) {
       status: true,
       sent,
       error: sendError,
-      reply: result.reply,
+      reply: result.reply || null,
       intent: result.intent,
       pelangganId: result.pelangganId,
     });

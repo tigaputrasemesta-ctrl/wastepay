@@ -12,7 +12,7 @@ export interface IncomingWaPayload {
 
 export interface BotProcessResult {
   reply: string;
-  intent: "MENU" | "TAGIHAN" | "JADWAL" | "KOMPLAIN" | "DAFTAR" | "ADMIN" | "COVERAGE" | "FAQ";
+  intent: "MENU" | "TAGIHAN" | "JADWAL" | "KOMPLAIN" | "DAFTAR" | "ADMIN" | "COVERAGE" | "FAQ" | "NONE";
   pelangganId?: number;
   komplainId?: number;
 }
@@ -66,16 +66,18 @@ export async function processIncomingWaMessage(
   // 2. Intent Parsing (Klasifikasi Kebutuhan)
 
   // Intent A: DAFTAR BARU
-  if (
+  const isDaftarTrigger =
     lowerMsg === "daftar" ||
-    lowerMsg.startsWith("daftar") ||
+    lowerMsg.startsWith("daftar ") ||
+    lowerMsg.startsWith("daftar-") ||
     lowerMsg.includes("registrasi") ||
     lowerMsg.includes("pasang baru") ||
     lowerMsg.includes("daftar baru") ||
     lowerMsg.includes("mau langganan") ||
     lowerMsg.includes("mau berlangganan") ||
-    lowerMsg.includes("cara daftar")
-  ) {
+    lowerMsg.includes("cara daftar");
+
+  if (isDaftarTrigger && !lowerMsg.includes("tagihan") && !lowerMsg.includes("jadwal")) {
     const reply = [
       `Halo ${sapaanNama}, selamat datang di layanan pengangkutan sampah resmi *UPS HERU Depok*! 🚛`,
       ``,
@@ -94,17 +96,23 @@ export async function processIncomingWaMessage(
   }
 
   // Intent: COVERAGE AREA / JANGKAUAN WILAYAH
-  if (
-    lowerMsg.includes("coverage") ||
+  // Hindari over-matching kata umum seperti "lokasi", "area", "daerah" yang sering dipakai saat chat biasa
+  const isCoverageTrigger =
+    lowerMsg === "coverage" ||
+    lowerMsg.includes("coverage area") ||
     lowerMsg.includes("jangkauan") ||
-    lowerMsg.includes("area") ||
-    lowerMsg.includes("wilayah") ||
-    lowerMsg.includes("daerah") ||
-    lowerMsg.includes("lokasi") ||
-    lowerMsg.includes("bisa diangkut gak") ||
     lowerMsg.includes("melayani mana") ||
-    lowerMsg.includes("apakah melayani")
-  ) {
+    lowerMsg.includes("apakah melayani") ||
+    lowerMsg.includes("bisa diangkut gak") ||
+    lowerMsg.includes("bisa angkut gak") ||
+    lowerMsg.includes("area layanan") ||
+    lowerMsg.includes("wilayah layanan") ||
+    lowerMsg.includes("cakupan area") ||
+    lowerMsg.includes("cakupan wilayah") ||
+    (lowerMsg.includes("area") && (lowerMsg.includes("mana") || lowerMsg.includes("bisa") || lowerMsg.includes("tercover") || lowerMsg.includes("masuk"))) ||
+    (lowerMsg.includes("wilayah") && (lowerMsg.includes("mana") || lowerMsg.includes("bisa") || lowerMsg.includes("tercover") || lowerMsg.includes("masuk")));
+
+  if (isCoverageTrigger) {
     const reply = [
       `📍 *WILAYAH JANGKAUAN LAYANAN (COVERAGE AREA) — UPS HERU DEPOK* 🚛`,
       ``,
@@ -425,21 +433,44 @@ export async function processIncomingWaMessage(
     };
   }
 
-  // Intent F: MENU UTAMA / GREETING DEFAULT
-  const reply = [
-    `Halo ${sapaanNama}! 👋`,
-    `Selamat datang di Layanan WhatsApp Otomatis *UPS HERU (WastePay Depok)*.`,
-    ...(pelanggan ? [`📍 _Terdaftar: ${namaZona}_`] : []),
-    ``,
-    `Silakan pilih menu bantuan dengan membalas angka atau kata kunci:`,
-    `1️⃣ *Cek Tagihan & Bayar Online* (Ketik: 1 / Tagihan)`,
-    `2️⃣ *Jadwal Penjemputan Sampah* (Ketik: 2 / Jadwal)`,
-    `3️⃣ *Pusat Pengaduan / Lapor Sampah* (Akses: https://upsheru.com/pengaduan)`,
-    `4️⃣ *Bicara dengan Admin/CS* (Ketik: 4 / Admin)`,
-    ``,
-    `Atau akses langsung portal resmi kami di:`,
-    `🌐 *https://upsheru.com*`,
-  ].join("\n");
+  // Intent F: MENU UTAMA / BANTUAN SPESIFIK
+  // Hanya membalas jika pengguna secara eksplisit meminta panduan / menu
+  const isMenuTrigger =
+    lowerMsg === "menu" ||
+    lowerMsg === "#menu" ||
+    lowerMsg === "/menu" ||
+    lowerMsg === "/help" ||
+    lowerMsg === "/start" ||
+    lowerMsg === "bantuan" ||
+    lowerMsg === "help" ||
+    lowerMsg === "panduan" ||
+    lowerMsg === "info" ||
+    lowerMsg === "pilihan" ||
+    lowerMsg === "halo" ||
+    lowerMsg === "halo bot" ||
+    lowerMsg === "hai" ||
+    lowerMsg === "hello";
 
-  return { reply, intent: "MENU", pelangganId: pelanggan?.id };
+  if (isMenuTrigger) {
+    const reply = [
+      `Halo ${sapaanNama}! 👋`,
+      `Selamat datang di Layanan WhatsApp Otomatis *UPS HERU (WastePay Depok)*.`,
+      ...(pelanggan ? [`📍 _Terdaftar: ${namaZona}_`] : []),
+      ``,
+      `Silakan pilih menu bantuan dengan membalas angka atau kata kunci:`,
+      `1️⃣ *Cek Tagihan & Bayar Online* (Ketik: 1 / Tagihan)`,
+      `2️⃣ *Jadwal Penjemputan Sampah* (Ketik: 2 / Jadwal)`,
+      `3️⃣ *Pusat Pengaduan / Lapor Sampah* (Akses: https://upsheru.com/pengaduan)`,
+      `4️⃣ *Bicara dengan Admin/CS* (Ketik: 4 / Admin)`,
+      ``,
+      `Atau akses langsung portal resmi kami di:`,
+      `🌐 *https://upsheru.com*`,
+    ].join("\n");
+
+    return { reply, intent: "MENU", pelangganId: pelanggan?.id };
+  }
+
+  // Pesan obrolan biasa / non-keyword: Diam (silent fallback)
+  // Menghindari bot menyela obrolan atau memunculkan saran berulang-ulang saat warga sedang chat santai / chat dengan CS
+  return { reply: "", intent: "NONE", pelangganId: pelanggan?.id };
 }

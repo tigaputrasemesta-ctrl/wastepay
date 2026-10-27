@@ -244,4 +244,37 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
 
     expect(res.intent).toBe("JADWAL");
   });
+
+  it("11. Diam (silent fallback / intent NONE) jika pesan obrolan umum biasa atau non-keyword", async () => {
+    const obrolanBiasa = [
+      "terima kasih pak",
+      "oke siap makasih",
+      "p",
+      "selamat siang pak eko",
+      "lokasi rumah saya di seberang masjid ya",
+      "ini fotonya pak",
+    ];
+
+    for (const msg of obrolanBiasa) {
+      const res = await processIncomingWaMessage({
+        sender: "081299995555",
+        message: msg,
+      });
+      expect(res.intent).toBe("NONE");
+      expect(res.reply).toBe("");
+    }
+  });
+
+  it("12. Tetap menyajikan Menu Utama jika secara eksplisit meminta 'menu' atau 'bantuan'", async () => {
+    const perintahMenu = ["menu", "#menu", "/menu", "bantuan", "help", "panduan"];
+
+    for (const cmd of perintahMenu) {
+      const res = await processIncomingWaMessage({
+        sender: "081299994444",
+        message: cmd,
+      });
+      expect(res.intent).toBe("MENU");
+      expect(res.reply).toContain("Silakan pilih menu bantuan");
+    }
+  });
 });
