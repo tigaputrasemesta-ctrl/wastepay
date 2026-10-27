@@ -165,8 +165,8 @@ export async function tetapkanJadwalDanPetugasPelanggan({
       where: {
         petugasId: pid,
         aktif: true,
-        ...(zid ? { zonaId: zid } : {}),
-        ...(kid ? { kelurahanId: kid } : {}),
+        ...(zid ? { OR: [{ zonaId: zid }, { zonas: { some: { id: zid } } }] } : {}),
+        ...(kid ? { OR: [{ kelurahanId: kid }, { kelurahans: { some: { id: kid } } }] } : {}),
       },
     });
 
@@ -220,7 +220,10 @@ export async function tetapkanJadwalDanPetugasPelanggan({
   // Jika tetap belum ada targetRuteId, cari rute berdasarkan zona
   if (!targetRuteId && zid) {
     const ruteZona = await prisma.rute.findFirst({
-      where: { zonaId: zid, aktif: true },
+      where: {
+        aktif: true,
+        OR: [{ zonaId: zid }, { zonas: { some: { id: zid } } }],
+      },
     });
     if (ruteZona) {
       targetRuteId = ruteZona.id;

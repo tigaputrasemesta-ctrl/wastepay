@@ -45,6 +45,16 @@ const nextConfig: NextConfig = {
         destination: "/coverage",
         permanent: true,
       },
+      {
+        source: "/apk/UPS-HERU-Petugas-Native.apk",
+        destination: "https://github.com/tigaputrasemesta-ctrl/wastepay/releases/download/apk-latest/UPS-HERU-Petugas-Native.apk",
+        permanent: false,
+      },
+      {
+        source: "/apk/O2W-Lapangan.apk",
+        destination: "https://github.com/tigaputrasemesta-ctrl/wastepay/releases/download/apk-latest/O2W-Lapangan.apk",
+        permanent: false,
+      },
     ];
   },
 

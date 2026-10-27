@@ -17,6 +17,7 @@ import {
   isWaEnabled,
   kirimNotifikasi,
   kirimReportOwner,
+  kirimReportPembayaranApp,
   sudahKirimWa,
   templateLaporanPembayaranOwner,
   templatePembayaranDiterima,
@@ -150,8 +151,8 @@ export async function syncDuitkuPayment(
               metode: labelMetode,
               waktu: new Date(),
             });
-            await kirimReportOwner({
-              tipe: "laporan_pembayaran_owner",
+            await kirimReportPembayaranApp({
+              tipe: "laporan_pembayaran_app",
               judul: tOwner.judul,
               pesan: tOwner.pesan,
               pelangganId: tagihan.pelanggan.id,

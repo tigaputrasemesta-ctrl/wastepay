@@ -65,6 +65,14 @@ function buatPinTugas(t: TugasMap, urutan?: number, isSelected?: boolean) {
   const isSelesai = t.status === "diambil";
   const isKendala = t.status === "tidak_diangkut";
 
+  // 1. Sudah Selesai & Tidak Dipilih -> Cukup Titik Mini Halus (Peta Bersih)
+  if (isSelesai && !isSelected) {
+    const html = `
+      <div style="transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;background:rgba(5,150,105,0.45);border:1.2px solid rgba(255,255,255,0.7);cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.3);"></div>
+    `;
+    return L.divIcon({ className: "map-angkut-pin-done", html, iconSize: [1, 1] });
+  }
+
   let bgColor = "#0284c7"; // Sky 600
   let icon = typeof urutan === "number" ? `#${urutan}` : "🏠";
   let pulseHtml = "";
@@ -103,41 +111,43 @@ function buatPinTugas(t: TugasMap, urutan?: number, isSelected?: boolean) {
     <div style="transform:translate(-50%,-100%);text-align:center;cursor:pointer;position:relative;transition:all 0.2s ease;">
       ${pulseHtml}
       <div style="
-        width: 32px;
-        height: 32px;
+        width: ${isSelected ? "36px" : "26px"};
+        height: ${isSelected ? "36px" : "26px"};
         margin: 0 auto;
         border-radius: 9999px;
         background: ${bgColor};
-        border: 2.5px solid #ffffff;
+        border: 2px solid #ffffff;
         box-shadow: 0 4px 14px rgba(0,0,0,0.4);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 12px;
+        font-size: ${isSelected ? "13px" : "11px"};
         font-weight: 900;
         color: #ffffff;
         ${selectedRing}
       ">
         ${icon}
       </div>
+      ${isSelected ? `
       <div style="
         margin-top: 2px;
         font-family: ui-sans-serif, system-ui, sans-serif;
-        font-size: 9px;
+        font-size: 10px;
         font-weight: 800;
         color: #ffffff;
         background: ${isMenunggak && t.status === "terjadwal" ? "#881337" : "#0f172a"};
-        border: 1px solid rgba(255,255,255,0.25);
+        border: 1.5px solid rgba(255,255,255,0.4);
         border-radius: 9999px;
-        padding: 1.5px 6px;
+        padding: 2px 8px;
         white-space: nowrap;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.35);
-        max-width: 100px;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+        max-width: 110px;
         overflow: hidden;
         text-overflow: ellipsis;
       ">
         ${labelText}
       </div>
+      ` : ""}
     </div>
   `;
 

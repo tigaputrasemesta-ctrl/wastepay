@@ -135,96 +135,113 @@ function buatPinDriver() {
   return L.divIcon({ className: "gojek-driver-pin", html, iconSize: [1, 1] });
 }
 
-/** Pin Rumah Pelanggan Khas Gojek / Grab Multi-Drop */
-function buatPinRumah(t: GojekTugas, index: number, isTarget: boolean) {
+/** Pin Rumah Pelanggan Khas Gojek / Grab Multi-Drop (Hierarki Bersih Anti-Menumpuk) */
+function buatPinRumah(t: GojekTugas, index: number, isTarget: boolean, isUpcoming: boolean = false) {
   const isMenunggak = Boolean(t.tunggakan?.isMenunggak);
   const isSelesai = t.status === "diambil";
+  const icon = typeof t.urutan === "number" ? `#${t.urutan}` : `#${index + 1}`;
 
-  let bgColor = "#00880C"; // Gojek Forest Green
-  let border = "border: 2.5px solid #ffffff;";
-  let pulseHtml = "";
-  let icon = typeof t.urutan === "number" ? `#${t.urutan}` : `#${index + 1}`;
-
-  if (isMenunggak && t.status === "terjadwal") {
-    bgColor = "#DC2626"; // Red
-    border = "border: 2.5px solid #FECDD3;";
-    icon = "⛔";
-    pulseHtml = `
-      <div style="
-        position: absolute;
-        width: 48px;
-        height: 48px;
-        top: -24px;
-        left: -24px;
-        border-radius: 50%;
-        background: rgba(220, 38, 38, 0.35);
-        border: 1.5px solid #f87171;
-        animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
-      "></div>
+  // 1. Sudah Selesai -> Cukup Titik Mini Redup
+  if (isSelesai) {
+    const html = `
+      <div style="transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;background:rgba(5,150,105,0.45);border:1.2px solid rgba(255,255,255,0.7);cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.3);"></div>
     `;
-  } else if (isSelesai) {
-    bgColor = "#059669";
-    icon = "✓";
-  } else if (isTarget) {
-    bgColor = "#00AA13"; // Bright Gojek Green
-    pulseHtml = `
+    return L.divIcon({ className: "gojek-stop-pin-done", html, iconSize: [1, 1] });
+  }
+
+  // 2. Target Aktif (Rumah Tujuan Sekarang -> Pin Besar + Glowing Pulse + Label Nama)
+  if (isTarget) {
+    const bgColor = isMenunggak ? "#DC2626" : "#00AA13";
+    const pulseHtml = `
       <div style="
         position: absolute;
-        width: 50px;
-        height: 50px;
-        top: -25px;
-        left: -25px;
+        width: 54px;
+        height: 54px;
+        top: -27px;
+        left: -27px;
         border-radius: 50%;
-        background: rgba(0, 170, 19, 0.3);
-        border: 2px solid #00AA13;
+        background: ${isMenunggak ? "rgba(220, 38, 38, 0.35)" : "rgba(0, 170, 19, 0.35)"};
+        border: 2px solid ${isMenunggak ? "#ef4444" : "#22c55e"};
         animation: ping 1.8s infinite;
       "></div>
     `;
+
+    const html = `
+      <div style="transform:translate(-50%,-100%);text-align:center;cursor:pointer;position:relative;transform-origin:bottom center;filter:drop-shadow(0 6px 14px rgba(0,170,19,0.6));">
+        ${pulseHtml}
+        <div style="
+          width: 36px;
+          height: 36px;
+          margin: 0 auto;
+          border-radius: 50%;
+          background: ${bgColor};
+          border: 3px solid #FEF08A;
+          box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 13px;
+          font-weight: 900;
+          color: #ffffff;
+        ">
+          ${isMenunggak ? "⛔" : icon}
+        </div>
+        <div style="
+          margin-top: 3px;
+          font-family: ui-sans-serif, system-ui, sans-serif;
+          font-size: 10px;
+          font-weight: 800;
+          color: #ffffff;
+          background: ${isMenunggak ? "#991B1B" : "#00AA13"};
+          border: 1.5px solid #ffffff;
+          border-radius: 9999px;
+          padding: 2px 8px;
+          white-space: nowrap;
+          box-shadow: 0 3px 8px rgba(0,0,0,0.5);
+          max-width: 110px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        ">
+          ${t.nama.replace(/["&<>]/g, "")}
+        </div>
+      </div>
+    `;
+    return L.divIcon({ className: "gojek-stop-pin-target", html, iconSize: [1, 1] });
   }
 
-  const highlightScale = isTarget ? "transform: scale(1.25); filter: drop-shadow(0 6px 12px rgba(0,170,19,0.5));" : "";
+  // 3. 4 Stop Terdekat Berikutnya -> Pin Nomor Bersih (Tanpa Teks Nama agar Peta Bersih)
+  if (isUpcoming) {
+    const bgColor = isMenunggak ? "#DC2626" : "#0284C7";
+    const html = `
+      <div style="transform:translate(-50%,-50%);text-align:center;cursor:pointer;">
+        <div style="
+          width: 26px;
+          height: 26px;
+          margin: 0 auto;
+          border-radius: 50%;
+          background: ${bgColor};
+          border: 2px solid #ffffff;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 11px;
+          font-weight: 900;
+          color: #ffffff;
+        ">
+          ${isMenunggak ? "!" : (typeof t.urutan === "number" ? t.urutan : index + 1)}
+        </div>
+      </div>
+    `;
+    return L.divIcon({ className: "gojek-stop-pin-upcoming", html, iconSize: [1, 1] });
+  }
 
+  // 4. Antrean Jauh -> Titik Bulat Halus Mini (14px)
+  const dotColor = isMenunggak ? "rgba(220,38,38,0.7)" : "rgba(2,132,199,0.65)";
   const html = `
-    <div style="transform:translate(-50%,-100%);text-align:center;cursor:pointer;position:relative;${highlightScale}">
-      ${pulseHtml}
-      <div style="
-        width: 32px;
-        height: 32px;
-        margin: 0 auto;
-        border-radius: 50%;
-        background: ${bgColor};
-        ${border}
-        box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 12px;
-        font-weight: 900;
-        color: #ffffff;
-      ">
-        ${icon}
-      </div>
-      <div style="
-        margin-top: 2px;
-        font-family: ui-sans-serif, system-ui, sans-serif;
-        font-size: 9px;
-        font-weight: 800;
-        color: #ffffff;
-        background: ${isMenunggak && t.status === "terjadwal" ? "#991B1B" : "#111827"};
-        border: 1px solid rgba(255,255,255,0.25);
-        border-radius: 9999px;
-        padding: 1px 6px;
-        white-space: nowrap;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-        max-width: 90px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      ">
-        ${t.nama.replace(/["&<>]/g, "")}
-      </div>
-    </div>
+    <div style="transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:${dotColor};border:1.5px solid #ffffff;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.3);"></div>
   `;
-  return L.divIcon({ className: "gojek-stop-pin", html, iconSize: [1, 1] });
+  return L.divIcon({ className: "gojek-stop-pin-distant", html, iconSize: [1, 1] });
 }
 
 /** Map Controller for Camera Movements */
@@ -816,21 +833,26 @@ export default function GojekDriverCockpit({
             </>
           )}
 
-          {/* Customer House Markers */}
-          {validTasks.map((t, idx) => (
-            <Marker
-              key={`pin-${t.id}`}
-              position={[t.latitude, t.longitude]}
-              icon={buatPinRumah(t, idx, currentTask?.id === t.id)}
-              eventHandlers={{
-                click: () => {
-                  setFocusPos([t.latitude, t.longitude]);
-                  onSelectTarget?.(t.id);
-                  if (sheetMode === "hidden") setSheetMode("compact");
-                },
-              }}
-            />
-          ))}
+          {/* Customer House Markers (Hierarki Bersih Anti-Menumpuk) */}
+          {validTasks.map((t, idx) => {
+            const isTarget = currentTask?.id === t.id;
+            const currentIdx = validTasks.findIndex((vt) => vt.id === currentTask?.id);
+            const isUpcoming = currentIdx >= 0 && idx > currentIdx && idx <= currentIdx + 4;
+            return (
+              <Marker
+                key={`pin-${t.id}`}
+                position={[t.latitude, t.longitude]}
+                icon={buatPinRumah(t, idx, isTarget, isUpcoming)}
+                eventHandlers={{
+                  click: () => {
+                    setFocusPos([t.latitude, t.longitude]);
+                    onSelectTarget?.(t.id);
+                    if (sheetMode === "hidden") setSheetMode("compact");
+                  },
+                }}
+              />
+            );
+          })}
         </MapContainer>
 
         {/* ── 3. FLOATING ACTION BUTTONS (FABS) ── */}

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
@@ -11,6 +12,7 @@ import '../../models/tugas_model.dart';
 import '../../providers/pengangkutan_provider.dart';
 import '../../providers/tracking_provider.dart';
 import '../../services/routing_service.dart';
+import '../../widgets/swipe_to_pickup_slider.dart';
 
 class PetaDriverScreen extends StatefulWidget {
   final int? initialRuteId;
@@ -44,6 +46,8 @@ class _PetaDriverScreenState extends State<PetaDriverScreen> {
 
   // Proximity threshold dalam meter
   static const double _arrivalThresholdMeters = 30.0;
+  int? _lastAlertedTargetId;
+  bool _showQuickSkipPresets = false;
 
   // Koordinat default Depok / Cilodong jika GPS belum terdeteksi
   static const LatLng _defaultCenter = LatLng(-6.424838, 106.832667);
@@ -274,6 +278,40 @@ class _PetaDriverScreenState extends State<PetaDriverScreen> {
     }
   }
 
+  Future<void> _quickSkipPreset(
+    TugasModel tugas,
+    String status,
+    String alasan,
+    LatLng driverPos,
+  ) async {
+    HapticFeedback.mediumImpact();
+    final provider = context.read<PengangkutanProvider>();
+    final success = await provider.lewatiRumah(tugas.id, status, alasan);
+    if (!mounted) return;
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.info_outline_rounded, color: Colors.white, size: 20),
+              const SizedBox(width: 8),
+              Expanded(child: Text("Dilewati: $alasan")),
+            ],
+          ),
+          backgroundColor: AppColors.warning,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+
+      final remaining = provider.tugasList.where((t) => t.isTerjadwal && t.id != tugas.id).toList();
+      if (remaining.isNotEmpty) {
+        _selectTarget(remaining.first, driverPos);
+      }
+    }
+  }
+
   void _hubungiWA(TugasModel tugas) async {
     final phone = tugas.pelanggan.noTelepon;
     if (phone == null || phone.trim().isEmpty) {
@@ -376,15 +414,16 @@ class _PetaDriverScreenState extends State<PetaDriverScreen> {
         : null;
     final isArrived = distanceMeters != null && distanceMeters <= _arrivalThresholdMeters;
 
-    // Siapkan daftar koordinat antrean rute (Polyline Antrean Sisa, berawal dari posisi truk)
-    final queuePoints = <LatLng>[driverPos];
-    for (final t in pendingTasks) {
-      if (t.pelanggan.hasCoordinates) {
-        queuePoints.add(LatLng(t.pelanggan.latitude!, t.pelanggan.longitude!));
-      }
+    // Geofence Proximity Alert: Getar saat pertama kali masuk ke radius kedatangan (< 30m)
+    if (isArrived && _activeTarget != null && _lastAlertedTargetId != _activeTarget!.id) {
+      _lastAlertedTargetId = _activeTarget!.id;
+      HapticFeedback.vibrate();
+      Future.delayed(const Duration(milliseconds: 250), () {
+        HapticFeedback.heavyImpact();
+      });
     }
 
-    // Bangun Markers
+    // Bangun Markers dengan Skema Bersih Anti-Menumpuk (Hierarki 4 Tingkat)
     final markers = <Marker>[];
 
     // 1. Marker Posisi Truk Driver (Live Pulse Beacon)
@@ -431,101 +470,177 @@ class _PetaDriverScreenState extends State<PetaDriverScreen> {
       ),
     );
 
-    // 2. Marker Rumah Pelanggan Berurutan (Gojek Cockpit Style Pin)
+    // Hitung posisi target aktif dalam antrean
+    final activeTargetId = _activeTarget?.id;
+    final activeIndexInPending = pendingTasks.indexWhere((t) => t.id == activeTargetId);
+
+    // 2. Marker Rumah Pelanggan (Anti-Menumpuk & Anti-Spiderweb)
     for (int i = 0; i < allTasks.length; i++) {
       final t = allTasks[i];
       if (!t.pelanggan.hasCoordinates) continue;
 
       final pos = LatLng(t.pelanggan.latitude!, t.pelanggan.longitude!);
-      final isTarget = _activeTarget?.id == t.id;
+      final isTarget = activeTargetId == t.id;
       final isSelesai = t.isSelesai;
       final isMenunggak = t.tunggakan.isMenunggak;
-
       final seqNum = t.urutan ?? (i + 1);
-      Color pinBg;
-      String pinIcon;
-      if (isSelesai) {
-        pinBg = const Color(0xFF059669); // Emerald
-        pinIcon = "✓";
-      } else if (isMenunggak) {
-        pinBg = const Color(0xFFDC2626); // Red
-        pinIcon = "⛔";
-      } else if (isTarget) {
-        pinBg = const Color(0xFF00AA13); // Gojek Green
-        pinIcon = "#$seqNum";
-      } else {
-        pinBg = const Color(0xFF0284C7); // Sky Blue
-        pinIcon = "#$seqNum";
-      }
 
-      markers.add(
-        Marker(
-          point: pos,
-          width: isTarget ? 68 : 54,
-          height: isTarget ? 72 : 58,
-          child: GestureDetector(
-            onTap: () => _selectTarget(t, driverPos),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: isTarget ? 38 : 30,
-                  height: isTarget ? 38 : 30,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: pinBg,
-                    border: Border.all(
-                      color: isTarget ? Colors.yellowAccent : Colors.white,
-                      width: isTarget ? 3 : 2,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: isTarget
-                            ? const Color(0xFF00AA13).withValues(alpha: 0.6)
-                            : Colors.black.withValues(alpha: 0.3),
-                        blurRadius: isTarget ? 10 : 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Center(
-                    child: Text(
-                      pinIcon,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: isTarget ? 13 : 11,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ),
+      // TINGKAT 1: SUDAH SELESAI -> Cukup titik mini redup (tidak menutupi peta)
+      if (isSelesai) {
+        markers.add(
+          Marker(
+            point: pos,
+            width: 14,
+            height: 14,
+            child: GestureDetector(
+              onTap: () => _selectTarget(t, driverPos),
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFF059669).withValues(alpha: 0.45),
+                  border: Border.all(color: Colors.white60, width: 1.0),
                 ),
-                Container(
-                  margin: const EdgeInsets.only(top: 2),
-                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
-                  decoration: BoxDecoration(
-                    color: isTarget
-                        ? const Color(0xFF00AA13)
-                        : (isMenunggak ? const Color(0xFF991B1B) : Colors.black87),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.white38, width: 0.8),
-                  ),
-                  child: Text(
-                    t.pelanggan.nama,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 9,
-                      fontWeight: FontWeight.w700,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
-        ),
-      );
+        );
+        continue;
+      }
+
+      // Cari urutan relatif dalam antrean
+      final pendingIndex = pendingTasks.indexWhere((pt) => pt.id == t.id);
+      final isUpcoming = pendingIndex >= 0 &&
+          activeIndexInPending >= 0 &&
+          (pendingIndex > activeIndexInPending && pendingIndex <= activeIndexInPending + 4);
+
+      // TINGKAT 2: TARGET AKTIF (Rumah Tujuan Saat Ini -> Pin Besar + Label Nama)
+      if (isTarget) {
+        markers.add(
+          Marker(
+            point: pos,
+            width: 84,
+            height: 74,
+            child: GestureDetector(
+              onTap: () => _selectTarget(t, driverPos),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isMenunggak ? const Color(0xFFDC2626) : const Color(0xFF00AA13),
+                      border: Border.all(color: Colors.yellowAccent, width: 3.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: (isMenunggak ? Colors.red : const Color(0xFF00AA13))
+                              .withValues(alpha: 0.7),
+                          blurRadius: 14,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Text(
+                        isMenunggak ? "⛔" : "#$seqNum",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 2),
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: isMenunggak ? const Color(0xFF991B1B) : const Color(0xFF00AA13),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.white, width: 1.2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.4),
+                          blurRadius: 5,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      t.pelanggan.nama,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      } else if (isUpcoming) {
+        // TINGKAT 3: 4 STOP TERDEKAT BERIKUTNYA -> Pin Nomor Bersih (Tanpa Teks Nama agar Jalan Terlihat)
+        markers.add(
+          Marker(
+            point: pos,
+            width: 28,
+            height: 28,
+            child: GestureDetector(
+              onTap: () => _selectTarget(t, driverPos),
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isMenunggak ? const Color(0xFFDC2626) : const Color(0xFF0284C7),
+                  border: Border.all(color: Colors.white, width: 2.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.35),
+                      blurRadius: 5,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Text(
+                    isMenunggak ? "!" : "$seqNum",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      } else {
+        // TINGKAT 4: ANTREAN JAUH -> Titik Bulat Halus Mini (Peta Bersih 100%)
+        markers.add(
+          Marker(
+            point: pos,
+            width: 14,
+            height: 14,
+            child: GestureDetector(
+              onTap: () => _selectTarget(t, driverPos),
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isMenunggak
+                      ? const Color(0xFFDC2626).withValues(alpha: 0.7)
+                      : const Color(0xFF0284C7).withValues(alpha: 0.6),
+                  border: Border.all(color: Colors.white, width: 1.2),
+                ),
+              ),
+            ),
+          ),
+        );
+      }
     }
 
     return Scaffold(
@@ -548,19 +663,7 @@ class _PetaDriverScreenState extends State<PetaDriverScreen> {
                 maxZoom: 19,
               ),
 
-              // Rute Keseluruhan Sisa Antrean (Garis Abu/Putih Lembut)
-              if (queuePoints.length > 1)
-                PolylineLayer(
-                  polylines: [
-                    Polyline(
-                      points: queuePoints,
-                      color: Colors.blueGrey.withValues(alpha: 0.45),
-                      strokeWidth: 3.0,
-                    ),
-                  ],
-                ),
-
-              // Rute Jalan Raya Nyata Mandiri via OSRM (Garis Hijau Navigasi Utama)
+              // Rute Jalan Raya Nyata Mandiri via OSRM (Garis Hijau Navigasi Utama Jalan)
               if (_currentRoadRoute != null && _currentRoadRoute!.points.isNotEmpty)
                 PolylineLayer(
                   polylines: [
@@ -831,192 +934,306 @@ class _PetaDriverScreenState extends State<PetaDriverScreen> {
             ),
           ),
 
-          // 4. BOTTOM COCKPIT HUD CARD (Mandiri Tanpa Perlu Keluar App)
+          // 4. BOTTOM COCKPIT HUD CARD (Modern Floating Cockpit & Swipe to Pickup)
           if (_activeTarget != null)
             Positioned(
               left: 12,
               right: 12,
               bottom: 16,
-              child: Card(
-                elevation: 12,
-                color: const Color(0xFF0F172A), // Dark Slate Modern HUD
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(22),
-                  side: BorderSide(
-                    color: isArrived ? const Color(0xFF00AA13) : const Color(0xFF334155),
-                    width: isArrived ? 2.5 : 1.0,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0F172A).withValues(alpha: 0.98), // Dark Slate Modern HUD
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: isArrived
+                        ? const Color(0xFF00AA13)
+                        : const Color(0xFF334155),
+                    width: isArrived ? 2.5 : 1.2,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: isArrived
+                          ? const Color(0xFF00AA13).withValues(alpha: 0.35)
+                          : Colors.black.withValues(alpha: 0.5),
+                      blurRadius: isArrived ? 18 : 12,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header Kartu Pelanggan
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Status Badge Pill (Radius Geofence / Navigasi Jarak)
+                    if (isArrived)
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF00AA13).withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: const Color(0xFF00AA13), width: 1.2),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Color(0xFF00AA13),
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            const Text(
+                              "📍 TIBA DI RADIUS PENJEMPUTAN (< 30m)",
+                              style: TextStyle(
+                                color: Color(0xFF4ADE80),
+                                fontSize: 11,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    else
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3.5),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: Colors.blue.shade400, width: 0.8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.navigation_rounded, color: Colors.lightBlueAccent, size: 12),
+                            const SizedBox(width: 4),
+                            Text(
+                              "Tujuan Stop #${_activeTarget!.urutan ?? 1} • ${distanceMeters != null ? (distanceMeters < 1000 ? '${distanceMeters.round()} m lagi' : '${(distanceMeters / 1000).toStringAsFixed(1)} km lagi') : 'Menghitung'}",
+                              style: const TextStyle(
+                                color: Colors.lightBlueAccent,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    // Header Pelanggan & Kontak
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: isArrived
+                                          ? const Color(0xFF00AA13)
+                                          : Colors.blue.shade700,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      "#${_activeTarget!.urutan ?? 1}",
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      _activeTarget!.pelanggan.nama,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w900,
+                                        letterSpacing: -0.2,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 3),
+                              Text(
+                                _activeTarget!.pelanggan.alamat,
+                                style: const TextStyle(color: Colors.white70, fontSize: 12),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Tombol Hubungi Warga
+                        Row(
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.chat_bubble_rounded, color: Color(0xFF25D366), size: 22),
+                              tooltip: "Chat WhatsApp",
+                              constraints: const BoxConstraints(),
+                              padding: const EdgeInsets.all(6),
+                              onPressed: () => _hubungiWA(_activeTarget!),
+                            ),
+                            const SizedBox(width: 4),
+                            IconButton(
+                              icon: const Icon(Icons.phone_rounded, color: Colors.lightBlueAccent, size: 22),
+                              tooltip: "Telepon Warga",
+                              constraints: const BoxConstraints(),
+                              padding: const EdgeInsets.all(6),
+                              onPressed: () => _teleponPelanggan(_activeTarget!),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+
+                    // Patokan Lokasi & Warning Tunggakan
+                    if (_activeTarget!.pelanggan.patokanLokasi != null || _activeTarget!.tunggakan.isMenunggak) ...[
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 4,
                         children: [
-                          Expanded(
+                          if (_activeTarget!.pelanggan.patokanLokasi != null)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                "📍 ${_activeTarget!.pelanggan.patokanLokasi}",
+                                style: const TextStyle(color: Colors.white, fontSize: 11),
+                              ),
+                            ),
+                          if (_activeTarget!.tunggakan.isMenunggak)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: Colors.red.shade900,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                "⛔ Menunggak ${_activeTarget!.tunggakan.jumlahBulan} bln",
+                                style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
+
+                    const SizedBox(height: 12),
+
+                    // 5. SLIDER SWIPE TO PICKUP (GESTURE DRIVER RAMAH 1-TANGAN)
+                    SwipeToPickupSlider(
+                      label: isArrived ? "Geser untuk Selesai Angkut" : "Geser Angkut (Tiba di Lokasi)",
+                      confirmedLabel: "Sampah Berhasil Diangkut! ✓",
+                      activeColor: isArrived ? const Color(0xFF00AA13) : const Color(0xFF0284C7),
+                      isMenunggak: _activeTarget!.tunggakan.isMenunggak,
+                      onConfirmed: () => _handleSelesaiAngkut(_activeTarget!, driverPos),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    // 6. QUICK SKIP 1-KETUKAN (CHIPS PRESET TANPA MENGETIK)
+                    Row(
+                      children: [
+                        const Text(
+                          "Lewati:",
+                          style: TextStyle(color: Colors.white54, fontSize: 11, fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
                             child: Row(
                               children: [
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: isArrived
-                                        ? const Color(0xFF00AA13)
-                                        : Colors.blue.shade800,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Icon(
-                                    isArrived ? Icons.check_circle_rounded : Icons.home_rounded,
-                                    color: Colors.white,
-                                    size: 20,
+                                ActionChip(
+                                  avatar: const Text("🚯", style: TextStyle(fontSize: 12)),
+                                  label: const Text("Sampah Kosong", style: TextStyle(fontSize: 11, color: Colors.white)),
+                                  backgroundColor: const Color(0xFF1E293B),
+                                  side: const BorderSide(color: Color(0xFF475569)),
+                                  padding: EdgeInsets.zero,
+                                  onPressed: () => _quickSkipPreset(
+                                    _activeTarget!,
+                                    "kosong",
+                                    "Rumah kosong / tidak ada sampah di luar",
+                                    driverPos,
                                   ),
                                 ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        _activeTarget!.pelanggan.nama,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w900,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      Text(
-                                        _activeTarget!.pelanggan.alamat,
-                                        style: const TextStyle(color: Colors.white70, fontSize: 12),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ],
+                                const SizedBox(width: 6),
+                                ActionChip(
+                                  avatar: const Text("🔒", style: TextStyle(fontSize: 12)),
+                                  label: const Text("Pagar Gembok", style: TextStyle(fontSize: 11, color: Colors.white)),
+                                  backgroundColor: const Color(0xFF1E293B),
+                                  side: const BorderSide(color: Color(0xFF475569)),
+                                  padding: EdgeInsets.zero,
+                                  onPressed: () => _quickSkipPreset(
+                                    _activeTarget!,
+                                    "tidak_diangkut",
+                                    "Pagar terkunci / tidak bisa diakses",
+                                    driverPos,
                                   ),
+                                ),
+                                const SizedBox(width: 6),
+                                ActionChip(
+                                  avatar: const Text("🚧", style: TextStyle(fontSize: 12)),
+                                  label: const Text("Akses Ditutup", style: TextStyle(fontSize: 11, color: Colors.white)),
+                                  backgroundColor: const Color(0xFF1E293B),
+                                  side: const BorderSide(color: Color(0xFF475569)),
+                                  padding: EdgeInsets.zero,
+                                  onPressed: () => _quickSkipPreset(
+                                    _activeTarget!,
+                                    "tidak_diangkut",
+                                    "Akses jalan tertutup / tidak muat truk",
+                                    driverPos,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                ActionChip(
+                                  label: const Text("Lainnya...", style: TextStyle(fontSize: 11, color: Colors.amberAccent)),
+                                  backgroundColor: const Color(0xFF1E293B),
+                                  side: const BorderSide(color: Colors.amberAccent),
+                                  padding: EdgeInsets.zero,
+                                  onPressed: () => _handleLewatiDialog(_activeTarget!, driverPos),
                                 ),
                               ],
                             ),
                           ),
-
-                          // Tombol WhatsApp & Telepon Cepat
-                          Row(
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.chat_bubble_rounded, color: Color(0xFF25D366), size: 22),
-                                tooltip: "Chat WhatsApp",
-                                onPressed: () => _hubungiWA(_activeTarget!),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.phone_rounded, color: Colors.lightBlueAccent, size: 22),
-                                tooltip: "Telepon Warga",
-                                onPressed: () => _teleponPelanggan(_activeTarget!),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-
-                      // Patokan & Peringatan Tunggakan
-                      if (_activeTarget!.pelanggan.patokanLokasi != null || _activeTarget!.tunggakan.isMenunggak) ...[
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 6,
-                          runSpacing: 4,
-                          children: [
-                            if (_activeTarget!.pelanggan.patokanLokasi != null)
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  "📍 ${_activeTarget!.pelanggan.patokanLokasi}",
-                                  style: const TextStyle(color: Colors.white, fontSize: 11),
-                                ),
-                              ),
-                            if (_activeTarget!.tunggakan.isMenunggak)
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                                decoration: BoxDecoration(
-                                  color: Colors.red.shade900,
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  "⛔ Menunggak ${_activeTarget!.tunggakan.jumlahBulan} bln",
-                                  style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                          ],
                         ),
                       ],
+                    ),
 
-                      const SizedBox(height: 14),
-
-                      // TOMBOL UTAMA AKSI DRIVER (MANDIRI 1-KETUKAN)
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 3,
-                            child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: isArrived ? const Color(0xFF00AA13) : const Color(0xFF0284C7),
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 14),
-                                elevation: isArrived ? 6 : 2,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                              ),
-                              icon: Icon(
-                                isArrived ? Icons.check_circle_rounded : Icons.check_rounded,
-                                size: 22,
-                              ),
-                              label: Text(
-                                isArrived ? "✓ SELESAI ANGKUT SAMPAH" : "SELESAI ANGKUT (TIBA)",
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                              onPressed: () => _handleSelesaiAngkut(_activeTarget!, driverPos),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          // Tombol Lewati
-                          OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: Colors.amberAccent,
-                              side: const BorderSide(color: Colors.amberAccent),
-                              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                            ),
-                            onPressed: () => _handleLewatiDialog(_activeTarget!, driverPos),
-                            child: const Text("Lewati", style: TextStyle(fontWeight: FontWeight.bold)),
-                          ),
-                        ],
-                      ),
-
-                      // Optional external Google Maps fallback (hanya link kecil, tidak dipaksa keluar)
-                      Center(
-                        child: TextButton.icon(
-                          onPressed: () => _openExternalGoogleMaps(_activeTarget!),
-                          icon: const Icon(Icons.open_in_new_rounded, size: 12, color: Colors.white54),
-                          label: const Text(
-                            "Opsi: Buka di Google Maps Eksternal",
-                            style: TextStyle(color: Colors.white54, fontSize: 10),
-                          ),
+                    // External Google Maps fallback
+                    Center(
+                      child: TextButton.icon(
+                        onPressed: () => _openExternalGoogleMaps(_activeTarget!),
+                        icon: const Icon(Icons.open_in_new_rounded, size: 12, color: Colors.white38),
+                        label: const Text(
+                          "Buka di Google Maps Eksternal",
+                          style: TextStyle(color: Colors.white38, fontSize: 10),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),

@@ -104,6 +104,30 @@ export function getPembayaranReportTargets(): string[] {
 }
 
 /**
+ * Target penerima Laporan Pembayaran via Aplikasi & Payment Gateway:
+ * - Grup WhatsApp: "UPS HERU PEMBAYARAN VIA APP" (120363432695009362@g.us)
+ * - Japri: Owner (081532843224) & Superadmin (085716251003)
+ */
+export function getPembayaranAppReportTargets(): string[] {
+  const sources = [
+    process.env.WA_GROUP_PEMBAYARAN_APP_ID?.trim() || "120363432695009362@g.us",
+    ...getInternalReportPhones(),
+  ].filter(Boolean) as string[];
+
+  const cleaned = new Set<string>();
+  for (const src of sources) {
+    const parts = src.split(/[,;\s]+/);
+    for (const part of parts) {
+      const target = cleanTarget(part);
+      if (target.length >= 9) {
+        cleaned.add(target);
+      }
+    }
+  }
+  return Array.from(cleaned);
+}
+
+/**
  * Target penerima Laporan Pendaftaran Baru:
  * - Grup WhatsApp: "UPS HERU PELANGGAN DAFTAR BARU" (120363432214955370@g.us)
  * - Japri: Owner (081532843224) & Superadmin (085716251003)
@@ -814,6 +838,33 @@ export async function kirimReportPembayaran(params: {
       });
     } catch (err) {
       console.error(`[WA Report Pembayaran] Gagal kirim ke ${target}:`, err);
+    }
+  }
+}
+
+/**
+ * Kirim notifikasi / report pembayaran via App / Payment Gateway ke Grup WA "UPS HERU PEMBAYARAN VIA APP", Owner, dan Superadmin.
+ */
+export async function kirimReportPembayaranApp(params: {
+  tipe: string;
+  judul: string;
+  pesan: string;
+  pelangganId?: number | null;
+  createdById?: number | null;
+}): Promise<void> {
+  const targets = getPembayaranAppReportTargets();
+  for (const target of targets) {
+    try {
+      await kirimNotifikasi({
+        tipe: params.tipe,
+        judul: params.judul,
+        pesan: params.pesan,
+        noTelepon: target,
+        pelangganId: params.pelangganId ?? null,
+        createdById: params.createdById ?? null,
+      });
+    } catch (err) {
+      console.error(`[WA Report Pembayaran App] Gagal kirim ke ${target}:`, err);
     }
   }
 }

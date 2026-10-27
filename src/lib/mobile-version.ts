@@ -10,24 +10,24 @@
  * unduh nonaktif (hanya info "versi baru tersedia").
  */
 export const MOBILE_VERSION = {
-  versionName: "2.0.4",
-  versionCode: 24,
+  versionName: "2.0.5",
+  versionCode: 25,
   /** Di bawah versi ini APK dianggap terlalu lama → update wajib (blocking). */
   minVersionCode: 15,
   changelog: [
+    "Auto-Popup Geofence radius penjemputan (< 30m) dengan respon getar Haptic Buzz",
+    "Fitur Swipe to Pickup (Slide to Confirm) anti salah sentuh untuk supir armada",
+    "Quick Skip Presets 1-ketukan tanpa mengetik (Sampah Kosong, Pagar Gembok, Akses Ditutup)",
+    "Modernisasi tampilan UI Driver Cockpit (elevasi halus, kontras tinggi, navigasi dinamis)",
     "Urutan rute fisik searah jalur jalan terdekat Nearest Neighbor (#1, #2, dst.)",
     "Integrasi jadwal 3 armada (Ago, Piat, Raka) mencakup 23 blok lengkap",
-    "Navigasi rute hari standby / hari libur dengan tombol pintas muat tugas besok",
-    "Badge armada mobil dan plat nomor pada daftar rute driver",
-    "Koneksi backend canonical upsheru.com dan autentikasi case-insensitive",
-    "Navigasi Rute Mandiri In-App Driver Cockpit dengan OSRM & proximity arrival",
   ],
 };
 
 export function getApkUrl(): string {
-  // Default: APK di-serve publik dari folder public/apk/
+  // Gunakan env bila disediakan, atau fallback ke GitHub Releases aset rilis resmi stabil
   return (
     process.env.MOBILE_APK_URL ||
-    "/apk/UPS-HERU-Petugas-Native.apk"
+    "https://github.com/tigaputrasemesta-ctrl/wastepay/releases/download/apk-latest/UPS-HERU-Petugas-Native.apk"
   );
 }
