@@ -20,6 +20,17 @@ class AdminSyncService {
   DateTime? get lastDownloadTime => _lastDownloadTime;
   int get totalCached => _cachedPelanggan.length;
 
+  static Future<Map<String, String>> _buildHeaders() async {
+    final token = await TokenStorage.getToken();
+    return {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+      if (token != null && token.isNotEmpty) "Authorization": "Bearer $token",
+      if (token != null && token.isNotEmpty)
+        "Cookie": "session=$token; auth-token=$token; __Host-session=$token",
+    };
+  }
+
   /// Inisialisasi: memuat cache lokal dari SharedPreferences
   Future<void> init() async {
     try {
@@ -44,53 +55,67 @@ class AdminSyncService {
   }
 
   /// Download Snapshot Master Penuh dari server
+  /// Dilengkapi fallback otomatis ke /api/pelanggan jika endpoint sync mengalami kendala
   Future<bool> downloadMaster() async {
+    final headers = await _buildHeaders();
+
+    // 1. Coba Endpoint Utama: /api/sync/master
     try {
-      final token = await TokenStorage.getToken();
       final url = Uri.parse("${ApiEndpoints.baseUrl}/api/sync/master");
+      final res = await http.get(url, headers: headers).timeout(const Duration(seconds: 25));
 
-      final res = await http.get(
-        url,
-        headers: {
-          "Content-Type": "application/json",
-          if (token != null) "Authorization": "Bearer $token",
-        },
-      );
+      if (res.statusCode == 200) {
+        final Map<String, dynamic> body = jsonDecode(res.body);
+        final String? serverTime = body['serverTime']?.toString();
+        final data = body['data'] as Map<String, dynamic>?;
 
-      if (res.statusCode != 200) {
-        debugPrint("[AdminSyncService] Error download master: ${res.statusCode} ${res.body}");
-        return false;
-      }
+        if (data != null && data['pelanggan'] is List) {
+          final List<dynamic> pList = data['pelanggan'];
+          _cachedPelanggan = pList
+              .map((item) => PelangganModel.fromJson(item as Map<String, dynamic>))
+              .toList();
 
-      final Map<String, dynamic> body = jsonDecode(res.body);
-      final String? serverTime = body['serverTime']?.toString();
-      final data = body['data'] as Map<String, dynamic>?;
-
-      if (data != null && data['pelanggan'] is List) {
-        final List<dynamic> pList = data['pelanggan'];
-        _cachedPelanggan = pList
-            .map((item) => PelangganModel.fromJson(item as Map<String, dynamic>))
-            .toList();
-
-        _lastSyncToken = serverTime;
-        _lastDownloadTime = DateTime.now();
-
-        // Simpan ke SharedPreferences
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString(
-          _keyMasterPelanggan,
-          jsonEncode(_cachedPelanggan.map((p) => p.toJson()).toList()),
-        );
-        if (serverTime != null) {
-          await prefs.setString(_keyLastSyncToken, serverTime);
+          _lastSyncToken = serverTime ?? DateTime.now().toIso8601String();
+          _lastDownloadTime = DateTime.now();
+          await _saveToDisk();
+          return true;
         }
-        await prefs.setString(_keyLastDownloadTime, _lastDownloadTime!.toIso8601String());
-
-        return true;
       }
+      debugPrint("[AdminSyncService] /api/sync/master status ${res.statusCode}, beralih ke fallback...");
+    } catch (e) {
+      debugPrint("[AdminSyncService] Exception /api/sync/master: $e, beralih ke fallback...");
+    }
+
+    // 2. Fallback Otomatis: /api/pelanggan
+    try {
+      final url = Uri.parse("${ApiEndpoints.baseUrl}/api/pelanggan");
+      final res = await http.get(url, headers: headers).timeout(const Duration(seconds: 25));
+
+      if (res.statusCode == 200) {
+        final dynamic decoded = jsonDecode(res.body);
+        List<dynamic> pList = [];
+
+        if (decoded is List) {
+          pList = decoded;
+        } else if (decoded is Map<String, dynamic> && decoded['pelanggan'] is List) {
+          pList = decoded['pelanggan'];
+        }
+
+        if (pList.isNotEmpty) {
+          _cachedPelanggan = pList
+              .map((item) => PelangganModel.fromJson(item as Map<String, dynamic>))
+              .toList();
+
+          _lastSyncToken = DateTime.now().toIso8601String();
+          _lastDownloadTime = DateTime.now();
+          await _saveToDisk();
+          return true;
+        }
+      }
+      debugPrint("[AdminSyncService] Fallback /api/pelanggan gagal: ${res.statusCode}");
       return false;
     } catch (e) {
-      debugPrint("[AdminSyncService] Exception download master: $e");
+      debugPrint("[AdminSyncService] Fallback exception: $e");
       return false;
     }
   }
@@ -103,17 +128,11 @@ class AdminSyncService {
     }
 
     try {
-      final token = await TokenStorage.getToken();
+      final headers = await _buildHeaders();
       final encodedSince = Uri.encodeComponent(_lastSyncToken!);
       final url = Uri.parse("${ApiEndpoints.baseUrl}/api/sync/delta?since=$encodedSince");
 
-      final res = await http.get(
-        url,
-        headers: {
-          "Content-Type": "application/json",
-          if (token != null) "Authorization": "Bearer $token",
-        },
-      );
+      final res = await http.get(url, headers: headers).timeout(const Duration(seconds: 20));
 
       if (res.statusCode != 200) {
         debugPrint("[AdminSyncService] Error delta sync: ${res.statusCode}");
@@ -153,23 +172,28 @@ class AdminSyncService {
           _cachedPelanggan.removeWhere((p) => deletedIds.contains(p.id));
         }
 
-        // Simpan cache terbaru
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString(
-          _keyMasterPelanggan,
-          jsonEncode(_cachedPelanggan.map((p) => p.toJson()).toList()),
-        );
-
-        if (serverTime != null) {
-          _lastSyncToken = serverTime;
-          await prefs.setString(_keyLastSyncToken, serverTime);
-        }
+        _lastSyncToken = serverTime ?? DateTime.now().toIso8601String();
+        await _saveToDisk();
       }
 
       return totalChanges;
     } catch (e) {
       debugPrint("[AdminSyncService] Exception delta sync: $e");
       return 0;
+    }
+  }
+
+  Future<void> _saveToDisk() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      _keyMasterPelanggan,
+      jsonEncode(_cachedPelanggan.map((p) => p.toJson()).toList()),
+    );
+    if (_lastSyncToken != null) {
+      await prefs.setString(_keyLastSyncToken, _lastSyncToken!);
+    }
+    if (_lastDownloadTime != null) {
+      await prefs.setString(_keyLastDownloadTime, _lastDownloadTime!.toIso8601String());
     }
   }
 

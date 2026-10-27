@@ -121,7 +121,7 @@ export async function GET(request: Request) {
           petugasId: true,
           petugas: { select: { id: true, nama: true, noTelepon: true } },
           kendaraanId: true,
-          kendaraan: { select: { id: true, platNomor: true, merkModel: true } },
+          kendaraan: { select: { id: true, platNomor: true, nama: true, jenis: true } },
           zonas: { select: { id: true, nama: true, warna: true } },
           updatedAt: true,
         },

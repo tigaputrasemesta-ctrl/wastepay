@@ -2,8 +2,8 @@
  * Konfigurasi versi APK UPS HERU (Petugas & Admin).
  */
 export const MOBILE_VERSION = {
-  versionName: "2.0.5",
-  versionCode: 25,
+  versionName: "2.0.6",
+  versionCode: 26,
   /** Di bawah versi ini APK dianggap terlalu lama → update wajib (blocking). */
   minVersionCode: 15,
   changelog: [
@@ -17,8 +17,8 @@ export const MOBILE_VERSION = {
 };
 
 export const ADMIN_VERSION = {
-  versionName: "2.0.5",
-  versionCode: 25,
+  versionName: "2.0.6",
+  versionCode: 26,
   changelog: [
     "Aplikasi dedicated Flutter Native khusus Admin & Backoffice (id.o2whero.admin)",
     "Penyimpanan data lokal di HP (Offline-First via SharedPreferences/Cache) tanpa menarik ulang database setiap login",
