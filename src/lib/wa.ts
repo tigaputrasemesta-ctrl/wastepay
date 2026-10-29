@@ -476,7 +476,7 @@ export async function templateBuktiBayarBaruOwner(p: {
   const baris = [
     `🔔 *BUKTI PEMBAYARAN BARU — ${NAMA().toUpperCase()}*`,
     ``,
-    `Pelanggan telah mengunggah bukti transfer baru dan menunggu verifikasi admin:`,
+    `Pelanggan telah mengunggah bukti pembayaran baru (${p.metode}) dan menunggu verifikasi admin:`,
     ``,
     `📄 *No. Invoice*   : ${p.noInvoice}`,
     `👤 *Pelanggan*     : ${p.namaPelanggan}${p.kodePelanggan ? ` (${p.kodePelanggan})` : ""}`,

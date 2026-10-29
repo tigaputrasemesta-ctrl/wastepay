@@ -86,9 +86,7 @@ const BULAN = [
 
 const METODE_MANUAL = [
   { value: "transfer", label: "Transfer Bank Manual" },
-  { value: "ewallet", label: "Dompet Digital (GoPay / OVO / DANA)" },
-  { value: "qris", label: "Scan QRIS Nasional" },
-  { value: "virtual_account", label: "Virtual Account (BCA / Mandiri / BRI)" },
+  { value: "tunai", label: "Tunai dengan Petugas Lapangan" },
 ];
 
 function StatusBadge({ status }: { status: string }) {
@@ -274,7 +272,7 @@ function BayarPortalContent() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 2 * 1024 * 1024) {
-      setKirimError("Ukuran file terlalu besar. Maksimal ukuran gambar bukti transfer adalah 2MB.");
+      setKirimError("Ukuran file terlalu besar. Maksimal ukuran gambar bukti pembayaran adalah 2MB.");
       return;
     }
     setKirimError("");
@@ -294,7 +292,8 @@ function BayarPortalContent() {
 
   async function kirimBuktiManual(e: React.FormEvent) {
     e.preventDefault();
-    if (!hasil || !pilihTagihan) return;
+    const kodeTarget = hasil?.pelanggan.kodePelanggan || detail?.pelanggan.kodePelanggan;
+    if (!kodeTarget || !pilihTagihan) return;
     setKirimError("");
     setMengirim(true);
     try {
@@ -302,7 +301,7 @@ function BayarPortalContent() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          kode: hasil.pelanggan.kodePelanggan,
+          kode: kodeTarget,
           tagihanId: pilihTagihan,
           metode: formManual.metode,
           buktiBayar: bukti || undefined,
@@ -312,9 +311,16 @@ function BayarPortalContent() {
       const data = await res.json();
       if (res.ok) {
         setSuksesManual(data.message);
-        setHasil(null);
-        setKode("");
+        if (hasil) {
+          setHasil(null);
+          setKode("");
+        }
         setPilihTagihan(null);
+        setBukti("");
+        setFormManual({ metode: "transfer", catatan: "" });
+        if (isInvoiceMode) {
+          muatInvoiceDetail();
+        }
       } else {
         setKirimError(data.error || "Gagal mengirim bukti pembayaran.");
       }
@@ -355,6 +361,134 @@ function BayarPortalContent() {
       setBayarLoading(false);
     }
   }
+
+  const renderModalUpload = () => {
+    if (!pilihTagihan) return null;
+    const isTunai = formManual.metode === "tunai";
+
+    return (
+      <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl p-6 sm:p-8 max-w-lg w-full space-y-5 max-h-[90vh] overflow-y-auto">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div>
+              <h3 className="text-base font-extrabold text-slate-900">Konfirmasi Bukti Transfer / Bayar Tunai</h3>
+              <p className="text-xs text-slate-500 mt-0.5">Unggah bukti transfer bank atau kwitansi bayar tunai ke petugas</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setPilihTagihan(null);
+                setKirimError("");
+              }}
+              className="text-slate-400 hover:text-slate-600 font-bold p-1 text-lg leading-none"
+            >
+              ✕
+            </button>
+          </div>
+
+          <form onSubmit={kirimBuktiManual} className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Pilihan Metode Pembayaran</label>
+              <select
+                value={formManual.metode}
+                onChange={(e) => setFormManual({ ...formManual, metode: e.target.value })}
+                className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-semibold bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+              >
+                {METODE_MANUAL.map((m) => (
+                  <option key={m.value} value={m.value}>{m.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {isTunai && (
+              <div className="p-3.5 bg-amber-50 border border-amber-200/80 rounded-2xl text-[11px] text-amber-900 leading-relaxed flex items-start gap-2.5">
+                <span className="text-base shrink-0">💵</span>
+                <div>
+                  <span className="font-bold">Pembayaran Tunai ke Petugas Lapangan:</span>
+                  <p className="mt-0.5 text-amber-800">
+                    Silakan unggah foto tanda terima, lembar kwitansi fisik, atau bukti serah terima uang tunai dari petugas kebersihan.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                {isTunai
+                  ? "Unggah Foto Kwitansi / Struk Bayar Tunai"
+                  : "Unggah Struk / Screenshot Bukti Transfer"}
+                <span className="text-rose-500 ml-0.5">*</span>
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFile}
+                className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer"
+              />
+              <p className="text-[10px] text-slate-400 mt-1">Maksimal ukuran file: 2MB (format JPG, PNG, WEBP)</p>
+            </div>
+
+            {bukti && (
+              <div className="relative w-full h-40 rounded-xl overflow-hidden border border-slate-200 shadow-inner">
+                <Image
+                  src={bukti}
+                  alt={isTunai ? "Bukti bayar tunai" : "Bukti transfer"}
+                  fill
+                  unoptimized
+                  className="object-cover"
+                />
+              </div>
+            )}
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                {isTunai
+                  ? "Nama Petugas Penerima / No. Kwitansi (Opsional)"
+                  : "Catatan Tambahan (Opsional)"}
+              </label>
+              <input
+                type="text"
+                value={formManual.catatan}
+                onChange={(e) => setFormManual({ ...formManual, catatan: e.target.value })}
+                placeholder={
+                  isTunai
+                    ? "Contoh: Titip ke Petugas Heru / Kwitansi #45"
+                    : "Contoh: Transfer via rekening a.n. Pengirim"
+                }
+                className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 placeholder:text-slate-400"
+              />
+            </div>
+
+            {kirimError && (
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-medium">
+                {kirimError}
+              </div>
+            )}
+
+            <div className="flex gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setPilihTagihan(null);
+                  setKirimError("");
+                }}
+                className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 transition"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                disabled={mengirim || !bukti}
+                className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow-sm transition active:scale-95"
+              >
+                {mengirim ? "Mengirim..." : isTunai ? "Kirim Bukti Tunai" : "Kirim Bukti"}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  };
 
   // =========================================================================
   // TAMPILAN 1: CHECKOUT INVOICE TERTENTU (Duitku / Link WA)
@@ -431,6 +565,12 @@ function BayarPortalContent() {
 
     return (
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-6">
+        {suksesManual && (
+          <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
+            <span className="font-bold text-base">✓</span>
+            <span className="font-medium">{suksesManual}</span>
+          </div>
+        )}
         <div className="flex items-center justify-between pb-2 border-b border-slate-100">
           <Link href="/bayar" className="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1">
             ← Cek Tagihan Lain
@@ -589,6 +729,21 @@ function BayarPortalContent() {
                 );
               })()}
             </button>
+
+            <div className="pt-2 border-t border-slate-100 flex flex-col items-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setPilihTagihan(detail.id);
+                  setBukti("");
+                  setKirimError("");
+                }}
+                className="text-xs font-semibold text-slate-600 hover:text-emerald-700 transition flex items-center gap-1.5 py-1 px-3 rounded-xl hover:bg-slate-50"
+              >
+                <span>📤</span>
+                <span>Sudah bayar via Transfer Bank atau Tunai? Upload Bukti di Sini</span>
+              </button>
+            </div>
           </div>
         ) : (
           <div className="bg-emerald-50 border border-emerald-200 rounded-3xl p-6 text-center space-y-2">
@@ -601,6 +756,8 @@ function BayarPortalContent() {
             </p>
           </div>
         )}
+
+        {renderModalUpload()}
       </div>
     );
   }
@@ -862,10 +1019,15 @@ function BayarPortalContent() {
                         )}
                         <button
                           type="button"
-                          onClick={() => setPilihTagihan(t.id)}
-                          className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition active:scale-95"
+                          onClick={() => {
+                            setPilihTagihan(t.id);
+                            setBukti("");
+                            setKirimError("");
+                          }}
+                          className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition active:scale-95 flex items-center gap-1.5"
                         >
-                          📤 Upload Bukti
+                          <span>📤</span>
+                          <span>Upload Bukti / Tunai</span>
                         </button>
                       </div>
                     )}
@@ -877,52 +1039,7 @@ function BayarPortalContent() {
         </div>
       )}
 
-      {/* Modal Upload Bukti Manual */}
-      {pilihTagihan && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl p-6 sm:p-8 max-w-lg w-full space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="text-base font-extrabold text-slate-900">Konfirmasi Bukti Transfer Manual</h3>
-              <button onClick={() => setPilihTagihan(null)} className="text-slate-400 hover:text-slate-600 font-bold">✕</button>
-            </div>
-
-            <form onSubmit={kirimBuktiManual} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Metode Pembayaran</label>
-                <select
-                  value={formManual.metode}
-                  onChange={(e) => setFormManual({ ...formManual, metode: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-semibold bg-white"
-                >
-                  {METODE_MANUAL.map((m) => (
-                    <option key={m.value} value={m.value}>{m.label}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Unggah Struk / Screenshot Bukti</label>
-                <input type="file" accept="image/*" onChange={handleFile} className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100" />
-              </div>
-
-              {bukti && (
-                <div className="relative w-full h-36 rounded-xl overflow-hidden border border-slate-200">
-                  <Image src={bukti} alt="Bukti transfer" fill unoptimized className="object-cover" />
-                </div>
-              )}
-
-              {kirimError && <p className="text-xs text-rose-600">{kirimError}</p>}
-
-              <div className="flex gap-2 pt-2">
-                <button type="button" onClick={() => setPilihTagihan(null)} className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700">Batal</button>
-                <button type="submit" disabled={mengirim} className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow-sm transition">
-                  {mengirim ? "Mengirim..." : "Kirim Bukti"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {renderModalUpload()}
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { hitungRincian, labelMetodePembayaran } from "@/lib/invoice";
 import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
 import { isWaEnabled, kirimReportOwner, templateBuktiBayarBaruOwner } from "@/lib/wa";
 
-const METODE_VALID = ["transfer", "ewallet", "qris", "virtual_account"];
+const METODE_VALID = ["transfer", "ewallet", "qris", "virtual_account", "tunai"];
 
 /**
  * POST /api/publik/bayar
