@@ -18,7 +18,7 @@ const pool = new Pool({
   // (Supavisor di port 6543 yang akan menangani pembatasan koneksi server).
   idleTimeoutMillis: 5000,
   connectionTimeoutMillis: 8000,
-  ssl: isProd || process.env.DATABASE_SSL === "true" || rawConnectionString?.includes("supabase.com")
+  ssl: isProd || process.env.DATABASE_SSL === "true" || rawConnectionString?.includes("supabase.com") || rawConnectionString?.includes("sumobase.my.id")
     ? { rejectUnauthorized: false }
     : undefined,
 });

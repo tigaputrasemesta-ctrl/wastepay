@@ -13,7 +13,6 @@ import { ensureArmadaRuteSchema } from "@/lib/db-patch";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  await ensureArmadaRuteSchema();
   const { searchParams } = new URL(request.url);
   const search = searchParams.get("search") || "";
   const wilayahId = searchParams.get("wilayahId");
@@ -119,9 +118,6 @@ export async function GET(request: Request) {
               },
             },
           },
-        },
-        _count: {
-          select: { tagihan: true, pembayaran: true },
         },
       },
       orderBy: { createdAt: "desc" },
