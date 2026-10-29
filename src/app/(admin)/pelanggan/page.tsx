@@ -10,7 +10,31 @@ import GeotagPhoto from "@/components/GeotagPhoto";
 import ModalApprovalPelanggan from "@/components/ModalApprovalPelanggan";
 import ModalStatusPelanggan from "@/components/ModalStatusPelanggan";
 import ModalHapusPelanggan from "@/components/ModalHapusPelanggan";
-import { Play, Pause, RefreshCw } from "lucide-react";
+import { 
+  Play, 
+  Pause, 
+  RefreshCw, 
+  Eye, 
+  Pencil, 
+  Trash2, 
+  ShieldCheck, 
+  Search, 
+  SlidersHorizontal, 
+  MapPin, 
+  Bell, 
+  X,
+  Plus,
+  Download,
+  Printer,
+  FileText,
+  Users,
+  ClipboardCheck,
+  Tag,
+  MessageCircle,
+  ChevronLeft,
+  ChevronRight,
+  Handshake
+} from "lucide-react";
 import { getAllCached, getOfflineDB } from "@/lib/offline-storage";
 
 type Kelurahan = { id: number; nama: string; kecamatan?: string | null };
@@ -497,12 +521,12 @@ function PelangganContent() {
 
   return (
     <div className="p-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 border-b border-slate-200 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 border-b border-slate-200/80 pb-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">
+          <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-slate-900 leading-none mb-1">
             Pusat Pengelolaan Pelanggan
           </h1>
-          <p className="text-xs font-medium text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 mt-1 font-normal">
             Kelola data pelanggan aktif, verifikasi survei calon pendaftar, dan cetak stiker barcode
           </p>
         </div>
@@ -514,27 +538,26 @@ function PelangganContent() {
               fetchData(true);
             }}
             disabled={refreshing}
-            className="px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition flex items-center gap-1.5 shadow-xs active:scale-95 disabled:opacity-50"
+            className="px-3 py-2 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition flex items-center gap-1.5 shadow-xs active:scale-98 disabled:opacity-50"
             title="Muat ulang data pelanggan terbaru dari server"
           >
-            <RefreshCw className={`w-4 h-4 text-slate-600 ${refreshing ? "animate-spin" : ""}`} />
+            <RefreshCw className={`w-3.5 h-3.5 text-slate-500 ${refreshing ? "animate-spin" : ""}`} />
             <span>{refreshing ? "Memuat..." : "Muat Ulang"}</span>
           </button>
           <Link
             href="/registrasi"
-            className="px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
+            className="px-3 py-2 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition flex items-center gap-1.5 shadow-xs"
           >
-            <span>📝 Formulir Lengkap</span>
+            <FileText size={14} className="text-slate-500" />
+            <span>Formulir</span>
           </Link>
           <button
             type="button"
             onClick={handleExportExcel}
-            className="px-3.5 py-2.5 rounded-xl border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold transition flex items-center gap-1.5 shadow-xs active:scale-95"
-            title="Ekspor ke Excel / CSV (Mendukung Android Native Share Sheet)"
+            className="px-3 py-2 rounded-xl border border-emerald-200 bg-emerald-50/70 hover:bg-emerald-100/70 text-emerald-800 text-xs font-medium transition flex items-center gap-1.5 shadow-xs active:scale-98"
+            title="Ekspor ke Excel / CSV"
           >
-            <svg className="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
+            <Download size={14} className="text-emerald-700" />
             <span>Ekspor Excel</span>
           </button>
           <Link
@@ -543,65 +566,64 @@ function PelangganContent() {
               ...(filterKategori ? { kategori: filterKategori } : {}),
               ...(filterKelurahan ? { kelurahanId: filterKelurahan } : {}),
             }).toString()}`}
-            className="px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
+            className="px-3 py-2 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition flex items-center gap-1.5 shadow-xs"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-            </svg>
-            Cetak
+            <Printer size={14} className="text-slate-500" />
+            <span>Cetak</span>
           </Link>
           <button
             onClick={openCreate}
-            className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-2 active:scale-95"
+            className="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-xl text-xs font-medium shadow-xs transition-all flex items-center gap-1.5 active:scale-98"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Tambah Pelanggan
+            <Plus size={14} strokeWidth={2} />
+            <span>Tambah Pelanggan</span>
           </button>
         </div>
       </div>
 
       {/* Main Module Tabs */}
-      <div className="flex items-center gap-2 mb-6 border-b border-slate-200 pb-2 overflow-x-auto">
+      <div className="flex items-center gap-2 mb-6 border-b border-slate-200/80 pb-2 overflow-x-auto">
         <button
           onClick={() => { setMainTab("data"); setFilterStatus(""); setPage(1); }}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all shrink-0 ${
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all shrink-0 ${
             mainTab === "data"
-              ? "bg-emerald-700 text-white shadow-sm"
-              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+              ? "bg-slate-900 text-white shadow-xs"
+              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/70"
           }`}
         >
-          <span>👥 Data Pelanggan</span>
-          <span className={`text-xs px-2 py-0.5 rounded-full font-mono ${mainTab === "data" ? "bg-emerald-800 text-white" : "bg-slate-200 text-slate-700"}`}>
+          <Users size={15} strokeWidth={1.75} />
+          <span>Data Pelanggan</span>
+          <span className={`text-[11px] px-2 py-0.5 rounded-full font-mono tabular-nums ${mainTab === "data" ? "bg-slate-800 text-slate-200" : "bg-slate-200/80 text-slate-700"}`}>
             {pelanggan.length}
           </span>
         </button>
 
         <button
           onClick={() => { setMainTab("approval"); setFilterStatus("calon"); setPage(1); }}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all shrink-0 ${
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all shrink-0 ${
             mainTab === "approval"
-              ? "bg-amber-600 text-white shadow-sm"
-              : "text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200"
+              ? "bg-amber-600 text-white shadow-xs"
+              : "text-amber-800 bg-amber-50/70 hover:bg-amber-100/70 border border-amber-200/80"
           }`}
         >
-          <span>📋 Survei & Approval Calon</span>
-          <span className={`text-xs px-2 py-0.5 rounded-full font-mono ${mainTab === "approval" ? "bg-amber-800 text-white" : "bg-amber-200 text-amber-900"}`}>
+          <ClipboardCheck size={15} strokeWidth={1.75} />
+          <span>Survei & Approval</span>
+          <span className={`text-[11px] px-2 py-0.5 rounded-full font-mono tabular-nums ${mainTab === "approval" ? "bg-amber-700 text-amber-100" : "bg-amber-100 text-amber-800"}`}>
             {calonList.length}
           </span>
         </button>
 
         <button
           onClick={() => { setMainTab("sticker"); setPage(1); }}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all shrink-0 ${
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all shrink-0 ${
             mainTab === "sticker"
-              ? "bg-emerald-700 text-white shadow-sm"
-              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+              ? "bg-slate-900 text-white shadow-xs"
+              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/70"
           }`}
         >
-          <span>🏷️ Cetak Stiker Barcode</span>
-          <span className={`text-xs px-2 py-0.5 rounded-full font-mono ${mainTab === "sticker" ? "bg-emerald-800 text-white" : "bg-slate-200 text-slate-700"}`}>
+          <Tag size={15} strokeWidth={1.75} />
+          <span>Cetak Stiker Barcode</span>
+          <span className={`text-[11px] px-2 py-0.5 rounded-full font-mono tabular-nums ${mainTab === "sticker" ? "bg-slate-800 text-slate-200" : "bg-slate-200/80 text-slate-700"}`}>
             {selectedStickers.size > 0 ? `${selectedStickers.size} dipilih` : "Cetak"}
           </span>
         </button>
@@ -689,21 +711,21 @@ function PelangganContent() {
         <>
           {/* Alert Banner Approval Pelanggan Baru */}
       {calonList.length > 0 && (
-        <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300/80 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-in fade-in">
+        <div className="mb-6 p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-in fade-in">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-lg font-black shrink-0 shadow-xs">
-              🔔
+            <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 border border-amber-200/60">
+              <Bell size={18} strokeWidth={2} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-extrabold text-slate-900 text-sm">
-                  {calonList.length} Pendaftar Baru Menunggu Approval Admin Pusat
+                <h3 className="font-semibold text-slate-900 text-sm">
+                  {calonList.length} Pendaftar Baru Menunggu Approval
                 </h3>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-200 text-amber-900">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-100 text-amber-800 border border-amber-200/60">
                   Perlu Ditinjau
                 </span>
               </div>
-              <p className="text-xs text-slate-600 mt-0.5">
+              <p className="text-xs text-slate-600 mt-0.5 font-normal">
                 Periksa hasil survei lapangan, tetapkan <strong>Zona Area Pickup</strong>, dan aktifkan layanan pengangkutan warga.
               </p>
             </div>
@@ -715,9 +737,9 @@ function PelangganContent() {
                 setFilterStatus(filterStatus === "calon" ? "" : "calon");
                 setPage(1);
               }}
-              className="w-full sm:w-auto px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 active:scale-95 text-white text-xs font-bold transition shadow-xs flex items-center justify-center gap-1.5"
+              className="w-full sm:w-auto px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 active:scale-98 text-white text-xs font-medium transition shadow-xs flex items-center justify-center gap-1.5"
             >
-              <span>{filterStatus === "calon" ? "Lihat Semua Pelanggan" : "Tampilkan Menunggu Approval"}</span>
+              <span>{filterStatus === "calon" ? "Lihat Semua Pelanggan" : "Tinjau Pendaftar Baru"}</span>
             </button>
           </div>
         </div>
@@ -728,26 +750,31 @@ function PelangganContent() {
         <button
           type="button"
           onClick={() => { setFilterStatus(""); setPage(1); }}
-          className={`px-3 py-1.5 rounded-xl font-bold transition shrink-0 ${
+          className={`px-3 py-1.5 rounded-xl font-medium transition shrink-0 flex items-center gap-1.5 ${
             filterStatus === ""
               ? "bg-slate-900 text-white shadow-xs"
-              : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
+              : "bg-white border border-slate-200/80 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
           }`}
         >
-          Semua ({totalCount})
+          <span>Semua</span>
+          <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono tabular-nums ${
+            filterStatus === "" ? "bg-slate-800 text-slate-200" : "bg-slate-100 text-slate-600"
+          }`}>
+            {totalCount}
+          </span>
         </button>
         <button
           type="button"
           onClick={() => { setFilterStatus("calon"); setPage(1); }}
-          className={`px-3 py-1.5 rounded-xl font-bold transition shrink-0 flex items-center gap-1.5 ${
+          className={`px-3 py-1.5 rounded-xl font-medium transition shrink-0 flex items-center gap-1.5 ${
             filterStatus === "calon"
               ? "bg-amber-600 text-white shadow-xs"
-              : "bg-amber-50 border border-amber-200 text-amber-800 hover:bg-amber-100"
+              : "bg-amber-50/80 border border-amber-200/80 text-amber-800 hover:bg-amber-100/60"
           }`}
         >
           <span>Menunggu Approval</span>
-          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold ${
-            filterStatus === "calon" ? "bg-amber-800 text-amber-100" : "bg-amber-200 text-amber-900"
+          <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono tabular-nums font-medium ${
+            filterStatus === "calon" ? "bg-amber-800 text-amber-100" : "bg-amber-100 text-amber-900"
           }`}>
             {calonCount}
           </span>
@@ -755,14 +782,14 @@ function PelangganContent() {
         <button
           type="button"
           onClick={() => { setFilterStatus("aktif"); setPage(1); }}
-          className={`px-3 py-1.5 rounded-xl font-bold transition shrink-0 flex items-center gap-1.5 ${
+          className={`px-3 py-1.5 rounded-xl font-medium transition shrink-0 flex items-center gap-1.5 ${
             filterStatus === "aktif"
               ? "bg-emerald-700 text-white shadow-xs"
-              : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
+              : "bg-white border border-slate-200/80 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
           }`}
         >
           <span>Aktif</span>
-          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold ${
+          <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono tabular-nums font-medium ${
             filterStatus === "aktif" ? "bg-emerald-800 text-white" : "bg-slate-100 text-slate-700"
           }`}>
             {aktifCount}
@@ -771,14 +798,14 @@ function PelangganContent() {
         <button
           type="button"
           onClick={() => { setFilterStatus("nonaktif"); setPage(1); }}
-          className={`px-3 py-1.5 rounded-xl font-bold transition shrink-0 flex items-center gap-1.5 ${
+          className={`px-3 py-1.5 rounded-xl font-medium transition shrink-0 flex items-center gap-1.5 ${
             filterStatus === "nonaktif"
               ? "bg-slate-800 text-white shadow-xs"
-              : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
+              : "bg-white border border-slate-200/80 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
           }`}
         >
           <span>Nonaktif</span>
-          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold ${
+          <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono tabular-nums font-medium ${
             filterStatus === "nonaktif" ? "bg-slate-950 text-white" : "bg-slate-100 text-slate-700"
           }`}>
             {nonaktifCount}
@@ -788,14 +815,14 @@ function PelangganContent() {
           <button
             type="button"
             onClick={() => { setFilterStatus("libur"); setPage(1); }}
-            className={`px-3 py-1.5 rounded-xl font-bold transition shrink-0 flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-xl font-medium transition shrink-0 flex items-center gap-1.5 ${
               filterStatus === "libur"
                 ? "bg-amber-600 text-white shadow-xs"
-                : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
+                : "bg-white border border-slate-200/80 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
             }`}
           >
             <span>Libur</span>
-            <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold ${
+            <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono tabular-nums font-medium ${
               filterStatus === "libur" ? "bg-amber-800 text-white" : "bg-amber-100 text-amber-900"
             }`}>
               {liburCount}
@@ -805,44 +832,42 @@ function PelangganContent() {
       </div>
 
       {/* Search + Filter mode */}
-      <div className="mb-6">
+      <div className="mb-5">
         <div className="flex items-center gap-3 flex-wrap">
           <div className="relative flex-1 min-w-[240px] max-w-md">
-            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" strokeWidth={1.75} />
             <input
               type="text"
-              placeholder="Cari nama, alamat, atau no telepon..."
+              placeholder="Cari nama, alamat, no. WhatsApp, kode..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-800 placeholder:text-slate-400 transition-all shadow-sm"
+              className="w-full pl-10 pr-12 py-2 border border-slate-200/80 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-normal text-slate-800 placeholder:text-slate-400 transition-all shadow-xs"
             />
-            {searchInput && (
+            {searchInput ? (
               <button
                 onClick={() => { setSearchInput(""); setSearch(""); }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 hover:text-rose-500 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-rose-500 transition-colors"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <X className="w-3.5 h-3.5" />
               </button>
+            ) : (
+              <div className="hidden sm:flex items-center gap-0.5 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-[10px] font-mono text-slate-400 bg-slate-100 border border-slate-200/60 px-1.5 py-0.5 rounded">
+                <span>⌘</span>K
+              </div>
             )}
           </div>
           <button
             onClick={() => setShowFilter((v) => !v)}
-            className={`flex items-center gap-2 px-4 py-2.5 border rounded-xl font-semibold text-xs transition-all shadow-sm ${
+            className={`flex items-center gap-2 px-3.5 py-2 border rounded-xl font-medium text-xs transition-all shadow-xs ${
               showFilter || [filterKelurahan, filterStatus, filterKategori].filter(Boolean).length > 0
                 ? "bg-slate-900 border-slate-900 text-white"
-                : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                : "bg-white border-slate-200/80 text-slate-700 hover:bg-slate-50"
             }`}
           >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-            </svg>
-            Filter
+            <SlidersHorizontal className="w-3.5 h-3.5" strokeWidth={1.75} />
+            <span>Filter</span>
             {[filterKelurahan, filterZona, filterStatus, filterKategori].filter(Boolean).length > 0 && (
-              <span className="bg-emerald-700 text-white px-1.5 py-0.5 rounded-full text-[10px] font-bold">
+              <span className="bg-emerald-600 text-white px-1.5 py-0.2 rounded-full text-[10px] font-semibold">
                 {[filterKelurahan, filterZona, filterStatus, filterKategori].filter(Boolean).length}
               </span>
             )}
@@ -927,240 +952,245 @@ function PelangganContent() {
       {/* Adaptive Dual-View: Desktop Table (hidden md:block) & Mobile Smart Cards (md:hidden) */}
       <div className="space-y-4">
         {/* DESKTOP TABLE VIEW (>= md: 768px) */}
-        <div className="hidden md:block bg-white rounded-2xl border border-slate-200/80 overflow-x-auto shadow-sm">
-          <table className="w-full text-sm text-left">
-          <thead>
-            <tr className="bg-slate-50 text-slate-600 font-bold text-xs border-b border-slate-200">
-              <th className="px-4 py-3.5 whitespace-nowrap">Kode</th>
-              <th className="px-4 py-3.5 whitespace-nowrap">Nama Pelanggan</th>
-              <th className="px-4 py-3.5 whitespace-nowrap">No. Telepon</th>
-              <th className="px-4 py-3.5 whitespace-nowrap">Alamat & Wilayah</th>
-              <th className="px-4 py-3.5 whitespace-nowrap">Tarif</th>
-              <th className="px-4 py-3.5 whitespace-nowrap">Status</th>
-              <th className="px-4 py-3.5 whitespace-nowrap">Tanggal</th>
-              <th className="px-4 py-3.5 text-center whitespace-nowrap">Aksi</th>
-            </tr>
-          </thead>
-          <tbody className="text-slate-800 divide-y divide-slate-100">
-            {paginatedPelanggan.length === 0 ? (
-              <tr>
-                <td colSpan={8} className="px-4 py-12 text-center text-slate-600 font-medium text-xs">
-                  Belum ada data pelanggan
-                </td>
+        <div className="hidden md:block bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-xs">
+          <table className="w-full text-sm text-left border-collapse">
+            <thead>
+              <tr className="bg-slate-50/75 text-slate-500 font-semibold text-[11px] uppercase tracking-wider border-b border-slate-200/80">
+                <th className="px-4 py-3 whitespace-nowrap">Kode</th>
+                <th className="px-4 py-3 whitespace-nowrap">Nama Pelanggan</th>
+                <th className="px-4 py-3 whitespace-nowrap">No. WhatsApp</th>
+                <th className="px-4 py-3 whitespace-nowrap">Alamat & Wilayah</th>
+                <th className="px-4 py-3 whitespace-nowrap">Tarif</th>
+                <th className="px-4 py-3 whitespace-nowrap">Status</th>
+                <th className="px-4 py-3 whitespace-nowrap">Tanggal</th>
+                <th className="px-4 py-3 text-center whitespace-nowrap">Aksi</th>
               </tr>
-            ) : (
-              paginatedPelanggan.map((p) => (
-                <tr key={p.id} className="hover:bg-slate-50/70 transition-colors">
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <span className="inline-block text-xs font-mono font-bold text-slate-800 bg-slate-100 border border-slate-200/80 px-2 py-0.5 rounded-lg">
-                      {p.kodePelanggan}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 min-w-[200px]">
-                    <div className="flex items-center gap-3">
-                      {p.fotoRumah ? (
-                        <Image
-                          src={p.fotoRumah}
-                          alt={`Foto ${p.nama}`}
-                          unoptimized
-                          width={36}
-                          height={36}
-                          className="w-9 h-9 object-cover rounded-xl border border-slate-200 shrink-0 shadow-sm"
-                        />
-                      ) : (
-                        <div className="w-9 h-9 border border-slate-200 bg-slate-100 rounded-xl shrink-0 flex items-center justify-center text-slate-600 text-xs font-bold">
-                          ?
-                        </div>
-                      )}
-                      <div>
-                        <div className="font-bold text-slate-900 text-sm">
-                          {p.nama}
-                        </div>
-                        {p.referal && (
-                          <div className="mt-0.5">
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-200" title={`Referral: ${p.referal}`}>
-                              <span aria-hidden="true">🤝</span>
-                              <span className="truncate max-w-[130px]">{p.referal}</span>
-                            </span>
-                          </div>
-                        )}
-                        {p.latitude && p.longitude && (
-                          <a
-                            href={`https://www.google.com/maps?q=${p.latitude},${p.longitude}`}
-                            target="_blank"
-                            className="text-[11px] text-emerald-700 font-medium hover:underline flex items-center gap-0.5 mt-0.5"
-                          >
-                            📍 {p.latitude.toFixed(5)}, {p.longitude.toFixed(5)}
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-slate-700 font-medium text-xs whitespace-nowrap">{p.noTelepon}</td>
-                  <td className="px-4 py-3 text-slate-700 max-w-[240px]">
-                    <div className="text-xs truncate font-medium text-slate-800" title={p.alamat}>{p.alamat}</div>
-                    <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                      <div className="inline-flex items-center px-2 py-0.5 bg-slate-100 rounded-md text-[10px] font-semibold text-slate-600">
-                        {p.kelurahan?.nama ?? "—"}
-                      </div>
-                      {p.wilayah?.zona ? (
-                        <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 border border-emerald-200/80 rounded-md text-[10px] font-bold text-emerald-800">
-                          <span
-                            className="w-2 h-2 rounded-full shrink-0"
-                            style={{ backgroundColor: p.wilayah.zona.warna || "#10b981" }}
-                          />
-                          <span className="truncate max-w-[120px]">{p.wilayah.zona.nama}</span>
-                        </div>
-                      ) : (
-                        <span className="text-[10px] text-amber-600 font-semibold">
-                          Belum ada zona
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="flex flex-col gap-1 items-start">
-                      {p.customTarif ? (
-                        <>
-                          <span className="text-xs font-bold text-amber-700">{formatRupiah(p.customTarif)}</span>
-                          <span className="inline-flex items-center px-2 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-full text-[9px] font-bold">
-                            Tarif Kustom
-                          </span>
-                        </>
-                      ) : p.paket ? (
-                        <>
-                          <span className="text-xs font-bold text-purple-700">{formatRupiah(p.paket.harga || 0)}</span>
-                          <span className="inline-flex items-center px-2 py-0.5 bg-purple-50 text-purple-700 border border-purple-200 rounded-full text-[9px] font-bold">
-                            {p.paket.nama.split(" ").slice(0, 2).join(" ")}
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          <span className="text-xs font-bold text-blue-700">
-                            {formatRupiah(kategoriTarifList.find(x => x.kategori === p.kategori)?.tarif || 0)}
-                          </span>
-                          <span className="inline-flex items-center px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-full text-[9px] font-bold">
-                            {p.kategori.replace('_', ' ')}
-                          </span>
-                        </>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    {p.status === "calon" ? (
-                      <div className="flex flex-col gap-1 items-start">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                          Menunggu Approval
-                        </span>
-                        {p.fotoRumah && p.latitude ? (
-                          <span className="text-[10px] text-emerald-700 font-semibold flex items-center gap-0.5">
-                            <span>✓</span> Disurvei
-                          </span>
-                        ) : (
-                          <span className="text-[10px] text-slate-400 font-medium">
-                            ⏳ Belum Survei
-                          </span>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="flex flex-col gap-0.5 items-start">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                          p.status === "aktif" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
-                          p.status === "libur" ? "bg-amber-50 text-amber-700 border border-amber-200" :
-                          "bg-slate-100 text-slate-700 border border-slate-300"
-                        }`}>
-                          {p.status === "aktif" ? "Aktif" : p.status === "nonaktif" ? "Nonaktif" : p.status === "libur" ? "Libur" : p.status}
-                        </span>
-                        {p.status === "nonaktif" && (
-                          <span className="text-[9px] text-slate-400 font-medium">
-                            Tagihan/pickup jeda
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-slate-500 text-xs font-medium whitespace-nowrap">
-                    {formatDate(p.createdAt)}
-                  </td>
-                  <td className="px-4 py-3 text-center whitespace-nowrap">
-                    <div className="flex items-center justify-center gap-1.5">
-                      {p.status === "calon" ? (
-                        <button
-                          type="button"
-                          onClick={() => setApprovalTarget(p)}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white text-xs font-bold shadow-xs transition"
-                          title="Approval Admin Pusat &amp; Tetapkan Zona Pickup"
-                        >
-                          <span>🛡️ Approval &amp; Zona</span>
-                        </button>
-                      ) : p.status === "aktif" ? (
-                        <button
-                          type="button"
-                          onClick={() => setStatusTarget({ pelanggan: p, initialTargetStatus: "nonaktif" })}
-                          className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-800 text-slate-500 transition-colors shadow-xs"
-                          title="Nonaktifkan Layanan (Disarankan jika berhenti langganan)"
-                        >
-                          <Pause className="w-3.5 h-3.5 fill-current" />
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => setStatusTarget({ pelanggan: p, initialTargetStatus: "aktif" })}
-                          className="inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-bold transition-colors shadow-xs"
-                          title="Aktifkan Kembali Layanan"
-                        >
-                          <Play className="w-3 h-3 fill-current" />
-                          <span>Aktifkan</span>
-                        </button>
-                      )}
-                      <Link
-                        href={`/pelanggan/${p.id}`}
-                        className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 text-slate-600 transition-colors shadow-xs"
-                        title="Detail"
-                      >
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={() => openEdit(p)}
-                        className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200 text-slate-600 transition-colors shadow-xs"
-                        title="Edit Data"
-                      >
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setDeleteTarget(p)}
-                        className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 bg-white hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 text-slate-600 transition-colors shadow-xs"
-                        title="Hapus atau Nonaktifkan"
-                      >
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    </div>
+            </thead>
+            <tbody className="divide-y divide-slate-100 text-slate-700">
+              {paginatedPelanggan.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="px-4 py-12 text-center text-slate-400 font-normal text-xs">
+                    Belum ada data pelanggan yang sesuai kriteria pencarian
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                paginatedPelanggan.map((p) => (
+                  <tr key={p.id} className="hover:bg-slate-50/60 transition-colors">
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className="inline-block text-[11px] font-mono font-medium text-slate-700 bg-slate-100/90 border border-slate-200/70 px-2 py-0.5 rounded-md">
+                        {p.kodePelanggan}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 min-w-[200px]">
+                      <div className="flex items-center gap-3">
+                        {p.fotoRumah ? (
+                          <Image
+                            src={p.fotoRumah}
+                            alt={`Foto ${p.nama}`}
+                            unoptimized
+                            width={34}
+                            height={34}
+                            className="w-8 h-8 object-cover rounded-lg border border-slate-200/80 shrink-0 shadow-xs"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 border border-emerald-200/60 bg-emerald-50/60 text-emerald-800 rounded-lg shrink-0 flex items-center justify-center text-xs font-semibold">
+                            {p.nama ? p.nama.charAt(0).toUpperCase() : "?"}
+                          </div>
+                        )}
+                        <div>
+                          <div className="font-semibold text-slate-900 text-xs tracking-tight">
+                            {p.nama}
+                          </div>
+                          {p.referal && (
+                            <div className="mt-0.5">
+                              <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-700 bg-emerald-50/80 px-1.5 py-0.5 rounded border border-emerald-200/60" title={`Referral: ${p.referal}`}>
+                                <Handshake size={11} className="shrink-0" />
+                                <span className="truncate max-w-[130px]">{p.referal}</span>
+                              </span>
+                            </div>
+                          )}
+                          {p.latitude && p.longitude && (
+                            <a
+                              href={`https://www.google.com/maps?q=${p.latitude},${p.longitude}`}
+                              target="_blank"
+                              className="text-[10px] text-slate-400 hover:text-emerald-600 transition flex items-center gap-1 mt-0.5"
+                            >
+                              <MapPin size={10} className="shrink-0 text-slate-400" />
+                              <span>{p.latitude.toFixed(4)}, {p.longitude.toFixed(4)}</span>
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-slate-600 font-mono text-xs whitespace-nowrap">
+                      {p.noTelepon || "—"}
+                    </td>
+                    <td className="px-4 py-3 text-slate-600 max-w-[240px]">
+                      <div className="text-xs truncate font-normal text-slate-800" title={p.alamat}>
+                        {p.alamat}
+                      </div>
+                      <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                        <div className="inline-flex items-center px-1.5 py-0.5 bg-slate-100 rounded text-[10px] font-medium text-slate-600">
+                          {p.kelurahan?.nama ?? "—"}
+                        </div>
+                        {p.wilayah?.zona ? (
+                          <div className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-slate-50 border border-slate-200/80 rounded text-[10px] font-medium text-slate-700">
+                            <span
+                              className="w-1.5 h-1.5 rounded-full shrink-0"
+                              style={{ backgroundColor: p.wilayah.zona.warna || "#10b981" }}
+                            />
+                            <span className="truncate max-w-[120px]">{p.wilayah.zona.nama}</span>
+                          </div>
+                        ) : (
+                          <span className="text-[10px] text-amber-600 font-medium">
+                            Belum ada zona
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <div className="flex flex-col gap-0.5 items-start">
+                        {p.customTarif ? (
+                          <>
+                            <span className="text-xs font-semibold text-amber-700 font-mono tabular-nums">{formatRupiah(p.customTarif)}</span>
+                            <span className="inline-flex items-center px-1.5 py-0.2 bg-amber-50 text-amber-700 border border-amber-200/70 rounded text-[9px] font-medium">
+                              Kustom
+                            </span>
+                          </>
+                        ) : p.paket ? (
+                          <>
+                            <span className="text-xs font-semibold text-purple-700 font-mono tabular-nums">{formatRupiah(p.paket.harga || 0)}</span>
+                            <span className="inline-flex items-center px-1.5 py-0.2 bg-purple-50 text-purple-700 border border-purple-200/70 rounded text-[9px] font-medium">
+                              {p.paket.nama.split(" ").slice(0, 2).join(" ")}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-xs font-semibold text-slate-800 font-mono tabular-nums">
+                              {formatRupiah(kategoriTarifList.find(x => x.kategori === p.kategori)?.tarif || 0)}
+                            </span>
+                            <span className="inline-flex items-center px-1.5 py-0.2 bg-slate-100 text-slate-600 border border-slate-200/70 rounded text-[9px] font-medium">
+                              {p.kategori.replace('_', ' ')}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      {p.status === "calon" ? (
+                        <div className="flex flex-col gap-1 items-start">
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-800 border border-amber-200/60">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                            Menunggu Approval
+                          </span>
+                          {p.fotoRumah && p.latitude ? (
+                            <span className="text-[10px] text-emerald-700 font-medium flex items-center gap-1">
+                              <span>✓</span> Sudah Disurvei
+                            </span>
+                          ) : (
+                            <span className="text-[10px] text-slate-400 font-normal">
+                              Belum Survei
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="flex flex-col gap-0.5 items-start">
+                          <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium ${
+                            p.status === "aktif" ? "bg-emerald-50 text-emerald-800 border border-emerald-200/60" :
+                            p.status === "libur" ? "bg-amber-50 text-amber-800 border border-amber-200/60" :
+                            "bg-slate-100 text-slate-600 border border-slate-200/80"
+                          }`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${
+                              p.status === "aktif" ? "bg-emerald-500" :
+                              p.status === "libur" ? "bg-amber-500" :
+                              "bg-slate-400"
+                            }`} />
+                            {p.status === "aktif" ? "Aktif" : p.status === "nonaktif" ? "Nonaktif" : p.status === "libur" ? "Libur" : p.status}
+                          </span>
+                          {p.status === "nonaktif" && (
+                            <span className="text-[9px] text-slate-400 font-normal">
+                              Tagihan/pickup jeda
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-slate-500 text-xs font-normal whitespace-nowrap">
+                      {formatDate(p.createdAt)}
+                    </td>
+                    <td className="px-4 py-3 text-center whitespace-nowrap">
+                      <div className="flex items-center justify-center gap-1">
+                        {p.status === "calon" ? (
+                          <button
+                            type="button"
+                            onClick={() => setApprovalTarget(p)}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:scale-98 text-white text-xs font-medium shadow-xs transition"
+                            title="Approval Admin Pusat & Tetapkan Zona Pickup"
+                          >
+                            <ShieldCheck size={13} />
+                            <span>Approval</span>
+                          </button>
+                        ) : p.status === "aktif" ? (
+                          <button
+                            type="button"
+                            onClick={() => setStatusTarget({ pelanggan: p, initialTargetStatus: "nonaktif" })}
+                            className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200/80 bg-white hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200 text-slate-500 transition-colors shadow-xs"
+                            title="Jeda / Nonaktifkan Layanan"
+                          >
+                            <Pause size={12} className="fill-current" />
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setStatusTarget({ pelanggan: p, initialTargetStatus: "aktif" })}
+                            className="inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-emerald-200/80 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-medium transition-colors shadow-xs"
+                            title="Aktifkan Kembali Layanan"
+                          >
+                            <Play size={10} className="fill-current" />
+                            <span>Aktifkan</span>
+                          </button>
+                        )}
+                        <Link
+                          href={`/pelanggan/${p.id}`}
+                          className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200/80 bg-white hover:bg-slate-50 hover:text-slate-900 text-slate-500 transition-colors shadow-xs"
+                          title="Lihat Detail"
+                        >
+                          <Eye size={13} strokeWidth={1.75} />
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => openEdit(p)}
+                          className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200/80 bg-white hover:bg-slate-50 hover:text-slate-900 text-slate-500 transition-colors shadow-xs"
+                          title="Edit Data"
+                        >
+                          <Pencil size={13} strokeWidth={1.75} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDeleteTarget(p)}
+                          className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200/80 bg-white hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 text-slate-400 transition-colors shadow-xs"
+                          title="Hapus atau Nonaktifkan"
+                        >
+                          <Trash2 size={13} strokeWidth={1.75} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
 
         {/* MOBILE SMART CARDS VIEW (< md: 768px, Bebas Scroll Horizontal) */}
         <div className="md:hidden space-y-3">
           {paginatedPelanggan.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-8 text-center text-xs font-semibold text-slate-500 shadow-sm">
-              Belum ada data pelanggan
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-8 text-center text-xs font-normal text-slate-500 shadow-xs">
+              Belum ada data pelanggan yang sesuai kriteria pencarian
             </div>
           ) : (
             paginatedPelanggan.map((p) => (
-              <div key={p.id} className="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-sm space-y-3">
+              <div key={p.id} className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs space-y-3">
                 {/* Header Card */}
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-2.5 min-w-0">
@@ -1169,46 +1199,53 @@ function PelangganContent() {
                         src={p.fotoRumah}
                         alt={`Foto ${p.nama}`}
                         unoptimized
-                        width={42}
-                        height={42}
-                        className="w-10 h-10 object-cover rounded-xl border border-slate-200 shrink-0"
+                        width={40}
+                        height={40}
+                        className="w-10 h-10 object-cover rounded-xl border border-slate-200/80 shrink-0"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-500 text-xs shrink-0">
-                        ?
+                      <div className="w-10 h-10 rounded-xl bg-emerald-50/70 border border-emerald-200/70 flex items-center justify-center font-semibold text-emerald-800 text-xs shrink-0">
+                        {p.nama ? p.nama.charAt(0).toUpperCase() : "?"}
                       </div>
                     )}
                     <div className="min-w-0">
-                      <h4 className="font-extrabold text-slate-900 text-sm truncate">{p.nama}</h4>
-                      <span className="inline-block text-[10px] font-mono font-bold text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded">
+                      <h4 className="font-semibold text-slate-900 text-sm truncate">{p.nama}</h4>
+                      <span className="inline-block text-[10px] font-mono font-medium text-slate-600 bg-slate-100 border border-slate-200/60 px-1.5 py-0.2 rounded mt-0.5">
                         {p.kodePelanggan}
                       </span>
                     </div>
                   </div>
-                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold shrink-0 ${
-                    p.status === "aktif" ? "bg-emerald-50 text-emerald-800 border border-emerald-200" :
-                    p.status === "calon" ? "bg-amber-50 text-amber-800 border border-amber-200" :
-                    p.status === "libur" ? "bg-amber-50 text-amber-800 border border-amber-200" :
-                    "bg-slate-100 text-slate-700 border border-slate-300"
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium shrink-0 flex items-center gap-1 ${
+                    p.status === "aktif" ? "bg-emerald-50 text-emerald-800 border border-emerald-200/60" :
+                    p.status === "calon" ? "bg-amber-50 text-amber-800 border border-amber-200/60" :
+                    p.status === "libur" ? "bg-amber-50 text-amber-800 border border-amber-200/60" :
+                    "bg-slate-100 text-slate-600 border border-slate-200"
                   }`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${
+                      p.status === "aktif" ? "bg-emerald-500" :
+                      p.status === "calon" ? "bg-amber-500 animate-pulse" :
+                      p.status === "libur" ? "bg-amber-500" :
+                      "bg-slate-400"
+                    }`} />
                     {p.status === "aktif" ? "Aktif" : p.status === "calon" ? "Calon" : p.status}
                   </span>
                 </div>
 
                 {/* Info Card */}
                 <div className="space-y-1.5 text-xs text-slate-600 border-t border-slate-100 pt-2">
-                  <p className="line-clamp-2 text-slate-800">{p.alamat} {p.rtRw ? `(RT/RW: ${p.rtRw})` : ""}</p>
+                  <p className="line-clamp-2 text-slate-800 font-normal">{p.alamat} {p.rtRw ? `(RT/RW: ${p.rtRw})` : ""}</p>
                   <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
-                    <span className="px-2 py-0.5 rounded-md bg-slate-100 text-[10px] font-semibold text-slate-700">
+                    <span className="px-2 py-0.5 rounded-md bg-slate-100 text-[10px] font-medium text-slate-700">
                       {p.kelurahan?.nama || "—"}
                     </span>
                     {p.wilayah?.zona && (
-                      <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 text-[10px] font-bold border border-emerald-200">
-                        🏷️ {p.wilayah.zona.nama}
+                      <span className="px-2 py-0.5 rounded-md bg-slate-50 text-slate-700 text-[10px] font-medium border border-slate-200/80 flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: p.wilayah.zona.warna || "#10b981" }} />
+                        {p.wilayah.zona.nama}
                       </span>
                     )}
-                    <span className="px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-bold border border-purple-200">
-                      💰 {formatRupiah(p.customTarif || p.paket?.harga || 0)}
+                    <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 text-[10px] font-medium font-mono tabular-nums border border-emerald-200/60">
+                      {formatRupiah(p.customTarif || p.paket?.harga || 0)}
                     </span>
                   </div>
                 </div>
@@ -1220,10 +1257,10 @@ function PelangganContent() {
                       href={`https://wa.me/${p.noTelepon.replace(/^0/, "62")}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="py-2.5 px-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center gap-1 border border-emerald-200 active:scale-95 transition-all"
+                      className="py-2 px-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-medium text-xs flex items-center justify-center gap-1.5 border border-emerald-200/70 active:scale-98 transition-all"
                     >
-                      <span>💬</span>
-                      <span>Chat WA</span>
+                      <MessageCircle size={13} />
+                      <span>WhatsApp</span>
                     </a>
                   ) : (
                     <div className="py-2 text-center text-xs text-slate-400 bg-slate-50 rounded-xl">No WA</div>
@@ -1233,27 +1270,27 @@ function PelangganContent() {
                     <button
                       type="button"
                       onClick={() => setApprovalTarget(p)}
-                      className="py-2.5 px-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs flex items-center justify-center gap-1 shadow-xs active:scale-95 transition-all"
+                      className="py-2 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs flex items-center justify-center gap-1.5 shadow-xs active:scale-98 transition-all"
                     >
-                      <span>🛡️</span>
+                      <ShieldCheck size={13} />
                       <span>Setujui</span>
                     </button>
                   ) : (
                     <button
                       type="button"
                       onClick={() => openEdit(p)}
-                      className="py-2.5 px-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1 active:scale-95 transition-all"
+                      className="py-2 px-2 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-medium text-xs flex items-center justify-center gap-1.5 active:scale-98 transition-all"
                     >
-                      <span>✏️</span>
-                      <span>Atur Rute</span>
+                      <Pencil size={13} />
+                      <span>Edit</span>
                     </button>
                   )}
 
                   <Link
                     href={`/pelanggan/${p.id}`}
-                    className="py-2.5 px-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center justify-center gap-1 border border-slate-200 active:scale-95 transition-all"
+                    className="py-2 px-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-medium text-xs flex items-center justify-center gap-1.5 border border-slate-200/80 active:scale-98 transition-all"
                   >
-                    <span>👁️</span>
+                    <Eye size={13} />
                     <span>Detail</span>
                   </Link>
                 </div>
@@ -1264,24 +1301,26 @@ function PelangganContent() {
 
         {/* Pagination Controls Terpadu */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border border-slate-200 rounded-2xl bg-white shadow-xs text-xs font-medium text-slate-600">
+          <div className="flex items-center justify-between px-4 py-2.5 border border-slate-200/80 rounded-2xl bg-white shadow-xs text-xs font-normal text-slate-600">
             <div>
-              Halaman {page} dari {totalPages}
+              Halaman <span className="font-semibold text-slate-900 font-mono">{page}</span> dari <span className="font-semibold text-slate-900 font-mono">{totalPages}</span>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-1.5">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 disabled:opacity-40 hover:bg-slate-100 transition-colors shadow-sm"
+                className="inline-flex items-center gap-1 px-3 py-1.5 bg-white border border-slate-200/80 rounded-lg text-xs font-medium text-slate-700 disabled:opacity-40 hover:bg-slate-50 transition-colors shadow-xs"
               >
-                Prev
+                <ChevronLeft size={13} />
+                <span>Prev</span>
               </button>
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 disabled:opacity-40 hover:bg-slate-100 transition-colors shadow-sm"
+                className="inline-flex items-center gap-1 px-3 py-1.5 bg-white border border-slate-200/80 rounded-lg text-xs font-medium text-slate-700 disabled:opacity-40 hover:bg-slate-50 transition-colors shadow-xs"
               >
-                Next
+                <span>Next</span>
+                <ChevronRight size={13} />
               </button>
             </div>
           </div>

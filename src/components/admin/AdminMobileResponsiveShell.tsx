@@ -172,7 +172,7 @@ export default function AdminMobileResponsiveShell({
       {/* ── MAIN CONTENT CONTAINER ── */}
       <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative">
         {/* ── TOPBAR RESPONSIVE ── */}
-        <header className="h-14 sm:h-16 flex items-center justify-between px-3 sm:px-6 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-sm shrink-0 select-none z-30">
+        <header className="h-14 sm:h-16 flex items-center justify-between px-3 sm:px-6 bg-white/90 backdrop-blur-md border-b border-slate-200/70 shadow-[0_1px_2px_rgba(0,0,0,0.03)] shrink-0 select-none z-30">
           <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
             {/* Tombol Menu ≡ Mobile untuk Membuka Slide-Up Drawer */}
             <button
@@ -180,25 +180,28 @@ export default function AdminMobileResponsiveShell({
               onClick={() => setDrawerOpen(true)}
               aria-label="Buka menu sekunder backoffice"
               aria-expanded={drawerOpen}
-              className="md:hidden inline-flex items-center justify-center p-2 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 active:bg-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 shrink-0"
+              className="md:hidden inline-flex items-center justify-center p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 active:bg-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 shrink-0"
             >
               <Menu className="w-5 h-5" />
             </button>
 
             {/* Logo UPS HERU Mini di Mobile */}
             <div className="md:hidden flex items-center gap-2">
-              <span className="w-7 h-7 rounded-lg bg-emerald-700 text-white font-extrabold flex items-center justify-center text-xs shadow-sm">
+              <span className="w-7 h-7 rounded-lg bg-emerald-700 text-white font-semibold flex items-center justify-center text-xs shadow-xs">
                 W
               </span>
-              <span className="font-extrabold text-xs tracking-tight text-slate-900">
+              <span className="font-semibold text-xs tracking-tight text-slate-900">
                 UPS HERU
               </span>
             </div>
 
             {/* Status Control Panel */}
-            <div className="hidden sm:inline-flex items-center gap-2 px-2.5 sm:px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] sm:text-xs font-bold truncate">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-              <span className="truncate">Control Panel Operasional</span>
+            <div className="hidden sm:inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-50 border border-slate-200/80 text-slate-700 text-xs font-medium">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span className="truncate">Sistem Operasional Aktif</span>
             </div>
           </div>
 

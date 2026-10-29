@@ -2,6 +2,34 @@ import { prisma } from "@/lib/prisma";
 import { formatRupiah, KATEGORI_PENGELUARAN } from "@/lib/utils";
 import Link from "next/link";
 import { Fragment } from "react";
+import {
+  Users,
+  FileText,
+  CheckCircle2,
+  AlertCircle,
+  Truck,
+  UserCheck,
+  Wallet,
+  Scale,
+  Megaphone,
+  Clock,
+  Receipt,
+  MessageSquare,
+  AlertTriangle,
+  PhoneOff,
+  CreditCard,
+  Building2,
+  Coins,
+  UserPlus,
+  MapPin,
+  CalendarCheck,
+  MessageSquareWarning,
+  Trophy,
+  ArrowRight,
+  TrendingUp,
+  Download,
+  Plus
+} from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -256,67 +284,67 @@ export default async function DashboardPage() {
     {
       no: "01", label: "Total Pelanggan", value: String(stats.totalPelanggan),
       sub: `${stats.pelangganAktif} pelanggan aktif`,
-      iconBg: "bg-blue-50 text-blue-600 border-blue-100", badgeBg: "bg-blue-50 text-blue-700",
-      icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>,
+      iconBg: "bg-blue-50/80 text-blue-600 border-blue-200/60", badgeBg: "bg-blue-50 text-blue-700",
+      icon: <Users size={18} strokeWidth={1.75} />,
     },
     {
       no: "02", label: "Tagihan Bulan Ini", value: formatRupiah(tagihanBulanIni),
       sub: `${stats.tagihanBulanIni} tagihan tertunda`,
-      iconBg: "bg-amber-50 text-amber-700 border-amber-100", badgeBg: "bg-amber-50 text-amber-700",
-      icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
+      iconBg: "bg-amber-50/80 text-amber-700 border-amber-200/60", badgeBg: "bg-amber-50 text-amber-700",
+      icon: <FileText size={18} strokeWidth={1.75} />,
     },
     {
       no: "03", label: "Terkumpul Bulan Ini", value: formatRupiah(terkumpul),
       sub: `${persenTerkumpul}% dari target tagihan`,
-      iconBg: "bg-emerald-50 text-emerald-700 border-emerald-100", badgeBg: "bg-emerald-50 text-emerald-700",
-      icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+      iconBg: "bg-emerald-50/80 text-emerald-700 border-emerald-200/60", badgeBg: "bg-emerald-50 text-emerald-700",
+      icon: <CheckCircle2 size={18} strokeWidth={1.75} />,
     },
     {
       no: "04", label: "Komplain Baru", value: String(stats.komplainBaru),
       sub: stats.komplainBaru > 0 ? "Perlu segera ditindak" : "Semua terselesaikan",
-      iconBg: stats.komplainBaru > 0 ? "bg-rose-50 text-rose-600 border-rose-100" : "bg-slate-50 text-slate-600 border-slate-100", badgeBg: stats.komplainBaru > 0 ? "bg-rose-50 text-rose-700" : "bg-slate-50 text-slate-600",
-      icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>,
+      iconBg: stats.komplainBaru > 0 ? "bg-rose-50/80 text-rose-600 border-rose-200/60" : "bg-slate-50 text-slate-600 border-slate-200/60", badgeBg: stats.komplainBaru > 0 ? "bg-rose-50 text-rose-700" : "bg-slate-50 text-slate-600",
+      icon: <AlertCircle size={18} strokeWidth={1.75} />,
     },
     {
       no: "05", label: "Pengangkutan Hari Ini", value: `${stats.pickupSelesai}/${stats.pickupTotal}`,
       sub: stats.pickupTotal === 0 ? "Tidak ada jadwal hari ini" : `${stats.pickupVolume}m³ • ${stats.pickupBerat}kg`,
-      iconBg: "bg-teal-50 text-teal-700 border-teal-100", badgeBg: "bg-teal-50 text-teal-700",
-      icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>,
+      iconBg: "bg-teal-50/80 text-teal-700 border-teal-200/60", badgeBg: "bg-teal-50 text-teal-700",
+      icon: <Truck size={18} strokeWidth={1.75} />,
       progress: pickupPersen,
     },
     {
       no: "06", label: "Petugas Lapangan", value: `${stats.petugasHadir}`,
       sub: `dari ${stats.totalPetugas} petugas terdaftar`,
-      iconBg: "bg-indigo-50 text-indigo-700 border-indigo-100", badgeBg: "bg-indigo-50 text-indigo-700",
-      icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>,
-      badgeText: `🟢 ${stats.petugasBertugas} di lapangan`,
+      iconBg: "bg-indigo-50/80 text-indigo-700 border-indigo-200/60", badgeBg: "bg-indigo-50 text-indigo-700",
+      icon: <UserCheck size={18} strokeWidth={1.75} />,
+      badgeText: `${stats.petugasBertugas} bertugas`,
     },
     {
       no: "07", label: "Saldo Bersih Bulan Ini", value: (saldoBersih >= 0 ? "+" : "") + formatRupiah(saldoBersih),
       sub: `Masuk ${formatRupiah(terkumpul)} • Keluar ${formatRupiah(stats.pengeluaranBulanIni)}`,
-      iconBg: saldoBersih >= 0 ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-rose-50 text-rose-700 border-rose-100",
+      iconBg: saldoBersih >= 0 ? "bg-emerald-50/80 text-emerald-700 border-emerald-200/60" : "bg-rose-50/80 text-rose-700 border-rose-200/60",
       badgeBg: saldoBersih >= 0 ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700",
-      icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>,
+      icon: <Wallet size={18} strokeWidth={1.75} />,
     },
     {
       no: "08", label: "Rekonsiliasi Kas", 
       value: !stats.rekonHariIni ? "Belum" : (stats.rekonHariIni.selisih === 0 || !stats.rekonHariIni.selisih ? "Nihil Selisih" : formatRupiah(stats.rekonHariIni.selisih)),
       sub: !stats.rekonHariIni ? "Kas hari ini belum diaudit" : (stats.rekonHariIni.selisih === 0 || !stats.rekonHariIni.selisih ? "Kas fisik = kas sistem" : `Sistem ${formatRupiah(stats.rekonHariIni.totalTunaiSistem)} • Fisik ${formatRupiah(stats.rekonHariIni.totalTunaiFisik || 0)}`),
-      iconBg: !stats.rekonHariIni ? "bg-slate-50 text-slate-600 border-slate-100" : ((stats.rekonHariIni.selisih || 0) === 0 ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-amber-50 text-amber-700 border-amber-100"),
+      iconBg: !stats.rekonHariIni ? "bg-slate-50 text-slate-600 border-slate-200/60" : ((stats.rekonHariIni.selisih || 0) === 0 ? "bg-emerald-50/80 text-emerald-700 border-emerald-200/60" : "bg-amber-50/80 text-amber-700 border-amber-200/60"),
       badgeBg: !stats.rekonHariIni ? "bg-slate-50 text-slate-600" : ((stats.rekonHariIni.selisih || 0) === 0 ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"),
-      icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z" /></svg>,
+      icon: <Scale size={18} strokeWidth={1.75} />,
     }
   ];
 
   const quickActions = [
-    { label: "Verifikasi Pembayaran", desc: stats.pembayaranPending > 0 ? `${stats.pembayaranPending} pembayaran menunggu review` : "Tidak ada pembayaran pending", href: "/tagihan", icon: "🔍" },
-    { label: "Generate Tagihan", desc: `Terbitkan tagihan ${bulan} ${tahun}`, href: "/tagihan", icon: "📄" },
-    { label: "Rekonsiliasi Kas", desc: stats.rekonHariIni ? "Sudah dilakukan hari ini" : "Belum audit kas hari ini", href: "/rekonsiliasi", icon: "🏦" },
-    { label: "Setujui Klaim Petugas", desc: stats.klaimMenunggu > 0 ? `${stats.klaimMenunggu} klaim menunggu persetujuan` : "Tidak ada klaim pending", href: "/klaim", icon: "💰" },
-    { label: "Registrasi Pelanggan", desc: "Daftarkan warga atau rute baru", href: "/pelanggan", icon: "👤" },
-    { label: "Peta Realtime", desc: "Pantau lokasi petugas & armada", href: "/peta", icon: "🗺️" },
-    { label: "Rekap Absensi", desc: `${stats.petugasHadir} petugas hadir hari ini`, href: "/absensi", icon: "📋" },
-    { label: "Kelola Komplain", desc: stats.komplainBaru > 0 ? `${stats.komplainBaru} aduan menunggu` : "Tidak ada komplain aktif", href: "/komplain", icon: "💬" },
+    { label: "Verifikasi Pembayaran", desc: stats.pembayaranPending > 0 ? `${stats.pembayaranPending} pembayaran menunggu review` : "Tidak ada pembayaran pending", href: "/tagihan", icon: <CreditCard size={18} className="text-emerald-600" strokeWidth={1.75} /> },
+    { label: "Generate Tagihan", desc: `Terbitkan tagihan ${bulan} ${tahun}`, href: "/tagihan", icon: <Receipt size={18} className="text-blue-600" strokeWidth={1.75} /> },
+    { label: "Rekonsiliasi Kas", desc: stats.rekonHariIni ? "Sudah dilakukan hari ini" : "Belum audit kas hari ini", href: "/rekonsiliasi", icon: <Building2 size={18} className="text-violet-600" strokeWidth={1.75} /> },
+    { label: "Setujui Klaim Petugas", desc: stats.klaimMenunggu > 0 ? `${stats.klaimMenunggu} klaim menunggu persetujuan` : "Tidak ada klaim pending", href: "/klaim", icon: <Coins size={18} className="text-amber-600" strokeWidth={1.75} /> },
+    { label: "Registrasi Pelanggan", desc: "Daftarkan warga atau rute baru", href: "/pelanggan", icon: <UserPlus size={18} className="text-teal-600" strokeWidth={1.75} /> },
+    { label: "Peta Realtime", desc: "Pantau lokasi petugas & armada", href: "/peta", icon: <MapPin size={18} className="text-indigo-600" strokeWidth={1.75} /> },
+    { label: "Rekap Absensi", desc: `${stats.petugasHadir} petugas hadir hari ini`, href: "/absensi", icon: <CalendarCheck size={18} className="text-sky-600" strokeWidth={1.75} /> },
+    { label: "Kelola Komplain", desc: stats.komplainBaru > 0 ? `${stats.komplainBaru} aduan menunggu` : "Tidak ada komplain aktif", href: "/komplain", icon: <MessageSquareWarning size={18} className="text-rose-600" strokeWidth={1.75} /> },
   ];
 
   const armadaMap = {
@@ -330,20 +358,22 @@ export default async function DashboardPage() {
   const infoRows = [
     { k: "Armada Siap Operasi", v: `${stats.armadaAktif} / ${stats.armadaTotal} Kendaraan` },
     { k: "Jenis Armada Beroperasi", v: armadaStr },
-    { k: "Gateway Pembayaran", v: stats.gatewayPending > 0 ? `⚠️ ${stats.gatewayPending} transaksi pending` : "✅ OK (0 stalled)" },
+    { k: "Gateway Pembayaran", v: stats.gatewayPending > 0 ? `⚠️ ${stats.gatewayPending} transaksi pending` : "OK (0 stalled)" },
     { k: "Delivery WA (Bulan Ini)", v: `${deliveryRate}% terkirim` },
   ];
 
   return (
-    <div className="p-4 sm:p-6 pb-12 space-y-8 w-full">
+    <div className="p-4 sm:p-6 pb-12 space-y-6 w-full">
       {/* Pengumuman Penting Banner */}
       {stats.pengumumanPenting && (
-        <div className="bg-yellow-50 border border-yellow-300 text-yellow-900 px-4 py-3 rounded-xl flex items-start sm:items-center justify-between gap-4 shadow-sm relative">
+        <div className="bg-amber-50/80 border border-amber-200/80 text-amber-900 px-4 py-3 rounded-2xl flex items-start sm:items-center justify-between gap-4 shadow-xs relative">
           <div className="flex items-start gap-3">
-            <span className="text-xl">📢</span>
+            <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 border border-amber-200/60">
+              <Megaphone size={16} strokeWidth={2} />
+            </div>
             <div>
-              <strong className="font-bold">PENGUMUMAN PENTING: {stats.pengumumanPenting.judul}</strong>
-              <p className="text-sm mt-0.5">{stats.pengumumanPenting.isi}</p>
+              <strong className="font-semibold text-slate-900 text-sm">PENGUMUMAN PENTING: {stats.pengumumanPenting.judul}</strong>
+              <p className="text-xs text-slate-600 mt-0.5 font-normal">{stats.pengumumanPenting.isi}</p>
             </div>
           </div>
         </div>
@@ -351,83 +381,101 @@ export default async function DashboardPage() {
 
       {/* Action Inbox Alerts */}
       {(stats.pembayaranPending > 0 || stats.klaimMenunggu > 0 || stats.chatBelumDibaca > 0 || stats.tidakDiangkut > 0 || stats.notifGagal > 0) && (
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
-          <div className="px-5 py-3 border-b border-slate-100 flex items-center gap-2 bg-slate-50/60">
-            <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-            <h2 className="text-sm font-bold text-slate-900 tracking-tight">Butuh Perhatian Segera</h2>
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+          <div className="px-5 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+              <h2 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">Perlu Tindak Lanjut</h2>
+            </div>
+            <span className="text-[11px] font-mono text-slate-500 font-medium">Realtime Queue</span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-100">
             {stats.pembayaranPending > 0 && (
-              <div className="bg-white p-4 flex flex-col justify-between hover:bg-slate-50 transition-colors">
+              <div className="bg-white p-4 flex flex-col justify-between hover:bg-slate-50/70 transition-colors">
                 <div className="flex items-start gap-3 mb-3">
-                  <span className="text-xl shrink-0">⚠️</span>
+                  <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 border border-amber-200/60 flex items-center justify-center shrink-0">
+                    <Clock size={16} strokeWidth={2} />
+                  </div>
                   <div>
-                    <strong className="font-bold text-amber-900 text-sm">{stats.pembayaranPending} Pembayaran Pending</strong>
-                    <p className="text-xs text-amber-700 mt-0.5">Menunggu verifikasi transfer</p>
+                    <h3 className="font-semibold text-slate-900 text-xs">{stats.pembayaranPending} Pembayaran Pending</h3>
+                    <p className="text-[11px] text-slate-500 mt-0.5 font-normal">Menunggu verifikasi bukti transfer</p>
                   </div>
                 </div>
-                <Link href="/tagihan" className="text-amber-700 bg-amber-100 hover:bg-amber-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors text-center w-full block">
-                  Verifikasi Sekarang &rarr;
+                <Link href="/tagihan" className="text-amber-800 bg-amber-50/80 hover:bg-amber-100 border border-amber-200/60 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1.5 w-full">
+                  <span>Verifikasi Sekarang</span>
+                  <ArrowRight size={12} />
                 </Link>
               </div>
             )}
             
             {stats.klaimMenunggu > 0 && (
-              <div className="bg-white p-4 flex flex-col justify-between hover:bg-slate-50 transition-colors">
+              <div className="bg-white p-4 flex flex-col justify-between hover:bg-slate-50/70 transition-colors">
                 <div className="flex items-start gap-3 mb-3">
-                  <span className="text-xl shrink-0">📝</span>
+                  <div className="w-8 h-8 rounded-xl bg-orange-50 text-orange-700 border border-orange-200/60 flex items-center justify-center shrink-0">
+                    <Receipt size={16} strokeWidth={2} />
+                  </div>
                   <div>
-                    <strong className="font-bold text-orange-900 text-sm">{stats.klaimMenunggu} Klaim Dana</strong>
-                    <p className="text-xs text-orange-700 mt-0.5">Menunggu persetujuan</p>
+                    <h3 className="font-semibold text-slate-900 text-xs">{stats.klaimMenunggu} Klaim Petugas</h3>
+                    <p className="text-[11px] text-slate-500 mt-0.5 font-normal">Menunggu persetujuan klaim dana</p>
                   </div>
                 </div>
-                <Link href="/klaim" className="text-orange-700 bg-orange-100 hover:bg-orange-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors text-center w-full block">
-                  Review Klaim &rarr;
+                <Link href="/klaim" className="text-orange-800 bg-orange-50/80 hover:bg-orange-100 border border-orange-200/60 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1.5 w-full">
+                  <span>Review Klaim</span>
+                  <ArrowRight size={12} />
                 </Link>
               </div>
             )}
 
             {stats.chatBelumDibaca > 0 && (
-              <div className="bg-white p-4 flex flex-col justify-between hover:bg-slate-50 transition-colors">
+              <div className="bg-white p-4 flex flex-col justify-between hover:bg-slate-50/70 transition-colors">
                 <div className="flex items-start gap-3 mb-3">
-                  <span className="text-xl shrink-0">💬</span>
+                  <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-700 border border-blue-200/60 flex items-center justify-center shrink-0">
+                    <MessageSquare size={16} strokeWidth={2} />
+                  </div>
                   <div>
-                    <strong className="font-bold text-blue-900 text-sm">{stats.chatBelumDibaca} Pesan Baru</strong>
-                    <p className="text-xs text-blue-700 mt-0.5">Laporan petugas lapangan</p>
+                    <h3 className="font-semibold text-slate-900 text-xs">{stats.chatBelumDibaca} Pesan Petugas</h3>
+                    <p className="text-[11px] text-slate-500 mt-0.5 font-normal">Laporan pesan lapangan masuk</p>
                   </div>
                 </div>
-                <Link href="/chat" className="text-blue-700 bg-blue-100 hover:bg-blue-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors text-center w-full block">
-                  Buka Chat &rarr;
+                <Link href="/chat" className="text-blue-800 bg-blue-50/80 hover:bg-blue-100 border border-blue-200/60 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1.5 w-full">
+                  <span>Buka Chat</span>
+                  <ArrowRight size={12} />
                 </Link>
               </div>
             )}
 
             {stats.tidakDiangkut > 0 && (
-              <div className="bg-white p-4 flex flex-col justify-between hover:bg-slate-50 transition-colors">
+              <div className="bg-white p-4 flex flex-col justify-between hover:bg-slate-50/70 transition-colors">
                 <div className="flex items-start gap-3 mb-3">
-                  <span className="text-xl shrink-0">🚨</span>
+                  <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-700 border border-rose-200/60 flex items-center justify-center shrink-0">
+                    <AlertTriangle size={16} strokeWidth={2} />
+                  </div>
                   <div>
-                    <strong className="font-bold text-rose-900 text-sm">{stats.tidakDiangkut} Titik Terlewat</strong>
-                    <p className="text-xs text-rose-700 mt-0.5">Gagal diangkut hari ini</p>
+                    <h3 className="font-semibold text-slate-900 text-xs">{stats.tidakDiangkut} Titik Terlewat</h3>
+                    <p className="text-[11px] text-slate-500 mt-0.5 font-normal">Pengangkutan sampah terlewat hari ini</p>
                   </div>
                 </div>
-                <Link href="/pengangkutan?status=tidak_diangkut" className="text-rose-700 bg-rose-100 hover:bg-rose-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors text-center w-full block">
-                  Lihat Detail &rarr;
+                <Link href="/pengangkutan?status=tidak_diangkut" className="text-rose-800 bg-rose-50/80 hover:bg-rose-100 border border-rose-200/60 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1.5 w-full">
+                  <span>Lihat Detail</span>
+                  <ArrowRight size={12} />
                 </Link>
               </div>
             )}
 
             {stats.notifGagal > 0 && (
-              <div className="bg-white p-4 flex flex-col justify-between hover:bg-slate-50 transition-colors">
+              <div className="bg-white p-4 flex flex-col justify-between hover:bg-slate-50/70 transition-colors">
                 <div className="flex items-start gap-3 mb-3">
-                  <span className="text-xl shrink-0">📵</span>
+                  <div className="w-8 h-8 rounded-xl bg-red-50 text-red-700 border border-red-200/60 flex items-center justify-center shrink-0">
+                    <PhoneOff size={16} strokeWidth={2} />
+                  </div>
                   <div>
-                    <strong className="font-bold text-red-900 text-sm">{stats.notifGagal} Notifikasi Gagal</strong>
-                    <p className="text-xs text-red-700 mt-0.5">Pesan WA gagal dikirim</p>
+                    <h3 className="font-semibold text-slate-900 text-xs">{stats.notifGagal} Notifikasi Gagal</h3>
+                    <p className="text-[11px] text-slate-500 mt-0.5 font-normal">Pesan WhatsApp gateway terhambat</p>
                   </div>
                 </div>
-                <Link href="/notifikasi" className="text-red-700 bg-red-100 hover:bg-red-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors text-center w-full block">
-                  Cek Riwayat &rarr;
+                <Link href="/notifikasi" className="text-red-800 bg-red-50/80 hover:bg-red-100 border border-red-200/60 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1.5 w-full">
+                  <span>Cek Riwayat Gateway</span>
+                  <ArrowRight size={12} />
                 </Link>
               </div>
             )}
@@ -438,48 +486,50 @@ export default async function DashboardPage() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 mb-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-700 animate-pulse" />
-            Live Operation & Dashboard Dispatch
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200/60 mb-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            Live Operation & Dispatch Center
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">
             Ringkasan Operasional — {bulan} {tahun}
           </h1>
-          <p className="text-slate-500 text-xs sm:text-sm mt-1">
+          <p className="text-slate-500 text-xs sm:text-sm mt-1 font-normal">
             Pantauan retribusi, tren penagihan, dan status operasional armada UPS HERU Kota Depok
           </p>
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-center">
-          <Link href="/tagihan" className="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5">
-            + Kelola Tagihan
+          <Link href="/tagihan" className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium shadow-xs transition-all flex items-center gap-1.5 active:scale-98">
+            <Plus size={14} strokeWidth={2} />
+            <span>Kelola Tagihan</span>
           </Link>
-          <Link href="/laporan" className="px-4 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold border border-slate-200 shadow-sm transition-all">
-            Unduh Laporan
+          <Link href="/laporan" className="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium border border-slate-200/80 shadow-xs transition-all flex items-center gap-1.5">
+            <Download size={14} className="text-slate-500" />
+            <span>Unduh Laporan</span>
           </Link>
         </div>
       </div>
 
       {/* Stat Cards Grid (2 rows x 4 cols) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {cards.map((c) => (
-          <div key={c.no} className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider z-10">{c.label}</span>
-              <div className={`w-10 h-10 rounded-xl border flex items-center justify-center z-10 ${c.iconBg}`}>
+          <div key={c.no} className="bg-white rounded-2xl border border-slate-200/80 p-4.5 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between relative overflow-hidden">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">{c.label}</span>
+              <div className={`w-9 h-9 rounded-xl border flex items-center justify-center ${c.iconBg}`}>
                 {c.icon}
               </div>
             </div>
-            <div className="z-10">
-              <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight tabular-nums">
+            <div>
+              <p className="text-2xl font-semibold text-slate-900 tracking-tight tabular-nums font-mono">
                 {c.value}
               </p>
               <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between">
-                <span className="text-xs text-slate-500 font-medium">
-                  {c.badgeText ? <span className="mr-1">{c.badgeText}</span> : null}
+                <span className="text-xs text-slate-500 font-normal">
+                  {c.badgeText ? <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5" /> : null}
                   {c.sub}
                 </span>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${c.badgeBg}`}>
+                <span className={`text-[10px] font-mono font-medium px-1.5 py-0.2 rounded ${c.badgeBg}`}>
                   {c.no}
                 </span>
               </div>
@@ -492,49 +542,49 @@ export default async function DashboardPage() {
       </div>
 
       {/* Collection Progress & Denda */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-sm">
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
           <div>
-            <h2 className="text-sm font-bold text-slate-900 tracking-tight">Realisasi Penagihan Retribusi Bulan Ini</h2>
-            <p className="text-xs text-slate-500 mt-0.5">Rasio perolehan kas pembayaran terhadap tagihan yang diterbitkan</p>
+            <h2 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">Realisasi Penagihan Retribusi Bulan Ini</h2>
+            <p className="text-xs text-slate-500 mt-0.5 font-normal">Rasio perolehan kas pembayaran terhadap tagihan yang diterbitkan</p>
           </div>
           <div className="flex items-baseline gap-1.5">
-            <span className="text-2xl font-extrabold text-emerald-700 tabular-nums">{persenTerkumpul}%</span>
-            <span className="text-xs font-semibold text-slate-600">terkumpul</span>
+            <span className="text-2xl font-semibold text-emerald-700 font-mono tabular-nums">{persenTerkumpul}%</span>
+            <span className="text-xs font-medium text-slate-500">terkumpul</span>
           </div>
         </div>
 
-        <div className="h-3.5 w-full bg-slate-100 rounded-full overflow-hidden p-0.5">
+        <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden p-0.5">
           <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-1000" style={{ width: `${Math.min(100, persenTerkumpul)}%` }} />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mt-5 pt-4 border-t border-slate-100 text-xs">
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+          <div className="flex items-center gap-2.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
             <div>
-              <span className="text-slate-600 block text-[11px] font-medium">Dana Terkumpul</span>
-              <span className="font-bold text-slate-800 text-sm">{formatRupiah(terkumpul)}</span>
+              <span className="text-slate-500 block text-[11px] font-normal">Dana Terkumpul</span>
+              <span className="font-semibold text-slate-900 text-xs font-mono tabular-nums">{formatRupiah(terkumpul)}</span>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
+          <div className="flex items-center gap-2.5">
+            <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
             <div>
-              <span className="text-slate-600 block text-[11px] font-medium">Sisa Belum Terbayar</span>
-              <span className="font-bold text-slate-800 text-sm">{formatRupiah(sisa)}</span>
+              <span className="text-slate-500 block text-[11px] font-normal">Sisa Belum Terbayar</span>
+              <span className="font-semibold text-slate-900 text-xs font-mono tabular-nums">{formatRupiah(sisa)}</span>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-slate-400" />
+          <div className="flex items-center gap-2.5">
+            <span className="w-2 h-2 rounded-full bg-slate-400 shrink-0" />
             <div>
-              <span className="text-slate-600 block text-[11px] font-medium">Target Tagihan Terbit</span>
-              <span className="font-bold text-slate-800 text-sm">{formatRupiah(tagihanBulanIni)}</span>
+              <span className="text-slate-500 block text-[11px] font-normal">Target Tagihan Terbit</span>
+              <span className="font-semibold text-slate-900 text-xs font-mono tabular-nums">{formatRupiah(tagihanBulanIni)}</span>
             </div>
           </div>
-          <div className="flex items-center gap-2 sm:justify-end">
-            <span className={`w-2.5 h-2.5 rounded-full ${stats.totalDendaBulanIni > 0 ? "bg-amber-500" : "bg-emerald-500"}`} />
+          <div className="flex items-center gap-2.5 sm:justify-end">
+            <span className={`w-2 h-2 rounded-full shrink-0 ${stats.totalDendaBulanIni > 0 ? "bg-amber-500" : "bg-emerald-500"}`} />
             <div>
-              <span className="text-slate-600 block text-[11px] font-medium">🟡 Denda Terakumulasi</span>
-              <span className={`font-bold text-sm ${stats.totalDendaBulanIni > 0 ? "text-amber-700" : "text-emerald-700"}`}>
+              <span className="text-slate-500 block text-[11px] font-normal">Denda Terakumulasi</span>
+              <span className={`font-semibold text-xs font-mono tabular-nums ${stats.totalDendaBulanIni > 0 ? "text-amber-700" : "text-emerald-700"}`}>
                 {formatRupiah(stats.totalDendaBulanIni)}
               </span>
             </div>
@@ -545,13 +595,16 @@ export default async function DashboardPage() {
       {/* Tren & Tunggakan & Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
         {/* Trend Bar Chart */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-sm lg:col-span-3 flex flex-col justify-between">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs lg:col-span-3 flex flex-col justify-between">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
             <div>
-              <h2 className="text-sm font-bold text-slate-900 tracking-tight">Tren Pemasukan vs Pengeluaran</h2>
-              <p className="text-xs text-slate-500 mt-0.5">Historis arus kas 6 bulan terakhir</p>
+              <h2 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">Tren Pemasukan vs Pengeluaran</h2>
+              <p className="text-xs text-slate-500 mt-0.5 font-normal">Historis arus kas 6 bulan terakhir</p>
             </div>
-            <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg">Semester Ini</span>
+            <div className="flex items-center gap-3 text-[11px] font-normal text-slate-500">
+              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500" /> Pemasukan</span>
+              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-rose-400" /> Pengeluaran</span>
+            </div>
           </div>
 
           <div className="flex-1 flex items-end gap-2 sm:gap-4 h-52 border-b border-slate-100 pb-3">
@@ -572,31 +625,31 @@ export default async function DashboardPage() {
           </div>
 
           <div className="flex items-center gap-2 sm:gap-4 mt-2">
-            {bulanLabels.map((m) => <span key={m.label} className="flex-1 text-center text-[11px] font-medium text-slate-500 pt-1">{m.label}</span>)}
+            {bulanLabels.map((m) => <span key={m.label} className="flex-1 text-center text-[11px] font-mono text-slate-500 pt-1">{m.label}</span>)}
           </div>
         </div>
 
         {/* Breakdown Pengeluaran */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-sm lg:col-span-3 flex flex-col justify-between">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs lg:col-span-3 flex flex-col justify-between">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
             <div>
-              <h2 className="text-sm font-bold text-slate-900 tracking-tight">Breakdown Pengeluaran Bulan Ini</h2>
-              <p className="text-xs text-slate-500 mt-0.5">Proporsi biaya operasional per kategori</p>
+              <h2 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">Breakdown Pengeluaran Bulan Ini</h2>
+              <p className="text-xs text-slate-500 mt-0.5 font-normal">Proporsi biaya operasional per kategori</p>
             </div>
-            <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg">Bulan Ini</span>
+            <span className="text-[11px] font-mono text-slate-600 bg-slate-100 border border-slate-200/60 px-2.5 py-0.5 rounded-lg">Bulan Ini</span>
           </div>
 
           <div className="flex-1 space-y-4">
             {stats.pengeluaranPerKategori.length === 0 ? (
-               <div className="text-center py-10 text-slate-500 text-sm">
-                 <p className="mb-2">Belum ada data pengeluaran</p>
-                 <Link href="/laporan" className="text-emerald-600 hover:text-emerald-700 font-semibold text-xs">+ Catat Pengeluaran Baru</Link>
+               <div className="text-center py-10 text-slate-500 text-xs font-normal">
+                 <p className="mb-2">Belum ada data pengeluaran bulan ini</p>
+                 <Link href="/laporan" className="text-emerald-600 hover:text-emerald-700 font-medium">+ Catat Pengeluaran Baru</Link>
                </div>
-            ) : stats.pengeluaranPerKategori.map((k, i) => {
+            ) : stats.pengeluaranPerKategori.map((k) => {
                const catMap: Record<string, { label: string, color: string }> = {
                  bbm: { label: "BBM", color: "bg-amber-500" },
                  gaji_petugas: { label: "Gaji Petugas", color: "bg-blue-500" },
-                 perawatan: { label: "Perawatan", color: "bg-orange-500" },
+                 perawatan: { label: "Perawatan Armada", color: "bg-orange-500" },
                  operasional: { label: "Operasional", color: "bg-slate-500" },
                  lainnya: { label: "Lainnya", color: "bg-gray-400" },
                };
@@ -605,10 +658,10 @@ export default async function DashboardPage() {
                return (
                  <div key={k.kategori}>
                    <div className="flex justify-between text-xs mb-1">
-                     <span className="font-semibold text-slate-700">{mapping.label}</span>
-                     <span className="text-slate-600 font-medium">{formatRupiah(k._sum.jumlah || 0)}</span>
+                     <span className="font-medium text-slate-700">{mapping.label}</span>
+                     <span className="text-slate-600 font-mono tabular-nums">{formatRupiah(k._sum.jumlah || 0)}</span>
                    </div>
-                   <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                   <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
                      <div className={`h-full ${mapping.color} rounded-full`} style={{ width: `${width}%` }}></div>
                    </div>
                  </div>
@@ -616,42 +669,41 @@ export default async function DashboardPage() {
             })}
           </div>
           
-          <div className="mt-4 pt-4 border-t border-slate-100 text-right">
-            <span className="text-xs font-semibold text-slate-600">Total Pengeluaran: </span>
-            <span className="text-sm font-bold text-slate-800">{formatRupiah(stats.pengeluaranBulanIni)}</span>
+          <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+            <span className="text-xs text-slate-500 font-normal">Total Pengeluaran</span>
+            <span className="text-sm font-semibold text-slate-900 font-mono tabular-nums">{formatRupiah(stats.pengeluaranBulanIni)}</span>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
         {/* Top Tunggakan */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden lg:col-span-3 flex flex-col">
-          <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/60">
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden lg:col-span-3 flex flex-col">
+          <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/70">
             <div>
-              <h2 className="text-sm font-bold text-slate-900 tracking-tight">Tunggakan Terbesar</h2>
-              <p className="text-xs text-slate-500 mt-0.5">Daftar pelanggan perlu tindak lanjut tagihan</p>
+              <h2 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">Tunggakan Terbesar</h2>
+              <p className="text-xs text-slate-500 mt-0.5 font-normal">Daftar pelanggan perlu tindak lanjut penagihan</p>
             </div>
             <span className="w-2 h-2 rounded-full bg-amber-500" />
           </div>
 
-          <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+          <div className="p-4 flex-1 flex flex-col justify-between space-y-2.5">
             {topTunggakan.length === 0 ? (
               <div className="text-center py-10">
-                <span className="text-2xl mb-1 block">🎉</span>
-                <p className="text-xs font-semibold text-emerald-700">Nihil Tunggakan Kritis</p>
-                <p className="text-[11px] text-slate-600 mt-0.5">Semua pelanggan tertib bayar tepat waktu</p>
+                <p className="text-xs font-medium text-emerald-700">Nihil Tunggakan Kritis</p>
+                <p className="text-[11px] text-slate-500 mt-0.5 font-normal">Semua pelanggan tertib bayar tepat waktu</p>
               </div>
             ) : (
               topTunggakan.map((t, i) => (
-                <div key={t.kode} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50/70 border border-slate-100 hover:border-slate-200 hover:bg-white transition-all">
-                  <span className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-xs font-bold text-slate-700 shrink-0">{i + 1}</span>
+                <div key={t.kode} className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50/60 border border-slate-200/70 hover:border-slate-300 hover:bg-white transition-all">
+                  <span className="w-6 h-6 rounded-lg bg-white border border-slate-200/80 flex items-center justify-center text-[11px] font-mono font-medium text-slate-700 shrink-0">{i + 1}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-bold text-slate-900 truncate">{t.nama}</p>
-                    <p className="text-[10px] text-slate-500 truncate mt-0.5">{t.kode} · {t.wilayah || "—"}</p>
+                    <p className="text-xs font-semibold text-slate-900 truncate">{t.nama}</p>
+                    <p className="text-[10px] text-slate-500 font-mono truncate mt-0.5">{t.kode} · {t.wilayah || "—"}</p>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="text-xs font-bold text-rose-600">{formatRupiah(t.total)}</p>
-                    <span className="text-[10px] text-slate-600 block font-medium">{t.jumlahTagihan} bulan</span>
+                    <p className="text-xs font-semibold text-rose-600 font-mono tabular-nums">{formatRupiah(t.total)}</p>
+                    <span className="text-[10px] text-slate-500 block font-normal">{t.jumlahTagihan} bulan</span>
                   </div>
                 </div>
               ))
@@ -660,29 +712,35 @@ export default async function DashboardPage() {
         </div>
 
         {/* Performa Kelurahan */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden lg:col-span-3 flex flex-col">
-          <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/60">
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden lg:col-span-3 flex flex-col">
+          <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/70">
             <div>
-              <h2 className="text-sm font-bold text-slate-900 tracking-tight">Performa Penagihan per Kelurahan</h2>
-              <p className="text-xs text-slate-500 mt-0.5">Rasio tagihan lunas bulan ini per wilayah</p>
+              <h2 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">Performa Penagihan per Kelurahan</h2>
+              <p className="text-xs text-slate-500 mt-0.5 font-normal">Rasio tagihan lunas bulan ini per wilayah</p>
             </div>
             <span className="w-2 h-2 rounded-full bg-blue-500" />
           </div>
-          <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+          <div className="p-4 flex-1 flex flex-col justify-between space-y-2.5">
             {stats.performaKelurahan.length === 0 ? (
-              <div className="text-center py-10 text-slate-500 text-sm">
+              <div className="text-center py-10 text-slate-500 text-xs font-normal">
                 <p className="mb-2">Belum ada data performa kelurahan</p>
-                <Link href="/pelanggan" className="text-blue-600 hover:text-blue-700 font-semibold text-xs">Kelola Pelanggan & Wilayah</Link>
+                <Link href="/pelanggan" className="text-blue-600 hover:text-blue-700 font-medium">Kelola Pelanggan & Wilayah</Link>
               </div>
             ) : stats.performaKelurahan.map((k, i) => (
               <div key={k.kelurahan} className="flex items-center gap-3">
-                <div className="w-24 shrink-0 truncate text-xs font-semibold text-slate-700">{i+1}. {k.kelurahan}</div>
+                <div className="w-28 shrink-0 truncate text-xs font-medium text-slate-700">{i+1}. {k.kelurahan}</div>
                 <div className="flex-1 bg-slate-100 h-2 rounded-full overflow-hidden">
                   <div className="h-full bg-blue-500 rounded-full" style={{ width: `${k.persen_lunas}%` }}></div>
                 </div>
-                <div className="w-12 text-right text-xs font-bold text-slate-800">{k.persen_lunas}%</div>
-                <div className="w-5 shrink-0 text-center text-xs">
-                  {k.persen_lunas < 70 ? "⚠️" : (k.persen_lunas > 90 ? "✅" : "")}
+                <div className="w-12 text-right text-xs font-mono tabular-nums font-semibold text-slate-800">{k.persen_lunas}%</div>
+                <div className="w-14 shrink-0 text-right">
+                  {k.persen_lunas < 70 ? (
+                    <span className="text-[10px] font-medium text-amber-800 bg-amber-50 border border-amber-200/60 px-1.5 py-0.2 rounded">Rendah</span>
+                  ) : k.persen_lunas >= 90 ? (
+                    <span className="text-[10px] font-medium text-emerald-800 bg-emerald-50 border border-emerald-200/60 px-1.5 py-0.2 rounded">Optimal</span>
+                  ) : (
+                    <span className="text-[10px] font-medium text-slate-600 bg-slate-100 px-1.5 py-0.2 rounded">Sedang</span>
+                  )}
                 </div>
               </div>
             ))}
@@ -692,60 +750,75 @@ export default async function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
         {/* Referral Leaderboard */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden lg:col-span-2 flex flex-col">
-          <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/60">
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden lg:col-span-2 flex flex-col">
+          <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/70">
             <div>
-              <h2 className="text-sm font-bold text-slate-900 tracking-tight">🏆 Top Referral Akuisisi</h2>
-              <p className="text-xs text-slate-500 mt-0.5">Petugas paling aktif rekrut warga baru</p>
+              <div className="flex items-center gap-1.5">
+                <Trophy size={14} className="text-amber-500" />
+                <h2 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">Top Referral</h2>
+              </div>
+              <p className="text-xs text-slate-500 mt-0.5 font-normal">Petugas akuisisi warga terbanyak</p>
             </div>
           </div>
           <div className="p-4 flex-1 flex flex-col space-y-3">
             {stats.topReferral.length === 0 ? (
-              <div className="text-center py-6 text-slate-500 text-sm">
+              <div className="text-center py-6 text-slate-500 text-xs font-normal">
                  <p className="mb-2">Belum ada data referral</p>
-                 <Link href="/petugas" className="text-emerald-600 hover:text-emerald-700 font-semibold text-xs">Lihat Daftar Petugas</Link>
+                 <Link href="/petugas" className="text-emerald-600 hover:text-emerald-700 font-medium">Lihat Petugas</Link>
               </div>
             ) : stats.topReferral.map((r, i) => (
-              <div key={r.referal} className="flex items-center justify-between text-sm">
-                <span className="font-semibold text-slate-800">
-                  {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : <span className="inline-block w-5 text-center text-slate-400">{i+1}.</span>} {r.referal}
-                </span>
-                <span className="text-slate-600 text-xs font-medium">{r._count.id} pelanggan</span>
+              <div key={r.referal} className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  {i === 0 ? (
+                    <span className="w-5 h-5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 flex items-center justify-center text-[10px] font-bold">1</span>
+                  ) : i === 1 ? (
+                    <span className="w-5 h-5 rounded-full bg-slate-200 text-slate-700 border border-slate-300 flex items-center justify-center text-[10px] font-bold">2</span>
+                  ) : i === 2 ? (
+                    <span className="w-5 h-5 rounded-full bg-amber-50 text-amber-900 border border-amber-200 flex items-center justify-center text-[10px] font-bold">3</span>
+                  ) : (
+                    <span className="w-5 h-5 text-center text-slate-400 font-mono text-[10px]">{i+1}</span>
+                  )}
+                  <span className="font-medium text-slate-800">{r.referal}</span>
+                </div>
+                <span className="text-slate-500 font-mono text-[11px] font-medium">{r._count.id} pelanggan</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Komposisi Sampah */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden lg:col-span-4 flex flex-col">
-          <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/60">
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden lg:col-span-4 flex flex-col">
+          <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/70">
             <div>
-              <h2 className="text-sm font-bold text-slate-900 tracking-tight">Komposisi Sampah Bulan Ini</h2>
-              <p className="text-xs text-slate-500 mt-0.5">Breakdown jenis sampah yang diangkut</p>
+              <h2 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">Komposisi Sampah Bulan Ini</h2>
+              <p className="text-xs text-slate-500 mt-0.5 font-normal">Breakdown jenis sampah yang diangkut armada</p>
             </div>
           </div>
-          <div className="p-4 flex-1 flex flex-col space-y-4 justify-center">
+          <div className="p-4 flex-1 flex flex-col space-y-3.5 justify-center">
             {stats.komposisiSampah.length === 0 ? (
-              <div className="text-center py-6 text-slate-500 text-sm">
+              <div className="text-center py-6 text-slate-500 text-xs font-normal">
                  <p className="mb-2">Belum ada data pengangkutan sampah</p>
-                 <Link href="/jadwal" className="text-emerald-600 hover:text-emerald-700 font-semibold text-xs">Jadwalkan Pengangkutan</Link>
+                 <Link href="/jadwal" className="text-emerald-600 hover:text-emerald-700 font-medium">Jadwalkan Pengangkutan</Link>
               </div>
             ) : stats.komposisiSampah.map(k => {
-              const catMap: Record<string, { label: string, color: string, icon: string }> = {
-                campuran: { label: "Campuran", color: "bg-stone-500", icon: "🟤" },
-                organik: { label: "Organik", color: "bg-green-500", icon: "🟢" },
-                anorganik: { label: "Anorganik", color: "bg-blue-500", icon: "🔵" },
-                b3: { label: "B3", color: "bg-red-500", icon: "🔴" },
+              const catMap: Record<string, { label: string, color: string, dot: string }> = {
+                campuran: { label: "Campuran", color: "bg-stone-500", dot: "bg-stone-500" },
+                organik: { label: "Organik", color: "bg-emerald-500", dot: "bg-emerald-500" },
+                anorganik: { label: "Anorganik", color: "bg-blue-500", dot: "bg-blue-500" },
+                b3: { label: "B3 (Limbah Berbahaya)", color: "bg-rose-500", dot: "bg-rose-500" },
               };
-              const map = catMap[k.jenisSampah] || { label: k.jenisSampah, color: "bg-slate-400", icon: "⚫" };
+              const map = catMap[k.jenisSampah] || { label: k.jenisSampah, color: "bg-slate-400", dot: "bg-slate-400" };
               const pct = stats.pickupVolume > 0 ? ((k._sum.volume || 0) / stats.pickupVolume) * 100 : 0;
               return (
                 <div key={k.jenisSampah} className="flex items-center gap-3">
-                  <div className="w-28 shrink-0 text-xs font-semibold text-slate-700">{map.icon} {map.label}</div>
-                  <div className="flex-1 bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                  <div className="w-32 shrink-0 text-xs font-medium text-slate-700 flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${map.dot}`} />
+                    <span>{map.label}</span>
+                  </div>
+                  <div className="flex-1 bg-slate-100 h-2 rounded-full overflow-hidden">
                     <div className={`h-full ${map.color} rounded-full`} style={{ width: `${pct}%` }}></div>
                   </div>
-                  <div className="w-32 text-right text-xs text-slate-600 font-medium">
+                  <div className="w-28 text-right text-xs text-slate-600 font-mono tabular-nums">
                     {k._sum.volume || 0} m³ ({Math.round(pct)}%)
                   </div>
                 </div>
@@ -758,16 +831,16 @@ export default async function DashboardPage() {
       {/* Quick Actions & System Status */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Quick Actions */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-sm">
-          <h2 className="text-sm font-bold text-slate-900 tracking-tight mb-1">Menu Akses Cepat</h2>
-          <p className="text-xs text-slate-500 mb-4">Pintasan operasional harian dinas</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-3">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+          <h2 className="text-xs font-semibold text-slate-900 uppercase tracking-wider mb-0.5">Menu Akses Cepat</h2>
+          <p className="text-xs text-slate-500 mb-4 font-normal">Pintasan operasional harian dinas</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             {quickActions.map((a) => (
-              <Link key={a.href + a.label} href={a.href} className="group p-3.5 rounded-xl border border-slate-200/90 bg-slate-50/60 hover:bg-white hover:border-emerald-400 hover:shadow-sm transition-all flex items-start gap-3">
-                <span className="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-base shrink-0 group-hover:scale-105 transition-transform">{a.icon}</span>
+              <Link key={a.href + a.label} href={a.href} className="group p-3 rounded-xl border border-slate-200/70 bg-white hover:bg-slate-50/70 hover:border-slate-300 hover:shadow-xs transition-all flex items-start gap-3">
+                <span className="w-8 h-8 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">{a.icon}</span>
                 <span className="flex-1 min-w-0">
-                  <span className="block text-xs font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">{a.label}</span>
-                  <span className="block text-[11px] text-slate-500 mt-0.5 truncate">{a.desc}</span>
+                  <span className="block text-xs font-medium text-slate-900 group-hover:text-emerald-700 transition-colors">{a.label}</span>
+                  <span className="block text-[11px] text-slate-500 mt-0.5 truncate font-normal">{a.desc}</span>
                 </span>
               </Link>
             ))}
@@ -775,29 +848,31 @@ export default async function DashboardPage() {
         </div>
 
         {/* System Status */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-sm flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-sm font-bold text-slate-900 tracking-tight">Status Operasional Sistem</h2>
-              <p className="text-xs text-slate-500 mt-0.5">Kondisi gateway transaksi & armada lapangan</p>
-            </div>
-            <div className={`flex items-center gap-2 px-2.5 py-1 rounded-full ${systemBadge.bg} ${systemBadge.text} border ${systemBadge.border} text-xs font-medium`}>
-              <span className={`w-2 h-2 rounded-full ${systemBadge.dot} animate-pulse`} />
-              {systemBadge.label}
-            </div>
-          </div>
-          <div className="space-y-3 divide-y divide-slate-100">
-            {infoRows.map((r) => (
-              <div key={r.k} className="flex items-center justify-between pt-2.5 first:pt-0">
-                <span className="text-xs text-slate-500 font-medium">{r.k}</span>
-                <span className="text-xs font-bold text-slate-800">{r.v}</span>
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">Status Operasional Sistem</h2>
+                <p className="text-xs text-slate-500 mt-0.5 font-normal">Kondisi gateway transaksi & armada lapangan</p>
               </div>
-            ))}
+              <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full ${systemBadge.bg} ${systemBadge.text} border ${systemBadge.border} text-xs font-medium`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${systemBadge.dot} animate-pulse`} />
+                {systemBadge.label}
+              </div>
+            </div>
+            <div className="space-y-3 divide-y divide-slate-100">
+              {infoRows.map((r) => (
+                <div key={r.k} className="flex items-center justify-between pt-2.5 first:pt-0">
+                  <span className="text-xs text-slate-500 font-normal">{r.k}</span>
+                  <span className="text-xs font-semibold text-slate-800">{r.v}</span>
+                </div>
+              ))}
+            </div>
           </div>
           <div className="mt-5 pt-4 border-t border-slate-100">
-            <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-              <span className="text-xs font-semibold text-slate-700">Piutang Retribusi Belum Masuk</span>
-              <span className={`text-sm font-bold tabular-nums ${sisa > 0 ? "text-rose-600" : "text-emerald-700"}`}>{formatRupiah(sisa)}</span>
+            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50/70 border border-slate-200/80">
+              <span className="text-xs font-medium text-slate-700">Piutang Retribusi Belum Masuk</span>
+              <span className={`text-sm font-semibold font-mono tabular-nums ${sisa > 0 ? "text-rose-600" : "text-emerald-700"}`}>{formatRupiah(sisa)}</span>
             </div>
           </div>
         </div>
