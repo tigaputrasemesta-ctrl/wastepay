@@ -103,7 +103,14 @@ export async function GET(request: Request) {
         }),
       ]);
 
-      deltaData.pelanggan = updatedPelanggan;
+      deltaData.pelanggan = updatedPelanggan.map((p) => ({
+        ...p,
+        fotoRumah: p.fotoRumah
+          ? p.fotoRumah.startsWith("http")
+            ? p.fotoRumah
+            : `/api/pelanggan/${p.id}/foto`
+          : null,
+      }));
       deltaCounts.pelanggan = updatedPelanggan.length + deletedPelanggan.length;
       deletedPelanggan.forEach((p) => {
         deletedItems.push({ entity: "pelanggan", id: p.id });

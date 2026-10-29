@@ -10,6 +10,8 @@ import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 import { tetapkanJadwalDanPetugasPelanggan } from "@/lib/penugasan-jadwal";
 import { ensureArmadaRuteSchema } from "@/lib/db-patch";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request) {
   await ensureArmadaRuteSchema();
   const { searchParams } = new URL(request.url);
@@ -146,6 +148,17 @@ export async function GET(request: Request) {
     countsMap.total += g._count.id;
   }
 
+  // Optimasi payload: fotoRumah yang berupa base64 besar dikonversi jadi URL endpoint /api/pelanggan/[id]/foto
+  // agar response JSON tidak membengkak ratusan megabyte dan tidak membuat browser tab crash/timeout.
+  const mappedPelanggan = pelanggan.map((p) => ({
+    ...p,
+    fotoRumah: p.fotoRumah
+      ? p.fotoRumah.startsWith("http")
+        ? p.fotoRumah
+        : `/api/pelanggan/${p.id}/foto`
+      : null,
+  }));
+
   const responseHeaders = {
     "X-Total-Count": String(isPaginated ? total : pelanggan.length),
     "X-Count-Total": String(countsMap.total),
@@ -153,12 +166,13 @@ export async function GET(request: Request) {
     "X-Count-Calon": String(countsMap.calon),
     "X-Count-Nonaktif": String(countsMap.nonaktif),
     "X-Count-Libur": String(countsMap.libur),
+    "Cache-Control": "no-store, no-cache, must-revalidate",
   };
 
   if (isPaginated) {
     return NextResponse.json(
       {
-        data: pelanggan,
+        data: mappedPelanggan,
         total,
         page,
         limit,
@@ -170,7 +184,7 @@ export async function GET(request: Request) {
     );
   }
 
-  return NextResponse.json(pelanggan, {
+  return NextResponse.json(mappedPelanggan, {
     headers: responseHeaders,
   });
 }

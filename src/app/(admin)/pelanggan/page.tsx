@@ -10,8 +10,8 @@ import GeotagPhoto from "@/components/GeotagPhoto";
 import ModalApprovalPelanggan from "@/components/ModalApprovalPelanggan";
 import ModalStatusPelanggan from "@/components/ModalStatusPelanggan";
 import ModalHapusPelanggan from "@/components/ModalHapusPelanggan";
-import { Play, Pause } from "lucide-react";
-import { getAllCached } from "@/lib/offline-storage";
+import { Play, Pause, RefreshCw } from "lucide-react";
+import { getAllCached, getOfflineDB } from "@/lib/offline-storage";
 
 type Kelurahan = { id: number; nama: string; kecamatan?: string | null };
 type Paket = { id: number; nama: string; harga: number | null };
@@ -164,6 +164,7 @@ function PelangganContent() {
   const [filterStatus, setFilterStatus] = useState(initialMainTab === "approval" ? "calon" : "");
   const [filterKategori, setFilterKategori] = useState("");
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Pelanggan | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Pelanggan | null>(null);
@@ -203,38 +204,40 @@ function PelangganContent() {
     createdAt: "", // Untuk Ubah Tanggal Langganan
   });
 
-  const fetchData = useCallback(async () => {
-    // 1. Coba muat instan dari cache memori HP (IndexedDB) jika belum ada data
-    try {
-      const cached = await getAllCached<Pelanggan>("pelanggan");
-      if (cached && cached.length > 0) {
-        let list = cached;
-        if (search) {
-          const q = search.toLowerCase();
-          list = list.filter(
-            (p) =>
-              p.nama?.toLowerCase().includes(q) ||
-              p.kodePelanggan?.toLowerCase().includes(q) ||
-              p.noTelepon?.includes(q) ||
-              p.alamat?.toLowerCase().includes(q)
-          );
-        }
-        if (filterStatus) list = list.filter((p) => p.status === filterStatus);
-        if (filterZona) list = list.filter((p) => p.wilayah?.zonaId === parseInt(filterZona));
-        if (filterKelurahan) list = list.filter((p) => p.kelurahanId === parseInt(filterKelurahan));
+  const fetchData = useCallback(async (isManualRefresh = false) => {
+    // 1. Coba muat instan dari cache memori HP (IndexedDB) jika belum ada data dan bukan reload manual
+    if (!isManualRefresh) {
+      try {
+        const cached = await getAllCached<Pelanggan>("pelanggan");
+        if (cached && cached.length > 0) {
+          let list = cached;
+          if (search) {
+            const q = search.toLowerCase();
+            list = list.filter(
+              (p) =>
+                p.nama?.toLowerCase().includes(q) ||
+                p.kodePelanggan?.toLowerCase().includes(q) ||
+                p.noTelepon?.includes(q) ||
+                p.alamat?.toLowerCase().includes(q)
+            );
+          }
+          if (filterStatus) list = list.filter((p) => p.status === filterStatus);
+          if (filterZona) list = list.filter((p) => p.wilayah?.zonaId === parseInt(filterZona));
+          if (filterKelurahan) list = list.filter((p) => p.kelurahanId === parseInt(filterKelurahan));
 
-        setPelanggan(list);
-        setStatusCounts({
-          total: cached.length,
-          aktif: cached.filter((p) => p.status === "aktif").length,
-          calon: cached.filter((p) => p.status === "calon").length,
-          nonaktif: cached.filter((p) => p.status === "nonaktif").length,
-          libur: cached.filter((p) => p.status === "libur").length,
-        });
-        setLoading(false);
+          setPelanggan(list);
+          setStatusCounts({
+            total: cached.length,
+            aktif: cached.filter((p) => p.status === "aktif").length,
+            calon: cached.filter((p) => p.status === "calon").length,
+            nonaktif: cached.filter((p) => p.status === "nonaktif").length,
+            libur: cached.filter((p) => p.status === "libur").length,
+          });
+          setLoading(false);
+        }
+      } catch {
+        // Abaikan jika IndexedDB belum diisi
       }
-    } catch {
-      // Abaikan jika IndexedDB belum diisi
     }
 
     try {
@@ -244,14 +247,22 @@ function PelangganContent() {
       if (filterZona) params.set("zonaId", filterZona);
       if (filterStatus) params.set("status", filterStatus);
       if (filterKategori) params.set("kategori", filterKategori);
+      // Mencegah cache browser / edge
+      params.set("_t", Date.now().toString());
       const qs = params.toString();
 
       const [pelangganRes, kelurahanRes, zonaRes, optionsRes] = await Promise.all([
-        fetch(`/api/pelanggan${qs ? `?${qs}` : ""}`),
-        fetch("/api/kelurahan"),
-        fetch("/api/zona"),
-        fetch("/api/publik/daftar-options"),
+        fetch(`/api/pelanggan?${qs}`, { cache: "no-store" }),
+        fetch("/api/kelurahan", { cache: "no-store" }),
+        fetch("/api/zona", { cache: "no-store" }),
+        fetch("/api/publik/daftar-options", { cache: "no-store" }),
       ]);
+
+      if (!pelangganRes.ok) {
+        const errJson = await pelangganRes.json().catch(() => ({}));
+        throw new Error(errJson?.error || `Gagal memuat pelanggan (${pelangganRes.status})`);
+      }
+
       const pelangganData = await pelangganRes.json();
       const kelurahanData = await kelurahanRes.json();
       const zonaData = await zonaRes.json();
@@ -285,14 +296,34 @@ function PelangganContent() {
         });
       }
 
-      setPelanggan(Array.isArray(pelangganData) ? pelangganData : []);
+      if (Array.isArray(pelangganData)) {
+        setPelanggan(pelangganData);
+        // Sinkronkan ke cache lokal IndexedDB agar muat instan berikutnya selalu terbarui
+        if (!search && !filterKelurahan && !filterZona && !filterStatus && !filterKategori) {
+          getOfflineDB().then((db) => {
+            const tx = db.transaction(["pelanggan", "metadata"], "readwrite");
+            const pStore = tx.objectStore("pelanggan");
+            pStore.clear();
+            pelangganData.forEach((item) => pStore.put(item));
+            const metaStore = tx.objectStore("metadata");
+            const now = new Date().toISOString();
+            metaStore.put({ key: "totalPelangganCached", value: pelangganData.length, updatedAt: now });
+            metaStore.put({ key: "lastSyncToken", value: now, updatedAt: now });
+          }).catch(() => {});
+        }
+      }
       setKelurahanList(Array.isArray(kelurahanData) ? kelurahanData : []);
       setZonaList(Array.isArray(zonaData) ? zonaData : []);
+
+      if (isManualRefresh) {
+        showToast("Data pelanggan berhasil diperbarui", "success");
+      }
     } catch (error) {
       console.warn("[Pelanggan] Jaringan offline/gagal, tetap menggunakan data HP:", error);
-      showToast("Menggunakan data tersimpan di HP (Mode Offline)", "info");
+      showToast(isManualRefresh ? "Gagal memuat data terbaru dari server" : "Menggunakan data tersimpan di HP (Mode Offline)", "info");
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   }, [search, filterKelurahan, filterZona, filterStatus, filterKategori, showToast]);
 
@@ -377,7 +408,7 @@ function PelangganContent() {
     if (res.ok) {
       setShowForm(false);
       showToast(editing ? "Pelanggan berhasil diperbarui" : "Pelanggan berhasil ditambahkan");
-      fetchData();
+      fetchData(true);
     } else {
       const data = await res.json();
       showToast(data.error || "Gagal menyimpan", "error");
@@ -476,6 +507,19 @@ function PelangganContent() {
           </p>
         </div>
         <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
+          <button
+            type="button"
+            onClick={() => {
+              setRefreshing(true);
+              fetchData(true);
+            }}
+            disabled={refreshing}
+            className="px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition flex items-center gap-1.5 shadow-xs active:scale-95 disabled:opacity-50"
+            title="Muat ulang data pelanggan terbaru dari server"
+          >
+            <RefreshCw className={`w-4 h-4 text-slate-600 ${refreshing ? "animate-spin" : ""}`} />
+            <span>{refreshing ? "Memuat..." : "Muat Ulang"}</span>
+          </button>
           <Link
             href="/registrasi"
             className="px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
@@ -1471,7 +1515,7 @@ function PelangganContent() {
         isOpen={Boolean(approvalTarget)}
         onClose={() => setApprovalTarget(null)}
         onSuccess={() => {
-          fetchData();
+          fetchData(true);
         }}
         showToast={showToast}
       />
@@ -1483,7 +1527,7 @@ function PelangganContent() {
         isOpen={Boolean(statusTarget)}
         onClose={() => setStatusTarget(null)}
         onSuccess={() => {
-          fetchData();
+          fetchData(true);
         }}
         showToast={showToast}
       />
@@ -1494,7 +1538,7 @@ function PelangganContent() {
         isOpen={Boolean(deleteTarget)}
         onClose={() => setDeleteTarget(null)}
         onSuccess={() => {
-          fetchData();
+          fetchData(true);
         }}
         showToast={showToast}
       />

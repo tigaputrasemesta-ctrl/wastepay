@@ -105,7 +105,7 @@ export async function PUT(
       // Whitelist: petugas survei hanya boleh menyentuh field survei + aktivasi.
       // kelurahanId TIDAK termasuk — pindah kelurahan hanya wewenang admin.
       const fieldSurvei: Record<string, unknown> = {};
-      if (fotoRumah !== undefined) fieldSurvei.fotoRumah = fotoRumah;
+      if (fotoRumah !== undefined && !fotoRumah.startsWith("/api/pelanggan/")) fieldSurvei.fotoRumah = fotoRumah;
       if (patokanLokasi !== undefined) fieldSurvei.patokanLokasi = patokanLokasi;
       if (latitude !== undefined) fieldSurvei.latitude = latitude ? parseFloat(latitude) : null;
       if (longitude !== undefined) fieldSurvei.longitude = longitude ? parseFloat(longitude) : null;
@@ -135,7 +135,7 @@ export async function PUT(
     if (kategori !== undefined) data.kategori = kategori;
     if (alamat !== undefined) data.alamat = alamat;
     if (rtRw !== undefined) data.rtRw = rtRw;
-    if (fotoRumah !== undefined) data.fotoRumah = fotoRumah;
+    if (fotoRumah !== undefined && !fotoRumah.startsWith("/api/pelanggan/")) data.fotoRumah = fotoRumah;
     if (patokanLokasi !== undefined) data.patokanLokasi = patokanLokasi;
     if (latitude !== undefined) data.latitude = latitude ? parseFloat(latitude) : null;
     if (longitude !== undefined) data.longitude = longitude ? parseFloat(longitude) : null;

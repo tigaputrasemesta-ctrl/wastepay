@@ -142,7 +142,14 @@ export async function GET(request: Request) {
         rute: ruteList.length,
       },
       data: {
-        pelanggan: pelangganList,
+        pelanggan: pelangganList.map((p) => ({
+          ...p,
+          fotoRumah: p.fotoRumah
+            ? p.fotoRumah.startsWith("http")
+              ? p.fotoRumah
+              : `/api/pelanggan/${p.id}/foto`
+            : null,
+        })),
         wilayah: wilayahList,
         zona: zonaList,
         kelurahan: kelurahanList,

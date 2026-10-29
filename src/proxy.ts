@@ -268,6 +268,11 @@ const API_ROLE_MAP: Record<string, number> = {
 
   // Ekspor Rekapitulasi Pelanggan (Kasir+)
   "GET:/api/pelanggan/export": 20,
+
+  // Offline Sync Master & Delta (Petugas / Admin+)
+  "GET:/api/sync/master": 10,
+  "GET:/api/sync/delta": 10,
+  "GET:/api/sync/": 10,
 };
 
 async function verifyToken(token: string) {
