@@ -15,8 +15,8 @@ Dokumentasi dan dataset kampanye pesan WhatsApp untuk calon pelanggan/warga yang
 | **Provider API** | Fonnte | https://api.fonnte.com/send |
 | **Fonnte API Token** | `8n46RV2x9GosQYgtAS1j` | Token terisolasi khusus device `089688151473` |
 | **Nomor Terlarang / Pengecualian** | `081400782617` | Nomor Admin Utama (tidak boleh menerima/mengirim kampanye ini) |
-| **Nomor Pengecualian Petugas** | 13 Nomor Petugas / Kru Lapangan | Dikecualikan otomatis (Novi, Heru, Ryan, Ago, Dani, Paung, Cepot, Adit, Piat, Awal, Eko, Rama, dll) |
-| **Total Target Unik** | **782 Kontak** | Sudah diverifikasi, bebas duplikasi, dan tidak terdaftar di DB Pelanggan |
+| **Nomor Pengecualian Petugas** | 16 Nomor Petugas / Kru Lapangan | Dikecualikan otomatis (Novi, Heru, Ryan, Ago, Dani, Paung, Cepot, Adit, Piat, Awal, Odon, Eko, Rama, dll) |
+| **Total Target Unik** | **1.048 Kontak** | Sudah diverifikasi, bebas duplikasi, dan tidak terdaftar di DB Pelanggan |
 
 ---
 

@@ -50,6 +50,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0811-1185-9631",
+    "nomorHpWa62": "6281111859631",
+    "namaKontak": "0811-1185-9631",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0811-1200-3121",
     "nomorHpWa62": "6281112003121",
     "namaKontak": "0811-1200-3121",
@@ -58,6 +68,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0811-1301-1300",
+    "nomorHpWa62": "6281113011300",
+    "namaKontak": "0811-1301-1300",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0811-1500-959",
@@ -88,6 +108,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0811-1814-881",
+    "nomorHpWa62": "628111814881",
+    "namaKontak": "Pak Endra Gas Bakung",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bakung",
+    "keterangan": "Potensi pelanggan wilayah Blok Bakung",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0811-1906-0444",
@@ -180,24 +210,34 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
-    "nomorHpStandar": "0811-8053-139",
-    "nomorHpWa62": "628118053139",
-    "namaKontak": "KWG Accessories Mobil Kebon Duren",
-    "namaPublik": "KWG Accessories Mobil",
+    "nomorHpStandar": "0811-5914-100",
+    "nomorHpWa62": "628115914100",
+    "namaKontak": "Wrkop Attaya(Candra)",
+    "namaPublik": "-",
     "tipe": "Personal",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0811-8053-139",
+    "nomorHpWa62": "628118053139",
+    "namaKontak": "K.s Kaca Film Jln.rayaBondur",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0811-8556-900",
     "nomorHpWa62": "628118556900",
     "namaKontak": "Dian Saphier No A2",
-    "namaPublik": "-",
+    "namaPublik": "Dean ~ ArkanRayyan",
     "tipe": "Personal",
     "indikasiWilayah": "-",
-    "keterangan": "Sudah Transfer November (Saphire No. A2) | Segera buatkan akun di sistem dan tandai lunas Nov 2026",
-    "sumberData": "Chat WhatsApp 30 Okt"
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0811-8670-41",
@@ -208,6 +248,16 @@
     "indikasiWilayah": "Blok Bakung",
     "keterangan": "Potensi pelanggan wilayah Blok Bakung",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0811-8728-962",
+    "nomorHpWa62": "628118728962",
+    "namaKontak": "BPK Rudi Ykp",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "Blok YKP Kelapa",
+    "keterangan": "Potensi pelanggan wilayah Blok YKP Kelapa",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0811-9008-6688",
@@ -242,12 +292,12 @@
   {
     "nomorHpStandar": "0811-9507-009",
     "nomorHpWa62": "628119507009",
-    "namaKontak": "Fitria Dwi Astuti",
+    "namaKontak": "Perum BMK B9 Bu Fitri",
     "namaPublik": "Fitria Dwi Astuti",
     "tipe": "Personal",
-    "indikasiWilayah": "-",
-    "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "indikasiWilayah": "Perumahan BMK",
+    "keterangan": "Potensi pelanggan wilayah Perumahan BMK",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0811-9710-8887",
@@ -260,24 +310,44 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0812-1025-3353",
+    "nomorHpWa62": "6281210253353",
+    "namaKontak": "Budeh Nenih GG.Niman",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Gg Niman",
+    "keterangan": "Potensi pelanggan wilayah Blok Gg Niman",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0812-1049-2917",
     "nomorHpWa62": "6281210492917",
-    "namaKontak": "AM Waskitoadi D",
+    "namaKontak": "K.s Hj Sugeng Ady",
     "namaPublik": "-",
     "tipe": "Personal",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0812-1081-984",
+    "nomorHpWa62": "628121081984",
+    "namaKontak": "Bu Joko GG H Mardan Kampus",
+    "namaPublik": "Wenny",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0812-1092-9224",
     "nomorHpWa62": "6281210929224",
-    "namaKontak": "idem Bawa Smp6",
+    "namaKontak": "Pak Riyadi GG.Niman",
     "namaPublik": "Dwi",
     "tipe": "Personal",
-    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
-    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "indikasiWilayah": "Blok Gg Niman",
+    "keterangan": "Potensi pelanggan wilayah Blok Gg Niman",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0812-1139-5430",
@@ -300,6 +370,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0812-1204-9012",
+    "nomorHpWa62": "6281212049012",
+    "namaKontak": "Bu RT Sasak Tower",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "Blok Sasak",
+    "keterangan": "Potensi pelanggan wilayah Blok Sasak",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0812-1217-2895",
     "nomorHpWa62": "6281212172895",
     "namaKontak": "Pak Iko Sasak",
@@ -308,6 +388,16 @@
     "indikasiWilayah": "Blok Sasak",
     "keterangan": "Potensi pelanggan wilayah Blok Sasak",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0812-1255-7730",
+    "nomorHpWa62": "6281212557730",
+    "namaKontak": "K.aris Sasak",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sasak",
+    "keterangan": "Potensi pelanggan wilayah Blok Sasak",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0812-1275-3968",
@@ -350,6 +440,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0812-1333-4523",
+    "nomorHpWa62": "6281213334523",
+    "namaKontak": "Bu Mei SDN Kalibaru1",
+    "namaPublik": "Meiliana Lovienica",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0812-1354-5960",
     "nomorHpWa62": "6281213545960",
     "namaKontak": "0812-1354-5960",
@@ -368,6 +468,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0812-1390-6539",
+    "nomorHpWa62": "6281213906539",
+    "namaKontak": "Villa Kalibaru B1 / Pak Yudha",
+    "namaPublik": "Yudha Setya Nugraha",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0812-1448-9488",
@@ -420,6 +530,36 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0812-1809-1722",
+    "nomorHpWa62": "6281218091722",
+    "namaKontak": "Mama Kkgitta",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0812-1822-2613",
+    "nomorHpWa62": "6281218222613",
+    "namaKontak": "Rujak Pabuaran",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0812-1887-8508",
+    "nomorHpWa62": "6281218878508",
+    "namaKontak": "Kontrakan Villa Bambu",
+    "namaPublik": "Forius Gulo .S.H.,M.H",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0812-1888-4860",
     "nomorHpWa62": "6281218884860",
     "namaKontak": "06tabroni",
@@ -430,6 +570,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0812-1891-468",
+    "nomorHpWa62": "628121891468",
+    "namaKontak": "PakHajiKontrakan",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0812-1900-5867",
     "nomorHpWa62": "6281219005867",
     "namaKontak": "Gang Jawa",
@@ -438,6 +588,26 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0812-1900-8641",
+    "nomorHpWa62": "6281219008641",
+    "namaKontak": "K.s Lia Kp.bulak",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Kp Bulak",
+    "keterangan": "Potensi pelanggan wilayah Blok Kp Bulak",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0812-1965-0954",
+    "nomorHpWa62": "6281219650954",
+    "namaKontak": "Iqbal Villa Kalibaru A5",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0812-1975-9301",
@@ -483,11 +653,11 @@
     "nomorHpStandar": "0812-2233-9929",
     "nomorHpWa62": "6281222339929",
     "namaKontak": "RAY YKP",
-    "namaPublik": "-",
+    "namaPublik": "Anak Petani",
     "tipe": "Personal",
-    "indikasiWilayah": "-",
-    "keterangan": "Warga Blok YKP (Menunggu Isi Form Ulang) | Kirim reminder link pendaftaran https://upsheru.com/daftar",
-    "sumberData": "Chat WhatsApp 30 Okt"
+    "indikasiWilayah": "Blok YKP Kelapa",
+    "keterangan": "[LABEL ADMIN: PELANGGA. BELUM TERDAFTAR APLIKASI] [LABEL ADMIN: PELANGGA. BELUM TERDAFTAR APLIKASI] Wilayah: Blok YKP Kelapa",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0812-2540-8045",
@@ -502,12 +672,12 @@
   {
     "nomorHpStandar": "0812-2543-3681",
     "nomorHpWa62": "6281225433681",
-    "namaKontak": "Pak Yudha Agisna 3 Sarin (ESTI SUCIATI)",
-    "namaPublik": "-",
+    "namaKontak": "Pak Yudha Agisna 3 Sarin",
+    "namaPublik": "ESTI SUCIATI",
     "tipe": "Personal",
-    "indikasiWilayah": "-",
-    "keterangan": "Label WA: PELANGGA. BELUM TERDAFTAR APLIKASI | Hubungi warga di Agisna 3 Sarin untuk pendaftaran akun WastePay",
-    "sumberData": "Chat WhatsApp 30 Okt"
+    "indikasiWilayah": "Blok Sarin",
+    "keterangan": "Potensi pelanggan wilayah Blok Sarin",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0812-2555-7595",
@@ -572,12 +742,12 @@
   {
     "nomorHpStandar": "0812-4074-2318",
     "nomorHpWa62": "6281240742318",
-    "namaKontak": "Shynta Pravitasari",
-    "namaPublik": "-",
+    "namaKontak": "Shynta",
+    "namaPublik": "Shynta",
     "tipe": "Personal",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0812-4173-6327",
@@ -588,6 +758,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0812-4711-2741",
+    "nomorHpWa62": "6281247112741",
+    "namaKontak": "K.s Pasar Ibu Sasak",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sasak",
+    "keterangan": "Potensi pelanggan wilayah Blok Sasak",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0812-5000-1544",
@@ -610,6 +790,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0812-6155-4581",
+    "nomorHpWa62": "6281261554581",
+    "namaKontak": "Apif 204 Tabroni",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "Blok Tabroni",
+    "keterangan": "Potensi pelanggan wilayah Blok Tabroni",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0812-6215-8124",
     "nomorHpWa62": "6281262158124",
     "namaKontak": "0812-6215-8124",
@@ -630,6 +820,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0812-7936-9016",
+    "nomorHpWa62": "6281279369016",
+    "namaKontak": "BPK.Rubio",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0812-8007-1896",
     "nomorHpWa62": "6281280071896",
     "namaKontak": "GALTANIA AMORIA ESHAS",
@@ -638,6 +838,46 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0812-8026-9011",
+    "nomorHpWa62": "6281280269011",
+    "namaKontak": "0812-8026-9011",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0812-8066-4311",
+    "nomorHpWa62": "6281280664311",
+    "namaKontak": "kurniaasihsapinah",
+    "namaPublik": "kurniaasihsapinah",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0812-8111-0857",
+    "nomorHpWa62": "6281281110857",
+    "namaKontak": "Bu Fatur Bwh.Smp 6",
+    "namaPublik": "Suharti Kusumawati",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0812-8139-5740",
+    "nomorHpWa62": "6281281395740",
+    "namaKontak": "Ruko Sebelah Notaris (CV.Argani)",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0812-8179-3682",
@@ -650,6 +890,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0812-8218-561",
+    "nomorHpWa62": "628128218561",
+    "namaKontak": "Gunawan Ykp",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok YKP Kelapa",
+    "keterangan": "Potensi pelanggan wilayah Blok YKP Kelapa",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0812-8220-0084",
     "nomorHpWa62": "6281282200084",
     "namaKontak": "0812-8220-0084",
@@ -658,6 +908,26 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0812-8225-3225",
+    "nomorHpWa62": "6281282253225",
+    "namaKontak": "Irma Pedati",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0812-8239-6554",
+    "nomorHpWa62": "6281282396554",
+    "namaKontak": "Andri GG.Niman",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Gg Niman",
+    "keterangan": "Potensi pelanggan wilayah Blok Gg Niman",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0812-8245-2465",
@@ -670,24 +940,44 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
-    "nomorHpStandar": "0812-8285-6403",
-    "nomorHpWa62": "6281282856403",
-    "namaKontak": "K",
-    "namaPublik": "K",
-    "tipe": "Personal",
-    "indikasiWilayah": "-",
-    "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
-  },
-  {
-    "nomorHpStandar": "0812-8301-5142",
-    "nomorHpWa62": "6281283015142",
-    "namaKontak": "kustini",
+    "nomorHpStandar": "0812-8260-6518",
+    "nomorHpWa62": "6281282606518",
+    "namaKontak": "0812-8260-6518",
     "namaPublik": "-",
     "tipe": "Personal",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0812-8285-6403",
+    "nomorHpWa62": "6281282856403",
+    "namaKontak": "Maju Alumunium Kp Sawah",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Kampung Sawah",
+    "keterangan": "Potensi pelanggan wilayah Blok Kampung Sawah",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0812-8301-5142",
+    "nomorHpWa62": "6281283015142",
+    "namaKontak": "Bu Candeini Bakung",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bakung",
+    "keterangan": "Potensi pelanggan wilayah Blok Bakung",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0812-8351-5055",
+    "nomorHpWa62": "6281283515055",
+    "namaKontak": "fitri Agisna No.6 Sarin",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sarin",
+    "keterangan": "Potensi pelanggan wilayah Blok Sarin",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0812-8353-9106",
@@ -780,6 +1070,36 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0812-8629-2886",
+    "nomorHpWa62": "6281286292886",
+    "namaKontak": "Kontrakan Betty No. 1",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0812-8685-6181",
+    "nomorHpWa62": "6281286856181",
+    "namaKontak": "K.andri Bwh.smp6",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0812-8696-6572",
+    "nomorHpWa62": "6281286966572",
+    "namaKontak": "Ibu Jong Sasak",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sasak",
+    "keterangan": "Potensi pelanggan wilayah Blok Sasak",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0812-8733-4463",
     "nomorHpWa62": "6281287334463",
     "namaKontak": "0812-8733-4463",
@@ -840,6 +1160,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0812-8883-0965",
+    "nomorHpWa62": "6281288830965",
+    "namaKontak": "Tyo Ykp",
+    "namaPublik": "Tyo",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok YKP Kelapa",
+    "keterangan": "Potensi pelanggan wilayah Blok YKP Kelapa",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0812-8935-1030",
     "nomorHpWa62": "6281289351030",
     "namaKontak": "Rt02",
@@ -848,6 +1178,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0812-8946-8236",
+    "nomorHpWa62": "6281289468236",
+    "namaKontak": "Tomo Perum Pohon Bambu GG.Niman",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "Blok Gg Niman",
+    "keterangan": "Potensi pelanggan wilayah Blok Gg Niman",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0812-8959-5559",
@@ -863,11 +1203,11 @@
     "nomorHpStandar": "0812-9003-6641",
     "nomorHpWa62": "6281290036641",
     "namaKontak": "BMK A7 Pak Fauzan",
-    "namaPublik": "-",
+    "namaPublik": "Warti N",
     "tipe": "Personal",
-    "indikasiWilayah": "-",
-    "keterangan": "Sudah Transfer Okt, Nov, Des (BMK Blok A7) | Segera input akun pelanggan & jadwalkan angkut sampah",
-    "sumberData": "Chat WhatsApp 30 Okt"
+    "indikasiWilayah": "Perumahan BMK",
+    "keterangan": "Potensi pelanggan wilayah Perumahan BMK",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0812-9039-3721",
@@ -898,6 +1238,26 @@
     "indikasiWilayah": "Blok Jl. Raya Cilodong",
     "keterangan": "Potensi pelanggan wilayah Blok Jl. Raya Cilodong",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0812-9125-8999",
+    "nomorHpWa62": "6281291258999",
+    "namaKontak": "Bu Eva Berdikari",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Perum Berdikari",
+    "keterangan": "Potensi pelanggan wilayah Perum Berdikari",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0812-9127-2647",
+    "nomorHpWa62": "6281291272647",
+    "namaKontak": "Een Sapire 1 Blok B No. 2",
+    "namaPublik": "Een Nurendah",
+    "tipe": "Personal",
+    "indikasiWilayah": "Perumahan Saphire",
+    "keterangan": "Potensi pelanggan wilayah Perumahan Saphire",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0812-9139-9512",
@@ -932,12 +1292,22 @@
   {
     "nomorHpStandar": "0812-9185-6006",
     "nomorHpWa62": "6281291856006",
-    "namaKontak": "Fadhilah Alfafa ❛◡❛",
+    "namaKontak": "Bu Dea / Fauzan Bwh Smp6",
     "namaPublik": "-",
     "tipe": "Personal",
-    "indikasiWilayah": "-",
-    "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0812-9199-0097",
+    "nomorHpWa62": "6281291990097",
+    "namaKontak": "A1 Perum Tabroni",
+    "namaPublik": "rkswidianingsih67",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Tabroni",
+    "keterangan": "Potensi pelanggan wilayah Blok Tabroni",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0812-9230-4602",
@@ -980,6 +1350,26 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0812-9415-7484",
+    "nomorHpWa62": "6281294157484",
+    "namaKontak": "BPk Baenudin bakung",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bakung",
+    "keterangan": "Potensi pelanggan wilayah Blok Bakung",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0812-9422-5788",
+    "nomorHpWa62": "6281294225788",
+    "namaKontak": "Nurul GG Umar",
+    "namaPublik": "Nurul Sierra Selina ~ SCB",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Gang Umar",
+    "keterangan": "Potensi pelanggan wilayah Blok Gang Umar",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0812-9497-4015",
     "nomorHpWa62": "6281294974015",
     "namaKontak": "Sukma Hp Kerja",
@@ -988,6 +1378,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0812-9510-6645",
+    "nomorHpWa62": "6281295106645",
+    "namaKontak": "Green Setu No. 3 Ika",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Setu",
+    "keterangan": "Potensi pelanggan wilayah Blok Setu",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0812-9514-9698",
@@ -1008,6 +1408,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0812-9536-0049",
+    "nomorHpWa62": "6281295360049",
+    "namaKontak": "K.s Juna Bwh.smp6",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0812-9582-1102",
@@ -1040,6 +1450,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0812-9631-711",
+    "nomorHpWa62": "628129631711",
+    "namaKontak": "K.s Kopidarihati",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0812-9632-4421",
     "nomorHpWa62": "6281296324421",
     "namaKontak": "DaengRusdi",
@@ -1048,6 +1468,26 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0812-9637-1948",
+    "nomorHpWa62": "6281296371948",
+    "namaKontak": "Bpk.Ajat Rayacilodong",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Jl. Raya Cilodong",
+    "keterangan": "Potensi pelanggan wilayah Blok Jl. Raya Cilodong",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0812-9644-7481",
+    "nomorHpWa62": "6281296447481",
+    "namaKontak": "BPK Bastian Kp.bulak Pohon Bambu",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Kp Bulak",
+    "keterangan": "Potensi pelanggan wilayah Blok Kp Bulak",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0812-9707-6784",
@@ -1098,6 +1538,26 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0812-9807-4845",
+    "nomorHpWa62": "6281298074845",
+    "namaKontak": "Iful Bwh.Smp6",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0812-9827-7694",
+    "nomorHpWa62": "6281298277694",
+    "namaKontak": "Mira Dmiles Trevista Premier A12a",
+    "namaPublik": "Mira YUnisah",
+    "tipe": "Personal",
+    "indikasiWilayah": "Trevista Premier / D Miles",
+    "keterangan": "Potensi pelanggan wilayah Trevista Premier / D Miles",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0812-9859-0505",
@@ -1157,7 +1617,7 @@
     "tipe": "Personal",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0813-1110-3326",
@@ -1180,6 +1640,36 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0813-1118-6157",
+    "nomorHpWa62": "6281311186157",
+    "namaKontak": "Permata Bomar No. 1 Pak Hendra",
+    "namaPublik": "Hendra",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0813-1122-1332",
+    "nomorHpWa62": "6281311221332",
+    "namaKontak": "Bu Yana",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0813-1127-3754",
+    "nomorHpWa62": "6281311273754",
+    "namaKontak": "K.bu Yelfa Kp.bulak",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Kp Bulak",
+    "keterangan": "Potensi pelanggan wilayah Blok Kp Bulak",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0813-1131-3971",
     "nomorHpWa62": "6281311313971",
     "namaKontak": "Alive Organizer",
@@ -1188,6 +1678,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0813-1170-1561",
+    "nomorHpWa62": "6281311701561",
+    "namaKontak": "0813-1170-1561",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0813-1300-5300",
@@ -1220,6 +1720,26 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0813-1444-3442",
+    "nomorHpWa62": "6281314443442",
+    "namaKontak": "Green Setu No. 7 Rahman",
+    "namaPublik": "Rachmanda",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Setu",
+    "keterangan": "Potensi pelanggan wilayah Blok Setu",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0813-1455-2347",
+    "nomorHpWa62": "6281314552347",
+    "namaKontak": "Iis Bwh Smp6 Blkng RT Toni",
+    "namaPublik": "Aachid's Nin..",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0813-1503-3775",
     "nomorHpWa62": "6281315033775",
     "namaKontak": "0813-1503-3775",
@@ -1230,6 +1750,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0813-1531-4373",
+    "nomorHpWa62": "6281315314373",
+    "namaKontak": "Depan Peti Mati(Bu Ely Ggdamai)",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0813-1572-5822",
     "nomorHpWa62": "6281315725822",
     "namaKontak": "Rohajon",
@@ -1238,6 +1768,26 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0813-1578-4937",
+    "nomorHpWa62": "6281315784937",
+    "namaKontak": "Ma² Berli Ykp",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok YKP Kelapa",
+    "keterangan": "Potensi pelanggan wilayah Blok YKP Kelapa",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0813-1582-1156",
+    "nomorHpWa62": "6281315821156",
+    "namaKontak": "Teh Indra(K) Bwh.smp6",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0813-1596-2520",
@@ -1270,6 +1820,26 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0813-1641-7171",
+    "nomorHpWa62": "6281316417171",
+    "namaKontak": "Ibu Royatmo Gank Niman Betty",
+    "namaPublik": "Angesti",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Gg Niman",
+    "keterangan": "Potensi pelanggan wilayah Blok Gg Niman",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0813-1684-8971",
+    "nomorHpWa62": "6281316848971",
+    "namaKontak": "Steam Kibeng",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Kibeng",
+    "keterangan": "Potensi pelanggan wilayah Blok Kibeng",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0813-1687-4767",
     "nomorHpWa62": "6281316874767",
     "namaKontak": "Warteg",
@@ -1288,6 +1858,26 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0813-1717-4727",
+    "nomorHpWa62": "6281317174727",
+    "namaKontak": "Pak DIKA Sasak",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sasak",
+    "keterangan": "Potensi pelanggan wilayah Blok Sasak",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0813-1752-4202",
+    "nomorHpWa62": "6281317524202",
+    "namaKontak": "BPK.yaya Bakung",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bakung",
+    "keterangan": "Potensi pelanggan wilayah Blok Bakung",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0813-1776-2732",
@@ -1318,6 +1908,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0813-1878-2907",
+    "nomorHpWa62": "6281318782907",
+    "namaKontak": "Tanah Ykp",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok YKP Kelapa",
+    "keterangan": "Potensi pelanggan wilayah Blok YKP Kelapa",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0813-1891-040",
@@ -1410,6 +2010,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0813-2821-0914",
+    "nomorHpWa62": "6281328210914",
+    "namaKontak": "Sebelah Warteg Bwh.Dmiles",
+    "namaPublik": "Vivi Martina",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0813-2825-7090",
     "nomorHpWa62": "6281328257090",
     "namaKontak": "Silvia",
@@ -1460,6 +2070,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0813-3438-5728",
+    "nomorHpWa62": "6281334385728",
+    "namaKontak": "Nasi Padang Jln.raya Cilodong",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Jl. Raya Cilodong",
+    "keterangan": "Potensi pelanggan wilayah Blok Jl. Raya Cilodong",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0813-3838-8862",
     "nomorHpWa62": "6281338388862",
     "namaKontak": "0813-3838-8862",
@@ -1468,6 +2088,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0813-5000-8081",
+    "nomorHpWa62": "6281350008081",
+    "namaKontak": "0813-5000-8081",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0813-5350-616",
@@ -1550,6 +2180,26 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0813-8000-1312",
+    "nomorHpWa62": "6281380001312",
+    "namaKontak": "Pak Adi C5 GG.Sarin",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sarin",
+    "keterangan": "Potensi pelanggan wilayah Blok Sarin",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0813-8009-900",
+    "nomorHpWa62": "628138009900",
+    "namaKontak": "0813-8009-900",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0813-8060-2003",
     "nomorHpWa62": "6281380602003",
     "namaKontak": "A4",
@@ -1560,14 +2210,24 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
-    "nomorHpStandar": "0813-8084-4435",
-    "nomorHpWa62": "6281380844435",
-    "namaKontak": "Hansyahcahyasakila",
+    "nomorHpStandar": "0813-8081-1704",
+    "nomorHpWa62": "6281380811704",
+    "namaKontak": "Hesti(Yessi) Suci",
     "namaPublik": "-",
     "tipe": "Personal",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0813-8084-4435",
+    "nomorHpWa62": "6281380844435",
+    "namaKontak": "K.Jauh Ma² Cahya GG.Niman",
+    "namaPublik": "Hansyahcahyasakila",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Gg Niman",
+    "keterangan": "Potensi pelanggan wilayah Blok Gg Niman",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0813-8086-3916",
@@ -1580,14 +2240,34 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0813-8135-5522",
+    "nomorHpWa62": "6281381355522",
+    "namaKontak": "BPK Joko Sasak",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sasak",
+    "keterangan": "Potensi pelanggan wilayah Blok Sasak",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0813-8176-8694",
+    "nomorHpWa62": "6281381768694",
+    "namaKontak": "K.Yanto Bwh.Smp6",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0813-8184-5254",
     "nomorHpWa62": "6281381845254",
-    "namaKontak": "Bagas Wijanarko",
-    "namaPublik": "Bagas Wijanarko",
+    "namaKontak": "Bpk Bagas Sasak",
+    "namaPublik": "-",
     "tipe": "Personal",
-    "indikasiWilayah": "-",
-    "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "indikasiWilayah": "Blok Sasak",
+    "keterangan": "Potensi pelanggan wilayah Blok Sasak",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0813-8212-7378",
@@ -1602,12 +2282,52 @@
   {
     "nomorHpStandar": "0813-8242-1212",
     "nomorHpWa62": "6281382421212",
-    "namaKontak": "Agusri Sasak",
-    "namaPublik": "Agusri",
+    "namaKontak": "Agus Pp Sasak",
+    "namaPublik": "-",
     "tipe": "Personal",
     "indikasiWilayah": "Blok Sasak",
     "keterangan": "Potensi pelanggan wilayah Blok Sasak",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0813-8270-2478",
+    "nomorHpWa62": "6281382702478",
+    "namaKontak": "BPK.Bagus Sasak",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sasak",
+    "keterangan": "Potensi pelanggan wilayah Blok Sasak",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0813-8283-6744",
+    "nomorHpWa62": "6281382836744",
+    "namaKontak": "K.s Amira Tabroni",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "Blok Tabroni",
+    "keterangan": "Potensi pelanggan wilayah Blok Tabroni",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0813-8350-9936",
+    "nomorHpWa62": "6281383509936",
+    "namaKontak": "BPK.Jong Sasak",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sasak",
+    "keterangan": "Potensi pelanggan wilayah Blok Sasak",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0813-8351-4313",
+    "nomorHpWa62": "6281383514313",
+    "namaKontak": "Viar Motor",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0813-8357-5061",
@@ -1650,14 +2370,24 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0813-8442-6646",
+    "nomorHpWa62": "6281384426646",
+    "namaKontak": "Mama Ara Bwh.Dmiles",
+    "namaPublik": "Cicilia Oemardie",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0813-8448-1690",
     "nomorHpWa62": "6281384481690",
     "namaKontak": "Rus Kampung Bulak",
-    "namaPublik": "x",
-    "tipe": "Akun Bisnis / Usaha",
+    "namaPublik": "-",
+    "tipe": "Personal",
     "indikasiWilayah": "Blok Kp Bulak",
-    "keterangan": "Potensi pelanggan wilayah Blok Kp Bulak",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0813-8515-1415",
@@ -1690,6 +2420,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0813-8570-5806",
+    "nomorHpWa62": "6281385705806",
+    "namaKontak": "Pak Firman Ggniman",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Gg Niman",
+    "keterangan": "Potensi pelanggan wilayah Blok Gg Niman",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0813-8586-1375",
     "nomorHpWa62": "6281385861375",
     "namaKontak": "Esterlita Nauli",
@@ -1712,12 +2452,12 @@
   {
     "nomorHpStandar": "0813-8632-2033",
     "nomorHpWa62": "6281386322033",
-    "namaKontak": "+62 813-8632-2033",
-    "namaPublik": "-",
+    "namaKontak": "KODAM II /SRIWIJAYA",
+    "namaPublik": "KODAM II /SRIWIJAYA",
     "tipe": "Personal",
     "indikasiWilayah": "-",
-    "keterangan": "Di Luar Area (Sawangan Pengasinan) | Konfirmasi area operasional belum menjangkau Sawangan",
-    "sumberData": "Chat WhatsApp 30 Okt"
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0813-8693-1087",
@@ -1810,6 +2550,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0813-8991-8831",
+    "nomorHpWa62": "6281389918831",
+    "namaKontak": "Agisna 2 No. 6 Bunga",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "Blok Agisna",
+    "keterangan": "Potensi pelanggan wilayah Blok Agisna",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0813-9008-8678",
     "nomorHpWa62": "6281390088678",
     "namaKontak": "0813-9008-8678",
@@ -1818,6 +2568,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0813-9214-0192",
+    "nomorHpWa62": "6281392140192",
+    "namaKontak": "0813-9214-0192",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0813-9391-297",
@@ -1838,6 +2598,16 @@
     "indikasiWilayah": "Blok Tabroni",
     "keterangan": "Potensi pelanggan wilayah Blok Tabroni",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0813-9459-8849",
+    "nomorHpWa62": "6281394598849",
+    "namaKontak": "Alex Tabroni",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Tabroni",
+    "keterangan": "Potensi pelanggan wilayah Blok Tabroni",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0813-9808-8364",
@@ -1880,6 +2650,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0813-9891-8552",
+    "nomorHpWa62": "6281398918552",
+    "namaKontak": "A4 Perum Tabroni",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Tabroni",
+    "keterangan": "Potensi pelanggan wilayah Blok Tabroni",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0813-9901-637",
     "nomorHpWa62": "628139901637",
     "namaKontak": "0813-9901-637",
@@ -1908,6 +2688,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0814-0060-0356",
+    "nomorHpWa62": "6281400600356",
+    "namaKontak": "K.Yono Dekat Aridho N",
+    "namaPublik": "Mama Fachri",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0814-0064-0117",
@@ -1950,6 +2740,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0815-1023-7886",
+    "nomorHpWa62": "6281510237886",
+    "namaKontak": "iLacak CS",
+    "namaPublik": "iLacak CS",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0815-1114-8995",
     "nomorHpWa62": "6281511148995",
     "namaKontak": "0815-1114-8995",
@@ -1960,6 +2760,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0815-1126-3077",
+    "nomorHpWa62": "6281511263077",
+    "namaKontak": "C5 Perum Ykp",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok YKP Kelapa",
+    "keterangan": "Potensi pelanggan wilayah Blok YKP Kelapa",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0815-1127-8393",
     "nomorHpWa62": "6281511278393",
     "namaKontak": "Neni Tabroni Cipta",
@@ -1968,6 +2778,16 @@
     "indikasiWilayah": "Blok Tabroni",
     "keterangan": "Potensi pelanggan wilayah Blok Tabroni",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0815-1165-5726",
+    "nomorHpWa62": "6281511655726",
+    "namaKontak": "SA~Angel~Jatimulya",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0815-1341-3389",
@@ -1982,12 +2802,12 @@
   {
     "nomorHpStandar": "0815-1414-6481",
     "nomorHpWa62": "6281514146481",
-    "namaKontak": "Trapis Wanita",
+    "namaKontak": "Palautan B 155",
     "namaPublik": "Trapis Wanita",
     "tipe": "Personal",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0815-1580-7845",
@@ -1998,6 +2818,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0815-1904-9335",
+    "nomorHpWa62": "6281519049335",
+    "namaKontak": "Villa Kalibaru A3 GG.umar Ggumar",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Gang Umar",
+    "keterangan": "Potensi pelanggan wilayah Blok Gang Umar",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0815-1985-6698",
@@ -2092,12 +2922,12 @@
   {
     "nomorHpStandar": "0816-1688-363",
     "nomorHpWa62": "628161688363",
-    "namaKontak": "+62 816-1688-363",
-    "namaPublik": "-",
+    "namaKontak": "zeki",
+    "namaPublik": "zeki",
     "tipe": "Personal",
     "indikasiWilayah": "-",
-    "keterangan": "Kak zeki (Tanya Skema Layanan KK/Orang) | Jelaskan skema iuran per rumah / KK dan kirim link daftar",
-    "sumberData": "Chat WhatsApp 30 Okt"
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0816-1717-2477",
@@ -2220,6 +3050,46 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0818-0575-2188",
+    "nomorHpWa62": "6281805752188",
+    "namaKontak": "Siti Bwh Dmiles",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0818-0688-0887",
+    "nomorHpWa62": "6281806880887",
+    "namaKontak": "Pak Kris Sasak",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sasak",
+    "keterangan": "Potensi pelanggan wilayah Blok Sasak",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0818-0690-8266",
+    "nomorHpWa62": "6281806908266",
+    "namaKontak": "Pak Zen Tabroni",
+    "namaPublik": "Sofia shahab",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "Blok Tabroni",
+    "keterangan": "Potensi pelanggan wilayah Blok Tabroni",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0818-0839-1450",
+    "nomorHpWa62": "6281808391450",
+    "namaKontak": "Bu Sri Trevista No 3 Depan D Miles Ayu",
+    "namaPublik": "Jeng Ayu",
+    "tipe": "Personal",
+    "indikasiWilayah": "Trevista Premier / D Miles",
+    "keterangan": "Potensi pelanggan wilayah Trevista Premier / D Miles",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0818-1816-1018",
     "nomorHpWa62": "6281818161018",
     "namaKontak": "0818-1816-1018",
@@ -2232,12 +3102,12 @@
   {
     "nomorHpStandar": "0818-1896-6997",
     "nomorHpWa62": "6281818966997",
-    "namaKontak": "Shareefa Sinergi Madani",
+    "namaKontak": "BMK B6 Erwin",
     "namaPublik": "Shareefa Sinergi Madani",
-    "tipe": "Personal",
-    "indikasiWilayah": "-",
-    "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "Perumahan BMK",
+    "keterangan": "Potensi pelanggan wilayah Perumahan BMK",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0818-2115-11",
@@ -2287,7 +3157,7 @@
     "tipe": "Personal",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0819-1333-9599",
@@ -2360,6 +3230,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0819-4508-4588",
+    "nomorHpWa62": "6281945084588",
+    "namaKontak": "Billy Bakung",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bakung",
+    "keterangan": "Potensi pelanggan wilayah Blok Bakung",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0819-4623-9078",
     "nomorHpWa62": "6281946239078",
     "namaKontak": "Risah",
@@ -2410,6 +3290,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0821-1111-6504",
+    "nomorHpWa62": "6282111116504",
+    "namaKontak": "K.s Alumunium Kp.bulak",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Kp Bulak",
+    "keterangan": "Potensi pelanggan wilayah Blok Kp Bulak",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0821-1113-0263",
     "nomorHpWa62": "6282111130263",
     "namaKontak": "0821-1113-0263",
@@ -2428,6 +3318,46 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0821-1180-6862",
+    "nomorHpWa62": "6282111806862",
+    "namaKontak": "Anang/Kiki Bakung",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "Blok Bakung",
+    "keterangan": "Potensi pelanggan wilayah Blok Bakung",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0821-1190-9811",
+    "nomorHpWa62": "6282111909811",
+    "namaKontak": "Dokter Fandi Kp.sawah",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "Blok Kampung Sawah",
+    "keterangan": "Potensi pelanggan wilayah Blok Kampung Sawah",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0821-1261-4990",
+    "nomorHpWa62": "6282112614990",
+    "namaKontak": "Rizka/Didik Kp. Bulak",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0821-1277-3865",
+    "nomorHpWa62": "6282112773865",
+    "namaKontak": "Bu Nunung Jln.raya Cilodong",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Jl. Raya Cilodong",
+    "keterangan": "Potensi pelanggan wilayah Blok Jl. Raya Cilodong",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0821-1300-3940",
@@ -2480,34 +3410,104 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0821-1420-1240",
+    "nomorHpWa62": "6282114201240",
+    "namaKontak": "Bpk.santoso Blok Setu",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Setu",
+    "keterangan": "Potensi pelanggan wilayah Blok Setu",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0821-1440-8641",
     "nomorHpWa62": "6282114408641",
-    "namaKontak": "Anton Kampunc Bulak",
-    "namaPublik": "😁",
+    "namaKontak": "Bu Jesica RT02 Kp.bulak",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Kp Bulak",
+    "keterangan": "Potensi pelanggan wilayah Blok Kp Bulak",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0821-1441-6123",
+    "nomorHpWa62": "6282114416123",
+    "namaKontak": "BPK.andi Sapire",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Perumahan Saphire",
+    "keterangan": "Potensi pelanggan wilayah Perumahan Saphire",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0821-1458-5003",
+    "nomorHpWa62": "6282114585003",
+    "namaKontak": "Bu Temon RT 02/01",
+    "namaPublik": "-",
     "tipe": "Personal",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0821-1470-1110",
     "nomorHpWa62": "6282114701110",
-    "namaKontak": "Muka Tabroni",
+    "namaKontak": "Pak Mulyadi Tabroni",
     "namaPublik": "Muka",
     "tipe": "Personal",
     "indikasiWilayah": "Blok Tabroni",
     "keterangan": "Potensi pelanggan wilayah Blok Tabroni",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0821-1474-6705",
     "nomorHpWa62": "6282114746705",
-    "namaKontak": "Ry A4 Blok Pete",
-    "namaPublik": "Ry",
+    "namaKontak": "Cluster Allesa A4 Riama",
+    "namaPublik": "-",
     "tipe": "Personal",
     "indikasiWilayah": "Blok Pete",
-    "keterangan": "Potensi pelanggan wilayah Blok Pete",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0821-1485-0684",
+    "nomorHpWa62": "6282114850684",
+    "namaKontak": "0821-1485-0684",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0821-1518-4853",
+    "nomorHpWa62": "6282115184853",
+    "namaKontak": "K.S Dika Sasak",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sasak",
+    "keterangan": "Potensi pelanggan wilayah Blok Sasak",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0821-1582-0902",
+    "nomorHpWa62": "6282115820902",
+    "namaKontak": "Fadel Sasak",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sasak",
+    "keterangan": "Potensi pelanggan wilayah Blok Sasak",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0821-1612-6282",
+    "nomorHpWa62": "6282116126282",
+    "namaKontak": "Bu Hermi Kp. Sawah Dishub Toto",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0821-1699-804",
@@ -2538,6 +3538,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0821-1790-3527",
+    "nomorHpWa62": "6282117903527",
+    "namaKontak": "Kontrakan Betty No. 6",
+    "namaPublik": "Tiar A. Nisa",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0821-1817-0517",
@@ -2573,11 +3583,11 @@
     "nomorHpStandar": "0821-2164-1166",
     "nomorHpWa62": "6282121641166",
     "namaKontak": "Azeppeo",
-    "namaPublik": "Azeppeo",
+    "namaPublik": "-",
     "tipe": "Personal",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0821-2211-0807",
@@ -2620,6 +3630,26 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0821-2240-8670",
+    "nomorHpWa62": "6282122408670",
+    "namaKontak": "Bu Bad Steam Kp.sawah Kp.Sawah",
+    "namaPublik": "Badriah",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Kampung Sawah",
+    "keterangan": "Potensi pelanggan wilayah Blok Kampung Sawah",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0821-2241-9935",
+    "nomorHpWa62": "6282122419935",
+    "namaKontak": "Pak Aryadi Bengkel Las",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0821-2301-4543",
     "nomorHpWa62": "6282123014543",
     "namaKontak": "Denokkw Santri",
@@ -2628,6 +3658,16 @@
     "indikasiWilayah": "Perumahan Santri",
     "keterangan": "Potensi pelanggan wilayah Perumahan Santri",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0821-2304-0320",
+    "nomorHpWa62": "6282123040320",
+    "namaKontak": "Rahmat K.No2 Jln.Raya Bakung",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bakung",
+    "keterangan": "Potensi pelanggan wilayah Blok Bakung",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0821-2331-7952",
@@ -2642,12 +3682,12 @@
   {
     "nomorHpStandar": "0821-2480-4097",
     "nomorHpWa62": "6282124804097",
-    "namaKontak": "Bayu Sasak Maulana",
+    "namaKontak": "Rafli Kontrakan Bu Tio No 3 Kebun Duren",
     "namaPublik": "Rafli Maulana",
     "tipe": "Personal",
-    "indikasiWilayah": "Blok Sasak",
-    "keterangan": "Potensi pelanggan wilayah Blok Sasak",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "indikasiWilayah": "Kebun Duren",
+    "keterangan": "Potensi pelanggan wilayah Kebun Duren",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0821-2511-5021",
@@ -2740,6 +3780,76 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0821-3092-4539",
+    "nomorHpWa62": "6282130924539",
+    "namaKontak": "Srihati Tabroni",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Tabroni",
+    "keterangan": "Potensi pelanggan wilayah Blok Tabroni",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0821-3254-9240",
+    "nomorHpWa62": "6282132549240",
+    "namaKontak": "Bu Pandi Sblh.aceng Ykp",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok YKP Kelapa",
+    "keterangan": "Potensi pelanggan wilayah Blok YKP Kelapa",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0821-3336-0248",
+    "nomorHpWa62": "6282133360248",
+    "namaKontak": "Bu Jaki Bwh Smp6",
+    "namaPublik": "Ersyah.B. ( Yanti Syam)",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0821-4636-6565",
+    "nomorHpWa62": "6282146366565",
+    "namaKontak": "Mama Denis K.Kuning",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0821-4761-0222",
+    "nomorHpWa62": "6282147610222",
+    "namaKontak": "Bu Megi Kp.sawah",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Kampung Sawah",
+    "keterangan": "Potensi pelanggan wilayah Blok Kampung Sawah",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0821-6317-6467",
+    "nomorHpWa62": "6282163176467",
+    "namaKontak": "Permata Bomar A7 / Putri, Riza",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0821-7117-0908",
+    "nomorHpWa62": "6282171170908",
+    "namaKontak": "K.Rizki Tabroni",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Tabroni",
+    "keterangan": "Potensi pelanggan wilayah Blok Tabroni",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0821-8000-1916",
     "nomorHpWa62": "6282180001916",
     "namaKontak": "0821-8000-1916",
@@ -2780,6 +3890,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0821-9823-2977",
+    "nomorHpWa62": "6282198232977",
+    "namaKontak": "Santo/Iqbal Perum BMK Blok A No 2",
+    "namaPublik": "Cepot Astrajingga",
+    "tipe": "Personal",
+    "indikasiWilayah": "Perumahan BMK",
+    "keterangan": "Potensi pelanggan wilayah Perumahan BMK",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0822-1017-5353",
     "nomorHpWa62": "6282210175353",
     "namaKontak": "0822-1017-5353",
@@ -2788,6 +3908,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0822-1026-7252",
+    "nomorHpWa62": "6282210267252",
+    "namaKontak": "K.s Togar C3 Sarin",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sarin",
+    "keterangan": "Potensi pelanggan wilayah Blok Sarin",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0822-1040-7077",
@@ -2812,12 +3942,12 @@
   {
     "nomorHpStandar": "0822-1069-1622",
     "nomorHpWa62": "6282210691622",
-    "namaKontak": "+62 822-1069-1622",
-    "namaPublik": "-",
+    "namaKontak": "Khairunnisa,Yusuf,dhiajen",
+    "namaPublik": "Khairunnisa,Yusuf,dhiajen",
     "tipe": "Personal",
     "indikasiWilayah": "-",
-    "keterangan": "Tanya Pembayaran Barcode / Belum Survei | Lakukan survei lokasi atau kirim link daftar mandiri",
-    "sumberData": "Chat WhatsApp 30 Okt"
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0822-1078-5571",
@@ -2880,6 +4010,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0822-2220-0508",
+    "nomorHpWa62": "6282222200508",
+    "namaKontak": "Villa Kalibaru A7 / Pak Fajar",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0822-2438-3510",
     "nomorHpWa62": "6282224383510",
     "namaKontak": ".",
@@ -2918,6 +4058,26 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0822-3752-6333",
+    "nomorHpWa62": "6282237526333",
+    "namaKontak": "Bos Mbeng/Pak SANUSI",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0822-4660-0499",
+    "nomorHpWa62": "6282246600499",
+    "namaKontak": "Mie Ayam Kp.sawah",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "Blok Kampung Sawah",
+    "keterangan": "Potensi pelanggan wilayah Blok Kampung Sawah",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0822-4694-2201",
@@ -2980,6 +4140,26 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0822-6078-4820",
+    "nomorHpWa62": "6282260784820",
+    "namaKontak": "Pak Zul Bawah SMP 6 zulkarnain",
+    "namaPublik": "muhammad zulkarnain",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0822-6136-4039",
+    "nomorHpWa62": "6282261364039",
+    "namaKontak": "ibrohim",
+    "namaPublik": "ibrohim",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0822-6181-4513",
     "nomorHpWa62": "6282261814513",
     "namaKontak": "Laellah",
@@ -3030,6 +4210,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0822-8461-7567",
+    "nomorHpWa62": "6282284617567",
+    "namaKontak": "Kontrakan H. Liyas 216",
+    "namaPublik": ".",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0822-9121-1168",
     "nomorHpWa62": "6282291211168",
     "namaKontak": "it's Me",
@@ -3040,6 +4230,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0822-9200-1021",
+    "nomorHpWa62": "6282292001021",
+    "namaKontak": "Wati/Ulfad (Ika)",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0822-9430-4490",
     "nomorHpWa62": "6282294304490",
     "namaKontak": "Bahrismb Sembiring",
@@ -3048,6 +4248,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0822-9646-8922",
+    "nomorHpWa62": "6282296468922",
+    "namaKontak": "Jannah/Afik Sasak No 34",
+    "namaPublik": "janna",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sasak",
+    "keterangan": "Potensi pelanggan wilayah Blok Sasak",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0822-9756-5486",
@@ -3100,6 +4310,36 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0823-1051-4233",
+    "nomorHpWa62": "6282310514233",
+    "namaKontak": "Konter Hp Bakung",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bakung",
+    "keterangan": "Potensi pelanggan wilayah Blok Bakung",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0823-1111-1141",
+    "nomorHpWa62": "6282311111141",
+    "namaKontak": "0823-1111-1141",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0823-1186-3804",
+    "nomorHpWa62": "6282311863804",
+    "namaKontak": "Bu Anggun Kp.Bulak Rt02",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Kp Bulak",
+    "keterangan": "Potensi pelanggan wilayah Blok Kp Bulak",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0823-1552-5574",
     "nomorHpWa62": "6282315525574",
     "namaKontak": "Salsa",
@@ -3138,6 +4378,16 @@
     "indikasiWilayah": "Blok YKP Kelapa",
     "keterangan": "Potensi pelanggan wilayah Blok YKP Kelapa",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0823-2954-3769",
+    "nomorHpWa62": "6282329543769",
+    "namaKontak": "Cabek Toto Cbng",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0823-3270-4481",
@@ -3183,21 +4433,31 @@
     "nomorHpStandar": "0831-0583-0387",
     "nomorHpWa62": "6283105830387",
     "namaKontak": "Wa Salim",
-    "namaPublik": "W Salim",
+    "namaPublik": "-",
     "tipe": "Personal",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0831-0586-4051",
     "nomorHpWa62": "6283105864051",
-    "namaKontak": "Raka",
+    "namaKontak": "raka",
     "namaPublik": "raka",
     "tipe": "Personal",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0831-2084-5339",
+    "nomorHpWa62": "6283120845339",
+    "namaKontak": "Kenek Bis Cabek",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0831-3657-3773",
@@ -3213,11 +4473,11 @@
     "nomorHpStandar": "0831-3918-1426",
     "nomorHpWa62": "6283139181426",
     "namaKontak": "Banjar",
-    "namaPublik": "pee",
-    "tipe": "Akun Bisnis / Usaha",
+    "namaPublik": "-",
+    "tipe": "Personal",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0831-4196-8427",
@@ -3350,6 +4610,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0838-3054-1446",
+    "nomorHpWa62": "6283830541446",
+    "namaKontak": "Teh Santi",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0838-4090-6044",
     "nomorHpWa62": "6283840906044",
     "namaKontak": "Alip",
@@ -3398,6 +4668,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0838-4942-4961",
+    "nomorHpWa62": "6283849424961",
+    "namaKontak": "0838-4942-4961",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0838-5333-6477",
@@ -3472,12 +4752,22 @@
   {
     "nomorHpStandar": "0838-7504-5040",
     "nomorHpWa62": "6283875045040",
-    "namaKontak": "Tri Sasak Listiyani",
-    "namaPublik": "Tri Listiyani",
+    "namaKontak": "Mama Kiano Sasak",
+    "namaPublik": "-",
     "tipe": "Personal",
     "indikasiWilayah": "Blok Sasak",
     "keterangan": "Potensi pelanggan wilayah Blok Sasak",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0838-7518-1292",
+    "nomorHpWa62": "6283875181292",
+    "namaKontak": "Teh Novi Bwh Smp6",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0838-7524-9472",
@@ -3488,6 +4778,26 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0838-9324-8847",
+    "nomorHpWa62": "6283893248847",
+    "namaKontak": "Santi/Neni Tabroni",
+    "namaPublik": "Santi",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Tabroni",
+    "keterangan": "Potensi pelanggan wilayah Blok Tabroni",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0838-9534-8170",
+    "nomorHpWa62": "6283895348170",
+    "namaKontak": "Teh Fenti Bwh.smp6",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0838-9551-9692",
@@ -3520,6 +4830,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0851-0022-0297",
+    "nomorHpWa62": "6285100220297",
+    "namaKontak": "Nardi Steam Bakung",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bakung",
+    "keterangan": "Potensi pelanggan wilayah Blok Bakung",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0851-1120-1838",
     "nomorHpWa62": "6285111201838",
     "namaKontak": "0851-1120-1838",
@@ -3538,6 +4858,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0851-1709-5170",
+    "nomorHpWa62": "6285117095170",
+    "namaKontak": "0851-1709-5170",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0851-1745-8900",
@@ -3642,12 +4972,12 @@
   {
     "nomorHpStandar": "0851-5656-2820",
     "nomorHpWa62": "6285156562820",
-    "namaKontak": "Dira (K) 02",
+    "namaKontak": "Dira",
     "namaPublik": "Dira",
     "tipe": "Personal",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0851-5661-0249",
@@ -3708,6 +5038,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0851-6134-4213",
+    "nomorHpWa62": "6285161344213",
+    "namaKontak": "Kontrakan Betty No. 2 Mutia",
+    "namaPublik": "Difta Mutia",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0851-6139-9656",
@@ -3820,6 +5160,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0851-8321-5116",
+    "nomorHpWa62": "6285183215116",
+    "namaKontak": "Green Setu No. 1 / Bpk. Praga",
+    "namaPublik": "Praga Satria Dirgantara",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Setu",
+    "keterangan": "Potensi pelanggan wilayah Blok Setu",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0851-8395-6645",
     "nomorHpWa62": "6285183956645",
     "namaKontak": "firmansyah731998",
@@ -3920,6 +5270,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0852-1854-5459",
+    "nomorHpWa62": "6285218545459",
+    "namaKontak": "Cluster Agisna 3 No. 6 GG. Sarin",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sarin",
+    "keterangan": "Potensi pelanggan wilayah Blok Sarin",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0852-1941-2170",
     "nomorHpWa62": "6285219412170",
     "namaKontak": "not your baby boo",
@@ -3930,6 +5290,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0852-2023-6381",
+    "nomorHpWa62": "6285220236381",
+    "namaKontak": "0852-2023-6381",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0852-2131-3560",
     "nomorHpWa62": "6285221313560",
     "namaKontak": "D05 tabroni",
@@ -3938,6 +5308,16 @@
     "indikasiWilayah": "Blok Tabroni",
     "keterangan": "Potensi pelanggan wilayah Blok Tabroni",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0852-6071-1616",
+    "nomorHpWa62": "6285260711616",
+    "namaKontak": "Nana Boo Boo",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0852-6665-5589",
@@ -3968,6 +5348,26 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0852-8068-5062",
+    "nomorHpWa62": "6285280685062",
+    "namaKontak": "Bu Meta/Pak Indra GG.Niman",
+    "namaPublik": "Indra",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Gg Niman",
+    "keterangan": "Potensi pelanggan wilayah Blok Gg Niman",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0852-8181-0916",
+    "nomorHpWa62": "6285281810916",
+    "namaKontak": "0852-8181-0916",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0852-8252-8737",
@@ -4020,6 +5420,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0852-8375-3240",
+    "nomorHpWa62": "6285283753240",
+    "namaKontak": "Yutiana ( Mama Anin ) GG Mardan Kebun Duren",
+    "namaPublik": "Andi Kurniawan",
+    "tipe": "Personal",
+    "indikasiWilayah": "Kebun Duren",
+    "keterangan": "Potensi pelanggan wilayah Kebun Duren",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0852-8612-6252",
     "nomorHpWa62": "6285286126252",
     "namaKontak": "0852-8612-6252",
@@ -4070,6 +5480,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0852-9505-8600",
+    "nomorHpWa62": "6285295058600",
+    "namaKontak": "Banyu Atos",
+    "namaPublik": "Banyu Atos",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0852-9579-7895",
     "nomorHpWa62": "6285295797895",
     "namaKontak": "GalihChandra_P",
@@ -4078,6 +5498,26 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0853-1334-8359",
+    "nomorHpWa62": "6285313348359",
+    "namaKontak": "Tasmiyati Gg Nean Dpan PGRI Tha",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0853-1370-2549",
+    "nomorHpWa62": "6285313702549",
+    "namaKontak": "Bu Dwi GG.Umar",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Gang Umar",
+    "keterangan": "Potensi pelanggan wilayah Blok Gang Umar",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0853-1402-8985",
@@ -4112,12 +5552,22 @@
   {
     "nomorHpStandar": "0853-2252-5617",
     "nomorHpWa62": "6285322525617",
-    "namaKontak": "+62 853-2252-5617",
-    "namaPublik": "-",
+    "namaKontak": "Muhammad Abdul Jabbar",
+    "namaPublik": "Muhammad Abdul Jabbar",
     "tipe": "Personal",
     "indikasiWilayah": "-",
-    "keterangan": "Permintaan Rute Baru (Sawangan Baru) | Tindak lanjuti penawaran rute kolektif RT/RW",
-    "sumberData": "Chat WhatsApp 30 Okt"
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0853-2254-9355",
+    "nomorHpWa62": "6285322549355",
+    "namaKontak": "Bu Rida Soleh Bwh.smp6",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0853-5280-2023",
@@ -4140,6 +5590,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0853-5959-0163",
+    "nomorHpWa62": "6285359590163",
+    "namaKontak": "Cindy Sapire",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Perumahan Saphire",
+    "keterangan": "Potensi pelanggan wilayah Perumahan Saphire",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0853-8555-5185",
     "nomorHpWa62": "6285385555185",
     "namaKontak": "0853-8555-5185",
@@ -4148,6 +5608,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0855-1000-185",
+    "nomorHpWa62": "628551000185",
+    "namaKontak": "0855-1000-185",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0855-1992-929",
@@ -4222,12 +5692,12 @@
   {
     "nomorHpStandar": "0856-1970-344",
     "nomorHpWa62": "628561970344",
-    "namaKontak": "Reza Bomar 09 Bawah Smp6",
+    "namaKontak": "Pak Permata Bomar No. 9 Pak Reza",
     "namaPublik": "-",
     "tipe": "Personal",
     "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
-    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0856-2416-6961",
@@ -4240,6 +5710,26 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0856-4042-6242",
+    "nomorHpWa62": "6285640426242",
+    "namaKontak": "Yudha GG.umar",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Gang Umar",
+    "keterangan": "Potensi pelanggan wilayah Blok Gang Umar",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0856-4052-8948",
+    "nomorHpWa62": "6285640528948",
+    "namaKontak": "Teh Pipit Jl. H. Atim Emat 188",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0856-4171-6737",
     "nomorHpWa62": "6285641716737",
     "namaKontak": "✨",
@@ -4248,6 +5738,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0856-4203-0751",
+    "nomorHpWa62": "6285642030751",
+    "namaKontak": "Bu Sufi Bawah SMP 6",
+    "namaPublik": "Resmi Yati",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0856-4221-1313",
@@ -4270,6 +5770,26 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0856-6994-3033",
+    "nomorHpWa62": "6285669943033",
+    "namaKontak": "K.s Kristian GG.sarin",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sarin",
+    "keterangan": "Potensi pelanggan wilayah Blok Sarin",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0856-7737-707",
+    "nomorHpWa62": "628567737707",
+    "namaKontak": "Elsa Jln Meran No. 151",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0856-8674-900",
     "nomorHpWa62": "628568674900",
     "namaKontak": "Dhani Akbar Tabroni",
@@ -4278,6 +5798,26 @@
     "indikasiWilayah": "Blok Tabroni",
     "keterangan": "Potensi pelanggan wilayah Blok Tabroni",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0856-8682-703",
+    "nomorHpWa62": "628568682703",
+    "namaKontak": "BPK Trio/Tio",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0856-8919-451",
+    "nomorHpWa62": "628568919451",
+    "namaKontak": "Pak Ricky B1 GG.sarin",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sarin",
+    "keterangan": "Potensi pelanggan wilayah Blok Sarin",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0856-9129-9632",
@@ -4323,11 +5863,11 @@
     "nomorHpStandar": "0856-9249-6326",
     "nomorHpWa62": "6285692496326",
     "namaKontak": "Bu Novi Bwh Smp 6",
-    "namaPublik": "-",
+    "namaPublik": "Novi",
     "tipe": "Personal",
-    "indikasiWilayah": "-",
-    "keterangan": "Warga Lama (Bawah SMP 6 No. 197) | Registrasikan nomor ke data pelanggan Bawah SMP 6",
-    "sumberData": "Chat WhatsApp 30 Okt"
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0856-9264-8281",
@@ -4348,6 +5888,26 @@
     "indikasiWilayah": "Blok Tabroni",
     "keterangan": "Potensi pelanggan wilayah Blok Tabroni",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0856-9296-5602",
+    "nomorHpWa62": "6285692965602",
+    "namaKontak": "0856-9296-5602",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0856-9326-5325",
+    "nomorHpWa62": "6285693265325",
+    "namaKontak": "0856-9326-5325",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0856-9353-3253",
@@ -4400,14 +5960,44 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0856-9750-9848",
+    "nomorHpWa62": "6285697509848",
+    "namaKontak": "Bu Afri Rmh Oren No. 114 SMP 6",
+    "namaPublik": "afry",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0856-9883-828",
+    "nomorHpWa62": "628569883828",
+    "namaKontak": "Bu Hj Hartini Bakung",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bakung",
+    "keterangan": "Potensi pelanggan wilayah Blok Bakung",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0857-0319-6287",
+    "nomorHpWa62": "6285703196287",
+    "namaKontak": "Bu Mia Kav Zam² A5",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0857-1017-1464",
     "nomorHpWa62": "6285710171464",
-    "namaKontak": "Dokter Kampung Sawah",
+    "namaKontak": "Hj Dokter Imam Ratna",
     "namaPublik": "RS",
     "tipe": "Personal",
     "indikasiWilayah": "Blok Kampung Sawah",
-    "keterangan": "Potensi pelanggan wilayah Blok Kampung Sawah",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0857-1068-8848",
@@ -4450,6 +6040,26 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0857-1279-6194",
+    "nomorHpWa62": "6285712796194",
+    "namaKontak": "0857-1279-6194",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0857-1463-5233",
+    "nomorHpWa62": "6285714635233",
+    "namaKontak": "K.Alisa GG Suci",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0857-1497-3900",
     "nomorHpWa62": "6285714973900",
     "namaKontak": "Alshira Dimsum",
@@ -4458,6 +6068,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0857-1507-4587",
+    "nomorHpWa62": "6285715074587",
+    "namaKontak": "Ronald Blok H. Sugeng",
+    "namaPublik": "NA",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0857-1511-9054",
@@ -4500,6 +6120,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0857-1570-4008",
+    "nomorHpWa62": "6285715704008",
+    "namaKontak": "Omah Bakung",
+    "namaPublik": "Febry DC14",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bakung",
+    "keterangan": "Potensi pelanggan wilayah Blok Bakung",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0857-1583-3471",
     "nomorHpWa62": "6285715833471",
     "namaKontak": "acihsulawesih",
@@ -4510,24 +6140,34 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0857-1585-8961",
+    "nomorHpWa62": "6285715858961",
+    "namaKontak": "Een Nur Endah Saphire",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Perumahan Saphire",
+    "keterangan": "Potensi pelanggan wilayah Perumahan Saphire",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0857-1592-1802",
     "nomorHpWa62": "6285715921802",
     "namaKontak": "abriellepebriansyah",
-    "namaPublik": "abriell pebriansyah",
+    "namaPublik": "-",
     "tipe": "Personal",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0857-1603-5270",
     "nomorHpWa62": "6285716035270",
-    "namaKontak": "M. Sofyan",
+    "namaKontak": "Bpk Fian GG.Niman",
     "namaPublik": "M. Sofyan",
     "tipe": "Personal",
-    "indikasiWilayah": "-",
-    "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "indikasiWilayah": "Blok Gg Niman",
+    "keterangan": "Potensi pelanggan wilayah Blok Gg Niman",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0857-1641-0800",
@@ -4552,12 +6192,22 @@
   {
     "nomorHpStandar": "0857-1685-1878",
     "nomorHpWa62": "6285716851878",
-    "namaKontak": "Lingga Prismananda Kampung Bulak",
-    "namaPublik": "Lingga Prismananda",
+    "namaKontak": "Lingga Hj Kibeng",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Kibeng",
+    "keterangan": "Potensi pelanggan wilayah Blok Kibeng",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0857-1696-9362",
+    "nomorHpWa62": "6285716969362",
+    "namaKontak": "Pak Anto Kp Bulak",
+    "namaPublik": "Niesya",
     "tipe": "Personal",
     "indikasiWilayah": "Blok Kp Bulak",
     "keterangan": "Potensi pelanggan wilayah Blok Kp Bulak",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0857-1767-9246",
@@ -4600,6 +6250,36 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0857-1933-3650",
+    "nomorHpWa62": "6285719333650",
+    "namaKontak": "Bpk Miko Agisna 3 No. 11 GG. Sarin",
+    "namaPublik": "Miko",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sarin",
+    "keterangan": "Potensi pelanggan wilayah Blok Sarin",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0857-1951-5587",
+    "nomorHpWa62": "6285719515587",
+    "namaKontak": "Laundry Kucek Jl. Raya Cilodong",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Jl. Raya Cilodong",
+    "keterangan": "Potensi pelanggan wilayah Blok Jl. Raya Cilodong",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0857-2142-7007",
+    "nomorHpWa62": "6285721427007",
+    "namaKontak": "Agisna 3 No 7 Ibu Suci GG. Sarin 3",
+    "namaPublik": "ozie Tiger",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sarin",
+    "keterangan": "Potensi pelanggan wilayah Blok Sarin",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0857-2221-6661",
     "nomorHpWa62": "6285722216661",
     "namaKontak": "Raedi",
@@ -4622,12 +6302,22 @@
   {
     "nomorHpStandar": "0857-4002-4025",
     "nomorHpWa62": "6285740024025",
-    "namaKontak": "Hayati Sasak",
+    "namaKontak": "BPK.Muksin Sasak",
     "namaPublik": "Hayati",
     "tipe": "Personal",
     "indikasiWilayah": "Blok Sasak",
     "keterangan": "Potensi pelanggan wilayah Blok Sasak",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0857-4021-0645",
+    "nomorHpWa62": "6285740210645",
+    "namaKontak": "Nia",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0857-4522-7054",
@@ -4662,12 +6352,12 @@
   {
     "nomorHpStandar": "0857-5882-7103",
     "nomorHpWa62": "6285758827103",
-    "namaKontak": "Kontrakan Kampung Bulak",
+    "namaKontak": "Bu Anggun Kp.bulak",
     "namaPublik": "-",
     "tipe": "Personal",
     "indikasiWilayah": "Blok Kp Bulak",
     "keterangan": "Potensi pelanggan wilayah Blok Kp Bulak",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0857-6083-7823",
@@ -4680,6 +6370,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0857-6480-1730",
+    "nomorHpWa62": "6285764801730",
+    "namaKontak": "Bu Niken Ykp",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok YKP Kelapa",
+    "keterangan": "Potensi pelanggan wilayah Blok YKP Kelapa",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0857-7111-4988",
     "nomorHpWa62": "6285771114988",
     "namaKontak": "Ardhia",
@@ -4688,6 +6388,26 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0857-7163-8095",
+    "nomorHpWa62": "6285771638095",
+    "namaKontak": "Satu Kenangan ABDUL GHANI",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0857-7203-7072",
+    "nomorHpWa62": "6285772037072",
+    "namaKontak": "K.s Fajar Sasak",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sasak",
+    "keterangan": "Potensi pelanggan wilayah Blok Sasak",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0857-7225-0980",
@@ -4730,6 +6450,26 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0857-7475-5358",
+    "nomorHpWa62": "6285774755358",
+    "namaKontak": "Hendri Jln.raya Cilodong",
+    "namaPublik": "hendri#fCS 02#",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Jl. Raya Cilodong",
+    "keterangan": "Potensi pelanggan wilayah Blok Jl. Raya Cilodong",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0857-7557-6874",
+    "nomorHpWa62": "6285775576874",
+    "namaKontak": "Green Setu No. 5 Hendri",
+    "namaPublik": "Rara",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Setu",
+    "keterangan": "Potensi pelanggan wilayah Blok Setu",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0857-7559-8494",
     "nomorHpWa62": "6285775598494",
     "namaKontak": "radenfarelilham",
@@ -4738,6 +6478,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0857-7658-4947",
+    "nomorHpWa62": "6285776584947",
+    "namaKontak": "Kontrakan YKP No10",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok YKP Kelapa",
+    "keterangan": "Potensi pelanggan wilayah Blok YKP Kelapa",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0857-7719-3855",
@@ -4750,6 +6500,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0857-7771-2539",
+    "nomorHpWa62": "6285777712539",
+    "namaKontak": "Sumila/Pak Ranu Trevista A12",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Trevista Premier / D Miles",
+    "keterangan": "Potensi pelanggan wilayah Trevista Premier / D Miles",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0857-7772-2065",
     "nomorHpWa62": "6285777722065",
     "namaKontak": "0857-7772-2065",
@@ -4758,6 +6518,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0857-7779-0033",
+    "nomorHpWa62": "6285777790033",
+    "namaKontak": "OKI Perum Berdikari",
+    "namaPublik": "yolendra yocki",
+    "tipe": "Personal",
+    "indikasiWilayah": "Perum Berdikari",
+    "keterangan": "Potensi pelanggan wilayah Perum Berdikari",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0857-7799-3701",
@@ -4792,12 +6562,12 @@
   {
     "nomorHpStandar": "0857-7914-0946",
     "nomorHpWa62": "6285779140946",
-    "namaKontak": "Pak Komar",
-    "namaPublik": "-",
+    "namaKontak": "Bu Komar Bakung",
+    "namaPublik": "Selvi AZZAM",
     "tipe": "Personal",
-    "indikasiWilayah": "-",
-    "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "indikasiWilayah": "Blok Bakung",
+    "keterangan": "Potensi pelanggan wilayah Blok Bakung",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0857-8013-1694",
@@ -4818,6 +6588,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0857-8023-9249",
+    "nomorHpWa62": "6285780239249",
+    "namaKontak": "Bu Sugiyanto Saphire No 155",
+    "namaPublik": "Lyta Septioaningsih",
+    "tipe": "Personal",
+    "indikasiWilayah": "Perumahan Saphire",
+    "keterangan": "Potensi pelanggan wilayah Perumahan Saphire",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0857-8043-7602",
@@ -4860,6 +6640,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0857-8183-9844",
+    "nomorHpWa62": "6285781839844",
+    "namaKontak": "PiraaaAnjg",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0857-8227-3177",
     "nomorHpWa62": "6285782273177",
     "namaKontak": "0857-8227-3177",
@@ -4880,6 +6670,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0857-9427-9851",
+    "nomorHpWa62": "6285794279851",
+    "namaKontak": "K.Yudi Blok Setu",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Setu",
+    "keterangan": "Potensi pelanggan wilayah Blok Setu",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0857-9519-3822",
     "nomorHpWa62": "6285795193822",
     "namaKontak": "Ade panju",
@@ -4888,6 +6688,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0857-9566-6128",
+    "nomorHpWa62": "6285795666128",
+    "namaKontak": "Rizal Blok h. Pu'ah, Kontrakan Pak Teguh",
+    "namaPublik": "Kimlin@🥰",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0857-9800-8094",
@@ -4940,6 +6750,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0858-1084-4582",
+    "nomorHpWa62": "6285810844582",
+    "namaKontak": "Ega",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0858-1106-9302",
     "nomorHpWa62": "6285811069302",
     "namaKontak": "alip",
@@ -4948,6 +6768,36 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0858-1116-8972",
+    "nomorHpWa62": "6285811168972",
+    "namaKontak": "Desmon Rmh Putih Sasak",
+    "namaPublik": "Desmon",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sasak",
+    "keterangan": "Potensi pelanggan wilayah Blok Sasak",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0858-1124-1121",
+    "nomorHpWa62": "6285811241121",
+    "namaKontak": "Kontrakan Bu Betty No. 3",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0858-1125-9550",
+    "nomorHpWa62": "6285811259550",
+    "namaKontak": "K.bang Ray Bakung",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bakung",
+    "keterangan": "Potensi pelanggan wilayah Blok Bakung",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0858-1148-4661",
@@ -5010,14 +6860,24 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0858-1706-5778",
+    "nomorHpWa62": "6285817065778",
+    "namaKontak": "Kontrakan Biru Nindi Sasak Yutiana Kebun Duren",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sasak",
+    "keterangan": "Potensi pelanggan wilayah Blok Sasak",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0858-1720-6042",
     "nomorHpWa62": "6285817206042",
     "namaKontak": "Aciltato",
-    "namaPublik": "𝓨𝓸𝓰𝓰𝓼🔥",
+    "namaPublik": "-",
     "tipe": "Personal",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0858-5304-4178",
@@ -5064,10 +6924,20 @@
     "nomorHpWa62": "6285880319680",
     "namaKontak": "+62 858-8031-9680",
     "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0858-8032-0572",
+    "nomorHpWa62": "6285880320572",
+    "namaKontak": "Bu Neneng K.30",
+    "namaPublik": "-",
     "tipe": "Personal",
     "indikasiWilayah": "-",
-    "keterangan": "Kak Bismillah (Sudah Transfer a/n Suryanih) | Daftarkan akun tarif Rp40.000,- sesuai kesepakatan chat",
-    "sumberData": "Chat WhatsApp 30 Okt"
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0858-8032-2308",
@@ -5160,6 +7030,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0858-8306-5558",
+    "nomorHpWa62": "6285883065558",
+    "namaKontak": "BPK.Bayu Sasak",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sasak",
+    "keterangan": "Potensi pelanggan wilayah Blok Sasak",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0858-8374-9714",
     "nomorHpWa62": "6285883749714",
     "namaKontak": "0858-8374-9714",
@@ -5230,6 +7110,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0858-9241-7854",
+    "nomorHpWa62": "6285892417854",
+    "namaKontak": "Bpk.Herlan Kibeng",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Kibeng",
+    "keterangan": "Potensi pelanggan wilayah Blok Kibeng",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0858-9278-6780",
     "nomorHpWa62": "6285892786780",
     "namaKontak": "Yoyoy",
@@ -5248,6 +7138,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0858-9419-9310",
+    "nomorHpWa62": "6285894199310",
+    "namaKontak": "Toko Bunga Bondur",
+    "namaPublik": "toko bunga NK florist depok",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0858-9488-9885",
@@ -5338,6 +7238,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0859-5673-0851",
+    "nomorHpWa62": "6285956730851",
+    "namaKontak": "0859-5673-0851",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0859-6610-1024",
@@ -5500,6 +7410,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0877-6176-8804",
+    "nomorHpWa62": "6287761768804",
+    "namaKontak": "Bapak Jabir Tabroni",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Tabroni",
+    "keterangan": "Potensi pelanggan wilayah Blok Tabroni",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0877-6392-3433",
     "nomorHpWa62": "6287763923433",
     "namaKontak": "Mila Bawah Smp6",
@@ -5560,6 +7480,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0877-7092-3592",
+    "nomorHpWa62": "6287770923592",
+    "namaKontak": "Perum BMK C6 YKP",
+    "namaPublik": "Yuni",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok YKP Kelapa",
+    "keterangan": "Potensi pelanggan wilayah Blok YKP Kelapa",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0877-7229-8014",
     "nomorHpWa62": "6287772298014",
     "namaKontak": "A4 Tabroni",
@@ -5598,6 +7528,26 @@
     "indikasiWilayah": "Blok Tabroni",
     "keterangan": "Potensi pelanggan wilayah Blok Tabroni",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0877-7797-8132",
+    "nomorHpWa62": "6287777978132",
+    "namaKontak": "Cluster Nirmala A5 Pak Siswo",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0877-7832-6714",
+    "nomorHpWa62": "6287778326714",
+    "namaKontak": "Vida Tabroni K.s",
+    "namaPublik": "Fida",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Tabroni",
+    "keterangan": "Potensi pelanggan wilayah Blok Tabroni",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0877-8059-3350",
@@ -5662,12 +7612,12 @@
   {
     "nomorHpStandar": "0877-8729-7391",
     "nomorHpWa62": "6287787297391",
-    "namaKontak": "Bengkel Bogel",
-    "namaPublik": "Andrayani",
+    "namaKontak": "Surya Motor2",
+    "namaPublik": "-",
     "tipe": "Personal",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0877-9532-2155",
@@ -5677,7 +7627,17 @@
     "tipe": "Personal",
     "indikasiWilayah": "Blok Sasak",
     "keterangan": "Potensi pelanggan wilayah Blok Sasak",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0878-0965-5788",
+    "nomorHpWa62": "6287809655788",
+    "namaKontak": "Bu Rahma Kp.bulak RT.02",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Kp Bulak",
+    "keterangan": "Potensi pelanggan wilayah Blok Kp Bulak",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0878-1004-1983",
@@ -5708,6 +7668,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0878-1711-2787",
+    "nomorHpWa62": "6287817112787",
+    "namaKontak": "Roni Sapire Bwh.Smp6",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0878-2217-2601",
@@ -5760,6 +7730,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0878-4597-3026",
+    "nomorHpWa62": "6287845973026",
+    "namaKontak": "Mutia Adm Ruko S Notaris",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0878-4800-5705",
     "nomorHpWa62": "6287848005705",
     "namaKontak": "Tukang Sayur Bakung Zaputra",
@@ -5768,6 +7748,26 @@
     "indikasiWilayah": "Blok Bakung",
     "keterangan": "Potensi pelanggan wilayah Blok Bakung",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0878-4907-9759",
+    "nomorHpWa62": "6287849079759",
+    "namaKontak": "Haris",
+    "namaPublik": "Haris",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0878-4956-4150",
+    "nomorHpWa62": "6287849564150",
+    "namaKontak": "Rizka Trevista Premier A10",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Trevista Premier / D Miles",
+    "keterangan": "Potensi pelanggan wilayah Trevista Premier / D Miles",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0878-5248-5850",
@@ -5780,6 +7780,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0878-5441-0326",
+    "nomorHpWa62": "6287854410326",
+    "namaKontak": "Faisal Bwh.smp6",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0878-5916-1173",
     "nomorHpWa62": "6287859161173",
     "namaKontak": "ɓàɗõŋ",
@@ -5788,6 +7798,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0878-5961-2674",
+    "nomorHpWa62": "6287859612674",
+    "namaKontak": "? T4E",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0878-6016-0941",
@@ -5850,14 +7870,74 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0878-7690-3074",
+    "nomorHpWa62": "6287876903074",
+    "namaKontak": "Agisna 19 GG.Sarin Dimas / Astrid",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sarin",
+    "keterangan": "Potensi pelanggan wilayah Blok Sarin",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0878-7779-8200",
     "nomorHpWa62": "6287877798200",
-    "namaKontak": "Bu Haji",
+    "namaKontak": "Ika Sasak",
     "namaPublik": "Ika(Ghina-Shulhan-Hannan)",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sasak",
+    "keterangan": "Potensi pelanggan wilayah Blok Sasak",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0878-7861-6268",
+    "nomorHpWa62": "6287878616268",
+    "namaKontak": "Wigy Fajar Wpr A7 Jl. Tabroni",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Tabroni",
+    "keterangan": "Potensi pelanggan wilayah Blok Tabroni",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0878-8157-1999",
+    "nomorHpWa62": "6287881571999",
+    "namaKontak": "Bang Amir",
+    "namaPublik": "-",
     "tipe": "Personal",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0878-8157-3987",
+    "nomorHpWa62": "6287881573987",
+    "namaKontak": "Prayoga",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0878-8275-7664",
+    "nomorHpWa62": "6287882757664",
+    "namaKontak": "Dicky No 16 Ggsarin",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "Blok Sarin",
+    "keterangan": "Potensi pelanggan wilayah Blok Sarin",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0878-8308-1000",
+    "nomorHpWa62": "6287883081000",
+    "namaKontak": "WARTEG prapatan",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0878-8369-6169",
@@ -5880,6 +7960,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0878-8612-5742",
+    "nomorHpWa62": "6287886125742",
+    "namaKontak": "Bang Emuh Bakung",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bakung",
+    "keterangan": "Potensi pelanggan wilayah Blok Bakung",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0878-8652-8784",
     "nomorHpWa62": "6287886528784",
     "namaKontak": "Mila Tabroni",
@@ -5900,6 +7990,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0878-8675-8282",
+    "nomorHpWa62": "6287886758282",
+    "namaKontak": "Es Sinar Garut Jln Raya Abdul Ghani",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0878-8756-4757",
     "nomorHpWa62": "6287887564757",
     "namaKontak": "Daniel",
@@ -5908,6 +8008,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0878-8899-3544",
+    "nomorHpWa62": "6287888993544",
+    "namaKontak": "Tantri Blok Mts Kampus Agustin",
+    "namaPublik": "Tantri Agustini,.",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok MTS",
+    "keterangan": "Potensi pelanggan wilayah Blok MTS",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0878-8906-6808",
@@ -5942,12 +8052,42 @@
   {
     "nomorHpStandar": "0878-8950-0244",
     "nomorHpWa62": "6287889500244",
-    "namaKontak": "+62 878-8950-0244",
+    "namaKontak": "Try Budiyarti",
+    "namaPublik": "Try Budiyarti",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0878-8959-8854",
+    "nomorHpWa62": "6287889598854",
+    "namaKontak": "Syaifulabidin Jln Atim Emat Indriani",
     "namaPublik": "-",
     "tipe": "Personal",
     "indikasiWilayah": "-",
-    "keterangan": "Try Budiyarti (Menanyakan Tagihan Okt) | Cari nama di buku iuran manual untuk diverifikasi",
-    "sumberData": "Chat WhatsApp 30 Okt"
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0878-9202-9404",
+    "nomorHpWa62": "6287892029404",
+    "namaKontak": "Pak Dikun Security Perum Koma",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0878-9330-9908",
+    "nomorHpWa62": "6287893309908",
+    "namaKontak": "Bomar F1 Bwhsmp6",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0878-9728-6647",
@@ -6122,12 +8262,22 @@
   {
     "nomorHpStandar": "0881-8614-780",
     "nomorHpWa62": "628818614780",
-    "namaKontak": "Salma",
-    "namaPublik": "Salma",
+    "namaKontak": "K.Pak Tata Sasak",
+    "namaPublik": "-",
     "tipe": "Personal",
-    "indikasiWilayah": "-",
-    "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "indikasiWilayah": "Blok Sasak",
+    "keterangan": "Potensi pelanggan wilayah Blok Sasak",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0882-1029-1810",
+    "nomorHpWa62": "6288210291810",
+    "namaKontak": "Pak Mada Saphire Rt02",
+    "namaPublik": "Molly H Famada",
+    "tipe": "Personal",
+    "indikasiWilayah": "Perumahan Saphire",
+    "keterangan": "Potensi pelanggan wilayah Perumahan Saphire",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0882-1132-6650",
@@ -6190,6 +8340,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0882-9865-7813",
+    "nomorHpWa62": "6288298657813",
+    "namaKontak": "Pak Paji Tabroni",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Tabroni",
+    "keterangan": "Potensi pelanggan wilayah Blok Tabroni",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0882-9889-7804",
     "nomorHpWa62": "6288298897804",
     "namaKontak": "Ratna Tabroni",
@@ -6230,6 +8390,26 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0888-7000-218",
+    "nomorHpWa62": "628887000218",
+    "namaKontak": "Bu Harments Bwhsmp6",
+    "namaPublik": "Ishak",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0888-8100-030",
+    "nomorHpWa62": "628888100030",
+    "namaKontak": "Bu Endah Bwh.smp6",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0888-8177-177",
     "nomorHpWa62": "628888177177",
     "namaKontak": "0888-8177-177",
@@ -6238,6 +8418,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0888-8947-239",
+    "nomorHpWa62": "628888947239",
+    "namaKontak": "Green Setu No. 2 / Indra safara",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Setu",
+    "keterangan": "Potensi pelanggan wilayah Blok Setu",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0888-9165-753",
@@ -6258,6 +8448,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0889-0526-9057",
+    "nomorHpWa62": "6288905269057",
+    "namaKontak": "Cakanao Toys Alfamidi",
+    "namaPublik": "Nis",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0889-7139-1293",
@@ -6290,6 +8490,26 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0895-0124-7103",
+    "nomorHpWa62": "6289501247103",
+    "namaKontak": "Bu Syahril Ggniman",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Gg Niman",
+    "keterangan": "Potensi pelanggan wilayah Blok Gg Niman",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0895-0187-0997",
+    "nomorHpWa62": "6289501870997",
+    "namaKontak": "0895-0187-0997",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0895-0267-4211",
     "nomorHpWa62": "6289502674211",
     "namaKontak": "0895-0267-4211",
@@ -6318,6 +8538,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0895-0382-8132",
+    "nomorHpWa62": "6289503828132",
+    "namaKontak": "Kordinator Blok Mts(Teh Yana)",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok MTS",
+    "keterangan": "Potensi pelanggan wilayah Blok MTS",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0895-0445-3282",
@@ -6350,6 +8580,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0895-0465-0684",
+    "nomorHpWa62": "6289504650684",
+    "namaKontak": "0895-0465-0684",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0895-0572-2242",
     "nomorHpWa62": "6289505722242",
     "namaKontak": "anomali",
@@ -6368,6 +8608,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0895-0749-2684",
+    "nomorHpWa62": "6289507492684",
+    "namaKontak": "Relly Pangaribuan",
+    "namaPublik": "Relly",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0895-0777-8771",
@@ -6442,12 +8692,12 @@
   {
     "nomorHpStandar": "0895-1000-0430",
     "nomorHpWa62": "6289510000430",
-    "namaKontak": "Sukirno-boy",
+    "namaKontak": "Sukirno-boy Warung Ezi Sasak",
     "namaPublik": "-",
     "tipe": "Personal",
-    "indikasiWilayah": "-",
-    "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "indikasiWilayah": "Blok Sasak",
+    "keterangan": "Potensi pelanggan wilayah Blok Sasak",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0895-1100-92259",
@@ -6500,14 +8750,24 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
-    "nomorHpStandar": "0895-1971-8313",
-    "nomorHpWa62": "6289519718313",
-    "namaKontak": "Edzar R.H ❤️ Aksha R.H🧒👶",
-    "namaPublik": "Edzar R.H ❤️ Aksha R.H🧒👶",
-    "tipe": "Personal",
+    "nomorHpStandar": "0895-1750-3081",
+    "nomorHpWa62": "6289517503081",
+    "namaKontak": "Ruko HNC",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0895-1971-8313",
+    "nomorHpWa62": "6289519718313",
+    "namaKontak": "Resti Ykp",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok YKP Kelapa",
+    "keterangan": "Potensi pelanggan wilayah Blok YKP Kelapa",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0895-2062-8485",
@@ -6530,6 +8790,26 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0895-2153-3790",
+    "nomorHpWa62": "6289521533790",
+    "namaKontak": ".Titin Setu Badeng",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Setu",
+    "keterangan": "Potensi pelanggan wilayah Blok Setu",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0895-2263-1307",
+    "nomorHpWa62": "6289522631307",
+    "namaKontak": "K.ibnu Kp.bulak",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Kp Bulak",
+    "keterangan": "Potensi pelanggan wilayah Blok Kp Bulak",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0895-2303-0888",
     "nomorHpWa62": "6289523030888",
     "namaKontak": "yudhistira rizky",
@@ -6538,6 +8818,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0895-2513-4284",
+    "nomorHpWa62": "6289525134284",
+    "namaKontak": "franklin Bawah SMP 6",
+    "namaPublik": "Franklin",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0895-2590-2374",
@@ -6580,6 +8870,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0895-2695-5382",
+    "nomorHpWa62": "6289526955382",
+    "namaKontak": "Mardiyah GG.Pecel",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0895-2877-7513",
     "nomorHpWa62": "6289528777513",
     "namaKontak": "dwii",
@@ -6588,6 +8888,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0895-2971-7147",
+    "nomorHpWa62": "6289529717147",
+    "namaKontak": "K. Betty No 7",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0895-3061-9125",
@@ -6618,6 +8928,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0895-3200-88385",
+    "nomorHpWa62": "62895320088385",
+    "namaKontak": "Mak Haji Nto",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0895-3210-67964",
@@ -6678,6 +8998,26 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0895-3244-25418",
+    "nomorHpWa62": "62895324425418",
+    "namaKontak": "K.suryani Ykp",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok YKP Kelapa",
+    "keterangan": "Potensi pelanggan wilayah Blok YKP Kelapa",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0895-3261-77873",
+    "nomorHpWa62": "62895326177873",
+    "namaKontak": "Teh Intan GG.Suci",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0895-3281-37479",
@@ -6770,6 +9110,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0895-3471-24372",
+    "nomorHpWa62": "62895347124372",
+    "namaKontak": "Kondinator Tanzil Sarin",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sarin",
+    "keterangan": "Potensi pelanggan wilayah Blok Sarin",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0895-3472-05097",
     "nomorHpWa62": "62895347205097",
     "namaKontak": "dyooh",
@@ -6858,6 +9208,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0895-3782-17903",
+    "nomorHpWa62": "62895378217903",
+    "namaKontak": "Bututi(Dpn Budi) GG.niman",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Gg Niman",
+    "keterangan": "Potensi pelanggan wilayah Blok Gg Niman",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0895-3792-36668",
@@ -6980,6 +9340,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0895-4040-58181",
+    "nomorHpWa62": "62895404058181",
+    "namaKontak": "Teh Ulfa Bwh.smp6",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0895-4051-54910",
     "nomorHpWa62": "62895405154910",
     "namaKontak": "Qolil",
@@ -7050,6 +9420,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0895-4284-40062",
+    "nomorHpWa62": "62895428440062",
+    "namaKontak": "Uut Pea",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0895-4287-10109",
     "nomorHpWa62": "62895428710109",
     "namaKontak": "App",
@@ -7060,6 +9440,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0895-6112-94499",
+    "nomorHpWa62": "62895611294499",
+    "namaKontak": "R.Gede Badiyah Sasak",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sasak",
+    "keterangan": "Potensi pelanggan wilayah Blok Sasak",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0895-6168-50290",
     "nomorHpWa62": "62895616850290",
     "namaKontak": "Me",
@@ -7068,6 +9458,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0895-6208-10207",
+    "nomorHpWa62": "62895620810207",
+    "namaKontak": "K.Mama Aira GG.Niman",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Gg Niman",
+    "keterangan": "Potensi pelanggan wilayah Blok Gg Niman",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0895-6267-03486",
@@ -7100,6 +9500,26 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0895-6357-77485",
+    "nomorHpWa62": "62895635777485",
+    "namaKontak": "K.Anak Muda Tabroni",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Tabroni",
+    "keterangan": "Potensi pelanggan wilayah Blok Tabroni",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0895-7032-21500",
+    "nomorHpWa62": "62895703221500",
+    "namaKontak": "Bu Leni Kontrakan Kuning",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0895-7042-75613",
     "nomorHpWa62": "62895704275613",
     "namaKontak": "Emay Daniel",
@@ -7112,12 +9532,12 @@
   {
     "nomorHpStandar": "0895-7042-76326",
     "nomorHpWa62": "62895704276326",
-    "namaKontak": "كاشيتyati",
+    "namaKontak": "Bu Yati K30",
     "namaPublik": "كاشيت",
     "tipe": "Personal",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0895-8012-15719",
@@ -7133,21 +9553,21 @@
     "nomorHpStandar": "0895-8032-30509",
     "nomorHpWa62": "62895803230509",
     "namaKontak": "Pak Pino & Pak Eko, Blkg Klinik Materna",
-    "namaPublik": "-",
+    "namaPublik": "Kayra_kenzi",
     "tipe": "Personal",
     "indikasiWilayah": "-",
-    "keterangan": "Warga Belakang Klinik Materna (Ada Label WA) | Tautkan nomor WhatsApp ini ke akun Supino (ID 1024)",
-    "sumberData": "Chat WhatsApp 30 Okt"
+    "keterangan": "[LABEL ADMIN: PELANGGA. BELUM TERDAFTAR APLIKASI] [LABEL ADMIN: PELANGGA. BELUM TERDAFTAR APLIKASI] ",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0896-0105-4349",
     "nomorHpWa62": "6289601054349",
-    "namaKontak": "Lya",
-    "namaPublik": "ly",
+    "namaKontak": "Lia",
+    "namaPublik": "-",
     "tipe": "Personal",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0896-0105-6438",
@@ -7158,6 +9578,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0896-0174-8358",
+    "nomorHpWa62": "6289601748358",
+    "namaKontak": "A Asep",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0896-0227-8683",
@@ -7250,6 +9680,26 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0896-1281-1391",
+    "nomorHpWa62": "6289612811391",
+    "namaKontak": "NIKOOO",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0896-1309-4606",
+    "nomorHpWa62": "6289613094606",
+    "namaKontak": "Pak Eben Bakung",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bakung",
+    "keterangan": "Potensi pelanggan wilayah Blok Bakung",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0896-1491-3553",
     "nomorHpWa62": "6289614913553",
     "namaKontak": "Fransiska",
@@ -7300,6 +9750,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0896-2635-1208",
+    "nomorHpWa62": "6289626351208",
+    "namaKontak": "Andai Sang petualang",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0896-3498-6555",
     "nomorHpWa62": "6289634986555",
     "namaKontak": "0896-3498-6555",
@@ -7320,6 +9780,26 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0896-3613-3901",
+    "nomorHpWa62": "6289636133901",
+    "namaKontak": "Fahmi Bwh.smp6",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0896-3614-2368",
+    "nomorHpWa62": "6289636142368",
+    "namaKontak": "0896-3614-2368",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0896-3760-4297",
     "nomorHpWa62": "6289637604297",
     "namaKontak": "Abellsss",
@@ -7328,6 +9808,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0896-3760-7532",
+    "nomorHpWa62": "6289637607532",
+    "namaKontak": "Kevin Toko Plastik Kevin",
+    "namaPublik": "-",
+    "tipe": "Akun Bisnis / Usaha",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0896-3814-0947",
@@ -7340,14 +9830,24 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
-    "nomorHpStandar": "0896-4207-1201",
-    "nomorHpWa62": "6289642071201",
-    "namaKontak": "A2 Mbk",
+    "nomorHpStandar": "0896-3849-1173",
+    "nomorHpWa62": "6289638491173",
+    "namaKontak": "Riri",
     "namaPublik": "-",
     "tipe": "Personal",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0896-4207-1201",
+    "nomorHpWa62": "6289642071201",
+    "namaKontak": "Dian Sapire",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Perumahan Saphire",
+    "keterangan": "Potensi pelanggan wilayah Perumahan Saphire",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0896-4667-9282",
@@ -7358,6 +9858,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0896-5022-7751",
+    "nomorHpWa62": "6289650227751",
+    "namaKontak": "Lia",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0896-5126-2217",
@@ -7382,12 +9892,22 @@
   {
     "nomorHpStandar": "0896-5347-7795",
     "nomorHpWa62": "6289653477795",
-    "namaKontak": "Finka Aprilia",
-    "namaPublik": "Finka Aprilia",
+    "namaKontak": "Palautan B 157 Widya GG.Niman Niman",
+    "namaPublik": "-",
     "tipe": "Personal",
-    "indikasiWilayah": "-",
-    "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "indikasiWilayah": "Blok Gg Niman",
+    "keterangan": "Potensi pelanggan wilayah Blok Gg Niman",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0896-6153-3225",
+    "nomorHpWa62": "6289661533225",
+    "namaKontak": "K.Depi Ykp",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok YKP Kelapa",
+    "keterangan": "Potensi pelanggan wilayah Blok YKP Kelapa",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0896-6261-0121",
@@ -7428,6 +9948,46 @@
     "indikasiWilayah": "Blok Sasak",
     "keterangan": "Potensi pelanggan wilayah Blok Sasak",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0896-6845-2035",
+    "nomorHpWa62": "6289668452035",
+    "namaKontak": "Bpk.dame/Indra Bakung",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bakung",
+    "keterangan": "Potensi pelanggan wilayah Blok Bakung",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0896-6868-1070",
+    "nomorHpWa62": "6289668681070",
+    "namaKontak": "Ramadhan Bwh.smp6",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
+    "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0896-6908-5542",
+    "nomorHpWa62": "6289669085542",
+    "namaKontak": "Anak Pak Tedi Bakung",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Bakung",
+    "keterangan": "Potensi pelanggan wilayah Blok Bakung",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0896-6975-2635",
+    "nomorHpWa62": "6289669752635",
+    "namaKontak": "Nyoscell",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0896-7109-0750",
@@ -7483,11 +10043,21 @@
     "nomorHpStandar": "0896-7542-8446",
     "nomorHpWa62": "6289675428446",
     "namaKontak": "Ramdani 😉😉",
-    "namaPublik": "Rido 😙🤭",
+    "namaPublik": "-",
     "tipe": "Personal",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0896-7600-6536",
+    "nomorHpWa62": "6289676006536",
+    "namaKontak": "Pak Kimi Sasak",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sasak",
+    "keterangan": "Potensi pelanggan wilayah Blok Sasak",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0896-7858-8488",
@@ -7560,6 +10130,16 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0896-9784-5699",
+    "nomorHpWa62": "6289697845699",
+    "namaKontak": "Palautan B 159 / Heddar",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0896-9934-9123",
     "nomorHpWa62": "6289699349123",
     "namaKontak": ".",
@@ -7578,6 +10158,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0897-5109-644",
+    "nomorHpWa62": "628975109644",
+    "namaKontak": "Bu Alin Blok.setu",
+    "namaPublik": "Lista Yuliani",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Setu",
+    "keterangan": "Potensi pelanggan wilayah Blok Setu",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0897-5987-384",
@@ -7612,12 +10202,12 @@
   {
     "nomorHpStandar": "0897-8257-433",
     "nomorHpWa62": "628978257433",
-    "namaKontak": "Wahyu",
+    "namaKontak": "Nyokap Kopet",
     "namaPublik": "War",
     "tipe": "Personal",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0897-8259-646",
@@ -7690,6 +10280,56 @@
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
   },
   {
+    "nomorHpStandar": "0898-6806-450",
+    "nomorHpWa62": "628986806450",
+    "namaKontak": "Bu Dian Kp. Bulak",
+    "namaPublik": "M.Faisal Iskandar",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0898-7527-270",
+    "nomorHpWa62": "628987527270",
+    "namaKontak": "Haydar Perum Pohon Bambu GG.Niman",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Gg Niman",
+    "keterangan": "Potensi pelanggan wilayah Blok Gg Niman",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0898-7761-022",
+    "nomorHpWa62": "628987761022",
+    "namaKontak": "Icha GG.Suci",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0898-8340-612",
+    "nomorHpWa62": "628988340612",
+    "namaKontak": "Riko Blok Setu",
+    "namaPublik": "🧑🩰",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Setu",
+    "keterangan": "Potensi pelanggan wilayah Blok Setu",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
+    "nomorHpStandar": "0898-8608-741",
+    "nomorHpWa62": "628988608741",
+    "namaKontak": "Oma Ami GG.Sarin",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "Blok Sarin",
+    "keterangan": "Potensi pelanggan wilayah Blok Sarin",
+    "sumberData": "Kontak HP Admin (081400782617)"
+  },
+  {
     "nomorHpStandar": "0898-8794-271",
     "nomorHpWa62": "628988794271",
     "namaKontak": "Tyas Chenwen",
@@ -7698,6 +10338,16 @@
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0898-9146-455",
+    "nomorHpWa62": "628989146455",
+    "namaKontak": "verinarizky",
+    "namaPublik": "verinarizky",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0898-9682-236",
@@ -7752,12 +10402,12 @@
   {
     "nomorHpStandar": "0899-7210-404",
     "nomorHpWa62": "628997210404",
-    "namaKontak": "Wpr B6",
+    "namaKontak": "Tia Wpr Regency B6",
     "namaPublik": "Tia",
     "tipe": "Personal",
     "indikasiWilayah": "-",
     "keterangan": "Belum terdaftar di sistem WastePay",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0899-7485-437",
@@ -7792,12 +10442,12 @@
   {
     "nomorHpStandar": "0899-9164-714",
     "nomorHpWa62": "628999164714",
-    "namaKontak": "Ipul Bawah Smp6",
-    "namaPublik": "🪂",
+    "namaKontak": "Iful Bwh. smp6",
+    "namaPublik": "-",
     "tipe": "Personal",
     "indikasiWilayah": "Blok Bawah Dmiles + SMP 6",
     "keterangan": "Potensi pelanggan wilayah Blok Bawah Dmiles + SMP 6",
-    "sumberData": "Kontak Batch 2 (1042 Kontak)"
+    "sumberData": "Kontak HP Admin (081400782617)"
   },
   {
     "nomorHpStandar": "0899-9303-992",
@@ -7818,5 +10468,15 @@
     "indikasiWilayah": "Blok Sasak",
     "keterangan": "Potensi pelanggan wilayah Blok Sasak",
     "sumberData": "Kontak Batch 2 (1042 Kontak)"
+  },
+  {
+    "nomorHpStandar": "0899-9414-444",
+    "nomorHpWa62": "628999414444",
+    "namaKontak": "0899-9414-444",
+    "namaPublik": "-",
+    "tipe": "Personal",
+    "indikasiWilayah": "-",
+    "keterangan": "Belum terdaftar di sistem WastePay",
+    "sumberData": "Kontak HP Admin (081400782617)"
   }
 ]
