@@ -278,8 +278,7 @@ export async function getKontrolContacts(): Promise<{
 
   // 4. Baca data HP Petugas Survei
   const petugasCsvPaths = [
-    path.resolve('scratch/user_additional_contacts.csv'),
-    path.resolve('scratch/user_contacts_input.csv'),
+    path.resolve('data/kontak-hp-petugas-089688151473/kontak_mentah_hp_petugas.csv'),
     path.resolve('data/blast-calon-089688151473/target_pelanggan_belum_terdaftar.csv'),
   ];
   for (const p of petugasCsvPaths) {
@@ -299,6 +298,15 @@ export async function getKontrolContacts(): Promise<{
         let savedName = (v[5] || '').trim();
         let publicName = (v[6] || '').trim();
         let isBusiness = v[7] === 'true';
+        let labels: string[] = [];
+        if (v[9] && v[9] !== '[]') {
+          try {
+            const parsed = JSON.parse(v[9]);
+            if (Array.isArray(parsed)) labels = parsed;
+          } catch {
+            labels = [v[9]];
+          }
+        }
         if (p.includes('target_pelanggan_belum_terdaftar.csv')) {
           savedName = (v[3] || '').trim();
           publicName = (v[4] || '').trim();
@@ -311,17 +319,19 @@ export async function getKontrolContacts(): Promise<{
             savedName,
             publicName,
             isBusiness,
-            labels: [],
+            labels,
             sourceAdmin: false,
             sourcePetugas: true,
           });
         } else {
           const cur = contactsMap.get(norm)!;
           cur.sourcePetugas = true;
+          if (labels.length > 0) cur.labels = Array.from(new Set([...cur.labels, ...labels]));
           if (!cur.savedName && savedName) cur.savedName = savedName;
           if (!cur.publicName && publicName) cur.publicName = publicName;
         }
       }
+      break;
     }
   }
 
