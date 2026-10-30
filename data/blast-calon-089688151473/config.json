@@ -1,0 +1,18 @@
+{
+  "campaignName": "Blast Pendaftaran Calon Pelanggan Baru",
+  "sender": {
+    "devicePhone": "089688151473",
+    "provider": "Fonnte",
+    "fonnteToken": "8n46RV2x9GosQYgtAS1j",
+    "apiUrl": "https://api.fonnte.com/send",
+    "importantRule": "KHUSUS device 089688151473. DILARANG menggunakan nomor admin utama 081400782617."
+  },
+  "exclusionList": [
+    "081400782617",
+    "081532843224",
+    "089688151473"
+  ],
+  "totalTargets": 204,
+  "status": "DRAFT_READY_FOR_SCHEDULE",
+  "updatedAt": "2026-10-30T16:04:42.933Z"
+}
