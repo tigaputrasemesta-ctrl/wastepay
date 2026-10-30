@@ -15,7 +15,7 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { targets, messageTemplate, senderMode, customToken, delayMs } = body;
+    const { targets, messageTemplate, senderMode, customToken, delayMs, dryRun } = body;
 
     if (!Array.isArray(targets) || targets.length === 0) {
       return NextResponse.json({ error: 'Daftar nomor target wajib diisi.' }, { status: 400 });
@@ -31,6 +31,7 @@ export async function POST(request: Request) {
       senderMode: senderMode || 'auto',
       customToken,
       delayMs: typeof delayMs === 'number' ? delayMs : 1500,
+      dryRun: Boolean(dryRun),
     });
 
     return NextResponse.json({

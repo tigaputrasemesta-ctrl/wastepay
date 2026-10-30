@@ -441,9 +441,10 @@ export async function sendBlastWaWithRouting(params: {
     wilayah?: string;
   }>;
   messageTemplate: string;
-  senderMode: 'auto' | 'hp_petugas' | 'hp_admin';
+  senderMode?: 'auto' | 'hp_petugas' | 'hp_admin';
   customToken?: string;
   delayMs?: number;
+  dryRun?: boolean;
 }): Promise<{
   totalRequested: number;
   totalSent: number;
@@ -456,7 +457,7 @@ export async function sendBlastWaWithRouting(params: {
     reason?: string;
   }>;
 }> {
-  const { targets, messageTemplate, senderMode, dryRun = false, delayMs = 1500 } = params;
+  const { targets, messageTemplate, senderMode = 'auto', dryRun = false, delayMs = 1500 } = params;
 
   // Verifikasi exclusion list (Admin, Petugas, Owner)
   const exclusionSet = new Set(Object.keys(KNOWN_STAFF_RECORD));
