@@ -62,6 +62,7 @@ export function getAllowedMenus(role: string): string[] {
     "klaim",
     "tpa",
     "pengaturan",
+    "data-kontrol",
   ];
 
   if (role === "superadmin") return [...allMenus, "users", "audit-log"];

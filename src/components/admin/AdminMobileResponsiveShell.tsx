@@ -37,6 +37,7 @@ import {
   MessageCircle,
   ShieldAlert,
   UserCog,
+  Smartphone,
 } from "lucide-react";
 
 export type AdminMobileResponsiveShellProps = {
@@ -109,6 +110,7 @@ const SECONDARY_MENU_ITEMS = [
   {
     title: "Komunikasi & Zonasi",
     items: [
+      { label: "Kontrol Kontak WA", href: "/data-kontrol", icon: Smartphone, desc: "Data kontrol HP admin & petugas live pendaftaran", badge: "Kontrol" },
       { label: "Chat Petugas", href: "/chat", icon: MessageCircle, desc: "Pesan & koordinasi tim lapangan", badge: null },
       { label: "Broadcast WhatsApp", href: "/notifikasi", icon: BellRing, desc: "Template & blast notifikasi tagihan warga", badge: "WA Blast" },
       { label: "Zonasi & Wilayah", href: "/zona", icon: Layers, desc: "Pembagian wilayah rute RT/RW & kelurahan", badge: null },

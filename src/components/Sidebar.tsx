@@ -35,6 +35,7 @@ import {
   Settings,
   ShieldCheck,
   FileText,
+  Smartphone,
   ChevronDown,
   LogOut,
   PanelLeftClose,
@@ -85,6 +86,7 @@ const menuConfig: Record<string, MenuItemDef> = {
   pengaturan: { label: "Pengaturan Sistem", href: "/pengaturan", icon: Settings },
   users: { label: "Kelola Akun Admin", href: "/users", icon: ShieldCheck },
   "audit-log": { label: "Audit Log Sistem", href: "/audit-log", icon: FileText },
+  "data-kontrol": { label: "Kontrol Kontak WA", href: "/data-kontrol", icon: Smartphone },
 };
 
 // Pengelompokan 5 grup menu ergonomis dan rapi
@@ -103,6 +105,7 @@ const MENU_GROUP: Record<string, string> = {
 
   // Pelanggan & Layanan
   pelanggan: "pelanggan",
+  "data-kontrol": "pelanggan",
   daftar: "pelanggan",
   survei: "pelanggan",
   sticker: "pelanggan",

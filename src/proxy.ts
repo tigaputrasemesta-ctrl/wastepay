@@ -40,6 +40,7 @@ const PAGE_ROLES: Record<string, number> = {
   "/users": 100, // superadmin only
   "/audit-log": 100, // superadmin only
   "/manajemen-artikel": 50, // admin+: artikel & berita edukasi
+  "/data-kontrol": 50, // admin+: kontrol data kontak hp admin & petugas
 };
 
 // API routes that require specific roles.
@@ -54,6 +55,10 @@ const API_ROLE_MAP: Record<string, number> = {
   "POST:/api/users": 100,
   "PUT:/api/users": 100,
   "DELETE:/api/users": 100,
+
+  // Data Kontrol Kontak WA & Blast Calon Pelanggan (admin+)
+  "GET:/api/data-kontrol": 50,
+  "POST:/api/data-kontrol/blast": 50,
 
   // Audit log (superadmin only)
   "GET:/api/audit-log": 100,
