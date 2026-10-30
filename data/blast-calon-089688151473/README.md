@@ -15,31 +15,31 @@ Dokumentasi dan dataset kampanye pesan WhatsApp untuk calon pelanggan/warga yang
 | **Provider API** | Fonnte | https://api.fonnte.com/send |
 | **Fonnte API Token** | `8n46RV2x9GosQYgtAS1j` | Token terisolasi khusus device `089688151473` |
 | **Nomor Terlarang / Pengecualian** | `081400782617` | Nomor Admin Utama (tidak boleh menerima/mengirim kampanye ini) |
-| **Nomor Pengecualian Lain** | `081532843224` *(Owner)*, `089688151473` *(Self)* | Dikecualikan otomatis dari daftar kirim |
-| **Total Target Unik** | **204 Kontak** | Sudah diverifikasi & bersih dari duplikasi |
+| **Nomor Pengecualian Petugas** | 13 Nomor Petugas / Kru Lapangan | Dikecualikan otomatis (Novi, Heru, Ryan, Ago, Dani, Paung, Cepot, Adit, Piat, Awal, Eko, Rama, dll) |
+| **Total Target Unik** | **782 Kontak** | Sudah diverifikasi, bebas duplikasi, dan tidak terdaftar di DB Pelanggan |
 
 ---
 
 ## 2. Struktur File
 
-- **[`config.json`](./config.json)**: Konfigurasi teknis token, device pengirim, dan daftar pengecualian.
-- **[`target_pelanggan_belum_terdaftar.csv`](./target_pelanggan_belum_terdaftar.csv)**: File CSV 204 target penerima (dapat dibuka di Excel).
-- **[`target_pelanggan_belum_terdaftar.json`](./target_pelanggan_belum_terdaftar.json)**: File JSON 204 target penerima untuk otomasi skrip.
+- **[`config.json`](./config.json)**: Konfigurasi teknis token, device pengirim, dan daftar pengecualian lengkap.
+- **[`target_pelanggan_belum_terdaftar.csv`](./target_pelanggan_belum_terdaftar.csv)**: File CSV 782 target penerima (dapat dibuka di Microsoft Excel).
+- **[`target_pelanggan_belum_terdaftar.json`](./target_pelanggan_belum_terdaftar.json)**: File JSON 782 target penerima untuk otomasi skrip.
 
 ---
 
-## 3. Rincian Segmentasi Wilayah Target (204 Kontak)
+## 3. Rincian Segmentasi Wilayah Target (782 Kontak)
 
-1. **Blok Bawah Dmiles + SMP 6**: 28 Kontak
-2. **Blok Tabroni**: 22 Kontak
-3. **Blok Sasak**: 20 Kontak
-4. **Blok Bakung**: 16 Kontak
-5. **Blok Setu & Pete**: 14 Kontak
-6. **Blok YKP Kelapa**: 9 Kontak
-7. **Blok Gg Niman**: 6 Kontak
-8. **Blok Kp Bulak & Kp Sawah**: 6 Kontak
-9. **Kategori Usaha / Toko / Warung**: 12 Kontak
-10. **Area Umum / Belum Terpetakan**: 71 Kontak
+1. **Blok Tabroni**: 28 Kontak
+2. **Blok Sasak**: 21 Kontak
+3. **Blok Bawah Dmiles + SMP 6**: 18 Kontak
+4. **Blok Bakung**: 12 Kontak
+5. **Blok Kp Bulak & Kp Sawah**: 13 Kontak
+6. **Blok Setu & Pete**: 5 Kontak
+7. **Blok Sarin & Gang Umar**: 8 Kontak
+8. **Blok YKP Kelapa & Santri**: 6 Kontak
+9. **Blok Agisna, Kibeng, THR, Cilodong**: 8 Kontak
+10. **Area Umum / Belum Terpetakan**: 663 Kontak
 
 ---
 
