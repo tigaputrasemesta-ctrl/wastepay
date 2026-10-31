@@ -77,7 +77,6 @@ export default async function DaftarPage({
     // DB offline
     tarifMin = 40000;
   }
-  }
 
   return (
     <div className={`py-4 sm:py-6 md:py-10 ${isPetugas ? 'max-w-3xl mx-auto' : 'space-y-6 sm:space-y-10 md:space-y-12'}`}>
