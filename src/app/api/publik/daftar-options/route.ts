@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
  *  - kategoriTarif: tarif default per kategori (ditampilkan sebagai hint)
  */
 export async function GET() {
-  const [wilayahRows, paket, kategoriTarif, zonas, petugas, rute] = await Promise.all([
+  const [wilayahRows, paketRows, kategoriTarif, zonas, petugas, rute] = await Promise.all([
     prisma.kelurahan.findMany({
       select: { nama: true, kecamatan: true },
       orderBy: [{ kecamatan: "asc" }, { nama: "asc" }],
@@ -39,6 +39,30 @@ export async function GET() {
       orderBy: { nama: "asc" },
     }),
   ]);
+
+  // Pastikan Paket Langganan 40.000 selalu tersedia dan presisi
+  let foundLangganan = false;
+  const paket = paketRows.map((p) => {
+    if (p.id === 18 || p.nama.toLowerCase().includes("langganan")) {
+      foundLangganan = true;
+      return {
+        ...p,
+        nama: "Paket Langganan",
+        harga: 40000,
+        deskripsi: p.deskripsi || "Pengangkutan sampah rutin perumahan / rumah tangga 3x seminggu (Rp 40.000/bulan)",
+      };
+    }
+    return p;
+  });
+
+  if (!foundLangganan) {
+    paket.unshift({
+      id: 18,
+      nama: "Paket Langganan",
+      harga: 40000,
+      deskripsi: "Pengangkutan sampah rutin perumahan / rumah tangga 3x seminggu (Rp 40.000/bulan)",
+    });
+  }
 
   // Kelompokkan kelurahan per kecamatan (unik, urut alfabet)
   const map = new Map<string, Set<string>>();

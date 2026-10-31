@@ -218,8 +218,12 @@ export async function POST(request: Request) {
       });
       if (p) {
         paketId = p.id;
-        paketNama = p.nama;
-        paketHarga = p.harga;
+        paketNama = p.id === 18 ? "Paket Langganan" : p.nama;
+        paketHarga = p.id === 18 ? 40000 : p.harga;
+      } else if (paketIdRaw === 18) {
+        paketId = 18;
+        paketNama = "Paket Langganan";
+        paketHarga = 40000;
       }
     }
 

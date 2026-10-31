@@ -545,6 +545,12 @@ export async function sendBlastWaWithRouting(params: {
       .replace(/\{wilayah\}/gi, cleanWilayah)
       .replace(/\{link_daftar\}/gi, 'https://upsheru.com/daftar');
 
+    if (dryRun) {
+      totalSent++;
+      details.push({ phone: norm, senderUsed: chosenSender.phone, status: 'sent' });
+      continue;
+    }
+
     try {
       const fonnteUrl = process.env.WA_API_URL?.trim() || 'https://api.fonnte.com/send';
       const res = await fetch(fonnteUrl, {
