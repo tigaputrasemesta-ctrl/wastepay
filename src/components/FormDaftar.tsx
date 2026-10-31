@@ -456,8 +456,8 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
                 onChange={() => setJenisLayanan('paket')}
               />
               <div className="flex-1 min-w-0">
-                <span className={`block font-bold text-slate-900 ${isPetugas ? 'text-[11px]' : 'text-xs sm:text-sm'}`}>Paket Khusus</span>
-                {!isPetugas && <span className="block text-[11px] sm:text-xs text-slate-500 mt-0.5">Layanan ritase & volume sampah ekstra</span>}
+                <span className={`block font-bold text-slate-900 ${isPetugas ? 'text-[11px]' : 'text-xs sm:text-sm'}`}>Paket Langganan</span>
+                {!isPetugas && <span className="block text-[11px] sm:text-xs text-slate-500 mt-0.5">Pilihan paket iuran rutin & layanan khusus</span>}
               </div>
             </label>
           )}
@@ -491,7 +491,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
           <div>
             {!isPetugas && (
               <label className="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5" htmlFor="d-paket">
-                Pilih Paket Khusus
+                Pilih Paket Langganan
               </label>
             )}
             <div className="relative">
@@ -499,7 +499,7 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
                 <option value="" disabled>— Pilih Paket —</option>
                 {(opsi?.paket ?? []).map((p) => (
                   <option key={p.id} value={p.id}>
-                    {p.nama} - Rp {p.harga.toLocaleString("id-ID")}/bulan
+                    {p.nama} {p.harga ? `- Rp ${p.harga.toLocaleString("id-ID")}/bulan` : "(Tarif Fleksibel)"}
                   </option>
                 ))}
               </select>

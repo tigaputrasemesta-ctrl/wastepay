@@ -241,7 +241,7 @@ export async function POST(request: Request) {
           patokanLokasi: patokanLokasi || null,
           penanggungjawab: penanggungjawab || null,
           referal: referal || null,
-          customTarif: customTarif,
+          customTarif: customTarif ?? paketHarga,
           latitude,
           longitude,
           koordinatSumber,

@@ -53,13 +53,24 @@ export default async function DaftarPage({
   const initialReferal = (sp?.ref || sp?.referal || "").trim();
   const isPetugas = sp?.mode === "petugas";
 
-  let tarifMin = 0;
+  let tarifMin = 40000;
   try {
-    const k = await prisma.kategoriTarif.findMany({
-      orderBy: { tarif: "asc" },
-      select: { tarif: true },
-    });
-    tarifMin = k.length > 0 ? Math.min(...k.map((x) => x.tarif)) : 0;
+    const [k, p] = await Promise.all([
+      prisma.kategoriTarif.findMany({
+        orderBy: { tarif: "asc" },
+        select: { tarif: true },
+      }),
+      prisma.paket.findMany({
+        where: { harga: { not: null, gt: 0 } },
+        orderBy: { harga: "asc" },
+        select: { harga: true },
+      }),
+    ]);
+    const allPrices = [
+      ...k.map((x) => x.tarif),
+      ...p.map((x) => x.harga as number),
+    ].filter((val) => typeof val === "number" && val > 0);
+    tarifMin = allPrices.length > 0 ? Math.min(...allPrices) : 40000;
   } catch {
     // DB offline
   }
