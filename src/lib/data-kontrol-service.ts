@@ -33,6 +33,7 @@ export interface KontrolContact {
   sourceLabel: string;
   isRegistered: boolean;
   isStaff: boolean;
+  blastStatus?: 'terkirim' | 'pending_resend' | 'belum_dikirim';
   labels: string[];
   indicatedArea: string;
   dbInfo?: KontrolDbInfo;
@@ -48,6 +49,8 @@ export interface DataKontrolSummary {
   hpPetugasCount: number;
   keduanyaCount: number;
   berlabelKhususCount: number;
+  blastTerkirimCount?: number;
+  blastPendingResendCount?: number;
 }
 
 export function normalizePhone(raw: string | null | undefined): string {
@@ -335,7 +338,36 @@ export async function getKontrolContacts(): Promise<{
     }
   }
 
-  // 5. Rakit kontak hasil gabungan dengan Live DB Matching
+  // 5. Muat checkpoint status blast terkirim & 520 target tertunda
+  const alreadySent = new Set<string>();
+  const checkpointFiles = [
+    path.resolve('data/blast_sent_checkpoints.json'),
+    path.resolve('scratch/blast_sent_checkpoints.json'),
+  ];
+  for (const cf of checkpointFiles) {
+    if (fs.existsSync(cf)) {
+      try {
+        const arr = JSON.parse(fs.readFileSync(cf, 'utf8'));
+        if (Array.isArray(arr)) {
+          arr.forEach((p) => alreadySent.add(normalizePhone(p)));
+          break;
+        }
+      } catch {}
+    }
+  }
+
+  const pending520Set = new Set<string>();
+  const pendingFile = path.resolve('data/kontak_pending_resend_520.json');
+  if (fs.existsSync(pendingFile)) {
+    try {
+      const arr = JSON.parse(fs.readFileSync(pendingFile, 'utf8'));
+      if (Array.isArray(arr)) {
+        arr.forEach((item: any) => pending520Set.add(normalizePhone(item.normPhone || item.phone)));
+      }
+    } catch {}
+  }
+
+  // 6. Rakit kontak hasil gabungan dengan Live DB Matching
   const contactList: KontrolContact[] = [];
 
   let countSudah = 0;
@@ -345,6 +377,8 @@ export async function getKontrolContacts(): Promise<{
   let countPetugas = 0;
   let countKeduanya = 0;
   let countBerlabel = 0;
+  let countBlastTerkirim = 0;
+  let countBlastPending = 0;
 
   for (const [normPhone, c] of contactsMap.entries()) {
     const isStaff = staffMap.has(normPhone) ||
@@ -376,6 +410,15 @@ export async function getKontrolContacts(): Promise<{
 
     if (c.labels.length > 0) countBerlabel++;
 
+    let blastStatus: 'terkirim' | 'pending_resend' | 'belum_dikirim' = 'belum_dikirim';
+    if (alreadySent.has(normPhone)) {
+      blastStatus = 'terkirim';
+      countBlastTerkirim++;
+    } else if (pending520Set.has(normPhone) || (!isStaff && !isRegistered && c.sourcePetugas)) {
+      blastStatus = 'pending_resend';
+      countBlastPending++;
+    }
+
     const dispName = c.savedName && c.savedName !== '-' 
       ? c.savedName 
       : (c.publicName && c.publicName !== '-' ? c.publicName : formatPhoneIndo(normPhone));
@@ -392,6 +435,7 @@ export async function getKontrolContacts(): Promise<{
       sourceLabel,
       isRegistered,
       isStaff,
+      blastStatus,
       labels: c.labels,
       indicatedArea: detectLocation(c.savedName),
       dbInfo: dbMatch ? {
@@ -435,6 +479,8 @@ export async function getKontrolContacts(): Promise<{
       hpPetugasCount: countPetugas,
       keduanyaCount: countKeduanya,
       berlabelKhususCount: countBerlabel,
+      blastTerkirimCount: countBlastTerkirim,
+      blastPendingResendCount: countBlastPending,
     },
     devices: DEVICE_CONFIG,
   };
