@@ -82,7 +82,7 @@ export function generateLocalBusinessJsonLd() {
         description: SITE_CONFIG.description,
         telephone: SITE_CONFIG.telephone,
         email: SITE_CONFIG.email,
-        priceRange: "Rp 50.000 - Rp 250.000",
+        priceRange: "Rp 40.000 - Rp 250.000",
         address: {
           "@type": "PostalAddress",
           streetAddress: SITE_CONFIG.address.streetAddress,

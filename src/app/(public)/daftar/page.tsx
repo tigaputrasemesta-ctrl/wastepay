@@ -43,6 +43,7 @@ const ALUR_DAFTAR = [
 ];
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function DaftarPage({
   searchParams,
@@ -67,12 +68,15 @@ export default async function DaftarPage({
       }),
     ]);
     const allPrices = [
-      ...k.map((x) => x.tarif),
+      ...k.map((x) => (x.tarif === 50000 ? 40000 : x.tarif)),
       ...p.map((x) => x.harga as number),
+      40000,
     ].filter((val) => typeof val === "number" && val > 0);
     tarifMin = allPrices.length > 0 ? Math.min(...allPrices) : 40000;
   } catch {
     // DB offline
+    tarifMin = 40000;
+  }
   }
 
   return (

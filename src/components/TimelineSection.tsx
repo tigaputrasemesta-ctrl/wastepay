@@ -48,7 +48,7 @@ const MILESTONES: TimelineMilestone[] = [
     year: "2026",
     badge: "DEPOK BERSIH 2026",
     title: "2.000+ Keluarga & Pelaku Usaha",
-    desc: "Transformasi penuh sebagai operator modern terpercaya di Kota Depok. Tarif transparan flat rate Rp 50.000/bulan dengan kepastian angkut harian.",
+    desc: "Transformasi penuh sebagai operator modern terpercaya di Kota Depok. Tarif transparan flat rate Rp 40.000/bulan dengan kepastian angkut harian.",
     icon: "⚡",
     highlight: "Ekosistem Kota Modern Tanpa Pusing",
   },

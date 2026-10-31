@@ -491,7 +491,7 @@ export default async function LandingPage() {
                   <div className="py-2.5 border-y border-slate-100">
                     <span className="text-xs text-slate-400 font-medium">Mulai dari</span>
                     <div className="flex items-baseline gap-1 mt-0.5">
-                      <span className="text-3xl font-extrabold text-slate-900">Rp 50.000</span>
+                      <span className="text-3xl font-extrabold text-slate-900">Rp 40.000</span>
                       <span className="text-xs text-slate-500">/ bulan</span>
                     </div>
                   </div>

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 /**
  * GET /api/publik/daftar-options
@@ -79,5 +80,24 @@ export async function GET() {
     }))
     .sort((a, b) => a.kecamatan.localeCompare(b.kecamatan));
 
-  return NextResponse.json({ wilayah, paket, kategoriTarif, zonas, petugas, rute });
+  // Pastikan kategori Level 1 (Rumah Tangga) terstandar Rp 40.000/bulan
+  const kategoriTarifSanitized = kategoriTarif.map((k) => {
+    if (k.kategori === "level_1") {
+      return {
+        ...k,
+        label: k.label && k.label !== "Level 1" ? k.label : "Level 1 (Rumah Tangga)",
+        tarif: 40000,
+      };
+    }
+    return k;
+  });
+
+  return NextResponse.json({
+    wilayah,
+    paket,
+    kategoriTarif: kategoriTarifSanitized,
+    zonas,
+    petugas,
+    rute,
+  });
 }

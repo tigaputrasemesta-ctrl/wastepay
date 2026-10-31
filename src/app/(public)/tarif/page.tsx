@@ -18,12 +18,13 @@ export const metadata: Metadata = {
 };
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function TarifPage() {
-  let kategoriTarif: { kategori: string; label: string; tarif: number; deskripsi: string | null }[] = [];
-  let paket: { nama: string; harga: number | null; deskripsi: string | null }[] = [];
+  let kategoriTarifRaw: { kategori: string; label: string; tarif: number; deskripsi: string | null }[] = [];
+  let paketRaw: { nama: string; harga: number | null; deskripsi: string | null }[] = [];
   try {
-    [kategoriTarif, paket] = await Promise.all([
+    [kategoriTarifRaw, paketRaw] = await Promise.all([
       prisma.kategoriTarif.findMany({
         orderBy: { tarif: "asc" },
         select: { kategori: true, label: true, tarif: true, deskripsi: true },
@@ -37,7 +38,49 @@ export default async function TarifPage() {
     // DB offline
   }
 
-  const tarifMin = kategoriTarif.length > 0 ? Math.min(...kategoriTarif.map((k) => k.tarif)) : 0;
+  // Standarisasi kategori Level 1 (Rumah Tangga) ke Rp 40.000
+  const kategoriTarif = (kategoriTarifRaw.length > 0 ? kategoriTarifRaw : [
+    { kategori: "level_1", label: "Level 1 (Rumah Tangga)", tarif: 40000, deskripsi: "Rutin 3x seminggu" }
+  ]).map((k) => {
+    if (k.kategori === "level_1") {
+      return {
+        ...k,
+        label: k.label && k.label !== "Level 1" ? k.label : "Level 1 (Rumah Tangga)",
+        tarif: 40000,
+        deskripsi: k.deskripsi || "Rutin perumahan / rumah tangga",
+      };
+    }
+    return k;
+  });
+
+  // Pastikan Paket Langganan 40.000 tercantum
+  let hasPaketLangganan = false;
+  const paket = paketRaw.map((p) => {
+    if (p.nama.toLowerCase().includes("langganan")) {
+      hasPaketLangganan = true;
+      return {
+        ...p,
+        nama: "Paket Langganan",
+        harga: 40000,
+        deskripsi: p.deskripsi || "Pengangkutan sampah rutin perumahan / rumah tangga 3x seminggu (Rp 40.000/bulan)",
+      };
+    }
+    return p;
+  });
+
+  if (!hasPaketLangganan) {
+    paket.unshift({
+      nama: "Paket Langganan",
+      harga: 40000,
+      deskripsi: "Pengangkutan sampah rutin perumahan / rumah tangga 3x seminggu (Rp 40.000/bulan)",
+    });
+  }
+
+  const allTarif = [
+    ...kategoriTarif.map((k) => k.tarif),
+    ...paket.map((p) => p.harga).filter((h): h is number => typeof h === "number" && h > 0),
+  ];
+  const tarifMin = allTarif.length > 0 ? Math.min(...allTarif) : 40000;
 
   return (
     <div className="py-8 sm:py-12 space-y-10 max-w-5xl mx-auto">

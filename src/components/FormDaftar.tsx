@@ -472,17 +472,21 @@ export default function FormDaftar({ initialReferal = "", isPetugas = false }: {
             )}
             <div className="relative">
               <select id="d-kategori" value={kategori} onChange={(e) => setKategori(e.target.value)} className={`w-full bg-white sm:bg-slate-50/80 border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer pr-9 ${isPetugas ? 'px-2 py-1 text-[11px] rounded-lg' : 'rounded-xl px-3.5 sm:px-4 text-slate-900 text-base sm:text-sm py-3 min-h-[46px]'}`}>
-                {(opsi?.kategoriTarif ?? []).map((k) => (
-                  <option key={k.kategori} value={k.kategori}>
-                    {k.label} — Rp {k.tarif.toLocaleString("id-ID")}/bulan
-                  </option>
-                ))}
+                {(opsi?.kategoriTarif ?? []).map((k) => {
+                  const label = k.kategori === 'level_1' && (!k.label || k.label === 'Level 1') ? 'Level 1 (Rumah Tangga)' : k.label;
+                  const tarifDisplay = k.kategori === 'level_1' && k.tarif === 50000 ? 40000 : k.tarif;
+                  return (
+                    <option key={k.kategori} value={k.kategori}>
+                      {label} — Rp {tarifDisplay.toLocaleString("id-ID")}/bulan
+                    </option>
+                  );
+                })}
               </select>
               <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">▼</div>
             </div>
             {tarifKategori && !isPetugas && (
               <div className="text-xs font-semibold mt-2 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200/80 inline-flex items-center gap-1.5 flex-wrap">
-                <span>Tarif: Rp {tarifKategori.tarif.toLocaleString("id-ID")}/bulan</span>
+                <span>Tarif: Rp {(tarifKategori.kategori === 'level_1' && tarifKategori.tarif === 50000 ? 40000 : tarifKategori.tarif).toLocaleString("id-ID")}/bulan</span>
                 {tarifKategori.deskripsi && <span className="text-emerald-700 font-normal">({tarifKategori.deskripsi})</span>}
               </div>
             )}
