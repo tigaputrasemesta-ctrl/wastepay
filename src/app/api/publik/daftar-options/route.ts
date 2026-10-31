@@ -80,13 +80,13 @@ export async function GET() {
     }))
     .sort((a, b) => a.kecamatan.localeCompare(b.kecamatan));
 
-  // Pastikan kategori Level 1 (Rumah Tangga) terstandar Rp 40.000/bulan
+  // Pastikan kategori Level 1 (Rumah Tangga) terstandar Rp 50.000/bulan
   const kategoriTarifSanitized = kategoriTarif.map((k) => {
     if (k.kategori === "level_1") {
       return {
         ...k,
         label: k.label && k.label !== "Level 1" ? k.label : "Level 1 (Rumah Tangga)",
-        tarif: 40000,
+        tarif: 50000,
       };
     }
     return k;

@@ -38,15 +38,15 @@ export default async function TarifPage() {
     // DB offline
   }
 
-  // Standarisasi kategori Level 1 (Rumah Tangga) ke Rp 40.000
+  // Standarisasi kategori Level 1 (Rumah Tangga) ke Rp 50.000
   const kategoriTarif = (kategoriTarifRaw.length > 0 ? kategoriTarifRaw : [
-    { kategori: "level_1", label: "Level 1 (Rumah Tangga)", tarif: 40000, deskripsi: "Rutin 3x seminggu" }
+    { kategori: "level_1", label: "Level 1 (Rumah Tangga)", tarif: 50000, deskripsi: "Rutin 3x seminggu" }
   ]).map((k) => {
     if (k.kategori === "level_1") {
       return {
         ...k,
         label: k.label && k.label !== "Level 1" ? k.label : "Level 1 (Rumah Tangga)",
-        tarif: 40000,
+        tarif: 50000,
         deskripsi: k.deskripsi || "Rutin perumahan / rumah tangga",
       };
     }

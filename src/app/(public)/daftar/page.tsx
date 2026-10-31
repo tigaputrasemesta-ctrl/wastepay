@@ -68,7 +68,7 @@ export default async function DaftarPage({
       }),
     ]);
     const allPrices = [
-      ...k.map((x) => (x.tarif === 50000 ? 40000 : x.tarif)),
+      ...k.map((x) => x.tarif),
       ...p.map((x) => x.harga as number),
       40000,
     ].filter((val) => typeof val === "number" && val > 0);
