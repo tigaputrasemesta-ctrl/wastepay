@@ -538,7 +538,7 @@ export async function sendBlastWaWithRouting(params: {
     const tokenToUse = params.customToken?.trim() || chosenSender.token;
 
     // Format pesan
-    const cleanName = target.name && target.name !== '-' ? target.name : 'Bapak/Ibu';
+    const cleanName = target.name && target.name !== '-' ? target.name : 'Pelanggan Setia UPS HERU';
     const cleanWilayah = target.wilayah && target.wilayah !== '-' ? target.wilayah : 'lingkungan Anda';
     const personalizedMessage = messageTemplate
       .replace(/\{nama\}/gi, cleanName)

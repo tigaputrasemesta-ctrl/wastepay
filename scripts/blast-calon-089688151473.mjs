@@ -43,25 +43,37 @@ for (const t of targets) {
 }
 
 function buildMessage(target) {
-  const sapaan = target.namaKontak && target.namaKontak !== '-' ? `Bapak/Ibu *${target.namaKontak}*` : 'Bapak/Ibu';
-  const wilayahStr = target.indikasiWilayah && target.indikasiWilayah !== '-' ? `di *${target.indikasiWilayah}*` : 'di lingkungan Anda';
+  const namaTarget = target.namaKontak && target.namaKontak !== '-' ? target.namaKontak : 'Pelanggan Setia UPS HERU';
 
-  return `Halo ${sapaan} 👋
+  return `*PEMBERITAHUAN RESMI — UPS HERU DEPOK* 🚛
+Layanan Terpadu Pengangkutan Sampah Warga
 
-Salam hangat dari Layanan Pengangkutan Kebersihan Lingkungan — *UPS HERU (WastePay Depok)*. 🚛♻️
+Yth. Bapak/Ibu ${namaTarget},
 
-Kami menginformasikan bahwa untuk meningkatkan keteraturan jadwal penjemputan sampah dan kemudahan pembayaran iuran ${wilayahStr}, layanan kini telah terintegrasi secara digital.
+Demi meningkatkan mutu dan kepastian layanan penjemputan sampah, saat ini sistem operasional UPS HERU telah terintegrasi secara digital.
 
-Bagi Bapak/Ibu yang ingin mendaftar atau memastikan rumahnya tercatat dalam jadwal operasional armada kami, silakan melakukan pendaftaran mandiri melalui tautan resmi kami:
-👉 *https://upsheru.com/daftar*
+Bagi Bapak/Ibu yang sudah berlangganan tetapi nomornya belum terdaftar di sistem, mohon meluangkan waktu 1 menit untuk aktivasi data mandiri.
 
-Atau dapat mengecek jangkauan area operasional di:
-🌐 *https://upsheru.com/coverage*
+✨ *Keuntungan Rumah Anda Terdaftar di Sistem:*
 
-Ada pertanyaan atau butuh bantuan pendaftaran? Cukup balas pesan WhatsApp ini ya, tim kami siap membantu. 🙏
+1️⃣ *Bayar Iuran Lebih Praktis & Transparan*
+Tagihan bulanan dan kuitansi otomatis masuk ke WhatsApp. Bisa bayar online 24 jam via QRIS (semua bank & e-wallet) atau tunai ke petugas tanpa khawatir kuitansi kertas hilang.
 
-Terima kasih atas kerja samanya menjaga kebersihan lingkungan bersama.
-— Tim Layanan UPS HERU Depok`;
+2️⃣ *Armada Pasti Tiba, Tidak Ada Rumah Terlewat*
+Titik rumah Anda otomatis terhubung ke peta navigasi truk petugas. Sampah dijamin dijemput rutin sesuai jadwal, bahkan saat supir/petugas berganti.
+
+3️⃣ *Layanan Pengaduan Cepat (Real-Time)*
+Jika sampah belum terangkut atau ada kendala, laporan langsung mendapat *Nomor Tiket Resmi* dan otomatis terkirim ke HP petugas rute di lokasi untuk segera ditindaklanjuti.
+
+---
+👉 *Aktivasi Mandiri Sekarang (1 Menit, Bebas Biaya):*
+https://upsheru.com/daftar
+
+📞 *Pusat Bantuan & Layanan Pelanggan:*
+WhatsApp Admin: https://wa.me/6281400782617 (0814-0078-2617)
+
+Terima kasih atas kerja samanya dalam menjaga kebersihan lingkungan bersama kami. 🙏
+_Manajemen UPS HERU (WastePay)_`;
 }
 
 async function run() {

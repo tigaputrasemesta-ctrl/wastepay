@@ -71,19 +71,35 @@ interface SummaryStats {
   berlabelKhususCount: number;
 }
 
-const DEFAULT_BLAST_MESSAGE = `Halo Bapak/Ibu {nama} 👋
+const DEFAULT_BLAST_MESSAGE = `*PEMBERITAHUAN RESMI — UPS HERU DEPOK* 🚛
+Layanan Terpadu Pengangkutan Sampah Warga
 
-Salam hangat dari Pengangkutan Kebersihan Lingkungan — UPS HERU (WastePay Depok). 🚛♻️
+Yth. Bapak/Ibu {nama},
 
-Kami menginformasikan bahwa untuk keteraturan jadwal pengangkutan sampah 3x seminggu dan kemudahan pembayaran iuran di wilayah {wilayah}, sistem pendataan kini terintegrasi secara digital.
+Demi meningkatkan mutu dan kepastian layanan penjemputan sampah, saat ini sistem operasional UPS HERU telah terintegrasi secara digital.
 
-Bagi Bapak/Ibu yang belum melengkapi data rumah atau ingin mendaftarkan layanan penjemputan sampah rutin, silakan mengisi formulir pendaftaran resmi kami di:
-👉 {link_daftar}
+Bagi Bapak/Ibu yang sudah berlangganan tetapi nomornya belum terdaftar di sistem, mohon meluangkan waktu 1 menit untuk aktivasi data mandiri.
 
-Ada pertanyaan atau butuh bantuan pendaftaran? Cukup balas pesan ini ya, tim kami siap membantu. 🙏
+✨ *Keuntungan Rumah Anda Terdaftar di Sistem:*
 
-Terima kasih atas kerja samanya menjaga kebersihan lingkungan bersama.
-— Tim Layanan UPS HERU Depok`;
+1️⃣ *Bayar Iuran Lebih Praktis & Transparan*
+Tagihan bulanan dan kuitansi otomatis masuk ke WhatsApp. Bisa bayar online 24 jam via QRIS (semua bank & e-wallet) atau tunai ke petugas tanpa khawatir kuitansi kertas hilang.
+
+2️⃣ *Armada Pasti Tiba, Tidak Ada Rumah Terlewat*
+Titik rumah Anda otomatis terhubung ke peta navigasi truk petugas. Sampah dijamin dijemput rutin sesuai jadwal, bahkan saat supir/petugas berganti.
+
+3️⃣ *Layanan Pengaduan Cepat (Real-Time)*
+Jika sampah belum terangkut atau ada kendala, laporan langsung mendapat *Nomor Tiket Resmi* dan otomatis terkirim ke HP petugas rute di lokasi untuk segera ditindaklanjuti.
+
+---
+👉 *Aktivasi Mandiri Sekarang (1 Menit, Bebas Biaya):*
+{link_daftar}
+
+📞 *Pusat Bantuan & Layanan Pelanggan:*
+WhatsApp Admin: https://wa.me/6281400782617 (0814-0078-2617)
+
+Terima kasih atas kerja samanya dalam menjaga kebersihan lingkungan bersama kami. 🙏
+_Manajemen UPS HERU (WastePay)_`;
 
 export default function DataKontrolPage() {
   const [contacts, setContacts] = useState<KontrolContact[]>([]);
