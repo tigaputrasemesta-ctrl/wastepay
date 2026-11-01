@@ -17,6 +17,70 @@ import { labelMetodePembayaran } from "@/lib/invoice";
 type Params = { params: Promise<{ id: string }> };
 
 /**
+ * Ambil detail pembayaran beserta bukti bayar jika ada.
+ * GET /api/pembayaran/[id]
+ */
+export async function GET(request: Request, { params }: Params) {
+  try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await params;
+    const numId = parseInt(id, 10);
+    if (!Number.isInteger(numId)) {
+      return NextResponse.json({ error: "ID pembayaran tidak valid" }, { status: 400 });
+    }
+
+    const pembayaran = await prisma.pembayaran.findUnique({
+      where: { id: numId },
+      include: {
+        pelanggan: {
+          select: {
+            id: true,
+            nama: true,
+            kodePelanggan: true,
+            noTelepon: true,
+            alamat: true,
+            kelurahanId: true,
+          },
+        },
+        tagihan: {
+          select: {
+            id: true,
+            noInvoice: true,
+            bulan: true,
+            tahun: true,
+            jumlah: true,
+            denda: true,
+            status: true,
+          },
+        },
+        verifiedBy: { select: { id: true, nama: true, role: true } },
+      },
+    });
+
+    if (!pembayaran) {
+      return NextResponse.json({ error: "Pembayaran tidak ditemukan" }, { status: 404 });
+    }
+
+    // Petugas scope check
+    if (session.role === "petugas" && !PETUGAS_SCOPE_ALL) {
+      const kelurahanId = await getPetugasKelurahan(session.id);
+      if (!kelurahanId || pembayaran.pelanggan.kelurahanId !== kelurahanId) {
+        return NextResponse.json({ error: "Pembayaran tidak ditemukan" }, { status: 404 });
+      }
+    }
+
+    return NextResponse.json(pembayaran);
+  } catch (error) {
+    console.error("Gagal mengambil detail pembayaran:", error);
+    return NextResponse.json({ error: "Gagal mengambil data pembayaran" }, { status: 500 });
+  }
+}
+
+/**
  * Verifikasi/tolak pembayaran non-tunai (pending).
  * PUT  /api/pembayaran/[id]  { status: "terverifikasi" | "ditolak", catatan? }
  * DELETE /api/pembayaran/[id] — hapus pembayaran & batalkan status lunas jika perlu

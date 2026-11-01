@@ -436,7 +436,8 @@
     min-height: auto !important;
   }
 
-  .kwitansi-toolbar {
+  .kwitansi-toolbar,
+  .kwitansi-no-print {
     display: none !important;
   }
 

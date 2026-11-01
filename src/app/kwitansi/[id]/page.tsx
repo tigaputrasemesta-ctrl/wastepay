@@ -234,6 +234,34 @@ export default async function KwitansiPage({
             </p>
           </div>
         </div>
+
+        {/* Lampiran Bukti Asli Pembayaran (Layar saja, tidak dicetak di slip A4) */}
+        {p.buktiBayar && (
+          <div className="kwitansi-attachment kwitansi-no-print mt-6 bg-white rounded-2xl border-2 border-black p-5 shadow-[5px_5px_0_0_#000]">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 flex-wrap gap-2">
+              <div className="flex items-center gap-2 font-bold text-slate-900 text-sm">
+                <span className="text-base">📷</span>
+                <span>Lampiran Foto Bukti Asli Pembayaran ({metodeLabel})</span>
+              </div>
+              <a
+                href={p.buktiBayar}
+                target="_blank"
+                rel="noopener noreferrer"
+                download={`bukti-bayar-${noKwitansi}.jpg`}
+                className="text-xs font-bold text-emerald-700 hover:text-emerald-800 underline flex items-center gap-1"
+              >
+                ↗ Buka Ukuran Asli / Unduh
+              </a>
+            </div>
+            <div className="mt-4 flex justify-center bg-slate-50 rounded-xl p-3 border border-slate-200 overflow-hidden">
+              <img
+                src={p.buktiBayar}
+                alt={`Bukti Pembayaran ${noKwitansi}`}
+                className="max-h-[500px] w-auto max-w-full object-contain rounded-lg shadow-sm"
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

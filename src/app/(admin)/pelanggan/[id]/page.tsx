@@ -72,6 +72,7 @@ type PelangganDetail = {
     metode: string;
     status: string;
     createdAt: string;
+    buktiBayar?: string | null;
   }[];
   pengangkutan: {
     id: number;
@@ -97,6 +98,13 @@ export default function DetailPelangganPage() {
   const [loading, setLoading] = useState(true);
   const [showApprovalModal, setShowApprovalModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
+  const [previewBuktiModal, setPreviewBuktiModal] = useState<{
+    url: string;
+    nama: string;
+    kode?: string;
+    metode?: string;
+    nominal?: number;
+  } | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -650,17 +658,38 @@ export default function DetailPelangganPage() {
                           </span>
                         </td>
                         <td className="px-3 py-2.5 text-center">
-                          {p.status === "terverifikasi" ? (
-                            <Link
-                              href={`/kwitansi/${p.id}`}
-                              target="_blank"
-                              className="text-xs text-emerald-700 underline hover:text-emerald-700 font-semibold"
-                            >
-                              Kwitansi
-                            </Link>
-                          ) : (
-                            <span className="text-xs text-slate-300">—</span>
-                          )}
+                          <div className="flex items-center justify-center gap-2 flex-wrap">
+                            {p.status === "terverifikasi" && (
+                              <Link
+                                href={`/kwitansi/${p.id}`}
+                                target="_blank"
+                                className="text-xs text-emerald-700 underline hover:text-emerald-800 font-semibold"
+                              >
+                                Kwitansi
+                              </Link>
+                            )}
+                            {p.buktiBayar && (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setPreviewBuktiModal({
+                                    url: p.buktiBayar!,
+                                    nama: data.nama,
+                                    kode: data.kodePelanggan,
+                                    metode: p.metode,
+                                    nominal: p.jumlah,
+                                  })
+                                }
+                                className="inline-flex items-center gap-0.5 text-xs text-indigo-600 hover:text-indigo-800 font-semibold underline px-1.5 py-0.5 rounded hover:bg-indigo-50 transition"
+                                title="Lihat foto bukti transfer / fisik"
+                              >
+                                📷 Foto
+                              </button>
+                            )}
+                            {!p.buktiBayar && p.status !== "terverifikasi" && (
+                              <span className="text-xs text-slate-300">—</span>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -770,6 +799,56 @@ export default function DetailPelangganPage() {
         }}
         showToast={showToast}
       />
+      {/* Modal Lightbox Foto Bukti Pembayaran */}
+      {previewBuktiModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 animate-in fade-in duration-150"
+          onClick={() => setPreviewBuktiModal(null)}
+        >
+          <div
+            className="relative bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100 bg-slate-50">
+              <div>
+                <h3 className="font-bold text-slate-900 text-sm">
+                  Foto Bukti Pembayaran
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  {previewBuktiModal.nama} {previewBuktiModal.kode ? `(${previewBuktiModal.kode})` : ""} •{" "}
+                  {previewBuktiModal.nominal ? formatRupiah(previewBuktiModal.nominal) : ""} •{" "}
+                  <span className="capitalize">{previewBuktiModal.metode || "Pembayaran"}</span>
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <a
+                  href={previewBuktiModal.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download={`bukti-bayar-${previewBuktiModal.nama.replace(/\s+/g, "_")}.jpg`}
+                  className="text-xs font-semibold px-2.5 py-1.5 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-100 transition shadow-sm"
+                >
+                  ↗ Buka Ukuran Penuh
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setPreviewBuktiModal(null)}
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200 text-lg leading-none transition"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+            <div className="p-4 flex items-center justify-center bg-slate-900/5 overflow-auto flex-1 max-h-[70vh]">
+              <img
+                src={previewBuktiModal.url}
+                alt="Bukti Pembayaran"
+                className="max-h-full max-w-full object-contain rounded-lg shadow-sm"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

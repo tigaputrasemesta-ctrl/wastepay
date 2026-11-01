@@ -64,7 +64,7 @@ type Tagihan = {
       } | null;
     } | null;
   };
-  pembayaran: { id: number; jumlah: number; metode: string; status: string; createdAt: string }[];
+  pembayaran: { id: number; jumlah: number; metode: string; status: string; createdAt: string; buktiBayar?: string | null }[];
 };
 
 type KelurahanItem = {
@@ -219,6 +219,13 @@ export default function TagihanPage() {
   const [previewLoading, setPreviewLoading] = useState(false);
   const [showBayar, setShowBayar] = useState<{ tagihanId: number; pelangganId: number; jumlah: number } | null>(null);
   const [formBayar, setFormBayar] = useState({ metode: "transfer", catatan: "", buktiBayar: "" });
+  const [previewBuktiModal, setPreviewBuktiModal] = useState<{
+    url: string;
+    nama: string;
+    kode?: string;
+    metode?: string;
+    nominal?: number;
+  } | null>(null);
 
   const filteredAndSortedPreview = useMemo(() => {
     if (!preview) return [];
@@ -1154,13 +1161,33 @@ export default function TagihanPage() {
                                 <span className="text-[10px] text-slate-500 font-semibold bg-slate-100 px-2 py-0.5 rounded-full mb-1 whitespace-nowrap">
                                   {labelMetode(pb.metode)}
                                 </span>
-                                <Link
-                                  href={`/kwitansi/${pb.id}`}
-                                  target="_blank"
-                                  className="text-xs text-emerald-700 underline hover:text-emerald-700 font-semibold"
-                                >
-                                  Kwitansi
-                                </Link>
+                                <div className="flex items-center gap-1.5">
+                                  <Link
+                                    href={`/kwitansi/${pb.id}`}
+                                    target="_blank"
+                                    className="text-xs text-emerald-700 underline hover:text-emerald-800 font-semibold"
+                                  >
+                                    Kwitansi
+                                  </Link>
+                                  {pb.buktiBayar && (
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        setPreviewBuktiModal({
+                                          url: pb.buktiBayar!,
+                                          nama: t.pelanggan.nama,
+                                          kode: t.pelanggan.kodePelanggan,
+                                          metode: pb.metode,
+                                          nominal: pb.jumlah,
+                                        })
+                                      }
+                                      className="text-xs text-indigo-600 hover:text-indigo-800 font-semibold underline flex items-center gap-0.5"
+                                      title="Lihat foto bukti pembayaran"
+                                    >
+                                      📷 Foto
+                                    </button>
+                                  )}
+                                </div>
                               </div>
                             ))}
                         </div>
@@ -1288,13 +1315,40 @@ export default function TagihanPage() {
                           Lunas: <b>{t.tanggalLunas ? formatDate(t.tanggalLunas) : "-"}</b>
                         </span>
                         {t.pembayaran.filter((pb) => pb.status === "terverifikasi").length > 0 && (
-                          <Link
-                            href={`/kwitansi/${t.pembayaran.find((pb) => pb.status === "terverifikasi")?.id}`}
-                            target="_blank"
-                            className="px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 font-bold transition"
-                          >
-                            📄 Kwitansi
-                          </Link>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            {(() => {
+                              const pb = t.pembayaran.find((pb) => pb.status === "terverifikasi");
+                              if (!pb) return null;
+                              return (
+                                <>
+                                  <Link
+                                    href={`/kwitansi/${pb.id}`}
+                                    target="_blank"
+                                    className="px-2.5 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 font-bold transition text-xs"
+                                  >
+                                    📄 Kwitansi
+                                  </Link>
+                                  {pb.buktiBayar && (
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        setPreviewBuktiModal({
+                                          url: pb.buktiBayar!,
+                                          nama: t.pelanggan.nama,
+                                          kode: t.pelanggan.kodePelanggan,
+                                          metode: pb.metode,
+                                          nominal: pb.jumlah,
+                                        })
+                                      }
+                                      className="px-2.5 py-1.5 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 font-bold transition text-xs flex items-center gap-1"
+                                    >
+                                      📷 Foto
+                                    </button>
+                                  )}
+                                </>
+                              );
+                            })()}
+                          </div>
                         )}
                       </div>
                     )}
@@ -1576,43 +1630,49 @@ export default function TagihanPage() {
                     Anda mencatat <b>pembayaran tunai</b> — tercatat atas nama Anda & langsung lunas.
                   </p>
                 )}
-                {formBayar.metode !== "tunai" && (
-                  <>
-                    <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 mt-2">
-                      Pembayaran non-tunai dicatat sebagai <b>pending</b> dan perlu diverifikasi admin di antrean verifikasi di atas.
-                    </p>
-                    <div className="mt-3">
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Upload Bukti Transfer</label>
-                      <input 
-                        type="file" 
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            if (file.size > 2_000_000) {
-                              alert("File terlalu besar, maksimal 2MB");
-                              e.target.value = "";
-                              return;
-                            }
-                            const reader = new FileReader();
-                            reader.onload = () => {
-                              setFormBayar((prev) => ({ ...prev, buktiBayar: reader.result as string }));
-                            };
-                            reader.readAsDataURL(file);
-                          } else {
-                            setFormBayar((prev) => ({ ...prev, buktiBayar: "" }));
-                          }
-                        }}
-                        className="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100"
-                      />
-                      {formBayar.buktiBayar && (
-                        <div className="mt-2">
-                          <img src={formBayar.buktiBayar} alt="Preview" className="h-24 object-cover rounded-lg border border-slate-200" />
-                        </div>
-                      )}
+                {formBayar.metode !== "tunai" ? (
+                  <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 mt-2">
+                    Pembayaran non-tunai dicatat sebagai <b>pending</b> dan perlu diverifikasi admin di antrean verifikasi di atas.
+                  </p>
+                ) : !isPetugas ? (
+                  <p className="text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 mt-2">
+                    Pembayaran tunai langsung diverifikasi <b>lunas</b> ke pembukuan kas.
+                  </p>
+                ) : null}
+                <div className="mt-3">
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    {formBayar.metode === "tunai"
+                      ? "Upload Foto Bukti/Nota Tunai (Opsional)"
+                      : "Upload Bukti Transfer"}
+                  </label>
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        if (file.size > 2_000_000) {
+                          alert("File terlalu besar, maksimal 2MB");
+                          e.target.value = "";
+                          return;
+                        }
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          setFormBayar((prev) => ({ ...prev, buktiBayar: reader.result as string }));
+                        };
+                        reader.readAsDataURL(file);
+                      } else {
+                        setFormBayar((prev) => ({ ...prev, buktiBayar: "" }));
+                      }
+                    }}
+                    className="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100"
+                  />
+                  {formBayar.buktiBayar && (
+                    <div className="mt-2">
+                      <img src={formBayar.buktiBayar} alt="Preview" className="h-24 object-cover rounded-lg border border-slate-200" />
                     </div>
-                  </>
-                )}
+                  )}
+                </div>
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">Catatan (opsional)</label>
@@ -2044,6 +2104,56 @@ export default function TagihanPage() {
                   )}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Modal Lightbox Foto Bukti Pembayaran */}
+      {previewBuktiModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 animate-in fade-in duration-150"
+          onClick={() => setPreviewBuktiModal(null)}
+        >
+          <div
+            className="relative bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100 bg-slate-50">
+              <div>
+                <h3 className="font-bold text-slate-900 text-sm">
+                  Foto Bukti Pembayaran
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  {previewBuktiModal.nama} {previewBuktiModal.kode ? `(${previewBuktiModal.kode})` : ""} •{" "}
+                  {previewBuktiModal.nominal ? formatRupiah(previewBuktiModal.nominal) : ""} •{" "}
+                  <span className="capitalize">{labelMetode(previewBuktiModal.metode || "")}</span>
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <a
+                  href={previewBuktiModal.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download={`bukti-bayar-${previewBuktiModal.nama.replace(/\s+/g, "_")}.jpg`}
+                  className="text-xs font-semibold px-2.5 py-1.5 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-100 transition shadow-sm"
+                >
+                  ↗ Buka Ukuran Penuh
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setPreviewBuktiModal(null)}
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200 text-lg leading-none transition"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+            <div className="p-4 flex items-center justify-center bg-slate-900/5 overflow-auto flex-1 max-h-[70vh]">
+              <img
+                src={previewBuktiModal.url}
+                alt="Bukti Pembayaran"
+                className="max-h-full max-w-full object-contain rounded-lg shadow-sm"
+              />
             </div>
           </div>
         </div>
