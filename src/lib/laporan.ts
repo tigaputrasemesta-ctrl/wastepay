@@ -75,6 +75,7 @@ export async function getLaporan(bulanIni: number, tahunIni: number) {
         tanggal: { gte: awalBulan, lt: akhirBulan },
       },
       include: {
+        pelanggan: { select: { id: true, nama: true, noTelepon: true, kodePelanggan: true } },
         tagihan: { select: { id: true, bulan: true, tahun: true, jumlah: true } },
       },
     }),

@@ -487,7 +487,7 @@ export default async function LaporanPage({
                       <tr key={p.id} className="hover:bg-slate-50">
                         <td className="px-3 py-2 text-slate-400 font-mono">{idx + 1}</td>
                         <td className="px-3 py-2 font-bold text-slate-900">
-                          {p.pelanggan.nama} <span className="text-[10px] text-slate-400 font-mono">({p.pelanggan.kodePelanggan})</span>
+                          {p.pelanggan?.nama || "Pelanggan"} <span className="text-[10px] text-slate-400 font-mono">({p.pelanggan?.kodePelanggan || "-"})</span>
                         </td>
                         <td className="px-3 py-2 text-slate-600">{formatDate(p.tanggal)}</td>
                         <td className="px-3 py-2 capitalize text-slate-600">{p.metode}</td>
@@ -533,7 +533,7 @@ export default async function LaporanPage({
                       <tr key={p.id} className="hover:bg-slate-50">
                         <td className="px-3 py-2 text-slate-400 font-mono">{idx + 1}</td>
                         <td className="px-3 py-2 font-bold text-slate-900">
-                          {p.pelanggan.nama} <span className="text-[10px] text-slate-400 font-mono">({p.pelanggan.kodePelanggan})</span>
+                          {p.pelanggan?.nama || "Pelanggan"} <span className="text-[10px] text-slate-400 font-mono">({p.pelanggan?.kodePelanggan || "-"})</span>
                         </td>
                         <td className="px-3 py-2 font-bold text-sky-800">
                           {NAMA_BULAN[p.tagihan.bulan - 1]} {p.tagihan.tahun}
