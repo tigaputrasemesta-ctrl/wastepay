@@ -60,7 +60,6 @@ export async function GET(request: Request) {
       },
       pembayaran: {
         orderBy: { createdAt: "desc" },
-        take: 1,
       },
     },
     orderBy: [
@@ -132,7 +131,14 @@ export async function GET(request: Request) {
     
     list.forEach((t, idx) => {
       const lunas = t.status === "lunas";
-      const p = t.pembayaran.length > 0 ? t.pembayaran[0] : null;
+      const verifiedPayments = t.pembayaran.filter((p) => p.status === "terverifikasi");
+      const pUtama = verifiedPayments.length > 0 ? verifiedPayments[0] : (t.pembayaran.length > 0 ? t.pembayaran[0] : null);
+      const totalBayar = verifiedPayments.length > 0
+        ? verifiedPayments.reduce((sum, p) => sum + p.jumlah, 0)
+        : (lunas ? t.jumlah + (t.denda || 0) : 0);
+      const metodeDisplay = verifiedPayments.length > 0
+        ? Array.from(new Set(verifiedPayments.map((p) => labelMetode(p.metode)))).join(", ")
+        : (pUtama ? labelMetode(pUtama.metode) : "");
       
       rows.push([
         idx + 1,
@@ -144,9 +150,9 @@ export async function GET(request: Request) {
         t.jumlah,
         t.denda || 0,
         lunas ? "LUNAS" : (t.status === "tunggakan" ? "TUNGGAKAN" : "BELUM BAYAR"),
-        lunas && p ? formatTanggalSingkat(p.createdAt) : "",
-        lunas && p ? labelMetode(p.metode) : "",
-        lunas && p ? p.jumlah : 0
+        lunas && pUtama ? formatTanggalSingkat(pUtama.tanggal || pUtama.createdAt) : "",
+        lunas ? metodeDisplay : "",
+        lunas ? totalBayar : 0
       ]);
     });
   });

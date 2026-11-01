@@ -111,7 +111,24 @@ export async function PUT(request: Request, { params }: Params) {
       return updated;
     });
 
-    await logAudit("update", "Pembayaran", pembayaran.id, { status: pembayaran.status }, { status });
+    await logAudit(
+      "update",
+      "Pembayaran",
+      pembayaran.id,
+      {
+        status: pembayaran.status,
+        jumlah: pembayaran.jumlah,
+        metode: pembayaran.metode,
+        tagihanId: pembayaran.tagihanId,
+        pelangganId: pembayaran.pelangganId,
+        catatan: pembayaran.catatan,
+      },
+      {
+        status,
+        catatan: catatan || pembayaran.catatan,
+        verifiedById: session?.id ?? null,
+      }
+    );
 
     // Auto-kirim WA konfirmasi ke pelanggan saat pembayaran diproses (skylite pattern)
     // dan laporan pembayaran masuk ke Owner & Admin
@@ -218,7 +235,22 @@ export async function DELETE(request: Request, { params }: Params) {
       }
     });
 
-    await logAudit("delete", "Pembayaran", pembayaran.id, { status: pembayaran.status }, undefined);
+    await logAudit(
+      "delete",
+      "Pembayaran",
+      pembayaran.id,
+      {
+        id: pembayaran.id,
+        status: pembayaran.status,
+        jumlah: pembayaran.jumlah,
+        metode: pembayaran.metode,
+        tagihanId: pembayaran.tagihanId,
+        pelangganId: pembayaran.pelangganId,
+        tanggal: pembayaran.tanggal,
+        createdAt: pembayaran.createdAt,
+      },
+      undefined
+    );
 
     return NextResponse.json({ message: "Pembayaran dihapus" });
   } catch {

@@ -68,7 +68,6 @@ export default async function LaporanPembayaranCetakPage({
       },
       pembayaran: {
         orderBy: { createdAt: "desc" },
-        take: 1, // Ambil pembayaran terakhir
       },
     },
     orderBy: [
@@ -92,9 +91,11 @@ export default async function LaporanPembayaranCetakPage({
   tagihanList.forEach((t) => {
     totalTagihan += t.jumlah;
     if (t.denda) totalDenda += t.denda;
-    if (t.status === "lunas" && t.pembayaran.length > 0) {
-      totalTerbayar += t.pembayaran[0].jumlah;
-    }
+    const verifiedPayments = t.pembayaran.filter((p) => p.status === "terverifikasi");
+    const terbayar = verifiedPayments.length > 0
+      ? verifiedPayments.reduce((sum, p) => sum + p.jumlah, 0)
+      : (t.status === "lunas" ? t.jumlah + (t.denda || 0) : 0);
+    totalTerbayar += terbayar;
 
     const zonaNama = t.pelanggan.wilayah?.zona?.nama || "Tanpa Zona";
     if (!groupedTagihan[zonaNama]) groupedTagihan[zonaNama] = [];
@@ -231,7 +232,11 @@ export default async function LaporanPembayaranCetakPage({
                         </tr>
                         {tList.map((t, idx) => {
                           const lunas = t.status === "lunas";
-                          const p = t.pembayaran.length > 0 ? t.pembayaran[0] : null;
+                          const verifiedPayments = t.pembayaran.filter((p) => p.status === "terverifikasi");
+                          const pUtama = verifiedPayments.length > 0 ? verifiedPayments[0] : (t.pembayaran.length > 0 ? t.pembayaran[0] : null);
+                          const metodeDisplay = verifiedPayments.length > 0
+                            ? Array.from(new Set(verifiedPayments.map((p) => labelMetode(p.metode)))).join(", ")
+                            : (pUtama ? labelMetode(pUtama.metode) : "-");
                           return (
                             <tr key={t.id}>
                               <td>{idx + 1}</td>
@@ -251,8 +256,8 @@ export default async function LaporanPembayaranCetakPage({
                                   </span>
                                 )}
                               </td>
-                              <td>{lunas && p ? formatTanggalSingkat(p.createdAt) : "-"}</td>
-                              <td>{lunas && p ? labelMetode(p.metode) : "-"}</td>
+                              <td>{lunas && pUtama ? formatTanggalSingkat(pUtama.tanggal || pUtama.createdAt) : "-"}</td>
+                              <td>{lunas ? metodeDisplay : "-"}</td>
                             </tr>
                           );
                         })}

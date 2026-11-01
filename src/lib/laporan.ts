@@ -8,11 +8,11 @@ export async function getLaporan(bulanIni: number, tahunIni: number) {
   const awalBulan = new Date(tahunIni, bulanIni - 1, 1);
   const akhirBulan = new Date(tahunIni, bulanIni, 1);
 
-  // Pendapatan bulan ini
+  // Pendapatan bulan ini (diselaraskan dengan tanggal transaksi riil kas/bank)
   const pemasukanBulanIni = await prisma.pembayaran.aggregate({
     where: {
       status: "terverifikasi",
-      createdAt: { gte: awalBulan, lt: akhirBulan },
+      tanggal: { gte: awalBulan, lt: akhirBulan },
     },
     _sum: { jumlah: true },
   });
@@ -22,7 +22,7 @@ export async function getLaporan(bulanIni: number, tahunIni: number) {
     by: ["metode"],
     where: {
       status: "terverifikasi",
-      createdAt: { gte: awalBulan, lt: akhirBulan },
+      tanggal: { gte: awalBulan, lt: akhirBulan },
     },
     _sum: { jumlah: true },
   });
@@ -35,15 +35,15 @@ export async function getLaporan(bulanIni: number, tahunIni: number) {
     _sum: { jumlah: true },
   });
 
-  // Total tagihan bulan ini
+  // Total tagihan bulan ini (mengabaikan tagihan yang dibatalkan/soft-deleted)
   const totalTagihanBulanIni = await prisma.tagihan.aggregate({
-    where: { bulan: bulanIni, tahun: tahunIni },
+    where: { bulan: bulanIni, tahun: tahunIni, deletedAt: null },
     _sum: { jumlah: true },
   });
 
   // Tagihan lunas bulan ini
   const tagihanLunas = await prisma.tagihan.aggregate({
-    where: { bulan: bulanIni, tahun: tahunIni, status: "lunas" },
+    where: { bulan: bulanIni, tahun: tahunIni, status: "lunas", deletedAt: null },
     _sum: { jumlah: true },
   });
 
@@ -98,10 +98,11 @@ export async function getLaporan(bulanIni: number, tahunIni: number) {
       })
     : [];
 
-  // Data pelanggan menunggak
+  // Data pelanggan menunggak (hanya tagihan aktif / deletedAt: null)
   const tagihanMenunggak = await prisma.tagihan.findMany({
     where: {
-      status: "belum_bayar",
+      status: { in: ["belum_bayar", "tunggakan"] },
+      deletedAt: null,
       OR: [
         { tahun: { lt: tahunIni } },
         { tahun: tahunIni, bulan: { lt: bulanIni } },
@@ -116,7 +117,12 @@ export async function getLaporan(bulanIni: number, tahunIni: number) {
 
   const totalPelanggan = await prisma.pelanggan.count({ where: { status: "aktif" } });
   const totalBelumBayar = await prisma.tagihan.count({
-    where: { bulan: bulanIni, tahun: tahunIni, status: "belum_bayar" },
+    where: {
+      bulan: bulanIni,
+      tahun: tahunIni,
+      status: { in: ["belum_bayar", "tunggakan"] },
+      deletedAt: null,
+    },
   });
 
   // Total pengangkutan

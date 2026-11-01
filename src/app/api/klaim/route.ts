@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { ROLE_HIERARCHY } from "@/lib/rbac";
+import { logAudit } from "@/lib/audit";
 
 export const dynamic = "force-dynamic";
 
@@ -88,21 +89,35 @@ export async function PUT(request: Request) {
       }
     });
 
-    // 2. Jika disetujui, catat ke Pengeluaran
+    // 2. Jika disetujui, catat ke Pengeluaran dengan tanggal klaim riil
     if (status === "disetujui") {
-      await tx.pengeluaran.create({
+      const p = await tx.pengeluaran.create({
         data: {
+          tanggal: klaim.tanggal,
           kategori: klaim.kategori,
           jumlah: klaim.nominal,
-          keterangan: `[Klaim Disetujui] ${klaim.keterangan}`,
+          keterangan: `[Klaim Disetujui #${klaim.id}] ${klaim.keterangan}`,
           bukti: klaim.fotoBukti,
           dicatatById: session.id
         }
+      });
+      await logAudit("create", "Pengeluaran", p.id, undefined, {
+        kategori: p.kategori,
+        jumlah: p.jumlah,
+        sumber: `Klaim #${klaim.id}`
       });
     }
 
     return res;
   });
+
+  await logAudit(
+    "update",
+    "KlaimPetugas",
+    klaim.id,
+    { status: klaim.status, catatanAdmin: klaim.catatanAdmin },
+    { status, catatanAdmin, diperiksaById: session.id }
+  );
 
   return NextResponse.json({ ok: true, klaim: updatedKlaim });
 }

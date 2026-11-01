@@ -8,6 +8,15 @@ export async function PUT(
 ) {
   try {
     const id = parseInt((await params).id);
+    if (!Number.isInteger(id)) {
+      return NextResponse.json({ error: "ID tidak valid" }, { status: 400 });
+    }
+
+    const existing = await prisma.pengeluaran.findUnique({ where: { id } });
+    if (!existing) {
+      return NextResponse.json({ error: "Pengeluaran tidak ditemukan" }, { status: 404 });
+    }
+
     const body = await request.json();
     const { tanggal, kategori, jumlah, keterangan, bukti } = body;
 
@@ -30,7 +39,27 @@ export async function PUT(
       include: { dicatatBy: { select: { id: true, nama: true } } },
     });
 
-    await logAudit("update", "Pengeluaran", id, { id }, { kategori: pengeluaran.kategori, jumlah: pengeluaran.jumlah });
+    // Catat log audit lengkap (nilai sebelum vs sesudah perubahan)
+    await logAudit(
+      "update",
+      "Pengeluaran",
+      id,
+      {
+        id: existing.id,
+        kategori: existing.kategori,
+        jumlah: existing.jumlah,
+        keterangan: existing.keterangan,
+        tanggal: existing.tanggal,
+      },
+      {
+        id: pengeluaran.id,
+        kategori: pengeluaran.kategori,
+        jumlah: pengeluaran.jumlah,
+        keterangan: pengeluaran.keterangan,
+        tanggal: pengeluaran.tanggal,
+      }
+    );
+
     return NextResponse.json(pengeluaran);
   } catch {
     return NextResponse.json({ error: "Gagal mengupdate pengeluaran" }, { status: 500 });
@@ -43,8 +72,33 @@ export async function DELETE(
 ) {
   try {
     const id = parseInt((await params).id);
+    if (!Number.isInteger(id)) {
+      return NextResponse.json({ error: "ID tidak valid" }, { status: 400 });
+    }
+
+    const existing = await prisma.pengeluaran.findUnique({ where: { id } });
+    if (!existing) {
+      return NextResponse.json({ error: "Pengeluaran tidak ditemukan" }, { status: 404 });
+    }
+
     await prisma.pengeluaran.delete({ where: { id } });
-    await logAudit("delete", "Pengeluaran", id, { id }, undefined);
+
+    // Simpan snapshot data lengkap yang dihapus untuk audit forensik
+    await logAudit(
+      "delete",
+      "Pengeluaran",
+      id,
+      {
+        id: existing.id,
+        kategori: existing.kategori,
+        jumlah: existing.jumlah,
+        keterangan: existing.keterangan,
+        tanggal: existing.tanggal,
+        dicatatById: existing.dicatatById,
+      },
+      undefined
+    );
+
     return NextResponse.json({ message: "Pengeluaran berhasil dihapus" });
   } catch {
     return NextResponse.json({ error: "Gagal menghapus pengeluaran" }, { status: 500 });

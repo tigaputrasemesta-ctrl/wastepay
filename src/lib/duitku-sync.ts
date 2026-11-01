@@ -8,6 +8,7 @@
  * (idempoten via sudahKirimWa — webhook retry tidak mengirim dobel).
  */
 import { prisma } from "@/lib/prisma";
+import { logAudit } from "@/lib/audit";
 import {
   isSuccessStatusCode,
   isFinalFailedStatusCode,
@@ -72,6 +73,7 @@ export async function syncDuitkuPayment(
           data: {
             status: "terverifikasi",
             jumlah: result.amount ?? pembayaran.jumlah,
+            tanggal: new Date(),
             catatan: result.paymentMethod
               ? `Payment Gateway Via Duitku (${result.paymentMethod})`
               : "Payment Gateway Via Duitku",
@@ -86,6 +88,13 @@ export async function syncDuitkuPayment(
             data: { status: "lunas", tanggalLunas: new Date() },
           });
         }
+        await logAudit(
+          "update",
+          "Pembayaran",
+          pembayaran.id,
+          { status: pembayaran.status, jumlah: pembayaran.jumlah },
+          { status: "terverifikasi", jumlah: result.amount ?? pembayaran.jumlah, source: `duitku_${source}` }
+        );
       }
     } else if (isFinalFailedStatusCode(result.statusCode, source) && pembayaran.status === "pending") {
       await tx.pembayaran.update({

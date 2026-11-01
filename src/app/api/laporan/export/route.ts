@@ -30,7 +30,7 @@ export async function GET(request: Request) {
 
   const [pemasukan, pengeluaran, tagihan, pembayaran, pengangkutan, menunggak] = await Promise.all([
     prisma.pembayaran.aggregate({
-      where: { status: "terverifikasi", createdAt: { gte: awalBulan, lt: akhirBulan } },
+      where: { status: "terverifikasi", tanggal: { gte: awalBulan, lt: akhirBulan } },
       _sum: { jumlah: true },
     }),
     prisma.pengeluaran.aggregate({
@@ -43,12 +43,12 @@ export async function GET(request: Request) {
       orderBy: { pelanggan: { nama: "asc" } },
     }),
     prisma.pembayaran.findMany({
-      where: { createdAt: { gte: awalBulan, lt: akhirBulan } },
+      where: { tanggal: { gte: awalBulan, lt: akhirBulan } },
       include: {
         pelanggan: { select: { nama: true, kodePelanggan: true } },
         tagihan: { select: { bulan: true, tahun: true } },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { tanggal: "desc" },
     }),
     prisma.pengangkutan.findMany({
       where: { tanggal: { gte: awalBulan, lt: akhirBulan } },
@@ -100,7 +100,7 @@ export async function GET(request: Request) {
   rows.push(["Tanggal", "Kode", "Pelanggan", "Periode", "Jumlah", "Metode", "Status"]);
   for (const p of pembayaran) {
     rows.push([
-      p.createdAt.toISOString().split("T")[0],
+      (p.tanggal || p.createdAt).toISOString().split("T")[0],
       p.pelanggan.kodePelanggan,
       p.pelanggan.nama,
       `${p.tagihan.bulan}/${p.tagihan.tahun}`,
