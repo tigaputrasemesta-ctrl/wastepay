@@ -19,7 +19,33 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { status, tanggalLunas } = body;
+    const { status, tanggalLunas, jumlah } = body;
+
+    const session = await getSession();
+
+    // Validasi hak akses jika mengubah nominal
+    let newJumlah: number | undefined = undefined;
+    if (jumlah !== undefined && jumlah !== null && String(jumlah).trim() !== "") {
+      if (session && session.role !== "admin" && session.role !== "superadmin") {
+        return NextResponse.json(
+          { error: "Hanya Admin dan Superadmin yang berwenang mengubah nominal tagihan" },
+          { status: 403 }
+        );
+      }
+      newJumlah = parseFloat(String(jumlah));
+      if (!Number.isFinite(newJumlah) || newJumlah < 0) {
+        return NextResponse.json(
+          { error: "Nominal tagihan harus berupa angka positif yang valid" },
+          { status: 400 }
+        );
+      }
+      if (existing.status === "lunas" && newJumlah !== existing.jumlah) {
+        return NextResponse.json(
+          { error: "Tidak dapat mengubah nominal tagihan yang sudah berstatus lunas" },
+          { status: 400 }
+        );
+      }
+    }
 
     // Validasi status — nilai tak dikenal langsung 400 (bukan 500 dari Prisma)
     const STATUS_VALID = ["belum_bayar", "lunas", "tunggakan", "dibatalkan"];
@@ -27,13 +53,12 @@ export async function PUT(
       return NextResponse.json({ error: "Status tidak valid" }, { status: 400 });
     }
 
-    const session = await getSession();
-
     const tagihan = await prisma.$transaction(async (tx) => {
       const updated = await tx.tagihan.update({
         where: { id },
         data: {
           ...(status ? { status } : {}),
+          ...(newJumlah !== undefined ? { jumlah: newJumlah } : {}),
           // tanggalLunas hanya boleh di-set/di-reset saat status lunas/berubah
           ...(status === "lunas"
             ? { tanggalLunas: tanggalLunas ? new Date(tanggalLunas) : new Date() }
@@ -56,7 +81,7 @@ export async function PUT(
             data: {
               tagihanId: id,
               pelangganId: existing.pelangganId,
-              jumlah: existing.jumlah + (existing.denda || 0),
+              jumlah: (newJumlah !== undefined ? newJumlah : existing.jumlah) + (existing.denda || 0),
               metode: "tunai",
               status: "terverifikasi",
               catatan: "Pelunasan manual oleh Admin/Kasir",
@@ -83,6 +108,7 @@ export async function PUT(
       {
         status: tagihan.status,
         tanggalLunas: tagihan.tanggalLunas,
+        jumlah: tagihan.jumlah,
       }
     );
 
