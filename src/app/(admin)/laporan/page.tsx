@@ -1,36 +1,62 @@
-import { getLaporan } from "@/lib/laporan";
+import Link from "next/link";
+import { getLaporan, labelKategoriPengeluaran, labelJenisSampah } from "@/lib/laporan";
 import { formatRupiah, formatDate } from "@/lib/utils";
 
 export default async function LaporanPage({
   searchParams,
 }: {
-  searchParams: Promise<{ bulan?: string; tahun?: string }>;
+  searchParams: Promise<{ bulan?: string; tahun?: string; tab?: string }>;
 }) {
   const params = await searchParams;
   const now = new Date();
   const bulan = Math.min(12, Math.max(1, parseInt(params.bulan || String(now.getMonth() + 1)) || now.getMonth() + 1));
   const tahun = parseInt(params.tahun || String(now.getFullYear())) || now.getFullYear();
+  const activeTab = params.tab || "eksekutif";
+
   const data = await getLaporan(bulan, tahun);
-  const NAMA_BULAN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+  const NAMA_BULAN = [
+    "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+    "Juli", "Agustus", "September", "Oktober", "November", "Desember",
+  ];
+  const NAMA_BULAN_SINGKAT = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+
+  const tabs = [
+    { id: "eksekutif", label: "📊 Ringkasan Eksekutif", desc: "C-Level Cockpit" },
+    { id: "arus_kas", label: "💰 Arus Kas & Laba Rugi", desc: "Waterfall PSAK 72" },
+    { id: "piutang", label: "⏳ Aging Piutang & CKPN", desc: "Kolektibilitas PSAK 71" },
+    { id: "logistik", label: "🌱 Unit Economics & TPA", desc: "Biaya per Ton & Ritase" },
+    { id: "referral", label: "🤝 Referral & Kohor", desc: "Retensi Pelanggan" },
+  ];
 
   return (
-    <div className="p-4 sm:p-6 pb-12 w-full">
+    <div className="p-4 sm:p-6 pb-16 w-full max-w-[1600px] mx-auto">
+      {/* Header & Controls */}
       <div className="mb-6">
         <div className="flex items-start justify-between flex-wrap gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">Laporan Keuangan & Operasional</h1>
-            <p className="text-xs sm:text-sm text-slate-500 font-medium">
-              Ringkasan {NAMA_BULAN[bulan - 1]} {tahun}
+            <div className="flex items-center gap-2 mb-1">
+              <span className="px-2.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[11px] font-bold tracking-wide uppercase">
+                Audit &amp; Financial Pack
+              </span>
+              <span className="text-xs text-slate-400 font-mono">UPS HERU Kota Depok</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none">
+              Laporan Keuangan &amp; Operasional
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
+              Periode {NAMA_BULAN[bulan - 1]} {tahun} · Standar Pengakuan Akrual &amp; Arus Kas
             </p>
           </div>
+
           <div className="flex items-center gap-2.5 flex-wrap w-full sm:w-auto">
             <form method="GET" className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+              <input type="hidden" name="tab" value={activeTab} />
               <select
                 name="bulan"
                 defaultValue={bulan}
                 className="px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 shadow-sm"
               >
-                {NAMA_BULAN.map((b, i) => (
+                {NAMA_BULAN_SINGKAT.map((b, i) => (
                   <option key={i + 1} value={i + 1}>{b}</option>
                 ))}
               </select>
@@ -50,564 +76,864 @@ export default async function LaporanPage({
                 Tampilkan
               </button>
             </form>
+
             <a
               href={`/laporan-cetak?bulan=${bulan}&tahun=${tahun}`}
               target="_blank"
               className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5"
             >
               <span>🖨</span>
-              <span>Cetak PDF</span>
+              <span>Cetak PDF Resmi</span>
             </a>
             <a
               href={`/api/laporan/export?bulan=${bulan}&tahun=${tahun}`}
               className="px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5"
             >
               <span>⬇</span>
-              <span>Ekspor CSV</span>
+              <span>Ekspor Multi-Modul (CSV)</span>
             </a>
           </div>
         </div>
       </div>
 
-      {/* Ringkasan Keuangan */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
-          <p className="text-xs font-semibold text-slate-500 mb-1">Pemasukan</p>
-          <p className="text-2xl font-bold text-emerald-700">{formatRupiah(data.totalPemasukan)}</p>
-        </div>
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
-          <p className="text-xs font-semibold text-slate-500 mb-1">Pengeluaran</p>
-          <p className="text-2xl font-bold text-rose-600">{formatRupiah(data.totalPengeluaran)}</p>
-        </div>
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
-          <p className="text-xs font-semibold text-slate-500 mb-1">Saldo Bersih</p>
-          <p className={`text-2xl font-bold ${data.saldo >= 0 ? "text-emerald-700" : "text-rose-600"}`}>
-            {formatRupiah(data.saldo)}
-          </p>
-        </div>
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
-          <p className="text-xs font-semibold text-slate-500 mb-1">Efektivitas Tagihan</p>
-          <p className="text-2xl font-bold text-emerald-700">
-            {data.totalTagihan > 0
-              ? Math.round((data.tagihanTerkumpul / data.totalTagihan) * 100)
-              : 0}%
-          </p>
-        </div>
+      {/* Tab Navigation */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 mb-6 border-b border-slate-200 scrollbar-none">
+        {tabs.map((t) => {
+          const isActive = activeTab === t.id;
+          return (
+            <Link
+              key={t.id}
+              href={`/laporan?bulan=${bulan}&tahun=${tahun}&tab=${t.id}`}
+              className={`px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-2 ${
+                isActive
+                  ? "bg-slate-900 text-white shadow-md shadow-slate-900/10"
+                  : "bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200/80"
+              }`}
+            >
+              <span>{t.label}</span>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded ${isActive ? "bg-slate-800 text-slate-300" : "bg-slate-100 text-slate-500"}`}>
+                {t.desc}
+              </span>
+            </Link>
+          );
+        })}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        {/* Tagihan */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
-          <h2 className="font-bold text-slate-900 text-base mb-4">Tagihan Bulan Ini</h2>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center text-sm">
-              <span className="text-slate-500 font-medium">Total Tagihan</span>
-              <span className="font-semibold text-slate-900">{formatRupiah(data.totalTagihan)}</span>
-            </div>
-            <div className="flex justify-between items-center text-sm">
-              <span className="text-slate-500 font-medium">Terkumpul</span>
-              <span className="font-semibold text-emerald-700">{formatRupiah(data.tagihanTerkumpul)}</span>
-            </div>
-            {data.totalDibayarDiMuka > 0 && (
-              <div className="flex justify-between items-center text-xs text-emerald-800 bg-emerald-50 px-2.5 py-1.5 rounded-lg border border-emerald-200/60">
-                <span>↳ Dibayar di Muka (Bln Lalu)</span>
-                <span className="font-bold">{formatRupiah(data.totalDibayarDiMuka)}</span>
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* TAB 1: RINGKASAN EKSEKUTIF (C-LEVEL COCKPIT)                          */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {activeTab === "eksekutif" && (
+        <div className="space-y-6">
+          {/* 4 Kartu KPI Utama */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm relative overflow-hidden">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs font-semibold text-slate-500">Pendapatan Bersih (PSAK 72)</p>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 font-bold border border-emerald-200">
+                  Accrual Revenue
+                </span>
               </div>
-            )}
-            <div className="flex justify-between items-center text-sm">
-              <span className="text-slate-500 font-medium">Sisa Tagihan</span>
-              <span className="font-semibold text-rose-600">{formatRupiah(data.tagihanSisa)}</span>
+              <p className="text-2xl font-black text-slate-900 tracking-tight">
+                {formatRupiah(data.kpi.earnedAccrualRevenue)}
+              </p>
+              <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                <span>Total Tagihan Terbit:</span>
+                <span className="font-semibold text-slate-800">{formatRupiah(data.kpi.grossBilledCurrent)}</span>
+              </div>
             </div>
-            <div className="border-t border-slate-100 pt-3 flex justify-between items-center text-sm">
-              <span className="text-slate-500 font-medium">Pelanggan Aktif</span>
-              <span className="font-semibold text-slate-900">{data.totalPelanggan}</span>
+
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm relative overflow-hidden">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs font-semibold text-slate-500">Realisasi Kas Masuk</p>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-sky-50 text-sky-800 font-bold border border-sky-200">
+                  Cash Inflow
+                </span>
+              </div>
+              <p className="text-2xl font-black text-sky-700 tracking-tight">
+                {formatRupiah(data.kpi.totalRealizedCash)}
+              </p>
+              <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                <span>Kas Tagihan Periode Ini:</span>
+                <span className="font-semibold text-slate-800">{formatRupiah(data.bridge.currentBilledCollected)}</span>
+              </div>
             </div>
-            <div className="flex justify-between items-center text-sm">
-              <span className="text-slate-500 font-medium">Belum Bayar</span>
-              <span className="font-semibold text-amber-700">{data.totalBelumBayar}</span>
+
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm relative overflow-hidden">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs font-semibold text-slate-500">Realisasi Beban Kas</p>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-50 text-rose-800 font-bold border border-rose-200">
+                  Operating Opex
+                </span>
+              </div>
+              <p className="text-2xl font-black text-rose-600 tracking-tight">
+                {formatRupiah(data.kpi.totalPengeluaran)}
+              </p>
+              <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                <span>Arus Kas Bersih (Net):</span>
+                <span className={`font-semibold ${data.kpi.netCashFlow >= 0 ? "text-emerald-700" : "text-rose-600"}`}>
+                  {formatRupiah(data.kpi.netCashFlow)}
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm relative overflow-hidden">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs font-semibold text-slate-500">Laba Operasional Bersih</p>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold border ${data.kpi.accrualOperatingProfit >= 0 ? "bg-emerald-50 text-emerald-800 border-emerald-200" : "bg-rose-50 text-rose-800 border-rose-200"}`}>
+                  Margin {data.kpi.accrualMarginPersen.toFixed(1)}%
+                </span>
+              </div>
+              <p className={`text-2xl font-black tracking-tight ${data.kpi.accrualOperatingProfit >= 0 ? "text-emerald-700" : "text-rose-600"}`}>
+                {formatRupiah(data.kpi.accrualOperatingProfit)}
+              </p>
+              <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                <span>Status Profitabilitas:</span>
+                <span className="font-semibold text-slate-800">{data.kpi.accrualOperatingProfit >= 0 ? "Surplus Sehat" : "Defisit"}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Indikator Penagihan, DSO, dan Kesehatan Pelanggan */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Gross Collection Rate (GCR) */}
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-bold text-slate-900 text-sm">Gross Collection Rate (GCR)</h3>
+                  <span className="text-xs font-mono font-bold text-emerald-700">
+                    {data.kpi.grossCollectionRate.toFixed(1)}%
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 mb-4">
+                  Efisiensi pengumpulan kas tagihan periode berjalan terhadap total komitmen tagihan terbit.
+                </p>
+                <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden mb-3">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 ${
+                      data.kpi.grossCollectionRate >= 85 ? "bg-emerald-600" : data.kpi.grossCollectionRate >= 70 ? "bg-amber-500" : "bg-rose-600"
+                    }`}
+                    style={{ width: `${Math.min(100, Math.max(0, data.kpi.grossCollectionRate))}%` }}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-xs pt-3 border-t border-slate-100">
+                <div>
+                  <span className="text-slate-400 block text-[10px]">Terkumpul Bulan Ini:</span>
+                  <span className="font-bold text-emerald-700">{formatRupiah(data.bridge.currentBilledCollected)}</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-slate-400 block text-[10px]">Sisa Belum Terbayar:</span>
+                  <span className="font-bold text-rose-600">{formatRupiah(data.bridge.accruedUncollected)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Days Sales Outstanding (DSO) */}
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-bold text-slate-900 text-sm">Days Sales Outstanding (DSO)</h3>
+                  <span className="text-xs font-mono font-bold text-indigo-700">
+                    {data.kpi.dsoHari} Hari
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 mb-3">
+                  Rata-rata jumlah hari yang dibutuhkan untuk mengonversi tagihan retribusi menjadi uang kas.
+                </p>
+                <div className="p-3 bg-indigo-50/70 border border-indigo-100 rounded-xl text-xs text-indigo-900 mb-2">
+                  <div className="flex justify-between font-semibold mb-1">
+                    <span>Total Portofolio Piutang:</span>
+                    <span>{formatRupiah(data.agingSchedule.totalPiutangGross)}</span>
+                  </div>
+                  <div className="flex justify-between text-indigo-700 text-[11px]">
+                    <span>Nilai Bersih Setelah CKPN:</span>
+                    <span>{formatRupiah(data.agingSchedule.netCarryingValuePiutang)}</span>
+                  </div>
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-500 italic">
+                {data.kpi.dsoHari <= 30 ? "✓ Perputaran piutang sangat sehat (< 30 hari)" : "⚠ Perlu eskalasi penagihan pada debitur menunggak"}
+              </p>
+            </div>
+
+            {/* Subscription Cohort Health */}
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-bold text-slate-900 text-sm">Kesehatan Pelanggan Berlangganan</h3>
+                  <span className="text-xs font-mono font-bold text-emerald-700">
+                    {data.cohort.pelangganAktif} Aktif
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 mb-3">
+                  Status retensi langganan iuran warga aktif dari total {data.cohort.totalPelanggan} terdaftar.
+                </p>
+                <div className="space-y-2 text-xs">
+                  <div className="flex justify-between items-center py-1 border-b border-slate-50">
+                    <span className="text-slate-600">Pelanggan Baru Periode Ini</span>
+                    <span className="font-bold text-emerald-700">+{data.cohort.pelangganBaruBulanIni} Pelanggan</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-slate-50">
+                    <span className="text-slate-600">Pelanggan Libur Sementara</span>
+                    <span className="font-semibold text-amber-700">{data.cohort.pelangganLiburBulanIni} Pelanggan</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1">
+                    <span className="text-slate-600">Pelanggan Lunas Periode Ini</span>
+                    <span className="font-bold text-slate-900">{data.kpi.tagihanLunasCount} dari {data.kpi.tagihanLunasCount + data.kpi.tagihanBelumLunasCount} Tagihan</span>
+                  </div>
+                </div>
+              </div>
+              <div className="pt-2 border-t border-slate-100 flex justify-between text-xs">
+                <span className="text-slate-500">ARPU (Rata-rata Retribusi):</span>
+                <span className="font-bold text-slate-900">{formatRupiah(Math.round(data.unitEconomics.arpu))}/KK</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Sorotan Audit & Catatan Pengendalian Internal */}
+          <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-6 text-white shadow-xl">
+            <div className="flex items-start justify-between flex-wrap gap-4">
+              <div>
+                <span className="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold uppercase tracking-wider">
+                  Audit Summary &amp; Internal Controls
+                </span>
+                <h3 className="text-lg font-bold mt-2 text-white">Catatan Auditor Eksekutif &amp; Pengendalian Kas</h3>
+                <p className="text-xs text-slate-300 mt-1 max-w-3xl leading-relaxed">
+                  Laporan bulan ini telah disesuaikan dengan prinsip <b>PSAK 72 (Pengakuan Pendapatan dari Kontrak Pelanggan)</b> dan <b>PSAK 71 (Penyisihan Penurunan Nilai Piutang)</b>. Penerimaan uang muka masa depan telah dipisahkan dari pendapatan berjalan, dan portofolio piutang telah dicadangkan risiko kerugian penurunan nilainya.
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/laporan?bulan=${bulan}&tahun=${tahun}&tab=arus_kas`}
+                  className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition backdrop-blur-sm"
+                >
+                  Buka Jembatan Arus Kas &rarr;
+                </Link>
+                <Link
+                  href={`/laporan?bulan=${bulan}&tahun=${tahun}&tab=piutang`}
+                  className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition shadow-sm"
+                >
+                  Lihat Aging Piutang &rarr;
+                </Link>
+              </div>
             </div>
           </div>
         </div>
-        {/* Pemasukan */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
-          <h2 className="font-bold text-slate-900 text-base mb-4">Pemasukan per Metode</h2>
-          {data.pemasukanByMetode.length === 0 ? (
-            <p className="text-sm text-slate-400 font-medium">Belum ada pemasukan bulan ini</p>
-          ) : (
-            <div className="space-y-3">
-              {Object.entries(
-                data.pemasukanByMetode.reduce((acc, m) => {
-                  let kat = "Lainnya";
-                  if (m.metode.startsWith("duitku") || ["qris", "ewallet", "virtual_account"].includes(m.metode)) {
-                    kat = "Payment Gateway (Duitku)";
-                  } else if (m.metode === "transfer") kat = "Transfer Bank";
-                  else if (m.metode === "tunai") kat = "Tunai";
-                  acc[kat] = (acc[kat] || 0) + m.jumlah;
-                  return acc;
-                }, {} as Record<string, number>)
-              ).map(([namaMetode, jumlah]) => (
-                <div key={namaMetode} className="flex justify-between items-center text-sm">
-                  <span className="text-slate-500 font-medium capitalize">{namaMetode}</span>
-                  <span className="font-semibold text-emerald-700">{formatRupiah(jumlah as number)}</span>
-                </div>
-              ))}
-              <div className="border-t border-slate-100 pt-3 flex justify-between items-center text-sm font-semibold text-slate-900">
-                <span>Total</span>
-                <span className="text-emerald-700">{formatRupiah(data.totalPemasukan)}</span>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* TAB 2: ARUS KAS & LABA RUGI (WATERFALL BRIDGE PSAK 72)                 */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {activeTab === "arus_kas" && (
+        <div className="space-y-6">
+          {/* Visual Waterfall Bridge Arus Kas ke Akrual */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+              <div>
+                <h2 className="font-bold text-slate-900 text-base">
+                  Jembatan Rekonsiliasi Arus Kas ke Pendapatan Operasional (PSAK 72 Bridge)
+                </h2>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">
+                  Menjembatani perbedaan antara kas riil yang masuk rekening dengan hak pendapatan sejati bulan {NAMA_BULAN[bulan - 1]} {tahun}.
+                </p>
               </div>
-              {data.totalPenerimaanUangDiMuka > 0 && (
-                <div className="flex justify-between items-center text-xs text-sky-800 bg-sky-50 px-2.5 py-1.5 rounded-lg border border-sky-200/60 mt-1">
-                  <span>↳ Titipan Periode Depan</span>
-                  <span className="font-bold">{formatRupiah(data.totalPenerimaanUangDiMuka)}</span>
+              <span className="px-3 py-1 bg-slate-100 text-slate-700 font-mono text-xs rounded-lg font-bold">
+                Standar Akuntansi Keuangan (PSAK 72)
+              </span>
+            </div>
+
+            <div className="bg-slate-50 rounded-xl p-5 border border-slate-200/80 space-y-3 font-mono text-xs">
+              <div className="flex items-center justify-between py-2 border-b border-slate-200 text-slate-900 font-bold text-sm">
+                <span>[+] Total Realisasi Kas Masuk (Cash Inflow)</span>
+                <span className="text-sky-700">{formatRupiah(data.bridge.realizedCashInflow)}</span>
+              </div>
+              <div className="flex items-center justify-between pl-4 text-slate-600">
+                <span>&bull; Dari Tagihan Periode Berjalan</span>
+                <span>{formatRupiah(data.bridge.currentBilledCollected)}</span>
+              </div>
+              <div className="flex items-center justify-between pl-4 text-slate-600">
+                <span>&bull; Dari Pelunasan Piutang Bulan Lalu (Recovery)</span>
+                <span>{formatRupiah(data.bridge.pastArrearsCollected)}</span>
+              </div>
+              <div className="flex items-center justify-between pl-4 text-amber-700 bg-amber-50/70 p-1.5 rounded">
+                <span>&bull; Titipan Pembayaran di Muka utk Periode Masa Depan (Deferred Revenue)</span>
+                <span>- {formatRupiah(data.bridge.prepaidFutureCollected)}</span>
+              </div>
+
+              <div className="flex items-center justify-between py-2 border-t border-slate-200 text-slate-700 font-semibold">
+                <span>[=] Kas Masuk yang Menjadi Hak Periode Ini</span>
+                <span>{formatRupiah(data.bridge.currentBilledCollected)}</span>
+              </div>
+              <div className="flex items-center justify-between pl-4 text-emerald-800 bg-emerald-50/70 p-1.5 rounded">
+                <span>[+] Tagihan Periode Ini yg Telah Dibayar di Muka Bulan Lalu (Recognized Unearned)</span>
+                <span>+ {formatRupiah(data.bridge.prepaidPastRecognized)}</span>
+              </div>
+              <div className="flex items-center justify-between pl-4 text-slate-600">
+                <span>[+] Piutang Baru Berjalan yg Belum Terbayar (Accrued Receivables)</span>
+                <span>+ {formatRupiah(data.bridge.accruedUncollected)}</span>
+              </div>
+
+              <div className="flex items-center justify-between py-3 border-t-2 border-slate-300 text-slate-900 font-black text-sm bg-emerald-100/50 p-2.5 rounded-lg">
+                <span>[=] PENDAPATAN OPERASIONAL SEJATI (EARNED REVENUE)</span>
+                <span className="text-emerald-900 text-base">{formatRupiah(data.bridge.earnedAccrualRevenue)}</span>
+              </div>
+
+              <div className="flex items-center justify-between py-2 text-rose-700">
+                <span>[-] Total Beban Operasional Kas (BBM, Gaji, Perawatan, TPA)</span>
+                <span>- {formatRupiah(data.bridge.accrualOperatingExpenses)}</span>
+              </div>
+
+              <div className="flex items-center justify-between py-3 border-t-2 border-slate-900 text-slate-900 font-black text-sm bg-slate-900 text-white p-3 rounded-xl">
+                <span>[=] SURPLUS LABA OPERASIONAL (NET ACCRUAL SURPLUS)</span>
+                <span className="text-emerald-400 text-base">
+                  {formatRupiah(data.bridge.accrualOperatingProfit)} ({data.bridge.accrualMarginPersen.toFixed(1)}%)
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Dua Kolom: Pemasukan per Kanal & Pengeluaran per Kategori */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Pemasukan per Metode */}
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+              <h3 className="font-bold text-slate-900 text-base mb-3">Realisasi Kas Masuk per Kanal Pembayaran</h3>
+              <div className="space-y-3">
+                {data.pemasukanByMetode.map((m) => {
+                  let nama = m.metode;
+                  let badge = "Manual";
+                  if (m.metode.startsWith("duitku") || ["qris", "ewallet", "virtual_account"].includes(m.metode)) {
+                    nama = "Payment Gateway Duitku (QRIS / VA)";
+                    badge = "Otomatis";
+                  } else if (m.metode === "transfer") {
+                    nama = "Transfer Bank Manual";
+                    badge = "Verifikasi Kasir";
+                  } else if (m.metode === "tunai") {
+                    nama = "Kas Tunai (Petugas Tagih / Kasir)";
+                    badge = "Fisik";
+                  }
+                  return (
+                    <div key={m.metode} className="flex items-center justify-between py-2 border-b border-slate-100 text-xs">
+                      <div>
+                        <span className="font-bold text-slate-800 capitalize block">{nama}</span>
+                        <span className="text-[10px] text-slate-400 font-mono">{badge}</span>
+                      </div>
+                      <span className="font-bold text-emerald-700 tabular-nums text-sm">{formatRupiah(m.jumlah)}</span>
+                    </div>
+                  );
+                })}
+                <div className="pt-2 flex justify-between font-bold text-slate-900 text-sm">
+                  <span>Total Kas Masuk Riil</span>
+                  <span className="text-emerald-700">{formatRupiah(data.totalPemasukan)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Pengeluaran per Kategori */}
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+              <h3 className="font-bold text-slate-900 text-base mb-3">Realisasi Beban Kas Operasional</h3>
+              {data.pengeluaranByKategori.length === 0 ? (
+                <div className="p-6 text-center text-slate-400 text-xs border border-dashed border-slate-200 rounded-xl">
+                  Belum ada catatan pengeluaran kas yang diinput pada periode ini
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {data.pengeluaranByKategori.map((k) => (
+                    <div key={k.kategori} className="flex items-center justify-between py-2 border-b border-slate-100 text-xs">
+                      <div>
+                        <span className="font-bold text-slate-800 capitalize block">{labelKategoriPengeluaran(k.kategori)}</span>
+                        <span className="text-[10px] text-slate-400 font-mono">Beban Rutin</span>
+                      </div>
+                      <span className="font-bold text-rose-600 tabular-nums text-sm">{formatRupiah(k._sum.jumlah || 0)}</span>
+                    </div>
+                  ))}
+                  <div className="pt-2 flex justify-between font-bold text-slate-900 text-sm">
+                    <span>Total Beban Kas</span>
+                    <span className="text-rose-600">{formatRupiah(data.totalPengeluaran)}</span>
+                  </div>
                 </div>
               )}
             </div>
-          )}
-        </div>
-
-        {/* Pengeluaran */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
-          <h2 className="font-bold text-slate-900 text-base mb-4">Pengeluaran per Kategori</h2>
-          {data.pengeluaranByKategori.length === 0 ? (
-            <p className="text-sm text-slate-400 font-medium">Belum ada pengeluaran bulan ini</p>
-          ) : (
-            <div className="space-y-3">
-              {data.pengeluaranByKategori.map((k) => (
-                <div key={k.kategori} className="flex justify-between items-center text-sm">
-                  <span className="text-slate-500 font-medium capitalize">
-                    {k.kategori === "bbm" ? "BBM" :
-                     k.kategori === "gaji_petugas" ? "Gaji Petugas" :
-                     k.kategori === "perawatan" ? "Perawatan" :
-                     k.kategori === "operasional" ? "Operasional" : "Lainnya"}
-                  </span>
-                  <span className="font-semibold text-rose-600">{formatRupiah(k._sum.jumlah || 0)}</span>
-                </div>
-              ))}
-              <div className="border-t border-slate-100 pt-3 flex justify-between items-center text-sm font-semibold text-slate-900">
-                <span>Total</span>
-                <span className="text-rose-600">{formatRupiah(data.totalPengeluaran)}</span>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Laporan Pembayaran di Muka (Prepaid / Bayar Dini) */}
-      {data.tagihanDibayarDiMuka.length > 0 && (
-        <div className="bg-white rounded-2xl border border-emerald-200/90 p-5 shadow-sm mb-8 bg-gradient-to-br from-emerald-50/40 via-white to-white">
-          <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-sm font-black shrink-0">
-                  ✓
-                </span>
-                <h2 className="font-bold text-slate-900 text-base">
-                  Tagihan {NAMA_BULAN[bulan - 1]} {tahun} yang Dibayar di Bulan Sebelumnya (Pembayaran di Muka)
-                </h2>
-              </div>
-              <p className="text-xs text-slate-500 font-medium mt-1">
-                Data pembayaran pelanggan untuk tagihan {NAMA_BULAN[bulan - 1]} yang telah lunas diterima lebih awal. Uang kas masuk tercatat pada pembukuan bulan sebelumnya.
-              </p>
-            </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="px-3 py-1 bg-emerald-100 text-emerald-900 border border-emerald-300 rounded-full text-xs font-bold shadow-sm">
-                {data.tagihanDibayarDiMuka.length} Tagihan Lunas
-              </span>
-              <span className="px-3 py-1 bg-emerald-700 text-white rounded-full text-xs font-bold shadow-sm">
-                Total {formatRupiah(data.totalDibayarDiMuka)}
-              </span>
-            </div>
           </div>
 
-          {/* Desktop Table View */}
-          <div className="hidden md:block overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-emerald-50/70 text-slate-700 font-semibold border-b border-emerald-200 text-xs uppercase tracking-wider">
-                  <th className="text-left px-3 py-2 font-semibold">No</th>
-                  <th className="text-left px-3 py-2 font-semibold">Pelanggan</th>
-                  <th className="text-left px-3 py-2 font-semibold">No. Telepon</th>
-                  <th className="text-left px-3 py-2 font-semibold">Tanggal Bayar Riil</th>
-                  <th className="text-left px-3 py-2 font-semibold">Metode</th>
-                  <th className="text-right px-3 py-2 font-semibold">Nominal Terbayar</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.tagihanDibayarDiMuka.map((p, idx) => (
-                  <tr key={p.id} className="border-b border-slate-100 hover:bg-emerald-50/30">
-                    <td className="px-3 py-2.5 text-slate-400 font-mono text-xs">{idx + 1}</td>
-                    <td className="px-3 py-2.5 font-bold text-slate-900">
-                      {p.pelanggan.nama}
-                      <span className="block text-[11px] text-slate-500 font-mono font-normal">
-                        {p.pelanggan.kodePelanggan}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2.5 text-slate-600 text-xs font-mono">{p.pelanggan.noTelepon || "-"}</td>
-                    <td className="px-3 py-2.5 text-slate-700 text-xs font-medium">
-                      {formatDate(p.tanggal)}
-                    </td>
-                    <td className="px-3 py-2.5 text-slate-600 capitalize text-xs">
-                      <span className="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-800 font-medium">
-                        {p.metode}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2.5 text-right font-bold text-emerald-700 tabular-nums">
-                      {formatRupiah(p.jumlah)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Mobile Card View */}
-          <div className="md:hidden divide-y divide-slate-100">
-            {data.tagihanDibayarDiMuka.map((p, idx) => (
-              <div key={p.id} className="py-3 first:pt-0 last:pb-0 flex flex-col gap-1.5 text-xs">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p className="font-bold text-slate-900 text-sm">{idx + 1}. {p.pelanggan.nama}</p>
-                    <p className="text-[11px] text-slate-500 font-mono">{p.pelanggan.kodePelanggan} · {p.pelanggan.noTelepon || "-"}</p>
-                  </div>
-                  <span className="font-bold text-emerald-700 text-sm tabular-nums">
-                    {formatRupiah(p.jumlah)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between text-slate-500 text-[11px] pt-1 border-t border-slate-50">
-                  <span>Dibayar pada: <b>{formatDate(p.tanggal)}</b></span>
-                  <span className="capitalize px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">{p.metode}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Penerimaan Kas di Bulan Ini untuk Tagihan Periode Mendatang */}
-      {data.penerimaanUangDiMuka.length > 0 && (
-        <div className="bg-white rounded-2xl border border-sky-200/90 p-5 shadow-sm mb-8 bg-gradient-to-br from-sky-50/40 via-white to-white">
-          <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="w-7 h-7 rounded-lg bg-sky-100 text-sky-800 flex items-center justify-center text-sm font-black shrink-0">
-                  📥
-                </span>
-                <h2 className="font-bold text-slate-900 text-base">
-                  Penerimaan Kas Bulan {NAMA_BULAN[bulan - 1]} {tahun} untuk Tagihan Periode Mendatang
-                </h2>
-              </div>
-              <p className="text-xs text-slate-500 font-medium mt-1">
-                Uang kas yang telah masuk pada bulan ini sebagai titipan / pembayaran di muka untuk layanan bulan-bulan berikutnya.
-              </p>
-            </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="px-3 py-1 bg-sky-100 text-sky-900 border border-sky-300 rounded-full text-xs font-bold shadow-sm">
-                {data.penerimaanUangDiMuka.length} Transaksi Masuk
-              </span>
-              <span className="px-3 py-1 bg-sky-700 text-white rounded-full text-xs font-bold shadow-sm">
-                Total {formatRupiah(data.totalPenerimaanUangDiMuka)}
-              </span>
-            </div>
-          </div>
-
-          {/* Desktop Table View */}
-          <div className="hidden md:block overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-sky-50/70 text-slate-700 font-semibold border-b border-sky-200 text-xs uppercase tracking-wider">
-                  <th className="text-left px-3 py-2 font-semibold">No</th>
-                  <th className="text-left px-3 py-2 font-semibold">Pelanggan</th>
-                  <th className="text-left px-3 py-2 font-semibold">Untuk Periode Tagihan</th>
-                  <th className="text-left px-3 py-2 font-semibold">Tanggal Masuk</th>
-                  <th className="text-left px-3 py-2 font-semibold">Metode</th>
-                  <th className="text-right px-3 py-2 font-semibold">Nominal Masuk</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.penerimaanUangDiMuka.map((p, idx) => (
-                  <tr key={p.id} className="border-b border-slate-100 hover:bg-sky-50/30">
-                    <td className="px-3 py-2.5 text-slate-400 font-mono text-xs">{idx + 1}</td>
-                    <td className="px-3 py-2.5 font-bold text-slate-900">
-                      {p.pelanggan.nama}
-                      <span className="block text-[11px] text-slate-500 font-mono font-normal">
-                        {p.pelanggan.kodePelanggan}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2.5 font-bold text-sky-800 text-xs">
-                      {NAMA_BULAN[p.tagihan.bulan - 1]} {p.tagihan.tahun}
-                    </td>
-                    <td className="px-3 py-2.5 text-slate-700 text-xs font-medium">
-                      {formatDate(p.tanggal)}
-                    </td>
-                    <td className="px-3 py-2.5 text-slate-600 capitalize text-xs">
-                      <span className="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-800 font-medium">
-                        {p.metode}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2.5 text-right font-bold text-sky-700 tabular-nums">
-                      {formatRupiah(p.jumlah)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Mobile Card View */}
-          <div className="md:hidden divide-y divide-slate-100">
-            {data.penerimaanUangDiMuka.map((p, idx) => (
-              <div key={p.id} className="py-3 first:pt-0 last:pb-0 flex flex-col gap-1.5 text-xs">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p className="font-bold text-slate-900 text-sm">{idx + 1}. {p.pelanggan.nama}</p>
-                    <p className="text-[11px] text-sky-700 font-semibold font-mono">Untuk Periode: {NAMA_BULAN[p.tagihan.bulan - 1]} {p.tagihan.tahun}</p>
-                  </div>
-                  <span className="font-bold text-sky-700 text-sm tabular-nums">
-                    {formatRupiah(p.jumlah)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between text-slate-500 text-[11px] pt-1 border-t border-slate-50">
-                  <span>Diterima pada: <b>{formatDate(p.tanggal)}</b></span>
-                  <span className="capitalize px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">{p.metode}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Data Lingkungan */}
-      <div className="mb-8">
-        <h2 className="text-xl font-bold text-slate-900 tracking-tight mb-4">🌱 Data Lingkungan</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
-            <p className="text-xs font-semibold text-slate-500 mb-1">Total Volume Sampah</p>
-            <p className="text-2xl font-bold text-slate-900 tracking-tight">{data.totalVolume.toFixed(1)} m³</p>
-          </div>
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
-            <p className="text-xs font-semibold text-slate-500 mb-1">Total Berat Sampah</p>
-            <p className="text-2xl font-bold text-slate-900 tracking-tight">{data.totalBerat.toFixed(1)} kg</p>
-          </div>
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
-            <p className="text-xs font-semibold text-slate-500 mb-1">Total Pengangkutan</p>
-            <p className="text-2xl font-bold text-slate-900 tracking-tight">{data.totalPengangkutan}</p>
-          </div>
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
-            <p className="text-xs font-semibold text-slate-500 mb-1">Berhasil Diangkut</p>
-            <p className="text-2xl font-bold text-emerald-700">{data.totalDiambil}</p>
-          </div>
-        </div>
-
-        {/* Sampah per Jenis */}
-        {data.sampahByJenis.length > 0 && (
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 mb-6 shadow-sm">
-            <h3 className="font-bold text-slate-900 text-base mb-3">Sampah per Jenis</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-              {data.sampahByJenis.map((j) => (
-                <div key={j.jenisSampah} className="bg-slate-50 border border-slate-200/60 rounded-xl p-3.5">
-                  <p className="text-xs font-bold text-slate-900 capitalize">{j.jenisSampah}</p>
-                  <p className="text-xs text-slate-600 mt-1">
-                    Volume: {j._sum.volume?.toFixed(1)} m³ | Berat: {j._sum.berat?.toFixed(1)} kg
+          {/* Tabel Pembayaran di Muka (Prepaid) */}
+          {data.tagihanDibayarDiMuka.length > 0 && (
+            <div className="bg-white rounded-2xl border border-emerald-200 p-5 shadow-sm">
+              <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+                <div>
+                  <h3 className="font-bold text-slate-900 text-sm">
+                    Tagihan {NAMA_BULAN[bulan - 1]} yang Dilunasi di Muka (Bulan Sebelumnya)
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium mt-0.5">
+                    Uang kas telah masuk di bulan lalu, diakui sebagai pendapatan bersih di bulan berjalan ini.
                   </p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">{j._count} kali angkut</p>
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Sampah per TPA */}
-        {data.sampahByTpa.length > 0 && (
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
-            <h3 className="font-bold text-slate-900 text-base mb-3">Pembuangan per TPA</h3>
-            
-            {/* Desktop Table View */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
-                    <th className="text-left px-3 py-2 font-semibold">TPA</th>
-                    <th className="text-right px-3 py-2 font-semibold">Volume (m³)</th>
-                    <th className="text-right px-3 py-2 font-semibold">Berat (kg)</th>
-                    <th className="text-right px-3 py-2 font-semibold">Frekuensi</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.sampahByTpa.map((s) => (
-                    <tr key={s.tpaId} className="border-b border-slate-100 hover:bg-slate-50/50">
-                      <td className="px-3 py-2.5 font-medium text-slate-900">{s.nama}</td>
-                      <td className="px-3 py-2.5 text-right text-slate-600 tabular-nums text-xs font-medium">{s.volume.toFixed(1)}</td>
-                      <td className="px-3 py-2.5 text-right text-slate-600 tabular-nums text-xs font-medium">{s.berat.toFixed(1)}</td>
-                      <td className="px-3 py-2.5 text-right text-slate-600 tabular-nums text-xs font-medium">{s.count}</td>
+                <span className="px-3 py-1 bg-emerald-100 text-emerald-900 font-bold text-xs rounded-full">
+                  Total {formatRupiah(data.totalDibayarDiMuka)} ({data.tagihanDibayarDiMuka.length} Tagihan)
+                </span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="bg-emerald-50/60 text-slate-700 font-bold border-b border-emerald-200 uppercase text-[10px]">
+                      <th className="text-left px-3 py-2">No</th>
+                      <th className="text-left px-3 py-2">Pelanggan</th>
+                      <th className="text-left px-3 py-2">Tanggal Bayar Riil</th>
+                      <th className="text-left px-3 py-2">Metode</th>
+                      <th className="text-right px-3 py-2">Nominal</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {data.tagihanDibayarDiMuka.map((p, idx) => (
+                      <tr key={p.id} className="hover:bg-slate-50">
+                        <td className="px-3 py-2 text-slate-400 font-mono">{idx + 1}</td>
+                        <td className="px-3 py-2 font-bold text-slate-900">
+                          {p.pelanggan.nama} <span className="text-[10px] text-slate-400 font-mono">({p.pelanggan.kodePelanggan})</span>
+                        </td>
+                        <td className="px-3 py-2 text-slate-600">{formatDate(p.tanggal)}</td>
+                        <td className="px-3 py-2 capitalize text-slate-600">{p.metode}</td>
+                        <td className="px-3 py-2 text-right font-bold text-emerald-700 tabular-nums">{formatRupiah(p.jumlah)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
+          )}
 
-            {/* Mobile Card View */}
-            <div className="md:hidden divide-y divide-slate-100">
-              {data.sampahByTpa.map((s) => (
-                <div key={s.tpaId} className="py-3.5 first:pt-0 last:pb-0 flex items-center justify-between gap-3 text-xs">
-                  <div>
-                    <p className="font-bold text-slate-900 text-sm">{s.nama}</p>
-                    <p className="text-slate-500 mt-0.5">{s.count} kali pengangkutan</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-slate-900 tabular-nums">{s.volume.toFixed(1)} m³</p>
-                    <p className="text-slate-500 tabular-nums">{s.berat.toFixed(1)} kg</p>
-                  </div>
+          {/* Tabel Titipan Periode Depan (Deferred Revenue) */}
+          {data.penerimaanUangDiMuka.length > 0 && (
+            <div className="bg-white rounded-2xl border border-sky-200 p-5 shadow-sm">
+              <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+                <div>
+                  <h3 className="font-bold text-slate-900 text-sm">
+                    Titipan Kas Bulan Ini untuk Periode Mendatang (Deferred Revenue)
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium mt-0.5">
+                    Kas telah masuk fisik/rekening, namun diakui sebagai liabilitas titipan hingga jasa diantarkan.
+                  </p>
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Tagihan Menunggak */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
-        <h2 className="font-bold text-slate-900 text-base mb-4">Tagihan Menunggak</h2>
-        {data.tagihanMenunggak.length === 0 ? (
-          <p className="text-sm text-slate-400 font-medium">Tidak ada tagihan menunggak</p>
-        ) : (
-          <>
-            {/* Desktop Table View */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
-                    <th className="text-left px-3 py-2 font-semibold">Pelanggan</th>
-                    <th className="text-left px-3 py-2 font-semibold">No. Telepon</th>
-                    <th className="text-left px-3 py-2 font-semibold">Periode</th>
-                    <th className="text-right px-3 py-2 font-semibold">Jumlah</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.tagihanMenunggak.map((t) => (
-                    <tr key={t.id} className="border-b border-slate-100 hover:bg-slate-50/50">
-                      <td className="px-3 py-2.5 font-medium text-slate-900">{t.pelanggan.nama}</td>
-                      <td className="px-3 py-2.5 text-slate-500 text-xs">{t.pelanggan.noTelepon}</td>
-                      <td className="px-3 py-2.5 text-slate-600">{["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"][t.bulan - 1]} {t.tahun}</td>
-                      <td className="px-3 py-2.5 text-right text-rose-600 font-bold tabular-nums">{formatRupiah(t.jumlah)}</td>
+                <span className="px-3 py-1 bg-sky-100 text-sky-900 font-bold text-xs rounded-full">
+                  Total {formatRupiah(data.totalPenerimaanUangDiMuka)} ({data.penerimaanUangDiMuka.length} Transaksi)
+                </span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="bg-sky-50/60 text-slate-700 font-bold border-b border-sky-200 uppercase text-[10px]">
+                      <th className="text-left px-3 py-2">No</th>
+                      <th className="text-left px-3 py-2">Pelanggan</th>
+                      <th className="text-left px-3 py-2">Untuk Periode Tagihan</th>
+                      <th className="text-left px-3 py-2">Tanggal Masuk</th>
+                      <th className="text-left px-3 py-2">Metode</th>
+                      <th className="text-right px-3 py-2">Nominal</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {data.penerimaanUangDiMuka.map((p, idx) => (
+                      <tr key={p.id} className="hover:bg-slate-50">
+                        <td className="px-3 py-2 text-slate-400 font-mono">{idx + 1}</td>
+                        <td className="px-3 py-2 font-bold text-slate-900">
+                          {p.pelanggan.nama} <span className="text-[10px] text-slate-400 font-mono">({p.pelanggan.kodePelanggan})</span>
+                        </td>
+                        <td className="px-3 py-2 font-bold text-sky-800">
+                          {NAMA_BULAN[p.tagihan.bulan - 1]} {p.tagihan.tahun}
+                        </td>
+                        <td className="px-3 py-2 text-slate-600">{formatDate(p.tanggal)}</td>
+                        <td className="px-3 py-2 capitalize text-slate-600">{p.metode}</td>
+                        <td className="px-3 py-2 text-right font-bold text-sky-700 tabular-nums">{formatRupiah(p.jumlah)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-
-            {/* Mobile Card View */}
-            <div className="md:hidden divide-y divide-slate-100">
-              {data.tagihanMenunggak.map((t) => (
-                <div key={t.id} className="py-3.5 first:pt-0 last:pb-0 flex flex-col gap-2">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <p className="font-bold text-slate-900 text-sm">{t.pelanggan.nama}</p>
-                      <p className="text-xs text-slate-500 font-mono mt-0.5">{t.pelanggan.noTelepon}</p>
-                    </div>
-                    <span className="font-bold text-rose-600 text-sm tabular-nums">
-                      {formatRupiah(t.jumlah)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-50">
-                    <span className="text-slate-500 font-medium">
-                      Periode: {["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"][t.bulan - 1]} {t.tahun}
-                    </span>
-                    <a
-                      href={`/tagihan?search=${encodeURIComponent(t.pelanggan.nama)}`}
-                      className="text-emerald-700 font-bold hover:underline"
-                    >
-                      Buka Tagihan &rarr;
-                    </a>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* Rekapitulasi Referral Petugas / Mitra */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm mt-6">
-        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-          <div>
-            <h2 className="font-bold text-slate-900 text-base">Rekapitulasi Referral Pelanggan</h2>
-            <p className="text-xs text-slate-500 font-medium">
-              Jumlah pelanggan yang didaftarkan melalui kode referral petugas & mitra
-            </p>
-          </div>
-          <span className="px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm">
-            <span>🤝</span>
-            <span>{data.rekapReferral.reduce((acc, curr) => acc + curr.total, 0)} Pelanggan Tereferensikan</span>
-          </span>
+          )}
         </div>
+      )}
 
-        {data.rekapReferral.length === 0 ? (
-          <p className="text-sm text-slate-400 font-medium">Belum ada pelanggan yang terdaftar melalui referral</p>
-        ) : (
-          <>
-            {/* Desktop Table View */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="w-full text-sm">
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* TAB 3: AGING SCHEDULE PIUTANG & CKPN (PSAK 71 / IFRS 9)                */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {activeTab === "piutang" && (
+        <div className="space-y-6">
+          {/* Ringkasan Portofolio Piutang & CKPN */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                Total Portofolio Piutang
+              </span>
+              <p className="text-2xl font-black text-slate-900 tracking-tight">
+                {formatRupiah(data.agingSchedule.totalPiutangGross)}
+              </p>
+              <p className="text-xs text-slate-500 mt-1">
+                {data.agingSchedule.totalDebiturUnik} debitur menunggak (seluruh periode)
+              </p>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-rose-200/80 p-5 shadow-sm bg-rose-50/20">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700 block mb-1">
+                Cadangan Kerugian Piutang (CKPN PSAK 71)
+              </span>
+              <p className="text-2xl font-black text-rose-600 tracking-tight">
+                - {formatRupiah(data.agingSchedule.totalNilaiCkpn)}
+              </p>
+              <p className="text-xs text-slate-500 mt-1">
+                Penyisihan risiko gagal bayar historis berjenjang
+              </p>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-emerald-200/80 p-5 shadow-sm bg-emerald-50/20">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 block mb-1">
+                Nilai Bersih Piutang (Net Carrying Value)
+              </span>
+              <p className="text-2xl font-black text-emerald-700 tracking-tight">
+                {formatRupiah(data.agingSchedule.netCarryingValuePiutang)}
+              </p>
+              <p className="text-xs text-slate-500 mt-1">
+                Aset piutang riil yang diekspektasikan tertagih kas
+              </p>
+            </div>
+          </div>
+
+          {/* Matriks Aging Schedule 5 Jenjang */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+              <div>
+                <h3 className="font-bold text-slate-900 text-base">Jadwal Umur Piutang (Aging Schedule)</h3>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">
+                  Klasifikasi umur piutang sesuai ketentuan kolektibilitas perbankan dan standar akuntansi PSAK 71.
+                </p>
+              </div>
+              <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 font-bold text-xs">
+                Audit Scope: 100% Data Riil Tanpa Batas Limit
+              </span>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
                 <thead>
-                  <tr className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
-                    <th className="text-left px-3 py-2 font-semibold">Nama Petugas / Kode Referral</th>
-                    <th className="text-right px-3 py-2 font-semibold">Jumlah Pelanggan</th>
-                    <th className="text-center px-3 py-2 font-semibold">Aksi</th>
+                  <tr className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 uppercase text-[10px]">
+                    <th className="text-left px-3 py-2.5">Kategori Umur</th>
+                    <th className="text-left px-3 py-2.5">Rentang Hari</th>
+                    <th className="text-center px-3 py-2.5">Jml Tagihan</th>
+                    <th className="text-center px-3 py-2.5">Debitur</th>
+                    <th className="text-right px-3 py-2.5">Saldo Piutang (Rp)</th>
+                    <th className="text-center px-3 py-2.5">% CKPN</th>
+                    <th className="text-right px-3 py-2.5">Nilai Cadangan (Rp)</th>
+                    <th className="text-center px-3 py-2.5">Tindakan SOP</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {data.rekapReferral.map((r) => (
-                    <tr key={r.referal} className="border-b border-slate-100 hover:bg-slate-50/50">
-                      <td className="px-3 py-2.5 font-bold text-slate-900 flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-black shrink-0">
-                          🤝
-                        </span>
-                        <span>{r.referal}</span>
-                      </td>
-                      <td className="px-3 py-2.5 text-right font-mono font-bold text-emerald-700 text-sm">
-                        {r.total} Orang
-                      </td>
-                      <td className="px-3 py-2.5 text-center">
-                        <a
-                          href={`/pelanggan?search=${encodeURIComponent(r.referal)}`}
-                          className="text-xs font-bold text-emerald-700 hover:text-emerald-800 hover:underline inline-flex items-center gap-1"
-                        >
-                          Lihat Pelanggan →
-                        </a>
-                      </td>
-                    </tr>
-                  ))}
+                <tbody className="divide-y divide-slate-100">
+                  {data.agingSchedule.buckets.map((b) => {
+                    const badgeCls =
+                      b.kategori === "lancar" ? "bg-emerald-50 text-emerald-800 border-emerald-200" :
+                      b.kategori === "perhatian" ? "bg-amber-50 text-amber-800 border-amber-200" :
+                      b.kategori === "kurang_lancar" ? "bg-orange-50 text-orange-800 border-orange-200" :
+                      b.kategori === "diragukan" ? "bg-rose-50 text-rose-800 border-rose-200" :
+                      "bg-red-100 text-red-900 border-red-300 font-bold";
+                    return (
+                      <tr key={b.kategori} className="hover:bg-slate-50">
+                        <td className="px-3 py-3 font-bold text-slate-900">
+                          <span className={`inline-flex px-2 py-0.5 rounded-md border text-[11px] ${badgeCls}`}>
+                            {b.label}
+                          </span>
+                        </td>
+                        <td className="px-3 py-3 text-slate-600 font-mono">{b.rentangHari}</td>
+                        <td className="px-3 py-3 text-center font-bold text-slate-800">{b.jumlahTagihan}</td>
+                        <td className="px-3 py-3 text-center text-slate-700">{b.jumlahPelanggan} KK</td>
+                        <td className="px-3 py-3 text-right font-black text-slate-900 tabular-nums">
+                          {formatRupiah(b.totalNominal)}
+                        </td>
+                        <td className="px-3 py-3 text-center font-mono font-semibold text-slate-600">
+                          {b.persenCkpn}%
+                        </td>
+                        <td className="px-3 py-3 text-right font-bold text-rose-600 tabular-nums">
+                          {formatRupiah(b.nilaiCkpn)}
+                        </td>
+                        <td className="px-3 py-3 text-center">
+                          <span className="text-[10px] text-slate-500 font-medium">
+                            {b.kategori === "lancar" ? "Reminder WA H-3" :
+                             b.kategori === "perhatian" ? "Rute Petugas Tagih" :
+                             b.kategori === "kurang_lancar" ? "Telepon Admin & SP1" :
+                             b.kategori === "diragukan" ? "SP2 & Jeda Angkut" :
+                             "Suspended Barcode"}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
+                <tfoot>
+                  <tr className="bg-slate-100 font-black text-slate-900 border-t-2 border-slate-300">
+                    <td colSpan={4} className="px-3 py-3 text-right uppercase text-[11px]">Total Portofolio &amp; Penyisihan</td>
+                    <td className="px-3 py-3 text-right text-sm">{formatRupiah(data.agingSchedule.totalPiutangGross)}</td>
+                    <td className="px-3 py-3 text-center text-[11px] font-mono">Avg</td>
+                    <td className="px-3 py-3 text-right text-rose-600 text-sm">{formatRupiah(data.agingSchedule.totalNilaiCkpn)}</td>
+                    <td className="px-3 py-3 text-center text-emerald-800 text-[11px]">Net: {formatRupiah(data.agingSchedule.netCarryingValuePiutang)}</td>
+                  </tr>
+                </tfoot>
               </table>
             </div>
+          </div>
 
-            {/* Mobile Card View */}
-            <div className="md:hidden divide-y divide-slate-100">
-              {data.rekapReferral.map((r) => (
-                <div key={r.referal} className="py-3.5 first:pt-0 last:pb-0 flex items-center justify-between gap-3 text-xs">
-                  <div className="flex items-center gap-2.5">
-                    <span className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-sm font-black shrink-0">
-                      🤝
-                    </span>
-                    <div>
-                      <p className="font-bold text-slate-900 text-sm">{r.referal}</p>
-                      <a
-                        href={`/pelanggan?search=${encodeURIComponent(r.referal)}`}
-                        className="text-[11px] font-bold text-emerald-700 hover:underline"
-                      >
-                        Lihat Pelanggan &rarr;
-                      </a>
-                    </div>
-                  </div>
-                  <span className="px-2.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200/60 rounded-xl font-mono font-bold text-xs shrink-0">
-                    {r.total} Orang
-                  </span>
-                </div>
-              ))}
+          {/* Tabel Seluruh Tagihan Tertunggak */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+              <div>
+                <h3 className="font-bold text-slate-900 text-base">
+                  Daftar Debitur Menunggak ({data.tagihanMenunggak.length} Tagihan)
+                </h3>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">
+                  Daftar rinci seluruh pelanggan dengan tunggakan berjalan untuk prioritas penagihan tim lapangan.
+                </p>
+              </div>
+              <Link
+                href="/tagihan?status=tunggakan"
+                className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-sm transition"
+              >
+                Buka di Menu Tagihan &rarr;
+              </Link>
             </div>
-          </>
-        )}
-      </div>
+
+            {data.tagihanMenunggak.length === 0 ? (
+              <p className="text-sm text-slate-400 font-medium py-8 text-center">Tidak ada tagihan tertunggak</p>
+            ) : (
+              <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
+                <table className="w-full text-xs">
+                  <thead className="sticky top-0 bg-slate-50 border-b border-slate-200 z-10">
+                    <tr className="text-slate-600 font-bold uppercase text-[10px]">
+                      <th className="text-left px-3 py-2.5">No</th>
+                      <th className="text-left px-3 py-2.5">Pelanggan</th>
+                      <th className="text-left px-3 py-2.5">Wilayah</th>
+                      <th className="text-left px-3 py-2.5">No. Telepon</th>
+                      <th className="text-left px-3 py-2.5">Periode Tagihan</th>
+                      <th className="text-right px-3 py-2.5">Nominal Tunggakan</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {data.tagihanMenunggak.map((t, idx) => (
+                      <tr key={t.id} className="hover:bg-slate-50">
+                        <td className="px-3 py-2 text-slate-400 font-mono">{idx + 1}</td>
+                        <td className="px-3 py-2 font-bold text-slate-900">
+                          {t.pelanggan.nama}
+                          <span className="block text-[10px] text-slate-500 font-mono font-normal">
+                            {t.pelanggan.kodePelanggan}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2 text-slate-600">
+                          {t.pelanggan.kelurahan?.nama || "-"}
+                        </td>
+                        <td className="px-3 py-2 text-slate-600 font-mono">{t.pelanggan.noTelepon || "-"}</td>
+                        <td className="px-3 py-2 font-medium text-slate-800">
+                          {NAMA_BULAN[t.bulan - 1]} {t.tahun}
+                        </td>
+                        <td className="px-3 py-2 text-right font-black text-rose-600 tabular-nums">
+                          {formatRupiah(t.jumlah)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* TAB 4: UNIT ECONOMICS & LOGISTIK SAMPAH                                */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {activeTab === "logistik" && (
+        <div className="space-y-6">
+          {/* 4 Kartu Unit Economics */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                Biaya Logistik per Tonase
+              </span>
+              <p className="text-2xl font-black text-slate-900 tracking-tight">
+                {formatRupiah(Math.round(data.unitEconomics.totalCostPerTon))}
+                <span className="text-xs font-normal text-slate-500"> / Ton</span>
+              </p>
+              <p className="text-[11px] text-slate-500 mt-1">
+                BBM, perawatan &amp; gaji per tonase sampah
+              </p>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                Biaya Armada per Ritase
+              </span>
+              <p className="text-2xl font-black text-slate-900 tracking-tight">
+                {formatRupiah(Math.round(data.unitEconomics.totalRitase > 0 ? data.totalPengeluaran / data.unitEconomics.totalRitase : 0))}
+                <span className="text-xs font-normal text-slate-500"> / Trip</span>
+              </p>
+              <p className="text-[11px] text-slate-500 mt-1">
+                Rata-rata ongkos operasional 1 kali angkut
+              </p>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                Revenue per Tonase Sampah
+              </span>
+              <p className="text-2xl font-black text-emerald-700 tracking-tight">
+                {formatRupiah(Math.round(data.unitEconomics.revenuePerTon))}
+                <span className="text-xs font-normal text-slate-500"> / Ton</span>
+              </p>
+              <p className="text-[11px] text-slate-500 mt-1">
+                Omset retribusi yang dihasilkan tiap 1 ton sampah
+              </p>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                Margin Kontribusi per KK
+              </span>
+              <p className="text-2xl font-black text-emerald-700 tracking-tight">
+                +{formatRupiah(Math.round(data.unitEconomics.netMarginPerUser))}
+                <span className="text-xs font-normal text-slate-500"> / KK</span>
+              </p>
+              <p className="text-[11px] text-slate-500 mt-1">
+                ARPU {formatRupiah(Math.round(data.unitEconomics.arpu))} vs Opex {formatRupiah(Math.round(data.unitEconomics.costToServePerUser))}
+              </p>
+            </div>
+          </div>
+
+          {/* Volume Fisik & Ritase */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+              <p className="text-xs font-semibold text-slate-500 mb-1">Total Volume Sampah</p>
+              <p className="text-2xl font-bold text-slate-900 tracking-tight">{data.totalVolume.toFixed(1)} m³</p>
+            </div>
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+              <p className="text-xs font-semibold text-slate-500 mb-1">Total Berat Sampah</p>
+              <p className="text-2xl font-bold text-slate-900 tracking-tight">
+                {(data.totalBerat / 1000).toFixed(2)} Ton <span className="text-xs text-slate-400">({data.totalBerat.toFixed(0)} kg)</span>
+              </p>
+            </div>
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+              <p className="text-xs font-semibold text-slate-500 mb-1">Total Ritase Pengangkutan</p>
+              <p className="text-2xl font-bold text-slate-900 tracking-tight">{data.totalPengangkutan} Trip</p>
+            </div>
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+              <p className="text-xs font-semibold text-slate-500 mb-1">Rata-rata Muatan per Trip</p>
+              <p className="text-2xl font-bold text-emerald-700 tracking-tight">
+                {data.unitEconomics.muatanPerRitaseTon.toFixed(2)} Ton/Trip
+              </p>
+            </div>
+          </div>
+
+          {/* Rincian Pembuangan per TPA & Sampah per Jenis */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+              <h3 className="font-bold text-slate-900 text-base mb-3">Distribusi Pembuangan ke TPA</h3>
+              {data.sampahByTpa.length === 0 ? (
+                <p className="text-xs text-slate-400 py-6 text-center">Belum ada pembuangan TPA tercatat</p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 uppercase text-[10px]">
+                        <th className="text-left px-3 py-2">TPA</th>
+                        <th className="text-right px-3 py-2">Volume (m³)</th>
+                        <th className="text-right px-3 py-2">Berat (kg)</th>
+                        <th className="text-right px-3 py-2">Frekuensi</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {data.sampahByTpa.map((s) => (
+                        <tr key={s.tpaId} className="hover:bg-slate-50">
+                          <td className="px-3 py-2.5 font-bold text-slate-900">{s.nama}</td>
+                          <td className="px-3 py-2.5 text-right font-mono text-slate-700">{s.volume.toFixed(1)}</td>
+                          <td className="px-3 py-2.5 text-right font-mono text-slate-700">{s.berat.toFixed(1)}</td>
+                          <td className="px-3 py-2.5 text-right font-bold text-slate-900">{s.count} kali</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+              <h3 className="font-bold text-slate-900 text-base mb-3">Komposisi Sampah per Jenis</h3>
+              {data.sampahByJenis.length === 0 ? (
+                <p className="text-xs text-slate-400 py-6 text-center">Belum ada data jenis sampah tercatat</p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {data.sampahByJenis.map((j) => (
+                    <div key={j.jenisSampah} className="p-3 bg-slate-50 border border-slate-200/80 rounded-xl text-xs">
+                      <p className="font-bold text-slate-900">{labelJenisSampah(j.jenisSampah || "")}</p>
+                      <p className="text-slate-600 mt-1">
+                        Volume: <b>{j._sum.volume?.toFixed(1) || 0} m³</b> | Berat: <b>{j._sum.berat?.toFixed(1) || 0} kg</b>
+                      </p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">{j._count} kali pengangkutan</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {/* TAB 5: REFERRAL & KOHOR PELANGGAN                                      */}
+      {/* ══════════════════════════════════════════════════════════════════════ */}
+      {activeTab === "referral" && (
+        <div className="space-y-6">
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+              <div>
+                <h3 className="font-bold text-slate-900 text-base">Rekapitulasi Agen Referral Petugas &amp; Mitra</h3>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">
+                  Jumlah pelanggan yang berhasil didaftarkan melalui kode referral petugas tagih dan mitra RW.
+                </p>
+              </div>
+              <span className="px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm">
+                <span>🤝</span>
+                <span>{data.rekapReferral.reduce((acc, curr) => acc + curr.total, 0)} Pelanggan Tereferensikan</span>
+              </span>
+            </div>
+
+            {data.rekapReferral.length === 0 ? (
+              <p className="text-sm text-slate-400 font-medium py-8 text-center">Belum ada pelanggan terdaftar via referral</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 uppercase text-[10px]">
+                      <th className="text-left px-3 py-2.5">No</th>
+                      <th className="text-left px-3 py-2.5">Kode Referral / Nama Agen</th>
+                      <th className="text-right px-3 py-2.5">Total Pelanggan Terdaftar</th>
+                      <th className="text-right px-3 py-2.5">Estimasi Kontribusi Omset/Bulan</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {data.rekapReferral.map((r, idx) => (
+                      <tr key={r.referal} className="hover:bg-slate-50">
+                        <td className="px-3 py-2.5 text-slate-400 font-mono">{idx + 1}</td>
+                        <td className="px-3 py-2.5 font-bold text-slate-900">
+                          <code className="px-2 py-0.5 bg-slate-100 rounded text-slate-800 font-mono text-[11px] mr-2">
+                            {r.referal}
+                          </code>
+                        </td>
+                        <td className="px-3 py-2.5 text-right font-black text-slate-900 tabular-nums">
+                          {r.total} KK
+                        </td>
+                        <td className="px-3 py-2.5 text-right font-bold text-emerald-700 tabular-nums">
+                          {formatRupiah(r.total * Math.round(data.unitEconomics.arpu))}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
