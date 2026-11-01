@@ -70,14 +70,34 @@ export async function GET(request: Request) {
     }),
   ]);
 
+  const tagihanIds = tagihan.map((t) => t.id);
+  const dibayarDiMuka = tagihanIds.length > 0
+    ? await prisma.pembayaran.findMany({
+        where: {
+          tagihanId: { in: tagihanIds },
+          status: "terverifikasi",
+          tanggal: { lt: awalBulan },
+        },
+        include: {
+          pelanggan: { select: { nama: true, noTelepon: true, kodePelanggan: true } },
+          tagihan: { select: { bulan: true, tahun: true } },
+        },
+        orderBy: { tanggal: "desc" },
+      })
+    : [];
+
   const rows: (string | number | null)[][] = [];
   rows.push(["LAPORAN UPS HERU DEPOK", "", ""]);
   rows.push([`Periode: ${NAMA_BULAN[bulan - 1]} ${tahun}`, "", ""]);
   rows.push([""]);
   rows.push(["RINGKASAN KEUANGAN", "", ""]);
-  rows.push(["Pemasukan", (pemasukan._sum.jumlah || 0).toString(), ""]);
-  rows.push(["Pengeluaran", (pengeluaran._sum.jumlah || 0).toString(), ""]);
+  rows.push(["Pemasukan Kas Bulan Ini", (pemasukan._sum.jumlah || 0).toString(), ""]);
+  rows.push(["Pengeluaran Kas Bulan Ini", (pengeluaran._sum.jumlah || 0).toString(), ""]);
   rows.push(["Saldo Bersih", ((pemasukan._sum.jumlah || 0) - (pengeluaran._sum.jumlah || 0)).toString(), ""]);
+  if (dibayarDiMuka.length > 0) {
+    const totalDiMuka = dibayarDiMuka.reduce((sum, d) => sum + d.jumlah, 0);
+    rows.push(["Tagihan Dilunasi di Muka (Bulan Sebelumnya)", totalDiMuka.toString(), ""]);
+  }
   rows.push([""]);
 
   rows.push(["TAGIHAN"]);
@@ -110,6 +130,23 @@ export async function GET(request: Request) {
     ]);
   }
   rows.push([""]);
+
+  if (dibayarDiMuka.length > 0) {
+    rows.push(["TAGIHAN DIBAYAR DI MUKA (DILUNASI DI BULAN SEBELUMNYA)"]);
+    rows.push(["Tanggal Bayar Riil", "Kode", "Pelanggan", "No. Telepon", "Periode Tagihan", "Jumlah", "Metode"]);
+    for (const d of dibayarDiMuka) {
+      rows.push([
+        (d.tanggal || d.createdAt).toISOString().split("T")[0],
+        d.pelanggan.kodePelanggan,
+        d.pelanggan.nama,
+        d.pelanggan.noTelepon,
+        `${NAMA_BULAN[d.tagihan.bulan - 1]} ${d.tagihan.tahun}`,
+        d.jumlah,
+        d.metode,
+      ]);
+    }
+    rows.push([""]);
+  }
 
   rows.push(["PENGANGKUTAN"]);
   rows.push(["Tanggal", "Pelanggan", "Petugas", "TPA", "Volume (m3)", "Berat (kg)", "Status"]);

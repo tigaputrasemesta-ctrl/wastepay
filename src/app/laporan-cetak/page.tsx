@@ -101,6 +101,12 @@ export default async function LaporanCetakPage({
               <h3>Tagihan Bulan Ini</h3>
               <div className="lp-row"><span>Total Tagihan</span><p>{formatRupiah(data.totalTagihan)}</p></div>
               <div className="lp-row"><span>Terkumpul</span><p className="lp-green">{formatRupiah(data.tagihanTerkumpul)}</p></div>
+              {data.totalDibayarDiMuka > 0 && (
+                <div className="lp-row">
+                  <span style={{ fontSize: "11px", color: "#1a7a34" }}>↳ Dibayar di Muka (Bln Lalu)</span>
+                  <p className="lp-green" style={{ fontSize: "11px" }}>{formatRupiah(data.totalDibayarDiMuka)}</p>
+                </div>
+              )}
               <div className="lp-row"><span>Sisa Tagihan</span><p className="lp-red">{formatRupiah(data.tagihanSisa)}</p></div>
               <div className="lp-row"><span>Pelanggan Aktif</span><p>{data.totalPelanggan}</p></div>
               <div className="lp-row"><span>Belum Bayar</span><p>{data.totalBelumBayar}</p></div>
@@ -219,6 +225,64 @@ export default async function LaporanCetakPage({
                   </table>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Tagihan dibayar di muka (Prepaid) */}
+          {data.tagihanDibayarDiMuka.length > 0 && (
+            <div className="lp-section">
+              <h3>Tagihan {periode} yang Telah Dibayar di Muka (Bulan Sebelumnya)</h3>
+              <table className="lp-table">
+                <thead>
+                  <tr>
+                    <th>Pelanggan</th>
+                    <th>No. Telepon</th>
+                    <th>Tanggal Bayar</th>
+                    <th>Metode</th>
+                    <th className="ta-r">Jumlah</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.tagihanDibayarDiMuka.map((p) => (
+                    <tr key={p.id}>
+                      <td>{p.pelanggan.nama}</td>
+                      <td>{p.pelanggan.noTelepon || "-"}</td>
+                      <td>{formatDate(p.tanggal)}</td>
+                      <td style={{ textTransform: "capitalize" }}>{p.metode}</td>
+                      <td className="ta-r lp-green">{formatRupiah(p.jumlah)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Penerimaan kas di muka untuk periode mendatang */}
+          {data.penerimaanUangDiMuka.length > 0 && (
+            <div className="lp-section">
+              <h3>Penerimaan Kas Bulan Ini untuk Tagihan Periode Mendatang</h3>
+              <table className="lp-table">
+                <thead>
+                  <tr>
+                    <th>Pelanggan</th>
+                    <th>Untuk Periode</th>
+                    <th>Tanggal Masuk</th>
+                    <th>Metode</th>
+                    <th className="ta-r">Jumlah</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.penerimaanUangDiMuka.map((p) => (
+                    <tr key={p.id}>
+                      <td>{p.pelanggan.nama}</td>
+                      <td>{NAMA_BULAN[p.tagihan.bulan - 1]} {p.tagihan.tahun}</td>
+                      <td>{formatDate(p.tanggal)}</td>
+                      <td style={{ textTransform: "capitalize" }}>{p.metode}</td>
+                      <td className="ta-r lp-green">{formatRupiah(p.jumlah)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
 

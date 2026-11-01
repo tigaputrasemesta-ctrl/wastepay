@@ -1,5 +1,5 @@
 import { getLaporan } from "@/lib/laporan";
-import { formatRupiah } from "@/lib/utils";
+import { formatRupiah, formatDate } from "@/lib/utils";
 
 export default async function LaporanPage({
   searchParams,
@@ -108,6 +108,12 @@ export default async function LaporanPage({
               <span className="text-slate-500 font-medium">Terkumpul</span>
               <span className="font-semibold text-emerald-700">{formatRupiah(data.tagihanTerkumpul)}</span>
             </div>
+            {data.totalDibayarDiMuka > 0 && (
+              <div className="flex justify-between items-center text-xs text-emerald-800 bg-emerald-50 px-2.5 py-1.5 rounded-lg border border-emerald-200/60">
+                <span>↳ Dibayar di Muka (Bln Lalu)</span>
+                <span className="font-bold">{formatRupiah(data.totalDibayarDiMuka)}</span>
+              </div>
+            )}
             <div className="flex justify-between items-center text-sm">
               <span className="text-slate-500 font-medium">Sisa Tagihan</span>
               <span className="font-semibold text-rose-600">{formatRupiah(data.tagihanSisa)}</span>
@@ -149,6 +155,12 @@ export default async function LaporanPage({
                 <span>Total</span>
                 <span className="text-emerald-700">{formatRupiah(data.totalPemasukan)}</span>
               </div>
+              {data.totalPenerimaanUangDiMuka > 0 && (
+                <div className="flex justify-between items-center text-xs text-sky-800 bg-sky-50 px-2.5 py-1.5 rounded-lg border border-sky-200/60 mt-1">
+                  <span>↳ Titipan Periode Depan</span>
+                  <span className="font-bold">{formatRupiah(data.totalPenerimaanUangDiMuka)}</span>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -179,6 +191,190 @@ export default async function LaporanPage({
           )}
         </div>
       </div>
+
+      {/* Laporan Pembayaran di Muka (Prepaid / Bayar Dini) */}
+      {data.tagihanDibayarDiMuka.length > 0 && (
+        <div className="bg-white rounded-2xl border border-emerald-200/90 p-5 shadow-sm mb-8 bg-gradient-to-br from-emerald-50/40 via-white to-white">
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-sm font-black shrink-0">
+                  ✓
+                </span>
+                <h2 className="font-bold text-slate-900 text-base">
+                  Tagihan {NAMA_BULAN[bulan - 1]} {tahun} yang Dibayar di Bulan Sebelumnya (Pembayaran di Muka)
+                </h2>
+              </div>
+              <p className="text-xs text-slate-500 font-medium mt-1">
+                Data pembayaran pelanggan untuk tagihan {NAMA_BULAN[bulan - 1]} yang telah lunas diterima lebih awal. Uang kas masuk tercatat pada pembukuan bulan sebelumnya.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="px-3 py-1 bg-emerald-100 text-emerald-900 border border-emerald-300 rounded-full text-xs font-bold shadow-sm">
+                {data.tagihanDibayarDiMuka.length} Tagihan Lunas
+              </span>
+              <span className="px-3 py-1 bg-emerald-700 text-white rounded-full text-xs font-bold shadow-sm">
+                Total {formatRupiah(data.totalDibayarDiMuka)}
+              </span>
+            </div>
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-emerald-50/70 text-slate-700 font-semibold border-b border-emerald-200 text-xs uppercase tracking-wider">
+                  <th className="text-left px-3 py-2 font-semibold">No</th>
+                  <th className="text-left px-3 py-2 font-semibold">Pelanggan</th>
+                  <th className="text-left px-3 py-2 font-semibold">No. Telepon</th>
+                  <th className="text-left px-3 py-2 font-semibold">Tanggal Bayar Riil</th>
+                  <th className="text-left px-3 py-2 font-semibold">Metode</th>
+                  <th className="text-right px-3 py-2 font-semibold">Nominal Terbayar</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.tagihanDibayarDiMuka.map((p, idx) => (
+                  <tr key={p.id} className="border-b border-slate-100 hover:bg-emerald-50/30">
+                    <td className="px-3 py-2.5 text-slate-400 font-mono text-xs">{idx + 1}</td>
+                    <td className="px-3 py-2.5 font-bold text-slate-900">
+                      {p.pelanggan.nama}
+                      <span className="block text-[11px] text-slate-500 font-mono font-normal">
+                        {p.pelanggan.kodePelanggan}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2.5 text-slate-600 text-xs font-mono">{p.pelanggan.noTelepon || "-"}</td>
+                    <td className="px-3 py-2.5 text-slate-700 text-xs font-medium">
+                      {formatDate(p.tanggal)}
+                    </td>
+                    <td className="px-3 py-2.5 text-slate-600 capitalize text-xs">
+                      <span className="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-800 font-medium">
+                        {p.metode}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2.5 text-right font-bold text-emerald-700 tabular-nums">
+                      {formatRupiah(p.jumlah)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden divide-y divide-slate-100">
+            {data.tagihanDibayarDiMuka.map((p, idx) => (
+              <div key={p.id} className="py-3 first:pt-0 last:pb-0 flex flex-col gap-1.5 text-xs">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="font-bold text-slate-900 text-sm">{idx + 1}. {p.pelanggan.nama}</p>
+                    <p className="text-[11px] text-slate-500 font-mono">{p.pelanggan.kodePelanggan} · {p.pelanggan.noTelepon || "-"}</p>
+                  </div>
+                  <span className="font-bold text-emerald-700 text-sm tabular-nums">
+                    {formatRupiah(p.jumlah)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-slate-500 text-[11px] pt-1 border-t border-slate-50">
+                  <span>Dibayar pada: <b>{formatDate(p.tanggal)}</b></span>
+                  <span className="capitalize px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">{p.metode}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Penerimaan Kas di Bulan Ini untuk Tagihan Periode Mendatang */}
+      {data.penerimaanUangDiMuka.length > 0 && (
+        <div className="bg-white rounded-2xl border border-sky-200/90 p-5 shadow-sm mb-8 bg-gradient-to-br from-sky-50/40 via-white to-white">
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="w-7 h-7 rounded-lg bg-sky-100 text-sky-800 flex items-center justify-center text-sm font-black shrink-0">
+                  📥
+                </span>
+                <h2 className="font-bold text-slate-900 text-base">
+                  Penerimaan Kas Bulan {NAMA_BULAN[bulan - 1]} {tahun} untuk Tagihan Periode Mendatang
+                </h2>
+              </div>
+              <p className="text-xs text-slate-500 font-medium mt-1">
+                Uang kas yang telah masuk pada bulan ini sebagai titipan / pembayaran di muka untuk layanan bulan-bulan berikutnya.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="px-3 py-1 bg-sky-100 text-sky-900 border border-sky-300 rounded-full text-xs font-bold shadow-sm">
+                {data.penerimaanUangDiMuka.length} Transaksi Masuk
+              </span>
+              <span className="px-3 py-1 bg-sky-700 text-white rounded-full text-xs font-bold shadow-sm">
+                Total {formatRupiah(data.totalPenerimaanUangDiMuka)}
+              </span>
+            </div>
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-sky-50/70 text-slate-700 font-semibold border-b border-sky-200 text-xs uppercase tracking-wider">
+                  <th className="text-left px-3 py-2 font-semibold">No</th>
+                  <th className="text-left px-3 py-2 font-semibold">Pelanggan</th>
+                  <th className="text-left px-3 py-2 font-semibold">Untuk Periode Tagihan</th>
+                  <th className="text-left px-3 py-2 font-semibold">Tanggal Masuk</th>
+                  <th className="text-left px-3 py-2 font-semibold">Metode</th>
+                  <th className="text-right px-3 py-2 font-semibold">Nominal Masuk</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.penerimaanUangDiMuka.map((p, idx) => (
+                  <tr key={p.id} className="border-b border-slate-100 hover:bg-sky-50/30">
+                    <td className="px-3 py-2.5 text-slate-400 font-mono text-xs">{idx + 1}</td>
+                    <td className="px-3 py-2.5 font-bold text-slate-900">
+                      {p.pelanggan.nama}
+                      <span className="block text-[11px] text-slate-500 font-mono font-normal">
+                        {p.pelanggan.kodePelanggan}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2.5 font-bold text-sky-800 text-xs">
+                      {NAMA_BULAN[p.tagihan.bulan - 1]} {p.tagihan.tahun}
+                    </td>
+                    <td className="px-3 py-2.5 text-slate-700 text-xs font-medium">
+                      {formatDate(p.tanggal)}
+                    </td>
+                    <td className="px-3 py-2.5 text-slate-600 capitalize text-xs">
+                      <span className="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-800 font-medium">
+                        {p.metode}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2.5 text-right font-bold text-sky-700 tabular-nums">
+                      {formatRupiah(p.jumlah)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden divide-y divide-slate-100">
+            {data.penerimaanUangDiMuka.map((p, idx) => (
+              <div key={p.id} className="py-3 first:pt-0 last:pb-0 flex flex-col gap-1.5 text-xs">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="font-bold text-slate-900 text-sm">{idx + 1}. {p.pelanggan.nama}</p>
+                    <p className="text-[11px] text-sky-700 font-semibold font-mono">Untuk Periode: {NAMA_BULAN[p.tagihan.bulan - 1]} {p.tagihan.tahun}</p>
+                  </div>
+                  <span className="font-bold text-sky-700 text-sm tabular-nums">
+                    {formatRupiah(p.jumlah)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-slate-500 text-[11px] pt-1 border-t border-slate-50">
+                  <span>Diterima pada: <b>{formatDate(p.tanggal)}</b></span>
+                  <span className="capitalize px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">{p.metode}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Data Lingkungan */}
       <div className="mb-8">

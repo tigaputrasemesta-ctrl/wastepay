@@ -159,6 +159,51 @@ export async function getLaporan(bulanIni: number, tahunIni: number) {
     }))
     .sort((a, b) => b.total - a.total);
 
+  // 1. Tagihan periode ini yang telah dibayar di muka pada bulan-bulan sebelumnya
+  const tagihanBulanIni = await prisma.tagihan.findMany({
+    where: { bulan: bulanIni, tahun: tahunIni, deletedAt: null },
+    select: { id: true },
+  });
+  const tagihanIds = tagihanBulanIni.map((t) => t.id);
+
+  const tagihanDibayarDiMuka = tagihanIds.length > 0
+    ? await prisma.pembayaran.findMany({
+        where: {
+          tagihanId: { in: tagihanIds },
+          status: "terverifikasi",
+          tanggal: { lt: awalBulan },
+        },
+        include: {
+          pelanggan: { select: { id: true, nama: true, noTelepon: true, kodePelanggan: true } },
+          tagihan: { select: { id: true, bulan: true, tahun: true, jumlah: true, denda: true } },
+        },
+        orderBy: { tanggal: "desc" },
+      })
+    : [];
+
+  const totalDibayarDiMuka = tagihanDibayarDiMuka.reduce((sum, p) => sum + p.jumlah, 0);
+
+  // 2. Arus kas masuk bulan ini yang dialokasikan untuk tagihan periode masa depan (Pembayaran di Muka)
+  const penerimaanUangDiMuka = await prisma.pembayaran.findMany({
+    where: {
+      status: "terverifikasi",
+      tanggal: { gte: awalBulan, lt: akhirBulan },
+      tagihan: {
+        OR: [
+          { tahun: { gt: tahunIni } },
+          { tahun: tahunIni, bulan: { gt: bulanIni } },
+        ],
+      },
+    },
+    include: {
+      pelanggan: { select: { id: true, nama: true, noTelepon: true, kodePelanggan: true } },
+      tagihan: { select: { id: true, bulan: true, tahun: true, jumlah: true, denda: true } },
+    },
+    orderBy: { tanggal: "desc" },
+  });
+
+  const totalPenerimaanUangDiMuka = penerimaanUangDiMuka.reduce((sum, p) => sum + p.jumlah, 0);
+
   return {
     bulanIni,
     tahunIni,
@@ -176,6 +221,10 @@ export async function getLaporan(bulanIni: number, tahunIni: number) {
     tagihanMenunggak,
     totalPelanggan,
     totalBelumBayar,
+    tagihanDibayarDiMuka,
+    totalDibayarDiMuka,
+    penerimaanUangDiMuka,
+    totalPenerimaanUangDiMuka,
     totalVolume: volumeAgg._sum.volume || 0,
     totalBerat: volumeAgg._sum.berat || 0,
     sampahByJenis,
