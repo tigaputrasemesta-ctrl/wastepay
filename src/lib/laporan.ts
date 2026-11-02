@@ -349,19 +349,20 @@ export async function getLaporan(bulanIni: number, tahunIni: number) {
   const biayaGaji = pengeluaranByKategoriMap["gaji_petugas"] || 0;
   const biayaOperasionalLain = (pengeluaranByKategoriMap["operasional"] || 0) + (pengeluaranByKategoriMap["lainnya"] || 0);
 
-  const safeTonase = totalBeratTon > 0 ? totalBeratTon : (totalVolumeM3 > 0 ? totalVolumeM3 * 0.35 : 1);
+  // Jika berat belum ditimbang (0), jangan gunakan fallback 1 ton agar tidak menghasilkan metrik absurd Rp 48jt/ton
+  const safeTonase = totalBeratTon > 0 ? totalBeratTon : 0;
   const unitEconomics: UnitEconomics = {
     totalTonase: totalBeratTon,
     totalVolumeM3,
     totalRitase,
-    muatanPerRitaseTon: totalRitase > 0 ? totalBeratTon / totalRitase : 0,
-    biayaBbmPerTon: biayaBbm / safeTonase,
-    biayaPerawatanPerTon: biayaPerawatan / safeTonase,
-    biayaGajiPerTon: biayaGaji / safeTonase,
-    biayaTpaPerTon: biayaOperasionalLain / safeTonase,
-    totalCostPerTon: totalPengeluaran / safeTonase,
-    revenuePerTon: totalTagihan / safeTonase,
-    marginPerTon: (totalTagihan - totalPengeluaran) / safeTonase,
+    muatanPerRitaseTon: totalRitase > 0 && totalBeratTon > 0 ? totalBeratTon / totalRitase : 0,
+    biayaBbmPerTon: safeTonase > 0 ? biayaBbm / safeTonase : 0,
+    biayaPerawatanPerTon: safeTonase > 0 ? biayaPerawatan / safeTonase : 0,
+    biayaGajiPerTon: safeTonase > 0 ? biayaGaji / safeTonase : 0,
+    biayaTpaPerTon: safeTonase > 0 ? biayaOperasionalLain / safeTonase : 0,
+    totalCostPerTon: safeTonase > 0 ? totalPengeluaran / safeTonase : 0,
+    revenuePerTon: safeTonase > 0 ? totalTagihan / safeTonase : 0,
+    marginPerTon: safeTonase > 0 ? (totalTagihan - totalPengeluaran) / safeTonase : 0,
     marginPersen: totalTagihan > 0 ? ((totalTagihan - totalPengeluaran) / totalTagihan) * 100 : 0,
     arpu: pelangganAktifCount > 0 ? totalTagihan / pelangganAktifCount : 0,
     costToServePerUser: pelangganAktifCount > 0 ? totalPengeluaran / pelangganAktifCount : 0,

@@ -21,11 +21,11 @@ export default async function LaporanPage({
   const NAMA_BULAN_SINGKAT = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
 
   const tabs = [
-    { id: "eksekutif", label: "📊 Ringkasan Eksekutif", desc: "C-Level Cockpit" },
-    { id: "arus_kas", label: "💰 Arus Kas & Laba Rugi", desc: "Waterfall PSAK 72" },
-    { id: "piutang", label: "⏳ Aging Piutang & CKPN", desc: "Kolektibilitas PSAK 71" },
-    { id: "logistik", label: "🌱 Unit Economics & TPA", desc: "Biaya per Ton & Ritase" },
-    { id: "referral", label: "🤝 Referral & Kohor", desc: "Retensi Pelanggan" },
+    { id: "eksekutif", label: "📊 Ringkasan Utama", desc: "Kinerja Vital" },
+    { id: "arus_kas", label: "💰 Arus Kas & Laba Rugi", desc: "Kas Masuk & Beban" },
+    { id: "piutang", label: "⏳ Status Tunggakan Warga", desc: "Aging Piutang" },
+    { id: "logistik", label: "🌱 Operasional & Logistik", desc: "Biaya per KK & Ritase" },
+    { id: "referral", label: "🤝 Referral & Warga", desc: "Agen & Retensi" },
   ];
 
   return (
@@ -44,7 +44,7 @@ export default async function LaporanPage({
               Laporan Keuangan &amp; Operasional
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
-              Periode {NAMA_BULAN[bulan - 1]} {tahun} · Standar Pengakuan Akrual &amp; Arus Kas
+              Periode {NAMA_BULAN[bulan - 1]} {tahun} · Standar Pengakuan Akrual &amp; Arus Kas Riil
             </p>
           </div>
 
@@ -119,8 +119,24 @@ export default async function LaporanPage({
         })}
       </div>
 
+      {/* Peringatan Pengeluaran Kosong (Empty State Warning) */}
+      {data.totalPengeluaran === 0 && (
+        <div className="mb-6 bg-amber-50/90 border border-amber-200 rounded-2xl p-4 text-xs text-amber-900 flex items-start gap-3 shadow-sm">
+          <span className="text-xl">⚠️</span>
+          <div>
+            <p className="font-bold text-sm text-amber-950">Catatan Pengeluaran Operasional Belum Diinput</p>
+            <p className="text-amber-800 mt-0.5 leading-relaxed">
+              Total pengeluaran bulan ini tercatat <b>Rp 0</b>. Angka estimasi laba operasional dan margin di bawah belum memperhitungkan biaya operasional riil (BBM armada truk, upah petugas/kru, dan servis armada). Silakan catat nota pengeluaran di menu{" "}
+              <Link href="/pengeluaran" className="underline font-bold text-amber-950 hover:text-emerald-800">
+                Pengeluaran Operasional &rarr;
+              </Link>
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* TAB 1: RINGKASAN EKSEKUTIF (C-LEVEL COCKPIT)                          */}
+      {/* TAB 1: RINGKASAN UTAMA (KILAS KINERJA VITAL)                          */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {activeTab === "eksekutif" && (
         <div className="space-y-6">
@@ -128,48 +144,48 @@ export default async function LaporanPage({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm relative overflow-hidden">
               <div className="flex items-center justify-between mb-1">
-                <p className="text-xs font-semibold text-slate-500">Pendapatan Bersih (PSAK 72)</p>
+                <p className="text-xs font-semibold text-slate-500">Komitmen Tagihan Terbit</p>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 font-bold border border-emerald-200">
-                  Accrual Revenue
+                  Hak Pendapatan
                 </span>
               </div>
               <p className="text-2xl font-black text-slate-900 tracking-tight">
                 {formatRupiah(data.kpi.earnedAccrualRevenue)}
               </p>
               <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                <span>Total Tagihan Terbit:</span>
-                <span className="font-semibold text-slate-800">{formatRupiah(data.kpi.grossBilledCurrent)}</span>
+                <span>Total Rumah Terbit Tagihan:</span>
+                <span className="font-semibold text-slate-800">{data.kpi.tagihanLunasCount + data.kpi.tagihanBelumLunasCount} KK</span>
               </div>
             </div>
 
             <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm relative overflow-hidden">
               <div className="flex items-center justify-between mb-1">
-                <p className="text-xs font-semibold text-slate-500">Realisasi Kas Masuk</p>
+                <p className="text-xs font-semibold text-slate-500">Uang Kas Nyata Diterima</p>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-sky-50 text-sky-800 font-bold border border-sky-200">
-                  Cash Inflow
+                  Uang Masuk Riil
                 </span>
               </div>
               <p className="text-2xl font-black text-sky-700 tracking-tight">
                 {formatRupiah(data.kpi.totalRealizedCash)}
               </p>
               <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                <span>Kas Tagihan Periode Ini:</span>
+                <span>Dari Tagihan Periode Ini:</span>
                 <span className="font-semibold text-slate-800">{formatRupiah(data.bridge.currentBilledCollected)}</span>
               </div>
             </div>
 
             <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm relative overflow-hidden">
               <div className="flex items-center justify-between mb-1">
-                <p className="text-xs font-semibold text-slate-500">Realisasi Beban Kas</p>
+                <p className="text-xs font-semibold text-slate-500">Pengeluaran Operasional</p>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-50 text-rose-800 font-bold border border-rose-200">
-                  Operating Opex
+                  BBM, Kru &amp; Servis
                 </span>
               </div>
               <p className="text-2xl font-black text-rose-600 tracking-tight">
                 {formatRupiah(data.kpi.totalPengeluaran)}
               </p>
               <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                <span>Arus Kas Bersih (Net):</span>
+                <span>Sisa Kas Masuk Bersih:</span>
                 <span className={`font-semibold ${data.kpi.netCashFlow >= 0 ? "text-emerald-700" : "text-rose-600"}`}>
                   {formatRupiah(data.kpi.netCashFlow)}
                 </span>
@@ -178,9 +194,9 @@ export default async function LaporanPage({
 
             <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm relative overflow-hidden">
               <div className="flex items-center justify-between mb-1">
-                <p className="text-xs font-semibold text-slate-500">Laba Operasional Bersih</p>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold border ${data.kpi.accrualOperatingProfit >= 0 ? "bg-emerald-50 text-emerald-800 border-emerald-200" : "bg-rose-50 text-rose-800 border-rose-200"}`}>
-                  Margin {data.kpi.accrualMarginPersen.toFixed(1)}%
+                <p className="text-xs font-semibold text-slate-500">Estimasi Laba Operasional</p>
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold border ${data.totalPengeluaran === 0 ? "bg-amber-50 text-amber-800 border-amber-200" : data.kpi.accrualOperatingProfit >= 0 ? "bg-emerald-50 text-emerald-800 border-emerald-200" : "bg-rose-50 text-rose-800 border-rose-200"}`}>
+                  {data.totalPengeluaran === 0 ? "Menunggu Beban" : `Margin ${data.kpi.accrualMarginPersen.toFixed(1)}%`}
                 </span>
               </div>
               <p className={`text-2xl font-black tracking-tight ${data.kpi.accrualOperatingProfit >= 0 ? "text-emerald-700" : "text-rose-600"}`}>
@@ -188,24 +204,26 @@ export default async function LaporanPage({
               </p>
               <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
                 <span>Status Profitabilitas:</span>
-                <span className="font-semibold text-slate-800">{data.kpi.accrualOperatingProfit >= 0 ? "Surplus Sehat" : "Defisit"}</span>
+                <span className="font-semibold text-slate-800">
+                  {data.totalPengeluaran === 0 ? "Perlu Input Beban Riil" : data.kpi.accrualOperatingProfit >= 0 ? "Surplus Sehat" : "Defisit"}
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Indikator Penagihan, DSO, dan Kesehatan Pelanggan */}
+          {/* Indikator Penagihan, Kecepatan Bayar, dan Kesehatan Pelanggan */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Gross Collection Rate (GCR) */}
+            {/* Tingkat Keberhasilan Penagihan (GCR) */}
             <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-bold text-slate-900 text-sm">Gross Collection Rate (GCR)</h3>
+                  <h3 className="font-bold text-slate-900 text-sm">Tingkat Keberhasilan Penagihan (GCR)</h3>
                   <span className="text-xs font-mono font-bold text-emerald-700">
                     {data.kpi.grossCollectionRate.toFixed(1)}%
                   </span>
                 </div>
                 <p className="text-xs text-slate-500 mb-4">
-                  Efisiensi pengumpulan kas tagihan periode berjalan terhadap total komitmen tagihan terbit.
+                  Persentase tagihan bulan berjalan yang telah lunas tertagih dibanding total tagihan yang diterbitkan.
                 </p>
                 <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden mb-3">
                   <div
@@ -228,78 +246,78 @@ export default async function LaporanPage({
               </div>
             </div>
 
-            {/* Days Sales Outstanding (DSO) */}
+            {/* Kecepatan Bayar Warga (DSO) */}
             <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-bold text-slate-900 text-sm">Days Sales Outstanding (DSO)</h3>
+                  <h3 className="font-bold text-slate-900 text-sm">Kecepatan Pembayaran Warga (DSO)</h3>
                   <span className="text-xs font-mono font-bold text-indigo-700">
                     {data.kpi.dsoHari} Hari
                   </span>
                 </div>
                 <p className="text-xs text-slate-500 mb-3">
-                  Rata-rata jumlah hari yang dibutuhkan untuk mengonversi tagihan retribusi menjadi uang kas.
+                  Rata-rata waktu (dalam hari) yang dibutuhkan sejak invoice dikirim hingga warga melunasi iurannya.
                 </p>
                 <div className="p-3 bg-indigo-50/70 border border-indigo-100 rounded-xl text-xs text-indigo-900 mb-2">
                   <div className="flex justify-between font-semibold mb-1">
-                    <span>Total Portofolio Piutang:</span>
+                    <span>Total Tunggakan Tertahan:</span>
                     <span>{formatRupiah(data.agingSchedule.totalPiutangGross)}</span>
                   </div>
                   <div className="flex justify-between text-indigo-700 text-[11px]">
-                    <span>Nilai Bersih Setelah CKPN:</span>
+                    <span>Estimasi Kas Tertagih Bersih:</span>
                     <span>{formatRupiah(data.agingSchedule.netCarryingValuePiutang)}</span>
                   </div>
                 </div>
               </div>
               <p className="text-[11px] text-slate-500 italic">
-                {data.kpi.dsoHari <= 30 ? "✓ Perputaran piutang sangat sehat (< 30 hari)" : "⚠ Perlu eskalasi penagihan pada debitur menunggak"}
+                {data.kpi.dsoHari <= 30 ? "✓ Perputaran kas sangat cepat & tertib (< 30 hari)" : "⚠ Banyak warga menunggak lama, perlu reminder penagihan"}
               </p>
             </div>
 
-            {/* Subscription Cohort Health */}
+            {/* Kesehatan Langganan Warga */}
             <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-bold text-slate-900 text-sm">Kesehatan Pelanggan Berlangganan</h3>
+                  <h3 className="font-bold text-slate-900 text-sm">Kesehatan Langganan Warga</h3>
                   <span className="text-xs font-mono font-bold text-emerald-700">
-                    {data.cohort.pelangganAktif} Aktif
+                    {data.cohort.pelangganAktif} KK Aktif
                   </span>
                 </div>
                 <p className="text-xs text-slate-500 mb-3">
-                  Status retensi langganan iuran warga aktif dari total {data.cohort.totalPelanggan} terdaftar.
+                  Jumlah rumah warga yang aktif mendapatkan layanan pengangkutan rutin dari total {data.cohort.totalPelanggan} terdaftar.
                 </p>
                 <div className="space-y-2 text-xs">
                   <div className="flex justify-between items-center py-1 border-b border-slate-50">
-                    <span className="text-slate-600">Pelanggan Baru Periode Ini</span>
+                    <span className="text-slate-600">Pelanggan Baru Bulan Ini</span>
                     <span className="font-bold text-emerald-700">+{data.cohort.pelangganBaruBulanIni} Pelanggan</span>
                   </div>
                   <div className="flex justify-between items-center py-1 border-b border-slate-50">
-                    <span className="text-slate-600">Pelanggan Libur Sementara</span>
+                    <span className="text-slate-600">Pelanggan Sedang Libur/Cuti</span>
                     <span className="font-semibold text-amber-700">{data.cohort.pelangganLiburBulanIni} Pelanggan</span>
                   </div>
                   <div className="flex justify-between items-center py-1">
-                    <span className="text-slate-600">Pelanggan Lunas Periode Ini</span>
+                    <span className="text-slate-600">Pelanggan Sudah Lunas</span>
                     <span className="font-bold text-slate-900">{data.kpi.tagihanLunasCount} dari {data.kpi.tagihanLunasCount + data.kpi.tagihanBelumLunasCount} Tagihan</span>
                   </div>
                 </div>
               </div>
               <div className="pt-2 border-t border-slate-100 flex justify-between text-xs">
-                <span className="text-slate-500">ARPU (Rata-rata Retribusi):</span>
+                <span className="text-slate-500">Rata-rata Retribusi per KK:</span>
                 <span className="font-bold text-slate-900">{formatRupiah(Math.round(data.unitEconomics.arpu))}/KK</span>
               </div>
             </div>
           </div>
 
-          {/* Sorotan Audit & Catatan Pengendalian Internal */}
+          {/* Sorotan Pengendalian Kas & Catatan Auditor */}
           <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-6 text-white shadow-xl">
             <div className="flex items-start justify-between flex-wrap gap-4">
               <div>
                 <span className="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold uppercase tracking-wider">
                   Audit Summary &amp; Internal Controls
                 </span>
-                <h3 className="text-lg font-bold mt-2 text-white">Catatan Auditor Eksekutif &amp; Pengendalian Kas</h3>
+                <h3 className="text-lg font-bold mt-2 text-white">Catatan Pengawasan Keuangan &amp; Arus Kas</h3>
                 <p className="text-xs text-slate-300 mt-1 max-w-3xl leading-relaxed">
-                  Laporan bulan ini telah disesuaikan dengan prinsip <b>PSAK 72 (Pengakuan Pendapatan dari Kontrak Pelanggan)</b> dan <b>PSAK 71 (Penyisihan Penurunan Nilai Piutang)</b>. Penerimaan uang muka masa depan telah dipisahkan dari pendapatan berjalan, dan portofolio piutang telah dicadangkan risiko kerugian penurunan nilainya.
+                  Laporan ini secara ketat memisahkan antara <b>uang fisik yang nyata masuk ke kasir/rekening</b> dengan <b>uang yang masih dalam bentuk komitmen tagihan</b>. Uang muka yang dibayar warga untuk bulan mendatang juga dipisahkan sebagai titipan agar tidak dianggap laba sepihak, dan tunggakan lama dikelompokkan berdasarkan usia keterlambatannya.
                 </p>
               </div>
               <div className="flex items-center gap-2">
@@ -307,13 +325,13 @@ export default async function LaporanPage({
                   href={`/laporan?bulan=${bulan}&tahun=${tahun}&tab=arus_kas`}
                   className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition backdrop-blur-sm"
                 >
-                  Buka Jembatan Arus Kas &rarr;
+                  Buka Rincian Arus Kas &rarr;
                 </Link>
                 <Link
                   href={`/laporan?bulan=${bulan}&tahun=${tahun}&tab=piutang`}
                   className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition shadow-sm"
                 >
-                  Lihat Aging Piutang &rarr;
+                  Lihat Status Tunggakan &rarr;
                 </Link>
               </div>
             </div>
@@ -331,10 +349,10 @@ export default async function LaporanPage({
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
               <div>
                 <h2 className="font-bold text-slate-900 text-base">
-                  Jembatan Rekonsiliasi Arus Kas ke Pendapatan Operasional (PSAK 72 Bridge)
+                  Alur Rekonsiliasi Kas Masuk ke Hak Pendapatan Murni
                 </h2>
                 <p className="text-xs text-slate-500 font-medium mt-0.5">
-                  Menjembatani perbedaan antara kas riil yang masuk rekening dengan hak pendapatan sejati bulan {NAMA_BULAN[bulan - 1]} {tahun}.
+                  Menjelaskan secara transparan mengapa uang kas yang masuk berbeda dengan total tagihan yang dicetak pada bulan {NAMA_BULAN[bulan - 1]} {tahun}.
                 </p>
               </div>
               <span className="px-3 py-1 bg-slate-100 text-slate-700 font-mono text-xs rounded-lg font-bold">
@@ -344,47 +362,47 @@ export default async function LaporanPage({
 
             <div className="bg-slate-50 rounded-xl p-5 border border-slate-200/80 space-y-3 font-mono text-xs">
               <div className="flex items-center justify-between py-2 border-b border-slate-200 text-slate-900 font-bold text-sm">
-                <span>[+] Total Realisasi Kas Masuk (Cash Inflow)</span>
+                <span>[+] Total Uang Kas Nyata Masuk (Rekening / Kasir)</span>
                 <span className="text-sky-700">{formatRupiah(data.bridge.realizedCashInflow)}</span>
               </div>
               <div className="flex items-center justify-between pl-4 text-slate-600">
-                <span>&bull; Dari Tagihan Periode Berjalan</span>
+                <span>&bull; Dari Tagihan Bulan Berjalan Ini</span>
                 <span>{formatRupiah(data.bridge.currentBilledCollected)}</span>
               </div>
               <div className="flex items-center justify-between pl-4 text-slate-600">
-                <span>&bull; Dari Pelunasan Piutang Bulan Lalu (Recovery)</span>
+                <span>&bull; Dari Pelunasan Tunggakan Bulan-Bulan Lalu</span>
                 <span>{formatRupiah(data.bridge.pastArrearsCollected)}</span>
               </div>
               <div className="flex items-center justify-between pl-4 text-amber-700 bg-amber-50/70 p-1.5 rounded">
-                <span>&bull; Titipan Pembayaran di Muka utk Periode Masa Depan (Deferred Revenue)</span>
+                <span>&bull; Titipan Uang di Muka (Warga Bayar Duluan utk Bulan Depan)</span>
                 <span>- {formatRupiah(data.bridge.prepaidFutureCollected)}</span>
               </div>
 
               <div className="flex items-center justify-between py-2 border-t border-slate-200 text-slate-700 font-semibold">
-                <span>[=] Kas Masuk yang Menjadi Hak Periode Ini</span>
+                <span>[=] Kas Masuk yang Murni Menjadi Hak Bulan Ini</span>
                 <span>{formatRupiah(data.bridge.currentBilledCollected)}</span>
               </div>
               <div className="flex items-center justify-between pl-4 text-emerald-800 bg-emerald-50/70 p-1.5 rounded">
-                <span>[+] Tagihan Periode Ini yg Telah Dibayar di Muka Bulan Lalu (Recognized Unearned)</span>
+                <span>[+] Tagihan Bulan Ini yg Sudah Dibayar Duluan di Bulan Lalu</span>
                 <span>+ {formatRupiah(data.bridge.prepaidPastRecognized)}</span>
               </div>
               <div className="flex items-center justify-between pl-4 text-slate-600">
-                <span>[+] Piutang Baru Berjalan yg Belum Terbayar (Accrued Receivables)</span>
+                <span>[+] Sisa Tagihan Bulan Ini yg Belum Dibayar Warga (Piutang Berjalan)</span>
                 <span>+ {formatRupiah(data.bridge.accruedUncollected)}</span>
               </div>
 
               <div className="flex items-center justify-between py-3 border-t-2 border-slate-300 text-slate-900 font-black text-sm bg-emerald-100/50 p-2.5 rounded-lg">
-                <span>[=] PENDAPATAN OPERASIONAL SEJATI (EARNED REVENUE)</span>
+                <span>[=] TOTAL HAK PENDAPATAN SEJATI BULAN INI (KOMITMEN TAGIHAN)</span>
                 <span className="text-emerald-900 text-base">{formatRupiah(data.bridge.earnedAccrualRevenue)}</span>
               </div>
 
               <div className="flex items-center justify-between py-2 text-rose-700">
-                <span>[-] Total Beban Operasional Kas (BBM, Gaji, Perawatan, TPA)</span>
+                <span>[-] Total Beban Operasional Kas (BBM, Gaji, Servis Armada)</span>
                 <span>- {formatRupiah(data.bridge.accrualOperatingExpenses)}</span>
               </div>
 
               <div className="flex items-center justify-between py-3 border-t-2 border-slate-900 text-slate-900 font-black text-sm bg-slate-900 text-white p-3 rounded-xl">
-                <span>[=] SURPLUS LABA OPERASIONAL (NET ACCRUAL SURPLUS)</span>
+                <span>[=] ESTIMASI SURPLUS / LABA OPERASIONAL BERSIH</span>
                 <span className="text-emerald-400 text-base">
                   {formatRupiah(data.bridge.accrualOperatingProfit)} ({data.bridge.accrualMarginPersen.toFixed(1)}%)
                 </span>
@@ -552,7 +570,7 @@ export default async function LaporanPage({
       )}
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* TAB 3: AGING SCHEDULE PIUTANG & CKPN (PSAK 71 / IFRS 9)                */}
+      {/* TAB 3: AGING SCHEDULE PIUTANG & CKPN (STATUS TUNGGAKAN WARGA)          */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {activeTab === "piutang" && (
         <div className="space-y-6">
@@ -560,37 +578,37 @@ export default async function LaporanPage({
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-                Total Portofolio Piutang
+                Total Tunggakan Warga (Piutang)
               </span>
               <p className="text-2xl font-black text-slate-900 tracking-tight">
                 {formatRupiah(data.agingSchedule.totalPiutangGross)}
               </p>
               <p className="text-xs text-slate-500 mt-1">
-                {data.agingSchedule.totalDebiturUnik} debitur menunggak (seluruh periode)
+                {data.agingSchedule.totalDebiturUnik} rumah tangga/KK menunggak (seluruh periode)
               </p>
             </div>
 
             <div className="bg-white rounded-2xl border border-rose-200/80 p-5 shadow-sm bg-rose-50/20">
               <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700 block mb-1">
-                Cadangan Kerugian Piutang (CKPN PSAK 71)
+                Cadangan Risiko Macet (Penyisihan)
               </span>
               <p className="text-2xl font-black text-rose-600 tracking-tight">
                 - {formatRupiah(data.agingSchedule.totalNilaiCkpn)}
               </p>
               <p className="text-xs text-slate-500 mt-1">
-                Penyisihan risiko gagal bayar historis berjenjang
+                Penyisihan cadangan risiko sesuai usia keterlambatan
               </p>
             </div>
 
             <div className="bg-white rounded-2xl border border-emerald-200/80 p-5 shadow-sm bg-emerald-50/20">
               <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 block mb-1">
-                Nilai Bersih Piutang (Net Carrying Value)
+                Ekspektasi Kas Tertagih Bersih
               </span>
               <p className="text-2xl font-black text-emerald-700 tracking-tight">
                 {formatRupiah(data.agingSchedule.netCarryingValuePiutang)}
               </p>
               <p className="text-xs text-slate-500 mt-1">
-                Aset piutang riil yang diekspektasikan tertagih kas
+                Perkiraan nilai piutang yang realistis dapat dicairkan
               </p>
             </div>
           </div>
@@ -599,13 +617,13 @@ export default async function LaporanPage({
           <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
               <div>
-                <h3 className="font-bold text-slate-900 text-base">Jadwal Umur Piutang (Aging Schedule)</h3>
+                <h3 className="font-bold text-slate-900 text-base">Jadwal Umur Keterlambatan Warga (Aging Schedule)</h3>
                 <p className="text-xs text-slate-500 font-medium mt-0.5">
-                  Klasifikasi umur piutang sesuai ketentuan kolektibilitas perbankan dan standar akuntansi PSAK 71.
+                  Pengelompokan rumah tangga yang menunggak berdasarkan lama hari keterlambatan untuk prioritas penagihan lapangan.
                 </p>
               </div>
               <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 font-bold text-xs">
-                Audit Scope: 100% Data Riil Tanpa Batas Limit
+                Audit Scope: 100% Data Riil Seluruh Wilayah
               </span>
             </div>
 
@@ -741,10 +759,23 @@ export default async function LaporanPage({
       )}
 
       {/* ══════════════════════════════════════════════════════════════════════ */}
-      {/* TAB 4: UNIT ECONOMICS & LOGISTIK SAMPAH                                */}
+      {/* TAB 4: UNIT ECONOMICS & LOGISTIK SAMPAH (OPERASIONAL & ARMADA)         */}
       {/* ══════════════════════════════════════════════════════════════════════ */}
       {activeTab === "logistik" && (
         <div className="space-y-6">
+          {/* Banner Peringatan Timbangan Fisik jika berat 0 */}
+          {data.totalBerat === 0 && (
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs text-slate-700 flex items-start gap-3 shadow-sm">
+              <span className="text-xl">⚖️</span>
+              <div>
+                <p className="font-bold text-slate-900">Armada Belum Menggunakan Timbangan Fisik (Weighbridge)</p>
+                <p className="text-slate-600 mt-0.5 leading-relaxed">
+                  Pencatatan saat ini berfokus pada status penjemputan rumah dan ritase trip truk. Karena berat fisik belum ditimbang di jembatan timbang TPS 3R/TPA, metrik operasional difokuskan pada <b>Biaya &amp; Margin per KK</b> serta <b>Biaya per Trip Armada</b>.
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* 4 Kartu Unit Economics */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
@@ -752,24 +783,30 @@ export default async function LaporanPage({
                 Biaya Logistik per Tonase
               </span>
               <p className="text-2xl font-black text-slate-900 tracking-tight">
-                {formatRupiah(Math.round(data.unitEconomics.totalCostPerTon))}
-                <span className="text-xs font-normal text-slate-500"> / Ton</span>
+                {data.unitEconomics.totalTonase > 0 ? (
+                  <>
+                    {formatRupiah(Math.round(data.unitEconomics.totalCostPerTon))}
+                    <span className="text-xs font-normal text-slate-500"> / Ton</span>
+                  </>
+                ) : (
+                  <span className="text-slate-400 text-lg font-bold">Belum Ditimbang</span>
+                )}
               </p>
               <p className="text-[11px] text-slate-500 mt-1">
-                BBM, perawatan &amp; gaji per tonase sampah
+                {data.unitEconomics.totalTonase > 0 ? "BBM, perawatan & gaji per tonase sampah" : "Memerlukan data jembatan timbang (kg)"}
               </p>
             </div>
 
             <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-                Biaya Armada per Ritase
+                Biaya Armada per Ritase (Trip)
               </span>
               <p className="text-2xl font-black text-slate-900 tracking-tight">
                 {formatRupiah(Math.round(data.unitEconomics.totalRitase > 0 ? data.totalPengeluaran / data.unitEconomics.totalRitase : 0))}
                 <span className="text-xs font-normal text-slate-500"> / Trip</span>
               </p>
               <p className="text-[11px] text-slate-500 mt-1">
-                Rata-rata ongkos operasional 1 kali angkut
+                Rata-rata ongkos operasional 1 kali angkut armada
               </p>
             </div>
 
@@ -778,11 +815,17 @@ export default async function LaporanPage({
                 Revenue per Tonase Sampah
               </span>
               <p className="text-2xl font-black text-emerald-700 tracking-tight">
-                {formatRupiah(Math.round(data.unitEconomics.revenuePerTon))}
-                <span className="text-xs font-normal text-slate-500"> / Ton</span>
+                {data.unitEconomics.totalTonase > 0 ? (
+                  <>
+                    {formatRupiah(Math.round(data.unitEconomics.revenuePerTon))}
+                    <span className="text-xs font-normal text-slate-500"> / Ton</span>
+                  </>
+                ) : (
+                  <span className="text-slate-400 text-lg font-bold">Belum Ditimbang</span>
+                )}
               </p>
               <p className="text-[11px] text-slate-500 mt-1">
-                Omset retribusi yang dihasilkan tiap 1 ton sampah
+                {data.unitEconomics.totalTonase > 0 ? "Omset retribusi yang dihasilkan tiap 1 ton" : "Menunggu pencatatan berat fisik sampah"}
               </p>
             </div>
 
@@ -795,7 +838,7 @@ export default async function LaporanPage({
                 <span className="text-xs font-normal text-slate-500"> / KK</span>
               </p>
               <p className="text-[11px] text-slate-500 mt-1">
-                ARPU {formatRupiah(Math.round(data.unitEconomics.arpu))} vs Opex {formatRupiah(Math.round(data.unitEconomics.costToServePerUser))}
+                Iuran {formatRupiah(Math.round(data.unitEconomics.arpu))} vs Beban {formatRupiah(Math.round(data.unitEconomics.costToServePerUser))}
               </p>
             </div>
           </div>
