@@ -76,7 +76,17 @@ export async function POST(request: Request) {
       );
     }
 
-    // Reuse transaksi pending yang masih aktif HANYA jika metode pembayarannya sama & dibuat dalam 30 menit
+    // Total yang ditagih = jumlah + PPN 11% + denda — sama dengan yang tampil di invoice
+    // (lihat hitungRincian di src/lib/invoice.ts)
+    const totalTagihan = hitungRincian(tagihan.jumlah, tagihan.denda).total;
+
+    // Biaya admin Rp 1.500 untuk pembayaran QRIS — dibebankan ke pelanggan
+    const metodeUpper = String(paymentMethod).trim().toUpperCase();
+    const isQris = metodeUpper === "QR" || metodeUpper === "SQ" || metodeUpper === "SP";
+    const biayaAdmin = isQris ? 1500 : 0;
+    const total = totalTagihan + biayaAdmin;
+
+    // Reuse transaksi pending yang masih aktif jika metode pembayarannya sama & dibuat dalam 30 menit
     const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
     const existing = await prisma.pembayaran.findFirst({
       where: {
@@ -86,8 +96,9 @@ export async function POST(request: Request) {
         createdAt: { gte: thirtyMinutesAgo },
         duitkuTransaction: {
           is: {
-            paymentMethod: String(paymentMethod).trim().toUpperCase(),
-            OR: [{ statusCode: null }, { statusCode: "01" }],
+            paymentMethod: metodeUpper,
+            // Selama bukan status final gagal/expired ("02"), paymentUrl masih aktif
+            NOT: { statusCode: "02" },
           },
         },
       },
@@ -104,16 +115,6 @@ export async function POST(request: Request) {
       });
     }
 
-    // Total yang ditagih = jumlah + PPN 11% + denda — sama dengan yang tampil di invoice
-    // (lihat hitungRincian di src/lib/invoice.ts)
-    const totalTagihan = hitungRincian(tagihan.jumlah, tagihan.denda).total;
-
-    // Biaya admin Rp 1.500 untuk pembayaran QRIS — dibebankan ke pelanggan
-    const metodeUpper = String(paymentMethod).trim().toUpperCase();
-    const isQris = metodeUpper === "QR" || metodeUpper === "SQ" || metodeUpper === "SP";
-    const biayaAdmin = isQris ? 1500 : 0;
-    const total = totalTagihan + biayaAdmin;
-
     // OrderId acak (tidak dapat ditebak/enumerasi) — hindari IDOR via endpoint status publik
     const orderId = `DW-${crypto.randomBytes(8).toString("hex").toUpperCase()}`;
     
@@ -129,6 +130,19 @@ export async function POST(request: Request) {
 
     // Simpan pembayaran pending & detail transaksi Duitku secara atomik
     const hasil = await prisma.$transaction(async (tx) => {
+      // Batalkan transaksi gateway pending sebelumnya pada tagihan ini (agar antrean admin tidak menumpuk draf ganda)
+      await tx.pembayaran.updateMany({
+        where: {
+          tagihanId: tagihan.id,
+          metode: "duitku",
+          status: "pending",
+        },
+        data: {
+          status: "ditolak",
+          catatan: `Digantikan sesi pembayaran baru (${metodeUpper})`,
+        },
+      });
+
       const p = await tx.pembayaran.create({
         data: {
           tagihanId: tagihan.id,
@@ -146,9 +160,9 @@ export async function POST(request: Request) {
           pembayaranId: p.id,
           paymentUrl: dt.paymentUrl || null,
           reference: dt.reference || null,
-          paymentMethod: String(paymentMethod).trim().toUpperCase(),
-          statusCode: dt.statusCode || "01",
-          statusMessage: dt.statusMessage || null,
+          paymentMethod: metodeUpper,
+          statusCode: "01", // Default "01" (proses/pending pembayaran di Duitku)
+          statusMessage: dt.statusMessage || "PROCESS",
           amount: dt.amount ? Number(dt.amount) : total,
           rawResponse: truncateRaw(dt),
         },

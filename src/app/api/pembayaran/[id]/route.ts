@@ -8,6 +8,7 @@ import {
   isWaEnabled,
   kirimNotifikasi,
   kirimReportOwner,
+  sudahKirimWa,
   templateLaporanPembayaranOwner,
   templatePembayaranDiterima,
   templatePembayaranGagal,
@@ -218,16 +219,27 @@ export async function PUT(request: Request, { params }: Params) {
           const labelMetode = labelMetodePembayaran(pembayaran.metode);
 
           if (tagihan.pelanggan.noTelepon) {
-            const templateData = status === "terverifikasi" 
-              ? await templatePembayaranDiterima(tWa, labelMetode)
-              : await templatePembayaranGagal(tWa);
-
-            await kirimNotifikasi({
-              tipe: status === "terverifikasi" ? "pembayaran_diterima" : "pembayaran_gagal",
-              ...templateData,
-              pelangganId: tagihan.pelanggan.id,
-              noTelepon: tagihan.pelanggan.noTelepon,
-            });
+            if (status === "terverifikasi") {
+              const templateData = await templatePembayaranDiterima(tWa, labelMetode);
+              await kirimNotifikasi({
+                tipe: "pembayaran_diterima",
+                ...templateData,
+                pelangganId: tagihan.pelanggan.id,
+                noTelepon: tagihan.pelanggan.noTelepon,
+              });
+            } else if (status === "ditolak" && tagihan.status !== "lunas") {
+              // Jangan kirim notifikasi pembayaran gagal jika tagihan sebenarnya sudah LUNAS (misal dibayar via metode lain)
+              const kataKunci = tagihan.noInvoice || `#${tagihan.id}`;
+              if (!(await sudahKirimWa("pembayaran_gagal", tagihan.pelanggan.id, kataKunci))) {
+                const templateData = await templatePembayaranGagal(tWa);
+                await kirimNotifikasi({
+                  tipe: "pembayaran_gagal",
+                  ...templateData,
+                  pelangganId: tagihan.pelanggan.id,
+                  noTelepon: tagihan.pelanggan.noTelepon,
+                });
+              }
+            }
           }
 
           // Jika status terverifikasi, kirim laporan ke Owner & Admin

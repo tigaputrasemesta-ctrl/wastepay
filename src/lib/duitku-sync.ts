@@ -168,7 +168,8 @@ export async function syncDuitkuPayment(
             });
           }
         } else if (isFinalFailedStatusCode(result.statusCode, source) && pembayaran.status === "pending") {
-          if (tagihan.pelanggan.noTelepon && !(await sudahKirimWa("pembayaran_gagal", tagihan.pelanggan.id, kataKunci))) {
+          // Jangan kirim notifikasi pembayaran gagal jika tagihan pelanggan sebenarnya sudah LUNAS (misal dibayar via transaksi/sesi lain)
+          if (tagihan.status !== "lunas" && tagihan.pelanggan.noTelepon && !(await sudahKirimWa("pembayaran_gagal", tagihan.pelanggan.id, kataKunci))) {
             await kirimNotifikasi({
               tipe: "pembayaran_gagal",
               ...await templatePembayaranGagal(wa),
