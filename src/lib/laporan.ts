@@ -75,9 +75,28 @@ export async function getLaporan(bulanIni: number, tahunIni: number) {
         tanggal: { gte: awalBulan, lt: akhirBulan },
       },
       include: {
-        pelanggan: { select: { id: true, nama: true, noTelepon: true, kodePelanggan: true } },
-        tagihan: { select: { id: true, bulan: true, tahun: true, jumlah: true } },
+        pelanggan: {
+          select: {
+            id: true,
+            nama: true,
+            noTelepon: true,
+            kodePelanggan: true,
+            kelurahan: { select: { id: true, nama: true } },
+          },
+        },
+        tagihan: {
+          select: {
+            id: true,
+            bulan: true,
+            tahun: true,
+            jumlah: true,
+            denda: true,
+            noInvoice: true,
+          },
+        },
+        verifiedBy: { select: { id: true, nama: true } },
       },
+      orderBy: { tanggal: "desc" },
     }),
 
     // 2. Pemasukan per metode
@@ -228,6 +247,10 @@ export async function getLaporan(bulanIni: number, tahunIni: number) {
   let pastArrearsCollected = 0;
   let prepaidFutureCollected = 0;
 
+  // Analisa Pemasukan per Kelurahan & Metode
+  const kelurahanPemasukanMap: Record<string, { nama: string; total: number; count: number }> = {};
+  const metodeCountMap: Record<string, number> = {};
+
   for (const bayar of semuaPembayaranBulanIni) {
     totalPemasukan += bayar.jumlah;
     const tBulan = bayar.tagihan.bulan;
@@ -240,7 +263,50 @@ export async function getLaporan(bulanIni: number, tahunIni: number) {
     } else {
       prepaidFutureCollected += bayar.jumlah;
     }
+
+    // Kelurahan
+    const namaKel = bayar.pelanggan?.kelurahan?.nama || "Wilayah Lain / Belum Terdata";
+    if (!kelurahanPemasukanMap[namaKel]) {
+      kelurahanPemasukanMap[namaKel] = { nama: namaKel, total: 0, count: 0 };
+    }
+    kelurahanPemasukanMap[namaKel].total += bayar.jumlah;
+    kelurahanPemasukanMap[namaKel].count += 1;
+
+    // Metode count
+    metodeCountMap[bayar.metode] = (metodeCountMap[bayar.metode] || 0) + 1;
   }
+
+  const pemasukanByKelurahan = Object.values(kelurahanPemasukanMap).sort((a, b) => b.total - a.total);
+
+  const detailPemasukanByMetode = pemasukanByMetodeRaw.map((m) => {
+    const jumlah = m._sum.jumlah || 0;
+    const count = metodeCountMap[m.metode] || 0;
+    const persen = totalPemasukan > 0 ? (jumlah / totalPemasukan) * 100 : 0;
+    return {
+      metode: m.metode,
+      jumlah,
+      count,
+      persen,
+    };
+  }).sort((a, b) => b.jumlah - a.jumlah);
+
+  const sumberPemasukan = {
+    tepatWaktu: {
+      label: "Iuran Periode Berjalan (Tepat Waktu)",
+      total: currentBilledCollected,
+      persen: totalPemasukan > 0 ? (currentBilledCollected / totalPemasukan) * 100 : 0,
+    },
+    tunggakanLalu: {
+      label: "Pelunasan Tunggakan Bulan Lalu",
+      total: pastArrearsCollected,
+      persen: totalPemasukan > 0 ? (pastArrearsCollected / totalPemasukan) * 100 : 0,
+    },
+    bayarDiMuka: {
+      label: "Iuran Bayar di Muka (Prepaid)",
+      total: prepaidFutureCollected,
+      persen: totalPemasukan > 0 ? (prepaidFutureCollected / totalPemasukan) * 100 : 0,
+    },
+  };
 
   // 14. Analisa Komponen Tagihan & Akrual
   const totalTagihan = tagihanBulanIniRaw.reduce((sum, t) => sum + t.jumlah, 0);
@@ -395,6 +461,10 @@ export async function getLaporan(bulanIni: number, tahunIni: number) {
       metode: m.metode,
       jumlah: m._sum.jumlah || 0,
     })),
+    detailPemasukanByMetode,
+    pemasukanByKelurahan,
+    sumberPemasukan,
+    riwayatPembayaranBulanIni: semuaPembayaranBulanIni,
     pengeluaranByKategori,
 
     // Kinerja Tagihan Periode Berjalan
