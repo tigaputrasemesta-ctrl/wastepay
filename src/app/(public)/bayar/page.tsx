@@ -86,7 +86,7 @@ const BULAN = [
 
 const METODE_MANUAL = [
   { value: "transfer", label: "Transfer Bank Manual" },
-  { value: "tunai", label: "Tunai dengan Petugas Lapangan" },
+  { value: "tunai", label: "Titip Tunai ke Petugas Lapangan" },
 ];
 
 function StatusBadge({ status }: { status: string }) {
@@ -96,14 +96,18 @@ function StatusBadge({ status }: { status: string }) {
   const cls = isLunas
     ? "bg-emerald-50 text-emerald-700 border-emerald-200"
     : isTunggakan
-    ? "bg-rose-50 text-rose-700 border-rose-200"
-    : "bg-amber-50 text-amber-700 border-amber-200";
+    ? "bg-amber-50 text-amber-800 border-amber-200"
+    : "bg-sky-50 text-sky-800 border-sky-200";
 
-  const label = isLunas ? "Lunas" : isTunggakan ? "Tunggakan" : "Belum Dibayar";
+  const label = isLunas
+    ? "✓ Sudah Lunas"
+    : isTunggakan
+    ? "⚠️ Belum Bayar (Bulan Lalu)"
+    : "⏳ Belum Bayar (Bulan Ini)";
 
   return (
     <span className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-full border ${cls}`}>
-      <span className={`w-1.5 h-1.5 rounded-full ${isLunas ? "bg-emerald-500" : isTunggakan ? "bg-rose-500" : "bg-amber-500"}`} />
+      <span className={`w-1.5 h-1.5 rounded-full ${isLunas ? "bg-emerald-500" : isTunggakan ? "bg-amber-500" : "bg-sky-500"}`} />
       {label}
     </span>
   );
@@ -371,8 +375,8 @@ function BayarPortalContent() {
         <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl p-6 sm:p-8 max-w-lg w-full space-y-5 max-h-[90vh] overflow-y-auto">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div>
-              <h3 className="text-base font-extrabold text-slate-900">Konfirmasi Bukti Transfer / Bayar Tunai</h3>
-              <p className="text-xs text-slate-500 mt-0.5">Unggah bukti transfer bank atau kwitansi bayar tunai ke petugas</p>
+              <h3 className="text-base font-extrabold text-slate-900">Konfirmasi Pembayaran Manual</h3>
+              <p className="text-xs text-slate-500 mt-0.5">Bagi Anda yang sudah melakukan transfer manual atau titip tunai</p>
             </div>
             <button
               type="button"
@@ -386,9 +390,19 @@ function BayarPortalContent() {
             </button>
           </div>
 
+          <div className="p-3.5 bg-emerald-50 border border-emerald-200/80 rounded-2xl text-xs text-emerald-900 space-y-1">
+            <div className="flex items-center gap-1.5 font-bold text-emerald-950">
+              <span>⚡</span>
+              <span>Disarankan: Bayar via QRIS (Langsung Lunas Otomatis)</span>
+            </div>
+            <p className="text-[11px] text-emerald-800 leading-relaxed">
+              Agar tidak perlu antri verifikasi admin, kami sangat menyarankan memakai tombol hijau <strong>&quot;Bayar via QRIS / Bank&quot;</strong>. Cukup scan dari m-banking apa saja atau e-wallet (BCA, Mandiri, BRI, DANA, GoPay), tagihan Anda langsung otomatis lunas seketika!
+            </p>
+          </div>
+
           <form onSubmit={kirimBuktiManual} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Pilihan Metode Pembayaran</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Pilihan Cara Pembayaran yang Dilakukan</label>
               <select
                 value={formManual.metode}
                 onChange={(e) => setFormManual({ ...formManual, metode: e.target.value })}
@@ -404,9 +418,9 @@ function BayarPortalContent() {
               <div className="p-3.5 bg-amber-50 border border-amber-200/80 rounded-2xl text-[11px] text-amber-900 leading-relaxed flex items-start gap-2.5">
                 <span className="text-base shrink-0">💵</span>
                 <div>
-                  <span className="font-bold">Pembayaran Tunai ke Petugas Lapangan:</span>
+                  <span className="font-bold">Info Titip Tunai ke Petugas Lapangan:</span>
                   <p className="mt-0.5 text-amber-800">
-                    Silakan unggah foto tanda terima, lembar kwitansi fisik, atau bukti serah terima uang tunai dari petugas kebersihan.
+                    Uang diserahkan langsung ke petugas armada mobil sampah. Unggah foto tanda terima / kwitansi (jika ada) dan tuliskan nama petugas penerima di bawah.
                   </p>
                 </div>
               </div>
@@ -414,10 +428,8 @@ function BayarPortalContent() {
 
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1">
-                {isTunai
-                  ? "Unggah Foto Kwitansi / Struk Bayar Tunai"
-                  : "Unggah Struk / Screenshot Bukti Transfer"}
-                <span className="text-rose-500 ml-0.5">*</span>
+                {isTunai ? "Unggah Foto Kwitansi / Bukti Tanda Terima (Opsional)" : "Unggah Struk / Screenshot Bukti Transfer"}
+                {!isTunai && <span className="text-rose-500 ml-0.5">*</span>}
               </label>
               <input
                 type="file"
@@ -432,7 +444,7 @@ function BayarPortalContent() {
               <div className="relative w-full h-40 rounded-xl overflow-hidden border border-slate-200 shadow-inner">
                 <Image
                   src={bukti}
-                  alt={isTunai ? "Bukti bayar tunai" : "Bukti transfer"}
+                  alt={isTunai ? "Bukti tanda terima tunai" : "Bukti transfer"}
                   fill
                   unoptimized
                   className="object-cover"
@@ -442,19 +454,13 @@ function BayarPortalContent() {
 
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1">
-                {isTunai
-                  ? "Nama Petugas Penerima / No. Kwitansi (Opsional)"
-                  : "Catatan Tambahan (Opsional)"}
+                {isTunai ? "Nama Petugas Armada Penerima (Opsional)" : "Nama Pemilik Rekening Pengirim (Opsional)"}
               </label>
               <input
                 type="text"
                 value={formManual.catatan}
                 onChange={(e) => setFormManual({ ...formManual, catatan: e.target.value })}
-                placeholder={
-                  isTunai
-                    ? "Contoh: Titip ke Petugas Heru / Kwitansi #45"
-                    : "Contoh: Transfer via rekening a.n. Pengirim"
-                }
+                placeholder={isTunai ? "Contoh: Titip ke Petugas Heru / Supir Armada" : "Contoh: Rekening a.n. Evi Susanti"}
                 className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 placeholder:text-slate-400"
               />
             </div>
@@ -478,10 +484,10 @@ function BayarPortalContent() {
               </button>
               <button
                 type="submit"
-                disabled={mengirim || !bukti}
+                disabled={mengirim || (!isTunai && !bukti)}
                 className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow-sm transition active:scale-95"
               >
-                {mengirim ? "Mengirim..." : isTunai ? "Kirim Bukti Tunai" : "Kirim Bukti"}
+                {mengirim ? "Mengirim..." : isTunai ? "Konfirmasi Titip Tunai" : "Kirim Bukti Transfer"}
               </button>
             </div>
           </form>
@@ -741,7 +747,7 @@ function BayarPortalContent() {
                 className="text-xs font-semibold text-slate-600 hover:text-emerald-700 transition flex items-center gap-1.5 py-1 px-3 rounded-xl hover:bg-slate-50"
               >
                 <span>📤</span>
-                <span>Sudah bayar via Transfer Bank atau Tunai? Upload Bukti di Sini</span>
+                <span>Sudah transfer bank manual sebelumnya? Konfirmasi bukti di sini</span>
               </button>
             </div>
           </div>
@@ -941,103 +947,142 @@ function BayarPortalContent() {
       )}
 
       {/* Hasil Pencarian Tagihan */}
-      {hasil && (
-        <div className="space-y-6 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Identitas Pelanggan</p>
-              <h3 className="text-xl font-extrabold text-slate-900">{hasil.pelanggan.nama}</h3>
-              <p className="text-xs text-slate-500 mt-0.5">{hasil.pelanggan.alamat}</p>
-            </div>
-            <div className="text-left sm:text-right">
-              <span className="inline-block px-3 py-1 rounded-xl bg-slate-100 border border-slate-200 text-xs font-mono font-bold text-slate-800">
-                {hasil.pelanggan.kodePelanggan}
-              </span>
-            </div>
-          </div>
+      {hasil && (() => {
+        const unpaidBills = hasil.tagihan.filter((t) => t.status !== "lunas");
+        const totalUnpaid = unpaidBills.reduce((acc, t) => acc + (t.total ?? (t.jumlah + (t.denda || 0))), 0);
 
-          <div className="space-y-3.5">
-            {hasil.tagihan.length === 0 ? (
-              <div className="bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-3">
-                {hasil.pelanggan.status === "calon" ? (
-                  <>
-                    <div className="w-12 h-12 mx-auto rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center text-xl">
-                      ⏳
-                    </div>
-                    <p className="font-bold text-slate-900">Pendaftaran Dalam Proses Verifikasi</p>
-                    <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
-                      Status akun Anda saat ini masih dalam tahap calon pelanggan / survei lokasi. Tagihan iuran sampah belum diterbitkan oleh admin.
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <div className="w-12 h-12 mx-auto rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center text-xl">
-                      🎉
-                    </div>
-                    <p className="font-bold text-slate-900">Tidak Ada Tagihan Tertunggak</p>
-                    <p className="text-xs text-slate-500">
-                      Semua iuran retribusi sampah Anda saat ini sudah lunas. Terima kasih atas partisipasi aktif Anda!
-                    </p>
-                  </>
-                )}
+        return (
+          <div className="space-y-6 animate-in fade-in duration-200">
+            <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Identitas Pelanggan</p>
+                <h3 className="text-xl font-extrabold text-slate-900">{hasil.pelanggan.nama}</h3>
+                <p className="text-xs text-slate-500 mt-0.5">{hasil.pelanggan.alamat}</p>
               </div>
-            ) : (
-              hasil.tagihan.map((t) => (
-                <div
-                  key={t.id}
-                  className="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
-                >
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg font-bold text-slate-900">{BULAN[t.bulan - 1]} {t.tahun}</span>
-                      <StatusBadge status={t.status} />
-                    </div>
-                    <p className="text-xs text-slate-500 font-medium">Jatuh Tempo: {formatDate(t.jatuhTempo)}</p>
-                    {t.denda ? (
-                      <p className="text-xs font-bold text-rose-600">+ Denda (2%): {formatRupiah(t.denda)}</p>
-                    ) : null}
+              <div className="text-left sm:text-right">
+                <span className="inline-block px-3 py-1 rounded-xl bg-slate-100 border border-slate-200 text-xs font-mono font-bold text-slate-800">
+                  {hasil.pelanggan.kodePelanggan}
+                </span>
+              </div>
+            </div>
+
+            {/* Edukasi & Rekomendasi Bayar QRIS */}
+            {unpaidBills.length > 0 && (
+              <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border border-emerald-200/90 rounded-3xl p-5 shadow-xs space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-2xl bg-emerald-700 text-white flex items-center justify-center text-lg shrink-0 shadow-xs">
+                    💡
                   </div>
-
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                    <div className="text-left sm:text-right">
-                      <p className="text-[10px] uppercase font-bold text-slate-400">Total Tagihan</p>
-                      <p className="text-xl font-extrabold text-slate-900">
-                        {formatRupiah(t.total ?? (t.jumlah + (t.denda || 0)))}
-                      </p>
-                    </div>
-
-                    {t.status !== "lunas" && (
-                      <div className="flex items-center gap-2">
-                        {t.noInvoice && (
-                          <Link
-                            href={`/bayar?invoice=${encodeURIComponent(t.noInvoice)}`}
-                            className="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-sm transition active:scale-95 flex items-center gap-1.5"
-                          >
-                            <span>⚡</span>
-                            <span>Bayar Instan</span>
-                          </Link>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setPilihTagihan(t.id);
-                            setBukti("");
-                            setKirimError("");
-                          }}
-                          className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition active:scale-95 flex items-center gap-1.5"
-                        >
-                          <span>📤</span>
-                          <span>Upload Bukti / Tunai</span>
-                        </button>
-                      </div>
-                    )}
+                  <div className="space-y-1">
+                    <h4 className="font-extrabold text-slate-900 text-sm">
+                      Cara Bayar Termudah (Bebas Antri & Otomatis Lunas):
+                    </h4>
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      Pilih tagihan di bawah, lalu klik tombol hijau <strong>&quot;Bayar via QRIS / Bank&quot;</strong>. Anda bisa langsung scan menggunakan aplikasi <strong>BCA, Mandiri, BRI, BNI, DANA, GoPay, ShopeePay, atau OVO</strong>. Tagihan langsung <strong>LUNAS otomatis</strong> tanpa perlu kirim struk konfirmasi.
+                    </p>
                   </div>
                 </div>
-              ))
+
+                {unpaidBills.length > 1 && (
+                  <div className="pt-2.5 border-t border-emerald-200/70 flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs">
+                    <span className="text-slate-600 font-medium">
+                      Total kewajiban yang belum dibayar ({unpaidBills.length} periode tagihan):
+                    </span>
+                    <span className="font-extrabold text-emerald-800 text-sm">
+                      {formatRupiah(totalUnpaid)}
+                    </span>
+                  </div>
+                )}
+              </div>
             )}
+
+            <div className="space-y-3.5">
+              {hasil.tagihan.length === 0 ? (
+                <div className="bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-3">
+                  {hasil.pelanggan.status === "calon" ? (
+                    <>
+                      <div className="w-12 h-12 mx-auto rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center text-xl">
+                        ⏳
+                      </div>
+                      <p className="font-bold text-slate-900">Pendaftaran Dalam Proses Verifikasi</p>
+                      <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
+                        Status akun Anda saat ini masih dalam tahap calon pelanggan / survei lokasi. Tagihan iuran sampah belum diterbitkan oleh admin.
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <div className="w-12 h-12 mx-auto rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center text-xl">
+                        🎉
+                      </div>
+                      <p className="font-bold text-slate-900">Tidak Ada Tagihan Tertunggak</p>
+                      <p className="text-xs text-slate-500">
+                        Semua iuran retribusi sampah Anda saat ini sudah lunas. Terima kasih atas partisipasi aktif Anda!
+                      </p>
+                    </>
+                  )}
+                </div>
+              ) : (
+                hasil.tagihan.map((t) => (
+                  <div
+                    key={t.id}
+                    className="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
+                  >
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg font-bold text-slate-900">{BULAN[t.bulan - 1]} {t.tahun}</span>
+                        <StatusBadge status={t.status} />
+                      </div>
+                      <p className="text-xs text-slate-500 font-medium">Jatuh Tempo: {formatDate(t.jatuhTempo)}</p>
+                      {t.denda ? (
+                        <p className="text-xs font-bold text-rose-600">+ Denda (2%): {formatRupiah(t.denda)}</p>
+                      ) : null}
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                      <div className="text-left sm:text-right">
+                        <p className="text-[10px] uppercase font-bold text-slate-400">Total Tagihan</p>
+                        <p className="text-xl font-extrabold text-slate-900">
+                          {formatRupiah(t.total ?? (t.jumlah + (t.denda || 0)))}
+                        </p>
+                      </div>
+
+                      {t.status !== "lunas" && (
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                          {t.noInvoice && (
+                            <Link
+                              href={`/bayar?invoice=${encodeURIComponent(t.noInvoice)}`}
+                              className="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-sm transition active:scale-95 flex items-center justify-center gap-2"
+                            >
+                              <span className="text-sm">💳</span>
+                              <div className="text-left">
+                                <span className="block leading-tight font-extrabold">Bayar via QRIS / Bank</span>
+                                <span className="text-[10px] font-normal text-emerald-100 block leading-tight">Otomatis Lunas • Scan QR</span>
+                              </div>
+                            </Link>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setPilihTagihan(t.id);
+                              setBukti("");
+                              setKirimError("");
+                            }}
+                            className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 rounded-xl text-xs font-semibold transition active:scale-95 flex items-center justify-center gap-1.5"
+                            title="Gunakan hanya jika Anda sudah terlanjur transfer manual sebelumnya"
+                          >
+                            <span>📤</span>
+                            <span>Sudah Transfer Bank?</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {renderModalUpload()}
     </div>

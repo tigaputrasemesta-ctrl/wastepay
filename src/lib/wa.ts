@@ -320,8 +320,13 @@ export async function templateTagihanBaru(t: TagihanWa): Promise<{ judul: string
     `Total Tagihan: ${formatRupiahSkylite(t.total)}`,
     `Jatuh Tempo: ${formatTanggalIndo(t.jatuhTempo)}`,
     ``,
-    `Anda dapat melakukan pembayaran dan juga melihat detail invoice pdf melalui link berikut:`,
+    `Anda dapat melakukan pembayaran dan juga melihat detail invoice melalui link berikut:`,
     t.link,
+    ``,
+    `💡 *Cara Mudah Bayar (Lunas Otomatis):*`,
+    `1. Buka link di atas, lalu klik *Bayar via QRIS / Bank*`,
+    `2. Scan kode QR menggunakan m-Banking (BCA, Mandiri, BRI, BNI) atau E-Wallet (DANA, GoPay, OVO, ShopeePay)`,
+    `3. Selesai! Tagihan langsung *LUNAS* otomatis tanpa perlu kirim bukti transfer.`,
     ``,
     `📢 Ada kendala layanan atau pengaduan sampah? Laporkan langsung di:`,
     `👉 https://upsheru.com/pengaduan`,
@@ -333,7 +338,7 @@ export async function templateTagihanBaru(t: TagihanWa): Promise<{ judul: string
     NAMA(),
     tagline || null,
     `🌐 www.upsheru.com`,
-].filter((x): x is string => Boolean(x));
+  ].filter((x): x is string => Boolean(x));
   return { judul: `Tagihan ${t.periode} — ${NAMA()}`, pesan: baris.join("\n") };
 }
 
@@ -354,13 +359,16 @@ export async function templateReminder(t: TagihanWa, sisaHari: number): Promise<
       `💰 Total       : ${formatRupiahSkylite(t.total)}`,
       `📅 Jatuh Tempo : ${formatTanggalIndo(t.jatuhTempo)}`,
       ``,
-      `💳 Bayar online : ${t.link}`,
+      `💳 *Bayar via QRIS / Bank (Otomatis Lunas):*`,
+      `${t.link}`,
+      `*(Bisa pakai m-Banking BCA, Mandiri, BRI, BNI, DANA, GoPay, OVO, ShopeePay)*`,
+      ``,
       `📢 Pengaduan web: https://upsheru.com/pengaduan`,
       `Terima kasih 🙏`,
       ``,
       `— ${NAMA()}`,
       `🌐 www.upsheru.com`,
-].join("\n"),
+    ].join("\n"),
   };
 }
 
@@ -368,7 +376,7 @@ export async function templateTunggakan(t: TagihanWa): Promise<{ judul: string; 
   return {
     judul: `Tagihan ${t.periode} Menunggak — ${NAMA()}`,
     pesan: [
-      `*TAGIHAN MENUNGAK — ${NAMA().toUpperCase()}*`,
+      `*TAGIHAN MENUNGGAK — ${NAMA().toUpperCase()}*`,
       ``,
       `Halo ${t.nama},`,
       `Tagihan iuran sampah ${t.periode} Anda telah melewati jatuh tempo dan dikenakan denda ${formatRupiahSkylite(t.denda)}.`,
@@ -376,13 +384,16 @@ export async function templateTunggakan(t: TagihanWa): Promise<{ judul: string; 
       `📄 No. Tagihan : ${t.noInvoice}`,
       `💰 Total       : ${formatRupiahSkylite(t.total)}`,
       ``,
-      `💳 Segera bayar : ${t.link}`,
+      `💳 *Segera bayar via QRIS / Bank:*`,
+      `${t.link}`,
+      `*(Scan QRIS langsung LUNAS otomatis tanpa perlu konfirmasi manual)*`,
+      ``,
       `Agar layanan pengangkutan sampah tetap berjalan tanpa kendala.`,
       `📢 Pusat bantuan & pengaduan: https://upsheru.com/pengaduan`,
       ``,
       `— ${NAMA()}`,
       `🌐 www.upsheru.com`,
-].join("\n"),
+    ].join("\n"),
   };
 }
 
