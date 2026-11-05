@@ -31,6 +31,10 @@ const PAGE_ROLES: Record<string, number> = {
   "/transit": 50, // admin+: kelola titik transit (petugas melihat via peta, bukan halaman ini)
   "/pengeluaran": 50, // admin+
   "/laporan": 20, // kasir+
+  "/laporan-cetak": 20,
+  "/laporan-pembayaran-cetak": 20,
+  "/pelanggan-cetak": 20,
+  "/absensi-cetak": 50,
   "/pengumuman": 50, // admin+
   "/pengaturan": 50, // admin+
   "/notifikasi": 20, // kasir+
@@ -177,7 +181,7 @@ const API_ROLE_MAP: Record<string, number> = {
   // Pembayaran — petugas tagih boleh mencatat & memverifikasi (guard jabatan di handler)
   "GET:/api/pembayaran": 10,
   "POST:/api/pembayaran": 10,
-  "PUT:/api/pembayaran/": 10,
+  "PUT:/api/pembayaran/": 50,
   "DELETE:/api/pembayaran/": 50,
 
   // Pengeluaran
@@ -282,7 +286,8 @@ const API_ROLE_MAP: Record<string, number> = {
 
 async function verifyToken(token: string) {
   try {
-    const { payload } = await jwtVerify(token, JWT_SECRET);
+    const { payload } = await jwtVerify(token, JWT_SECRET, { algorithms: ["HS256"] });
+    if (!Number.isInteger(payload.id) || Number(payload.id) <= 0 || !Number.isInteger(payload.v)) return null;
     return payload as {
       id: number;
       email: string;
@@ -298,7 +303,7 @@ async function verifyToken(token: string) {
 /**
  * Muat user dari DB untuk cek revoke (tokenVersion) & status aktif.
  * Sesi JWT lama (sebelum ganti/reset password) atau user yang dinonaktifkan ditolak.
- * Jika DB sedang transien/lambat, fallback ke payload JWT yang terverifikasi kriptografis.
+ * User hilang atau lookup DB gagal: tolak sesi, jangan fallback ke hak akses JWT lama.
  */
 async function loadSessionUser(payload: { id: number; email?: string; nama?: string; role?: string; v?: number }) {
   try {
@@ -315,15 +320,11 @@ async function loadSessionUser(payload: { id: number; email?: string; nama?: str
     });
     if (user) {
       if (!user.aktif) return null;
-      if (payload.v !== undefined && user.tokenVersion !== payload.v) return null;
+      if (user.tokenVersion !== payload.v) return null;
       return { id: user.id, email: user.email, nama: user.nama, role: user.role };
     }
   } catch {
-    // DB lookup transient error
-  }
-  
-  if (payload.id && payload.email && payload.role) {
-    return { id: payload.id, email: payload.email, nama: payload.nama || "", role: payload.role };
+    // Fail closed: revocation cannot be verified while DB is unavailable.
   }
   return null;
 }
@@ -351,7 +352,6 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/api/publik") ||
     pathname.startsWith("/api/mobile") ||
     pathname.startsWith("/api/pembayaran/search") ||
-    pathname.startsWith("/api/peta/foto-rumah") ||
     pathname.startsWith("/api/integrasi/google-contacts/callback")
   ) {
     return NextResponse.next();

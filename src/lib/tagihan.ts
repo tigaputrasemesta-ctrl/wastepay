@@ -9,16 +9,13 @@ const THROTTLE_MS = 5 * 60 * 1000;
 let lastRun = 0;
 
 /**
- * Tandai tagihan lewat jatuh tempo sebagai "tunggakan" dan hitung denda
- * (2% per bulan keterlambatan).
+ * Tandai tagihan lewat jatuh tempo sebagai "tunggakan"; denda dihapuskan.
  * @param opts.force true → selalu jalan (dipakai endpoint admin eksplisit
  *   POST /api/tagihan/tunggakan); false/default → throttle 5 menit.
  */
 export async function updateTunggakan(opts?: { force?: boolean }): Promise<number> {
   const now = Date.now();
   if (!opts?.force && now - lastRun < THROTTLE_MS) return 0;
-  lastRun = now;
-
   const overdue = await prisma.tagihan.findMany({
     where: {
       status: { in: ["belum_bayar", "tunggakan"] },
@@ -27,9 +24,6 @@ export async function updateTunggakan(opts?: { force?: boolean }): Promise<numbe
     },
     select: { id: true, jumlah: true, denda: true, status: true, jatuhTempo: true },
   });
-
-  const MS_PER_BULAN = 30 * 24 * 3600 * 1000;
-  const nowDate = new Date();
 
   // Pra-hitung dan saring hanya tagihan yang nominal denda atau statusnya berubah
   const targets = overdue
@@ -42,18 +36,25 @@ export async function updateTunggakan(opts?: { force?: boolean }): Promise<numbe
 
   // Update secara bertahap (chunk kecil) agar ramah connection pooler
   const CHUNK = 10;
+  let updatedCount = 0;
   for (let i = 0; i < targets.length; i += CHUNK) {
-    await Promise.all(
+    const results = await Promise.all(
       targets.slice(i, i + CHUNK).map((t) =>
-        prisma.tagihan.update({
-          where: { id: t.id },
+        prisma.tagihan.updateMany({
+          where: {
+            id: t.id,
+            status: { in: ["belum_bayar", "tunggakan"] },
+            deletedAt: null,
+            jatuhTempo: { lt: new Date(now) },
+          },
           data: { status: "tunggakan", denda: t.denda },
         })
       )
     );
+    updatedCount += results.reduce((sum, result) => sum + result.count, 0);
   }
-
-  return targets.length;
+  lastRun = Date.now();
+  return updatedCount;
 }
 
 /** Total tagihan yang harus dibayar (termasuk denda) */

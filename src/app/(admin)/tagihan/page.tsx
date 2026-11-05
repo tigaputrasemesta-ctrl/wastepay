@@ -106,6 +106,7 @@ type BlastRecipient = {
   zonaNama?: string;
   zonaWarna?: string | null;
   kelurahanNama?: string;
+  waLink?: string;
 };
 
 type BlastPreviewData = {
@@ -2194,7 +2195,7 @@ export default function TagihanPage() {
                           </div>
                           {!blastPreview.isWaConfigured && r.noTelepon && (
                             <a
-                              href={`https://wa.me/${r.noTelepon.replace(/^0/, "62")}?text=${encodeURIComponent(blastPreview.sampleMessage)}`}
+                              href={r.waLink || `https://wa.me/${r.noTelepon.replace(/^0/, "62")}?text=${encodeURIComponent(blastPreview.sampleMessage)}`}
                               target="_blank"
                               rel="noreferrer"
                               className="text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200/60 px-3 py-1.5 rounded-xl transition-all inline-flex items-center gap-1"

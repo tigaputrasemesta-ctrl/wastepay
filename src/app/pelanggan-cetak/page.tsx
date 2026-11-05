@@ -1,7 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth";
+import { requirePageRole } from "@/lib/server-rbac";
 import { prisma } from "@/lib/prisma";
 import TombolCetak from "@/components/TombolCetak";
 import { companyInfo } from "@/lib/invoice-format";
@@ -36,8 +35,7 @@ export default async function PelangganCetakPage({
 }: {
   searchParams: Promise<{ status?: string; kategori?: string; kelurahanId?: string }>;
 }) {
-  const session = await getSession();
-  if (!session) redirect("/login");
+  await requirePageRole("kasir");
 
   const params = await searchParams;
   const where: any = { deletedAt: null };

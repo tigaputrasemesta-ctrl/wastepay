@@ -13,7 +13,10 @@ import {
   templatePembayaranDiterima,
   templatePembayaranGagal,
 } from "@/lib/wa";
-import { labelMetodePembayaran } from "@/lib/invoice";
+import { hitungRincian, labelMetodePembayaran } from "@/lib/invoice";
+import { requireRole } from "@/lib/server-rbac";
+
+class PaymentConflictError extends Error {}
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -87,6 +90,9 @@ export async function GET(request: Request, { params }: Params) {
  * DELETE /api/pembayaran/[id] — hapus pembayaran & batalkan status lunas jika perlu
  */
 export async function PUT(request: Request, { params }: Params) {
+  const auth = await requireRole(request, "admin");
+  if (auth instanceof NextResponse) return auth;
+  const session = auth.user;
   try {
     const { id } = await params;
     const { status, catatan } = await request.json();
@@ -98,21 +104,6 @@ export async function PUT(request: Request, { params }: Params) {
       );
     }
 
-    // Petugas boleh verifikasi hanya jika jabatan tagih
-    const session = await getSession();
-    if (session && session.role === "petugas") {
-      const profil = await prisma.petugas.findUnique({
-        where: { userId: session.id },
-        select: { jabatan: true },
-      });
-      if (!(profil?.jabatan || "").split(",").includes("tagih")) {
-        return NextResponse.json(
-          { error: "Jabatan Anda tidak berwenang memverifikasi pembayaran" },
-          { status: 403 }
-        );
-      }
-    }
-
     const pembayaran = await prisma.pembayaran.findUnique({
       where: { id: parseInt(id) },
       include: { pelanggan: { select: { kelurahanId: true } } },
@@ -121,17 +112,6 @@ export async function PUT(request: Request, { params }: Params) {
       return NextResponse.json({ error: "Pembayaran tidak ditemukan" }, { status: 404 });
     }
 
-    // Petugas tagih hanya boleh memverifikasi pembayaran pelanggan di kelurahannya sendiri
-    // (nonaktif sementara — PETUGAS_SCOPE_ALL = semua kelurahan).
-    if (session && session.role === "petugas" && !PETUGAS_SCOPE_ALL) {
-      const kelurahanId = await getPetugasKelurahan(session.id);
-      if (!kelurahanId || pembayaran.pelanggan.kelurahanId !== kelurahanId) {
-        return NextResponse.json(
-          { error: "Pelanggan di luar wilayah Anda" },
-          { status: 403 }
-        );
-      }
-    }
     if (pembayaran.status !== "pending") {
       return NextResponse.json(
         { error: `Pembayaran sudah ${pembayaran.status}` },
@@ -150,30 +130,39 @@ export async function PUT(request: Request, { params }: Params) {
     }
 
     const result = await prisma.$transaction(async (tx) => {
-      const updated = await tx.pembayaran.update({
-        where: { id: pembayaran.id },
-        data: {
-          status,
-          catatan: catatan || pembayaran.catatan,
-          // Siapa yang memverifikasi
-          verifiedById: session?.id ?? null,
-        },
-      });
-
       if (status === "terverifikasi") {
-        // Tagihan hanya lunas jika pembayaran yang memenuhi syarat
-        const tagihan = await tx.tagihan.findUnique({
-          where: { id: pembayaran.tagihanId },
+        // Claim invoice first. Concurrent approvals serialize on this row;
+        // a second payment must not become verified for an already-paid invoice.
+        const claimed = await tx.tagihan.updateMany({
+          where: {
+            id: pembayaran.tagihanId,
+            status: { in: ["belum_bayar", "tunggakan"] },
+            deletedAt: null,
+          },
+          data: { status: "lunas", tanggalLunas: new Date() },
         });
-        if (tagihan && tagihan.status !== "lunas") {
-          await tx.tagihan.update({
-            where: { id: tagihan.id },
-            data: { status: "lunas", tanggalLunas: new Date() },
-          });
+        if (claimed.count !== 1) {
+          throw new PaymentConflictError("Tagihan sudah lunas, dibatalkan, atau dihapus");
+        }
+        const tagihan = await tx.tagihan.findUniqueOrThrow({ where: { id: pembayaran.tagihanId } });
+        if (!Number.isFinite(pembayaran.jumlah) ||
+            pembayaran.jumlah < hitungRincian(tagihan.jumlah, tagihan.denda).total) {
+          throw new PaymentConflictError("Nominal pembayaran tidak memenuhi tagihan terbaru");
         }
       }
 
-      return updated;
+      const claimedPayment = await tx.pembayaran.updateMany({
+        where: { id: pembayaran.id, status: "pending" },
+        data: {
+          status,
+          catatan: catatan || pembayaran.catatan,
+          verifiedById: session.id,
+        },
+      });
+      if (claimedPayment.count !== 1) {
+        throw new PaymentConflictError("Pembayaran sudah diproses; muat ulang data");
+      }
+      return tx.pembayaran.findUniqueOrThrow({ where: { id: pembayaran.id } });
     });
 
     await logAudit(
@@ -267,7 +256,10 @@ export async function PUT(request: Request, { params }: Params) {
     }
 
     return NextResponse.json(result);
-  } catch {
+  } catch (error) {
+    if (error instanceof PaymentConflictError) {
+      return NextResponse.json({ error: error.message }, { status: 409 });
+    }
     return NextResponse.json(
       { error: "Gagal memproses pembayaran" },
       { status: 500 }

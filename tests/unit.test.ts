@@ -95,7 +95,7 @@ vi.mock("../src/lib/prisma", () => ({
   prisma: {
     tagihan: {
       findMany: vi.fn(),
-      update: vi.fn(),
+      updateMany: vi.fn(),
     },
     pengaturan: {
       findUnique: vi.fn(),
@@ -104,7 +104,7 @@ vi.mock("../src/lib/prisma", () => ({
 }));
 
 const prismaMock = prisma as unknown as {
-  tagihan: { findMany: Mock; update: Mock };
+  tagihan: { findMany: Mock; updateMany: Mock };
   pengaturan: { findUnique: Mock };
 };
 
@@ -135,13 +135,13 @@ describe("updateTunggakan", () => {
     prismaMock.tagihan.findMany.mockResolvedValue([
       { id: 1, jumlah: 50000, denda: null, status: "belum_bayar", jatuhTempo: duaBulanLalu },
     ]);
-    prismaMock.tagihan.update.mockResolvedValue({});
+    prismaMock.tagihan.updateMany.mockResolvedValue({ count: 1 });
 
-    const n = await updateTunggakan();
+    const n = await updateTunggakan({ force: true });
     expect(n).toBe(1);
-    expect(prismaMock.tagihan.update).toHaveBeenCalledWith(
+    expect(prismaMock.tagihan.updateMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { id: 1 },
+        where: expect.objectContaining({ id: 1, status: { in: ["belum_bayar", "tunggakan"] }, deletedAt: null }),
         data: expect.objectContaining({ status: "tunggakan", denda: 0 }),
       })
     );
@@ -152,16 +152,27 @@ describe("updateTunggakan", () => {
     prismaMock.tagihan.findMany.mockResolvedValue([
       { id: 2, jumlah: 100000, denda: 2000, status: "tunggakan", jatuhTempo: tigaBulanLalu },
     ]);
-    prismaMock.tagihan.update.mockResolvedValue({});
+    prismaMock.tagihan.updateMany.mockResolvedValue({ count: 1 });
 
     const n = await updateTunggakan({ force: true });
     expect(n).toBe(1);
-    expect(prismaMock.tagihan.update).toHaveBeenCalledWith(
+    expect(prismaMock.tagihan.updateMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { id: 2 },
+        where: expect.objectContaining({ id: 2, status: { in: ["belum_bayar", "tunggakan"] }, deletedAt: null }),
         data: expect.objectContaining({ status: "tunggakan", denda: 0 }),
       })
     );
+  });
+
+  it("tidak menimpa tagihan yang telah lunas setelah query awal", async () => {
+    prismaMock.tagihan.findMany.mockResolvedValue([
+      { id: 3, jumlah: 50000, denda: 0, status: "belum_bayar", jatuhTempo: new Date(0) },
+    ]);
+    prismaMock.tagihan.updateMany.mockResolvedValue({ count: 0 });
+    expect(await updateTunggakan({ force: true })).toBe(0);
+    expect(prismaMock.tagihan.updateMany).toHaveBeenCalledWith(expect.objectContaining({
+      where: expect.objectContaining({ status: { in: ["belum_bayar", "tunggakan"] }, deletedAt: null }),
+    }));
   });
 
   it("throttle: panggilan kedua dalam 5 menit di-skip (tanpa query)", async () => {

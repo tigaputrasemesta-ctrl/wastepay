@@ -71,48 +71,77 @@ const totalTagihan = (jumlah, denda) => Math.round(jumlah + jumlah * 0.11) + (de
 
 /* ---------------- template (sama dengan src/lib/wa.ts) ---------------- */
 function templateReminder(t, sisaHari) {
-  const label = sisaHari <= 1 ? "BESOK adalah batas akhir pembayaran" : `${sisaHari} HARI LAGI jatuh tempo`;
+  const label =
+    sisaHari <= 1
+      ? "BESOK adalah batas akhir pembayaran"
+      : `${sisaHari} HARI LAGI batas akhir pembayaran`;
   return {
     judul: `Pengingat Tagihan ${t.periode} — ${NAMA}`,
     pesan: [
-      `*PENGINGAT TAGIHAN — ${NAMA.toUpperCase()}*`,
+      `🌿 *Pengingat Iuran Kebersihan — ${NAMA}*`,
       ``,
-      `Halo ${t.nama},`,
-      `${label} tagihan iuran sampah ${t.periode}:`,
+      `Yth. Bapak/Ibu Warga *${t.nama}*,`,
       ``,
-      `📄 No. Tagihan : ${t.noInvoice}`,
-      `💰 Total       : ${rupiah(t.total)} (termasuk PPN 11%)`,
-      `📅 Jatuh Tempo : ${tglIndo(new Date(t.jatuhTempo))}`,
+      `Semoga Bapak/Ibu dan keluarga senantiasa sehat.`,
       ``,
-      `💳 Bayar online : ${t.link}`,
-      `📢 Pengaduan web: https://upsheru.com/pengaduan`,
-      `Terima kasih 🙏`,
+      `Kami ingin menginformasikan bahwa ${label} untuk tagihan iuran kebersihan lingkungan periode *${t.periode}*:`,
       ``,
-      `— ${NAMA}`,
+      `📄 *No. Tagihan* : ${t.noInvoice}`,
+      `💰 *Total*       : ${rupiah(t.total)}`,
+      `📅 *Jatuh Tempo* : ${tglIndo(new Date(t.jatuhTempo))}`,
+      ``,
+      `Demi kenyamanan dan kelancaran operasional pengangkutan sampah di lingkungan kita, pembayaran dapat dilakukan secara praktis melalui tautan berikut:`,
+      ``,
+      `👉 ${t.link}`,
+      ``,
+      `*(Bisa menggunakan QRIS semua Bank & Dompet Digital. Sistem otomatis lunas tanpa perlu konfirmasi manual).*`,
+      ``,
+      `💡 *Butuh panduan cara bayar?*`,
+      `Balas pesan ini dengan ketik: *CARA BAYAR*`,
+      ``,
+      `Terima kasih banyak atas perhatian dan kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏`,
+      ``,
+      `*(Abaikan pesan ini apabila Bapak/Ibu sudah melakukan pembayaran).*`,
+      `📢 Pusat Bantuan: https://upsheru.com/pengaduan`,
+      `— *Pengelola ${NAMA}*`,
       `🌐 www.upsheru.com`,
-].join("\n"),
+    ].join("\n"),
   };
 }
 
 function templateTunggakan(t) {
+  const infoDenda = t.denda > 0 ? ` (termasuk denda ${rupiah(t.denda)})` : ` (bebas denda)`;
   return {
     judul: `Tagihan ${t.periode} Menunggak — ${NAMA}`,
     pesan: [
-      `*TAGIHAN MENUNGAK — ${NAMA.toUpperCase()}*`,
+      `🌿 *Pengingat Iuran Kebersihan — ${NAMA}*`,
       ``,
-      `Halo ${t.nama},`,
-      `Tagihan iuran sampah ${t.periode} Anda telah melewati jatuh tempo dan dikenakan denda ${rupiah(t.denda)}.`,
+      `Yth. Bapak/Ibu Warga *${t.nama}*,`,
       ``,
-      `📄 No. Tagihan : ${t.noInvoice}`,
-      `💰 Total       : ${rupiah(t.total)} (termasuk PPN 11% + denda)`,
+      `Semoga Bapak/Ibu dan keluarga senantiasa sehat.`,
       ``,
-      `💳 Segera bayar : ${t.link}`,
-      `Agar layanan pengangkutan sampah tetap berjalan tanpa kendala.`,
-      `📢 Butuh bantuan/pengaduan: https://upsheru.com/pengaduan`,
+      `Kami ingin menginformasikan bahwa tagihan iuran kebersihan lingkungan untuk periode *${t.periode}* saat ini belum tercatat${t.denda > 0 ? ` dan dikenakan denda ${rupiah(t.denda)}` : ""}:`,
       ``,
-      `— ${NAMA}`,
+      `📄 *No. Tagihan* : ${t.noInvoice}`,
+      `💰 *Total*       : ${rupiah(t.total)}${t.denda > 0 ? infoDenda : ""}`,
+      ...(t.denda > 0 ? [] : [`📌 *Denda*       : Rp0 (Bebas Denda)`]),
+      ``,
+      `Demi kenyamanan dan kelancaran operasional pengangkutan sampah di lingkungan kita, pembayaran dapat dilakukan secara praktis melalui tautan berikut:`,
+      ``,
+      `👉 ${t.link}`,
+      ``,
+      `*(Bisa menggunakan QRIS semua Bank & Dompet Digital. Sistem otomatis lunas tanpa perlu konfirmasi manual).*`,
+      ``,
+      `💡 *Butuh panduan cara bayar?*`,
+      `Balas pesan ini dengan ketik: *CARA BAYAR*`,
+      ``,
+      `Terima kasih banyak atas perhatian dan kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏`,
+      ``,
+      `*(Abaikan pesan ini apabila Bapak/Ibu sudah melakukan pembayaran).*`,
+      `📢 Pusat Bantuan: https://upsheru.com/pengaduan`,
+      `— *Pengelola ${NAMA}*`,
       `🌐 www.upsheru.com`,
-].join("\n"),
+    ].join("\n"),
   };
 }
 

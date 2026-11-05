@@ -88,7 +88,13 @@ export async function PUT(request: Request) {
     if (!id) return NextResponse.json({ error: "ID User diperlukan" }, { status: 400 });
 
     const updateData: { aktif?: boolean; password?: string; tokenVersion?: { increment: number }; nama?: string; email?: string; role?: string; noTelepon?: string | null } = {};
-    if (aktif !== undefined) updateData.aktif = Boolean(aktif);
+    if (aktif !== undefined) {
+      if (typeof aktif !== "boolean") {
+        return NextResponse.json({ error: "Status aktif harus boolean" }, { status: 400 });
+      }
+      updateData.aktif = aktif;
+      updateData.tokenVersion = { increment: 1 };
+    }
     if (password) {
       updateData.password = await hashPassword(password);
       // Reset password → revoke semua sesi lama user tersebut.
@@ -113,6 +119,7 @@ export async function PUT(request: Request) {
         return NextResponse.json({ error: "Role tidak valid" }, { status: 400 });
       }
       updateData.role = role;
+      updateData.tokenVersion = { increment: 1 };
     }
     if (noTelepon !== undefined) updateData.noTelepon = noTelepon.trim() || null;
 

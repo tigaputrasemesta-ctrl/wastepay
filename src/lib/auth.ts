@@ -56,23 +56,18 @@ export async function createMobileSession(user: SessionUser & { tokenVersion: nu
 
 export async function verifySessionToken(token: string): Promise<SessionUser | null> {
   try {
-    const { payload } = await jwtVerify(token, JWT_SECRET);
-    const p = payload as unknown as {
-      id: number;
-      email: string;
-      nama: string;
-      role: string;
-      v?: number;
-    };
+    const { payload } = await jwtVerify(token, JWT_SECRET, { algorithms: ["HS256"] });
+    if (!Number.isInteger(payload.id) || Number(payload.id) <= 0 || !Number.isInteger(payload.v)) {
+      return null;
+    }
 
     const user = await prisma.user.findUnique({
-      where: { id: p.id },
-      select: { tokenVersion: true, aktif: true },
+      where: { id: Number(payload.id) },
+      select: { id: true, email: true, nama: true, role: true, tokenVersion: true, aktif: true },
     });
-    if (!user || !user.aktif) return null;
-    if (p.v !== undefined && user.tokenVersion !== p.v) return null;
+    if (!user || !user.aktif || user.tokenVersion !== payload.v) return null;
 
-    return { id: p.id, email: p.email, nama: p.nama, role: p.role };
+    return { id: user.id, email: user.email, nama: user.nama, role: user.role };
   } catch {
     return null;
   }
@@ -116,30 +111,7 @@ export async function getSession(request?: Request): Promise<SessionUser | null>
     }
     if (!token) return null;
 
-    const { payload } = await jwtVerify(token, JWT_SECRET);
-    const p = payload as unknown as {
-      id: number;
-      email: string;
-      nama: string;
-      role: string;
-      v?: number;
-    };
-
-    try {
-      // Revoke check: sesi JWT hanya valid jika user masih aktif DAN tokenVersion cocok
-      const user = await prisma.user.findUnique({
-        where: { id: p.id },
-        select: { tokenVersion: true, aktif: true },
-      });
-      if (user) {
-        if (!user.aktif) return null;
-        if (p.v !== undefined && user.tokenVersion !== p.v) return null;
-      }
-    } catch {
-      // Jika terjadi koneksi pool latency, tetap pertahankan sesi JWT yang telah terverifikasi kriptografis
-    }
-
-    return { id: p.id, email: p.email, nama: p.nama, role: p.role };
+    return await verifySessionToken(token);
   } catch {
     return null;
   }
@@ -155,10 +127,10 @@ export async function login(
       email: { equals: cleanEmail, mode: "insensitive" },
     },
   });
-  if (!user) return { error: "Email tidak ditemukan" };
+  if (!user || !user.aktif) return { error: "Email atau password salah" };
 
   const valid = await verifyPassword(password, user.password);
-  if (!valid) return { error: "Password salah" };
+  if (!valid) return { error: "Email atau password salah" };
 
   const sessionUser: SessionUser = {
     id: user.id,

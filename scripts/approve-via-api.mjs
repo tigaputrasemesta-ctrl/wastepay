@@ -75,30 +75,29 @@ async function runApproval({ dryRun = false } = {}) {
     return { total: calonList.length, ready: withZona.length, skipped: withoutZona.length };
   }
 
-  console.log(`🚀 Memulai proses approval untuk ${withZona.length} pelanggan (jeda 1 detik/data untuk keamanan WhatsApp)...\n`);
+  const limitArg = process.argv.find((a) => a.startsWith("--limit="));
+  const limit = limitArg ? parseInt(limitArg.split("=")[1]) : (process.argv.includes("--limit") ? parseInt(process.argv[process.argv.indexOf("--limit") + 1]) : withZona.length);
+  const targets = withZona.slice(0, limit);
+
+  console.log(`🚀 Memulai proses approval untuk ${targets.length} pelanggan (jeda 1.5 detik/data untuk stabilitas WhatsApp)...\n`);
 
   let successCount = 0;
   let failCount = 0;
 
-  for (let i = 0; i < withZona.length; i++) {
-    const p = withZona[i];
-    const zonaNama = p.wilayah?.zona?.nama || "Zona";
-    const progress = `[${i + 1}/${withZona.length}]`;
+  for (let i = 0; i < targets.length; i++) {
+    const p = targets[i];
+    const resolvedZonaId = p.wilayah?.zonaId || p.wilayah?.zona?.id || p.jadwal?.[0]?.rute?.zonaId;
+    const zonaNama = p.wilayah?.zona?.nama || p.jadwal?.[0]?.rute?.zona?.nama || "Zona";
+    const progress = `[${i + 1}/${targets.length}]`;
 
-    console.log(`${progress} Memproses "${p.nama}" (${p.kodePelanggan}) - Zona: ${zonaNama}...`);
+    console.log(`${progress} Memproses "${p.nama}" (${p.kodePelanggan}) - Zona: ${zonaNama} (ID: ${resolvedZonaId})...`);
 
     try {
-      // 1. Ubah status perantara ke 'libur' agar backend tidak auto-generate tagihan Oktober
-      await fetch(`${BASE_URL}/api/pelanggan/${p.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Cookie: COOKIE,
-        },
-        body: JSON.stringify({ status: "libur" }),
-      });
-
-      // 2. Aktifkan pelanggan & set siklus tagihan perdana ke 1 November 2026
+      // Aktifkan pelanggan langsung dari calon -> aktif.
+      // Backend akan otomatis:
+      // 1. Mengubah status ke aktif
+      // 2. Menerbitkan tagihan perdana bulan berjalan (November 2026)
+      // 3. Mengirimkan notifikasi WhatsApp konfirmasi persetujuan & rincian invoice
       const updateRes = await fetch(`${BASE_URL}/api/pelanggan/${p.id}`, {
         method: "PUT",
         headers: {
@@ -109,33 +108,13 @@ async function runApproval({ dryRun = false } = {}) {
           status: "aktif",
           kelurahanId: p.kelurahanId,
           wilayahId: p.wilayahId,
-          zonaId: p.wilayah?.zonaId || p.wilayah?.zona?.id,
-          createdAt: "2026-11-01T00:00:00.000Z",
+          zonaId: resolvedZonaId,
         }),
       });
 
       if (updateRes.ok) {
-        console.log(`       ✅ Sukses di-approve & diaktifkan (Siklus Perdana: 1 November 2026).`);
+        console.log(`       ✅ Sukses di-approve & diaktifkan.`);
         successCount++;
-
-        // 3. Kirim WhatsApp konfirmasi persetujuan (tagihan mulai 1 November)
-        try {
-          await fetch(`${BASE_URL}/api/notifikasi`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Cookie: COOKIE,
-            },
-            body: JSON.stringify({
-              tipe: "approval",
-              judul: "Pendaftaran Disetujui — UPS HERU DEPOK",
-              pesan: `Halo ${p.nama},\n\nSelamat! Pendaftaran layanan pengangkutan sampah Anda telah disetujui dan telah aktif.\n\n🆔 Kode Pelanggan: ${p.kodePelanggan || p.noTelepon}\n📍 Zona: ${zonaNama}\n📅 Siklus Tagihan: Tagihan perdana Anda akan diterbitkan pada tanggal 1 November 2026 secara otomatis.\n\nTerima kasih telah bergabung bersama UPS HERU Depok.`,
-              pelangganId: p.id,
-            }),
-          });
-        } catch {
-          // Abaikan jika notifikasi WA gagal/skip
-        }
       } else {
         const err = await updateRes.json().catch(() => ({}));
         console.error(`       ❌ Gagal:`, err.error || updateRes.statusText);
@@ -146,8 +125,8 @@ async function runApproval({ dryRun = false } = {}) {
       failCount++;
     }
 
-    // Delay 1000ms antar data agar tidak kena pembatasan rate limit provider WhatsApp
-    await sleep(1000);
+    // Delay 1500ms antar data agar aman dari rate limit provider WhatsApp
+    await sleep(1500);
   }
 
   console.log("\n==========================================");

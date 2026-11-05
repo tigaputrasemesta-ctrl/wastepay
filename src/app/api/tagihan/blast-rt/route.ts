@@ -164,6 +164,7 @@ export async function POST(request: Request) {
       zonaNama: string;
       zonaWarna: string | null;
       kelurahanNama: string;
+      waLink?: string;
     })[] = [];
 
     const mapTagihan = new Map<number, (typeof tagihanList)[0]>();
@@ -186,6 +187,13 @@ export async function POST(request: Request) {
       totalNominal += tagihanWa.total;
       mapTagihan.set(t.pelanggan.id, t);
 
+      const personalizedMsg =
+        t.status === "tunggakan"
+          ? (await templateTunggakan(tagihanWa)).pesan
+          : (await templateReminder(tagihanWa, 3)).pesan;
+      const cleanPhone = t.pelanggan.noTelepon ? t.pelanggan.noTelepon.replace(/^0/, "62").replace(/\D/g, "") : "";
+      const waLink = cleanPhone ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(personalizedMsg)}` : "";
+
       targets.push({
         pelangganId: t.pelanggan.id,
         nama: t.pelanggan.nama,
@@ -199,6 +207,7 @@ export async function POST(request: Request) {
         zonaNama: t.pelanggan.wilayah?.zona?.nama || zonaNama || "-",
         zonaWarna: t.pelanggan.wilayah?.zona?.warna || null,
         kelurahanNama: t.pelanggan.kelurahan?.nama || "-",
+        waLink,
       });
     }
 

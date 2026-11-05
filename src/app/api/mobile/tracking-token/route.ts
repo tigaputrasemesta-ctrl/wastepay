@@ -21,9 +21,9 @@ export async function POST() {
 
     const profil = await prisma.petugas.findUnique({
       where: { userId: session.id },
-      select: { id: true },
+      select: { id: true, aktif: true, deletedAt: true },
     });
-    if (!profil) {
+    if (!profil || !profil.aktif || profil.deletedAt) {
       return NextResponse.json({ error: "Akun ini belum ter-link ke profil petugas" }, { status: 403 });
     }
 

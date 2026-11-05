@@ -54,10 +54,9 @@ export default async function TarifPage() {
   });
 
   // Pastikan Paket Langganan 40.000 tercantum
-  let hasPaketLangganan = false;
+  const hasPaketLangganan = paketRaw.some((p) => p.nama.toLowerCase().includes("langganan"));
   const paket = paketRaw.map((p) => {
     if (p.nama.toLowerCase().includes("langganan")) {
-      hasPaketLangganan = true;
       return {
         ...p,
         nama: "Paket Langganan",

@@ -1,7 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth";
+import { requirePageRole } from "@/lib/server-rbac";
 import { prisma } from "@/lib/prisma";
 import TombolCetak from "@/components/TombolCetak";
 import { formatRupiah, formatDate } from "@/lib/utils";
@@ -18,8 +17,7 @@ export default async function LaporanPembayaranCetakPage({
 }: {
   searchParams: Promise<{ bulan?: string; tahun?: string; status?: string }>;
 }) {
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const session = await requirePageRole("kasir");
 
   const params = await searchParams;
   const now = new Date();

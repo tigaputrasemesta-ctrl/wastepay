@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { processIncomingWaMessage } from "@/lib/server/wa-bot-service";
 import { kirimWhatsApp } from "@/lib/wa";
+import { timingSafeEqual } from "node:crypto";
+import { allowAttempt } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -46,6 +48,23 @@ export async function GET() {
  * Mendukung format JSON dan form-data / x-www-form-urlencoded.
  */
 export async function POST(request: Request) {
+  const secret = process.env.WA_WEBHOOK_SECRET?.trim();
+  if (!secret || secret.length < 32) {
+    return NextResponse.json({ error: "Webhook belum dikonfigurasi" }, { status: 503 });
+  }
+  // Prefer header; query token supports providers configured only with a webhook URL.
+  const supplied = request.headers.get("x-webhook-secret") ||
+    request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ||
+    new URL(request.url).searchParams.get("token") || "";
+  const expected = Buffer.from(secret);
+  const received = Buffer.from(supplied);
+  if (received.length !== expected.length || !timingSafeEqual(received, expected)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  if (!(await allowAttempt(`wa-webhook:${ip}`, { max: 120, windowMs: 60_000 }))) {
+    return NextResponse.json({ error: "Terlalu banyak permintaan" }, { status: 429 });
+  }
   try {
     let sender = "";
     let message = "";
@@ -132,9 +151,7 @@ export async function POST(request: Request) {
       status: true,
       sent,
       error: sendError,
-      reply: result.reply || null,
-      intent: result.intent,
-      pelangganId: result.pelangganId,
+      // Acknowledge delivery only; private bot data must not be echoed over HTTP.
     });
   } catch (err: any) {
     console.error("Error in wa-webhook handler:", err);
@@ -142,7 +159,6 @@ export async function POST(request: Request) {
       {
         status: false,
         error: "Internal webhook processing error",
-        message: err instanceof Error ? err.message : "Unknown error",
       },
       { status: 500 }
     );

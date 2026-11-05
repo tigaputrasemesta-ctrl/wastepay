@@ -76,6 +76,20 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
     expect(res.reply).toContain("https://upsheru.com/bayar?kode=081234567890");
   });
 
+  it("includes old arrears beyond six recent paid invoices", async () => {
+    vi.mocked(prisma.pelanggan.findFirst).mockResolvedValue({
+      id: 102, nama: "Test", noTelepon: "081398765432",
+    } as never);
+    vi.mocked(prisma.tagihan.findMany).mockResolvedValue([
+      ...Array.from({ length: 6 }, (_, i) => ({ id: i + 1, bulan: 11 - i, tahun: 2026, jumlah: 50000, status: "lunas" })),
+      { id: 7, bulan: 1, tahun: 2026, jumlah: 50000, status: "tunggakan" },
+    ] as never);
+    const result = await processIncomingWaMessage({ sender: "081398765432", message: "tagihan" });
+    expect(result.reply).not.toContain("TAGIHAN ANDA LUNAS");
+    expect(result.reply).toContain("50.000");
+    expect(vi.mocked(prisma.tagihan.findMany).mock.calls[0][0]).not.toHaveProperty("take");
+  });
+
   it("3. Menginformasikan tagihan LUNAS jika pelanggan tidak memiliki tunggakan", async () => {
     (prisma.pelanggan.findFirst as any).mockResolvedValue({
       id: 102,
@@ -275,6 +289,28 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
       });
       expect(res.intent).toBe("MENU");
       expect(res.reply).toContain("Silakan pilih menu bantuan");
+    }
+  });
+
+  it("13. Merespons panduan pembayaran QRIS jika pengguna mengetik 'cara bayar' atau 'qris'", async () => {
+    (prisma.pelanggan.findFirst as any).mockResolvedValue({
+      id: 201,
+      nama: "Pak RT Heru",
+      noTelepon: "087881536978",
+    });
+
+    const variations = ["cara bayar", "CARA BAYAR", "qris", "panduan bayar", "tutorial bayar", "tata cara pembayaran", "5"];
+
+    for (const msg of variations) {
+      const res = await processIncomingWaMessage({
+        sender: "087881536978",
+        message: msg,
+      });
+      expect(res.intent).toBe("CARA_BAYAR");
+      expect(res.reply).toContain("PANDUAN PRAKTIS CARA BAYAR VIA QRIS");
+      expect(res.reply).toContain("Screenshot (Tangkapan Layar)");
+      expect(res.reply).toContain("Upload Galeri");
+      expect(res.reply).toContain("https://upsheru.com/bayar?kode=087881536978");
     }
   });
 });

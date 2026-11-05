@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth";
+import { requirePageRole } from "@/lib/server-rbac";
 import {
   getLaporan,
   labelKategoriPengeluaran,
@@ -25,8 +24,7 @@ export default async function LaporanCetakPage({
 }: {
   searchParams: Promise<{ bulan?: string; tahun?: string }>;
 }) {
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const session = await requirePageRole("kasir");
 
   const params = await searchParams;
   const now = new Date();

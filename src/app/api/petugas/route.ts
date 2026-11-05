@@ -8,6 +8,7 @@ export async function GET(request: Request) {
   const includeUser = url.searchParams.get("includeUser") === "1";
 
   const petugas = await prisma.petugas.findMany({
+    omit: { trackingToken: true },
     where: { deletedAt: null },
     include: {
       wilayah: true,
@@ -72,6 +73,7 @@ export async function POST(request: Request) {
     }
 
     const petugas = await prisma.petugas.create({
+      omit: { trackingToken: true },
       data: {
         nama,
         noTelepon,

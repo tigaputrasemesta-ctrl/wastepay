@@ -27,7 +27,7 @@ export async function GET(
       paket: true,
       jadwal: {
         where: { aktif: true },
-        include: { rute: { include: { kendaraan: true, petugas: true } } },
+        include: { rute: { include: { kendaraan: true, petugas: { omit: { trackingToken: true } } } } },
       },
       tagihan: { orderBy: [{ tahun: "desc" }, { bulan: "desc" }], take: 12 },
       pembayaran: { orderBy: { createdAt: "desc" }, take: 12 },
@@ -231,7 +231,7 @@ export async function PUT(
         paket: true,
         jadwal: {
           where: { aktif: true },
-          include: { rute: { include: { kendaraan: true, petugas: true } } },
+          include: { rute: { include: { kendaraan: true, petugas: { omit: { trackingToken: true } } } } },
         },
       },
     });

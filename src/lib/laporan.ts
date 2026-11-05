@@ -48,8 +48,9 @@ export interface CashAccrualBridge {
  * Dipakai bersama oleh halaman admin (/laporan), halaman cetak (/laporan-cetak), dan ekspor (/api/laporan/export).
  */
 export async function getLaporan(bulanIni: number, tahunIni: number) {
-  const awalBulan = new Date(tahunIni, bulanIni - 1, 1, 0, 0, 0, 0);
-  const akhirBulan = new Date(tahunIni, bulanIni, 1, 0, 0, 0, 0);
+  // Asia/Jakarta has no DST: midnight WIB is 17:00 UTC on the previous day.
+  const awalBulan = new Date(Date.UTC(tahunIni, bulanIni - 1, 1, -7));
+  const akhirBulan = new Date(Date.UTC(tahunIni, bulanIni, 1, -7));
   const now = new Date();
 
   // Kueri paralel multi-domain
@@ -119,7 +120,7 @@ export async function getLaporan(bulanIni: number, tahunIni: number) {
 
     // 4. Tagihan yang diterbitkan untuk periode berjalan
     prisma.tagihan.findMany({
-      where: { bulan: bulanIni, tahun: tahunIni, deletedAt: null },
+      where: { bulan: bulanIni, tahun: tahunIni, deletedAt: null, status: { not: "dibatalkan" } },
       select: { id: true, jumlah: true, denda: true, status: true, tanggalLunas: true },
     }),
 
@@ -128,6 +129,7 @@ export async function getLaporan(bulanIni: number, tahunIni: number) {
       where: {
         tanggal: { gte: awalBulan, lt: akhirBulan },
         status: "diambil",
+        deletedAt: null,
       },
       _sum: { volume: true, berat: true },
       _count: true,
@@ -140,6 +142,7 @@ export async function getLaporan(bulanIni: number, tahunIni: number) {
         tanggal: { gte: awalBulan, lt: akhirBulan },
         status: "diambil",
         jenisSampah: { not: null },
+        deletedAt: null,
       },
       _sum: { volume: true, berat: true },
       _count: true,
@@ -152,6 +155,7 @@ export async function getLaporan(bulanIni: number, tahunIni: number) {
         tanggal: { gte: awalBulan, lt: akhirBulan },
         status: "diambil",
         tpaId: { not: null },
+        deletedAt: null,
       },
       _sum: { volume: true, berat: true },
       _count: true,

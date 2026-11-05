@@ -17,15 +17,15 @@ export async function POST(request: Request) {
     if (token) {
       const petugas = await prisma.petugas.findUnique({
         where: { trackingToken: token },
-        select: { id: true, aktif: true },
+        select: { id: true, aktif: true, deletedAt: true, user: { select: { aktif: true } } },
       });
-      if (petugas?.aktif) targetPetugasId = petugas.id;
+      if (petugas?.aktif && !petugas.deletedAt && petugas.user?.aktif) targetPetugasId = petugas.id;
     } else if (session && session.role === "petugas") {
       const petugas = await prisma.petugas.findUnique({
         where: { userId: session.id },
-        select: { id: true, aktif: true },
+        select: { id: true, aktif: true, deletedAt: true },
       });
-      if (petugas?.aktif) targetPetugasId = petugas.id;
+      if (petugas?.aktif && !petugas.deletedAt) targetPetugasId = petugas.id;
     }
 
     if (!targetPetugasId) {
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const lat = parseFloat(body.latitude);
     const lng = parseFloat(body.longitude);
-    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+    if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) {
       return NextResponse.json({ error: "Koordinat tidak valid" }, { status: 400 });
     }
 

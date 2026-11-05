@@ -9,6 +9,7 @@ export async function GET(
   try {
     const id = parseInt((await params).id);
     const petugas = await prisma.petugas.findUnique({
+      omit: { trackingToken: true },
       where: { id },
       include: {
         wilayah: true,
@@ -49,6 +50,7 @@ export async function PUT(
     }
 
     const petugas = await prisma.petugas.update({
+      omit: { trackingToken: true },
       where: { id },
       data,
       include: { wilayah: true, kelurahan: true },
@@ -88,7 +90,7 @@ export async function DELETE(
     // Soft delete — pertahankan riwayat pengangkutan & rute
     await prisma.petugas.update({
       where: { id },
-      data: { deletedAt: new Date() },
+      data: { deletedAt: new Date(), aktif: false, trackingToken: null },
     });
     await logAudit("delete", "Petugas", id, { id }, undefined);
     return NextResponse.json({ message: "Petugas berhasil dihapus" });

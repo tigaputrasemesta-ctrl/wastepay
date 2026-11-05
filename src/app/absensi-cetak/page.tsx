@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth";
+import { requirePageRole } from "@/lib/server-rbac";
 import { getRekapAbsensi } from "@/lib/absensi";
 import TombolCetak from "@/components/TombolCetak";
 import { BULAN_INDO, companyInfo, formatTanggalWaktuIndo } from "@/lib/invoice-format";
@@ -39,8 +38,7 @@ export default async function AbsensiCetakPage({
 }: {
   searchParams: Promise<{ bulan?: string; tahun?: string }>;
 }) {
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const session = await requirePageRole("admin");
 
   const sp = await searchParams;
   const now = new Date();
