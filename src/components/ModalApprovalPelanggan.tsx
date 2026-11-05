@@ -390,9 +390,9 @@ export default function ModalApprovalPelanggan({
           </div>
 
           {/* Status Hasil Survei Lapangan */}
-          <div className="p-4 rounded-2xl border border-slate-200/80 bg-white space-y-3 shadow-xs">
+          <div className="p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 space-y-3 shadow-xs">
             <div className="flex items-center justify-between">
-              <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+              <h4 className="text-xs font-black text-slate-800 dark:text-zinc-100 uppercase tracking-wider flex items-center gap-1.5">
                 <span>📋</span>
                 <span>Hasil Cek Survei Lapangan</span>
               </h4>
@@ -400,8 +400,8 @@ export default function ModalApprovalPelanggan({
                 <span
                   className={`px-2 py-0.5 rounded-full font-bold ${
                     hasPhoto && hasGps
-                      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                      : "bg-amber-50 text-amber-700 border border-amber-200"
+                      ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"
+                      : "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
                   }`}
                 >
                   {hasPhoto && hasGps ? "✓ Survei Lengkap" : "⏳ Menunggu Lengkap"}
@@ -411,12 +411,12 @@ export default function ModalApprovalPelanggan({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
               {/* Foto Rumah */}
-              <div className="p-3 rounded-xl border border-slate-100 bg-slate-50/50">
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">
+              <div className="p-3 rounded-xl border border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+                <span className="text-[10px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider block mb-1.5">
                   Foto Rumah Pendaftar:
                 </span>
                 {pelanggan.fotoRumah ? (
-                  <div className="relative h-28 w-full rounded-lg overflow-hidden border border-slate-200 bg-slate-100">
+                  <div className="relative h-28 w-full rounded-lg overflow-hidden border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-950">
                     <Image
                       src={pelanggan.fotoRumah}
                       alt={pelanggan.nama}
@@ -425,34 +425,34 @@ export default function ModalApprovalPelanggan({
                     />
                   </div>
                 ) : (
-                  <div className="h-28 rounded-lg border border-dashed border-amber-300 bg-amber-50/50 flex flex-col items-center justify-center text-center p-2">
-                    <AlertTriangle className="w-5 h-5 text-amber-600 mb-1" />
-                    <span className="text-xs font-semibold text-amber-800">Foto Belum Diambil</span>
-                    <span className="text-[10px] text-amber-600">Survei petugas belum upload foto</span>
+                  <div className="h-28 rounded-lg border border-dashed border-amber-300 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/30 flex flex-col items-center justify-center text-center p-2">
+                    <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 mb-1" />
+                    <span className="text-xs font-semibold text-amber-800 dark:text-amber-300">Foto Belum Diambil</span>
+                    <span className="text-[10px] text-amber-600 dark:text-amber-400">Survei petugas belum upload foto</span>
                   </div>
                 )}
               </div>
 
               {/* Titik GPS & Koordinat */}
-              <div className="p-3 rounded-xl border border-slate-100 bg-slate-50/50 flex flex-col justify-between">
+              <div className="p-3 rounded-xl border border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 flex flex-col justify-between">
                 <div>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">
+                  <span className="text-[10px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider block mb-1.5">
                     Koordinat Lokasi (GPS):
                   </span>
                   {hasGps ? (
                     <div className="space-y-1">
-                      <p className="font-mono text-xs font-bold text-slate-800">
+                      <p className="font-mono text-xs font-bold text-slate-800 dark:text-zinc-200">
                         {pelanggan.latitude?.toFixed(6)}, {pelanggan.longitude?.toFixed(6)}
                       </p>
                       {pelanggan.koordinatAkurasi && (
-                        <p className="text-[11px] text-emerald-700 font-medium">
+                        <p className="text-[11px] text-emerald-700 dark:text-emerald-400 font-medium">
                           Akurasi GPS: ± {Math.round(pelanggan.koordinatAkurasi)} meter
                         </p>
                       )}
                       <a
                         href={`https://www.google.com/maps?q=${pelanggan.latitude},${pelanggan.longitude}`}
                         target="_blank"
-                        className="inline-flex items-center gap-1 text-xs text-emerald-700 hover:underline font-semibold mt-1"
+                        className="inline-flex items-center gap-1 text-xs text-emerald-700 dark:text-emerald-400 hover:underline font-semibold mt-1"
                       >
                         <span>Buka Google Maps</span>
                         <ExternalLink className="w-3 h-3" />
@@ -461,10 +461,10 @@ export default function ModalApprovalPelanggan({
                   ) : (
                     <div className="py-4 text-center">
                       <MapPin className="w-5 h-5 text-amber-500 mx-auto mb-1" />
-                      <span className="text-xs font-semibold text-amber-800 block">
+                      <span className="text-xs font-semibold text-amber-800 dark:text-amber-300 block">
                         Titik Belum Ditandai
                       </span>
-                      <span className="text-[10px] text-amber-600">
+                      <span className="text-[10px] text-amber-600 dark:text-amber-400">
                         Koordinat GPS belum dimasukkan petugas
                       </span>
                     </div>
@@ -472,7 +472,7 @@ export default function ModalApprovalPelanggan({
                 </div>
 
                 {pelanggan.catatan && (
-                  <div className="mt-2 pt-2 border-t border-slate-200/60 text-[11px] text-slate-600">
+                  <div className="mt-2 pt-2 border-t border-slate-200/60 dark:border-zinc-800 text-[11px] text-slate-600 dark:text-zinc-400">
                     <strong>Catatan:</strong> {pelanggan.catatan}
                   </div>
                 )}
@@ -481,17 +481,17 @@ export default function ModalApprovalPelanggan({
           </div>
 
           {/* Form Konfigurasi Admin Pusat */}
-          <div className="p-4 sm:p-5 rounded-2xl border-2 border-emerald-600/20 bg-emerald-50/20 space-y-4">
-            <div className="flex items-center justify-between gap-2 border-b border-emerald-900/10 pb-3">
+          <div className="p-4 sm:p-5 rounded-2xl border-2 border-emerald-600/20 dark:border-emerald-500/20 bg-emerald-50/20 dark:bg-emerald-950/20 space-y-4">
+            <div className="flex items-center justify-between gap-2 border-b border-emerald-900/10 dark:border-emerald-500/20 pb-3">
               <div className="flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-emerald-700 text-white text-xs flex items-center justify-center font-black">
                   ⚙️
                 </span>
                 <div>
-                  <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">
+                  <h4 className="text-xs font-black text-slate-900 dark:text-zinc-100 uppercase tracking-wider">
                     Pengaturan Operasional oleh Admin Pusat
                   </h4>
-                  <p className="text-[11px] text-slate-500 font-medium">
+                  <p className="text-[11px] text-slate-500 dark:text-zinc-400 font-medium">
                     Penetapan zonasi, petugas pickup, jadwal multi-hari, dan paket iuran
                   </p>
                 </div>
@@ -499,14 +499,14 @@ export default function ModalApprovalPelanggan({
             </div>
 
             {/* Bagian 1: Zonasi & Wilayah */}
-            <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 shadow-xs space-y-3">
-              <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">
+            <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-3">
+              <span className="text-[10px] font-black text-slate-700 dark:text-zinc-300 uppercase tracking-wider block">
                 1. Wilayah &amp; Penetapan Zona Pickup
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* Kelurahan */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-zinc-300 mb-1">
                     Kelurahan *
                   </label>
                   <select
@@ -517,7 +517,7 @@ export default function ModalApprovalPelanggan({
                       setSelectedWilayah("");
                       setSelectedRute("");
                     }}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-zinc-800 rounded-xl text-xs font-semibold bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
                     <option value="">Pilih Kelurahan</option>
                     {kelurahanList.map((k) => (
@@ -530,14 +530,14 @@ export default function ModalApprovalPelanggan({
 
                 {/* Zona Area Pickup */}
                 <div>
-                  <label className="block text-xs font-bold text-emerald-800 mb-1 flex items-center gap-1">
+                  <label className="block text-xs font-bold text-emerald-800 dark:text-emerald-300 mb-1 flex items-center gap-1">
                     <span>📍 Zona Area Pickup *</span>
-                    <span className="text-[10px] text-emerald-600 font-normal">(Wajib)</span>
+                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-normal">(Wajib)</span>
                   </label>
                   <select
                     value={selectedZona}
                     onChange={(e) => setSelectedZona(e.target.value)}
-                    className="w-full px-3 py-2 border-2 border-emerald-500 rounded-xl text-xs font-bold bg-white text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-xs"
+                    className="w-full px-3 py-2 border-2 border-emerald-500 dark:border-emerald-600 rounded-xl text-xs font-bold bg-white dark:bg-zinc-950 text-emerald-900 dark:text-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-xs"
                   >
                     <option value="">— Pilih Zona Angkut Pelanggan —</option>
                     {availableZonas.map((z) => (
@@ -547,7 +547,7 @@ export default function ModalApprovalPelanggan({
                     ))}
                   </select>
                   {availableZonas.length === 0 && selectedKelurahan && (
-                    <p className="text-[10px] text-amber-700 mt-1">
+                    <p className="text-[10px] text-amber-700 dark:text-amber-400 mt-1">
                       Belum ada zona di kelurahan ini.
                     </p>
                   )}
@@ -555,13 +555,13 @@ export default function ModalApprovalPelanggan({
 
                 {/* Wilayah / RT */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-zinc-300 mb-1">
                     Wilayah / RT (Opsional)
                   </label>
                   <select
                     value={selectedWilayah}
                     onChange={(e) => setSelectedWilayah(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-zinc-800 rounded-xl text-xs font-medium bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
                     <option value="">— Hubungkan ke RT Wilayah —</option>
                     {availableWilayahs.map((w) => (
@@ -574,36 +574,36 @@ export default function ModalApprovalPelanggan({
 
                 {/* Tanggal Langganan / Siklus Tagihan */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1 whitespace-nowrap overflow-hidden text-ellipsis">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-zinc-300 mb-1 whitespace-nowrap overflow-hidden text-ellipsis">
                     Tanggal Langganan / Tagihan
                   </label>
                   <input
                     type="datetime-local"
                     value={createdAt}
                     onChange={(e) => setCreatedAt(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-zinc-800 rounded-xl text-xs font-medium bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
               </div>
             </div>
 
             {/* Bagian 2: Mobil Armada Pickup & Jadwal Multi-Hari */}
-            <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 shadow-xs space-y-3.5">
-              <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">
+            <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-3.5">
+              <span className="text-[10px] font-black text-slate-700 dark:text-zinc-300 uppercase tracking-wider block">
                 2. Mobil Armada Pickup &amp; Jadwal Penjemputan (Bisa &gt; 1 Hari)
               </span>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {/* Mobil Armada Pickup */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
-                    <Truck className="w-3 h-3 text-emerald-700" />
+                  <label className="block text-xs font-bold text-slate-700 dark:text-zinc-300 mb-1 flex items-center gap-1">
+                    <Truck className="w-3 h-3 text-emerald-700 dark:text-emerald-400" />
                     <span>Mobil Armada Pickup</span>
                   </label>
                   <select
                     value={selectedKendaraan}
                     onChange={(e) => setSelectedKendaraan(e.target.value)}
-                    className="w-full px-3 py-2 border-2 border-emerald-500 rounded-xl text-xs font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 border-2 border-emerald-500 dark:border-emerald-600 rounded-xl text-xs font-semibold bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
                     <option value="">— Pilih Mobil Armada —</option>
                     {kendaraanList.map((k) => (
@@ -616,14 +616,14 @@ export default function ModalApprovalPelanggan({
 
                 {/* Rute Armada */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
-                    <Truck className="w-3 h-3 text-slate-500" />
+                  <label className="block text-xs font-bold text-slate-700 dark:text-zinc-300 mb-1 flex items-center gap-1">
+                    <Truck className="w-3 h-3 text-slate-500 dark:text-zinc-400" />
                     <span>Rute Armada (Opsional)</span>
                   </label>
                   <select
                     value={selectedRute}
                     onChange={(e) => handleRuteChange(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-zinc-800 rounded-xl text-xs font-medium bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
                     <option value="">— Hubungkan ke Rute Armada —</option>
                     {availableRutes.map((r) => (
@@ -636,28 +636,28 @@ export default function ModalApprovalPelanggan({
 
                 {/* Jam Estimasi */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-zinc-300 mb-1">
                     Jam Estimasi Penjemputan
                   </label>
                   <input
                     type="time"
                     value={selectedJam}
                     onChange={(e) => setSelectedJam(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-zinc-800 rounded-xl text-xs font-medium bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
               </div>
 
               {/* Supir / Petugas (Opsional) */}
               <div className="pt-1">
-                <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
-                  <User className="w-3 h-3 text-slate-500" />
+                <label className="block text-xs font-bold text-slate-700 dark:text-zinc-300 mb-1 flex items-center gap-1">
+                  <User className="w-3 h-3 text-slate-500 dark:text-zinc-400" />
                   <span>Petugas / Supir (Opsional)</span>
                 </label>
                 <select
                   value={selectedPetugas}
                   onChange={(e) => setSelectedPetugas(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3 py-2 border border-slate-300 dark:border-zinc-800 rounded-xl text-xs font-medium bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
                   <option value="">— Pilih Petugas / Supir (Opsional) —</option>
                   {petugasList.map((p) => (
@@ -669,10 +669,10 @@ export default function ModalApprovalPelanggan({
               </div>
 
               {/* Multi-Select Hari Pengangkutan */}
-              <div className="pt-2 border-t border-slate-100 space-y-2">
+              <div className="pt-2 border-t border-slate-100 dark:border-zinc-800 space-y-2">
                 <div className="flex items-center justify-between flex-wrap gap-2">
-                  <label className="text-xs font-bold text-slate-800">
-                    Pilih Hari Penjemputan <span className="text-slate-500 font-medium">(Bisa memilih lebih dari satu hari)</span>
+                  <label className="text-xs font-bold text-slate-800 dark:text-zinc-200">
+                    Pilih Hari Penjemputan <span className="text-slate-500 dark:text-zinc-400 font-medium">(Bisa memilih lebih dari satu hari)</span>
                   </label>
 
                   {/* Preset Buttons */}
@@ -680,35 +680,35 @@ export default function ModalApprovalPelanggan({
                     <button
                       type="button"
                       onClick={() => setSelectedHari(["Senin", "Kamis"])}
-                      className="px-2 py-0.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium transition"
+                      className="px-2 py-0.5 rounded-lg border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 font-medium transition"
                     >
                       Senin &amp; Kamis
                     </button>
                     <button
                       type="button"
                       onClick={() => setSelectedHari(["Senin", "Rabu", "Jumat"])}
-                      className="px-2 py-0.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium transition"
+                      className="px-2 py-0.5 rounded-lg border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 font-medium transition"
                     >
                       Senin, Rabu, Jumat
                     </button>
                     <button
                       type="button"
                       onClick={() => setSelectedHari(["Selasa", "Kamis", "Sabtu"])}
-                      className="px-2 py-0.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium transition"
+                      className="px-2 py-0.5 rounded-lg border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 font-medium transition"
                     >
                       Selasa, Kamis, Sabtu
                     </button>
                     <button
                       type="button"
                       onClick={() => setSelectedHari([...DAFTAR_HARI])}
-                      className="px-2 py-0.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium transition"
+                      className="px-2 py-0.5 rounded-lg border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 font-medium transition"
                     >
                       Semua Hari
                     </button>
                     <button
                       type="button"
                       onClick={() => setSelectedHari([])}
-                      className="px-2 py-0.5 rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 font-medium transition"
+                      className="px-2 py-0.5 rounded-lg border border-rose-200 dark:border-rose-900 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900 text-rose-700 dark:text-rose-300 font-medium transition"
                     >
                       Reset
                     </button>
@@ -727,7 +727,7 @@ export default function ModalApprovalPelanggan({
                         className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                           isSelected
                             ? "bg-emerald-700 text-white shadow-xs scale-[1.02]"
-                            : "bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200"
+                            : "bg-slate-50 dark:bg-zinc-950 text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800 border border-slate-200 dark:border-zinc-800"
                         }`}
                       >
                         <span>{isSelected ? "✓" : "+"}</span>
@@ -740,12 +740,12 @@ export default function ModalApprovalPelanggan({
                 {/* Selection status */}
                 <div className="text-[11px] font-medium pt-0.5">
                   {selectedHari.length > 0 ? (
-                    <span className="text-emerald-700 font-semibold flex items-center gap-1">
+                    <span className="text-emerald-700 dark:text-emerald-400 font-semibold flex items-center gap-1">
                       <span>✓</span>
                       <span>{selectedHari.length} hari dipilih: <strong>{selectedHari.join(", ")}</strong></span>
                     </span>
                   ) : (
-                    <span className="text-amber-700 font-medium">
+                    <span className="text-amber-700 dark:text-amber-400 font-medium">
                       ⚠️ Belum ada hari penjemputan yang dipilih. Silakan klik hari di atas (bisa lebih dari satu).
                     </span>
                   )}
@@ -754,20 +754,20 @@ export default function ModalApprovalPelanggan({
             </div>
 
             {/* Bagian 3: Tarif & Kategori */}
-            <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 shadow-xs space-y-3">
-              <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">
+            <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-3">
+              <span className="text-[10px] font-black text-slate-700 dark:text-zinc-300 uppercase tracking-wider block">
                 3. Kategori Tarif &amp; Paket Layanan
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* Kategori Tarif */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-zinc-300 mb-1">
                     Kategori Pelanggan
                   </label>
                   <select
                     value={selectedKategori}
                     onChange={(e) => setSelectedKategori(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-zinc-800 rounded-xl text-xs font-medium bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
                     {KATEGORI_OPTIONS.map((k) => (
                       <option key={k.value} value={k.value}>
@@ -779,13 +779,13 @@ export default function ModalApprovalPelanggan({
 
                 {/* Paket Layanan */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-zinc-300 mb-1">
                     Paket Layanan
                   </label>
                   <select
                     value={selectedPaket}
                     onChange={(e) => setSelectedPaket(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-zinc-800 rounded-xl text-xs font-medium bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
                     <option value="">Default Kategori</option>
                     {paketList.map((p) => (

@@ -1543,9 +1543,9 @@ export default function TagihanPage() {
 
       {/* Modal Auto Generate */}
       {showAutoGenerate && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-zinc-900 w-full max-w-2xl rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden text-slate-900 dark:text-zinc-100">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-zinc-900 w-full max-w-2xl max-h-[90vh] flex flex-col rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div>
                 <h2 className="font-semibold text-slate-900 dark:text-zinc-100 text-base tracking-tight">Auto-Generate Tagihan</h2>
                 <p className="text-xs text-slate-500 dark:text-zinc-400">Buat tagihan massal secara otomatis berdasarkan tarif pelanggan</p>
@@ -1558,7 +1558,8 @@ export default function TagihanPage() {
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <form onSubmit={handleAutoGenerate} className="p-6 space-y-4">
+            <form id="auto-generate-modal-form" onSubmit={handleAutoGenerate} className="flex flex-col flex-1 overflow-hidden min-h-0">
+              <div className="p-6 space-y-4 flex-1 overflow-y-auto min-h-0">
               <div className="bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-900/50 rounded-xl p-3.5 text-xs text-sky-900 dark:text-sky-200">
                 <p className="font-bold mb-1">ℹ️ Cara Kerja Auto-Generate</p>
                 <p className="text-sky-800 dark:text-sky-300 leading-relaxed">Nominal dihitung otomatis (tarif kustom → paket → Level). Klik <b>Muat Preview</b> untuk melihat & mengubah nominal per pelanggan sebelum generate.</p>
@@ -1701,18 +1702,21 @@ export default function TagihanPage() {
                 </div>
               )}
 
-              <div className="flex gap-2.5 pt-2">
+              </div>
+
+              <div className="flex items-center justify-end gap-2.5 px-6 py-3.5 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-950/80 shrink-0">
                 <button
                   type="button"
                   onClick={() => { setShowAutoGenerate(false); setAutoResult(null); setPreview(null); }}
-                  className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 text-sm font-semibold rounded-lg transition-all"
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 text-xs font-semibold rounded-lg transition-all"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
+                  form="auto-generate-modal-form"
                   disabled={generating || (preview !== null && selectedPreviewIds.size === 0)}
-                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm hover:shadow active:scale-[0.98] transition-all text-sm font-semibold rounded-lg disabled:opacity-50"
+                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm hover:shadow active:scale-[0.98] transition-all text-xs font-semibold rounded-lg disabled:opacity-50"
                 >
                   {generating ? "Memproses..." : preview ? `Generate (${selectedPreviewIds.size})` : "Generate Semua"}
                 </button>
@@ -2075,10 +2079,10 @@ export default function TagihanPage() {
 
       {/* Modal Blast WA Tagihan per RT */}
       {showBlastModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-zinc-900 w-full max-w-3xl rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl my-8 overflow-hidden text-slate-900 dark:text-zinc-100">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-zinc-900 w-full max-w-3xl max-h-[90vh] flex flex-col rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden text-slate-900 dark:text-zinc-100">
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-900 flex items-center justify-center text-lg">
                   📢
@@ -2097,7 +2101,7 @@ export default function TagihanPage() {
               </button>
             </div>
 
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-4 flex-1 overflow-y-auto min-h-0">
               {/* Filter / Kriteria Pengiriman */}
               <div className="bg-slate-50/70 dark:bg-zinc-950/60 border border-slate-200/80 dark:border-zinc-800 rounded-lg p-4 space-y-3">
                 <div className="flex items-center justify-between">
@@ -2456,37 +2460,37 @@ export default function TagihanPage() {
                   )}
                 </div>
               )}
+            </div>
 
-              {/* Action Buttons */}
-              <div className="flex gap-2.5 pt-2">
-                <button
-                  type="button"
-                  onClick={() => { setShowBlastModal(false); setBlastResult(null); }}
-                  className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 font-semibold rounded-lg text-sm transition-all"
-                >
-                  {blastResult ? "Tutup" : "Batal"}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSendBlast}
-                  disabled={blastSending || blastLoading || !blastPreview || blastPreview.totalWarga === 0}
-                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-lg shadow-sm hover:shadow active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  {blastSending ? (
-                    <>
-                      <span className="animate-spin">⏳</span>
-                      <span>Sedang Mengirim Blast...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>🚀</span>
-                      <span>
-                        Kirim Blast WA ({blastPreview ? `${blastPreview.totalWarga} Warga` : "..."})
-                      </span>
-                    </>
-                  )}
-                </button>
-              </div>
+            {/* Modal Footer (Pinned / Sticky Bottom) */}
+            <div className="flex items-center justify-end gap-2.5 px-6 py-3.5 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-950/80 shrink-0">
+              <button
+                type="button"
+                onClick={() => { setShowBlastModal(false); setBlastResult(null); }}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 font-semibold rounded-lg text-xs transition-all"
+              >
+                {blastResult ? "Tutup" : "Batal"}
+              </button>
+              <button
+                type="button"
+                onClick={handleSendBlast}
+                disabled={blastSending || blastLoading || !blastPreview || blastPreview.totalWarga === 0}
+                className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm hover:shadow active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
+              >
+                {blastSending ? (
+                  <>
+                    <span className="animate-spin">⏳</span>
+                    <span>Sedang Mengirim Blast...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>🚀</span>
+                    <span>
+                      Kirim Blast WA ({blastPreview ? `${blastPreview.totalWarga} Warga` : "..."})
+                    </span>
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>
