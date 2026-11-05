@@ -45,8 +45,8 @@ export default function ConfirmDialog({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-slate-900/60 dark:bg-black/75 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-      <div className="bg-white dark:bg-zinc-900 rounded-3xl border border-slate-200/90 dark:border-zinc-800 shadow-2xl w-full max-w-sm overflow-hidden p-6 text-center space-y-4 text-slate-900 dark:text-zinc-100">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+      <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl w-full max-w-sm overflow-hidden p-6 text-center space-y-4 text-slate-900 dark:text-zinc-100">
         {/* Icon */}
         <div
           className={`w-12 h-12 rounded-2xl mx-auto flex items-center justify-center border ${

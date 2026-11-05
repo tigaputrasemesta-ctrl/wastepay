@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { X } from "lucide-react";
 import { formatRupiah, formatDate } from "@/lib/utils";
 
 export interface RiwayatPembayaranItem {
@@ -301,30 +302,30 @@ export function TabelRiwayatPemasukan({
       {/* Modal Foto Bukti */}
       {modalFoto && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150"
           onClick={() => setModalFoto(null)}
         >
           <div
-            className="bg-white rounded-2xl max-w-lg w-full p-5 shadow-2xl relative"
+            className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl max-w-lg w-full p-5 shadow-2xl relative text-slate-900 dark:text-zinc-100"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-zinc-800 mb-4">
               <div>
-                <h4 className="font-extrabold text-slate-900 text-sm">Foto Bukti Pembayaran</h4>
-                <p className="text-xs text-slate-500 font-medium">
+                <h4 className="font-semibold text-slate-900 dark:text-zinc-100 text-sm">Foto Bukti Pembayaran</h4>
+                <p className="text-xs text-slate-500 dark:text-zinc-400">
                   {modalFoto.nama} ({modalFoto.kode}) · {formatRupiah(modalFoto.nominal)}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setModalFoto(null)}
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold flex items-center justify-center text-sm"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="relative w-full h-80 bg-slate-900 rounded-xl overflow-hidden flex items-center justify-center border border-slate-200">
+            <div className="relative w-full h-80 bg-slate-950 rounded-lg overflow-hidden flex items-center justify-center border border-slate-200 dark:border-zinc-800">
               <Image
                 src={modalFoto.url}
                 alt="Bukti pembayaran"
@@ -335,14 +336,14 @@ export function TabelRiwayatPemasukan({
             </div>
 
             <div className="mt-4 flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500 capitalize">
+              <span className="text-xs font-semibold text-slate-500 dark:text-zinc-400 capitalize">
                 Metode: {modalFoto.metode}
               </span>
               <a
                 href={modalFoto.url}
                 download={`bukti-bayar-${modalFoto.kode}.jpg`}
                 target="_blank"
-                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow transition"
+                className="px-4 py-2 bg-slate-900 dark:bg-zinc-100 hover:bg-slate-800 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 font-semibold text-xs rounded-lg shadow-sm transition-colors"
               >
                 Unduh Foto Asli
               </a>

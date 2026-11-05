@@ -6,6 +6,7 @@ import { formatRupiah, formatDate, KATEGORI_PENGELUARAN } from "@/lib/utils";
 import { useUser } from "@/hooks/useUser";
 import { useToast } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { X } from "lucide-react";
 
 type Pengeluaran = {
   id: number;
@@ -215,36 +216,75 @@ export default function PengeluaranPage() {
 
       {/* Form Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
-              <h2 className="font-semibold text-slate-900 text-base">{editing ? "Edit Pengeluaran" : "Catat Pengeluaran"}</h2>
-              <button onClick={() => { setShowForm(false); setEditing(null); }} className="p-1.5 text-slate-600 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+              <h2 className="font-semibold text-slate-900 dark:text-zinc-100 text-base tracking-tight">{editing ? "Edit Pengeluaran" : "Catat Pengeluaran"}</h2>
+              <button
+                type="button"
+                onClick={() => { setShowForm(false); setEditing(null); }}
+                className="p-1.5 text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+              >
+                <X className="w-4 h-4" />
               </button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Tanggal</label>
-                <input type="date" value={form.tanggal} onChange={(e) => setForm({ ...form, tanggal: e.target.value })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm" />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Tanggal</label>
+                <input
+                  type="date"
+                  value={form.tanggal}
+                  onChange={(e) => setForm({ ...form, tanggal: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100"
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Kategori *</label>
-                <select value={form.kategori} onChange={(e) => setForm({ ...form, kategori: e.target.value })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white" required>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Kategori *</label>
+                <select
+                  value={form.kategori}
+                  onChange={(e) => setForm({ ...form, kategori: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100"
+                  required
+                >
                   {KATEGORI_PENGELUARAN.map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Jumlah *</label>
-                <input type="number" value={form.jumlah} onChange={(e) => setForm({ ...form, jumlah: e.target.value })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm" placeholder="50000" required />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Jumlah (Rp) *</label>
+                <input
+                  type="number"
+                  value={form.jumlah}
+                  onChange={(e) => setForm({ ...form, jumlah: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100"
+                  placeholder="50000"
+                  required
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Keterangan *</label>
-                <textarea value={form.keterangan} onChange={(e) => setForm({ ...form, keterangan: e.target.value })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm" rows={2} placeholder="Isi BBM motor" required />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Keterangan *</label>
+                <textarea
+                  value={form.keterangan}
+                  onChange={(e) => setForm({ ...form, keterangan: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500"
+                  rows={2}
+                  placeholder="Isi BBM motor"
+                  required
+                />
               </div>
-              <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-700 font-medium hover:bg-slate-50 transition">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all">{editing ? "Simpan" : "Simpan"}</button>
+              <div className="flex gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={() => { setShowForm(false); setEditing(null); }}
+                  className="flex-1 px-4 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg text-sm text-slate-700 dark:text-zinc-200 font-semibold hover:bg-slate-100 dark:hover:bg-zinc-800 transition"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-semibold shadow-xs active:scale-95 transition-all"
+                >
+                  Simpan
+                </button>
               </div>
             </form>
           </div>

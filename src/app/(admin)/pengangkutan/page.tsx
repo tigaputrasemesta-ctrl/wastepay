@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { X } from "lucide-react";
 import { formatDate, todayLocalISO } from "@/lib/utils";
 import { useUser } from "@/hooks/useUser";
 import LacakLokasi from "@/components/LacakLokasi";
@@ -346,26 +347,24 @@ export default function PengangkutanPage() {
 
       {/* Update Modal */}
       {updating && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4.5 bg-slate-900 text-white">
-              <h2 className="font-bold text-base tracking-wide">Update Pengangkutan</h2>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+              <h2 className="font-semibold text-base text-slate-900 dark:text-zinc-100">Update Pengangkutan</h2>
               <button
                 onClick={() => setUpdating(null)}
-                className="w-8 h-8 rounded-xl flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <X className="w-4 h-4" />
               </button>
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Status Pengangkutan</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Status Pengangkutan</label>
                 <select
                   value={editForm.status}
                   onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900"
+                  className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
                 >
                   {STATUS_OPTIONS.map((s) => (
                     <option key={s.value} value={s.value}>{s.label}</option>
@@ -374,32 +373,32 @@ export default function PengangkutanPage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Volume (m³)</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Volume (m³)</label>
                   <input
                     type="number" step="0.1"
                     value={editForm.volume}
                     onChange={(e) => setEditForm({ ...editForm, volume: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900"
+                    className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
                     placeholder="0.0"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Berat (kg)</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Berat (kg)</label>
                   <input
                     type="number" step="0.1"
                     value={editForm.berat}
                     onChange={(e) => setEditForm({ ...editForm, berat: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900"
+                    className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
                     placeholder="0.0"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Jenis Sampah</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Jenis Sampah</label>
                 <select
                   value={editForm.jenisSampah}
                   onChange={(e) => setEditForm({ ...editForm, jenisSampah: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900"
+                  className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
                 >
                   <option value="">Pilih jenis</option>
                   {JENIS_SAMPAH.map((j) => (
@@ -408,11 +407,11 @@ export default function PengangkutanPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Kendaraan Pengangkut</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Kendaraan Pengangkut</label>
                 <select
                   value={editForm.kendaraanId}
                   onChange={(e) => setEditForm({ ...editForm, kendaraanId: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900"
+                  className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
                 >
                   <option value="">— {user?.role === "petugas" ? "Pilih kendaraan Anda" : "Tanpa kendaraan"} —</option>
                   {kendaraanSaya.map((k) => (
@@ -423,31 +422,31 @@ export default function PengangkutanPage() {
                   ))}
                 </select>
                 {user?.role === "petugas" && editForm.status === "sudah_diambil" && !editForm.kendaraanId && (
-                  <p className="text-[11px] text-rose-600 font-semibold mt-1">Wajib pilih kendaraan untuk pickup</p>
+                  <p className="text-[11px] text-rose-500 font-semibold mt-1">Wajib pilih kendaraan untuk pickup</p>
                 )}
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Catatan</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Catatan</label>
                 <textarea
                   value={editForm.catatan}
                   onChange={(e) => setEditForm({ ...editForm, catatan: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900 placeholder:text-slate-400"
+                  className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
                   rows={2}
                   placeholder="Kendala atau catatan..."
                 />
               </div>
-              <div className="flex gap-3 pt-3 border-t border-slate-200">
+              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100 dark:border-zinc-800">
                 <button
                   type="button"
                   onClick={() => setUpdating(null)}
-                  className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors"
+                  className="px-4 py-2 text-xs font-semibold rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
                 >
                   Batal
                 </button>
                 <button
                   type="button"
                   onClick={() => handleUpdate(updating)}
-                  className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-md active:scale-95 transition-all"
+                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-colors"
                 >
                   Simpan Status
                 </button>

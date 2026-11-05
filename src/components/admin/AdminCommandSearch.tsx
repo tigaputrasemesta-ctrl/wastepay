@@ -451,11 +451,11 @@ export default function AdminCommandSearch() {
       {/* ── COMMAND SEARCH MODAL ── */}
       {open && (
         <div
-          className="fixed inset-0 z-50 flex items-start justify-center pt-[10vh] px-4 bg-slate-950/60 dark:bg-black/75 backdrop-blur-sm animate-in fade-in duration-150"
+          className="fixed inset-0 z-50 flex items-start justify-center pt-[10vh] px-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150"
           onClick={() => setOpen(false)}
         >
           <div
-            className="w-full max-w-xl bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-zinc-800 overflow-hidden text-slate-800 dark:text-zinc-100 flex flex-col max-h-[75vh] animate-in zoom-in-95 duration-150"
+            className="w-full max-w-xl bg-white dark:bg-zinc-900 rounded-xl shadow-2xl border border-slate-200 dark:border-zinc-800 overflow-hidden text-slate-800 dark:text-zinc-100 flex flex-col max-h-[75vh] animate-in zoom-in-95 duration-150"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Input Bar */}

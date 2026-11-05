@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { X } from "lucide-react";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { useToast } from "@/components/Toast";
 
@@ -1366,14 +1367,14 @@ export default function PengaturanPage() {
 
       {/* MODAL TAMBAH / EDIT BLOK PICKUP */}
       {showWilayahModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl overflow-hidden w-full max-w-lg">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/70">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-lg text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
               <div>
-                <h2 className="font-bold text-slate-900 text-base">
+                <h2 className="font-semibold text-slate-900 dark:text-zinc-100 text-base">
                   {editingWilayah ? "Edit Blok Pickup" : "Tambah Blok Pickup Layanan"}
                 </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
                   Unit jemput sampah: Kecamatan → Kelurahan → Nama Blok
                 </p>
               </div>
@@ -1382,18 +1383,16 @@ export default function PengaturanPage() {
                   setShowWilayahModal(false);
                   resetWilayahForm();
                 }}
-                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-200/60 transition-colors"
+                className="p-1.5 text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             <form onSubmit={handleSubmitWilayah} className="p-6 space-y-4">
               {formWilayahError && (
-                <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs font-medium text-rose-700 flex items-start gap-2">
-                  <svg className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-850 rounded-lg text-xs font-medium text-rose-700 dark:text-rose-400 flex items-start gap-2">
+                  <svg className="w-4 h-4 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <span>{formWilayahError}</span>
@@ -1402,8 +1401,8 @@ export default function PengaturanPage() {
 
               {/* 1. KECAMATAN */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  1. Kecamatan <span className="text-slate-400 font-normal lowercase">(filter kelurahan)</span>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">
+                  1. Kecamatan <span className="text-slate-400 dark:text-zinc-500 font-normal lowercase">(filter kelurahan)</span>
                 </label>
                 <select
                   value={formKecamatan}
@@ -1417,7 +1416,7 @@ export default function PengaturanPage() {
                       }
                     }
                   }}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium text-slate-800"
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
                 >
                   <option value="">-- Pilih / Semua Kecamatan di Depok --</option>
                   {availableKecamatanList.map((kec) => (
@@ -1430,7 +1429,7 @@ export default function PengaturanPage() {
 
               {/* 2. KELURAHAN */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">
                   2. Kelurahan <span className="text-rose-500">*</span>
                 </label>
                 <select
@@ -1443,7 +1442,7 @@ export default function PengaturanPage() {
                       setFormKecamatan(kel.kecamatan);
                     }
                   }}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium text-slate-800"
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
                   required
                 >
                   <option value="">-- Pilih Kelurahan --</option>
@@ -1457,18 +1456,18 @@ export default function PengaturanPage() {
 
               {/* 3. NAMA BLOK PICKUP */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">
                   3. Nama Blok Pickup <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={formNamaBlok}
                   onChange={(e) => setFormNamaBlok(e.target.value.toUpperCase())}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-semibold uppercase tracking-wide text-slate-900"
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors uppercase tracking-wide font-medium"
                   placeholder="Misal: BLOK BAKUNG, BLOK H PUAH"
                   required
                 />
-                <p className="text-[11px] text-slate-500 mt-1">
+                <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-1">
                   Area operasional penjemputan sampah warga (misal: Blok Bakung, Perumahan Mawar Blok C).
                 </p>
               </div>
@@ -1478,19 +1477,19 @@ export default function PengaturanPage() {
                 <button
                   type="button"
                   onClick={() => setShowAdvancedRtRw(!showAdvancedRtRw)}
-                  className="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1.5"
+                  className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center gap-1.5"
                 >
                   <span>{showAdvancedRtRw ? "▼ Sembunyikan" : "▶ Tampilkan"} Pengaturan Tambahan (Zona & RT/RW)</span>
                 </button>
 
                 {showAdvancedRtRw && (
-                  <div className="mt-3 p-3.5 bg-slate-50 rounded-2xl border border-slate-200/70 space-y-3 animate-in fade-in duration-100">
+                  <div className="mt-3 p-3.5 bg-slate-50 dark:bg-zinc-950/50 rounded-lg border border-slate-200 dark:border-zinc-800 space-y-3 animate-in fade-in duration-100">
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">Zona Angkut</label>
+                      <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1">Zona Angkut</label>
                       <select
                         value={formZonaId}
                         onChange={(e) => setFormZonaId(e.target.value)}
-                        className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                        className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg text-xs bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
                       >
                         <option value="">Tanpa zona</option>
                         {zonaList.map((z) => (
@@ -1503,22 +1502,22 @@ export default function PengaturanPage() {
 
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-xs font-semibold text-slate-700 mb-1">RT (Opsional)</label>
+                        <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1">RT (Opsional)</label>
                         <input
                           type="text"
                           value={formRt}
                           onChange={(e) => setFormRt(e.target.value)}
-                          className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-mono"
+                          className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg text-xs bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors font-mono"
                           placeholder="001"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-slate-700 mb-1">RW (Opsional)</label>
+                        <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1">RW (Opsional)</label>
                         <input
                           type="text"
                           value={formRw}
                           onChange={(e) => setFormRw(e.target.value)}
-                          className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-mono"
+                          className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg text-xs bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors font-mono"
                           placeholder="003"
                         />
                       </div>
@@ -1528,7 +1527,7 @@ export default function PengaturanPage() {
               </div>
 
               {/* TOMBOL SIMPAN / BATAL */}
-              <div className="flex gap-3 pt-3">
+              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100 dark:border-zinc-800">
                 <button
                   type="button"
                   disabled={savingWilayah}
@@ -1536,14 +1535,14 @@ export default function PengaturanPage() {
                     setShowWilayahModal(false);
                     resetWilayahForm();
                   }}
-                  className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all disabled:opacity-50"
+                  className="px-4 py-2 text-xs font-semibold rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors disabled:opacity-50"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={savingWilayah}
-                  className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white rounded-xl text-xs font-bold shadow-xs hover:shadow-sm transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
+                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
                 >
                   {savingWilayah ? (
                     <>

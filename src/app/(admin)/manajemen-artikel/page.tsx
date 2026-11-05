@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
+import { X } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { useToast } from "@/components/Toast";
 import { kompresGambar } from "@/lib/foto";
@@ -388,22 +389,22 @@ export default function ArtikelPage() {
       </div>
 
       {showForm && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-t-3xl sm:rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-3xl max-h-[88dvh] sm:max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 bg-slate-900 text-white shrink-0">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-zinc-900 rounded-t-2xl sm:rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-3xl max-h-[88dvh] sm:max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div className="flex items-center gap-3">
-                <h2 className="font-bold text-sm sm:text-base tracking-wide">
+                <h2 className="font-semibold text-sm sm:text-base text-slate-900 dark:text-zinc-100">
                   {editing ? "Edit Artikel" : "Tulis Artikel Baru"}
                 </h2>
                 {/* Segmented Toggle Tab Mobile */}
-                <div className="flex items-center gap-1 bg-slate-800 p-1 rounded-xl">
+                <div className="flex items-center gap-1 bg-slate-200/80 dark:bg-zinc-800 p-1 rounded-lg">
                   <button
                     type="button"
                     onClick={() => setEditorTab("edit")}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                    className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${
                       editorTab === "edit"
-                        ? "bg-emerald-600 text-white shadow-sm"
-                        : "text-slate-400 hover:text-white"
+                        ? "bg-white dark:bg-zinc-900 text-slate-900 dark:text-zinc-100 shadow-xs"
+                        : "text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200"
                     }`}
                   >
                     ✏️ Editor
@@ -411,10 +412,10 @@ export default function ArtikelPage() {
                   <button
                     type="button"
                     onClick={() => setEditorTab("preview")}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                    className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${
                       editorTab === "preview"
-                        ? "bg-emerald-600 text-white shadow-sm"
-                        : "text-slate-400 hover:text-white"
+                        ? "bg-white dark:bg-zinc-900 text-slate-900 dark:text-zinc-100 shadow-xs"
+                        : "text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200"
                     }`}
                   >
                     👁️ Pratinjau
@@ -425,9 +426,9 @@ export default function ArtikelPage() {
               <button
                 type="button"
                 onClick={() => setShowForm(false)}
-                className="w-8 h-8 rounded-xl flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
               >
-                ×
+                <X className="w-4 h-4" />
               </button>
             </div>
             
@@ -436,19 +437,19 @@ export default function ArtikelPage() {
                 {editorTab === "preview" ? (
                   <div className="space-y-4 max-w-2xl mx-auto py-2">
                     <div className="space-y-2">
-                      <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800">
+                      <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300">
                         {form.kategori}
                       </span>
-                      <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                      <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-zinc-100 tracking-tight">
                         {form.judul || "Judul Artikel (Pratinjau)"}
                       </h1>
-                      <p className="text-xs text-slate-400">
+                      <p className="text-xs text-slate-400 dark:text-zinc-500">
                         Status: {form.diterbitkan ? "Diterbitkan (Publik)" : "Draft"} · Pratinjau Tampilan
                       </p>
                     </div>
 
                     {form.gambar && (
-                      <div className="h-44 sm:h-60 w-full rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 relative">
+                      <div className="h-44 sm:h-60 w-full rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-800 bg-slate-950 relative">
                         <ArticleImage
                           src={getArticleCoverImage(form.gambar, form.kategori)}
                           alt={form.judul}
@@ -458,14 +459,14 @@ export default function ArtikelPage() {
                       </div>
                     )}
 
-                    <div className="prose prose-sm max-w-none text-slate-700 whitespace-pre-wrap leading-relaxed border-t border-slate-100 pt-4 text-xs sm:text-sm">
+                    <div className="prose prose-sm max-w-none text-slate-700 dark:text-zinc-300 whitespace-pre-wrap leading-relaxed border-t border-slate-100 dark:border-zinc-800 pt-4 text-xs sm:text-sm">
                       {form.isi || "Belum ada konten artikel."}
                     </div>
                   </div>
                 ) : (
                   <>
                     {errorMsg && (
-                      <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2 animate-in fade-in">
+                      <div className="p-3.5 rounded-lg bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-400 text-xs font-semibold flex items-center gap-2 animate-in fade-in">
                         <span>⚠️</span>
                         <span>{errorMsg}</span>
                       </div>
@@ -473,21 +474,21 @@ export default function ArtikelPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="space-y-1.5 md:col-span-2">
-                    <label className="block text-xs font-bold text-slate-700">Judul Artikel <span className="text-rose-500">*</span></label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300">Judul Artikel <span className="text-rose-500">*</span></label>
                     <input
                       required
                       value={form.judul}
                       onChange={e => setForm({ ...form, judul: e.target.value })}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                      className="w-full bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-slate-900 dark:text-zinc-100 text-sm placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
                       placeholder="Masukkan judul artikel"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="block text-xs font-bold text-slate-700">Kategori</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300">Kategori</label>
                     <select
                       value={form.kategori}
                       onChange={e => setForm({ ...form, kategori: e.target.value })}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                      className="w-full bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-slate-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
                     >
                       <option value="edukasi">Edukasi</option>
                       <option value="informasi">Informasi</option>
@@ -502,18 +503,18 @@ export default function ArtikelPage() {
                         onChange={e => setForm({ ...form, diterbitkan: e.target.checked })}
                         className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
                       />
-                      <span className="text-sm font-bold text-slate-700">Publikasikan langsung</span>
+                      <span className="text-sm font-semibold text-slate-700 dark:text-zinc-300">Publikasikan langsung</span>
                     </label>
                   </div>
                 </div>
 
                 {/* GAMBAR COVER: BISA KETIK URL ATAU UNGGAH FILE */}
-                <div className="space-y-3 p-4 rounded-2xl bg-slate-50/90 border border-slate-200">
+                <div className="space-y-3 p-4 rounded-xl bg-slate-50/50 dark:bg-zinc-950/50 border border-slate-200 dark:border-zinc-800">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                    <label className="block text-xs font-bold text-slate-800">
+                    <label className="block text-xs font-semibold text-slate-800 dark:text-zinc-200">
                       Gambar Cover / Sampul (Opsional)
                     </label>
-                    <span className="text-[11px] text-slate-500">Ketik link URL atau unggah file foto</span>
+                    <span className="text-[11px] text-slate-500 dark:text-zinc-400">Ketik link URL atau unggah file foto</span>
                   </div>
 
                   {/* Input URL atau Unggah File */}
@@ -524,16 +525,16 @@ export default function ArtikelPage() {
                         value={form.gambar.startsWith("data:") ? "" : form.gambar}
                         onChange={e => setForm(prev => ({ ...prev, gambar: e.target.value }))}
                         placeholder="Ketik atau tempel link URL foto (contoh: https://...)"
-                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 shadow-sm"
+                        className="w-full bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors shadow-xs"
                       />
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-xs text-slate-400 font-bold hidden sm:inline">atau</span>
+                      <span className="text-xs text-slate-400 dark:text-zinc-500 font-semibold hidden sm:inline">atau</span>
                       <button
                         type="button"
                         disabled={uploadingImage}
                         onClick={() => fileInputRef.current?.click()}
-                        className="w-full sm:w-auto px-4 py-2.5 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50 shadow-sm"
+                        className="w-full sm:w-auto px-4 py-2 bg-white dark:bg-zinc-900 hover:bg-slate-100 dark:hover:bg-zinc-800 border border-slate-200 dark:border-zinc-800 text-slate-700 dark:text-zinc-300 text-xs font-semibold rounded-lg flex items-center justify-center gap-2 transition-colors disabled:opacity-50 shadow-xs"
                       >
                         {uploadingImage ? "⏳ Memproses..." : "📁 Unggah File"}
                       </button>
@@ -542,25 +543,25 @@ export default function ArtikelPage() {
 
                   {/* Tombol Pilihan Foto Cepat UPS HERU */}
                   <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mr-1">Rekomendasi Foto:</span>
+                    <span className="text-[10px] text-slate-400 dark:text-zinc-500 font-semibold uppercase tracking-wider mr-1">Rekomendasi Foto:</span>
                     <button
                       type="button"
                       onClick={() => setForm(prev => ({ ...prev, gambar: "https://images.unsplash.com/photo-1595278069441-2cf29f8005a4?auto=format&fit=crop&w=800&q=80" }))}
-                      className="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[11px] font-semibold border border-emerald-200 transition-colors"
+                      className="px-2.5 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 text-[11px] font-semibold border border-emerald-200 dark:border-emerald-800 transition-colors"
                     >
                       🚚 Truk Sampah
                     </button>
                     <button
                       type="button"
                       onClick={() => setForm(prev => ({ ...prev, gambar: "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=800&q=80" }))}
-                      className="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[11px] font-semibold border border-emerald-200 transition-colors"
+                      className="px-2.5 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 text-[11px] font-semibold border border-emerald-200 dark:border-emerald-800 transition-colors"
                     >
                       ♻️ Pemilahan Sampah
                     </button>
                     <button
                       type="button"
                       onClick={() => setForm(prev => ({ ...prev, gambar: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80" }))}
-                      className="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[11px] font-semibold border border-emerald-200 transition-colors"
+                      className="px-2.5 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 text-[11px] font-semibold border border-emerald-200 dark:border-emerald-800 transition-colors"
                     >
                       🌿 Lingkungan Bersih
                     </button>
@@ -569,7 +570,7 @@ export default function ArtikelPage() {
                   {/* Preview Gambar Cover */}
                   {form.gambar && (
                     <div className="relative inline-block mt-1">
-                      <div className="h-36 w-64 rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-slate-900">
+                      <div className="h-36 w-64 rounded-lg overflow-hidden border border-slate-200 dark:border-zinc-800 shadow-xs bg-slate-900">
                         <ArticleImage
                           src={form.gambar}
                           alt="Preview Cover"
@@ -583,7 +584,7 @@ export default function ArtikelPage() {
                           setForm(prev => ({ ...prev, gambar: "" }));
                           if (fileInputRef.current) fileInputRef.current.value = "";
                         }}
-                        className="absolute -top-2 -right-2 bg-rose-600 hover:bg-rose-700 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs shadow-md transition z-10"
+                        className="absolute -top-2 -right-2 bg-rose-600 hover:bg-rose-700 text-white rounded-full w-5 h-5 flex items-center justify-center font-bold text-xs shadow-md transition z-10"
                         title="Hapus Gambar"
                       >
                         ×
@@ -603,7 +604,7 @@ export default function ArtikelPage() {
                 {/* ISI ARTIKEL DENGAN TOOLBAR SISIPKAN FOTO / FORMAT */}
                 <div className="space-y-1.5">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
-                    <label className="block text-xs font-bold text-slate-700">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300">
                       Isi Konten Artikel <span className="text-rose-500">*</span>
                     </label>
                     <div className="flex flex-wrap items-center gap-1.5">
@@ -618,7 +619,7 @@ export default function ArtikelPage() {
                             }));
                           }
                         }}
-                        className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition flex items-center gap-1"
+                        className="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-white dark:bg-zinc-900 hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-800 transition flex items-center gap-1"
                       >
                         <span>📷</span>
                         <span>Sisipkan Foto di Teks</span>
@@ -631,7 +632,7 @@ export default function ArtikelPage() {
                             isi: (prev.isi ? prev.isi + "\n\n" : "") + "### Sub-Judul Baru\n"
                           }));
                         }}
-                        className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition"
+                        className="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-white dark:bg-zinc-900 hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-800 transition"
                       >
                         📌 Sub-Judul
                       </button>
@@ -643,7 +644,7 @@ export default function ArtikelPage() {
                             isi: (prev.isi ? prev.isi + "\n" : "") + "• Poin pertama\n• Poin kedua\n"
                           }));
                         }}
-                        className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition"
+                        className="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-white dark:bg-zinc-900 hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-800 transition"
                       >
                         • Poin
                       </button>
@@ -653,7 +654,7 @@ export default function ArtikelPage() {
                     required
                     value={form.isi}
                     onChange={e => setForm({ ...form, isi: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 min-h-[250px] resize-y"
+                    className="w-full bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-lg px-3 py-2.5 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 min-h-[250px] resize-y transition-colors"
                     placeholder="Tulis konten berita atau edukasi di sini. Anda bisa menyisipkan foto atau sub-judul memakai tombol di atas."
                   />
                 </div>
@@ -661,23 +662,23 @@ export default function ArtikelPage() {
             )}
           </div>
 
-              <div className="p-4 border-t border-slate-100 bg-slate-50 shrink-0 flex justify-end gap-3 rounded-b-3xl">
+              <div className="p-4 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0 flex items-center justify-end gap-2.5">
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
                   disabled={saving}
-                  className="px-5 py-2.5 rounded-xl font-bold text-sm text-slate-600 hover:bg-slate-200 transition-colors disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg font-semibold text-xs border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors disabled:opacity-50"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={saving || uploadingImage}
-                  className="px-6 py-2.5 rounded-xl font-bold text-sm bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm transition-colors disabled:opacity-50 flex items-center gap-2"
+                  className="px-4 py-2 rounded-lg font-semibold text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-colors disabled:opacity-50 flex items-center gap-2"
                 >
                   {saving ? (
                     <>
-                      <span className="w-4 h-4 border-2 border-white border-r-transparent rounded-full animate-spin"></span>
+                      <span className="w-3.5 h-3.5 border-2 border-white border-r-transparent rounded-full animate-spin"></span>
                       <span>Menyimpan...</span>
                     </>
                   ) : (

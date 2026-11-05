@@ -906,42 +906,42 @@ export default function DataKontrolPage() {
       {/* 5. Blast Drawer / Modal */}
       <AnimatePresence>
         {isBlastModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto text-slate-900 dark:text-zinc-100"
             >
               {/* Modal Header */}
-              <div className="flex items-center justify-between p-5 border-b border-slate-200 dark:border-slate-800 sticky top-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xs z-10">
+              <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-zinc-800 sticky top-0 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm z-10">
                 <div className="flex items-center gap-2">
                   <div className="p-2 bg-emerald-100 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-400 rounded-lg">
                     <Send className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                    <h3 className="text-base font-semibold text-slate-900 dark:text-zinc-100">
                       Kirim Blast WhatsApp Calon Pelanggan
                     </h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                    <p className="text-xs text-slate-500 dark:text-zinc-400">
                       Target: <strong>{blastTargets.length} nomor calon pelanggan</strong> (bebas dari pelanggan lama & kru)
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={() => setIsBlastModalOpen(false)}
-                  className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg"
+                  className="p-1.5 text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
 
               {/* Modal Body */}
               <div className="p-5 space-y-5">
                 {/* 1. Pengaturan Nomor Pengirim (Multi-Device Sender Routing) */}
-                <div className="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
+                <div className="bg-slate-50/50 dark:bg-zinc-950/50 p-4 rounded-xl border border-slate-200 dark:border-zinc-800 space-y-2">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
+                    <label className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
                       Routing Nomor Pengirim (Sender Device)
                     </label>
                     <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
@@ -957,14 +957,14 @@ export default function DataKontrolPage() {
                       className={`p-3 text-left rounded-lg border transition ${
                         senderMode === "auto"
                           ? "border-emerald-500 bg-emerald-50 text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200 font-semibold ring-1 ring-emerald-500"
-                          : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                          : "border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800"
                       }`}
                     >
-                      <div className="font-bold flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 mb-0.5">
+                      <div className="font-semibold flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 mb-0.5">
                         <Sparkles className="w-3.5 h-3.5" />
                         <span>Otomatis (Sesuai Asal)</span>
                       </div>
-                      <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                      <p className="text-[10px] text-slate-500 dark:text-zinc-400">
                         Kontak petugas via HP Petugas, kontak admin via HP Admin.
                       </p>
                     </button>
@@ -976,13 +976,13 @@ export default function DataKontrolPage() {
                       className={`p-3 text-left rounded-lg border transition ${
                         senderMode === "hp_petugas"
                           ? "border-emerald-500 bg-emerald-50 text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200 font-semibold ring-1 ring-emerald-500"
-                          : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                          : "border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800"
                       }`}
                     >
-                      <div className="font-bold text-slate-800 dark:text-white mb-0.5">
+                      <div className="font-semibold text-slate-800 dark:text-zinc-200 mb-0.5">
                         HP Petugas (089688151473)
                       </div>
-                      <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                      <p className="text-[10px] text-slate-500 dark:text-zinc-400">
                         Menggunakan token Fonnte khusus Survei Novi.
                       </p>
                     </button>
@@ -994,13 +994,13 @@ export default function DataKontrolPage() {
                       className={`p-3 text-left rounded-lg border transition ${
                         senderMode === "hp_admin"
                           ? "border-emerald-500 bg-emerald-50 text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200 font-semibold ring-1 ring-emerald-500"
-                          : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                          : "border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800"
                       }`}
                     >
-                      <div className="font-bold text-slate-800 dark:text-white mb-0.5">
+                      <div className="font-semibold text-slate-800 dark:text-zinc-200 mb-0.5">
                         HP Admin (081400782617)
                       </div>
-                      <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                      <p className="text-[10px] text-slate-500 dark:text-zinc-400">
                         Menggunakan nomor WhatsApp Admin Utama.
                       </p>
                     </button>
@@ -1010,14 +1010,14 @@ export default function DataKontrolPage() {
                 {/* 2. Textarea Editor */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
+                    <label className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
                       Isi Pesan WhatsApp
                     </label>
-                    <div className="flex items-center gap-1.5 text-[11px] text-slate-500">
+                    <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-zinc-400">
                       <span>Variabel:</span>
-                      <code className="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded text-emerald-600">{"{nama}"}</code>
-                      <code className="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded text-emerald-600">{"{wilayah}"}</code>
-                      <code className="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded text-emerald-600">{"{link_daftar}"}</code>
+                      <code className="bg-slate-100 dark:bg-zinc-800 px-1 py-0.5 rounded text-emerald-600 dark:text-emerald-400">{"{nama}"}</code>
+                      <code className="bg-slate-100 dark:bg-zinc-800 px-1 py-0.5 rounded text-emerald-600 dark:text-emerald-400">{"{wilayah}"}</code>
+                      <code className="bg-slate-100 dark:bg-zinc-800 px-1 py-0.5 rounded text-emerald-600 dark:text-emerald-400">{"{link_daftar}"}</code>
                     </div>
                   </div>
 
@@ -1025,18 +1025,18 @@ export default function DataKontrolPage() {
                     rows={8}
                     value={blastMessage}
                     onChange={(e) => setBlastMessage(e.target.value)}
-                    className="w-full p-3 text-xs md:text-sm font-sans rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full p-3 text-xs md:text-sm font-sans rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
                     placeholder="Ketik isi pesan WhatsApp di sini..."
                   />
                 </div>
 
                 {/* 3. Preview Bubble */}
                 <div className="space-y-1">
-                  <div className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                  <div className="text-xs font-medium text-slate-500 dark:text-zinc-400">
                     Preview Tampilan di WhatsApp Konsumen:
                   </div>
-                  <div className="bg-[#e5ddd5] dark:bg-slate-950 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs md:text-sm shadow-inner">
-                    <div className="max-w-md bg-white dark:bg-[#1f2c34] text-slate-800 dark:text-slate-200 p-3 rounded-xl rounded-tl-none shadow-xs whitespace-pre-wrap leading-relaxed">
+                  <div className="bg-[#e5ddd5] dark:bg-zinc-950 p-3.5 rounded-xl border border-slate-200 dark:border-zinc-800 text-xs md:text-sm shadow-inner">
+                    <div className="max-w-md bg-white dark:bg-[#1f2c34] text-slate-800 dark:text-zinc-200 p-3 rounded-xl rounded-tl-none shadow-xs whitespace-pre-wrap leading-relaxed">
                       {blastMessage
                         .replace(/\{nama\}/gi, "Bapak Joko")
                         .replace(/\{wilayah\}/gi, "Blok Tabroni")
@@ -1050,23 +1050,23 @@ export default function DataKontrolPage() {
 
                 {/* 4. Hasil Blast Jika Sudah Selesai */}
                 {blastResult && (
-                  <div className="p-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs space-y-2 border border-slate-200 dark:border-slate-700">
-                    <div className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <div className="p-4 rounded-xl bg-slate-100 dark:bg-zinc-800 text-xs space-y-2 border border-slate-200 dark:border-zinc-700">
+                    <div className="font-semibold text-slate-900 dark:text-zinc-100 flex items-center gap-1.5">
                       <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                       <span>Ringkasan Pengiriman:</span>
                     </div>
                     <div className="grid grid-cols-3 gap-2">
-                      <div className="bg-white dark:bg-slate-900 p-2 rounded border border-slate-200 dark:border-slate-800">
-                        <span className="text-slate-500">Berhasil:</span>{" "}
-                        <strong className="text-emerald-600">{blastResult.totalSent}</strong>
+                      <div className="bg-white dark:bg-zinc-900 p-2 rounded-lg border border-slate-200 dark:border-zinc-800">
+                        <span className="text-slate-500 dark:text-zinc-400">Berhasil:</span>{" "}
+                        <strong className="text-emerald-600 dark:text-emerald-400">{blastResult.totalSent}</strong>
                       </div>
-                      <div className="bg-white dark:bg-slate-900 p-2 rounded border border-slate-200 dark:border-slate-800">
-                        <span className="text-slate-500">Dilewati:</span>{" "}
-                        <strong className="text-amber-600">{blastResult.totalSkipped}</strong>
+                      <div className="bg-white dark:bg-zinc-900 p-2 rounded-lg border border-slate-200 dark:border-zinc-800">
+                        <span className="text-slate-500 dark:text-zinc-400">Dilewati:</span>{" "}
+                        <strong className="text-amber-600 dark:text-amber-400">{blastResult.totalSkipped}</strong>
                       </div>
-                      <div className="bg-white dark:bg-slate-900 p-2 rounded border border-slate-200 dark:border-slate-800">
-                        <span className="text-slate-500">Gagal:</span>{" "}
-                        <strong className="text-rose-600">{blastResult.totalFailed}</strong>
+                      <div className="bg-white dark:bg-zinc-900 p-2 rounded-lg border border-slate-200 dark:border-zinc-800">
+                        <span className="text-slate-500 dark:text-zinc-400">Gagal:</span>{" "}
+                        <strong className="text-rose-600 dark:text-rose-400">{blastResult.totalFailed}</strong>
                       </div>
                     </div>
                   </div>
@@ -1074,8 +1074,8 @@ export default function DataKontrolPage() {
               </div>
 
               {/* Modal Footer */}
-              <div className="flex items-center justify-between p-5 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60">
-                <div className="text-xs text-slate-500">
+              <div className="flex items-center justify-between p-5 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+                <div className="text-xs text-slate-500 dark:text-zinc-400">
                   Delay anti-banned: <strong>1,2 detik per pesan</strong>
                 </div>
 
@@ -1084,7 +1084,7 @@ export default function DataKontrolPage() {
                     type="button"
                     onClick={() => setIsBlastModalOpen(false)}
                     disabled={isSendingBlast}
-                    className="px-4 py-2 text-xs md:text-sm font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 text-slate-700 dark:text-slate-200"
+                    className="px-4 py-2 text-xs font-semibold rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-300 transition-colors"
                   >
                     Tutup
                   </button>
@@ -1093,16 +1093,16 @@ export default function DataKontrolPage() {
                     type="button"
                     onClick={handleExecuteBlast}
                     disabled={isSendingBlast || blastTargets.length === 0}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 text-xs md:text-sm font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-md disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm disabled:opacity-50 transition-colors"
                   >
                     {isSendingBlast ? (
                       <>
-                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
                         <span>Mengirim ({blastTargets.length} Target)...</span>
                       </>
                     ) : (
                       <>
-                        <Send className="w-4 h-4" />
+                        <Send className="w-3.5 h-3.5" />
                         <span>Kirim Blast ({blastTargets.length} Nomor)</span>
                       </>
                     )}

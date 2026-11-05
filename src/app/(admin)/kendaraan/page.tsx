@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useToast } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import CoordinatePicker from "@/components/CoordinatePicker";
+import { X } from "lucide-react";
 
 type PetugasOpt = { id: number; nama: string };
 
@@ -629,47 +630,90 @@ function ArmadaFasilitasContent() {
       {/* ========================================================================= */}
       {/* Modal Kendaraan */}
       {showKendaraanForm && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-md bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/80">
-              <h2 className="text-base font-semibold text-slate-900">{editKendaraan ? "Edit Kendaraan" : "Tambah Kendaraan"}</h2>
-              <button onClick={() => setShowKendaraanForm(false)} className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+          <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+              <h2 className="text-base font-semibold text-slate-900 dark:text-zinc-100 tracking-tight">{editKendaraan ? "Edit Kendaraan" : "Tambah Kendaraan"}</h2>
+              <button
+                type="button"
+                onClick={() => setShowKendaraanForm(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 transition"
+              >
+                <X className="w-4 h-4" />
               </button>
             </div>
             <form onSubmit={saveKendaraan} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Nama Armada <span className="text-red-500">*</span></label>
-                <input type="text" value={kendaraanForm.nama} onChange={(e) => setKendaraanForm({ ...kendaraanForm, nama: e.target.value })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white" placeholder="cth: Truk Sukmajaya 01" required />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Nama Armada <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  value={kendaraanForm.nama}
+                  onChange={(e) => setKendaraanForm({ ...kendaraanForm, nama: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500"
+                  placeholder="cth: Truk Sukmajaya 01"
+                  required
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Plat Nomor</label>
-                <input type="text" value={kendaraanForm.platNomor} onChange={(e) => setKendaraanForm({ ...kendaraanForm, platNomor: e.target.value })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white uppercase" placeholder="B 1234 XYZ" />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Plat Nomor</label>
+                <input
+                  type="text"
+                  value={kendaraanForm.platNomor}
+                  onChange={(e) => setKendaraanForm({ ...kendaraanForm, platNomor: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 uppercase placeholder:text-slate-400 dark:placeholder:text-zinc-500"
+                  placeholder="B 1234 XYZ"
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Jenis Armada</label>
-                <select value={kendaraanForm.jenis} onChange={(e) => setKendaraanForm({ ...kendaraanForm, jenis: e.target.value })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Jenis Armada</label>
+                <select
+                  value={kendaraanForm.jenis}
+                  onChange={(e) => setKendaraanForm({ ...kendaraanForm, jenis: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100"
+                >
                   {JENIS_KENDARAAN.map((j) => (
                     <option key={j.value} value={j.value}>{j.ikon} {j.label}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Kapasitas (m³)</label>
-                <input type="number" step="0.1" value={kendaraanForm.kapasitas} onChange={(e) => setKendaraanForm({ ...kendaraanForm, kapasitas: e.target.value })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white" placeholder="cth: 6" />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Kapasitas (m³)</label>
+                <input
+                  type="number"
+                  step="0.1"
+                  value={kendaraanForm.kapasitas}
+                  onChange={(e) => setKendaraanForm({ ...kendaraanForm, kapasitas: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500"
+                  placeholder="cth: 6"
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Petugas / Supir Utama</label>
-                <select value={kendaraanForm.petugasId} onChange={(e) => setKendaraanForm({ ...kendaraanForm, petugasId: e.target.value })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Petugas / Supir Utama</label>
+                <select
+                  value={kendaraanForm.petugasId}
+                  onChange={(e) => setKendaraanForm({ ...kendaraanForm, petugasId: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100"
+                >
                   <option value="">-- Belum Ditentukan --</option>
                   {petugasList.map((p) => (
                     <option key={p.id} value={p.id}>{p.nama}</option>
                   ))}
                 </select>
               </div>
-              <div className="flex gap-2 pt-2">
-                <button type="button" onClick={() => setShowKendaraanForm(false)} className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-50 transition">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow transition">Simpan</button>
+              <div className="flex gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowKendaraanForm(false)}
+                  className="flex-1 px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 rounded-lg text-sm font-semibold transition"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-semibold shadow-xs transition"
+                >
+                  Simpan
+                </button>
               </div>
             </form>
           </div>
@@ -678,25 +722,42 @@ function ArmadaFasilitasContent() {
 
       {/* Modal Transit */}
       {showTransitForm && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-3xl border border-slate-200/80 shadow-2xl">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/80 sticky top-0 z-10">
-              <h2 className="text-base font-semibold text-slate-900">{editTransit ? "Edit Titik Transit" : "Tambah Titik Transit"}</h2>
-              <button onClick={() => setShowTransitForm(false)} className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+          <div className="w-full max-w-md max-h-[90vh] overflow-y-auto bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 sticky top-0 z-10">
+              <h2 className="text-base font-semibold text-slate-900 dark:text-zinc-100 tracking-tight">{editTransit ? "Edit Titik Transit" : "Tambah Titik Transit"}</h2>
+              <button
+                type="button"
+                onClick={() => setShowTransitForm(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 transition"
+              >
+                <X className="w-4 h-4" />
               </button>
             </div>
             <form onSubmit={saveTransit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Nama Titik Transit / Lapak <span className="text-red-500">*</span></label>
-                <input type="text" value={transitForm.nama} onChange={(e) => setTransitForm({ ...transitForm, nama: e.target.value })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white" placeholder="cth: Lapak Pemilahan Sukmajaya" required />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Nama Titik Transit / Lapak <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  value={transitForm.nama}
+                  onChange={(e) => setTransitForm({ ...transitForm, nama: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500"
+                  placeholder="cth: Lapak Pemilahan Sukmajaya"
+                  required
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Alamat Lengkap</label>
-                <textarea rows={2} value={transitForm.alamat} onChange={(e) => setTransitForm({ ...transitForm, alamat: e.target.value })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white resize-none" placeholder="Jl. Raya..." />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Alamat Lengkap</label>
+                <textarea
+                  rows={2}
+                  value={transitForm.alamat}
+                  onChange={(e) => setTransitForm({ ...transitForm, alamat: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 resize-none placeholder:text-slate-400 dark:placeholder:text-zinc-500"
+                  placeholder="Jl. Raya..."
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Koordinat Lokasi GPS <span className="text-red-500">*</span></label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Koordinat Lokasi GPS <span className="text-red-500">*</span></label>
                 <CoordinatePicker
                   latitude={transitForm.latitude}
                   longitude={transitForm.longitude}
@@ -704,12 +765,29 @@ function ArmadaFasilitasContent() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Catatan Tambahan</label>
-                <input type="text" value={transitForm.catatan} onChange={(e) => setTransitForm({ ...transitForm, catatan: e.target.value })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white" placeholder="Jam operasional, penanggung jawab..." />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Catatan Tambahan</label>
+                <input
+                  type="text"
+                  value={transitForm.catatan}
+                  onChange={(e) => setTransitForm({ ...transitForm, catatan: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500"
+                  placeholder="Jam operasional, penanggung jawab..."
+                />
               </div>
-              <div className="flex gap-2 pt-2">
-                <button type="button" onClick={() => setShowTransitForm(false)} className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-50 transition">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow transition">Simpan</button>
+              <div className="flex gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowTransitForm(false)}
+                  className="flex-1 px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 rounded-lg text-sm font-semibold transition"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-semibold shadow-xs transition"
+                >
+                  Simpan
+                </button>
               </div>
             </form>
           </div>
@@ -718,34 +796,75 @@ function ArmadaFasilitasContent() {
 
       {/* Modal TPA */}
       {showTpaForm && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-md bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/80">
-              <h2 className="text-base font-semibold text-slate-900">{editTpa ? "Edit Data TPA" : "Tambah Lokasi TPA"}</h2>
-              <button onClick={() => setShowTpaForm(false)} className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+          <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+              <h2 className="text-base font-semibold text-slate-900 dark:text-zinc-100 tracking-tight">{editTpa ? "Edit Data TPA" : "Tambah Lokasi TPA"}</h2>
+              <button
+                type="button"
+                onClick={() => setShowTpaForm(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 transition"
+              >
+                <X className="w-4 h-4" />
               </button>
             </div>
             <form onSubmit={saveTpa} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Nama TPA <span className="text-red-500">*</span></label>
-                <input type="text" value={tpaForm.nama} onChange={(e) => setTpaForm({ ...tpaForm, nama: e.target.value })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white" placeholder="cth: TPA Cipayung" required />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Nama TPA <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  value={tpaForm.nama}
+                  onChange={(e) => setTpaForm({ ...tpaForm, nama: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500"
+                  placeholder="cth: TPA Cipayung"
+                  required
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Alamat</label>
-                <input type="text" value={tpaForm.alamat} onChange={(e) => setTpaForm({ ...tpaForm, alamat: e.target.value })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white" placeholder="Jl. Raya Cipayung" />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Alamat</label>
+                <input
+                  type="text"
+                  value={tpaForm.alamat}
+                  onChange={(e) => setTpaForm({ ...tpaForm, alamat: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500"
+                  placeholder="Jl. Raya Cipayung"
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Kota</label>
-                <input type="text" value={tpaForm.kota} onChange={(e) => setTpaForm({ ...tpaForm, kota: e.target.value })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white" placeholder="Depok" />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Kota</label>
+                <input
+                  type="text"
+                  value={tpaForm.kota}
+                  onChange={(e) => setTpaForm({ ...tpaForm, kota: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500"
+                  placeholder="Depok"
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Estimasi Jarak (km)</label>
-                <input type="number" step="0.1" value={tpaForm.jarak} onChange={(e) => setTpaForm({ ...tpaForm, jarak: e.target.value })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white" placeholder="cth: 12.5" />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Estimasi Jarak (km)</label>
+                <input
+                  type="number"
+                  step="0.1"
+                  value={tpaForm.jarak}
+                  onChange={(e) => setTpaForm({ ...tpaForm, jarak: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500"
+                  placeholder="cth: 12.5"
+                />
               </div>
-              <div className="flex gap-2 pt-2">
-                <button type="button" onClick={() => setShowTpaForm(false)} className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-50 transition">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow transition">Simpan</button>
+              <div className="flex gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowTpaForm(false)}
+                  className="flex-1 px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 rounded-lg text-sm font-semibold transition"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-semibold shadow-xs transition"
+                >
+                  Simpan
+                </button>
               </div>
             </form>
           </div>

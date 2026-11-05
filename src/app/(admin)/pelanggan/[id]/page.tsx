@@ -9,7 +9,7 @@ import { formatRupiah, formatDate } from "@/lib/utils";
 import ModalApprovalPelanggan from "@/components/ModalApprovalPelanggan";
 import ModalStatusPelanggan from "@/components/ModalStatusPelanggan";
 import { useToast } from "@/components/Toast";
-import { ShieldCheck, Play, Pause } from "lucide-react";
+import { ShieldCheck, Play, Pause, X } from "lucide-react";
 
 const PetaLokasi = dynamic(() => import("@/components/PetaLokasi"), {
   ssr: false,
@@ -802,19 +802,19 @@ export default function DetailPelangganPage() {
       {/* Modal Lightbox Foto Bukti Pembayaran */}
       {previewBuktiModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 animate-in fade-in duration-150"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150"
           onClick={() => setPreviewBuktiModal(null)}
         >
           <div
-            className="relative bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200"
+            className="relative bg-white dark:bg-zinc-900 rounded-xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-zinc-100"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100 bg-slate-50">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
               <div>
-                <h3 className="font-bold text-slate-900 text-sm">
+                <h3 className="font-semibold text-slate-900 dark:text-zinc-100 text-sm">
                   Foto Bukti Pembayaran
                 </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
                   {previewBuktiModal.nama} {previewBuktiModal.kode ? `(${previewBuktiModal.kode})` : ""} •{" "}
                   {previewBuktiModal.nominal ? formatRupiah(previewBuktiModal.nominal) : ""} •{" "}
                   <span className="capitalize">{previewBuktiModal.metode || "Pembayaran"}</span>
@@ -826,20 +826,20 @@ export default function DetailPelangganPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   download={`bukti-bayar-${previewBuktiModal.nama.replace(/\s+/g, "_")}.jpg`}
-                  className="text-xs font-semibold px-2.5 py-1.5 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-100 transition shadow-sm"
+                  className="text-xs font-semibold px-2.5 py-1.5 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-zinc-200 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-700 transition shadow-sm"
                 >
                   ↗ Buka Ukuran Penuh
                 </a>
                 <button
                   type="button"
                   onClick={() => setPreviewBuktiModal(null)}
-                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200 text-lg leading-none transition"
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
                 >
-                  ✕
+                  <X className="w-4 h-4" />
                 </button>
               </div>
             </div>
-            <div className="p-4 flex items-center justify-center bg-slate-900/5 overflow-auto flex-1 max-h-[70vh]">
+            <div className="p-4 flex items-center justify-center bg-slate-950 overflow-auto flex-1 max-h-[70vh]">
               <img
                 src={previewBuktiModal.url}
                 alt="Bukti Pembayaran"

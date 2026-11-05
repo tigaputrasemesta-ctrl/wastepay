@@ -317,19 +317,19 @@ export default function ModalApprovalPelanggan({
   const hasGps = Boolean(pelanggan.latitude && pelanggan.longitude);
 
   return (
-    <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 animate-in fade-in duration-150">
-      <div className="bg-white rounded-t-3xl sm:rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-2xl max-h-[88dvh] sm:max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 animate-in fade-in duration-150">
+      <div className="bg-white dark:bg-zinc-900 rounded-t-2xl sm:rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-2xl max-h-[88dvh] sm:max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
         {/* Modal Header */}
-        <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/70 flex items-center justify-between shrink-0">
+        <div className="px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-2xl bg-emerald-600/10 text-emerald-700 border border-emerald-600/20 flex items-center justify-center text-base font-black">
-              <ShieldCheck className="w-5 h-5 text-emerald-700" />
+            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center justify-center text-base font-bold">
+              <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             </div>
             <div>
-              <h2 className="text-base font-extrabold text-slate-900 leading-tight">
+              <h2 className="text-base font-semibold text-slate-900 dark:text-zinc-100 leading-tight tracking-tight">
                 Approval &amp; Penentuan Zona Pickup
               </h2>
-              <p className="text-xs text-slate-500 font-medium">
+              <p className="text-xs text-slate-500 dark:text-zinc-400 font-normal">
                 Persetujuan Admin Pusat sebelum layanan &amp; penagihan diaktifkan
               </p>
             </div>
@@ -337,7 +337,7 @@ export default function ModalApprovalPelanggan({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-200/60 transition"
+            className="p-1.5 text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 transition"
           >
             <X className="w-5 h-5" />
           </button>
@@ -346,14 +346,14 @@ export default function ModalApprovalPelanggan({
         {/* Modal Body */}
         <div className="p-6 overflow-y-auto space-y-5 text-sm">
           {/* Ringkasan Pendaftar & Referral */}
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+          <div className="p-4 rounded-lg bg-slate-50 dark:bg-zinc-950 border border-slate-200/80 dark:border-zinc-800 space-y-3">
             <div className="flex items-start justify-between gap-3 flex-wrap">
               <div>
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                <span className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-wider block">
                   Nama Warga / Calon Pelanggan
                 </span>
-                <h3 className="text-base font-extrabold text-slate-900">{pelanggan.nama}</h3>
-                <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-600">
+                <h3 className="text-base font-bold text-slate-900 dark:text-zinc-100">{pelanggan.nama}</h3>
+                <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-600 dark:text-zinc-400">
                   <a
                     href={`https://wa.me/${pelanggan.noTelepon.replace(/^0/, "62")}`}
                     target="_blank"
@@ -801,12 +801,12 @@ export default function ModalApprovalPelanggan({
         </div>
 
         {/* Modal Footer (Sticky di Mobile + Safe Area) */}
-        <div className="sticky bottom-0 px-6 py-4 border-t border-slate-100 bg-slate-50/95 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0 z-10 pb-safe">
+        <div className="sticky bottom-0 px-6 py-4 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/95 dark:bg-zinc-950/95 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0 z-10 pb-safe">
           <button
             type="button"
             onClick={handleReject}
             disabled={rejecting || submitting}
-            className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold transition flex items-center justify-center gap-1.5"
+            className="w-full sm:w-auto px-4 py-2 rounded-lg border border-rose-200 dark:border-rose-900 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 text-xs font-semibold transition flex items-center justify-center gap-1.5"
           >
             <Trash2 className="w-3.5 h-3.5" />
             <span>{rejecting ? "Menolak…" : "Tolak Pendaftaran"}</span>
@@ -816,7 +816,7 @@ export default function ModalApprovalPelanggan({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 text-xs font-semibold hover:bg-slate-100 transition"
+              className="flex-1 sm:flex-none px-4 py-2 rounded-lg border border-slate-200 dark:border-zinc-800 text-slate-700 dark:text-zinc-200 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-zinc-800 transition"
             >
               Batal
             </button>
@@ -824,7 +824,7 @@ export default function ModalApprovalPelanggan({
               type="button"
               onClick={handleApprove}
               disabled={submitting || rejecting}
-              className="flex-1 sm:flex-none px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5"
+              className="flex-1 sm:flex-none px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white text-xs font-semibold shadow-xs transition flex items-center justify-center gap-1.5"
             >
               <CheckCircle2 className="w-4 h-4" />
               <span>{submitting ? "Memproses Approval…" : "✓ Setujui & Aktifkan Layanan"}</span>

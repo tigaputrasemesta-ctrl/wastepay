@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useToast } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { X } from "lucide-react";
 
 type Wilayah = { id: number; nama: string };
 type Kelurahan = { id: number; nama: string; kecamatan?: string | null };
@@ -433,42 +434,66 @@ export default function PetugasPage() {
 
       {/* Form Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-md max-h-[85vh] overflow-y-auto">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
-              <h2 className="font-semibold text-slate-900 text-base">{editing ? "Edit Petugas" : "Tambah Petugas"}</h2>
-              <button onClick={() => { setShowForm(false); setEditing(null); }} className="p-1.5 text-slate-600 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md max-h-[85vh] overflow-y-auto text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+              <h2 className="font-semibold text-slate-900 dark:text-zinc-100 text-base tracking-tight">{editing ? "Edit Petugas" : "Tambah Petugas"}</h2>
+              <button
+                type="button"
+                onClick={() => { setShowForm(false); setEditing(null); }}
+                className="p-1.5 text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+              >
+                <X className="w-4 h-4" />
               </button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Nama *</label>
-                <input type="text" value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm" required />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Nama *</label>
+                <input
+                  type="text"
+                  value={form.nama}
+                  onChange={(e) => setForm({ ...form, nama: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100"
+                  required
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">No. Telepon *</label>
-                <input type="text" value={form.noTelepon} onChange={(e) => setForm({ ...form, noTelepon: e.target.value })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm" required />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">No. Telepon *</label>
+                <input
+                  type="text"
+                  value={form.noTelepon}
+                  onChange={(e) => setForm({ ...form, noTelepon: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100"
+                  required
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
-                <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm" />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Email</label>
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100"
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Kelurahan *</label>
-                <select value={form.kelurahanId} onChange={(e) => setForm({ ...form, kelurahanId: e.target.value, zonaIds: [] })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white" required>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Kelurahan *</label>
+                <select
+                  value={form.kelurahanId}
+                  onChange={(e) => setForm({ ...form, kelurahanId: e.target.value, zonaIds: [] })}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100"
+                  required
+                >
                   <option value="">Pilih Kelurahan</option>
                   {kelurahanList.map((k) => <option key={k.id} value={k.id}>{k.nama}{k.kecamatan ? ` · ${k.kecamatan}` : ""}</option>)}
                 </select>
-                <p className="text-[11px] text-slate-600 mt-1">
+                <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-1">
                   Area tugas &amp; batas persetujuan petugas — seluruh wilayah/RT di kelurahan ini.
                 </p>
               </div>
               {form.kelurahanId && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Zona Angkut <span className="text-xs text-slate-600 font-normal">(opsional)</span></label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Zona Angkut <span className="text-xs text-slate-500 dark:text-zinc-400 font-normal">(opsional)</span></label>
                   <div className="grid grid-cols-2 gap-2">
                     {zonaList.filter((z) => z.kelurahanId.toString() === form.kelurahanId).map((z) => {
                       const idStr = z.id.toString();
@@ -476,10 +501,10 @@ export default function PetugasPage() {
                       return (
                         <label
                           key={z.id}
-                          className={`flex items-center justify-center px-3 py-2 border rounded-xl text-xs font-medium cursor-pointer transition ${
+                          className={`flex items-center justify-center px-3 py-2 border rounded-lg text-xs font-medium cursor-pointer transition ${
                             checked
-                              ? "bg-emerald-50 border-emerald-300 text-emerald-700 font-semibold"
-                              : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+                              ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 font-semibold"
+                              : "bg-white dark:bg-zinc-950 border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-zinc-800"
                           }`}
                         >
                           <input
@@ -499,17 +524,17 @@ export default function PetugasPage() {
                     })}
                   </div>
                   {zonaList.filter((z) => z.kelurahanId.toString() === form.kelurahanId).length === 0 && (
-                    <p className="text-xs text-slate-600 italic">Kelurahan ini belum memiliki zona angkut.</p>
+                    <p className="text-xs text-slate-500 dark:text-zinc-400 italic">Kelurahan ini belum memiliki zona angkut.</p>
                   )}
                 </div>
               )}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Jabatan <span className="text-xs text-slate-600 font-normal">(bisa lebih dari satu)</span></label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-2">Jabatan <span className="text-xs text-slate-500 dark:text-zinc-400 font-normal">(bisa lebih dari satu)</span></label>
                 <div className="space-y-2">
                   {JABATAN_OPTIONS.map((j) => {
                     const on = form.jabatan.includes(j.value);
                     return (
-                      <label key={j.value} className={`flex items-start gap-3 p-3.5 rounded-xl border cursor-pointer transition ${on ? "border-emerald-300 bg-emerald-50/50" : "border-slate-200 hover:bg-slate-50/60"}`}>
+                      <label key={j.value} className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition ${on ? "border-emerald-300 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/30" : "border-slate-200 dark:border-zinc-800 hover:bg-slate-50/60 dark:hover:bg-zinc-800/40"}`}>
                         <input
                           type="checkbox"
                           checked={on}
@@ -521,11 +546,11 @@ export default function PetugasPage() {
                                 : form.jabatan.filter((x) => x !== j.value),
                             })
                           }
-                          className="mt-0.5 w-4 h-4 rounded text-emerald-700 focus:ring-emerald-500 border-slate-300"
+                          className="mt-0.5 w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 dark:border-zinc-700"
                         />
                         <span>
-                          <span className="block text-sm font-semibold text-slate-900">{j.label}</span>
-                          <span className="block text-xs text-slate-500 mt-0.5">{j.desc}</span>
+                          <span className="block text-sm font-semibold text-slate-900 dark:text-zinc-100">{j.label}</span>
+                          <span className="block text-xs text-slate-500 dark:text-zinc-400 mt-0.5">{j.desc}</span>
                         </span>
                       </label>
                     );
@@ -533,8 +558,12 @@ export default function PetugasPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Akun Login</label>
-                <select value={form.userId} onChange={(e) => setForm({ ...form, userId: e.target.value })} className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Akun Login</label>
+                <select
+                  value={form.userId}
+                  onChange={(e) => setForm({ ...form, userId: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100"
+                >
                   <option value="">{editing ? "— Tanpa akun login —" : "— Tanpa akun login —"}</option>
                   {editing?.user && (
                     <option value={editing.user.id}>{editing.user.nama} ({editing.user.email})</option>
@@ -543,30 +572,41 @@ export default function PetugasPage() {
                     <option key={a.id} value={a.id}>{a.nama} ({a.email})</option>
                   ))}
                 </select>
-                <p className="text-[11px] text-slate-600 mt-1">
+                <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-1">
                   Hubungkan dengan akun login petugas agar data lapangannya tersambung (peta realtime, pickup, dll).
                 </p>
               </div>
 
               {/* Referral info in form */}
-              <div className="p-3 bg-emerald-50/70 rounded-2xl border border-emerald-200/60 text-xs">
-                <div className="font-semibold text-emerald-800 flex items-center gap-1.5 mb-1">
+              <div className="p-3 bg-emerald-50/70 dark:bg-emerald-950/40 rounded-lg border border-emerald-200/60 dark:border-emerald-900 text-xs">
+                <div className="font-semibold text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5 mb-1">
                   <span>🤝</span>
                   <span>Kode &amp; Tautan Referral</span>
                 </div>
-                <p className="text-[11px] text-slate-600 mb-1.5">
-                  Kode referral warga otomatis mengikuti nama petugas: <strong className="text-slate-800 font-semibold">{form.nama || "(Nama Petugas)"}</strong>
+                <p className="text-[11px] text-slate-600 dark:text-zinc-400 mb-1.5">
+                  Kode referral warga otomatis mengikuti nama petugas: <strong className="text-slate-800 dark:text-zinc-200 font-semibold">{form.nama || "(Nama Petugas)"}</strong>
                 </p>
                 {form.nama && (
-                  <div className="bg-white px-2.5 py-1.5 rounded-lg border border-emerald-200 text-[11px] font-mono text-emerald-800 truncate select-all">
+                  <div className="bg-white dark:bg-zinc-900 px-2.5 py-1.5 rounded-md border border-emerald-200 dark:border-emerald-900 text-[11px] font-mono text-emerald-800 dark:text-emerald-300 truncate select-all">
                     {(typeof window !== "undefined" ? window.location.origin : "https://upsheru.com")}/daftar?ref={encodeURIComponent(form.nama)}
                   </div>
                 )}
               </div>
 
-              <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => { setShowForm(false); setEditing(null); }} className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-700 font-medium hover:bg-slate-50 transition">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow-sm active:scale-95 transition-all">{editing ? "Simpan" : "Tambah"}</button>
+              <div className="flex gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={() => { setShowForm(false); setEditing(null); }}
+                  className="flex-1 px-4 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg text-sm text-slate-700 dark:text-zinc-200 font-semibold hover:bg-slate-100 dark:hover:bg-zinc-800 transition"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-semibold shadow-xs active:scale-95 transition-all"
+                >
+                  {editing ? "Simpan" : "Tambah"}
+                </button>
               </div>
             </form>
           </div>

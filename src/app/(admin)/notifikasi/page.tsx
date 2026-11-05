@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { X } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { useUser } from "@/hooks/useUser";
 import { useToast } from "@/components/Toast";
@@ -707,27 +708,25 @@ function NotifikasiContent() {
       {/* MODAL FORM KIRIM NOTIFIKASI WA */}
       {/* ========================================================================= */}
       {showForm && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-lg bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/80">
-              <h2 className="text-base font-semibold text-slate-900">Kirim Notifikasi WhatsApp</h2>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+          <div className="w-full max-w-lg bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+              <h2 className="text-base font-semibold text-slate-900 dark:text-zinc-100">Kirim Notifikasi WhatsApp</h2>
               <button
                 onClick={() => { setShowForm(false); setResult(null); }}
-                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition"
+                className="p-1.5 text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             <form onSubmit={handleSubmitNotif} className="p-6 space-y-4 overflow-y-auto flex-1">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Tipe Notifikasi</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Tipe Notifikasi</label>
                 <select
                   value={form.tipe}
                   onChange={(e) => setForm({ ...form, tipe: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white"
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 transition-colors"
                 >
                   {TIPE_NOTIF.map((t) => (
                     <option key={t.value} value={t.value}>{t.label}</option>
@@ -736,49 +735,49 @@ function NotifikasiContent() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Judul <span className="text-red-500">*</span></label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Judul <span className="text-rose-500">*</span></label>
                 <input
                   type="text"
                   value={form.judul}
                   onChange={(e) => setForm({ ...form, judul: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white"
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 transition-colors"
                   placeholder="cth: Pengingat Tagihan Bulan Ini"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Pesan WhatsApp <span className="text-red-500">*</span></label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Pesan WhatsApp <span className="text-rose-500">*</span></label>
                 <textarea
                   rows={4}
                   value={form.pesan}
                   onChange={(e) => setForm({ ...form, pesan: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white resize-none"
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 resize-none transition-colors"
                   placeholder="Tulis pesan..."
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Penerima</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Penerima</label>
                 <div className="space-y-2">
-                  <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-700 font-medium">
+                  <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-700 dark:text-zinc-300 font-medium">
                     <input
                       type="radio"
                       name="penerima"
                       checked={form.semuaPelanggan}
                       onChange={() => setForm({ ...form, semuaPelanggan: true, pelangganId: "" })}
-                      className="text-emerald-700 focus:ring-emerald-500"
+                      className="text-emerald-600 focus:ring-emerald-500"
                     />
                     Semua Pelanggan Aktif ({pelangganList.length} orang)
                   </label>
-                  <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-700 font-medium">
+                  <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-700 dark:text-zinc-300 font-medium">
                     <input
                       type="radio"
                       name="penerima"
                       checked={!form.semuaPelanggan}
                       onChange={() => setForm({ ...form, semuaPelanggan: false })}
-                      className="text-emerald-700 focus:ring-emerald-500"
+                      className="text-emerald-600 focus:ring-emerald-500"
                     />
                     Pilih Satu Pelanggan Tertentu
                   </label>
@@ -788,7 +787,7 @@ function NotifikasiContent() {
                   <select
                     value={form.pelangganId}
                     onChange={(e) => setForm({ ...form, pelangganId: e.target.value })}
-                    className="w-full mt-2 px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white"
+                    className="w-full mt-2 px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 transition-colors"
                     required={!form.semuaPelanggan}
                   >
                     <option value="">-- Pilih Pelanggan --</option>
@@ -801,18 +800,18 @@ function NotifikasiContent() {
 
               {/* Tampilan Hasil / Link WA */}
               {result && (
-                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-xs space-y-2">
-                  <p className="font-bold text-emerald-800">{result.message}</p>
+                <div className="p-4 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 rounded-xl text-xs space-y-2 text-emerald-800 dark:text-emerald-300">
+                  <p className="font-semibold">{result.message}</p>
                   {result.links && result.links.length > 0 && (
                     <div className="space-y-1">
-                      <p className="font-medium text-emerald-700">Tautan Manual WhatsApp:</p>
+                      <p className="font-medium text-emerald-700 dark:text-emerald-400">Tautan Manual WhatsApp:</p>
                       {result.links.slice(0, 3).map((link, i) => (
                         <a
                           key={i}
                           href={link}
                           target="_blank"
                           rel="noreferrer"
-                          className="block text-emerald-600 hover:underline truncate"
+                          className="block text-emerald-600 dark:text-emerald-400 hover:underline truncate"
                         >
                           🔗 Buka Chat WA #{i + 1}
                         </a>
@@ -822,18 +821,18 @@ function NotifikasiContent() {
                 </div>
               )}
 
-              <div className="flex gap-2 pt-2">
+              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100 dark:border-zinc-800">
                 <button
                   type="button"
                   onClick={() => { setShowForm(false); setResult(null); }}
-                  className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-50 transition"
+                  className="px-4 py-2 text-xs font-semibold rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
                 >
                   Tutup
                 </button>
                 <button
                   type="submit"
                   disabled={sending}
-                  className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow transition"
+                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white shadow-sm transition-colors"
                 >
                   {sending ? "Mengirim..." : "Kirim Sekarang"}
                 </button>
@@ -847,39 +846,37 @@ function NotifikasiContent() {
       {/* MODAL FORM BUAT PENGUMUMAN BARU */}
       {/* ========================================================================= */}
       {showPengumumanForm && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-lg bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/80">
-              <h2 className="text-base font-semibold text-slate-900">Buat Pengumuman Baru</h2>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+          <div className="w-full max-w-lg bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+              <h2 className="text-base font-semibold text-slate-900 dark:text-zinc-100">Buat Pengumuman Baru</h2>
               <button
                 onClick={() => setShowPengumumanForm(false)}
-                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition"
+                className="p-1.5 text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             <form onSubmit={handleSubmitPengumuman} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Judul Pengumuman <span className="text-red-500">*</span></label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Judul Pengumuman <span className="text-rose-500">*</span></label>
                 <input
                   type="text"
                   value={pengumumanForm.judul}
                   onChange={(e) => setPengumumanForm({ ...pengumumanForm, judul: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white"
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 transition-colors"
                   placeholder="cth: Perubahan Jadwal Libur Lebaran"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Wilayah Spesifik (Opsional)</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Wilayah Spesifik (Opsional)</label>
                 <select
                   value={pengumumanForm.untukWilayahId}
                   onChange={(e) => setPengumumanForm({ ...pengumumanForm, untukWilayahId: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white"
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 transition-colors"
                 >
                   <option value="">-- Semua Wilayah --</option>
                   {wilayahList.map((w) => (
@@ -889,38 +886,38 @@ function NotifikasiContent() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Isi Pengumuman <span className="text-red-500">*</span></label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Isi Pengumuman <span className="text-rose-500">*</span></label>
                 <textarea
                   rows={5}
                   value={pengumumanForm.isi}
                   onChange={(e) => setPengumumanForm({ ...pengumumanForm, isi: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white resize-none"
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 resize-none transition-colors"
                   placeholder="Tulis rincian pengumuman..."
                   required
                 />
               </div>
 
-              <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-slate-700">
+              <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-slate-700 dark:text-zinc-300">
                 <input
                   type="checkbox"
                   checked={pengumumanForm.penting}
                   onChange={(e) => setPengumumanForm({ ...pengumumanForm, penting: e.target.checked })}
-                  className="rounded text-emerald-700 focus:ring-emerald-500"
+                  className="rounded text-emerald-600 focus:ring-emerald-500"
                 />
                 Tandai sebagai Pengumuman Penting (High Priority)
               </label>
 
-              <div className="flex gap-2 pt-2">
+              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100 dark:border-zinc-800">
                 <button
                   type="button"
                   onClick={() => setShowPengumumanForm(false)}
-                  className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-50 transition"
+                  className="px-4 py-2 text-xs font-semibold rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow transition"
+                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-colors"
                 >
                   Terbitkan
                 </button>

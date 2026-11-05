@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { X } from "lucide-react";
 import { useToast } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
@@ -364,35 +365,77 @@ export default function TarifPage() {
 
       {/* Modal Kategori */}
       {showKatForm && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="bg-white w-full max-w-md rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden">
-            <div className="p-5 border-b border-slate-200 bg-slate-50/70 flex justify-between items-center">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-zinc-900 w-full max-w-md rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden text-slate-900 dark:text-zinc-100">
+            <div className="p-5 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 flex justify-between items-center">
               <div>
-                <h2 className="font-bold text-slate-900 text-base">{katEditing ? "Edit Kategori" : "Tambah Kategori Baru"}</h2>
-                <p className="text-xs text-slate-500">Sesuaikan kode, nama tampilan, dan nominal tarif</p>
+                <h2 className="font-semibold text-slate-900 dark:text-zinc-100 text-base">{katEditing ? "Edit Kategori" : "Tambah Kategori Baru"}</h2>
+                <p className="text-xs text-slate-500 dark:text-zinc-400">Sesuaikan kode, nama tampilan, dan nominal tarif</p>
               </div>
-              <button onClick={() => setShowKatForm(false)} className="text-slate-600 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-lg leading-none">&times;</button>
+              <button
+                onClick={() => setShowKatForm(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
             <form onSubmit={saveKat} className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Kode ID (Tanpa spasi)</label>
-                <input type="text" value={katForm.kategori} onChange={e => setKatForm({...katForm, kategori: e.target.value})} className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all" required placeholder="contoh: level_1" disabled={!!katEditing} />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Kode ID (Tanpa spasi)</label>
+                <input
+                  type="text"
+                  value={katForm.kategori}
+                  onChange={e => setKatForm({...katForm, kategori: e.target.value})}
+                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-slate-900 dark:text-zinc-100 placeholder-slate-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors disabled:opacity-60"
+                  required
+                  placeholder="contoh: level_1"
+                  disabled={!!katEditing}
+                />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Label Tampilan</label>
-                <input type="text" value={katForm.label} onChange={e => setKatForm({...katForm, label: e.target.value})} className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all" required placeholder="contoh: Rumah Tangga Biasa" />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Label Tampilan</label>
+                <input
+                  type="text"
+                  value={katForm.label}
+                  onChange={e => setKatForm({...katForm, label: e.target.value})}
+                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-slate-900 dark:text-zinc-100 placeholder-slate-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+                  required
+                  placeholder="contoh: Rumah Tangga Biasa"
+                />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Tarif Bulanan (Rp)</label>
-                <input type="number" value={katForm.tarif} onChange={e => setKatForm({...katForm, tarif: e.target.value})} className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all" required />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Tarif Bulanan (Rp)</label>
+                <input
+                  type="number"
+                  value={katForm.tarif}
+                  onChange={e => setKatForm({...katForm, tarif: e.target.value})}
+                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-slate-900 dark:text-zinc-100 placeholder-slate-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+                  required
+                />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Deskripsi</label>
-                <textarea value={katForm.deskripsi} onChange={e => setKatForm({...katForm, deskripsi: e.target.value})} className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all" rows={2} />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Deskripsi</label>
+                <textarea
+                  value={katForm.deskripsi}
+                  onChange={e => setKatForm({...katForm, deskripsi: e.target.value})}
+                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-slate-900 dark:text-zinc-100 placeholder-slate-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+                  rows={2}
+                />
               </div>
-              <div className="pt-2 flex gap-3">
-                <button type="button" onClick={() => setShowKatForm(false)} className="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl text-sm font-semibold transition-all">Batal</button>
-                <button type="submit" className="w-2/3 bg-emerald-700 hover:bg-emerald-800 text-white py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow transition-all">Simpan Kategori</button>
+              <div className="pt-2 flex items-center justify-end gap-2.5 border-t border-slate-100 dark:border-zinc-800">
+                <button
+                  type="button"
+                  onClick={() => setShowKatForm(false)}
+                  className="px-4 py-2 text-xs font-semibold rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-colors"
+                >
+                  Simpan Kategori
+                </button>
               </div>
             </form>
           </div>
@@ -401,35 +444,73 @@ export default function TarifPage() {
 
       {/* Modal Paket */}
       {showPaketForm && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="bg-white w-full max-w-md rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden">
-            <div className="p-5 border-b border-slate-200 bg-slate-50/70 flex justify-between items-center">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-zinc-900 w-full max-w-md rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden text-slate-900 dark:text-zinc-100">
+            <div className="p-5 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 flex justify-between items-center">
               <div>
-                <h2 className="font-bold text-slate-900 text-base">{paketEditing ? "Edit Paket Khusus" : "Tambah Paket Khusus"}</h2>
-                <p className="text-xs text-slate-500">Sesuaikan paket berlangganan atau program custom</p>
+                <h2 className="font-semibold text-slate-900 dark:text-zinc-100 text-base">{paketEditing ? "Edit Paket Khusus" : "Tambah Paket Khusus"}</h2>
+                <p className="text-xs text-slate-500 dark:text-zinc-400">Sesuaikan paket berlangganan atau program custom</p>
               </div>
-              <button onClick={() => setShowPaketForm(false)} className="text-slate-600 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-lg leading-none">&times;</button>
+              <button
+                onClick={() => setShowPaketForm(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
             <form onSubmit={savePaket} className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Kode ID (opsional)</label>
-                <input type="text" value={paketForm.kode} onChange={e => setPaketForm({...paketForm, kode: e.target.value})} className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all" placeholder="contoh: paket_event" />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Kode ID (opsional)</label>
+                <input
+                  type="text"
+                  value={paketForm.kode}
+                  onChange={e => setPaketForm({...paketForm, kode: e.target.value})}
+                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-slate-900 dark:text-zinc-100 placeholder-slate-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+                  placeholder="contoh: paket_event"
+                />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Nama Paket</label>
-                <input type="text" value={paketForm.nama} onChange={e => setPaketForm({...paketForm, nama: e.target.value})} className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all" required />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Nama Paket</label>
+                <input
+                  type="text"
+                  value={paketForm.nama}
+                  onChange={e => setPaketForm({...paketForm, nama: e.target.value})}
+                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-slate-900 dark:text-zinc-100 placeholder-slate-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+                  required
+                />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Harga Bulanan (Rp) — kosongkan jika variabel</label>
-                <input type="number" value={paketForm.harga} onChange={e => setPaketForm({...paketForm, harga: e.target.value})} className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all" />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Harga Bulanan (Rp) — kosongkan jika variabel</label>
+                <input
+                  type="number"
+                  value={paketForm.harga}
+                  onChange={e => setPaketForm({...paketForm, harga: e.target.value})}
+                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-slate-900 dark:text-zinc-100 placeholder-slate-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+                />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">Deskripsi</label>
-                <textarea value={paketForm.deskripsi} onChange={e => setPaketForm({...paketForm, deskripsi: e.target.value})} className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all" rows={3} />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Deskripsi</label>
+                <textarea
+                  value={paketForm.deskripsi}
+                  onChange={e => setPaketForm({...paketForm, deskripsi: e.target.value})}
+                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-slate-900 dark:text-zinc-100 placeholder-slate-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+                  rows={3}
+                />
               </div>
-              <div className="pt-2 flex gap-3">
-                <button type="button" onClick={() => setShowPaketForm(false)} className="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl text-sm font-semibold transition-all">Batal</button>
-                <button type="submit" className="w-2/3 bg-emerald-700 hover:bg-emerald-800 text-white py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow transition-all">Simpan Paket</button>
+              <div className="pt-2 flex items-center justify-end gap-2.5 border-t border-slate-100 dark:border-zinc-800">
+                <button
+                  type="button"
+                  onClick={() => setShowPaketForm(false)}
+                  className="px-4 py-2 text-xs font-semibold rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-colors"
+                >
+                  Simpan Paket
+                </button>
               </div>
             </form>
           </div>

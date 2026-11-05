@@ -1302,19 +1302,19 @@ function RuteContent() {
       {/* MODAL FORM RUTE (INDUSTRY STANDARD: TABBED & VIEWPORT ADAPTIVE) */}
       {/* ========================================================================= */}
       {showRuteForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 md:p-6 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="w-full h-[100dvh] sm:h-auto sm:max-h-[88dvh] max-w-3xl bg-white rounded-none sm:rounded-3xl border-0 sm:border border-slate-200/80 shadow-2xl flex flex-col overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 md:p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="w-full h-[100dvh] sm:h-auto sm:max-h-[88dvh] max-w-3xl bg-white dark:bg-zinc-900 rounded-none sm:rounded-xl border-0 sm:border border-slate-200 dark:border-zinc-800 shadow-2xl flex flex-col overflow-hidden text-slate-900 dark:text-zinc-100">
             {/* Header Modal */}
-            <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-100 bg-slate-50/80 shrink-0">
+            <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold shadow-xs shrink-0">
-                  <Truck className="w-5 h-5 text-emerald-700" />
+                <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center justify-center font-bold shadow-xs shrink-0">
+                  <Truck className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <div className="min-w-0">
-                  <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-tight truncate">
+                  <h2 className="text-base font-semibold text-slate-900 dark:text-zinc-100 leading-tight tracking-tight truncate">
                     {editingRute ? "Edit Rute Armada" : "Tambah Rute Armada Baru"}
                   </h2>
-                  <p className="text-xs text-slate-500 truncate">
+                  <p className="text-xs text-slate-500 dark:text-zinc-400 truncate">
                     {editingRute ? editingRute.nama : "Atur jadwal, armada penjemput, serta cakupan zona operasional"}
                   </p>
                 </div>
@@ -1322,15 +1322,15 @@ function RuteContent() {
               <button
                 type="button"
                 onClick={() => { setShowRuteForm(false); setEditingRute(null); }}
-                className="p-2 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100 transition shrink-0"
+                className="p-1.5 text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 transition shrink-0"
                 aria-label="Tutup"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Tab Navigation Header (Progressive Disclosure) */}
-            <div className="flex items-center border-b border-slate-200 bg-white px-4 sm:px-6 shrink-0 gap-2">
+            <div className="flex items-center border-b border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 sm:px-6 shrink-0 gap-2">
               <button
                 type="button"
                 onClick={() => setRuteModalTab("jadwal")}
@@ -1850,14 +1850,17 @@ function RuteContent() {
       {/* MODAL FORM JADWAL PELANGGAN */}
       {/* ========================================================================= */}
       {showJadwalForm && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-md bg-white rounded-3xl border border-slate-200/80 shadow-2xl">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/80">
-              <h2 className="text-base font-semibold text-slate-900">{editingJadwal ? "Edit Jadwal Pelanggan" : "Tambah Jadwal Pelanggan"}</h2>
-              <button onClick={() => { setShowJadwalForm(false); setEditingJadwal(null); }} className="p-1.5 text-slate-600 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition" aria-label="Tutup">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+          <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+              <h2 className="text-base font-semibold text-slate-900 dark:text-zinc-100 tracking-tight">{editingJadwal ? "Edit Jadwal Pelanggan" : "Tambah Jadwal Pelanggan"}</h2>
+              <button
+                type="button"
+                onClick={() => { setShowJadwalForm(false); setEditingJadwal(null); }}
+                className="p-1.5 text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 transition"
+                aria-label="Tutup"
+              >
+                <X className="w-4 h-4" />
               </button>
             </div>
             <form onSubmit={handleJadwalSubmit} className="p-6 space-y-4">
@@ -2021,27 +2024,28 @@ function RuteContent() {
       {/* MODAL SETTING HARI PELANGGAN PER RUTE */}
       {/* ========================================================================= */}
       {modalPelangganRute.isOpen && modalPelangganRute.rute && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-0 sm:p-4 md:p-6 animate-in fade-in duration-150">
-          <div className="w-full h-full sm:h-auto max-w-4xl bg-white rounded-none sm:rounded-3xl border-0 sm:border border-slate-200/80 shadow-2xl flex flex-col sm:max-h-[92vh] overflow-hidden">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-0 sm:p-4 md:p-6 animate-in fade-in duration-150">
+          <div className="w-full h-full sm:h-auto max-w-4xl bg-white dark:bg-zinc-900 rounded-none sm:rounded-xl border-0 sm:border border-slate-200 dark:border-zinc-800 shadow-2xl flex flex-col sm:max-h-[92vh] overflow-hidden text-slate-900 dark:text-zinc-100">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/80">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xl">👥</span>
-                  <h2 className="text-base font-bold text-slate-900">
+                  <span className="text-lg">👥</span>
+                  <h2 className="text-base font-semibold text-slate-900 dark:text-zinc-100 tracking-tight">
                     Setting Hari Layanan Warga — {modalPelangganRute.rute.nama}
                   </h2>
                 </div>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
                   Sesuaikan hari penjemputan warga di cakupan rute ini agar otomatis masuk ke tugas pickup armada
                 </p>
               </div>
               <button
+                type="button"
                 onClick={() => setModalPelangganRute((prev) => ({ ...prev, isOpen: false, rute: null }))}
-                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition"
+                className="p-1.5 text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 transition"
                 aria-label="Tutup"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 

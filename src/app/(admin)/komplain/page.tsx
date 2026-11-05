@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { formatDate } from "@/lib/utils";
 import { useToast } from "@/components/Toast";
+import { X, Send, CheckCircle, MessageSquare, Clock, AlertCircle } from "lucide-react";
 
 type Petugas = {
   id: number;
@@ -604,37 +605,38 @@ export default function KomplainPage() {
       {/* MODAL 1: TERUSKAN KE PETUGAS FORMAT WHATSAPP                    */}
       {/* ============================================================== */}
       {showForward && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150 overflow-y-auto">
-          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl overflow-hidden w-full max-w-2xl my-6">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150 overflow-y-auto">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-2xl my-6 text-slate-900 dark:text-zinc-100">
             {/* Header Modal */}
-            <div className="flex items-center justify-between px-6 py-4 bg-emerald-800 text-white">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-emerald-700 flex items-center justify-center shadow-inner">
-                  <svg className="w-5 h-5 fill-current text-white" viewBox="0 0 24 24">
+                <div className="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200/50 dark:border-emerald-900 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                  <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
                     <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.969.54 1.771.814 2.791.814 3.18 0 5.766-2.587 5.767-5.767.001-3.18-2.585-5.766-5.767-5.767zm7.502 5.766c-.001 4.14-3.364 7.503-7.502 7.503-1.282 0-2.482-.323-3.539-.893l-4.492 1.178 1.198-4.377c-.636-1.096-.97-2.355-.97-3.411 0-4.14 3.363-7.503 7.503-7.503 4.139 0 7.502 3.363 7.502 7.502z" />
                   </svg>
                 </div>
                 <div>
-                  <h2 className="font-bold text-base leading-tight">Teruskan Pengaduan ke Petugas</h2>
-                  <p className="text-[11px] text-emerald-200 font-mono">Tiket #KMP-{showForward.id} • {showForward.pelanggan.nama}</p>
+                  <h2 className="font-semibold text-base leading-tight text-slate-900 dark:text-zinc-100 tracking-tight">Teruskan Pengaduan ke Petugas</h2>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400 font-mono">Tiket #KMP-{showForward.id} • {showForward.pelanggan.nama}</p>
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => setShowForward(null)}
-                className="w-8 h-8 rounded-xl flex items-center justify-center bg-emerald-700/80 hover:bg-emerald-700 text-emerald-100 hover:text-white transition"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="p-6 space-y-5 max-h-[80vh] overflow-y-auto">
+            <div className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
               {/* Petugas Rekomendasi Badge jika ada */}
               {recommendedPetugas && (
-                <div className="bg-indigo-50/80 border border-indigo-200 p-3 rounded-2xl flex items-center justify-between text-xs text-indigo-900">
+                <div className="bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900 p-3 rounded-lg flex items-center justify-between text-xs text-indigo-900 dark:text-indigo-200">
                   <div className="flex items-center gap-2">
                     <span className="text-base">⭐</span>
                     <div>
-                      <span className="font-bold">Petugas Rute Terkait: </span>
+                      <span className="font-semibold">Petugas Rute Terkait: </span>
                       <span className="font-medium">{recommendedPetugas.nama} ({recommendedPetugas.noTelepon})</span>
                     </div>
                   </div>
@@ -645,57 +647,57 @@ export default function KomplainPage() {
                         setTargetType("petugas");
                         setSelectedPetugasId(recommendedPetugas.id);
                       }}
-                      className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-[11px] shadow-sm transition"
+                      className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md font-semibold text-[11px] shadow-xs transition"
                     >
                       Pilih Petugas Ini
                     </button>
                   ) : (
-                    <span className="text-[11px] font-bold text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded">Terpilih</span>
+                    <span className="text-[11px] font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-100 dark:bg-indigo-900/60 px-2 py-0.5 rounded">Terpilih</span>
                   )}
                 </div>
               )}
 
               {/* Pilihan Target Penerima */}
               <div>
-                <label className="block text-xs font-extrabold text-slate-800 mb-2">Tujuan Pengiriman Disposisi</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-2">Tujuan Pengiriman Disposisi</label>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3">
                   <button
                     type="button"
                     onClick={() => setTargetType("petugas")}
-                    className={`p-3 rounded-2xl border text-left transition-all ${
+                    className={`p-3 rounded-lg border text-left transition-all ${
                       targetType === "petugas"
-                        ? "border-emerald-600 bg-emerald-50/60 ring-2 ring-emerald-500/20 text-emerald-950 font-bold"
-                        : "border-slate-200 hover:bg-slate-50 text-slate-700 font-medium"
+                        ? "border-emerald-600 bg-emerald-50/60 dark:bg-emerald-950/40 ring-1 ring-emerald-500/20 text-emerald-950 dark:text-emerald-200 font-semibold"
+                        : "border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-800/60 text-slate-700 dark:text-zinc-300 font-medium"
                     }`}
                   >
                     <div className="text-sm">👤 Petugas Lapangan</div>
-                    <div className="text-[10px] text-slate-500 font-normal mt-0.5">Japri langsung ke driver</div>
+                    <div className="text-[10px] text-slate-500 dark:text-zinc-400 font-normal mt-0.5">Japri langsung ke driver</div>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setTargetType("grup")}
-                    className={`p-3 rounded-2xl border text-left transition-all ${
+                    className={`p-3 rounded-lg border text-left transition-all ${
                       targetType === "grup"
-                        ? "border-emerald-600 bg-emerald-50/60 ring-2 ring-emerald-500/20 text-emerald-950 font-bold"
-                        : "border-slate-200 hover:bg-slate-50 text-slate-700 font-medium"
+                        ? "border-emerald-600 bg-emerald-50/60 dark:bg-emerald-950/40 ring-1 ring-emerald-500/20 text-emerald-950 dark:text-emerald-200 font-semibold"
+                        : "border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-800/60 text-slate-700 dark:text-zinc-300 font-medium"
                     }`}
                   >
                     <div className="text-sm">👥 Grup Pengaduan</div>
-                    <div className="text-[10px] text-slate-500 font-normal mt-0.5">Broadcast tim operasional</div>
+                    <div className="text-[10px] text-slate-500 dark:text-zinc-400 font-normal mt-0.5">Broadcast tim operasional</div>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setTargetType("custom")}
-                    className={`p-3 rounded-2xl border text-left transition-all ${
+                    className={`p-3 rounded-lg border text-left transition-all ${
                       targetType === "custom"
-                        ? "border-emerald-600 bg-emerald-50/60 ring-2 ring-emerald-500/20 text-emerald-950 font-bold"
-                        : "border-slate-200 hover:bg-slate-50 text-slate-700 font-medium"
+                        ? "border-emerald-600 bg-emerald-50/60 dark:bg-emerald-950/40 ring-1 ring-emerald-500/20 text-emerald-950 dark:text-emerald-200 font-semibold"
+                        : "border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-800/60 text-slate-700 dark:text-zinc-300 font-medium"
                     }`}
                   >
                     <div className="text-sm">📱 Nomor Kustom</div>
-                    <div className="text-[10px] text-slate-500 font-normal mt-0.5">Ketik nomor HP lain</div>
+                    <div className="text-[10px] text-slate-500 dark:text-zinc-400 font-normal mt-0.5">Ketik nomor HP lain</div>
                   </button>
                 </div>
 
@@ -705,7 +707,7 @@ export default function KomplainPage() {
                     <select
                       value={selectedPetugasId || ""}
                       onChange={(e) => setSelectedPetugasId(parseInt(e.target.value))}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-semibold text-slate-900"
+                      className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-semibold text-slate-900 dark:text-zinc-100"
                     >
                       {petugasList.map((p) => (
                         <option key={p.id} value={p.id}>
@@ -724,14 +726,14 @@ export default function KomplainPage() {
                       placeholder="Nama Penerima (mis. Pak Budi)"
                       value={customName}
                       onChange={(e) => setCustomName(e.target.value)}
-                      className="px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
+                      className="px-3 py-2 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-lg text-xs font-medium text-slate-900 dark:text-zinc-100 focus:outline-none focus:border-emerald-500"
                     />
                     <input
                       type="text"
                       placeholder="Nomor WhatsApp (08xxxx / 628xxxx)"
                       value={customPhone}
                       onChange={(e) => setCustomPhone(e.target.value)}
-                      className="px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
+                      className="px-3 py-2 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-lg text-xs font-mono font-medium text-slate-900 dark:text-zinc-100 focus:outline-none focus:border-emerald-500"
                     />
                   </div>
                 )}
@@ -739,7 +741,7 @@ export default function KomplainPage() {
 
               {/* Catatan Admin Khusus */}
               <div>
-                <label className="block text-xs font-extrabold text-slate-800 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">
                   Instruksi Khusus untuk Petugas (Opsional)
                 </label>
                 <input
@@ -747,19 +749,19 @@ export default function KomplainPage() {
                   placeholder="Contoh: Tolong segera jemput sebelum dzuhur ya mas / bawa karung cadangan..."
                   value={catatanAdmin}
                   onChange={(e) => setCatatanAdmin(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs text-slate-900 font-medium placeholder:text-slate-400"
+                  className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs text-slate-900 dark:text-zinc-100 font-medium placeholder:text-slate-400 dark:placeholder:text-zinc-500"
                 />
               </div>
 
               {/* Checkbox Otomatis Update Status */}
-              <label className="flex items-center gap-2.5 cursor-pointer bg-slate-50 p-3 rounded-2xl border border-slate-200 select-none">
+              <label className="flex items-center gap-2.5 cursor-pointer bg-slate-50 dark:bg-zinc-950 p-3 rounded-lg border border-slate-200 dark:border-zinc-800 select-none">
                 <input
                   type="checkbox"
                   checked={autoUpdateStatus}
                   onChange={(e) => setAutoUpdateStatus(e.target.checked)}
-                  className="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500"
+                  className="w-4 h-4 text-emerald-600 rounded border-slate-300 dark:border-zinc-700 focus:ring-emerald-500"
                 />
-                <span className="text-xs text-slate-700 font-medium">
+                <span className="text-xs text-slate-700 dark:text-zinc-300 font-medium">
                   Otomatis tandai status komplain ini menjadi <b>&quot;Diproses&quot;</b> setelah diteruskan
                 </span>
               </label>
@@ -767,72 +769,66 @@ export default function KomplainPage() {
               {/* Live Preview Pesan WhatsApp Bubble */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-zinc-300 flex items-center gap-1.5">
                     <span>Pratinjau Format Pesan WhatsApp</span>
-                    <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-bold px-2 py-0.5 rounded-full">
                       Tujuan: {currentTarget.nama}
                     </span>
                   </label>
                   <button
                     type="button"
                     onClick={handleCopyText}
-                    className="text-[11px] text-emerald-700 hover:text-emerald-800 font-bold flex items-center gap-1"
+                    className="text-[11px] text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 font-semibold flex items-center gap-1"
                   >
                     <span>📋 Salin Teks</span>
                   </button>
                 </div>
 
-                <div className="bg-[#E5DDD5] p-3.5 rounded-2xl border border-slate-300/80 shadow-inner">
-                  <div className="bg-[#DCF8C6] p-3 rounded-xl shadow-sm text-xs text-slate-800 font-sans leading-relaxed whitespace-pre-wrap border border-[#c4e8aa] max-h-56 overflow-y-auto font-mono text-[11px]">
+                <div className="bg-[#E5DDD5] dark:bg-zinc-950 p-3 rounded-lg border border-slate-300/80 dark:border-zinc-800 shadow-inner">
+                  <div className="bg-[#DCF8C6] dark:bg-emerald-950/60 p-3 rounded-md shadow-xs text-xs text-slate-800 dark:text-emerald-200 leading-relaxed whitespace-pre-wrap border border-[#c4e8aa] dark:border-emerald-800 max-h-56 overflow-y-auto font-mono text-[11px]">
                     {previewPesanWa}
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="pt-2 border-t border-slate-200 flex flex-col sm:flex-row items-center gap-2.5">
+              <div className="pt-3 border-t border-slate-100 dark:border-zinc-800 flex flex-col sm:flex-row items-center gap-2 justify-end">
                 <button
                   type="button"
                   onClick={() => setShowForward(null)}
-                  className="w-full sm:w-auto px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition"
+                  className="w-full sm:w-auto px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 font-semibold text-xs rounded-lg transition"
                 >
                   Batal
                 </button>
 
-                <div className="w-full sm:w-auto flex-1 flex flex-col sm:flex-row items-center gap-2 justify-end">
-                  {/* Tombol 1: Buka WhatsApp Langsung (wa.me) */}
-                  {!currentTarget.isGroup && (
-                    <button
-                      type="button"
-                      onClick={handleOpenWaMe}
-                      className="w-full sm:w-auto px-4 py-2.5 bg-white border border-emerald-600 hover:bg-emerald-50 text-emerald-700 font-bold text-xs rounded-xl shadow-sm transition flex items-center justify-center gap-1.5"
-                    >
-                      <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                        <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.969.54 1.771.814 2.791.814 3.18 0 5.766-2.587 5.767-5.767.001-3.18-2.585-5.766-5.767-5.767zm7.502 5.766c-.001 4.14-3.364 7.503-7.502 7.503-1.282 0-2.482-.323-3.539-.893l-4.492 1.178 1.198-4.377c-.636-1.096-.97-2.355-.97-3.411 0-4.14 3.363-7.503 7.503-7.503 4.139 0 7.502 3.363 7.502 7.502z" />
-                      </svg>
-                      <span>Buka di WhatsApp (wa.me)</span>
-                    </button>
-                  )}
-
-                  {/* Tombol 2: Kirim Otomatis via Bot Gateway Fonnte */}
+                {!currentTarget.isGroup && (
                   <button
                     type="button"
-                    disabled={forwarding}
-                    onClick={handleSendGateway}
-                    className="w-full sm:w-auto px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-md active:scale-95 transition flex items-center justify-center gap-1.5"
+                    onClick={handleOpenWaMe}
+                    className="w-full sm:w-auto px-4 py-2 bg-white dark:bg-zinc-900 border border-emerald-600 hover:bg-emerald-50 dark:hover:bg-zinc-800 text-emerald-700 dark:text-emerald-400 font-semibold text-xs rounded-lg shadow-xs transition flex items-center justify-center gap-1.5"
                   >
-                    {forwarding ? (
-                      <>
-                        <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        <span>Mengirim Pesan...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>🚀 Kirim Otomatis (Gateway)</span>
-                      </>
-                    )}
+                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.969.54 1.771.814 2.791.814 3.18 0 5.766-2.587 5.767-5.767.001-3.18-2.585-5.766-5.767-5.767zm7.502 5.766c-.001 4.14-3.364 7.503-7.502 7.503-1.282 0-2.482-.323-3.539-.893l-4.492 1.178 1.198-4.377c-.636-1.096-.97-2.355-.97-3.411 0-4.14 3.363-7.503 7.503-7.503 4.139 0 7.502 3.363 7.502 7.502z" />
+                    </svg>
+                    <span>Buka di WhatsApp (wa.me)</span>
                   </button>
-                </div>
+                )}
+
+                <button
+                  type="button"
+                  disabled={forwarding}
+                  onClick={handleSendGateway}
+                  className="w-full sm:w-auto px-5 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold text-xs rounded-lg shadow-xs active:scale-95 transition flex items-center justify-center gap-1.5"
+                >
+                  {forwarding ? (
+                    <>
+                      <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>Mengirim Pesan...</span>
+                    </>
+                  ) : (
+                    <span>🚀 Kirim Otomatis (Gateway)</span>
+                  )}
+                </button>
               </div>
             </div>
           </div>
@@ -843,63 +839,64 @@ export default function KomplainPage() {
       {/* MODAL 2: SELESAIKAN STATUS KOMPLAIN                            */}
       {/* ============================================================== */}
       {showResolve && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden w-full max-w-lg">
-            <div className="flex items-center justify-between px-6 py-4.5 bg-slate-900 text-white">
-              <h2 className="font-bold text-base tracking-wide">Update Status Pengaduan</h2>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-lg text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+              <h2 className="font-semibold text-base tracking-tight text-slate-900 dark:text-zinc-100">Update Status Pengaduan</h2>
               <button
+                type="button"
                 onClick={() => setShowResolve(null)}
-                className="w-8 h-8 rounded-xl flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                <X className="w-4 h-4" />
               </button>
             </div>
             <form onSubmit={handleResolve} className="p-6 space-y-4">
-              <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl text-xs space-y-2">
-                <p className="font-bold text-slate-900 text-sm">{showResolve.pelanggan.nama}</p>
-                <p className="text-slate-600 font-normal leading-relaxed">{showResolve.deskripsi}</p>
+              <div className="bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 p-4 rounded-lg text-xs space-y-2">
+                <p className="font-bold text-slate-900 dark:text-zinc-100 text-sm">{showResolve.pelanggan.nama}</p>
+                <p className="text-slate-600 dark:text-zinc-400 font-normal leading-relaxed">{showResolve.deskripsi}</p>
                 {showResolve.foto && (
                   <div className="mt-2">
                     <img
                       src={showResolve.foto}
                       alt="Dokumentasi komplain"
-                      className="w-full max-h-48 object-cover rounded-xl border border-slate-200 shadow-sm"
+                      className="w-full max-h-48 object-cover rounded-lg border border-slate-200 dark:border-zinc-800 shadow-xs"
                     />
                   </div>
                 )}
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Status Penyelesaian</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Status Penyelesaian</label>
                 <select
                   value={formResolve.status}
                   onChange={(e) => setFormResolve({ ...formResolve, status: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900"
+                  className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900 dark:text-zinc-100"
                 >
                   <option value="diproses">Diproses</option>
                   <option value="selesai">Selesai</option>
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Tanggapan / Catatan Penyelesaian</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Tanggapan / Catatan Penyelesaian</label>
                 <textarea
                   value={formResolve.tanggapan}
                   onChange={(e) => setFormResolve({ ...formResolve, tanggapan: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900 placeholder:text-slate-400"
+                  className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500"
                   rows={3}
                   placeholder="Berikan tanggapan untuk warga atau catatan armada..."
                 />
               </div>
-              <div className="flex gap-3 pt-3 border-t border-slate-200">
+              <div className="flex gap-2.5 pt-3 border-t border-slate-100 dark:border-zinc-800">
                 <button
                   type="button"
                   onClick={() => setShowResolve(null)}
-                  className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors"
+                  className="flex-1 px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 font-semibold text-xs rounded-lg transition-colors"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-md active:scale-95 transition-all"
+                  className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-xs active:scale-95 transition-all"
                 >
                   Simpan Status
                 </button>
