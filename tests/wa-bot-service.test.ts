@@ -8,6 +8,7 @@ vi.mock("../src/lib/prisma", () => ({
       findFirst: vi.fn(),
     },
     tagihan: {
+      findFirst: vi.fn(),
       findMany: vi.fn(),
     },
     komplain: {

@@ -233,32 +233,57 @@ export async function processIncomingWaMessage(
   }
 
   // Intent: TATACARA PEMBAYARAN QRIS & M-BANKING
+  const cleanFormattedMsg = lowerMsg.replace(/[*_~`]/g, "").trim();
   const isCaraBayarTrigger =
-    lowerMsg === "5" ||
-    lowerMsg === "cara bayar" ||
-    lowerMsg.startsWith("cara bayar") ||
-    lowerMsg.includes("cara bayar") ||
-    lowerMsg.includes("cara pembayaran") ||
-    lowerMsg.includes("tatacara bayar") ||
-    lowerMsg.includes("tata cara bayar") ||
-    lowerMsg.includes("tata cara pembayaran") ||
-    lowerMsg.includes("tatacara pembayaran") ||
-    lowerMsg.includes("panduan bayar") ||
-    lowerMsg.includes("panduan pembayaran") ||
-    lowerMsg.includes("tutorial bayar") ||
-    lowerMsg.includes("tutorial pembayaran") ||
-    lowerMsg.includes("cara qris") ||
-    lowerMsg.includes("cara scan") ||
-    lowerMsg.includes("panduan qris") ||
-    lowerMsg.includes("tutorial qris") ||
-    lowerMsg === "qris" ||
-    lowerMsg === "cara transfer" ||
-    lowerMsg === "cara tf";
+    cleanFormattedMsg === "5" ||
+    cleanFormattedMsg === "cara bayar" ||
+    cleanFormattedMsg.startsWith("cara bayar") ||
+    cleanFormattedMsg.includes("cara bayar") ||
+    cleanFormattedMsg.includes("carabayar") ||
+    cleanFormattedMsg.includes("cara pembayaran") ||
+    cleanFormattedMsg.includes("tatacara bayar") ||
+    cleanFormattedMsg.includes("tata cara bayar") ||
+    cleanFormattedMsg.includes("tata cara pembayaran") ||
+    cleanFormattedMsg.includes("tatacara pembayaran") ||
+    cleanFormattedMsg.includes("panduan bayar") ||
+    cleanFormattedMsg.includes("panduan pembayaran") ||
+    cleanFormattedMsg.includes("tutorial bayar") ||
+    cleanFormattedMsg.includes("tutorial pembayaran") ||
+    cleanFormattedMsg.includes("cara qris") ||
+    cleanFormattedMsg.includes("cara scan") ||
+    cleanFormattedMsg.includes("panduan qris") ||
+    cleanFormattedMsg.includes("tutorial qris") ||
+    cleanFormattedMsg === "qris" ||
+    cleanFormattedMsg === "cara transfer" ||
+    cleanFormattedMsg === "cara tf" ||
+    cleanFormattedMsg.includes("gimana bayar") ||
+    cleanFormattedMsg.includes("bagaimana bayar") ||
+    cleanFormattedMsg.includes("bayar qris");
 
   if (isCaraBayarTrigger) {
-    const paymentLinkStr = pelanggan?.noTelepon
+    let directInvoiceUrl: string | null = null;
+    if (pelanggan?.id) {
+      try {
+        const unpaid = await prisma.tagihan.findFirst({
+          where: {
+            pelangganId: pelanggan.id,
+            deletedAt: null,
+            status: { in: ["belum_bayar", "tunggakan"] },
+          },
+          orderBy: [{ tahun: "desc" }, { bulan: "desc" }],
+          select: { noInvoice: true },
+        });
+        if (unpaid?.noInvoice) {
+          directInvoiceUrl = `https://upsheru.com/bayar-tagihan?invoice=${encodeURIComponent(unpaid.noInvoice)}`;
+        }
+      } catch (e) {
+        console.error("Gagal mengambil tagihan untuk cara bayar:", e);
+      }
+    }
+
+    const paymentLinkStr = directInvoiceUrl || (pelanggan?.noTelepon
       ? `https://upsheru.com/bayar?kode=${pelanggan.noTelepon}`
-      : `https://upsheru.com/bayar`;
+      : `https://upsheru.com/bayar`);
 
     const reply = [
       `📱 *PANDUAN PRAKTIS CARA BAYAR VIA QRIS*`,
