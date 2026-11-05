@@ -545,7 +545,7 @@ export default function PengaturanPage() {
       .replace(/\{denda\}/g, `Rp ${dendaRp.toLocaleString("id-ID")}`)
       .replace(/\{total_tagihan\}/g, `Rp ${total.toLocaleString("id-ID")}`)
       .replace(/\{jatuh_tempo\}/g, "20 Oktober 2026")
-      .replace(/\{link_pembayaran\}/g, "https://wastepay.vercel.app/bayar?ref=WP-0821");
+      .replace(/\{link_pembayaran\}/g, "https://upsheru.com/bayar?ref=WP-0821");
   }, [tarifSettings]);
 
   function renderWhatsAppFormattedText(text: string) {

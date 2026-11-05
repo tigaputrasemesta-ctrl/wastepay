@@ -14,7 +14,7 @@ import {
 describe('WastePay Backend Hardened Core Services', () => {
   describe('Domain 1: Auth, RBAC Guard & CORS Builder', () => {
     it('mengizinkan origin Capacitor Android https://localhost', () => {
-      const mockReq = new Request('https://wastepay.vercel.app/api/pengaturan', {
+      const mockReq = new Request('https://upsheru.com/api/pengaturan', {
         headers: { origin: 'https://localhost' },
       });
       const headers = buildCorsHeaders(mockReq);

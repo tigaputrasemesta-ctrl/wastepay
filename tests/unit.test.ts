@@ -615,6 +615,21 @@ describe("notifikasi operasional whatsapp & hardening keamanan", () => {
     delete process.env.NEXT_PUBLIC_APP_URL;
   });
 
+  it("appBaseUrl mengabaikan domain vercel.app dan selalu fallback ke https://upsheru.com", () => {
+    process.env.NEXT_PUBLIC_APP_URL = "https://wastepay.vercel.app/";
+    expect(appBaseUrl()).toBe("https://upsheru.com");
+    delete process.env.NEXT_PUBLIC_APP_URL;
+  });
+
+  it("appBaseUrl menolak domain asing selain upsheru.com pada production", () => {
+    const origEnv = process.env.NODE_ENV;
+    (process.env as Record<string, string | undefined>).NODE_ENV = "production";
+    process.env.NEXT_PUBLIC_APP_URL = "https://random-unknown-domain.com";
+    expect(appBaseUrl()).toBe("https://upsheru.com");
+    (process.env as Record<string, string | undefined>).NODE_ENV = origEnv;
+    delete process.env.NEXT_PUBLIC_APP_URL;
+  });
+
   it("templateKonfirmasiPengangkutanPelanggan menghasilkan format konfirmasi diambil yang ramah", () => {
     const pesan = templateKonfirmasiPengangkutanPelanggan({
       namaPelanggan: "Ibu Evi",

@@ -191,11 +191,22 @@ export function blastDelayMs(): number {
 
 export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-/** Base URL aplikasi untuk link pembayaran di pesan WA. */
+/** Base URL aplikasi untuk link pembayaran di pesan WA (selalu menggunakan domain resmi https://upsheru.com). */
 export function appBaseUrl(): string {
-  const envUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
-  if (envUrl) {
-    return envUrl.replace(/\/+$/, "");
+  const envUrl = process.env.NEXT_PUBLIC_APP_URL?.trim() || process.env.APP_URL?.trim();
+  if (envUrl && /^https?:\/\//i.test(envUrl)) {
+    // Larang keras domain vercel.app atau subdomain vercel di lingkungan apapun
+    if (envUrl.includes("vercel.app")) {
+      return "https://upsheru.com";
+    }
+    // Izinkan localhost hanya saat development lokal
+    if (process.env.NODE_ENV === "development" && envUrl.includes("localhost")) {
+      return envUrl.replace(/\/+$/, "");
+    }
+    // Khusus testing atau jika disetel eksplisit ke domain resmi upsheru.com
+    if (envUrl.includes("upsheru.com") || process.env.NODE_ENV === "test") {
+      return envUrl.replace(/\/+$/, "");
+    }
   }
   return "https://upsheru.com";
 }
