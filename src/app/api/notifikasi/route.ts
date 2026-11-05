@@ -66,7 +66,7 @@ export async function POST(request: Request) {
       autoSend,
       failures: hasil.failures.length > 0 ? hasil.failures : undefined,
       // Link wa.me untuk kirim manual (fallback & ketika auto-send gagal)
-      links: hasil.links.length > 0 ? hasil.links : undefined,
+      links: hasil.links.length > 0 ? hasil.links.map((l: any) => (typeof l === "string" ? l : l.link)) : undefined,
     });
   } catch {
     return NextResponse.json({ error: "Gagal mengirim notifikasi" }, { status: 500 });

@@ -7,7 +7,7 @@ import { formatRupiah, formatDate } from "@/lib/utils";
 import { useToast } from "@/components/Toast";
 import { duitkuChannelLabel } from "@/lib/duitku-channels";
 import { useUser } from "@/hooks/useUser";
-import { hitungRincian } from "@/lib/invoice-format";
+import { hitungRincian, buildDirectWaLinkTagihan } from "@/lib/invoice-format";
 
 const METODE_LABEL: Record<string, string> = {
   tunai: "Tunai",
@@ -1188,7 +1188,7 @@ export default function TagihanPage() {
                     </td>
                     <td className="px-4 py-3 text-center">
                       {t.status !== "lunas" ? (
-                        <div className="inline-flex items-center gap-1.5 justify-center">
+                        <div className="inline-flex items-center gap-1.5 justify-center flex-wrap">
                           <button
                             onClick={() => { setFormBayar({ metode: isPetugas ? "tunai" : "transfer", catatan: isPetugas ? "Bayar tunai via petugas tagih" : "", buktiBayar: "" }); setShowBayar({ tagihanId: t.id, pelangganId: t.pelanggan.id, jumlah: hitungRincian(t.jumlah, t.denda).total }); }}
                             className="text-xs font-semibold bg-emerald-700 hover:bg-emerald-800 text-white px-2.5 py-1.5 rounded-lg shadow-sm hover:shadow active:scale-95 transition-all inline-flex items-center gap-1"
@@ -1197,6 +1197,18 @@ export default function TagihanPage() {
                             <span>💳</span>
                             <span>Bayar</span>
                           </button>
+                          {t.pelanggan.noTelepon && (
+                            <a
+                              href={buildDirectWaLinkTagihan(t)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/80 px-2.5 py-1.5 rounded-lg shadow-sm active:scale-95 transition-all inline-flex items-center gap-1"
+                              title={`Kirim WA Tagihan ke ${t.pelanggan.nama}`}
+                            >
+                              <span className="text-emerald-700 text-sm">💬</span>
+                              <span>WA</span>
+                            </a>
+                          )}
                           {!isPetugas && (
                             <button
                               type="button"
@@ -1381,6 +1393,18 @@ export default function TagihanPage() {
                           <span>💳</span>
                           <span>Input Pembayaran</span>
                         </button>
+                        {t.pelanggan.noTelepon && (
+                          <a
+                            href={buildDirectWaLinkTagihan(t)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-3 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200/80 text-emerald-800 hover:bg-emerald-100 font-semibold text-xs flex items-center gap-1 transition shadow-sm active:scale-[0.98]"
+                            title="Kirim Pesan WhatsApp (wa.me)"
+                          >
+                            <span className="text-emerald-700">💬</span>
+                            <span>WA</span>
+                          </a>
+                        )}
                         {!isPetugas && (
                           <button
                             type="button"
@@ -2195,12 +2219,23 @@ export default function TagihanPage() {
                           </div>
                           {!blastPreview.isWaConfigured && r.noTelepon && (
                             <a
-                              href={r.waLink || `https://wa.me/${r.noTelepon.replace(/^0/, "62")}?text=${encodeURIComponent(blastPreview.sampleMessage)}`}
+                              href={r.waLink || buildDirectWaLinkTagihan({
+                                noInvoice: r.noInvoice,
+                                bulan: parseInt(blastBulan) || new Date().getMonth() + 1,
+                                tahun: parseInt(blastTahun) || new Date().getFullYear(),
+                                jumlah: r.total,
+                                denda: r.denda,
+                                status: r.status,
+                                jatuhTempo: new Date(),
+                                pelanggan: { nama: r.nama, noTelepon: r.noTelepon },
+                              })}
                               target="_blank"
-                              rel="noreferrer"
-                              className="text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200/60 px-3 py-1.5 rounded-xl transition-all inline-flex items-center gap-1"
+                              rel="noopener noreferrer"
+                              className="text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200/60 px-3 py-1.5 rounded-xl transition-all inline-flex items-center gap-1 shadow-sm active:scale-95"
+                              title="Buka WhatsApp dengan pesan tagihan warga ini"
                             >
-                              Buka WA ↗
+                              <span>💬</span>
+                              <span>Buka WA ↗</span>
                             </a>
                           )}
                         </div>

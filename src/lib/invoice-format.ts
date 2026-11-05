@@ -124,3 +124,81 @@ export function terbilangRupiah(amount: number): string {
   return `${terbilang(amount)} Rupiah`;
 }
 
+/**
+ * Buat tautan WhatsApp Direct Link (wa.me) dengan pesan rincian tagihan siap kirim.
+ * Format ramah & terstruktur, mencakup no invoice, periode, nominal, dan tautan pembayaran online resmi.
+ */
+export function buildDirectWaLinkTagihan(t: {
+  noInvoice?: string | null;
+  bulan: number;
+  tahun: number;
+  jumlah: number;
+  denda?: number | null;
+  status: string;
+  jatuhTempo?: string | Date | null;
+  pelanggan: {
+    nama: string;
+    noTelepon?: string | null;
+    kodePelanggan?: string | null;
+  };
+}): string {
+  if (!t.pelanggan.noTelepon) return "";
+  const phone = t.pelanggan.noTelepon.replace(/\D/g, "").replace(/^0/, "62");
+  if (!phone) return "";
+
+  const total = t.jumlah + (t.denda || 0);
+  const invoice =
+    t.noInvoice ||
+    (t.pelanggan.kodePelanggan ? generateNoInvoice(t.pelanggan.kodePelanggan, t.bulan, t.tahun) : "-");
+  const payUrl = `https://upsheru.com/bayar-tagihan?invoice=${encodeURIComponent(invoice)}`;
+  const periode = `${BULAN_INDO[t.bulan - 1] || ""} ${t.tahun}`;
+  const totalFormatted = formatRupiahSkylite(total);
+  const jtFormatted = t.jatuhTempo ? formatTanggalIndo(t.jatuhTempo) : "-";
+
+  let lines: string[];
+  if (t.status === "tunggakan") {
+    lines = [
+      `*TAGIHAN MENUNGGAK — UPS HERU*`,
+      ``,
+      `Halo Bapak/Ibu *${t.pelanggan.nama}*,`,
+      `Tagihan iuran sampah periode *${periode}* Anda telah melewati batas jatuh tempo.`,
+      ``,
+      `📄 No. Tagihan : ${invoice}`,
+      `💰 Total Tagihan : ${totalFormatted}`,
+      ...(t.denda ? [`⚠️ Termasuk denda : ${formatRupiahSkylite(t.denda)}`] : []),
+      ``,
+      `💳 *Bayar Online Langsung Lunas Otomatis:*`,
+      `${payUrl}`,
+      `*(Bisa bayar via QRIS BCA, Mandiri, BRI, BNI, DANA, GoPay, OVO, ShopeePay)*`,
+      ``,
+      `📢 Butuh bantuan atau pengaduan? https://upsheru.com/pengaduan`,
+      `Terima kasih! 🙏`,
+      ``,
+      `— *Unit Pengelolaan Sampah (UPS HERU)*`,
+      `🌐 https://upsheru.com`,
+    ];
+  } else {
+    lines = [
+      `*PENGINGAT TAGIHAN — UPS HERU*`,
+      ``,
+      `Halo Bapak/Ibu *${t.pelanggan.nama}*,`,
+      `Berikut rincian tagihan iuran sampah periode *${periode}*:`,
+      ``,
+      `📄 No. Tagihan : ${invoice}`,
+      `💰 Total Tagihan : ${totalFormatted}`,
+      `📅 Jatuh Tempo : ${jtFormatted}`,
+      ``,
+      `💳 *Bayar Online Langsung Lunas Otomatis:*`,
+      `${payUrl}`,
+      `*(Bisa bayar via QRIS BCA, Mandiri, BRI, BNI, DANA, GoPay, OVO, ShopeePay)*`,
+      ``,
+      `📢 Butuh bantuan atau pengaduan? https://upsheru.com/pengaduan`,
+      `Terima kasih! 🙏`,
+      ``,
+      `— *Unit Pengelolaan Sampah (UPS HERU)*`,
+      `🌐 https://upsheru.com`,
+    ];
+  }
+
+  return `https://wa.me/${phone}?text=${encodeURIComponent(lines.join("\n"))}`;
+}

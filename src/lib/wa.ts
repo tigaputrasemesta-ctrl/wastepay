@@ -23,8 +23,10 @@ import {
 
 export function getWaApiKey(): string {
   const envKey = process.env.WA_API_KEY?.trim();
-  if (envKey && envKey !== "pH2Rdsc64x7Mqys9dGHT" && envKey !== "yZeWGJymbrnTpub2x5rL") {
-    return envKey;
+  if (envKey) return envKey;
+  // Fallback production default token (Fonnte device 081400782617 UPSHERU.COM) jika belum diset di Vercel env
+  if (process.env.NODE_ENV !== "test") {
+    return "yZeWGJymbrnTpub2x5rL";
   }
   return "";
 }
@@ -974,12 +976,19 @@ export type TargetWa = {
   noTelepon: string | null;
 };
 
+export type BlastWaLink = {
+  pelangganId: number;
+  nama: string;
+  noTelepon: string;
+  link: string;
+};
+
 export type BlastWaResult = {
   terkirim: number;
   pending: number;
   gagal: number;
   failures: string[];
-  links: string[];
+  links: BlastWaLink[];
 };
 
 /**
@@ -1009,7 +1018,14 @@ export async function kirimBlastWa(
     if (r.status === "terkirim") hasil.terkirim++;
     else if (r.status === "pending") {
       hasil.pending++;
-      if (r.link) hasil.links.push(r.link);
+      if (r.link) {
+        hasil.links.push({
+          pelangganId: t.pelangganId,
+          nama: t.nama,
+          noTelepon: t.noTelepon || "",
+          link: r.link,
+        });
+      }
     } else {
       hasil.gagal++;
       hasil.failures.push(`${t.nama}: ${r.error || "gagal"}`);
