@@ -33,6 +33,7 @@ import { generateLocalBusinessJsonLd } from "@/lib/seo";
 import { DEFAULT_ARTIKEL, getArticleCoverImage, cleanArticleSnippet } from "@/lib/default-articles";
 import ArticleImage from "@/components/ArticleImage";
 import { NativeGuardedLink } from "@/components/mobile/LandingApkBanner";
+import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 
 export const dynamic = "force-dynamic";
 
@@ -1015,6 +1016,9 @@ export default async function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* Floating WA Button (Khusus Landing Page) */}
+      <FloatingWhatsApp phoneNumber="6281400782617" />
     </div>
   );
 }
