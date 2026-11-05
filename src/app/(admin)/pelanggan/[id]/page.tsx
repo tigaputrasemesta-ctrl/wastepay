@@ -127,9 +127,9 @@ export default function DetailPelangganPage() {
   if (loading) {
     return (
       <div className="p-6 animate-pulse space-y-4">
-        <div className="h-8 bg-gray-100 border border-slate-200/80 rounded-xl w-64" />
-        <div className="h-48 bg-gray-100 border border-slate-200/80 rounded-2xl" />
-        <div className="h-32 bg-gray-100 border border-slate-200/80 rounded-2xl" />
+        <div className="h-8 bg-slate-100 dark:bg-zinc-800 border border-slate-200/80 dark:border-zinc-700 rounded-xl w-64" />
+        <div className="h-48 bg-slate-100 dark:bg-zinc-800 border border-slate-200/80 dark:border-zinc-700 rounded-2xl" />
+        <div className="h-32 bg-slate-100 dark:bg-zinc-800 border border-slate-200/80 dark:border-zinc-700 rounded-2xl" />
       </div>
     );
   }
@@ -157,21 +157,21 @@ export default function DetailPelangganPage() {
       <div className="flex items-center gap-4 mb-6">
         <button
           onClick={() => router.push("/pelanggan")}
-          className="p-2 hover:bg-slate-100 text-slate-600 rounded-xl transition"
+          className="p-2 hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-600 dark:text-zinc-400 rounded-xl transition"
         >
-          <svg className="w-5 h-5 text-gray-600 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 text-slate-600 dark:text-zinc-400 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 12H5m7 7l-7-7 7-7" />
           </svg>
         </button>
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none mb-1">{data.nama}</h1>
-          <p className="text-sm text-slate-500 font-medium">Detail pelanggan</p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-zinc-100 leading-none mb-1">{data.nama}</h1>
+          <p className="text-sm text-slate-500 dark:text-zinc-400 font-medium">Detail pelanggan</p>
         </div>
         <span className={`ml-auto inline-flex items-center px-3 py-1 rounded-full text-xs font-extrabold uppercase ${
-          data.status === "aktif" ? "bg-emerald-100 text-emerald-800 border border-emerald-300" :
-          data.status === "calon" ? "bg-amber-100 text-amber-800 border border-amber-300" :
-          data.status === "libur" ? "bg-amber-100 text-amber-900 border border-amber-300" :
-          "bg-slate-200 border border-slate-300 text-slate-800"
+          data.status === "aktif" ? "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800" :
+          data.status === "calon" ? "bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800" :
+          data.status === "libur" ? "bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-800" :
+          "bg-slate-200 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700 text-slate-800 dark:text-zinc-300"
         }`}>
           {data.status === "calon" ? "Calon" : data.status}
         </span>
@@ -187,7 +187,7 @@ export default function DetailPelangganPage() {
         {data.status === "aktif" && (
           <button
             onClick={() => setShowStatusModal(true)}
-            className="ml-2 inline-flex items-center gap-1.5 px-3 py-1.5 border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold transition shadow-xs active:scale-95"
+            className="ml-2 inline-flex items-center gap-1.5 px-3 py-1.5 border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 rounded-xl text-xs font-bold transition shadow-xs active:scale-95"
             title="Ubah Status / Nonaktifkan Layanan"
           >
             <Pause className="w-3.5 h-3.5 fill-current" />
@@ -212,10 +212,10 @@ export default function DetailPelangganPage() {
           <div className="flex items-start sm:items-center gap-3">
             <span className="text-2xl">⏳</span>
             <div>
-              <p className="text-sm font-bold text-slate-800">
+              <p className="text-sm font-bold text-slate-800 dark:text-zinc-100">
                 Calon Pelanggan Baru — Menunggu Approval &amp; Penentuan Zona Admin Pusat
               </p>
-              <p className="text-xs text-slate-600">
+              <p className="text-xs text-slate-600 dark:text-zinc-400">
                 {data.fotoRumah || (data.latitude && data.longitude)
                   ? "Survei lapangan telah dilakukan. Tentukan zona area pickup dan rute armada untuk mengaktifkan pelanggan."
                   : "Menunggu kelengkapan survei lapangan atau lengkapi zona langsung untuk mengaktifkan."}
@@ -235,18 +235,18 @@ export default function DetailPelangganPage() {
 
       {/* Banner Pelanggan Nonaktif */}
       {data.status === "nonaktif" && (
-        <div className="mb-6 p-4 bg-slate-100 border border-slate-300 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+        <div className="mb-6 p-4 bg-slate-100 dark:bg-zinc-900 border border-slate-300 dark:border-zinc-800 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
           <div className="flex items-start sm:items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-slate-200 text-slate-700 flex items-center justify-center text-lg font-black shrink-0 shadow-xs">
+            <div className="w-10 h-10 rounded-2xl bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 flex items-center justify-center text-lg font-black shrink-0 shadow-xs">
               ⏸️
             </div>
             <div>
-              <p className="text-sm font-extrabold text-slate-900">
+              <p className="text-sm font-extrabold text-slate-900 dark:text-zinc-100">
                 Layanan Pelanggan Sedang Nonaktif
               </p>
-              <p className="text-xs text-slate-600 mt-0.5">
+              <p className="text-xs text-slate-600 dark:text-zinc-400 mt-0.5">
                 Pengangkutan sampah rutin dan tagihan bulanan otomatis dihentikan. Seluruh riwayat transaksi pembayaran terdahulu tetap tersimpan aman di pembukuan.
-                {data.catatan && <span className="block mt-0.5 font-medium text-slate-700">Catatan: {data.catatan}</span>}
+                {data.catatan && <span className="block mt-0.5 font-medium text-slate-700 dark:text-zinc-300">Catatan: {data.catatan}</span>}
               </p>
             </div>
           </div>
@@ -262,18 +262,18 @@ export default function DetailPelangganPage() {
 
       {/* Banner Pelanggan Libur */}
       {data.status === "libur" && (
-        <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+        <div className="mb-6 p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
           <div className="flex items-start sm:items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center text-lg font-black shrink-0 shadow-xs">
+            <div className="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 flex items-center justify-center text-lg font-black shrink-0 shadow-xs">
               🏖️
             </div>
             <div>
-              <p className="text-sm font-extrabold text-amber-950">
+              <p className="text-sm font-extrabold text-amber-950 dark:text-amber-200">
                 Pelanggan Sedang Libur / Cuti Pengangkutan
               </p>
-              <p className="text-xs text-amber-800 mt-0.5">
+              <p className="text-xs text-amber-800 dark:text-amber-300 mt-0.5">
                 Penjemputan sampah harian dijeda sementara waktu. Data langganan tetap terdaftar aktif.
-                {data.catatan && <span className="block mt-0.5 font-medium text-amber-900">Catatan: {data.catatan}</span>}
+                {data.catatan && <span className="block mt-0.5 font-medium text-amber-900 dark:text-amber-200">Catatan: {data.catatan}</span>}
               </p>
             </div>
           </div>
@@ -292,33 +292,35 @@ export default function DetailPelangganPage() {
         <div className="lg:col-span-1 space-y-6">
           {/* Kode Pelanggan & Barcode */}
           {data.kodePelanggan && (
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 text-center">
-              <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide mb-2">Kode Pelanggan</p>
-              <p className="text-2xl font-extrabold text-slate-900 tracking-tight tracking-widest mb-3 font-mono">{data.kodePelanggan}</p>
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-5 text-center">
+              <p className="text-xs text-slate-400 dark:text-zinc-500 font-semibold uppercase tracking-wide mb-2">Kode Pelanggan</p>
+              <p className="text-2xl font-extrabold text-slate-900 dark:text-zinc-100 tracking-tight tracking-widest mb-3 font-mono">{data.kodePelanggan}</p>
               {/* Barcode visual */}
-              <svg className="mx-auto" width="220" height="50" viewBox="0 0 220 50">
-                <rect x="0" y="0" width="4" height="44" fill="#000" />
-                {data.kodePelanggan.split("").map((char, i) => (
-                  <rect
-                    key={i}
-                    x={6 + i * 14}
-                    y="4"
-                    width={char === "-" ? 3 : 5}
-                    height="36"
-                    fill={char === "-" ? "#fff" : "#000"}
-                  />
-                ))}
-                <rect x="216" y="0" width="4" height="44" fill="#000" />
-              </svg>
-              <p className="text-xs text-gray-400 font-bold mt-2 font-mono">{data.kodePelanggan}</p>
+              <div className="bg-white p-2 rounded-lg inline-block border border-slate-200 dark:border-zinc-700">
+                <svg className="mx-auto" width="220" height="50" viewBox="0 0 220 50">
+                  <rect x="0" y="0" width="4" height="44" fill="#000" />
+                  {data.kodePelanggan.split("").map((char, i) => (
+                    <rect
+                      key={i}
+                      x={6 + i * 14}
+                      y="4"
+                      width={char === "-" ? 3 : 5}
+                      height="36"
+                      fill={char === "-" ? "#fff" : "#000"}
+                    />
+                  ))}
+                  <rect x="216" y="0" width="4" height="44" fill="#000" />
+                </svg>
+              </div>
+              <p className="text-xs text-slate-400 dark:text-zinc-500 font-bold mt-2 font-mono">{data.kodePelanggan}</p>
             </div>
           )}
 
           {/* Foto Depan Rumah (Geotag) */}
           {(data.fotoRumah || (data.latitude && data.longitude)) && (
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-              <h2 className="font-bold text-slate-900 text-base mb-3 flex items-center gap-2">
-                <svg className="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-5">
+              <h2 className="font-bold text-slate-900 dark:text-zinc-100 text-base mb-3 flex items-center gap-2">
+                <svg className="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
@@ -331,10 +333,10 @@ export default function DetailPelangganPage() {
                   unoptimized
                   width={800}
                   height={400}
-                  className="w-full h-52 object-cover rounded-2xl border border-slate-200/80 shadow-sm"
+                  className="w-full h-52 object-cover rounded-2xl border border-slate-200/80 dark:border-zinc-700 shadow-sm"
                 />
               ) : (
-                <div className="w-full h-52 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/50 flex flex-col items-center justify-center text-slate-400">
+                <div className="w-full h-52 rounded-2xl border-2 border-dashed border-slate-200 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-800/30 flex flex-col items-center justify-center text-slate-400 dark:text-zinc-500">
                   <svg className="w-10 h-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -345,7 +347,7 @@ export default function DetailPelangganPage() {
               {data.latitude && data.longitude && (
                 <div className="mt-3 space-y-2 text-sm">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 font-mono">
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 font-mono">
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -354,10 +356,10 @@ export default function DetailPelangganPage() {
                     </span>
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${
                       data.koordinatSumber === "exif_foto"
-                        ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                        ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
                         : data.koordinatSumber === "gps_perangkat"
-                        ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                        : "bg-slate-100 border border-slate-200 text-slate-600"
+                        ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
+                        : "bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-slate-600 dark:text-zinc-400"
                     }`}>
                       {{
                         exif_foto: "Geotag dari Foto",
@@ -366,20 +368,20 @@ export default function DetailPelangganPage() {
                       }[data.koordinatSumber || ""] || "Manual"}
                     </span>
                     {data.koordinatAkurasi ? (
-                      <span className="text-xs text-emerald-700 font-medium">± {Math.round(data.koordinatAkurasi)} m</span>
+                      <span className="text-xs text-emerald-700 dark:text-emerald-400 font-medium">± {Math.round(data.koordinatAkurasi)} m</span>
                     ) : null}
                   </div>
                   <a
                     href={`https://www.google.com/maps?q=${data.latitude},${data.longitude}`}
                     target="_blank"
-                    className="inline-flex items-center gap-1 text-xs text-emerald-700 hover:text-emerald-700 font-medium"
+                    className="inline-flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-medium"
                   >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                     </svg>
                     Buka Google Maps ↗
                   </a>
-                  <div className="h-52 rounded-xl border border-slate-200/80 overflow-hidden">
+                  <div className="h-52 rounded-xl border border-slate-200/80 dark:border-zinc-800 overflow-hidden">
                     <PetaLokasi
                       latitude={data.latitude}
                       longitude={data.longitude}
@@ -391,16 +393,16 @@ export default function DetailPelangganPage() {
             </div>
           )}
 
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-            <h2 className="font-bold text-slate-900 text-base mb-4">Informasi</h2>
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-5">
+            <h2 className="font-bold text-slate-900 dark:text-zinc-100 text-base mb-4">Informasi</h2>
             <div className="space-y-3 text-sm">
               <div>
-                <p className="text-xs text-slate-500 font-medium">No. Telepon</p>
-                <p className="font-semibold text-slate-900 text-sm">{data.noTelepon}</p>
+                <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">No. Telepon</p>
+                <p className="font-semibold text-slate-900 dark:text-zinc-100 text-sm">{data.noTelepon}</p>
               </div>
               <div>
-                <p className="text-xs text-slate-500 font-medium">Kategori</p>
-                <p className="font-semibold text-slate-900 text-sm">
+                <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Kategori</p>
+                <p className="font-semibold text-slate-900 dark:text-zinc-100 text-sm">
                   {{
                     level_1: "🏠 Level 1 — Volume Sangat Kecil",
                     level_2: "🏘️ Level 2 — Volume Kecil–Sedang",
@@ -416,24 +418,24 @@ export default function DetailPelangganPage() {
                 </p>
               </div>
               <div>
-                <p className="text-xs text-slate-500 font-medium">Alamat</p>
-                <p className="font-semibold text-slate-900 text-sm">{data.alamat}</p>
+                <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Alamat</p>
+                <p className="font-semibold text-slate-900 dark:text-zinc-100 text-sm">{data.alamat}</p>
               </div>
               {data.rtRw && (
                 <div>
-                  <p className="text-xs text-slate-500 font-medium">RT/RW</p>
-                  <p className="font-semibold text-slate-900 text-sm">{data.rtRw}</p>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">RT/RW</p>
+                  <p className="font-semibold text-slate-900 dark:text-zinc-100 text-sm">{data.rtRw}</p>
                 </div>
               )}
               <div>
-                <p className="text-xs text-slate-500 font-medium">Kelurahan &amp; Kecamatan</p>
-                <p className="font-semibold text-slate-900 text-sm">
+                <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Kelurahan &amp; Kecamatan</p>
+                <p className="font-semibold text-slate-900 dark:text-zinc-100 text-sm">
                   {data.kelurahan?.nama ?? "—"}
                   {data.kelurahan?.kecamatan ? ` (Kec. ${data.kelurahan.kecamatan})` : ""}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-slate-500 font-medium">Zona Area Pickup</p>
+                <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Zona Area Pickup</p>
                 {data.wilayah?.zona ? (
                   <div className="flex items-center justify-between mt-0.5">
                     <div className="flex items-center gap-1.5">
@@ -441,23 +443,23 @@ export default function DetailPelangganPage() {
                         className="w-2.5 h-2.5 rounded-full shrink-0"
                         style={{ backgroundColor: data.wilayah.zona.warna || "#10b981" }}
                       />
-                      <span className="font-bold text-slate-900 text-sm">
+                      <span className="font-bold text-slate-900 dark:text-zinc-100 text-sm">
                         {data.wilayah.zona.nama}
                       </span>
                     </div>
                     <button
                       onClick={() => setShowApprovalModal(true)}
-                      className="text-[11px] font-semibold text-emerald-700 hover:text-emerald-800 underline"
+                      className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 hover:underline"
                     >
                       Ubah Zona
                     </button>
                   </div>
                 ) : (
                   <div className="flex items-center justify-between mt-0.5">
-                    <span className="text-xs text-amber-600 font-medium">Belum ditentukan</span>
+                    <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">Belum ditentukan</span>
                     <button
                       onClick={() => setShowApprovalModal(true)}
-                      className="text-[11px] font-semibold text-emerald-700 hover:text-emerald-800 underline"
+                      className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 hover:underline"
                     >
                       + Tentukan Zona
                     </button>
@@ -466,26 +468,26 @@ export default function DetailPelangganPage() {
               </div>
               {data.wilayah && (
                 <div>
-                  <p className="text-xs text-slate-500 font-medium">Wilayah / RT</p>
-                  <p className="font-semibold text-slate-900 text-sm">{data.wilayah.nama}</p>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Wilayah / RT</p>
+                  <p className="font-semibold text-slate-900 dark:text-zinc-100 text-sm">{data.wilayah.nama}</p>
                 </div>
               )}
               {data.patokanLokasi && (
                 <div>
-                  <p className="text-xs text-slate-500 font-medium">Patokan Lokasi</p>
-                  <p className="font-semibold text-slate-900 text-sm">{data.patokanLokasi}</p>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Patokan Lokasi</p>
+                  <p className="font-semibold text-slate-900 dark:text-zinc-100 text-sm">{data.patokanLokasi}</p>
                 </div>
               )}
               {data.latitude && data.longitude && (
                 <div>
-                  <p className="text-xs text-slate-500 font-medium">Koordinat</p>
-                  <p className="font-semibold text-slate-900 font-mono text-xs">
+                  <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Koordinat</p>
+                  <p className="font-semibold text-slate-900 dark:text-zinc-100 font-mono text-xs">
                     {data.latitude}, {data.longitude}
                   </p>
                   <a
                     href={`https://www.google.com/maps?q=${data.latitude},${data.longitude}`}
                     target="_blank"
-                    className="text-xs text-emerald-700 hover:text-emerald-700 font-medium inline-flex items-center gap-1 mt-1"
+                    className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-medium inline-flex items-center gap-1 mt-1"
                   >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -496,82 +498,82 @@ export default function DetailPelangganPage() {
               )}
               {data.penanggungjawab && (
                 <div>
-                  <p className="text-xs text-slate-500 font-medium">Penanggung Jawab</p>
-                  <p className="font-semibold text-slate-900 text-sm">{data.penanggungjawab}</p>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Penanggung Jawab</p>
+                  <p className="font-semibold text-slate-900 dark:text-zinc-100 text-sm">{data.penanggungjawab}</p>
                 </div>
               )}
               {data.referal && (
                 <div>
-                  <p className="text-xs text-slate-500 font-medium">Referal</p>
-                  <p className="font-semibold text-slate-900 text-sm">{data.referal}</p>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Referal</p>
+                  <p className="font-semibold text-slate-900 dark:text-zinc-100 text-sm">{data.referal}</p>
                 </div>
               )}
               {data.paket && (
                 <div>
-                  <p className="text-xs text-slate-500 font-medium">Paket Langganan</p>
-                  <p className="font-semibold text-slate-900 text-sm">{data.paket.nama}</p>
-                  <p className="text-xs text-emerald-700 font-semibold">{data.paket.harga != null ? `${formatRupiah(data.paket.harga)}/bln` : "Tarif variabel"}</p>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Paket Langganan</p>
+                  <p className="font-semibold text-slate-900 dark:text-zinc-100 text-sm">{data.paket.nama}</p>
+                  <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">{data.paket.harga != null ? `${formatRupiah(data.paket.harga)}/bln` : "Tarif variabel"}</p>
                 </div>
               )}
               {data.customTarif && (
                 <div>
-                  <p className="text-xs text-slate-500 font-medium">Tarif Kustom</p>
-                  <p className="font-semibold text-emerald-700 text-sm">{formatRupiah(data.customTarif)}/bln</p>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Tarif Kustom</p>
+                  <p className="font-semibold text-emerald-600 dark:text-emerald-400 text-sm">{formatRupiah(data.customTarif)}/bln</p>
                 </div>
               )}
               <div>
-                <p className="text-xs text-slate-500 font-medium">Tanggal Daftar</p>
-                <p className="font-semibold text-slate-900 text-sm">{formatDate(data.createdAt)}</p>
+                <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Tanggal Daftar</p>
+                <p className="font-semibold text-slate-900 dark:text-zinc-100 text-sm">{formatDate(data.createdAt)}</p>
               </div>
             </div>
           </div>
 
           {/* Ringkasan Keuangan */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-            <h2 className="font-bold text-slate-900 text-base mb-4">Ringkasan Keuangan</h2>
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-5">
+            <h2 className="font-bold text-slate-900 dark:text-zinc-100 text-base mb-4">Ringkasan Keuangan</h2>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-slate-500 font-medium">Total Tagihan</span>
-                <span className="font-semibold text-slate-900">{formatRupiah(totalTagihan)}</span>
+                <span className="text-slate-500 dark:text-zinc-400 font-medium">Total Tagihan</span>
+                <span className="font-semibold text-slate-900 dark:text-zinc-100">{formatRupiah(totalTagihan)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500 font-medium">Total Bayar</span>
-                <span className="font-semibold text-emerald-700">{formatRupiah(totalBayar)}</span>
+                <span className="text-slate-500 dark:text-zinc-400 font-medium">Total Bayar</span>
+                <span className="font-semibold text-emerald-600 dark:text-emerald-400">{formatRupiah(totalBayar)}</span>
               </div>
-              <div className="flex justify-between border-t border-slate-100 pt-3">
-                <span className="text-slate-500 font-medium">Sisa Tagihan</span>
-                <span className={`font-semibold ${totalTagihan - totalBayar > 0 ? "text-rose-600" : "text-emerald-700"}`}>
+              <div className="flex justify-between border-t border-slate-100 dark:border-zinc-800 pt-3">
+                <span className="text-slate-500 dark:text-zinc-400 font-medium">Sisa Tagihan</span>
+                <span className={`font-semibold ${totalTagihan - totalBayar > 0 ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"}`}>
                   {formatRupiah(Math.max(0, totalTagihan - totalBayar))}
                 </span>
               </div>
-              <div className="flex justify-between border-t border-slate-100 pt-3">
-                <span className="text-slate-500 font-medium">Lunas Sampai</span>
-                <span className="font-semibold text-sky-700 bg-sky-50 px-2 py-0.5 rounded-md text-xs">{lunasSampai}</span>
+              <div className="flex justify-between border-t border-slate-100 dark:border-zinc-800 pt-3">
+                <span className="text-slate-500 dark:text-zinc-400 font-medium">Lunas Sampai</span>
+                <span className="font-semibold text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/40 border border-sky-200/60 dark:border-sky-800/50 px-2 py-0.5 rounded-md text-xs">{lunasSampai}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500 font-medium">Tagihan Aktif (Belum Lunas)</span>
-                <span className="font-semibold text-amber-700">{tagihanAktif.length}</span>
+                <span className="text-slate-500 dark:text-zinc-400 font-medium">Tagihan Aktif (Belum Lunas)</span>
+                <span className="font-semibold text-amber-700 dark:text-amber-400">{tagihanAktif.length}</span>
               </div>
             </div>
           </div>
 
           {/* Jadwal */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-            <h2 className="font-bold text-slate-900 text-base mb-4">Jadwal Pengangkutan</h2>
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-5">
+            <h2 className="font-bold text-slate-900 dark:text-zinc-100 text-base mb-4">Jadwal Pengangkutan</h2>
             {data.jadwal.length === 0 ? (
-              <p className="text-sm text-slate-400 font-medium">Belum ada jadwal</p>
+              <p className="text-sm text-slate-400 dark:text-zinc-500 font-medium">Belum ada jadwal</p>
             ) : (
               <div className="space-y-2">
                 {data.jadwal.map((j) => (
-                  <div key={j.id} className="bg-slate-50 rounded-xl border border-slate-200/60 p-3 text-sm">
+                  <div key={j.id} className="bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-200/60 dark:border-zinc-800 p-3 text-sm">
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-slate-900">{j.hari}</span>
-                      {j.jam && <span className="text-slate-500 font-normal">• {j.jam}</span>}
+                      <span className="font-semibold text-slate-900 dark:text-zinc-100">{j.hari}</span>
+                      {j.jam && <span className="text-slate-500 dark:text-zinc-400 font-normal">• {j.jam}</span>}
                     </div>
-                    <p className="text-xs text-slate-500 font-normal mt-0.5">
+                    <p className="text-xs text-slate-500 dark:text-zinc-400 font-normal mt-0.5">
                       {j.rute.nama}
                       {j.rute.kendaraan && (
-                        <span className="text-emerald-700 font-medium"> • 🚛 {j.rute.kendaraan.nama}{j.rute.kendaraan.platNomor ? ` (${j.rute.kendaraan.platNomor})` : ""}</span>
+                        <span className="text-emerald-600 dark:text-emerald-400 font-medium"> • 🚛 {j.rute.kendaraan.nama}{j.rute.kendaraan.platNomor ? ` (${j.rute.kendaraan.platNomor})` : ""}</span>
                       )}
                     </p>
                   </div>
@@ -583,15 +585,15 @@ export default function DetailPelangganPage() {
 
         {/* Tagihan */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-            <h2 className="font-bold text-slate-900 text-base mb-4">Tagihan</h2>
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-5">
+            <h2 className="font-bold text-slate-900 dark:text-zinc-100 text-base mb-4">Tagihan</h2>
             {data.tagihan.length === 0 ? (
-              <p className="text-sm text-slate-400 font-medium">Belum ada tagihan</p>
+              <p className="text-sm text-slate-400 dark:text-zinc-500 font-medium">Belum ada tagihan</p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
+                    <tr className="bg-slate-50 dark:bg-zinc-950/60 text-slate-600 dark:text-zinc-400 font-semibold border-b border-slate-200 dark:border-zinc-800 text-xs uppercase tracking-wider">
                       <th className="text-left px-3 py-2 font-semibold">Periode</th>
                       <th className="text-right px-3 py-2 font-semibold">Jumlah</th>
                       <th className="text-left px-3 py-2 font-semibold">Jatuh Tempo</th>
@@ -600,17 +602,17 @@ export default function DetailPelangganPage() {
                   </thead>
                   <tbody>
                     {data.tagihan.map((t) => (
-                      <tr key={t.id} className="border-b border-slate-100 hover:bg-slate-50/50">
-                        <td className="px-3 py-2.5 font-medium text-slate-900">
+                      <tr key={t.id} className="border-b border-slate-100 dark:border-zinc-800 hover:bg-slate-50/50 dark:hover:bg-zinc-800/40">
+                        <td className="px-3 py-2.5 font-medium text-slate-900 dark:text-zinc-100">
                           {bulanList[t.bulan - 1]} {t.tahun}
                         </td>
-                        <td className="px-3 py-2.5 text-right font-semibold text-slate-900 tabular-nums">{formatRupiah(t.jumlah)}</td>
-                        <td className="px-3 py-2.5 text-slate-500 text-xs">{formatDate(t.jatuhTempo)}</td>
+                        <td className="px-3 py-2.5 text-right font-semibold text-slate-900 dark:text-zinc-100 tabular-nums">{formatRupiah(t.jumlah)}</td>
+                        <td className="px-3 py-2.5 text-slate-500 dark:text-zinc-400 text-xs">{formatDate(t.jatuhTempo)}</td>
                         <td className="px-3 py-2.5 text-center">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                            t.status === "lunas" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
-                            t.status === "tunggakan" ? "bg-rose-50 text-rose-700 border border-rose-200" :
-                            "bg-amber-50 text-amber-700 border border-amber-200"
+                            t.status === "lunas" ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800" :
+                            t.status === "tunggakan" ? "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800" :
+                            "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800"
                           }`}>
                             {t.status === "belum_bayar" ? "Belum Bayar" : t.status === "lunas" ? "Lunas" : "Tunggakan"}
                           </span>
@@ -624,15 +626,15 @@ export default function DetailPelangganPage() {
           </div>
 
           {/* Pembayaran */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-            <h2 className="font-bold text-slate-900 text-base mb-4">Riwayat Pembayaran</h2>
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-5">
+            <h2 className="font-bold text-slate-900 dark:text-zinc-100 text-base mb-4">Riwayat Pembayaran</h2>
             {data.pembayaran.length === 0 ? (
-              <p className="text-sm text-slate-400 font-medium">Belum ada pembayaran</p>
+              <p className="text-sm text-slate-400 dark:text-zinc-500 font-medium">Belum ada pembayaran</p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
+                    <tr className="bg-slate-50 dark:bg-zinc-950/60 text-slate-600 dark:text-zinc-400 font-semibold border-b border-slate-200 dark:border-zinc-800 text-xs uppercase tracking-wider">
                       <th className="text-left px-3 py-2 font-semibold">Tanggal</th>
                       <th className="text-right px-3 py-2 font-semibold">Jumlah</th>
                       <th className="text-left px-3 py-2 font-semibold">Metode</th>
@@ -642,17 +644,17 @@ export default function DetailPelangganPage() {
                   </thead>
                   <tbody>
                     {data.pembayaran.map((p) => (
-                      <tr key={p.id} className="border-b border-slate-100 hover:bg-slate-50/50">
-                        <td className="px-3 py-2.5 text-slate-500 text-xs">{formatDate(p.createdAt)}</td>
-                        <td className="px-3 py-2.5 text-right font-semibold text-emerald-700 tabular-nums">{formatRupiah(p.jumlah)}</td>
-                        <td className="px-3 py-2.5 text-slate-600 capitalize">
+                      <tr key={p.id} className="border-b border-slate-100 dark:border-zinc-800 hover:bg-slate-50/50 dark:hover:bg-zinc-800/40">
+                        <td className="px-3 py-2.5 text-slate-500 dark:text-zinc-400 text-xs">{formatDate(p.createdAt)}</td>
+                        <td className="px-3 py-2.5 text-right font-semibold text-emerald-600 dark:text-emerald-400 tabular-nums">{formatRupiah(p.jumlah)}</td>
+                        <td className="px-3 py-2.5 text-slate-600 dark:text-zinc-300 capitalize">
                           {p.metode === "duitku" ? "Payment Gateway" : p.metode.charAt(0).toUpperCase() + p.metode.slice(1)}
                         </td>
                         <td className="px-3 py-2.5 text-center">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                            p.status === "terverifikasi" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
-                            p.status === "pending" ? "bg-amber-50 text-amber-700 border border-amber-200" :
-                            "bg-rose-50 text-rose-700 border border-rose-200"
+                            p.status === "terverifikasi" ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800" :
+                            p.status === "pending" ? "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800" :
+                            "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800"
                           }`}>
                             {p.status === "terverifikasi" ? "Terverifikasi" : p.status === "pending" ? "Pending" : "Ditolak"}
                           </span>
@@ -663,7 +665,7 @@ export default function DetailPelangganPage() {
                               <Link
                                 href={`/kwitansi/${p.id}`}
                                 target="_blank"
-                                className="text-xs text-emerald-700 underline hover:text-emerald-800 font-semibold"
+                                className="text-xs text-emerald-600 dark:text-emerald-400 underline hover:text-emerald-700 font-semibold"
                               >
                                 Kwitansi
                               </Link>
@@ -672,22 +674,22 @@ export default function DetailPelangganPage() {
                               <button
                                 type="button"
                                 onClick={() =>
-                                  setPreviewBuktiModal({
-                                    url: p.buktiBayar!,
-                                    nama: data.nama,
-                                    kode: data.kodePelanggan,
-                                    metode: p.metode,
-                                    nominal: p.jumlah,
-                                  })
-                                }
-                                className="inline-flex items-center gap-0.5 text-xs text-indigo-600 hover:text-indigo-800 font-semibold underline px-1.5 py-0.5 rounded hover:bg-indigo-50 transition"
+                                   setPreviewBuktiModal({
+                                     url: p.buktiBayar!,
+                                     nama: data.nama,
+                                     kode: data.kodePelanggan,
+                                     metode: p.metode,
+                                     nominal: p.jumlah,
+                                   })
+                                 }
+                                className="inline-flex items-center gap-0.5 text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-semibold underline px-1.5 py-0.5 rounded hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition"
                                 title="Lihat foto bukti transfer / fisik"
                               >
                                 📷 Foto
                               </button>
                             )}
                             {!p.buktiBayar && p.status !== "terverifikasi" && (
-                              <span className="text-xs text-slate-300">—</span>
+                              <span className="text-xs text-slate-300 dark:text-zinc-600">—</span>
                             )}
                           </div>
                         </td>
@@ -700,15 +702,15 @@ export default function DetailPelangganPage() {
           </div>
 
           {/* Pengangkutan */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-            <h2 className="font-bold text-slate-900 text-base mb-4">Riwayat Pengangkutan</h2>
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-5">
+            <h2 className="font-bold text-slate-900 dark:text-zinc-100 text-base mb-4">Riwayat Pengangkutan</h2>
             {data.pengangkutan.length === 0 ? (
-              <p className="text-sm text-slate-400 font-medium">Belum ada pengangkutan</p>
+              <p className="text-sm text-slate-400 dark:text-zinc-500 font-medium">Belum ada pengangkutan</p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
+                    <tr className="bg-slate-50 dark:bg-zinc-950/60 text-slate-600 dark:text-zinc-400 font-semibold border-b border-slate-200 dark:border-zinc-800 text-xs uppercase tracking-wider">
                       <th className="text-left px-3 py-2 font-semibold">Tanggal</th>
                       <th className="text-left px-3 py-2 font-semibold">Petugas</th>
                       <th className="text-center px-3 py-2 font-semibold">Status</th>
@@ -717,19 +719,19 @@ export default function DetailPelangganPage() {
                   </thead>
                   <tbody>
                     {data.pengangkutan.map((p) => (
-                      <tr key={p.id} className="border-b border-slate-100 hover:bg-slate-50/50">
-                        <td className="px-3 py-2.5 text-slate-500 text-xs">{formatDate(p.tanggal)}</td>
-                        <td className="px-3 py-2.5 text-slate-900 font-medium">{p.petugas?.nama || "—"}</td>
+                      <tr key={p.id} className="border-b border-slate-100 dark:border-zinc-800 hover:bg-slate-50/50 dark:hover:bg-zinc-800/40">
+                        <td className="px-3 py-2.5 text-slate-500 dark:text-zinc-400 text-xs">{formatDate(p.tanggal)}</td>
+                        <td className="px-3 py-2.5 text-slate-900 dark:text-zinc-100 font-medium">{p.petugas?.nama || "—"}</td>
                         <td className="px-3 py-2.5 text-center">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                            p.status === "diambil" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
-                            p.status === "terjadwal" ? "bg-sky-50 text-sky-700 border border-sky-200" :
-                            "bg-rose-50 text-rose-700 border border-rose-200"
+                            p.status === "diambil" ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800" :
+                            p.status === "terjadwal" ? "bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800" :
+                            "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800"
                           }`}>
                             {p.status === "diambil" ? "Diambil" : p.status === "terjadwal" ? "Terjadwal" : p.status === "kosong" ? "Kosong" : "Tidak Diangkut"}
                           </span>
                         </td>
-                        <td className="px-3 py-2.5 text-slate-500 text-xs">{p.catatan || "—"}</td>
+                        <td className="px-3 py-2.5 text-slate-500 dark:text-zinc-400 text-xs">{p.catatan || "—"}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -739,25 +741,25 @@ export default function DetailPelangganPage() {
           </div>
 
           {/* Komplain */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-            <h2 className="font-bold text-slate-900 text-base mb-4">Komplain</h2>
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-5">
+            <h2 className="font-bold text-slate-900 dark:text-zinc-100 text-base mb-4">Komplain</h2>
             {data.komplain.length === 0 ? (
-              <p className="text-sm text-slate-400 font-medium">Belum ada komplain</p>
+              <p className="text-sm text-slate-400 dark:text-zinc-500 font-medium">Belum ada komplain</p>
             ) : (
               <div className="space-y-2.5">
                 {data.komplain.map((k) => (
-                  <div key={k.id} className="bg-slate-50 rounded-xl border border-slate-200/60 p-3.5">
+                  <div key={k.id} className="bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-200/60 dark:border-zinc-800 p-3.5">
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-xs text-slate-400 font-medium">{formatDate(k.createdAt)}</span>
+                      <span className="text-xs text-slate-400 dark:text-zinc-500 font-medium">{formatDate(k.createdAt)}</span>
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                        k.status === "baru" ? "bg-rose-50 text-rose-700 border border-rose-200" :
-                        k.status === "diproses" ? "bg-amber-50 text-amber-700 border border-amber-200" :
-                        "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                        k.status === "baru" ? "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800" :
+                        k.status === "diproses" ? "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800" :
+                        "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
                       }`}>
                         {k.status.charAt(0).toUpperCase() + k.status.slice(1)}
                       </span>
                     </div>
-                    <p className="text-sm text-slate-700 font-normal">{k.deskripsi}</p>
+                    <p className="text-sm text-slate-700 dark:text-zinc-300 font-normal">{k.deskripsi}</p>
                   </div>
                 ))}
               </div>

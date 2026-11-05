@@ -521,12 +521,12 @@ function PelangganContent() {
 
   return (
     <div className="p-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 border-b border-slate-200/80 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 border-b border-slate-200/80 dark:border-zinc-800 pb-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-slate-900 leading-none mb-1">
+          <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-slate-900 dark:text-zinc-100 leading-none mb-1">
             Pusat Pengelolaan Pelanggan
           </h1>
-          <p className="text-xs text-slate-500 mt-1 font-normal">
+          <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1 font-normal">
             Kelola data pelanggan aktif, verifikasi survei calon pendaftar, dan cetak stiker barcode
           </p>
         </div>
@@ -582,18 +582,20 @@ function PelangganContent() {
       </div>
 
       {/* Main Module Tabs */}
-      <div className="flex items-center gap-2 mb-6 border-b border-slate-200/80 pb-2 overflow-x-auto">
+      <div className="flex items-center gap-2 mb-6 border-b border-slate-200/80 dark:border-zinc-800 pb-2 overflow-x-auto">
         <button
           onClick={() => { setMainTab("data"); setFilterStatus(""); setPage(1); }}
           className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all shrink-0 ${
             mainTab === "data"
-              ? "bg-slate-900 text-white shadow-xs"
-              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/70"
+              ? "bg-slate-900 dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-xs"
+              : "text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-100/70 dark:hover:bg-zinc-800/70"
           }`}
         >
           <Users size={15} strokeWidth={1.75} />
           <span>Data Pelanggan</span>
-          <span className={`text-[11px] px-2 py-0.5 rounded-full font-mono tabular-nums ${mainTab === "data" ? "bg-slate-800 text-slate-200" : "bg-slate-200/80 text-slate-700"}`}>
+          <span className={`text-[11px] px-2 py-0.5 rounded-full font-mono tabular-nums ${
+            mainTab === "data" ? "bg-slate-800 dark:bg-zinc-300 text-slate-200 dark:text-zinc-800" : "bg-slate-200/80 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300"
+          }`}>
             {pelanggan.length}
           </span>
         </button>
@@ -603,12 +605,14 @@ function PelangganContent() {
           className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all shrink-0 ${
             mainTab === "approval"
               ? "bg-amber-600 text-white shadow-xs"
-              : "text-amber-800 bg-amber-50/70 hover:bg-amber-100/70 border border-amber-200/80"
+              : "text-amber-800 dark:text-amber-300 bg-amber-50/70 dark:bg-amber-950/40 hover:bg-amber-100/70 dark:hover:bg-amber-900/40 border border-amber-200/80 dark:border-amber-800/50"
           }`}
         >
           <ClipboardCheck size={15} strokeWidth={1.75} />
           <span>Survei & Approval</span>
-          <span className={`text-[11px] px-2 py-0.5 rounded-full font-mono tabular-nums ${mainTab === "approval" ? "bg-amber-700 text-amber-100" : "bg-amber-100 text-amber-800"}`}>
+          <span className={`text-[11px] px-2 py-0.5 rounded-full font-mono tabular-nums ${
+            mainTab === "approval" ? "bg-amber-700 text-amber-100" : "bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300"
+          }`}>
             {calonList.length}
           </span>
         </button>
@@ -617,13 +621,15 @@ function PelangganContent() {
           onClick={() => { setMainTab("sticker"); setPage(1); }}
           className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all shrink-0 ${
             mainTab === "sticker"
-              ? "bg-slate-900 text-white shadow-xs"
-              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/70"
+              ? "bg-slate-900 dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-xs"
+              : "text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-100/70 dark:hover:bg-zinc-800/70"
           }`}
         >
           <Tag size={15} strokeWidth={1.75} />
           <span>Cetak Stiker Barcode</span>
-          <span className={`text-[11px] px-2 py-0.5 rounded-full font-mono tabular-nums ${mainTab === "sticker" ? "bg-slate-800 text-slate-200" : "bg-slate-200/80 text-slate-700"}`}>
+          <span className={`text-[11px] px-2 py-0.5 rounded-full font-mono tabular-nums ${
+            mainTab === "sticker" ? "bg-slate-800 dark:bg-zinc-300 text-slate-200 dark:text-zinc-800" : "bg-slate-200/80 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300"
+          }`}>
             {selectedStickers.size > 0 ? `${selectedStickers.size} dipilih` : "Cetak"}
           </span>
         </button>
@@ -631,7 +637,7 @@ function PelangganContent() {
 
       {mainTab === "sticker" ? (
         <div className="space-y-6">
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2 flex-wrap text-xs">
               <button
                 type="button"
@@ -639,18 +645,18 @@ function PelangganContent() {
                   const allIds = new Set(pelanggan.map((p) => p.id));
                   setSelectedStickers(allIds);
                 }}
-                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl transition"
+                className="px-3 py-1.5 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-200 font-bold rounded-xl transition"
               >
                 Pilih Semua ({pelanggan.length})
               </button>
               <button
                 type="button"
                 onClick={() => setSelectedStickers(new Set())}
-                className="px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold rounded-xl transition"
+                className="px-3 py-1.5 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 hover:bg-slate-50 dark:hover:bg-zinc-700 text-slate-600 dark:text-zinc-300 font-bold rounded-xl transition"
               >
                 Bersihkan Pilihan
               </button>
-              <span className="text-slate-500 font-medium">
+              <span className="text-slate-500 dark:text-zinc-400 font-medium">
                 {selectedStickers.size} dari {pelanggan.length} pelanggan dipilih untuk dicetak
               </span>
             </div>
@@ -685,12 +691,12 @@ function PelangganContent() {
                   }}
                   className={`p-3 rounded-2xl border-2 transition-all cursor-pointer select-none print:border-0 print:p-0 ${
                     isChecked
-                      ? "border-emerald-600 bg-emerald-50/20 shadow-xs"
-                      : "border-slate-200 bg-white hover:border-slate-300 opacity-60 print:hidden"
+                      ? "border-emerald-600 dark:border-emerald-500 bg-emerald-50/20 dark:bg-emerald-950/20 shadow-xs"
+                      : "border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-slate-300 dark:hover:border-zinc-700 opacity-60 print:hidden"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2 print:hidden">
-                    <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-800">
+                    <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-800 dark:text-zinc-200">
                       <input
                         type="checkbox"
                         checked={isChecked}
@@ -699,7 +705,7 @@ function PelangganContent() {
                       />
                       <span>Pilih untuk Cetak</span>
                     </label>
-                    <span className="text-[10px] font-mono text-slate-400">#{idx + 1}</span>
+                    <span className="text-[10px] font-mono text-slate-400 dark:text-zinc-500">#{idx + 1}</span>
                   </div>
                   <StickerBarcodeItem p={p} idx={idx} />
                 </div>
@@ -711,21 +717,21 @@ function PelangganContent() {
         <>
           {/* Alert Banner Approval Pelanggan Baru */}
       {calonList.length > 0 && (
-        <div className="mb-6 p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-in fade-in">
+        <div className="mb-6 p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/50 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-in fade-in">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 border border-amber-200/60">
+            <div className="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 flex items-center justify-center shrink-0 border border-amber-200/60 dark:border-amber-800/40">
               <Bell size={18} strokeWidth={2} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-slate-900 text-sm">
+                <h3 className="font-semibold text-slate-900 dark:text-zinc-100 text-sm">
                   {calonList.length} Pendaftar Baru Menunggu Approval
                 </h3>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-100 text-amber-800 border border-amber-200/60">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/50">
                   Perlu Ditinjau
                 </span>
               </div>
-              <p className="text-xs text-slate-600 mt-0.5 font-normal">
+              <p className="text-xs text-slate-600 dark:text-zinc-400 mt-0.5 font-normal">
                 Periksa hasil survei lapangan, tetapkan <strong>Zona Area Pickup</strong>, dan aktifkan layanan pengangkutan warga.
               </p>
             </div>
@@ -752,13 +758,13 @@ function PelangganContent() {
           onClick={() => { setFilterStatus(""); setPage(1); }}
           className={`px-3 py-1.5 rounded-xl font-medium transition shrink-0 flex items-center gap-1.5 ${
             filterStatus === ""
-              ? "bg-slate-900 text-white shadow-xs"
-              : "bg-white border border-slate-200/80 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+              ? "bg-slate-900 dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-xs"
+              : "bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-50 dark:hover:bg-zinc-800"
           }`}
         >
           <span>Semua</span>
           <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono tabular-nums ${
-            filterStatus === "" ? "bg-slate-800 text-slate-200" : "bg-slate-100 text-slate-600"
+            filterStatus === "" ? "bg-slate-800 dark:bg-zinc-300 text-slate-200 dark:text-zinc-800" : "bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400"
           }`}>
             {totalCount}
           </span>
@@ -769,12 +775,12 @@ function PelangganContent() {
           className={`px-3 py-1.5 rounded-xl font-medium transition shrink-0 flex items-center gap-1.5 ${
             filterStatus === "calon"
               ? "bg-amber-600 text-white shadow-xs"
-              : "bg-amber-50/80 border border-amber-200/80 text-amber-800 hover:bg-amber-100/60"
+              : "bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/50 text-amber-800 dark:text-amber-300 hover:bg-amber-100/60 dark:hover:bg-amber-900/40"
           }`}
         >
           <span>Menunggu Approval</span>
           <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono tabular-nums font-medium ${
-            filterStatus === "calon" ? "bg-amber-800 text-amber-100" : "bg-amber-100 text-amber-900"
+            filterStatus === "calon" ? "bg-amber-800 text-amber-100" : "bg-amber-100 dark:bg-amber-900/60 text-amber-900 dark:text-amber-300"
           }`}>
             {calonCount}
           </span>
@@ -785,12 +791,12 @@ function PelangganContent() {
           className={`px-3 py-1.5 rounded-xl font-medium transition shrink-0 flex items-center gap-1.5 ${
             filterStatus === "aktif"
               ? "bg-emerald-700 text-white shadow-xs"
-              : "bg-white border border-slate-200/80 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+              : "bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-50 dark:hover:bg-zinc-800"
           }`}
         >
           <span>Aktif</span>
           <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono tabular-nums font-medium ${
-            filterStatus === "aktif" ? "bg-emerald-800 text-white" : "bg-slate-100 text-slate-700"
+            filterStatus === "aktif" ? "bg-emerald-800 text-white" : "bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-400"
           }`}>
             {aktifCount}
           </span>
@@ -800,13 +806,13 @@ function PelangganContent() {
           onClick={() => { setFilterStatus("nonaktif"); setPage(1); }}
           className={`px-3 py-1.5 rounded-xl font-medium transition shrink-0 flex items-center gap-1.5 ${
             filterStatus === "nonaktif"
-              ? "bg-slate-800 text-white shadow-xs"
-              : "bg-white border border-slate-200/80 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+              ? "bg-slate-800 dark:bg-zinc-700 text-white shadow-xs"
+              : "bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-50 dark:hover:bg-zinc-800"
           }`}
         >
           <span>Nonaktif</span>
           <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono tabular-nums font-medium ${
-            filterStatus === "nonaktif" ? "bg-slate-950 text-white" : "bg-slate-100 text-slate-700"
+            filterStatus === "nonaktif" ? "bg-slate-950 dark:bg-zinc-900 text-white" : "bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-400"
           }`}>
             {nonaktifCount}
           </span>
@@ -818,12 +824,12 @@ function PelangganContent() {
             className={`px-3 py-1.5 rounded-xl font-medium transition shrink-0 flex items-center gap-1.5 ${
               filterStatus === "libur"
                 ? "bg-amber-600 text-white shadow-xs"
-                : "bg-white border border-slate-200/80 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                : "bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-50 dark:hover:bg-zinc-800"
             }`}
           >
             <span>Libur</span>
             <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono tabular-nums font-medium ${
-              filterStatus === "libur" ? "bg-amber-800 text-white" : "bg-amber-100 text-amber-900"
+              filterStatus === "libur" ? "bg-amber-800 text-white" : "bg-amber-100 dark:bg-amber-900/60 text-amber-900 dark:text-amber-300"
             }`}>
               {liburCount}
             </span>
@@ -835,23 +841,23 @@ function PelangganContent() {
       <div className="mb-5">
         <div className="flex items-center gap-3 flex-wrap">
           <div className="relative flex-1 min-w-[240px] max-w-md">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" strokeWidth={1.75} />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-zinc-500 pointer-events-none" strokeWidth={1.75} />
             <input
               type="text"
               placeholder="Cari nama, alamat, no. WhatsApp, kode..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full pl-10 pr-12 py-2 border border-slate-200/80 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-normal text-slate-800 placeholder:text-slate-400 transition-all shadow-xs"
+              className="w-full pl-10 pr-12 py-2 border border-slate-200/80 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-normal text-slate-800 dark:text-zinc-200 placeholder:text-slate-400 dark:placeholder:text-zinc-500 transition-all shadow-xs"
             />
             {searchInput ? (
               <button
                 onClick={() => { setSearchInput(""); setSearch(""); }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-rose-500 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-zinc-500 hover:text-rose-500 dark:hover:text-rose-400 transition-colors"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
             ) : (
-              <div className="hidden sm:flex items-center gap-0.5 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-[10px] font-mono text-slate-400 bg-slate-100 border border-slate-200/60 px-1.5 py-0.5 rounded">
+              <div className="hidden sm:flex items-center gap-0.5 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-[10px] font-mono text-slate-400 dark:text-zinc-500 bg-slate-100 dark:bg-zinc-800 border border-slate-200/60 dark:border-zinc-700 px-1.5 py-0.5 rounded">
                 <span>⌘</span>K
               </div>
             )}
@@ -860,8 +866,8 @@ function PelangganContent() {
             onClick={() => setShowFilter((v) => !v)}
             className={`flex items-center gap-2 px-3.5 py-2 border rounded-xl font-medium text-xs transition-all shadow-xs ${
               showFilter || [filterKelurahan, filterStatus, filterKategori].filter(Boolean).length > 0
-                ? "bg-slate-900 border-slate-900 text-white"
-                : "bg-white border-slate-200/80 text-slate-700 hover:bg-slate-50"
+                ? "bg-slate-900 dark:bg-zinc-100 border-slate-900 dark:border-zinc-100 text-white dark:text-zinc-900"
+                : "bg-white dark:bg-zinc-900 border-slate-200/80 dark:border-zinc-800 text-slate-700 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-zinc-800"
             }`}
           >
             <SlidersHorizontal className="w-3.5 h-3.5" strokeWidth={1.75} />
@@ -876,14 +882,14 @@ function PelangganContent() {
 
         {/* Filter panel */}
         {showFilter && (
-          <div className="mt-3 p-4 bg-slate-50 border border-slate-200/80 rounded-2xl shadow-sm">
+          <div className="mt-3 p-4 bg-slate-50 dark:bg-zinc-900/80 border border-slate-200/80 dark:border-zinc-800 rounded-2xl shadow-sm">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Kelurahan</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-zinc-300 mb-1.5">Kelurahan</label>
                 <select
                   value={filterKelurahan}
                   onChange={(e) => { setFilterKelurahan(e.target.value); setFilterZona(""); setPage(1); }}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-medium text-slate-800"
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-medium text-slate-800 dark:text-zinc-200"
                 >
                   <option value="">Semua Kelurahan</option>
                   {kelurahanList.map((k) => (
@@ -892,11 +898,11 @@ function PelangganContent() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Zona Area Pickup</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-zinc-300 mb-1.5">Zona Area Pickup</label>
                 <select
                   value={filterZona}
                   onChange={(e) => { setFilterZona(e.target.value); setPage(1); }}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-medium text-slate-800"
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-medium text-slate-800 dark:text-zinc-200"
                 >
                   <option value="">Semua Zona</option>
                   {zonaList
@@ -907,11 +913,11 @@ function PelangganContent() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Status</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-zinc-300 mb-1.5">Status</label>
                 <select
                   value={filterStatus}
                   onChange={(e) => { setFilterStatus(e.target.value); setPage(1); }}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-medium text-slate-800"
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-medium text-slate-800 dark:text-zinc-200"
                 >
                   <option value="">Semua Status</option>
                   {STATUS_LIST.map((s) => (
@@ -920,11 +926,11 @@ function PelangganContent() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">Kategori</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-zinc-300 mb-1.5">Kategori</label>
                 <select
                   value={filterKategori}
                   onChange={(e) => { setFilterKategori(e.target.value); setPage(1); }}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-medium text-slate-800"
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-medium text-slate-800 dark:text-zinc-200"
                 >
                   <option value="">Semua Kategori</option>
                   {KATEGORI_LIST.map((k) => (
@@ -933,14 +939,14 @@ function PelangganContent() {
                 </select>
               </div>
             </div>
-            <div className="flex justify-between items-center mt-4 pt-3 border-t border-slate-200">
-              <span className="text-xs font-medium text-slate-500">
+            <div className="flex justify-between items-center mt-4 pt-3 border-t border-slate-200 dark:border-zinc-800">
+              <span className="text-xs font-medium text-slate-500 dark:text-zinc-400">
                 {pelanggan.length} pelanggan tampil
               </span>
               <button
                 onClick={resetFilters}
                 disabled={[filterKelurahan, filterZona, filterStatus, filterKategori].filter(Boolean).length === 0}
-                className="px-3.5 py-1.5 bg-white border border-slate-200 rounded-xl font-semibold text-xs text-slate-600 hover:text-rose-600 hover:border-rose-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-3.5 py-1.5 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl font-semibold text-xs text-slate-600 dark:text-zinc-300 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-200 dark:hover:border-rose-900 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Reset Filter
               </button>
@@ -951,11 +957,11 @@ function PelangganContent() {
 
       {/* Adaptive Dual-View: Desktop Table (hidden md:block) & Mobile Smart Cards (md:hidden) */}
       <div className="space-y-4">
-        {/* DESKTOP TABLE VIEW (>= md: 768px) */}
-        <div className="hidden md:block bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-xs">
-          <table className="w-full text-sm text-left border-collapse">
+        {/* DESKTOP TABLE VIEW (>= md: 768px) - Overflow-x-auto to prevent clipping Aksi buttons */}
+        <div className="hidden md:block bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 overflow-x-auto shadow-xs">
+          <table className="w-full min-w-[960px] text-sm text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50/75 text-slate-500 font-semibold text-[11px] uppercase tracking-wider border-b border-slate-200/80">
+              <tr className="bg-slate-50/75 dark:bg-zinc-950/60 text-slate-500 dark:text-zinc-400 font-semibold text-[11px] uppercase tracking-wider border-b border-slate-200/80 dark:border-zinc-800">
                 <th className="px-4 py-3 whitespace-nowrap">Kode</th>
                 <th className="px-4 py-3 whitespace-nowrap">Nama Pelanggan</th>
                 <th className="px-4 py-3 whitespace-nowrap">No. WhatsApp</th>
@@ -966,18 +972,18 @@ function PelangganContent() {
                 <th className="px-4 py-3 text-center whitespace-nowrap">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-slate-700">
+            <tbody className="divide-y divide-slate-100 dark:divide-zinc-800/60 text-slate-700 dark:text-zinc-300">
               {paginatedPelanggan.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-12 text-center text-slate-400 font-normal text-xs">
+                  <td colSpan={8} className="px-4 py-12 text-center text-slate-400 dark:text-zinc-500 font-normal text-xs">
                     Belum ada data pelanggan yang sesuai kriteria pencarian
                   </td>
                 </tr>
               ) : (
                 paginatedPelanggan.map((p) => (
-                  <tr key={p.id} className="hover:bg-slate-50/60 transition-colors">
+                  <tr key={p.id} className="hover:bg-slate-50/60 dark:hover:bg-zinc-800/40 transition-colors">
                     <td className="px-4 py-3 whitespace-nowrap">
-                      <span className="inline-block text-[11px] font-mono font-medium text-slate-700 bg-slate-100/90 border border-slate-200/70 px-2 py-0.5 rounded-md">
+                      <span className="inline-block text-[11px] font-mono font-medium text-slate-700 dark:text-zinc-300 bg-slate-100/90 dark:bg-zinc-800 border border-slate-200/70 dark:border-zinc-700 px-2 py-0.5 rounded-md">
                         {p.kodePelanggan}
                       </span>
                     </td>
@@ -990,20 +996,20 @@ function PelangganContent() {
                             unoptimized
                             width={34}
                             height={34}
-                            className="w-8 h-8 object-cover rounded-lg border border-slate-200/80 shrink-0 shadow-xs"
+                            className="w-8 h-8 object-cover rounded-lg border border-slate-200/80 dark:border-zinc-700 shrink-0 shadow-xs"
                           />
                         ) : (
-                          <div className="w-8 h-8 border border-emerald-200/60 bg-emerald-50/60 text-emerald-800 rounded-lg shrink-0 flex items-center justify-center text-xs font-semibold">
+                          <div className="w-8 h-8 border border-emerald-200/60 dark:border-emerald-800/60 bg-emerald-50/60 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 rounded-lg shrink-0 flex items-center justify-center text-xs font-semibold">
                             {p.nama ? p.nama.charAt(0).toUpperCase() : "?"}
                           </div>
                         )}
                         <div>
-                          <div className="font-semibold text-slate-900 text-xs tracking-tight">
+                          <div className="font-semibold text-slate-900 dark:text-zinc-100 text-xs tracking-tight">
                             {p.nama}
                           </div>
                           {p.referal && (
                             <div className="mt-0.5">
-                              <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-700 bg-emerald-50/80 px-1.5 py-0.5 rounded border border-emerald-200/60" title={`Referral: ${p.referal}`}>
+                              <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-700 dark:text-emerald-300 bg-emerald-50/80 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-200/60 dark:border-emerald-800/50" title={`Referral: ${p.referal}`}>
                                 <Handshake size={11} className="shrink-0" />
                                 <span className="truncate max-w-[130px]">{p.referal}</span>
                               </span>
@@ -1013,28 +1019,28 @@ function PelangganContent() {
                             <a
                               href={`https://www.google.com/maps?q=${p.latitude},${p.longitude}`}
                               target="_blank"
-                              className="text-[10px] text-slate-400 hover:text-emerald-600 transition flex items-center gap-1 mt-0.5"
+                              className="text-[10px] text-slate-400 dark:text-zinc-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition flex items-center gap-1 mt-0.5"
                             >
-                              <MapPin size={10} className="shrink-0 text-slate-400" />
+                              <MapPin size={10} className="shrink-0 text-slate-400 dark:text-zinc-500" />
                               <span>{p.latitude.toFixed(4)}, {p.longitude.toFixed(4)}</span>
                             </a>
                           )}
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-slate-600 font-mono text-xs whitespace-nowrap">
+                    <td className="px-4 py-3 text-slate-600 dark:text-zinc-400 font-mono text-xs whitespace-nowrap">
                       {p.noTelepon || "—"}
                     </td>
-                    <td className="px-4 py-3 text-slate-600 max-w-[240px]">
-                      <div className="text-xs truncate font-normal text-slate-800" title={p.alamat}>
+                    <td className="px-4 py-3 text-slate-600 dark:text-zinc-300 max-w-[240px]">
+                      <div className="text-xs truncate font-normal text-slate-800 dark:text-zinc-200" title={p.alamat}>
                         {p.alamat}
                       </div>
                       <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                        <div className="inline-flex items-center px-1.5 py-0.5 bg-slate-100 rounded text-[10px] font-medium text-slate-600">
+                        <div className="inline-flex items-center px-1.5 py-0.5 bg-slate-100 dark:bg-zinc-800 rounded text-[10px] font-medium text-slate-600 dark:text-zinc-400">
                           {p.kelurahan?.nama ?? "—"}
                         </div>
                         {p.wilayah?.zona ? (
-                          <div className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-slate-50 border border-slate-200/80 rounded text-[10px] font-medium text-slate-700">
+                          <div className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-slate-50 dark:bg-zinc-800/60 border border-slate-200/80 dark:border-zinc-700 rounded text-[10px] font-medium text-slate-700 dark:text-zinc-300">
                             <span
                               className="w-1.5 h-1.5 rounded-full shrink-0"
                               style={{ backgroundColor: p.wilayah.zona.warna || "#10b981" }}
@@ -1042,7 +1048,7 @@ function PelangganContent() {
                             <span className="truncate max-w-[120px]">{p.wilayah.zona.nama}</span>
                           </div>
                         ) : (
-                          <span className="text-[10px] text-amber-600 font-medium">
+                          <span className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">
                             Belum ada zona
                           </span>
                         )}
@@ -1052,24 +1058,24 @@ function PelangganContent() {
                       <div className="flex flex-col gap-0.5 items-start">
                         {p.customTarif ? (
                           <>
-                            <span className="text-xs font-semibold text-amber-700 font-mono tabular-nums">{formatRupiah(p.customTarif)}</span>
-                            <span className="inline-flex items-center px-1.5 py-0.2 bg-amber-50 text-amber-700 border border-amber-200/70 rounded text-[9px] font-medium">
+                            <span className="text-xs font-semibold text-amber-700 dark:text-amber-400 font-mono tabular-nums">{formatRupiah(p.customTarif)}</span>
+                            <span className="inline-flex items-center px-1.5 py-0.2 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200/70 dark:border-amber-800/60 rounded text-[9px] font-medium">
                               Kustom
                             </span>
                           </>
                         ) : p.paket ? (
                           <>
-                            <span className="text-xs font-semibold text-purple-700 font-mono tabular-nums">{formatRupiah(p.paket.harga || 0)}</span>
-                            <span className="inline-flex items-center px-1.5 py-0.2 bg-purple-50 text-purple-700 border border-purple-200/70 rounded text-[9px] font-medium">
+                            <span className="text-xs font-semibold text-purple-700 dark:text-purple-400 font-mono tabular-nums">{formatRupiah(p.paket.harga || 0)}</span>
+                            <span className="inline-flex items-center px-1.5 py-0.2 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200/70 dark:border-purple-800/60 rounded text-[9px] font-medium">
                               {p.paket.nama.split(" ").slice(0, 2).join(" ")}
                             </span>
                           </>
                         ) : (
                           <>
-                            <span className="text-xs font-semibold text-slate-800 font-mono tabular-nums">
+                            <span className="text-xs font-semibold text-slate-800 dark:text-zinc-200 font-mono tabular-nums">
                               {formatRupiah(kategoriTarifList.find(x => x.kategori === p.kategori)?.tarif || 0)}
                             </span>
-                            <span className="inline-flex items-center px-1.5 py-0.2 bg-slate-100 text-slate-600 border border-slate-200/70 rounded text-[9px] font-medium">
+                            <span className="inline-flex items-center px-1.5 py-0.2 bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 border border-slate-200/70 dark:border-zinc-700 rounded text-[9px] font-medium">
                               {p.kategori.replace('_', ' ')}
                             </span>
                           </>
@@ -1079,16 +1085,16 @@ function PelangganContent() {
                     <td className="px-4 py-3 whitespace-nowrap">
                       {p.status === "calon" ? (
                         <div className="flex flex-col gap-1 items-start">
-                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-800 border border-amber-200/60">
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/50">
                             <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
                             Menunggu Approval
                           </span>
                           {p.fotoRumah && p.latitude ? (
-                            <span className="text-[10px] text-emerald-700 font-medium flex items-center gap-1">
+                            <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-medium flex items-center gap-1">
                               <span>✓</span> Sudah Disurvei
                             </span>
                           ) : (
-                            <span className="text-[10px] text-slate-400 font-normal">
+                            <span className="text-[10px] text-slate-400 dark:text-zinc-500 font-normal">
                               Belum Survei
                             </span>
                           )}
@@ -1096,9 +1102,9 @@ function PelangganContent() {
                       ) : (
                         <div className="flex flex-col gap-0.5 items-start">
                           <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium ${
-                            p.status === "aktif" ? "bg-emerald-50 text-emerald-800 border border-emerald-200/60" :
-                            p.status === "libur" ? "bg-amber-50 text-amber-800 border border-amber-200/60" :
-                            "bg-slate-100 text-slate-600 border border-slate-200/80"
+                            p.status === "aktif" ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/50" :
+                            p.status === "libur" ? "bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/50" :
+                            "bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 border border-slate-200/80 dark:border-zinc-700"
                           }`}>
                             <span className={`w-1.5 h-1.5 rounded-full ${
                               p.status === "aktif" ? "bg-emerald-500" :
@@ -1108,14 +1114,14 @@ function PelangganContent() {
                             {p.status === "aktif" ? "Aktif" : p.status === "nonaktif" ? "Nonaktif" : p.status === "libur" ? "Libur" : p.status}
                           </span>
                           {p.status === "nonaktif" && (
-                            <span className="text-[9px] text-slate-400 font-normal">
+                            <span className="text-[9px] text-slate-400 dark:text-zinc-500 font-normal">
                               Tagihan/pickup jeda
                             </span>
                           )}
                         </div>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-slate-500 text-xs font-normal whitespace-nowrap">
+                    <td className="px-4 py-3 text-slate-500 dark:text-zinc-400 text-xs font-normal whitespace-nowrap">
                       {formatDate(p.createdAt)}
                     </td>
                     <td className="px-4 py-3 text-center whitespace-nowrap">
@@ -1134,7 +1140,7 @@ function PelangganContent() {
                           <button
                             type="button"
                             onClick={() => setStatusTarget({ pelanggan: p, initialTargetStatus: "nonaktif" })}
-                            className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200/80 bg-white hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200 text-slate-500 transition-colors shadow-xs"
+                            className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200/80 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-amber-50 dark:hover:bg-amber-950/40 hover:text-amber-700 dark:hover:text-amber-400 hover:border-amber-200 dark:hover:border-amber-800 text-slate-500 dark:text-zinc-400 transition-colors shadow-xs"
                             title="Jeda / Nonaktifkan Layanan"
                           >
                             <Pause size={12} className="fill-current" />
@@ -1143,7 +1149,7 @@ function PelangganContent() {
                           <button
                             type="button"
                             onClick={() => setStatusTarget({ pelanggan: p, initialTargetStatus: "aktif" })}
-                            className="inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-emerald-200/80 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-medium transition-colors shadow-xs"
+                            className="inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-emerald-200/80 dark:border-emerald-800/60 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-[11px] font-medium transition-colors shadow-xs"
                             title="Aktifkan Kembali Layanan"
                           >
                             <Play size={10} className="fill-current" />
@@ -1152,7 +1158,7 @@ function PelangganContent() {
                         )}
                         <Link
                           href={`/pelanggan/${p.id}`}
-                          className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200/80 bg-white hover:bg-slate-50 hover:text-slate-900 text-slate-500 transition-colors shadow-xs"
+                          className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200/80 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-700 hover:text-slate-900 dark:hover:text-zinc-100 text-slate-500 dark:text-zinc-400 transition-colors shadow-xs"
                           title="Lihat Detail"
                         >
                           <Eye size={13} strokeWidth={1.75} />
@@ -1160,7 +1166,7 @@ function PelangganContent() {
                         <button
                           type="button"
                           onClick={() => openEdit(p)}
-                          className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200/80 bg-white hover:bg-slate-50 hover:text-slate-900 text-slate-500 transition-colors shadow-xs"
+                          className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200/80 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-700 hover:text-slate-900 dark:hover:text-zinc-100 text-slate-500 dark:text-zinc-400 transition-colors shadow-xs"
                           title="Edit Data"
                         >
                           <Pencil size={13} strokeWidth={1.75} />
@@ -1168,7 +1174,7 @@ function PelangganContent() {
                         <button
                           type="button"
                           onClick={() => setDeleteTarget(p)}
-                          className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200/80 bg-white hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 text-slate-400 transition-colors shadow-xs"
+                          className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200/80 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-200 dark:hover:border-rose-800 text-slate-400 dark:text-zinc-500 transition-colors shadow-xs"
                           title="Hapus atau Nonaktifkan"
                         >
                           <Trash2 size={13} strokeWidth={1.75} />
@@ -1182,15 +1188,15 @@ function PelangganContent() {
           </table>
         </div>
 
-        {/* MOBILE SMART CARDS VIEW (< md: 768px, Bebas Scroll Horizontal) */}
+        {/* MOBILE SMART CARDS VIEW (< md: 768px, Responsif & Fitur Lengkap) */}
         <div className="md:hidden space-y-3">
           {paginatedPelanggan.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-8 text-center text-xs font-normal text-slate-500 shadow-xs">
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 p-8 text-center text-xs font-normal text-slate-500 dark:text-zinc-400 shadow-xs">
               Belum ada data pelanggan yang sesuai kriteria pencarian
             </div>
           ) : (
             paginatedPelanggan.map((p) => (
-              <div key={p.id} className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs space-y-3">
+              <div key={p.id} className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 p-4 shadow-xs space-y-3">
                 {/* Header Card */}
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-2.5 min-w-0">
@@ -1201,25 +1207,25 @@ function PelangganContent() {
                         unoptimized
                         width={40}
                         height={40}
-                        className="w-10 h-10 object-cover rounded-xl border border-slate-200/80 shrink-0"
+                        className="w-10 h-10 object-cover rounded-xl border border-slate-200/80 dark:border-zinc-700 shrink-0"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-xl bg-emerald-50/70 border border-emerald-200/70 flex items-center justify-center font-semibold text-emerald-800 text-xs shrink-0">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200/70 dark:border-emerald-800/60 flex items-center justify-center font-semibold text-emerald-800 dark:text-emerald-300 text-xs shrink-0">
                         {p.nama ? p.nama.charAt(0).toUpperCase() : "?"}
                       </div>
                     )}
                     <div className="min-w-0">
-                      <h4 className="font-semibold text-slate-900 text-sm truncate">{p.nama}</h4>
-                      <span className="inline-block text-[10px] font-mono font-medium text-slate-600 bg-slate-100 border border-slate-200/60 px-1.5 py-0.2 rounded mt-0.5">
+                      <h4 className="font-semibold text-slate-900 dark:text-zinc-100 text-sm truncate">{p.nama}</h4>
+                      <span className="inline-block text-[10px] font-mono font-medium text-slate-600 dark:text-zinc-400 bg-slate-100 dark:bg-zinc-800 border border-slate-200/60 dark:border-zinc-700 px-1.5 py-0.2 rounded mt-0.5">
                         {p.kodePelanggan}
                       </span>
                     </div>
                   </div>
                   <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium shrink-0 flex items-center gap-1 ${
-                    p.status === "aktif" ? "bg-emerald-50 text-emerald-800 border border-emerald-200/60" :
-                    p.status === "calon" ? "bg-amber-50 text-amber-800 border border-amber-200/60" :
-                    p.status === "libur" ? "bg-amber-50 text-amber-800 border border-amber-200/60" :
-                    "bg-slate-100 text-slate-600 border border-slate-200"
+                    p.status === "aktif" ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/50" :
+                    p.status === "calon" ? "bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/50" :
+                    p.status === "libur" ? "bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/50" :
+                    "bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 border border-slate-200 dark:border-zinc-700"
                   }`}>
                     <span className={`w-1.5 h-1.5 rounded-full ${
                       p.status === "aktif" ? "bg-emerald-500" :
@@ -1232,67 +1238,100 @@ function PelangganContent() {
                 </div>
 
                 {/* Info Card */}
-                <div className="space-y-1.5 text-xs text-slate-600 border-t border-slate-100 pt-2">
-                  <p className="line-clamp-2 text-slate-800 font-normal">{p.alamat} {p.rtRw ? `(RT/RW: ${p.rtRw})` : ""}</p>
+                <div className="space-y-1.5 text-xs text-slate-600 dark:text-zinc-400 border-t border-slate-100 dark:border-zinc-800 pt-2">
+                  <p className="line-clamp-2 text-slate-800 dark:text-zinc-200 font-normal">{p.alamat} {p.rtRw ? `(RT/RW: ${p.rtRw})` : ""}</p>
                   <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
-                    <span className="px-2 py-0.5 rounded-md bg-slate-100 text-[10px] font-medium text-slate-700">
+                    <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-zinc-800 text-[10px] font-medium text-slate-700 dark:text-zinc-300">
                       {p.kelurahan?.nama || "—"}
                     </span>
                     {p.wilayah?.zona && (
-                      <span className="px-2 py-0.5 rounded-md bg-slate-50 text-slate-700 text-[10px] font-medium border border-slate-200/80 flex items-center gap-1">
+                      <span className="px-2 py-0.5 rounded-md bg-slate-50 dark:bg-zinc-800/60 text-slate-700 dark:text-zinc-300 text-[10px] font-medium border border-slate-200/80 dark:border-zinc-700 flex items-center gap-1">
                         <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: p.wilayah.zona.warna || "#10b981" }} />
                         {p.wilayah.zona.nama}
                       </span>
                     )}
-                    <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 text-[10px] font-medium font-mono tabular-nums border border-emerald-200/60">
+                    <span className="px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 text-[10px] font-medium font-mono tabular-nums border border-emerald-200/60 dark:border-emerald-800/50">
                       {formatRupiah(p.customTarif || p.paket?.harga || 0)}
                     </span>
                   </div>
                 </div>
 
-                {/* Mobile Quick Actions (One-Thumb Target) */}
-                <div className="grid grid-cols-3 gap-2 pt-1 border-t border-slate-100">
-                  {p.noTelepon ? (
-                    <a
-                      href={`https://wa.me/${p.noTelepon.replace(/^0/, "62")}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="py-2 px-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-medium text-xs flex items-center justify-center gap-1.5 border border-emerald-200/70 active:scale-98 transition-all"
-                    >
-                      <MessageCircle size={13} />
-                      <span>WhatsApp</span>
-                    </a>
-                  ) : (
-                    <div className="py-2 text-center text-xs text-slate-400 bg-slate-50 rounded-xl">No WA</div>
-                  )}
+                {/* Mobile Quick Actions (Lengkap: Kontak, Status, Edit, Detail, Hapus) */}
+                <div className="pt-2 border-t border-slate-100 dark:border-zinc-800 space-y-2">
+                  {/* Row 1: Komunikasi & Status Layanan */}
+                  <div className="grid grid-cols-2 gap-2">
+                    {p.noTelepon ? (
+                      <a
+                        href={`https://wa.me/${p.noTelepon.replace(/^0/, "62")}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="py-2 px-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 font-medium text-xs flex items-center justify-center gap-1.5 border border-emerald-200/70 dark:border-emerald-800/50 active:scale-98 transition-all"
+                      >
+                        <MessageCircle size={13} />
+                        <span>WhatsApp</span>
+                      </a>
+                    ) : (
+                      <div className="py-2 text-center text-xs text-slate-400 dark:text-zinc-500 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800">
+                        No WA
+                      </div>
+                    )}
 
-                  {p.status === "calon" ? (
-                    <button
-                      type="button"
-                      onClick={() => setApprovalTarget(p)}
-                      className="py-2 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs flex items-center justify-center gap-1.5 shadow-xs active:scale-98 transition-all"
+                    {p.status === "calon" ? (
+                      <button
+                        type="button"
+                        onClick={() => setApprovalTarget(p)}
+                        className="py-2 px-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs flex items-center justify-center gap-1.5 shadow-xs active:scale-98 transition-all"
+                      >
+                        <ShieldCheck size={13} />
+                        <span>Approval</span>
+                      </button>
+                    ) : p.status === "aktif" ? (
+                      <button
+                        type="button"
+                        onClick={() => setStatusTarget({ pelanggan: p, initialTargetStatus: "nonaktif" })}
+                        className="py-2 px-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/40 text-amber-800 dark:text-amber-300 font-medium text-xs flex items-center justify-center gap-1.5 border border-amber-200/70 dark:border-amber-800/50 active:scale-98 transition-all"
+                      >
+                        <Pause size={12} className="fill-current" />
+                        <span>Jeda Layanan</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setStatusTarget({ pelanggan: p, initialTargetStatus: "aktif" })}
+                        className="py-2 px-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 font-medium text-xs flex items-center justify-center gap-1.5 border border-emerald-200/70 dark:border-emerald-800/50 active:scale-98 transition-all"
+                      >
+                        <Play size={11} className="fill-current" />
+                        <span>Aktifkan</span>
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Row 2: Detail, Edit, Hapus */}
+                  <div className="grid grid-cols-3 gap-2">
+                    <Link
+                      href={`/pelanggan/${p.id}`}
+                      className="py-1.5 px-2 rounded-xl bg-white dark:bg-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 font-medium text-xs flex items-center justify-center gap-1 border border-slate-200/80 dark:border-zinc-700 active:scale-98 transition-all"
                     >
-                      <ShieldCheck size={13} />
-                      <span>Setujui</span>
-                    </button>
-                  ) : (
+                      <Eye size={13} />
+                      <span>Detail</span>
+                    </Link>
                     <button
                       type="button"
                       onClick={() => openEdit(p)}
-                      className="py-2 px-2 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-medium text-xs flex items-center justify-center gap-1.5 active:scale-98 transition-all"
+                      className="py-1.5 px-2 rounded-xl bg-white dark:bg-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 font-medium text-xs flex items-center justify-center gap-1 border border-slate-200/80 dark:border-zinc-700 active:scale-98 transition-all"
                     >
                       <Pencil size={13} />
                       <span>Edit</span>
                     </button>
-                  )}
-
-                  <Link
-                    href={`/pelanggan/${p.id}`}
-                    className="py-2 px-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-medium text-xs flex items-center justify-center gap-1.5 border border-slate-200/80 active:scale-98 transition-all"
-                  >
-                    <Eye size={13} />
-                    <span>Detail</span>
-                  </Link>
+                    <button
+                      type="button"
+                      onClick={() => setDeleteTarget(p)}
+                      className="py-1.5 px-2 rounded-xl bg-white dark:bg-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-500 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 font-medium text-xs flex items-center justify-center gap-1 border border-slate-200/80 dark:border-zinc-700 hover:border-rose-200 dark:hover:border-rose-900 active:scale-98 transition-all"
+                    >
+                      <Trash2 size={13} />
+                      <span>Hapus</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             ))
@@ -1301,15 +1340,15 @@ function PelangganContent() {
 
         {/* Pagination Controls Terpadu */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-2.5 border border-slate-200/80 rounded-2xl bg-white shadow-xs text-xs font-normal text-slate-600">
+          <div className="flex items-center justify-between px-4 py-2.5 border border-slate-200/80 dark:border-zinc-800 rounded-2xl bg-white dark:bg-zinc-900 shadow-xs text-xs font-normal text-slate-600 dark:text-zinc-400">
             <div>
-              Halaman <span className="font-semibold text-slate-900 font-mono">{page}</span> dari <span className="font-semibold text-slate-900 font-mono">{totalPages}</span>
+              Halaman <span className="font-semibold text-slate-900 dark:text-zinc-100 font-mono">{page}</span> dari <span className="font-semibold text-slate-900 dark:text-zinc-100 font-mono">{totalPages}</span>
             </div>
             <div className="flex gap-1.5">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="inline-flex items-center gap-1 px-3 py-1.5 bg-white border border-slate-200/80 rounded-lg text-xs font-medium text-slate-700 disabled:opacity-40 hover:bg-slate-50 transition-colors shadow-xs"
+                className="inline-flex items-center gap-1 px-3 py-1.5 bg-white dark:bg-zinc-800 border border-slate-200/80 dark:border-zinc-700 rounded-lg text-xs font-medium text-slate-700 dark:text-zinc-200 disabled:opacity-40 hover:bg-slate-50 dark:hover:bg-zinc-700 transition-colors shadow-xs"
               >
                 <ChevronLeft size={13} />
                 <span>Prev</span>
@@ -1317,7 +1356,7 @@ function PelangganContent() {
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="inline-flex items-center gap-1 px-3 py-1.5 bg-white border border-slate-200/80 rounded-lg text-xs font-medium text-slate-700 disabled:opacity-40 hover:bg-slate-50 transition-colors shadow-xs"
+                className="inline-flex items-center gap-1 px-3 py-1.5 bg-white dark:bg-zinc-800 border border-slate-200/80 dark:border-zinc-700 rounded-lg text-xs font-medium text-slate-700 dark:text-zinc-200 disabled:opacity-40 hover:bg-slate-50 dark:hover:bg-zinc-700 transition-colors shadow-xs"
               >
                 <span>Next</span>
                 <ChevronRight size={13} />
