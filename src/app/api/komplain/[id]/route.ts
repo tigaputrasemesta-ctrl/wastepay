@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { logAudit } from "@/lib/audit";
 import { getSession } from "@/lib/auth";
+import { isWaEnabled, kirimWhatsApp, templateUpdateKomplainPelanggan } from "@/lib/wa";
 
 export async function PUT(
   request: Request,
@@ -12,9 +13,12 @@ export async function PUT(
     const body = await request.json();
     const { status, tanggapan } = body;
 
+    // Normalisasi: jika ada input "diproses", petakan ke "proses"
+    const normalizedStatus = status === "diproses" ? "proses" : status;
+
     // Status valid
     const STATUS_VALID = ["baru", "proses", "selesai", "ditolak"];
-    if (status && !STATUS_VALID.includes(status)) {
+    if (normalizedStatus && !STATUS_VALID.includes(normalizedStatus)) {
       return NextResponse.json({ error: "Status tidak valid" }, { status: 400 });
     }
 
@@ -24,13 +28,33 @@ export async function PUT(
     const komplain = await prisma.komplain.update({
       where: { id },
       data: {
-        ...(status ? { status } : {}),
+        ...(normalizedStatus ? { status: normalizedStatus } : {}),
         ...(tanggapan !== undefined ? { tanggapan } : {}),
-        ...(status === "selesai" || status === "ditolak"
+        ...(normalizedStatus === "selesai" || normalizedStatus === "ditolak"
           ? { resolvedById: session?.id ?? null }
           : {}),
       },
+      include: {
+        pelanggan: {
+          select: { nama: true, noTelepon: true },
+        },
+      },
     });
+
+    // Kirim notifikasi WA real-time ke pelanggan mengenai pembaruan tiket pengaduan
+    if (isWaEnabled() && komplain.pelanggan?.noTelepon && (normalizedStatus || tanggapan)) {
+      try {
+        const pesan = templateUpdateKomplainPelanggan({
+          tiketId: komplain.id,
+          namaPelanggan: komplain.pelanggan.nama,
+          status: komplain.status,
+          tanggapan: tanggapan || komplain.tanggapan,
+        });
+        kirimWhatsApp(komplain.pelanggan.noTelepon, pesan).catch(() => {});
+      } catch (err) {
+        console.error("[Komplain WA Notification Error]:", err);
+      }
+    }
 
     await logAudit("update", "Komplain", id, { id }, { status: komplain.status });
     return NextResponse.json(komplain);

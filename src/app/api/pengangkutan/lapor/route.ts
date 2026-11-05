@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
 import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
+import { isWaEnabled, kirimWhatsApp, templateKonfirmasiPengangkutanPelanggan } from "@/lib/wa";
 
 export const dynamic = "force-dynamic";
 
@@ -148,7 +149,7 @@ export async function POST(request: Request) {
     const existing = await prisma.pengangkutan.findFirst({
       where: { pelangganId: pelanggan.id, deletedAt: null, tanggal: { gte: start, lte: end } },
       orderBy: { createdAt: "desc" },
-      select: { id: true },
+      select: { id: true, status: true },
     });
 
     let result;
@@ -157,15 +158,31 @@ export async function POST(request: Request) {
       result = await prisma.pengangkutan.update({
         where: { id: existing.id },
         data,
-        include: { pelanggan: { select: { id: true, nama: true, kodePelanggan: true } } },
+        include: { pelanggan: { select: { id: true, nama: true, noTelepon: true, kodePelanggan: true } } },
       });
       dibuat = false;
     } else {
       result = await prisma.pengangkutan.create({
         data: { ...data, tanggal: new Date(), pelangganId: pelanggan.id },
-        include: { pelanggan: { select: { id: true, nama: true, kodePelanggan: true } } },
+        include: { pelanggan: { select: { id: true, nama: true, noTelepon: true, kodePelanggan: true } } },
       });
       dibuat = true;
+    }
+
+    // Kirim notifikasi WA konfirmasi ke pelanggan jika status berubah (anti duplicate / anti spam pada retry)
+    const statusBerubah = dibuat || existing?.status !== status;
+    if (isWaEnabled() && result.pelanggan?.noTelepon && statusBerubah) {
+      try {
+        const pesan = templateKonfirmasiPengangkutanPelanggan({
+          namaPelanggan: result.pelanggan.nama,
+          status,
+          namaPetugas: profil.nama,
+          catatan: body.catatan || null,
+        });
+        kirimWhatsApp(result.pelanggan.noTelepon, pesan).catch(() => {});
+      } catch (err) {
+        console.error("[Pengangkutan Lapor WA Error]:", err);
+      }
     }
 
     await logAudit(dibuat ? "create" : "update", "Pengangkutan", result.id, undefined, {

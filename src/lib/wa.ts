@@ -23,10 +23,10 @@ import {
 
 export function getWaApiKey(): string {
   const envKey = process.env.WA_API_KEY?.trim();
-  if (envKey && envKey !== "pH2Rdsc64x7Mqys9dGHT") {
+  if (envKey && envKey !== "pH2Rdsc64x7Mqys9dGHT" && envKey !== "yZeWGJymbrnTpub2x5rL") {
     return envKey;
   }
-  return "yZeWGJymbrnTpub2x5rL";
+  return "";
 }
 
 const WA_API_URL = process.env.WA_API_URL?.trim() || "https://api.fonnte.com/send";
@@ -36,12 +36,12 @@ export const NAMA = () => companyInfo().nama;
 
 /** Nomor WhatsApp owner untuk notifikasi & laporan utama */
 export function ownerPhone(): string {
-  return process.env.OWNER_PHONE?.trim() || "081532843224";
+  return process.env.OWNER_PHONE?.trim() || "";
 }
 
 /** Nomor WhatsApp admin/superadmin untuk notifikasi internal (format 08xx atau 628xx). */
 export function adminPhone(): string {
-  return process.env.ADMIN_PHONE?.trim() || "085716251003";
+  return process.env.ADMIN_PHONE?.trim() || "";
 }
 
 /** Bersihkan target: jika WhatsApp Group (@g.us), pertahankan; jika no HP, bersihkan digit */
@@ -61,9 +61,6 @@ export function getInternalReportPhones(): string[] {
     process.env.REPORT_PHONES?.trim(),
     process.env.OWNER_PHONE?.trim(),
     process.env.ADMIN_PHONE?.trim(),
-    // Default: Nomor Owner & Superadmin selalu terdaftar
-    "081532843224",
-    "085716251003",
   ].filter(Boolean) as string[];
 
   const cleaned = new Set<string>();
@@ -81,12 +78,12 @@ export function getInternalReportPhones(): string[] {
 
 /**
  * Target penerima Laporan Pembayaran:
- * - Grup WhatsApp: "UPS HERU PEMBAYARAN VIA APP" (120363432695009362@g.us)
- * - Japri: Owner (081532843224) & Superadmin (085716251003)
+ * - Grup WhatsApp via env WA_GROUP_PEMBAYARAN_ID
+ * - Nomor Internal Owner & Admin
  */
 export function getPembayaranReportTargets(): string[] {
   const sources = [
-    process.env.WA_GROUP_PEMBAYARAN_ID?.trim() || "120363432695009362@g.us",
+    process.env.WA_GROUP_PEMBAYARAN_ID?.trim(),
     ...getInternalReportPhones(),
   ].filter(Boolean) as string[];
 
@@ -194,6 +191,10 @@ export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /** Base URL aplikasi untuk link pembayaran di pesan WA. */
 export function appBaseUrl(): string {
+  const envUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
+  if (envUrl) {
+    return envUrl.replace(/\/+$/, "");
+  }
   return "https://upsheru.com";
 }
 
@@ -1035,17 +1036,121 @@ export async function templatePendaftaranDisetujui(nama: string, kode: string): 
       `🆔 Kode Pelanggan: ${kode}`,
       ``,
       `💡 *Informasi Layanan Web ${NAMA()}*:`,
-      `Melalui website kami (www.upsheru.com), Anda dapat:`,
+      `Melalui website kami (${appBaseUrl()}), Anda dapat:`,
       `- Mengecek tagihan dan riwayat pembayaran`,
       `- Melakukan pembayaran secara online (Otomatis terverifikasi)`,
       `- Melihat jadwal penjemputan sampah`,
-      `- Menyampaikan laporan / pengaduan sampah: https://upsheru.com/pengaduan`,
+      `- Menyampaikan laporan / pengaduan sampah: ${appBaseUrl()}/pengaduan`,
       ``,
       `Anda dapat menggunakan nomor WhatsApp Anda atau kode pelanggan untuk masuk ke sistem kami.`,
       `Terima kasih telah bergabung.`,
       ``,
       `— ${NAMA()}`,
-      `🌐 www.upsheru.com`,
-].join("\n"),
+      `🌐 ${appBaseUrl()}`,
+    ].join("\n"),
   };
+}
+
+/**
+ * Template WhatsApp untuk Notifikasi Operasional Pengangkutan Sampah kepada Pelanggan.
+ * Menginformasikan status real-time: diambil, tidak_diangkut (beserta kendala), atau kosong.
+ */
+export function templateKonfirmasiPengangkutanPelanggan(params: {
+  namaPelanggan: string;
+  status: "diambil" | "tidak_diangkut" | "kosong" | string;
+  namaPetugas?: string | null;
+  catatan?: string | null;
+}): string {
+  const tanggalStr = formatTanggalWaktuIndo(new Date());
+
+  if (params.status === "diambil") {
+    return [
+      `🚛 *KONFIRMASI PENGANGKUTAN SAMPAH — ${NAMA()}* ✅`,
+      ``,
+      `Halo Bapak/Ibu *${params.namaPelanggan}*,`,
+      `Sampah di lokasi Anda telah *BERHASIL DIANGKUT* oleh armada petugas kami hari ini pada ${tanggalStr}.`,
+      ...(params.namaPetugas ? [`Petugas Armada: *${params.namaPetugas}*`] : []),
+      ``,
+      `Terima kasih telah menyiapkan wadah sampah dengan rapi. Mari bersama wujudkan lingkungan Kota Depok yang bersih, sehat, dan asri. ♻️`,
+      ``,
+      `Salam hangat,`,
+      `*Tim Operasional ${NAMA()}*`,
+    ].join("\n");
+  }
+
+  if (params.status === "tidak_diangkut") {
+    return [
+      `⚠️ *INFO KENDALA PENGANGKUTAN SAMPAH — ${NAMA()}*`,
+      ``,
+      `Halo Bapak/Ibu *${params.namaPelanggan}*,`,
+      `Petugas armada kami telah mengunjungi titik lokasi Anda pada ${tanggalStr}, namun sampah *BELUM DAPAT DIANGKUT* karena kendala di lapangan.`,
+      ...(params.catatan ? [``, `📝 *Keterangan Kendala:*`, `"${params.catatan}"`] : []),
+      ``,
+      `Tim pengawas kami sedang menindaklanjuti kendala ini. Jika ada pertanyaan atau konfirmasi akses jalan/pagar, silakan hubungi Customer Service kami atau balas pesan ini.`,
+      ``,
+      `Mohon maaf atas ketidaknyamanan yang terjadi. 🙏`,
+      `Salam,`,
+      `*Customer Service ${NAMA()}*`,
+    ].join("\n");
+  }
+
+  if (params.status === "kosong") {
+    return [
+      `ℹ️ *LAPORAN PENGECEKAN SAMPAH — ${NAMA()}*`,
+      ``,
+      `Halo Bapak/Ibu *${params.namaPelanggan}*,`,
+      `Armada penjemput kami telah melintasi lokasi Anda pada ${tanggalStr}. Wadah/tong sampah terdata *KOSONG / TIDAK DITARUH DI LUAR*.`,
+      ...(params.catatan ? [``, `📝 *Catatan Petugas:* "${params.catatan}"`] : []),
+      ``,
+      `Pengangkutan berikutnya akan dilakukan sesuai jadwal rutin mingguan Anda. Terima kasih! 🙏`,
+      ``,
+      `Salam,`,
+      `*Tim Operasional ${NAMA()}*`,
+    ].join("\n");
+  }
+
+  return `Layanan pengangkutan sampah tercatat: ${params.status} pada ${tanggalStr}.`;
+}
+
+/**
+ * Template WhatsApp untuk Notifikasi Pembaruan Status Komplain / Tiket Pengaduan kepada Pelanggan.
+ */
+export function templateUpdateKomplainPelanggan(params: {
+  tiketId: number;
+  namaPelanggan: string;
+  status: string; // "baru" | "proses" | "selesai" | "ditolak"
+  tanggapan?: string | null;
+}): string {
+  const labelStatus: Record<string, string> = {
+    baru: "Laporan Diterima 📋",
+    proses: "Sedang Ditindaklanjuti Tim Lapangan 🚛",
+    selesai: "Selesai / Sudah Tertangani ✅",
+    ditolak: "Laporan Tidak Dapat Diproses ℹ️",
+  };
+  const statusStr = labelStatus[params.status] || params.status;
+  const baseUrl = appBaseUrl();
+
+  const lines = [
+    `📢 *PEMBARUAN STATUS PENGADUAN (#KMP-${params.tiketId})*`,
+    ``,
+    `Halo Bapak/Ibu *${params.namaPelanggan}*,`,
+    `Keluhan/pengaduan Anda dengan nomor tiket *#KMP-${params.tiketId}* saat ini berstatus:`,
+    `👉 *${statusStr}*`,
+    ``,
+  ];
+
+  if (params.tanggapan) {
+    lines.push(`📝 *Tanggapan Petugas:*`, `"${params.tanggapan}"`, ``);
+  }
+
+  lines.push(
+    `Anda dapat memantau perkembangan lebih lanjut melalui portal resmi kami:`,
+    `🌐 ${baseUrl}/pengaduan`,
+    ``,
+    `Terima kasih telah membantu kami meningkatkan kualitas kebersihan lingkungan.`,
+    `Salam,`,
+    `*Customer Service ${NAMA()}*`
+  );
+
+  return lines.join("\n");
 }

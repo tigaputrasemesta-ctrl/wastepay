@@ -21,6 +21,12 @@ import {
 import { allowAttempt, retryAfterSeconds } from "../src/lib/rate-limit";
 import { extractOrigin, isSameOriginRequest } from "../src/lib/csrf";
 import { formatRtRw, normalisasiTelepon, teleponValid } from "../src/lib/daftar";
+import {
+  templateKonfirmasiPengangkutanPelanggan,
+  templateUpdateKomplainPelanggan,
+  getWaApiKey,
+  appBaseUrl,
+} from "../src/lib/wa";
 
 describe("rbac", () => {
   it("hasRole: superadmin punya akses semua level", () => {
@@ -583,6 +589,52 @@ describe("verifikasi status pembayaran & pencegahan double input", () => {
     ];
     const pendingPayment = pembayaranList.find((p) => p.status === "pending");
     expect(pendingPayment).toBeUndefined(); // tidak ada pending, user boleh submit bukti baru
+  });
+});
+
+describe("notifikasi operasional whatsapp & hardening keamanan", () => {
+  it("getWaApiKey mengembalikan string kosong jika env WA_API_KEY tidak diatur", () => {
+    delete process.env.WA_API_KEY;
+    expect(getWaApiKey()).toBe("");
+  });
+
+  it("appBaseUrl memprioritaskan NEXT_PUBLIC_APP_URL tanpa trailing slash", () => {
+    process.env.NEXT_PUBLIC_APP_URL = "https://upsheru.com/";
+    expect(appBaseUrl()).toBe("https://upsheru.com");
+    delete process.env.NEXT_PUBLIC_APP_URL;
+  });
+
+  it("templateKonfirmasiPengangkutanPelanggan menghasilkan format konfirmasi diambil yang ramah", () => {
+    const pesan = templateKonfirmasiPengangkutanPelanggan({
+      namaPelanggan: "Ibu Evi",
+      status: "diambil",
+      namaPetugas: "Pak Heru",
+    });
+    expect(pesan).toContain("BERHASIL DIANGKUT");
+    expect(pesan).toContain("Ibu Evi");
+    expect(pesan).toContain("Pak Heru");
+  });
+
+  it("templateKonfirmasiPengangkutanPelanggan menginformasikan kendala dengan santun jika tidak diangkut", () => {
+    const pesan = templateKonfirmasiPengangkutanPelanggan({
+      namaPelanggan: "Bpk. Budi",
+      status: "tidak_diangkut",
+      catatan: "Pagar terkunci dan tidak ada akses",
+    });
+    expect(pesan).toContain("BELUM DAPAT DIANGKUT");
+    expect(pesan).toContain("Pagar terkunci dan tidak ada akses");
+  });
+
+  it("templateUpdateKomplainPelanggan memuat nomor tiket dan status penanganan", () => {
+    const pesan = templateUpdateKomplainPelanggan({
+      tiketId: 789,
+      namaPelanggan: "Ibu Siti",
+      status: "proses",
+      tanggapan: "Armada dump truck sedang menuju lokasi",
+    });
+    expect(pesan).toContain("#KMP-789");
+    expect(pesan).toContain("Sedang Ditindaklanjuti");
+    expect(pesan).toContain("Armada dump truck sedang menuju lokasi");
   });
 });
 
