@@ -54,6 +54,25 @@ export async function POST(request: Request) {
       );
     }
 
+    // Cegah double input: cek apakah sudah ada pembayaran pending untuk tagihan ini
+    const existingPending = await prisma.pembayaran.findFirst({
+      where: {
+        tagihanId: tagihan.id,
+        status: "pending",
+      },
+      select: { id: true, metode: true, createdAt: true },
+    });
+    if (existingPending) {
+      return NextResponse.json(
+        {
+          error: "Bukti pembayaran untuk tagihan ini sudah dikirim dan sedang menunggu verifikasi admin. Anda tidak perlu mengirim ulang.",
+          alreadyPending: true,
+          pembayaranId: existingPending.id,
+        },
+        { status: 409 }
+      );
+    }
+
     // Cegah spam: batasi ukuran bukti (data URL base64, max ~2MB)
     if (buktiBayar && typeof buktiBayar === "string" && buktiBayar.length > 2_800_000) {
       return NextResponse.json({ error: "Ukuran bukti terlalu besar (maks 2MB)" }, { status: 400 });

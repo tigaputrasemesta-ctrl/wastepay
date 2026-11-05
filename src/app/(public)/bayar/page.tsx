@@ -26,6 +26,12 @@ type TagihanPublik = {
   total?: number;
   status: string;
   jatuhTempo: string;
+  pendingPayment?: {
+    id: number;
+    metode: string;
+    createdAt: string;
+    catatan?: string | null;
+  } | null;
 };
 
 type HasilCek = {
@@ -71,14 +77,21 @@ type DetailTagihan = {
   tanggalLunas?: string | null;
   pelanggan: {
     nama: string;
-    noTelepon: string;
+    noTelepon?: string;
     kodePelanggan: string;
-    alamat: string;
+    alamat?: string;
   };
   pembayaranLunas?: {
     metode: string;
     jumlah: number;
     tanggal: string;
+  } | null;
+  pembayaranPending?: {
+    id: number;
+    metode: string;
+    jumlah: number;
+    tanggal: string;
+    catatan?: string | null;
   } | null;
 };
 
@@ -92,7 +105,16 @@ const METODE_MANUAL = [
   { value: "tunai", label: "Titip Tunai ke Petugas Lapangan" },
 ];
 
-function StatusBadge({ status }: { status: string }) {
+function StatusBadge({ status, hasPending }: { status: string; hasPending?: boolean }) {
+  if (hasPending) {
+    return (
+      <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-full border bg-amber-50 text-amber-900 border-amber-300 shadow-2xs">
+        <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+        ⏳ Menunggu Verifikasi Admin
+      </span>
+    );
+  }
+
   const isLunas = status === "lunas";
   const isTunggakan = status === "tunggakan";
 
@@ -308,6 +330,18 @@ function BayarPortalContent() {
     reader.readAsDataURL(file);
   }
 
+  const segarkanTagihan = useCallback(async (queryTarget: string) => {
+    try {
+      const res = await fetch(`/api/publik/tagihan?kode=${encodeURIComponent(queryTarget)}`);
+      const data = await res.json();
+      if (res.ok) {
+        setHasil(data);
+      }
+    } catch {
+      // fallback
+    }
+  }, []);
+
   async function kirimBuktiManual(e: React.FormEvent) {
     e.preventDefault();
     const kodeTarget = hasil?.pelanggan.kodePelanggan || detail?.pelanggan.kodePelanggan;
@@ -328,16 +362,14 @@ function BayarPortalContent() {
       });
       const data = await res.json();
       if (res.ok) {
-        setSuksesManual(data.message);
-        if (hasil) {
-          setHasil(null);
-          setKode("");
-        }
+        setSuksesManual(data.message || "Bukti pembayaran diterima. Status pembayaran menunggu verifikasi admin.");
         setPilihTagihan(null);
         setBukti("");
         setFormManual({ metode: "transfer", catatan: "" });
         if (isInvoiceMode) {
           muatInvoiceDetail();
+        } else if (kodeTarget) {
+          await segarkanTagihan(kodeTarget);
         }
       } else {
         setKirimError(data.error || "Gagal mengirim bukti pembayaran.");
@@ -383,6 +415,34 @@ function BayarPortalContent() {
   const renderModalUpload = () => {
     if (!pilihTagihan) return null;
     const isTunai = formManual.metode === "tunai";
+    const tagihanTarget = hasil?.tagihan.find((t) => t.id === pilihTagihan);
+    const sudahPending = Boolean(tagihanTarget?.pendingPayment || (detail?.id === pilihTagihan && detail?.pembayaranPending));
+
+    if (sudahPending) {
+      return (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl p-6 sm:p-8 max-w-md w-full space-y-4 text-center">
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center text-2xl mx-auto shadow-xs">
+              ⏳
+            </div>
+            <h3 className="text-base font-extrabold text-slate-900">Pembayaran Sedang Diverifikasi</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Bukti pembayaran untuk tagihan ini sudah dikirim sebelumnya dan sedang dalam proses verifikasi oleh admin. Anda tidak perlu mengirim ulang.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setPilihTagihan(null);
+                setKirimError("");
+              }}
+              className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl transition"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
@@ -643,8 +703,14 @@ function BayarPortalContent() {
               <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Nomor Invoice</p>
               <p className="font-mono font-bold text-sm text-slate-800">{detail.noInvoice}</p>
             </div>
-            <span className={`text-xs font-bold px-3 py-1 rounded-full ${lunas ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
-              {lunas ? "✓ Lunas" : "Menunggu Pembayaran"}
+            <span className={`text-xs font-bold px-3 py-1 rounded-full ${
+              lunas
+                ? "bg-emerald-100 text-emerald-800"
+                : detail.pembayaranPending
+                ? "bg-amber-100 text-amber-900 border border-amber-300"
+                : "bg-amber-100 text-amber-800"
+            }`}>
+              {lunas ? "✓ Lunas" : detail.pembayaranPending ? "⏳ Menunggu Verifikasi Admin" : "Menunggu Pembayaran"}
             </span>
           </div>
 
@@ -689,6 +755,65 @@ function BayarPortalContent() {
 
         {/* Pilihan Metode Pembayaran jika belum lunas */}
         {!lunas ? (
+          detail.pembayaranPending ? (
+            <div className="space-y-6">
+              <div className="bg-amber-50/70 border-2 border-amber-200/90 rounded-3xl p-6 sm:p-7 space-y-4 shadow-sm animate-in fade-in">
+                <div className="flex items-start gap-3.5">
+                  <div className="w-11 h-11 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-xl shrink-0 shadow-xs">
+                    ⏳
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-md inline-block">
+                      Status Transaksi
+                    </span>
+                    <h3 className="font-extrabold text-amber-950 text-base sm:text-lg">
+                      Pembayaran Sedang Dalam Proses Verifikasi Admin
+                    </h3>
+                    <p className="text-xs text-amber-900/85 leading-relaxed">
+                      Konfirmasi pembayaran Anda via{" "}
+                      <strong>
+                        {detail.pembayaranPending.metode === "tunai" ? "Titip Tunai ke Petugas Lapangan" : "Transfer Bank Manual"}
+                      </strong>{" "}
+                      telah berhasil diterima oleh sistem pada{" "}
+                      <strong>{formatTanggalIndo(detail.pembayaranPending.tanggal)}</strong>.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-white/90 rounded-2xl p-4 border border-amber-200/70 text-xs text-slate-700 space-y-2 shadow-2xs">
+                  <div className="flex items-center gap-2 font-bold text-slate-900">
+                    <span>🛡️</span>
+                    <span>Sinkronisasi Pembayaran Aman (Tidak Perlu Kirim Ulang):</span>
+                  </div>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Petugas administrasi kasir kami sedang mencocokkan mutasi rekening bank / tanda terima fisik dari armada penjemput. Status invoice ini akan otomatis berubah menjadi <strong>LUNAS</strong> setelah diverifikasi. Anda tidak perlu mengunggah ulang bukti pembayaran.
+                  </p>
+                  {detail.pembayaranPending.catatan && (
+                    <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-500">
+                      <span className="font-semibold text-slate-700">Catatan Pengirim:</span> {detail.pembayaranPending.catatan}
+                    </div>
+                  )}
+                </div>
+
+                <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                  <span className="text-amber-800 text-center sm:text-left">Butuh percepatan verifikasi atau konfirmasi darurat?</span>
+                  <a
+                    href={`https://wa.me/6281400782617?text=${encodeURIComponent(
+                      `Halo Admin UPS HERU, saya sudah konfirmasi pembayaran untuk invoice ${detail.noInvoice} a.n ${detail.pelanggan.nama}. Mohon bantuannya untuk verifikasi.`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl transition shadow-xs flex items-center justify-center gap-1.5 w-full sm:w-auto"
+                  >
+                    <span>💬 Chat Petugas Verifikasi</span>
+                  </a>
+                </div>
+              </div>
+
+              {/* Panduan Cara Pembayaran QRIS tetap bisa dilihat sebagai referensi */}
+              <PanduanCaraBayarQris defaultOpen={false} />
+            </div>
+          ) : (
           <div className="space-y-6">
             <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
               <div className="flex items-center justify-between">
@@ -788,6 +913,7 @@ function BayarPortalContent() {
             {/* Panduan Cara Pembayaran QRIS (How to Pay dari Duitku) */}
             <PanduanCaraBayarQris defaultOpen={true} />
           </div>
+          )
         ) : (
           <div className="bg-emerald-50 border border-emerald-200 rounded-3xl p-6 text-center space-y-2">
             <div className="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xl mx-auto">
@@ -986,6 +1112,7 @@ function BayarPortalContent() {
       {/* Hasil Pencarian Tagihan */}
       {hasil && (() => {
         const unpaidBills = hasil.tagihan.filter((t) => t.status !== "lunas");
+        const pendingBills = hasil.tagihan.filter((t) => t.status !== "lunas" && t.pendingPayment);
         const totalUnpaid = unpaidBills.reduce((acc, t) => acc + (t.total ?? (t.jumlah + (t.denda || 0))), 0);
 
         return (
@@ -1002,6 +1129,23 @@ function BayarPortalContent() {
                 </span>
               </div>
             </div>
+
+            {/* Banner Khusus jika ada pembayaran yang sedang diverifikasi admin */}
+            {pendingBills.length > 0 && (
+              <div className="p-4 bg-amber-50/90 border border-amber-200/90 rounded-3xl flex items-start gap-3.5 text-xs text-amber-950 shadow-xs animate-in fade-in">
+                <div className="w-9 h-9 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-lg shrink-0 shadow-2xs">
+                  ⏳
+                </div>
+                <div className="space-y-0.5">
+                  <h4 className="font-extrabold text-amber-950 text-sm">
+                    {pendingBills.length} Tagihan Sedang Dalam Proses Verifikasi Admin
+                  </h4>
+                  <p className="text-xs text-amber-900/85 leading-relaxed">
+                    Bukti pembayaran transfer / tanda terima Anda telah tercatat aman di sistem dan sedang dalam antrean verifikasi kasir. <strong>Anda tidak perlu mengirim bukti ulang.</strong>
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Edukasi & Rekomendasi Bayar QRIS */}
             {unpaidBills.length > 0 && (
@@ -1067,7 +1211,7 @@ function BayarPortalContent() {
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <span className="text-lg font-bold text-slate-900">{BULAN[t.bulan - 1]} {t.tahun}</span>
-                        <StatusBadge status={t.status} />
+                        <StatusBadge status={t.status} hasPending={Boolean(t.pendingPayment)} />
                       </div>
                       <p className="text-xs text-slate-500 font-medium">Jatuh Tempo: {formatDate(t.jatuhTempo)}</p>
                       {t.denda ? (
@@ -1084,33 +1228,56 @@ function BayarPortalContent() {
                       </div>
 
                       {t.status !== "lunas" && (
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                          {t.noInvoice && (
-                            <Link
-                              href={`/bayar?invoice=${encodeURIComponent(t.noInvoice)}`}
-                              className="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-sm transition active:scale-95 flex items-center justify-center gap-2"
-                            >
-                              <span className="text-sm">💳</span>
-                              <div className="text-left">
-                                <span className="block leading-tight font-extrabold">Bayar via QRIS / Bank</span>
-                                <span className="text-[10px] font-normal text-emerald-100 block leading-tight">Otomatis Lunas • Scan QR</span>
+                        t.pendingPayment ? (
+                          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                            <div className="px-3.5 py-2 rounded-2xl bg-amber-50 border border-amber-200/90 text-amber-950 text-xs flex items-center gap-2.5 shadow-2xs">
+                              <span className="text-base shrink-0 animate-pulse">⏳</span>
+                              <div>
+                                <p className="font-extrabold leading-tight">Bukti Terkirim (Sedang Diverifikasi)</p>
+                                <p className="text-[10px] text-amber-800 leading-tight mt-0.5">
+                                  {t.pendingPayment.metode === "tunai" ? "Titip Tunai Petugas" : "Transfer Bank"} • Admin sedang memproses
+                                </p>
                               </div>
-                            </Link>
-                          )}
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setPilihTagihan(t.id);
-                              setBukti("");
-                              setKirimError("");
-                            }}
-                            className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 rounded-xl text-xs font-semibold transition active:scale-95 flex items-center justify-center gap-1.5"
-                            title="Gunakan hanya jika Anda sudah terlanjur transfer manual sebelumnya"
-                          >
-                            <span>📤</span>
-                            <span>Sudah Transfer Bank?</span>
-                          </button>
-                        </div>
+                            </div>
+                            <button
+                              type="button"
+                              disabled
+                              className="px-3.5 py-2.5 bg-slate-100 text-slate-400 rounded-xl text-xs font-semibold cursor-not-allowed flex items-center justify-center gap-1.5 opacity-80"
+                              title="Bukti pembayaran sudah terkirim dan sedang dalam antrean verifikasi admin"
+                            >
+                              <span>✓</span>
+                              <span>Menunggu Approval</span>
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                            {t.noInvoice && (
+                              <Link
+                                href={`/bayar?invoice=${encodeURIComponent(t.noInvoice)}`}
+                                className="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-sm transition active:scale-95 flex items-center justify-center gap-2"
+                              >
+                                <span className="text-sm">💳</span>
+                                <div className="text-left">
+                                  <span className="block leading-tight font-extrabold">Bayar via QRIS / Bank</span>
+                                  <span className="text-[10px] font-normal text-emerald-100 block leading-tight">Otomatis Lunas • Scan QR</span>
+                                </div>
+                              </Link>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPilihTagihan(t.id);
+                                setBukti("");
+                                setKirimError("");
+                              }}
+                              className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 rounded-xl text-xs font-semibold transition active:scale-95 flex items-center justify-center gap-1.5"
+                              title="Gunakan hanya jika Anda sudah terlanjur transfer manual sebelumnya"
+                            >
+                              <span>📤</span>
+                              <span>Sudah Transfer Bank?</span>
+                            </button>
+                          </div>
+                        )
                       )}
                     </div>
                   </div>

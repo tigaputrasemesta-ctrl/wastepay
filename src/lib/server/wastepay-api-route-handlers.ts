@@ -332,7 +332,7 @@ export async function handlePublicSearchPayment(request: Request): Promise<NextR
     );
   }
 
-  // Ambil daftar tagihan
+  // Ambil daftar tagihan beserta status verifikasi pembayaran terkini
   const tagihanList = await prisma.tagihan.findMany({
     where: { pelangganId: pelanggan.id, deletedAt: null },
     orderBy: [{ tahun: 'desc' }, { bulan: 'desc' }],
@@ -345,13 +345,41 @@ export async function handlePublicSearchPayment(request: Request): Promise<NextR
       denda: true,
       status: true,
       jatuhTempo: true,
+      pembayaran: {
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          metode: true,
+          status: true,
+          createdAt: true,
+          catatan: true,
+        },
+      },
     },
   });
 
-  const tagihanWithRincian = tagihanList.map((t) => ({
-    ...t,
-    total: hitungRincian(t.jumlah, t.denda || 0).total,
-  }));
+  const tagihanWithRincian = tagihanList.map((t) => {
+    const pendingPayment = t.pembayaran.find((p) => p.status === 'pending');
+    return {
+      id: t.id,
+      noInvoice: t.noInvoice,
+      bulan: t.bulan,
+      tahun: t.tahun,
+      jumlah: t.jumlah,
+      denda: t.denda,
+      status: t.status,
+      jatuhTempo: t.jatuhTempo,
+      total: hitungRincian(t.jumlah, t.denda || 0).total,
+      pendingPayment: pendingPayment
+        ? {
+            id: pendingPayment.id,
+            metode: pendingPayment.metode,
+            createdAt: pendingPayment.createdAt.toISOString(),
+            catatan: pendingPayment.catatan,
+          }
+        : null,
+    };
+  });
 
   const unpaidCount = tagihanList.filter((t) => t.status === 'belum_bayar' || t.status === 'tunggakan').length;
   const totalUnpaidNominal = tagihanWithRincian

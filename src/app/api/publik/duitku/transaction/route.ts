@@ -76,6 +76,24 @@ export async function POST(request: Request) {
       );
     }
 
+    // Cek apakah ada pembayaran manual (transfer/tunai) yang sedang pending menunggu verifikasi
+    const existingManualPending = await prisma.pembayaran.findFirst({
+      where: {
+        tagihanId: tagihan.id,
+        metode: { in: ["transfer", "tunai", "ewallet", "virtual_account"] },
+        status: "pending",
+      },
+      select: { id: true, metode: true },
+    });
+    if (existingManualPending) {
+      return NextResponse.json(
+        {
+          error: "Tagihan ini sedang dalam proses verifikasi bukti pembayaran oleh admin. Anda tidak perlu membayar ulang.",
+        },
+        { status: 409 }
+      );
+    }
+
     // Total yang ditagih = jumlah + PPN 11% + denda — sama dengan yang tampil di invoice
     // (lihat hitungRincian di src/lib/invoice.ts)
     const totalTagihan = hitungRincian(tagihan.jumlah, tagihan.denda).total;

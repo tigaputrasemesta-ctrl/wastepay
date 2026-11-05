@@ -73,6 +73,9 @@ export async function GET(request: Request) {
   const pembayaranLunas = tagihan.pembayaran.find(
     (p) => p.status === "terverifikasi" || p.status === "lunas"
   );
+  const pembayaranPending = tagihan.pembayaran.find(
+    (p) => p.status === "pending"
+  );
 
   return NextResponse.json({
     id: tagihan.id,
@@ -101,6 +104,15 @@ export async function GET(request: Request) {
           metode: pembayaranLunas.metode,
           jumlah: pembayaranLunas.jumlah,
           tanggal: pembayaranLunas.createdAt,
+        }
+      : null,
+    pembayaranPending: pembayaranPending
+      ? {
+          id: pembayaranPending.id,
+          metode: pembayaranPending.metode,
+          jumlah: pembayaranPending.jumlah,
+          tanggal: pembayaranPending.createdAt,
+          catatan: pembayaranPending.catatan,
         }
       : null,
   }, {

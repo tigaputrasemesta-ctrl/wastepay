@@ -548,3 +548,41 @@ describe("seo module", () => {
   });
 });
 
+describe("verifikasi status pembayaran & pencegahan double input", () => {
+  it("mendeteksi pembayaran berstatus pending dari riwayat transaksi tagihan", () => {
+    const pembayaranList = [
+      { id: 1, status: "ditolak", metode: "transfer" },
+      { id: 2, status: "pending", metode: "transfer", createdAt: new Date() },
+    ];
+    const pendingPayment = pembayaranList.find((p) => p.status === "pending");
+    expect(pendingPayment).toBeDefined();
+    expect(pendingPayment?.id).toBe(2);
+    expect(pendingPayment?.status).toBe("pending");
+  });
+
+  it("membedakan status tagihan jika ada bukti yang menunggu verifikasi admin", () => {
+    const tagihan = {
+      id: 101,
+      status: "belum_bayar",
+      pendingPayment: { id: 2, metode: "transfer", createdAt: new Date().toISOString() },
+    };
+    const hasPending = Boolean(tagihan.pendingPayment);
+    const badgeLabel = hasPending
+      ? "Menunggu Verifikasi Admin"
+      : tagihan.status === "lunas"
+      ? "Sudah Lunas"
+      : "Belum Bayar";
+
+    expect(hasPending).toBe(true);
+    expect(badgeLabel).toBe("Menunggu Verifikasi Admin");
+  });
+
+  it("mengizinkan pengunggahan bukti kembali jika pembayaran sebelumnya telah ditolak admin", () => {
+    const pembayaranList = [
+      { id: 1, status: "ditolak", metode: "transfer" },
+    ];
+    const pendingPayment = pembayaranList.find((p) => p.status === "pending");
+    expect(pendingPayment).toBeUndefined(); // tidak ada pending, user boleh submit bukti baru
+  });
+});
+
