@@ -45,10 +45,10 @@ const ICONS: Record<ToastType, React.ReactNode> = {
 };
 
 const BG_CLASSES: Record<ToastType, string> = {
-  success: "border-l-4 border-l-emerald-500 bg-white border border-slate-200/80 shadow-lg text-slate-800",
-  error: "border-l-4 border-l-rose-500 bg-white border border-slate-200/80 shadow-lg text-slate-800",
-  warning: "border-l-4 border-l-amber-500 bg-white border border-slate-200/80 shadow-lg text-slate-800",
-  info: "border-l-4 border-l-sky-500 bg-white border border-slate-200/80 shadow-lg text-slate-800",
+  success: "border-l-4 border-l-emerald-500 bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 shadow-xl text-slate-800 dark:text-zinc-100",
+  error: "border-l-4 border-l-rose-500 bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 shadow-xl text-slate-800 dark:text-zinc-100",
+  warning: "border-l-4 border-l-amber-500 bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 shadow-xl text-slate-800 dark:text-zinc-100",
+  info: "border-l-4 border-l-sky-500 bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 shadow-xl text-slate-800 dark:text-zinc-100",
 };
 
 const ICON_COLOR: Record<ToastType, string> = {
@@ -93,11 +93,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             )}
           >
             <span className={cn("flex-shrink-0", ICON_COLOR[toast.type])}>{ICONS[toast.type]}</span>
-            <p className="text-xs font-semibold text-slate-800 flex-1">{toast.message}</p>
+            <p className="text-xs font-semibold text-slate-800 dark:text-zinc-100 flex-1">{toast.message}</p>
             <button
               onClick={() => removeToast(toast.id)}
               aria-label="Tutup notifikasi"
-              className="text-slate-400 hover:text-slate-600 p-1 rounded-lg transition-colors"
+              className="text-slate-400 hover:text-slate-600 dark:hover:text-zinc-200 p-1 rounded-lg transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

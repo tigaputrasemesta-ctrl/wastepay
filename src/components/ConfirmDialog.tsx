@@ -45,14 +45,14 @@ export default function ConfirmDialog({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl w-full max-w-sm overflow-hidden p-6 text-center space-y-4">
+    <div className="fixed inset-0 bg-slate-900/60 dark:bg-black/75 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+      <div className="bg-white dark:bg-zinc-900 rounded-3xl border border-slate-200/90 dark:border-zinc-800 shadow-2xl w-full max-w-sm overflow-hidden p-6 text-center space-y-4 text-slate-900 dark:text-zinc-100">
         {/* Icon */}
         <div
           className={`w-12 h-12 rounded-2xl mx-auto flex items-center justify-center border ${
             variant === "danger"
-              ? "bg-rose-50 border-rose-100 text-rose-600"
-              : "bg-emerald-50 border-emerald-100 text-emerald-700"
+              ? "bg-rose-50 dark:bg-rose-950/50 border-rose-100 dark:border-rose-900/60 text-rose-600 dark:text-rose-400"
+              : "bg-emerald-50 dark:bg-emerald-950/50 border-emerald-100 dark:border-emerald-900/60 text-emerald-700 dark:text-emerald-400"
           }`}
         >
           {variant === "danger" ? (
@@ -67,8 +67,8 @@ export default function ConfirmDialog({
         </div>
 
         <div>
-          <h3 className="font-extrabold text-base text-slate-900 tracking-tight">{title}</h3>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1 leading-relaxed">{message}</p>
+          <h3 className="font-extrabold text-base text-slate-900 dark:text-zinc-100 tracking-tight">{title}</h3>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-zinc-400 mt-1 leading-relaxed">{message}</p>
         </div>
 
         <div className="flex gap-2.5 pt-2">
@@ -76,7 +76,7 @@ export default function ConfirmDialog({
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-sm transition-all disabled:opacity-50"
+            className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-300 text-xs font-semibold shadow-xs transition-all disabled:opacity-50"
           >
             {cancelText}
           </button>
@@ -85,10 +85,10 @@ export default function ConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={loading}
-            className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 ${
+            className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 ${
               variant === "danger"
                 ? "bg-rose-600 hover:bg-rose-700 text-white"
-                : "bg-emerald-700 hover:bg-emerald-800 text-white"
+                : "bg-emerald-600 hover:bg-emerald-700 text-white"
             }`}
           >
             {loading ? (
