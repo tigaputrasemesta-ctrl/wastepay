@@ -44,11 +44,17 @@ export async function GET(request: Request) {
   const fromApi = raw
     .filter((m) => channelAllowed(m.paymentMethod))
     .map((m) => {
+      let paymentName = m.paymentName;
+      let paymentImage = m.paymentImage;
+      if (m.paymentMethod.toUpperCase() === "SP") {
+        paymentName = "QRIS / Cetak QRIS";
+        paymentImage = "https://images.duitku.com/hotlink-ok/QR.PNG";
+      }
       if (FEE_CODES.has(m.paymentMethod.toUpperCase())) {
         const existingFee = parseInt(m.totalFee || "0", 10) || 0;
-        return { ...m, totalFee: String(existingFee + BIAYA_ADMIN) };
+        return { ...m, paymentName, paymentImage, totalFee: String(existingFee + BIAYA_ADMIN) };
       }
-      return m;
+      return { ...m, paymentName, paymentImage };
     });
 
   // Gabungkan fallback methods yang tidak dikembalikan oleh Duitku API

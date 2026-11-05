@@ -14,6 +14,7 @@ import {
 } from "@/lib/invoice-format";
 import { DUITKU_METHODS, duitkuChannelLabel } from "@/lib/duitku-channels";
 import AnimatedDumpTruck from "@/components/AnimatedDumpTruck";
+import { PanduanCaraBayarQris } from "@/components/PanduanCaraBayarQris";
 
 type TagihanPublik = {
   id: number;
@@ -32,22 +33,24 @@ type HasilCek = {
   tagihan: TagihanPublik[];
 };
 
-type MetodeBayar = { value: string; label: string; icon: string; imageUrl?: string; totalFee?: string };
+type MetodeBayar = { value: string; label: string; sublabel?: string; icon: string; imageUrl?: string; totalFee?: string };
 
 const ICON_CHANNEL: Record<string, string> = {
   VC: "🏦", VA: "🏦", BT: "🏦", M1: "🏛️", CIMB: "🏛️", BNI: "🏛️",
-  BRI: "🏛️", PERMATA: "🏛️", MANDIRI: "🏛️", QR: "📱", SP: "🛍️",
+  BRI: "🏛️", PERMATA: "🏛️", MANDIRI: "🏛️", QR: "💳", SP: "💳",
   OVO: "💜", DANA: "🔵", GOPAY: "🟢", LINK_AJA: "🟠", SA: "🕌",
-  CREDIT_CARD: "💳", SQ: "📱",
+  CREDIT_CARD: "💳", SQ: "💳",
 };
 
 function keMetodeBayar(pm: { paymentMethod: string; paymentName?: string; paymentImage?: string; totalFee?: string }): MetodeBayar {
   const kode = pm.paymentMethod;
+  const isQris = kode === "SP" || kode === "SQ" || kode === "QR";
   return {
     value: kode,
-    label: pm.paymentName || duitkuChannelLabel(kode),
-    icon: ICON_CHANNEL[kode] || "💳",
-    imageUrl: pm.paymentImage,
+    label: isQris ? "QRIS / Cetak QRIS" : (pm.paymentName || duitkuChannelLabel(kode)),
+    sublabel: isQris ? "BCA, Mandiri, BRI, BNI, DANA, GoPay, OVO, ShopeePay dll" : undefined,
+    icon: isQris ? "💳" : (ICON_CHANNEL[kode] || "💳"),
+    imageUrl: isQris ? "https://images.duitku.com/hotlink-ok/QR.PNG" : pm.paymentImage,
     totalFee: pm.totalFee,
   };
 }
@@ -215,7 +218,11 @@ function BayarPortalContent() {
         const res = await fetch(`/api/publik/duitku/methods?amount=${detail.total}`);
         const data = await res.json();
         if (!batal && res.ok && data.enabled && Array.isArray(data.methods) && data.methods.length > 0) {
-          setMetodeList(data.methods.map(keMetodeBayar));
+          const list = data.methods.map(keMetodeBayar);
+          setMetodeList(list);
+          if (list.length > 0) {
+            setPilihMetode(list[0].value);
+          }
         }
       } catch {
         // fallback
@@ -225,6 +232,13 @@ function BayarPortalContent() {
       batal = true;
     };
   }, [detail]);
+
+  // Pastikan metode default terpilih jika belum dipilih
+  useEffect(() => {
+    if (metodeList.length > 0 && !pilihMetode) {
+      setPilihMetode(metodeList[0].value);
+    }
+  }, [metodeList, pilihMetode]);
 
   // Cek tagihan by kode / WA / invoice input
   async function cekTagihan(e: React.FormEvent) {
@@ -675,81 +689,102 @@ function BayarPortalContent() {
 
         {/* Pilihan Metode Pembayaran jika belum lunas */}
         {!lunas ? (
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
-            <h3 className="font-bold text-slate-900 text-sm">Pilih Metode Pembayaran</h3>
+          <div className="space-y-6">
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-bold text-slate-900 text-sm">Metode Pembayaran Resmi</h3>
+                <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                  ⚡ Verifikasi Otomatis
+                </span>
+              </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {metodeList.map((m) => (
-                <button
-                  key={m.value}
-                  type="button"
-                  onClick={() => setPilihMetode(m.value)}
-                  className={`flex items-center justify-between p-3 rounded-2xl border text-left transition ${
-                    pilihMetode === m.value
-                      ? "border-emerald-600 bg-emerald-50/50 shadow-xs ring-2 ring-emerald-500/20"
-                      : "border-slate-200 bg-white hover:border-slate-300"
-                  }`}
-                >
-                  <div className="flex items-center gap-3 overflow-hidden">
-                    {m.imageUrl ? (
-                      /* eslint-disable-next-line @next/next/no-img-element */
-                      <img src={m.imageUrl} alt={m.label} className="w-10 h-auto shrink-0 object-contain" />
-                    ) : (
-                      <span className="text-xl shrink-0">{m.icon}</span>
-                    )}
-                    <span className="text-xs font-bold text-slate-800 truncate">{m.label}</span>
-                  </div>
-                  {m.totalFee && (
-                    <div className="shrink-0 text-right ml-2">
-                      <span className="text-[10px] font-medium text-slate-500 block">
-                        {m.totalFee === "0" ? "Gratis" : `+Rp ${parseInt(m.totalFee).toLocaleString("id-ID")}`}
-                      </span>
+              <div className="space-y-2">
+                {metodeList.map((m) => (
+                  <button
+                    key={m.value}
+                    type="button"
+                    onClick={() => setPilihMetode(m.value)}
+                    className={`w-full flex items-center justify-between p-4 rounded-2xl border text-left transition ${
+                      pilihMetode === m.value
+                        ? "border-emerald-600 bg-emerald-50/60 shadow-xs ring-2 ring-emerald-500/20"
+                        : "border-slate-200 bg-white hover:border-slate-300"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3.5 overflow-hidden">
+                      {m.imageUrl ? (
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img src={m.imageUrl} alt={m.label} className="w-12 h-auto shrink-0 object-contain rounded" />
+                      ) : (
+                        <span className="text-2xl shrink-0">{m.icon}</span>
+                      )}
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-extrabold text-slate-900">{m.label}</span>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                            Rekomendasi
+                          </span>
+                        </div>
+                        <p className="text-[11px] font-medium text-slate-500 mt-0.5">
+                          {m.sublabel || "Scan pakai m-Banking (BCA, Mandiri, BRI, BNI) atau E-Wallet (DANA, GoPay, OVO, ShopeePay)"}
+                        </p>
+                      </div>
                     </div>
-                  )}
-                </button>
-              ))}
-            </div>
+                    {m.totalFee && (
+                      <div className="shrink-0 text-right ml-2">
+                        <span className="text-xs font-bold text-slate-700 block">
+                          {m.totalFee === "0" ? "Gratis" : `+Rp ${parseInt(m.totalFee).toLocaleString("id-ID")}`}
+                        </span>
+                        <span className="text-[10px] text-slate-400 block">biaya admin</span>
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
 
-            {bayarError && (
-              <p className="text-xs text-rose-600 font-medium bg-rose-50 p-2.5 rounded-xl border border-rose-200">
-                {bayarError}
-              </p>
-            )}
+              {bayarError && (
+                <p className="text-xs text-rose-600 font-medium bg-rose-50 p-2.5 rounded-xl border border-rose-200">
+                  {bayarError}
+                </p>
+              )}
 
-            <button
-              type="button"
-              disabled={bayarLoading || !pilihMetode}
-              onClick={bayarOnlineDuitku}
-              className="w-full py-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white font-bold text-sm shadow-sm transition active:scale-95 flex flex-col items-center justify-center gap-0.5"
-            >
-              {(() => {
-                if (bayarLoading) return <span>Menghubungkan ke Gateway...</span>;
-                const selected = metodeList.find((m) => m.value === pilihMetode);
-                const fee = selected?.totalFee ? parseInt(selected.totalFee) || 0 : 0;
-                const grandTotal = detail.total + fee;
-                return (
-                  <>
-                    <span>Bayar Sekarang ({formatRupiahSkylite(grandTotal)})</span>
-                    {fee > 0 && <span className="text-[10px] font-normal opacity-80">termasuk biaya admin Rp {fee.toLocaleString("id-ID")}</span>}
-                  </>
-                );
-              })()}
-            </button>
-
-            <div className="pt-2 border-t border-slate-100 flex flex-col items-center">
               <button
                 type="button"
-                onClick={() => {
-                  setPilihTagihan(detail.id);
-                  setBukti("");
-                  setKirimError("");
-                }}
-                className="text-xs font-semibold text-slate-600 hover:text-emerald-700 transition flex items-center gap-1.5 py-1 px-3 rounded-xl hover:bg-slate-50"
+                disabled={bayarLoading || !pilihMetode}
+                onClick={bayarOnlineDuitku}
+                className="w-full py-3.5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white font-bold text-sm shadow-sm transition active:scale-95 flex flex-col items-center justify-center gap-0.5"
               >
-                <span>📤</span>
-                <span>Sudah transfer bank manual sebelumnya? Konfirmasi bukti di sini</span>
+                {(() => {
+                  if (bayarLoading) return <span>Menghubungkan ke Gateway...</span>;
+                  const selected = metodeList.find((m) => m.value === pilihMetode);
+                  const fee = selected?.totalFee ? parseInt(selected.totalFee) || 0 : 0;
+                  const grandTotal = detail.total + fee;
+                  return (
+                    <>
+                      <span>Bayar Sekarang ({formatRupiahSkylite(grandTotal)})</span>
+                      {fee > 0 && <span className="text-[10px] font-normal opacity-80">termasuk biaya admin gateway Rp {fee.toLocaleString("id-ID")}</span>}
+                    </>
+                  );
+                })()}
               </button>
+
+              <div className="pt-2 border-t border-slate-100 flex flex-col items-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPilihTagihan(detail.id);
+                    setBukti("");
+                    setKirimError("");
+                  }}
+                  className="text-xs font-semibold text-slate-600 hover:text-emerald-700 transition flex items-center gap-1.5 py-1 px-3 rounded-xl hover:bg-slate-50"
+                >
+                  <span>📤</span>
+                  <span>Sudah transfer bank manual sebelumnya? Konfirmasi bukti di sini</span>
+                </button>
+              </div>
             </div>
+
+            {/* Panduan Cara Pembayaran QRIS (How to Pay dari Duitku) */}
+            <PanduanCaraBayarQris defaultOpen={true} />
           </div>
         ) : (
           <div className="bg-emerald-50 border border-emerald-200 rounded-3xl p-6 text-center space-y-2">
@@ -1080,9 +1115,21 @@ function BayarPortalContent() {
                 ))
               )}
             </div>
+
+            {/* Panduan Lengkap Cara Bayar QRIS */}
+            <div className="pt-2">
+              <PanduanCaraBayarQris defaultOpen={false} />
+            </div>
           </div>
         );
       })()}
+
+      {/* Jika belum mencari tagihan, tampilkan panduan cara bayar sebagai edukasi warga */}
+      {!hasil && !mencari && (
+        <div className="max-w-2xl mx-auto pt-2">
+          <PanduanCaraBayarQris defaultOpen={false} />
+        </div>
+      )}
 
       {renderModalUpload()}
     </div>
