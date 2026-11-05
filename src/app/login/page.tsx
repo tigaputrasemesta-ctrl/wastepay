@@ -52,14 +52,8 @@ export default function LoginPage() {
         const next = params.get("next");
         const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? next : null;
         
-        if (safeNext) {
-          router.push(safeNext);
-        } else if (data.user?.role === "petugas") {
-          router.push("/m");
-        } else {
-          router.push("/dashboard");
-        }
-        router.refresh();
+        const target = safeNext || (data.user?.role === "petugas" ? "/m" : "/dashboard");
+        window.location.href = target;
       }
     } catch {
       setError("Terjadi kesalahan sistem. Silakan coba lagi.");

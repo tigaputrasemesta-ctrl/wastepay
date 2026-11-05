@@ -1,0 +1,43 @@
+name: Auto-Deploy to VPS
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-vps
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build & Deploy to SumoPod VPS
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Deploy on VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          script_stop: true
+          script: |
+            echo "🚀 [CI/CD] Memulai auto-deploy ke VPS SumoPod..."
+            cd /home/ubuntu/wastepay
+            
+            echo "📥 Menarik perubahan kode terbaru dari Git..."
+            git fetch origin master
+            git reset --hard origin/master
+            
+            echo "🐳 Membangun container Docker dan me-restart aplikasi..."
+            docker compose up -d --build
+            
+            echo "🧹 Membersihkan image lama..."
+            docker image prune -f
+            
+            echo "✅ Auto-deploy selesai dengan sukses!"

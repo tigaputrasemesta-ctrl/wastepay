@@ -1,0 +1,12 @@
+node_modules
+.next
+.git
+.github
+.agents
+.windsurf
+.claude
+android
+mobile_petugas
+*.log
+.env*.local
+.env

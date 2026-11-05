@@ -42,9 +42,13 @@ export async function POST(request: Request) {
       message: "Login berhasil",
     });
 
+    const isHttps =
+      request.headers.get("x-forwarded-proto") === "https" ||
+      request.url.startsWith("https://");
+
     response.cookies.set(COOKIE_NAME, result.token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: isHttps,
       sameSite: "lax",
       maxAge: cookieMaxAge,
       path: "/",

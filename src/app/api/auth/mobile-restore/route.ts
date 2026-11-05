@@ -58,10 +58,14 @@ export async function POST(request: Request) {
       token: freshToken,
     });
 
+    const isHttps =
+      request.headers.get("x-forwarded-proto") === "https" ||
+      request.url.startsWith("https://");
+
     // Pasang cookie sesi 90 hari
     response.cookies.set(COOKIE_NAME, freshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: isHttps,
       sameSite: "lax",
       maxAge: 90 * 24 * 60 * 60, // 90 hari
       path: "/",

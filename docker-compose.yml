@@ -1,0 +1,24 @@
+services:
+  wastepay:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        DATABASE_URL: ${DATABASE_URL}
+        JWT_SECRET: ${JWT_SECRET}
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+    container_name: wastepay-app
+    restart: always
+    ports:
+      - "127.0.0.1:3000:3000"
+    env_file:
+      - .env
+    environment:
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+      - TZ=Asia/Jakarta
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

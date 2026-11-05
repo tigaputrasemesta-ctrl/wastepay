@@ -3,8 +3,8 @@ import type { NextConfig } from "next";
 const isCapacitorBuild = process.env.CAPACITOR_BUILD === "true";
 
 const nextConfig: NextConfig = {
-  // Aktifkan static export hanya saat mem-build bundle untuk APK Android
-  output: isCapacitorBuild ? "export" : undefined,
+  // Aktifkan static export hanya saat mem-build bundle untuk APK Android, atau standalone untuk Docker/VPS
+  output: isCapacitorBuild ? "export" : "standalone",
   distDir: isCapacitorBuild ? "out" : undefined,
   trailingSlash: isCapacitorBuild,
 
@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["192.168.100.19"],
 
   images: {
-    unoptimized: isCapacitorBuild ? true : false,
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
