@@ -80,7 +80,7 @@ export async function POST(request: Request) {
     // (lihat hitungRincian di src/lib/invoice.ts)
     const totalTagihan = hitungRincian(tagihan.jumlah, tagihan.denda).total;
 
-    // Biaya admin Rp 1.500 untuk pembayaran QRIS — dibebankan ke pelanggan
+    // Biaya layanan sistem web Rp 1.500 untuk operasional portal digital & notifikasi realtime
     const metodeUpper = String(paymentMethod).trim().toUpperCase();
     const isQris = metodeUpper === "QR" || metodeUpper === "SQ" || metodeUpper === "SP";
     const biayaAdmin = isQris ? 1500 : 0;
@@ -123,7 +123,7 @@ export async function POST(request: Request) {
       orderId,
       amount: total,
       paymentMethod: metodeUpper,
-      productDetails: `Iuran sampah ${BULAN[tagihan.bulan - 1]} ${tagihan.tahun} — ${pelanggan.nama}${biayaAdmin ? ` (termasuk biaya admin Rp ${biayaAdmin.toLocaleString("id-ID")})` : ""}`,
+      productDetails: `Iuran sampah ${BULAN[tagihan.bulan - 1]} ${tagihan.tahun} — ${pelanggan.nama}${biayaAdmin ? ` (termasuk biaya layanan sistem web Rp ${biayaAdmin.toLocaleString("id-ID")})` : ""}`,
       customerVaName: pelanggan.nama,
       phoneNumber: pelanggan.noTelepon || undefined,
     });
@@ -150,7 +150,7 @@ export async function POST(request: Request) {
           jumlah: total,
           metode: "duitku",
           status: "pending",
-          catatan: `Payment Gateway Via Duitku (${metodeUpper})${biayaAdmin ? ` — biaya admin Rp ${biayaAdmin.toLocaleString("id-ID")}` : ""}`,
+          catatan: `Payment Gateway Via Duitku (${metodeUpper})${biayaAdmin ? ` — biaya layanan sistem web Rp ${biayaAdmin.toLocaleString("id-ID")}` : ""}`,
         },
       });
 

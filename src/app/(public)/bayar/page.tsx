@@ -734,7 +734,7 @@ function BayarPortalContent() {
                         <span className="text-xs font-bold text-slate-700 block">
                           {m.totalFee === "0" ? "Gratis" : `+Rp ${parseInt(m.totalFee).toLocaleString("id-ID")}`}
                         </span>
-                        <span className="text-[10px] text-slate-400 block">biaya admin</span>
+                        <span className="text-[10px] text-slate-400 block">biaya layanan web</span>
                       </div>
                     )}
                   </button>
@@ -761,7 +761,7 @@ function BayarPortalContent() {
                   return (
                     <>
                       <span>Bayar Sekarang ({formatRupiahSkylite(grandTotal)})</span>
-                      {fee > 0 && <span className="text-[10px] font-normal opacity-80">termasuk biaya admin gateway Rp {fee.toLocaleString("id-ID")}</span>}
+                      {fee > 0 && <span className="text-[10px] font-normal opacity-80">termasuk biaya layanan sistem web Rp {fee.toLocaleString("id-ID")}</span>}
                     </>
                   );
                 })()}
