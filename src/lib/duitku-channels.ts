@@ -71,7 +71,7 @@ export const DUITKU_METHODS: any[] = [
     label: "QRIS / Cetak QRIS",
     sublabel: "BCA, Mandiri, BRI, BNI, DANA, GoPay, OVO, ShopeePay",
     icon: "💳",
-    imageUrl: "https://images.duitku.com/hotlink-ok/QR.PNG",
+    imageUrl: "/qris.png",
     totalFee: "1500"
   },
 ];

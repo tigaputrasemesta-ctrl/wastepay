@@ -48,7 +48,7 @@ export async function GET(request: Request) {
       let paymentImage = m.paymentImage;
       if (m.paymentMethod.toUpperCase() === "SP") {
         paymentName = "QRIS / Cetak QRIS";
-        paymentImage = "https://images.duitku.com/hotlink-ok/QR.PNG";
+        paymentImage = "/qris.png";
       }
       if (FEE_CODES.has(m.paymentMethod.toUpperCase())) {
         const existingFee = parseInt(m.totalFee || "0", 10) || 0;

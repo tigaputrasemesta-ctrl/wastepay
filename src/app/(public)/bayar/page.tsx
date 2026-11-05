@@ -50,7 +50,7 @@ function keMetodeBayar(pm: { paymentMethod: string; paymentName?: string; paymen
     label: isQris ? "QRIS / Cetak QRIS" : (pm.paymentName || duitkuChannelLabel(kode)),
     sublabel: isQris ? "BCA, Mandiri, BRI, BNI, DANA, GoPay, OVO, ShopeePay dll" : undefined,
     icon: isQris ? "💳" : (ICON_CHANNEL[kode] || "💳"),
-    imageUrl: isQris ? "https://images.duitku.com/hotlink-ok/QR.PNG" : pm.paymentImage,
+    imageUrl: isQris ? "/qris.png" : pm.paymentImage,
     totalFee: pm.totalFee,
   };
 }
@@ -712,8 +712,10 @@ function BayarPortalContent() {
                   >
                     <div className="flex items-center gap-3.5 overflow-hidden">
                       {m.imageUrl ? (
-                        /* eslint-disable-next-line @next/next/no-img-element */
-                        <img src={m.imageUrl} alt={m.label} className="w-12 h-auto shrink-0 object-contain rounded" />
+                        <div className="w-14 h-9 px-1.5 py-1 bg-white rounded-xl border border-slate-200/90 shadow-2xs flex items-center justify-center shrink-0">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={m.imageUrl} alt={m.label} className="w-full h-full object-contain" />
+                        </div>
                       ) : (
                         <span className="text-2xl shrink-0">{m.icon}</span>
                       )}
