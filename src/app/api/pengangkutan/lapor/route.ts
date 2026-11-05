@@ -86,7 +86,7 @@ export async function POST(request: Request) {
     }
     const profil = await prisma.petugas.findUnique({
       where: { userId: session.id },
-      select: { id: true },
+      select: { id: true, nama: true },
     });
     if (!profil) {
       return NextResponse.json({ error: "Akun belum ter-link ke profil petugas" }, { status: 403 });
