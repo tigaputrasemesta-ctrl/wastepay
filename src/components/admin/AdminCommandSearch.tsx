@@ -437,7 +437,7 @@ export default function AdminCommandSearch() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Cari menu atau tekan Ctrl+K"
-        className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-900/80 hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200 transition-all text-xs font-medium shadow-xs w-36 sm:w-64 justify-between"
+        className="flex items-center gap-2.5 h-9 px-3 rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-900/80 hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200 transition-colors text-xs font-medium shadow-xs w-36 sm:w-64 justify-between select-none"
       >
         <span className="flex items-center gap-2 truncate">
           <Search className="w-3.5 h-3.5 shrink-0" />

@@ -551,11 +551,11 @@ export default async function DashboardPage() {
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-center">
-          <Link href="/tagihan" className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-xs transition-all flex items-center gap-1.5 active:scale-98">
+          <Link href="/tagihan" className="h-9 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium shadow-xs transition-colors flex items-center gap-1.5 active:scale-[0.98]">
             <Plus size={14} strokeWidth={2} />
             <span>Kelola Tagihan</span>
           </Link>
-          <Link href="/laporan" className="px-3.5 py-2 rounded-xl bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-200 text-xs font-semibold border border-slate-200/80 dark:border-zinc-800 shadow-xs transition-all flex items-center gap-1.5">
+          <Link href="/laporan" className="h-9 px-4 rounded-lg bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-200 text-xs font-medium border border-slate-200/80 dark:border-zinc-800 shadow-xs transition-colors flex items-center gap-1.5 active:scale-[0.98]">
             <Download size={14} className="text-slate-500 dark:text-zinc-400" />
             <span>Unduh Laporan</span>
           </Link>

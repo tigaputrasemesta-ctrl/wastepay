@@ -538,26 +538,26 @@ function PelangganContent() {
               fetchData(true);
             }}
             disabled={refreshing}
-            className="px-3 py-2 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition flex items-center gap-1.5 shadow-xs active:scale-98 disabled:opacity-50"
+            className="h-9 px-3 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-200 text-xs font-medium transition-colors flex items-center gap-1.5 shadow-xs active:scale-[0.98] disabled:opacity-50"
             title="Muat ulang data pelanggan terbaru dari server"
           >
-            <RefreshCw className={`w-3.5 h-3.5 text-slate-500 ${refreshing ? "animate-spin" : ""}`} />
+            <RefreshCw className={`w-3.5 h-3.5 text-slate-500 dark:text-zinc-400 ${refreshing ? "animate-spin" : ""}`} />
             <span>{refreshing ? "Memuat..." : "Muat Ulang"}</span>
           </button>
           <Link
             href="/registrasi"
-            className="px-3 py-2 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition flex items-center gap-1.5 shadow-xs"
+            className="h-9 px-3 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-200 text-xs font-medium transition-colors flex items-center gap-1.5 shadow-xs active:scale-[0.98]"
           >
-            <FileText size={14} className="text-slate-500" />
+            <FileText size={14} className="text-slate-500 dark:text-zinc-400" />
             <span>Formulir</span>
           </Link>
           <button
             type="button"
             onClick={handleExportExcel}
-            className="px-3 py-2 rounded-xl border border-emerald-200 bg-emerald-50/70 hover:bg-emerald-100/70 text-emerald-800 text-xs font-medium transition flex items-center gap-1.5 shadow-xs active:scale-98"
+            className="h-9 px-3 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-emerald-50/70 dark:bg-emerald-950/40 hover:bg-emerald-100/70 dark:hover:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 text-xs font-medium transition-colors flex items-center gap-1.5 shadow-xs active:scale-[0.98]"
             title="Ekspor ke Excel / CSV"
           >
-            <Download size={14} className="text-emerald-700" />
+            <Download size={14} className="text-emerald-700 dark:text-emerald-400" />
             <span>Ekspor Excel</span>
           </button>
           <Link
@@ -566,14 +566,14 @@ function PelangganContent() {
               ...(filterKategori ? { kategori: filterKategori } : {}),
               ...(filterKelurahan ? { kelurahanId: filterKelurahan } : {}),
             }).toString()}`}
-            className="px-3 py-2 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition flex items-center gap-1.5 shadow-xs"
+            className="h-9 px-3 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-200 text-xs font-medium transition-colors flex items-center gap-1.5 shadow-xs active:scale-[0.98]"
           >
-            <Printer size={14} className="text-slate-500" />
+            <Printer size={14} className="text-slate-500 dark:text-zinc-400" />
             <span>Cetak</span>
           </Link>
           <button
             onClick={openCreate}
-            className="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-xl text-xs font-medium shadow-xs transition-all flex items-center gap-1.5 active:scale-98"
+            className="h-9 px-3.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium shadow-xs transition-colors flex items-center gap-1.5 active:scale-[0.98]"
           >
             <Plus size={14} strokeWidth={2} />
             <span>Tambah Pelanggan</span>

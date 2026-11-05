@@ -47,7 +47,7 @@ export default function AdminSyncIndicator() {
       <button
         type="button"
         onClick={() => setModalOpen(true)}
-        className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all border shadow-xs ${
+        className={`h-9 inline-flex items-center gap-1.5 px-2.5 rounded-lg text-xs font-medium transition-colors border shadow-xs select-none ${
           !isOnline
             ? "bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800"
             : isOfflineReady

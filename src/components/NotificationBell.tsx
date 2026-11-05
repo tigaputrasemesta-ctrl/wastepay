@@ -109,7 +109,7 @@ export default function NotificationBell() {
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         aria-label={`Notifikasi pending (${totalCount})`}
-        className={`relative p-2 rounded-lg border transition-all flex items-center justify-center ${
+        className={`relative w-9 h-9 rounded-lg border transition-all flex items-center justify-center shrink-0 ${
           isOpen
             ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 shadow-xs"
             : "bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 border-slate-200 dark:border-zinc-800 text-slate-700 dark:text-zinc-300 shadow-xs hover:border-slate-300 dark:hover:border-zinc-700"

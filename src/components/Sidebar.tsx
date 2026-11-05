@@ -203,12 +203,12 @@ export default function Sidebar({
           </div>
         ) : (
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex items-center justify-center p-1 shrink-0 overflow-hidden">
+            <div className="w-9 h-9 rounded-lg bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex items-center justify-center p-1 shrink-0 overflow-hidden">
               <img src="/ups-heru-logo.jpg" alt="Logo" className="w-full h-full object-contain" />
             </div>
             <div className="min-w-0 flex flex-col">
               <div className="flex items-center gap-1.5">
-                <span className="font-bold text-sm tracking-tight text-slate-900 dark:text-zinc-100 leading-none">
+                <span className="font-semibold text-sm tracking-tight text-slate-900 dark:text-zinc-100 leading-none">
                   UPS HERU
                 </span>
                 <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/60">
@@ -250,7 +250,7 @@ export default function Sidebar({
       {/* ── USER PROFILE CHIP ── */}
       {user && !isCollapsedEffective && (
         <div className="px-3 pt-3 pb-1 shrink-0">
-          <div className="px-3 py-2 rounded-xl bg-slate-50/90 dark:bg-zinc-900/90 border border-slate-200/60 dark:border-zinc-800/80 flex items-center gap-2.5">
+          <div className="px-3 py-2 rounded-lg bg-slate-50/90 dark:bg-zinc-900/90 border border-slate-200/60 dark:border-zinc-800/80 flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-full bg-emerald-600 text-white font-medium flex items-center justify-center text-xs shadow-xs ring-2 ring-emerald-500/15 shrink-0">
               {user.nama.charAt(0).toUpperCase()}
             </div>
@@ -313,8 +313,8 @@ export default function Sidebar({
                         }}
                         aria-current={isActive ? "page" : undefined}
                         className={cn(
-                          "flex items-center gap-2.5 px-2.5 py-2 text-xs rounded-xl transition-all duration-150 relative group",
-                          isCollapsedEffective ? "justify-center px-0 h-10 w-10 mx-auto" : "",
+                          "flex items-center gap-2.5 px-2.5 py-2 text-xs rounded-lg transition-all duration-150 relative group",
+                          isCollapsedEffective ? "justify-center px-0 h-9 w-9 mx-auto" : "",
                           isActive
                             ? "bg-emerald-50/90 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-300 font-semibold shadow-xs border border-emerald-200/60 dark:border-emerald-800/50"
                             : "text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-100/70 dark:hover:bg-zinc-900/70 font-medium"
@@ -358,8 +358,8 @@ export default function Sidebar({
           }}
           aria-label="Keluar dari sistem"
           className={cn(
-            "flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-50/80 dark:hover:bg-rose-950/30 transition-colors w-full text-xs font-medium active:scale-[0.98]",
-            isCollapsedEffective && "justify-center px-0 h-10 w-10 mx-auto"
+            "flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-rose-600 dark:text-rose-400 hover:bg-rose-50/80 dark:hover:bg-rose-950/30 transition-colors w-full text-xs font-medium active:scale-[0.98]",
+            isCollapsedEffective && "justify-center px-0 h-9 w-9 mx-auto"
           )}
           title={isCollapsedEffective ? "Keluar Sistem" : undefined}
         >

@@ -782,7 +782,7 @@ export default function TagihanPage() {
         <>
         <button
           onClick={handleOpenBlastModal}
-          className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-sm active:scale-95 transition flex items-center gap-1.5"
+          className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium shadow-xs active:scale-[0.98] transition-all flex items-center gap-1.5"
           title="Kirim pesan WhatsApp massal ke seluruh warga yang belum bayar di RT tertentu"
         >
           <span className="text-sm">📢</span>
@@ -790,7 +790,7 @@ export default function TagihanPage() {
         </button>
         <button
           onClick={() => setShowGenerate(true)}
-          className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow-sm active:scale-95 transition flex items-center gap-1.5"
+          className="px-3.5 py-2 bg-slate-900 dark:bg-zinc-800 hover:bg-slate-800 dark:hover:bg-zinc-700 text-white rounded-lg text-xs font-medium shadow-xs active:scale-[0.98] transition-all flex items-center gap-1.5"
         >
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -799,7 +799,7 @@ export default function TagihanPage() {
         </button>
         <button
           onClick={() => { setShowAutoGenerate(true); setAutoResult(null); }}
-          className="px-4 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-800 rounded-xl text-xs font-bold shadow-sm active:scale-95 transition flex items-center gap-1.5"
+          className="px-3.5 py-2 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-800 dark:text-zinc-200 rounded-lg text-xs font-medium shadow-xs active:scale-[0.98] transition-all flex items-center gap-1.5"
         >
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -811,7 +811,7 @@ export default function TagihanPage() {
         <Link
           href={`/tagihan-cetak?bulan=${bulan || new Date().getMonth() + 1}&tahun=${tahun || new Date().getFullYear()}`}
           target="_blank"
-          className="px-4 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-800 rounded-xl text-xs font-bold shadow-sm active:scale-95 transition flex items-center gap-1.5"
+          className="px-3.5 py-2 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-800 dark:text-zinc-200 rounded-lg text-xs font-medium shadow-xs active:scale-[0.98] transition-all flex items-center gap-1.5"
         >
           <span>🖨</span>
           <span>Cetak Massal</span>
@@ -819,7 +819,7 @@ export default function TagihanPage() {
         <Link
           href={`/laporan-pembayaran-cetak?bulan=${bulan || new Date().getMonth() + 1}&tahun=${tahun || new Date().getFullYear()}&status=${status || 'all'}`}
           target="_blank"
-          className="px-4 py-2 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 text-indigo-700 rounded-xl text-xs font-bold shadow-sm active:scale-95 transition flex items-center gap-1.5"
+          className="px-3.5 py-2 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 rounded-lg text-xs font-medium shadow-xs active:scale-[0.98] transition-all flex items-center gap-1.5"
         >
           <span>📊</span>
           <span>Rekap Laporan</span>

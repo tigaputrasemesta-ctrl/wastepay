@@ -182,7 +182,7 @@ export default function AdminMobileResponsiveShell({
               onClick={() => setDrawerOpen(true)}
               aria-label="Buka menu sekunder backoffice"
               aria-expanded={drawerOpen}
-              className="md:hidden inline-flex items-center justify-center p-2 rounded-xl text-slate-600 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 active:bg-slate-200 dark:active:bg-zinc-700 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 shrink-0"
+              className="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-lg text-slate-600 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 active:bg-slate-200 dark:active:bg-zinc-700 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/20 shrink-0"
             >
               <Menu className="w-5 h-5" />
             </button>

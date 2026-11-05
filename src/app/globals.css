@@ -58,6 +58,16 @@
     cursor: default;
     overscroll-behavior-y: none;
     -webkit-tap-highlight-color: transparent;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    letter-spacing: -0.012em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    letter-spacing: -0.024em;
+    font-weight: 600;
   }
 
   ::selection {
@@ -121,15 +131,39 @@
   }
   
   .hm-btn {
-    @apply inline-flex items-center justify-center px-6 py-2.5 bg-white text-slate-900 border border-slate-200 font-bold rounded-xl shadow-sm hover:bg-slate-50 hover:border-slate-300 transition-all text-center;
+    @apply inline-flex items-center justify-center px-4 py-2 bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-zinc-800 font-medium text-xs sm:text-sm rounded-lg shadow-xs hover:bg-slate-50 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-zinc-100 active:scale-[0.98] transition-all text-center select-none;
   }
   
   .hm-btn-red {
-    @apply inline-flex items-center justify-center px-6 py-2.5 bg-rose-600 text-white font-bold rounded-xl shadow-sm hover:bg-rose-500 transition-all text-center;
+    @apply inline-flex items-center justify-center px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-medium text-xs sm:text-sm rounded-lg shadow-xs active:scale-[0.98] transition-all text-center select-none;
   }
   
   .hm-btn-green {
-    @apply inline-flex items-center justify-center px-6 py-2.5 bg-emerald-600 text-white font-bold rounded-xl shadow-sm hover:bg-emerald-500 transition-all text-center;
+    @apply inline-flex items-center justify-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs sm:text-sm rounded-lg shadow-xs active:scale-[0.98] transition-all text-center select-none;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-xs sm:text-sm font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/20 disabled:pointer-events-none disabled:opacity-50 select-none;
+  }
+
+  .btn-primary {
+    @apply btn h-9 px-4 py-2 bg-emerald-600 text-white shadow-xs hover:bg-emerald-700 active:scale-[0.98] dark:bg-emerald-600 dark:hover:bg-emerald-500;
+  }
+
+  .btn-secondary {
+    @apply btn h-9 px-4 py-2 bg-slate-100 dark:bg-zinc-800 text-slate-900 dark:text-zinc-100 shadow-xs hover:bg-slate-200/80 dark:hover:bg-zinc-700 active:scale-[0.98];
+  }
+
+  .btn-outline {
+    @apply btn h-9 px-4 py-2 border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 shadow-xs hover:bg-slate-100 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-zinc-50 active:scale-[0.98];
+  }
+
+  .btn-destructive {
+    @apply btn h-9 px-4 py-2 bg-rose-600 text-white shadow-xs hover:bg-rose-700 active:scale-[0.98] dark:bg-rose-600 dark:hover:bg-rose-500;
+  }
+
+  .btn-ghost {
+    @apply btn h-9 px-3 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-zinc-50 active:scale-[0.98];
   }
 
   .hm-card {
@@ -459,6 +493,27 @@
     .hover\:bg-slate-100:hover {
       background-color: #27272a !important; /* zinc-800 */
     }
+  }
+
+  /* Enforce Shadcn button proportions and radius across all buttons */
+  button:not([class*="rounded-full"]):not([class*="rounded-none"]):not(.pin-jemput):not(.truk-jemput-body):not([class*="leaflet"]),
+  a[class*="px-"][class*="py-"]:not([class*="rounded-full"]):not([class*="rounded-none"]):not([class*="leaflet"]) {
+    border-radius: 0.5rem; /* 8px - standard shadcn rounded-lg */
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  /* Auto dark slate-900 buttons */
+  .dark button.bg-slate-900,
+  .dark a.bg-slate-900 {
+    background-color: #27272a !important; /* zinc-800 */
+    color: #f4f4f5 !important;
+    border-color: #3f3f46 !important;
+  }
+  .dark button.bg-slate-900:hover,
+  .dark a.bg-slate-900:hover {
+    background-color: #3f3f46 !important; /* zinc-700 */
+    color: #ffffff !important;
   }
 }
 
