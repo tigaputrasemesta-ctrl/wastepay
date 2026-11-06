@@ -106,6 +106,7 @@ export async function POST(
         const pembayaran = await tx.pembayaran.create({
           data: {
             tagihanId: tagihan.id,
+            pelangganId: tagihan.pelangganId,
             jumlah: duitkuStatus.amount ? parseInt(String(duitkuStatus.amount)) : tagihan.jumlah,
             metode: "duitku",
             status: "terverifikasi",
