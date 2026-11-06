@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, Suspense } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -25,6 +25,7 @@ import {
   X,
   Plus,
   Download,
+  Upload,
   Printer,
   FileText,
   Users,
@@ -33,7 +34,10 @@ import {
   MessageCircle,
   ChevronLeft,
   ChevronRight,
-  Handshake
+  Handshake,
+  AlertTriangle,
+  CheckCircle2,
+  FileSpreadsheet
 } from "lucide-react";
 import { getAllCached, getOfflineDB } from "@/lib/offline-storage";
 
@@ -175,6 +179,22 @@ function PelangganContent() {
   const { showToast } = useToast();
   const [mainTab, setMainTab] = useState<"data" | "approval" | "sticker">(initialMainTab);
   const [selectedStickers, setSelectedStickers] = useState<Set<number>>(new Set());
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [filterGps, setFilterGps] = useState<"" | "ada" | "belum">("");
+
+  // Bulk action states
+  const [bulkModal, setBulkModal] = useState<"status" | "zona" | null>(null);
+  const [bulkStatus, setBulkStatus] = useState<"aktif" | "calon" | "nonaktif" | "libur">("aktif");
+  const [bulkZonaId, setBulkZonaId] = useState<string>("");
+  const [bulkCatatan, setBulkCatatan] = useState<string>("");
+  const [bulkLoading, setBulkLoading] = useState(false);
+
+  // Import CSV states
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importFile, setImportFile] = useState<File | null>(null);
+  const [importPreview, setImportPreview] = useState<Record<string, string>[]>([]);
+  const [importError, setImportError] = useState<string | null>(null);
+  const [importLoading, setImportLoading] = useState(false);
 
   const [pelanggan, setPelanggan] = useState<Pelanggan[]>([]);
   const [kelurahanList, setKelurahanList] = useState<Kelurahan[]>([]);
@@ -446,8 +466,173 @@ function PelangganContent() {
     setFilterZona("");
     setFilterStatus("");
     setFilterKategori("");
+    setFilterGps("");
     setPage(1);
   }
+
+  // Cek duplikasi nomor telepon secara real-time
+  const phoneDuplicate = useMemo(() => {
+    if (!form.noTelepon || form.noTelepon.length < 8) return null;
+    const clean = form.noTelepon.replace(/[^0-9]/g, "");
+    return pelanggan.find(
+      (p) => p.id !== editing?.id && p.noTelepon && p.noTelepon.replace(/[^0-9]/g, "") === clean
+    );
+  }, [form.noTelepon, pelanggan, editing]);
+
+  // Unduh template CSV
+  const handleDownloadTemplate = () => {
+    const headers = "nama,noTelepon,alamat,rtRw,patokanLokasi,kategori,kelurahan,zona,customTarif,catatan";
+    const sample1 = 'Budi Santoso,081234567890,"Jl. Margonda Raya No. 12",001/005,"Dekat Masjid Al-Ikhlas",level_1,Pancoran Mas,Zona A,50000,"Pagar Hitam"';
+    const sample2 = 'Siti Aminah,628987654321,"Jl. Keadilan No. 45",003/002,"Sebelah Toko Berkah",level_2,Depok Jaya,Zona B,60000,"Rumah Tingkat"';
+    const csvContent = "data:text/csv;charset=utf-8," + [headers, sample1, sample2].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "template_import_pelanggan.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Parsing file CSV di sisi client
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImportFile(file);
+    setImportError(null);
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const text = evt.target?.result as string;
+        const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
+        if (lines.length < 2) {
+          setImportError("File CSV kosong atau hanya berisi baris judul/header");
+          setImportPreview([]);
+          return;
+        }
+
+        const headers = lines[0].split(",").map((h) => h.trim().replace(/^["']|["']$/g, ""));
+        const parsed: Record<string, string>[] = [];
+
+        for (let i = 1; i < lines.length; i++) {
+          const line = lines[i];
+          const values: string[] = [];
+          let insideQuote = false;
+          let curVal = "";
+          for (let c = 0; c < line.length; c++) {
+            const char = line[c];
+            if (char === '"' || char === "'") {
+              insideQuote = !insideQuote;
+            } else if (char === "," && !insideQuote) {
+              values.push(curVal.trim().replace(/^["']|["']$/g, ""));
+              curVal = "";
+            } else {
+              curVal += char;
+            }
+          }
+          values.push(curVal.trim().replace(/^["']|["']$/g, ""));
+
+          const row: Record<string, string> = {};
+          headers.forEach((h, idx) => {
+            row[h] = values[idx] || "";
+          });
+          if (row.nama || row.noTelepon) {
+            parsed.push(row);
+          }
+        }
+
+        if (parsed.length === 0) {
+          setImportError("Tidak ada baris data valid yang ditemukan dalam berkas CSV");
+        }
+        setImportPreview(parsed);
+      } catch (err: unknown) {
+        setImportError(err instanceof Error ? err.message : "Gagal membaca berkas CSV");
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  // Submit Import CSV ke API
+  const handleProcessImport = async () => {
+    if (importPreview.length === 0) {
+      showToast("Pilih berkas CSV valid terlebih dahulu", "error");
+      return;
+    }
+
+    setImportLoading(true);
+    try {
+      const res = await fetch("/api/pelanggan/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: importPreview }),
+      });
+
+      const resData = await res.json();
+      if (!res.ok) {
+        throw new Error(resData.error || "Gagal mengimpor data pelanggan");
+      }
+
+      showToast(
+        `Sukses! ${resData.summary?.created || 0} baru dibuat, ${resData.summary?.updated || 0} diperbarui`,
+        "success"
+      );
+      setShowImportModal(false);
+      setImportFile(null);
+      setImportPreview([]);
+      fetchData(true);
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : "Terjadi kesalahan saat import", "error");
+    } finally {
+      setImportLoading(false);
+    }
+  };
+
+  // Submit Bulk Action (Status / Zona)
+  const handleBulkActionSubmit = async () => {
+    if (selectedIds.size === 0 || !bulkModal) return;
+    setBulkLoading(true);
+
+    try {
+      const payload: Record<string, unknown> = {
+        ids: Array.from(selectedIds),
+        action: bulkModal === "status" ? "update_status" : "reassign_zona",
+      };
+
+      if (bulkModal === "status") {
+        payload.status = bulkStatus;
+        payload.catatan = bulkCatatan || undefined;
+      } else {
+        if (!bulkZonaId) {
+          showToast("Pilih zona tujuan terlebih dahulu", "error");
+          setBulkLoading(false);
+          return;
+        }
+        payload.zonaId = Number(bulkZonaId);
+      }
+
+      const res = await fetch("/api/pelanggan/bulk", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const resData = await res.json();
+      if (!res.ok) {
+        throw new Error(resData.error || "Gagal memproses aksi massal");
+      }
+
+      showToast(`Sukses memperbarui ${resData.count || selectedIds.size} pelanggan`, "success");
+      setBulkModal(null);
+      setSelectedIds(new Set());
+      setBulkCatatan("");
+      fetchData(true);
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : "Gagal memproses aksi massal", "error");
+    } finally {
+      setBulkLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -474,8 +659,14 @@ function PelangganContent() {
   const liburCount = statusCounts.libur || liburList.length;
   const totalCount = statusCounts.total || pelanggan.length;
 
-  const paginatedPelanggan = pelanggan.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
-  const totalPages = Math.ceil(pelanggan.length / ITEMS_PER_PAGE);
+  const filteredPelanggan = pelanggan.filter((p) => {
+    if (filterGps === "ada") return p.latitude != null && p.longitude != null;
+    if (filterGps === "belum") return p.latitude == null || p.longitude == null;
+    return true;
+  });
+
+  const paginatedPelanggan = filteredPelanggan.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filteredPelanggan.length / ITEMS_PER_PAGE);
 
   const handleExportExcel = async () => {
     const exportQuery = new URLSearchParams({
@@ -559,6 +750,15 @@ function PelangganContent() {
           >
             <Download size={14} className="text-emerald-700 dark:text-emerald-400" />
             <span>Ekspor Excel</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowImportModal(true)}
+            className="h-9 px-3 rounded-lg border border-sky-200 dark:border-sky-800 bg-sky-50/70 dark:bg-sky-950/40 hover:bg-sky-100/70 dark:hover:bg-sky-950/70 text-sky-800 dark:text-sky-300 text-xs font-medium transition-colors flex items-center gap-1.5 shadow-xs active:scale-[0.98]"
+            title="Import data pelanggan dari berkas CSV"
+          >
+            <Upload size={14} className="text-sky-700 dark:text-sky-400" />
+            <span>Import CSV</span>
           </button>
           <Link
             href={`/pelanggan-cetak?${new URLSearchParams({
@@ -872,9 +1072,9 @@ function PelangganContent() {
           >
             <SlidersHorizontal className="w-3.5 h-3.5" strokeWidth={1.75} />
             <span>Filter</span>
-            {[filterKelurahan, filterZona, filterStatus, filterKategori].filter(Boolean).length > 0 && (
+            {[filterKelurahan, filterZona, filterStatus, filterKategori, filterGps].filter(Boolean).length > 0 && (
               <span className="bg-emerald-600 text-white px-1.5 py-0.2 rounded-full text-[10px] font-semibold">
-                {[filterKelurahan, filterZona, filterStatus, filterKategori].filter(Boolean).length}
+                {[filterKelurahan, filterZona, filterStatus, filterKategori, filterGps].filter(Boolean).length}
               </span>
             )}
           </button>
@@ -883,7 +1083,7 @@ function PelangganContent() {
         {/* Filter panel */}
         {showFilter && (
           <div className="mt-3 p-4 bg-slate-50 dark:bg-zinc-900/80 border border-slate-200/80 dark:border-zinc-800 rounded-2xl shadow-sm">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-zinc-300 mb-1.5">Kelurahan</label>
                 <select
@@ -938,14 +1138,26 @@ function PelangganContent() {
                   ))}
                 </select>
               </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-zinc-300 mb-1.5">Titik GPS</label>
+                <select
+                  value={filterGps}
+                  onChange={(e) => { setFilterGps(e.target.value as "" | "ada" | "belum"); setPage(1); }}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-medium text-slate-800 dark:text-zinc-200"
+                >
+                  <option value="">Semua Lokasi</option>
+                  <option value="ada">📍 Ada Titik GPS</option>
+                  <option value="belum">⚠️ Belum Ada GPS</option>
+                </select>
+              </div>
             </div>
             <div className="flex justify-between items-center mt-4 pt-3 border-t border-slate-200 dark:border-zinc-800">
               <span className="text-xs font-medium text-slate-500 dark:text-zinc-400">
-                {pelanggan.length} pelanggan tampil
+                {filteredPelanggan.length} pelanggan tampil
               </span>
               <button
                 onClick={resetFilters}
-                disabled={[filterKelurahan, filterZona, filterStatus, filterKategori].filter(Boolean).length === 0}
+                disabled={[filterKelurahan, filterZona, filterStatus, filterKategori, filterGps].filter(Boolean).length === 0}
                 className="px-3.5 py-1.5 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl font-semibold text-xs text-slate-600 dark:text-zinc-300 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-200 dark:hover:border-rose-900 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Reset Filter
@@ -962,6 +1174,23 @@ function PelangganContent() {
           <table className="w-full min-w-[960px] text-sm text-left border-collapse">
             <thead>
               <tr className="bg-slate-50/75 dark:bg-zinc-950/60 text-slate-500 dark:text-zinc-400 font-semibold text-[11px] uppercase tracking-wider border-b border-slate-200/80 dark:border-zinc-800">
+                <th className="px-3 py-3 w-10 text-center">
+                  <input
+                    type="checkbox"
+                    checked={paginatedPelanggan.length > 0 && paginatedPelanggan.every((p) => selectedIds.has(p.id))}
+                    onChange={(e) => {
+                      const next = new Set(selectedIds);
+                      if (e.target.checked) {
+                        paginatedPelanggan.forEach((p) => next.add(p.id));
+                      } else {
+                        paginatedPelanggan.forEach((p) => next.delete(p.id));
+                      }
+                      setSelectedIds(next);
+                    }}
+                    className="rounded border-slate-300 dark:border-zinc-700 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                    title="Pilih Semua Halaman Ini"
+                  />
+                </th>
                 <th className="px-4 py-3 whitespace-nowrap">Kode</th>
                 <th className="px-4 py-3 whitespace-nowrap">Nama Pelanggan</th>
                 <th className="px-4 py-3 whitespace-nowrap">No. WhatsApp</th>
@@ -975,13 +1204,33 @@ function PelangganContent() {
             <tbody className="divide-y divide-slate-100 dark:divide-zinc-800/60 text-slate-700 dark:text-zinc-300">
               {paginatedPelanggan.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-12 text-center text-slate-400 dark:text-zinc-500 font-normal text-xs">
+                  <td colSpan={9} className="px-4 py-12 text-center text-slate-400 dark:text-zinc-500 font-normal text-xs">
                     Belum ada data pelanggan yang sesuai kriteria pencarian
                   </td>
                 </tr>
               ) : (
                 paginatedPelanggan.map((p) => (
-                  <tr key={p.id} className="hover:bg-slate-50/60 dark:hover:bg-zinc-800/40 transition-colors">
+                  <tr
+                    key={p.id}
+                    className={`transition-colors ${
+                      selectedIds.has(p.id)
+                        ? "bg-emerald-50/50 dark:bg-emerald-950/20 hover:bg-emerald-50/70 dark:hover:bg-emerald-950/30"
+                        : "hover:bg-slate-50/60 dark:hover:bg-zinc-800/40"
+                    }`}
+                  >
+                    <td className="px-3 py-3 text-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(p.id)}
+                        onChange={() => {
+                          const next = new Set(selectedIds);
+                          if (next.has(p.id)) next.delete(p.id);
+                          else next.add(p.id);
+                          setSelectedIds(next);
+                        }}
+                        className="rounded border-slate-300 dark:border-zinc-700 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                      />
+                    </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <span className="inline-block text-[11px] font-mono font-medium text-slate-700 dark:text-zinc-300 bg-slate-100/90 dark:bg-zinc-800 border border-slate-200/70 dark:border-zinc-700 px-2 py-0.5 rounded-md">
                         {p.kodePelanggan}
@@ -1050,6 +1299,22 @@ function PelangganContent() {
                         ) : (
                           <span className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">
                             Belum ada zona
+                          </span>
+                        )}
+                        {p.latitude && p.longitude ? (
+                          <a
+                            href={`https://www.google.com/maps?q=${p.latitude},${p.longitude}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800 text-[10px] font-medium text-emerald-700 dark:text-emerald-300 rounded hover:bg-emerald-100 transition"
+                            title={`Buka Google Maps (${p.latitude.toFixed(5)}, ${p.longitude.toFixed(5)})`}
+                          >
+                            <MapPin size={10} className="shrink-0" />
+                            <span>GPS Ada</span>
+                          </a>
+                        ) : (
+                          <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-200/70 dark:border-amber-800 text-[10px] font-medium text-amber-700 dark:text-amber-400 rounded">
+                            ⚠️ Belum GPS
                           </span>
                         )}
                       </div>
@@ -1200,6 +1465,17 @@ function PelangganContent() {
                 {/* Header Card */}
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-2.5 min-w-0">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(p.id)}
+                      onChange={() => {
+                        const next = new Set(selectedIds);
+                        if (next.has(p.id)) next.delete(p.id);
+                        else next.add(p.id);
+                        setSelectedIds(next);
+                      }}
+                      className="rounded border-slate-300 dark:border-zinc-700 text-emerald-600 focus:ring-emerald-500 cursor-pointer w-4 h-4 shrink-0"
+                    />
                     {p.fotoRumah ? (
                       <Image
                         src={p.fotoRumah}
@@ -1248,6 +1524,21 @@ function PelangganContent() {
                       <span className="px-2 py-0.5 rounded-md bg-slate-50 dark:bg-zinc-800/60 text-slate-700 dark:text-zinc-300 text-[10px] font-medium border border-slate-200/80 dark:border-zinc-700 flex items-center gap-1">
                         <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: p.wilayah.zona.warna || "#10b981" }} />
                         {p.wilayah.zona.nama}
+                      </span>
+                    )}
+                    {p.latitude && p.longitude ? (
+                      <a
+                        href={`https://www.google.com/maps?q=${p.latitude},${p.longitude}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 text-[10px] font-medium border border-emerald-200/60 dark:border-emerald-800/50 flex items-center gap-1"
+                      >
+                        <MapPin size={10} />
+                        <span>GPS Ada</span>
+                      </a>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 text-[10px] font-medium border border-amber-200/70 dark:border-amber-800">
+                        ⚠️ Belum GPS
                       </span>
                     )}
                     <span className="px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 text-[10px] font-medium font-mono tabular-nums border border-emerald-200/60 dark:border-emerald-800/50">
@@ -1407,15 +1698,32 @@ function PelangganContent() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">No. Telepon / WA *</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5 flex items-center justify-between">
+                      <span>No. Telepon / WA *</span>
+                      {phoneDuplicate && (
+                        <span className="text-[10px] text-rose-600 dark:text-rose-400 font-semibold flex items-center gap-1">
+                          <AlertTriangle size={11} /> Nomor sudah ada: {phoneDuplicate.nama}
+                        </span>
+                      )}
+                    </label>
                     <input
                       type="text"
                       value={form.noTelepon}
-                      onChange={(e) => setForm({ ...form, noTelepon: e.target.value })}
-                      className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500"
-                      placeholder="081234567890"
+                      onChange={(e) => {
+                        let val = e.target.value.replace(/[^0-9+]/g, "");
+                        if (val.startsWith("0")) val = "62" + val.slice(1);
+                        if (val.startsWith("+62")) val = "62" + val.slice(3);
+                        setForm({ ...form, noTelepon: val });
+                      }}
+                      className={`w-full px-3 py-2 bg-white dark:bg-zinc-950 border rounded-lg focus:outline-none focus:ring-2 text-sm font-medium text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 ${
+                        phoneDuplicate
+                          ? "border-rose-400 focus:ring-rose-500/20 focus:border-rose-500"
+                          : "border-slate-200 dark:border-zinc-800 focus:ring-emerald-500/20 focus:border-emerald-500"
+                      }`}
+                      placeholder="6281234567890"
                       required
                     />
+                    <p className="text-[10px] text-slate-400 dark:text-zinc-500 mt-1">Otomatis diformat ke 628... (format resmi WhatsApp)</p>
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Kategori</label>
@@ -1631,6 +1939,312 @@ function PelangganContent() {
         }}
         showToast={showToast}
       />
+
+      {/* Floating Action Bar Massal */}
+      {selectedIds.size > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-slate-900/95 dark:bg-zinc-900/95 text-white backdrop-blur-md px-4 sm:px-6 py-3 rounded-2xl shadow-2xl border border-slate-700/60 dark:border-zinc-700 flex items-center gap-3 sm:gap-4 max-w-[95vw] overflow-x-auto animate-in slide-in-from-bottom-5">
+          <div className="flex items-center gap-2 whitespace-nowrap text-xs font-semibold">
+            <span className="w-6 h-6 rounded-full bg-emerald-500 text-slate-900 flex items-center justify-center text-xs font-extrabold">
+              {selectedIds.size}
+            </span>
+            <span>Pelanggan Terpilih</span>
+          </div>
+
+          <div className="h-5 w-px bg-slate-700 dark:bg-zinc-700 shrink-0" />
+
+          <div className="flex items-center gap-2 flex-wrap shrink-0">
+            <button
+              type="button"
+              onClick={() => setBulkModal("status")}
+              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium rounded-xl border border-slate-700 transition flex items-center gap-1.5 whitespace-nowrap shadow-xs"
+            >
+              <SlidersHorizontal size={13} />
+              <span>Ubah Status</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setBulkModal("zona")}
+              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium rounded-xl border border-slate-700 transition flex items-center gap-1.5 whitespace-nowrap shadow-xs"
+            >
+              <MapPin size={13} />
+              <span>Pindah Zona</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedStickers(new Set(selectedIds));
+                setMainTab("sticker");
+                showToast(`${selectedIds.size} pelanggan terpilih dibuka di tab Stiker`, "info");
+              }}
+              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium rounded-xl transition flex items-center gap-1.5 whitespace-nowrap shadow-xs"
+            >
+              <Tag size={13} />
+              <span>Cetak Stiker</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setSelectedIds(new Set())}
+              className="px-2.5 py-1.5 bg-transparent hover:bg-white/10 text-slate-300 hover:text-white text-xs font-medium rounded-xl transition whitespace-nowrap"
+            >
+              ✕ Batal
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Import CSV */}
+      {showImportModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
+              <div>
+                <h2 className="font-semibold text-base tracking-tight text-slate-900 dark:text-zinc-100 flex items-center gap-2">
+                  <FileSpreadsheet className="text-emerald-600 w-5 h-5" />
+                  <span>Import Data Pelanggan (CSV)</span>
+                </h2>
+                <p className="text-xs text-slate-500 dark:text-zinc-400">
+                  Unggah berkas CSV untuk mendaftarkan atau memperbarui data warga secara massal
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => { setShowImportModal(false); setImportFile(null); setImportPreview([]); setImportError(null); }}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4 flex-1 overflow-y-auto min-h-0">
+              {/* Petunjuk & Unduh Template */}
+              <div className="p-4 bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/60 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div>
+                  <h4 className="text-xs font-bold text-emerald-900 dark:text-emerald-200">Gunakan Format Template Resmi</h4>
+                  <p className="text-[11px] text-emerald-800/80 dark:text-emerald-300/80 mt-0.5">
+                    Pastikan kolom nama, noTelepon, alamat, dan kelurahan sesuai format standar.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleDownloadTemplate}
+                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-xs transition flex items-center gap-1.5 shrink-0"
+                >
+                  <Download size={13} />
+                  <span>Unduh Template CSV</span>
+                </button>
+              </div>
+
+              {/* Upload Input */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">
+                  Pilih Berkas CSV
+                </label>
+                <input
+                  type="file"
+                  accept=".csv,text/csv"
+                  onChange={handleFileChange}
+                  className="w-full text-xs text-slate-500 dark:text-zinc-400 file:mr-3 file:py-2 file:px-3.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-100 dark:file:bg-zinc-800 file:text-slate-700 dark:file:text-zinc-200 hover:file:bg-slate-200 border border-dashed border-slate-300 dark:border-zinc-700 rounded-xl p-3"
+                />
+              </div>
+
+              {/* Error Warning */}
+              {importError && (
+                <div className="p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 rounded-xl text-rose-800 dark:text-rose-300 text-xs flex items-center gap-2">
+                  <AlertTriangle size={15} className="shrink-0" />
+                  <span>{importError}</span>
+                </div>
+              )}
+
+              {/* Preview Table */}
+              {importPreview.length > 0 && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-semibold text-slate-800 dark:text-zinc-200">
+                      Pratinjau ({importPreview.length} baris terbaca)
+                    </span>
+                    <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+                      Menampilkan max 5 baris pertama
+                    </span>
+                  </div>
+                  <div className="border border-slate-200 dark:border-zinc-800 rounded-xl overflow-x-auto">
+                    <table className="w-full text-[11px] text-left border-collapse">
+                      <thead className="bg-slate-50 dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 font-semibold">
+                        <tr>
+                          <th className="px-3 py-2">Nama</th>
+                          <th className="px-3 py-2">No. WhatsApp</th>
+                          <th className="px-3 py-2">Alamat</th>
+                          <th className="px-3 py-2">Kelurahan</th>
+                          <th className="px-3 py-2">Zona</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 dark:divide-zinc-800 text-slate-700 dark:text-zinc-300">
+                        {importPreview.slice(0, 5).map((row, idx) => (
+                          <tr key={idx} className="hover:bg-slate-50/50 dark:hover:bg-zinc-800/50">
+                            <td className="px-3 py-2 font-medium">{row.nama || "—"}</td>
+                            <td className="px-3 py-2 font-mono">{row.noTelepon || "—"}</td>
+                            <td className="px-3 py-2 truncate max-w-[140px]">{row.alamat || "—"}</td>
+                            <td className="px-3 py-2">{row.kelurahan || "—"}</td>
+                            <td className="px-3 py-2">{row.zona || "—"}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 px-6 py-3.5 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-950/80 shrink-0">
+              <button
+                type="button"
+                onClick={() => { setShowImportModal(false); setImportFile(null); setImportPreview([]); setImportError(null); }}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 font-semibold text-xs rounded-lg transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleProcessImport}
+                disabled={importLoading || importPreview.length === 0}
+                className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold text-xs rounded-lg shadow-sm active:scale-95 transition-all flex items-center gap-1.5"
+              >
+                <Upload size={13} className={importLoading ? "animate-spin" : ""} />
+                <span>{importLoading ? "Mengimpor..." : `Mulai Import (${importPreview.length} Baris)`}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Ubah Status Massal */}
+      {bulkModal === "status" && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl max-w-md w-full overflow-hidden text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+              <div>
+                <h3 className="font-semibold text-sm tracking-tight text-slate-900 dark:text-zinc-100">
+                  Ubah Status Massal ({selectedIds.size} Pelanggan)
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-zinc-400">Pilih status operasional baru untuk pelanggan terpilih</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setBulkModal(null)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Target Status</label>
+                <select
+                  value={bulkStatus}
+                  onChange={(e) => setBulkStatus(e.target.value as "aktif" | "calon" | "nonaktif" | "libur")}
+                  className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-lg text-xs font-medium text-slate-900 dark:text-zinc-100"
+                >
+                  <option value="aktif">🟢 AKTIF (Layanan Jalan & Masuk Tagihan)</option>
+                  <option value="calon">🟡 CALON (Menunggu Survei/Approval)</option>
+                  <option value="libur">🟠 LIBUR (Jeda Sementara / Mudik)</option>
+                  <option value="nonaktif">🔴 NONAKTIF (Berhenti Berlangganan)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">
+                  Catatan / Alasan Perubahan (Opsional)
+                </label>
+                <textarea
+                  value={bulkCatatan}
+                  onChange={(e) => setBulkCatatan(e.target.value)}
+                  rows={2}
+                  placeholder="Contoh: Penyesuaian massal periode libur akhir tahun"
+                  className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-lg text-xs font-medium text-slate-900 dark:text-zinc-100"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 px-6 py-3.5 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-950/80">
+              <button
+                type="button"
+                onClick={() => setBulkModal(null)}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 font-semibold text-xs rounded-lg transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleBulkActionSubmit}
+                disabled={bulkLoading}
+                className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold text-xs rounded-lg shadow-sm transition flex items-center gap-1.5"
+              >
+                {bulkLoading ? "Memproses..." : "Terapkan Perubahan"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Pindah Zona Massal */}
+      {bulkModal === "zona" && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl max-w-md w-full overflow-hidden text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+              <div>
+                <h3 className="font-semibold text-sm tracking-tight text-slate-900 dark:text-zinc-100">
+                  Pindah Zona Massal ({selectedIds.size} Pelanggan)
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-zinc-400">Pindahkan area pickup seluruh pelanggan terpilih</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setBulkModal(null)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Pilih Zona Tujuan</label>
+                <select
+                  value={bulkZonaId}
+                  onChange={(e) => setBulkZonaId(e.target.value)}
+                  className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-lg text-xs font-medium text-slate-900 dark:text-zinc-100"
+                >
+                  <option value="">-- Pilih Zona Area Pickup --</option>
+                  {zonaList.map((z) => (
+                    <option key={z.id} value={z.id}>{z.nama}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 px-6 py-3.5 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-950/80">
+              <button
+                type="button"
+                onClick={() => setBulkModal(null)}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 font-semibold text-xs rounded-lg transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleBulkActionSubmit}
+                disabled={bulkLoading || !bulkZonaId}
+                className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold text-xs rounded-lg shadow-sm transition flex items-center gap-1.5"
+              >
+                {bulkLoading ? "Memindahkan..." : "Pindahkan Sekarang"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

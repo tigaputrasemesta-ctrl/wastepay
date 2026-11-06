@@ -8,7 +8,7 @@ import { useToast } from "@/components/Toast";
 import { duitkuChannelLabel } from "@/lib/duitku-channels";
 import { useUser } from "@/hooks/useUser";
 import { hitungRincian, buildDirectWaLinkTagihan } from "@/lib/invoice-format";
-import { X, Search, Check, AlertCircle, Sparkles, Send, Upload, ExternalLink } from "lucide-react";
+import { X, Search, Check, AlertCircle, Sparkles, Send, Upload, ExternalLink, RefreshCw, Printer, ShieldCheck, FileText } from "lucide-react";
 
 const METODE_LABEL: Record<string, string> = {
   tunai: "Tunai",
@@ -220,7 +220,69 @@ export default function TagihanPage() {
   const [previewSortConfig, setPreviewSortConfig] = useState<{ key: keyof PreviewItem; direction: "asc" | "desc" } | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [showBayar, setShowBayar] = useState<{ tagihanId: number; pelangganId: number; jumlah: number } | null>(null);
+  const [durasiBulan, setDurasiBulan] = useState<number>(1);
+  const [checkingGatewayId, setCheckingGatewayId] = useState<number | null>(null);
+  const [blastSafeMode, setBlastSafeMode] = useState<boolean>(true);
   const [formBayar, setFormBayar] = useState({ metode: "transfer", catatan: "", buktiBayar: "" });
+
+  // Ringkasan Cashflow Real-time
+  const summaryCashflow = useMemo(() => {
+    let totalTagihan = 0;
+    let digitalTotal = 0;
+    let tunaiTotal = 0;
+    let tunggakanTotal = 0;
+    let tunggakanCount = 0;
+
+    tagihan.forEach((t) => {
+      const nominal = t.jumlah + (t.denda || 0);
+      totalTagihan += nominal;
+
+      if (t.status === "lunas") {
+        const verifiedPayments = t.pembayaran.filter((pb) => pb.status === "terverifikasi");
+        if (verifiedPayments.length > 0) {
+          verifiedPayments.forEach((pb) => {
+            if (pb.metode === "tunai") {
+              tunaiTotal += pb.jumlah;
+            } else {
+              digitalTotal += pb.jumlah;
+            }
+          });
+        } else {
+          tunaiTotal += nominal;
+        }
+      } else {
+        tunggakanTotal += nominal;
+        tunggakanCount++;
+      }
+    });
+
+    return { totalTagihan, digitalTotal, tunaiTotal, tunggakanTotal, tunggakanCount };
+  }, [tagihan]);
+
+  // Cek Status Gateway Duitku on-demand
+  async function handleCheckGateway(tagihanId: number) {
+    setCheckingGatewayId(tagihanId);
+    try {
+      const res = await fetch(`/api/tagihan/${tagihanId}/check-gateway`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Gagal memeriksa status gateway");
+      }
+      if (data.status === "lunas") {
+        showToast("Pembayaran gateway terverifikasi LUNAS!", "success");
+        fetchTagihan();
+      } else {
+        showToast(`Status Gateway: ${data.message || data.status || "Belum dibayar"}`, "info");
+      }
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : "Terjadi kesalahan saat cek gateway", "error");
+    } finally {
+      setCheckingGatewayId(null);
+    }
+  }
   const [editNominalModal, setEditNominalModal] = useState<{
     id: number;
     nama: string;
@@ -715,6 +777,32 @@ export default function TagihanPage() {
   async function handleBayar(e: React.FormEvent) {
     e.preventDefault();
     if (!showBayar) return;
+
+    if (durasiBulan > 1) {
+      const res = await fetch("/api/tagihan/bayar-multi", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tagihanId: showBayar.tagihanId,
+          durasiBulan,
+          metode: formBayar.metode,
+          keterangan: formBayar.catatan,
+          buktiBayar: formBayar.buktiBayar,
+        }),
+      });
+
+      if (res.ok) {
+        setShowBayar(null);
+        setDurasiBulan(1);
+        showToast(`Pembayaran di muka untuk ${durasiBulan} bulan berhasil dicatat!`, "success");
+        fetchTagihan();
+      } else {
+        const data = await res.json();
+        showToast(data.error || "Gagal mencatat pembayaran di muka", "error");
+      }
+      return;
+    }
+
     const res = await fetch("/api/pembayaran", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -727,6 +815,7 @@ export default function TagihanPage() {
     });
     if (res.ok) {
       setShowBayar(null);
+      setDurasiBulan(1);
       showToast("Pembayaran berhasil dicatat");
       fetchTagihan();
     } else {
@@ -836,6 +925,64 @@ export default function TagihanPage() {
           <span>📊</span>
           <span>Rekap Laporan</span>
         </Link>
+        <Link
+          href={`/rekap-rt-cetak?bulan=${bulan || new Date().getMonth() + 1}&tahun=${tahun || new Date().getFullYear()}${kelurahanId ? `&kelurahanId=${kelurahanId}` : ""}${zonaId ? `&zonaId=${zonaId}` : ""}`}
+          target="_blank"
+          className="px-3.5 py-2 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 rounded-lg text-xs font-medium shadow-xs active:scale-[0.98] transition-all flex items-center gap-1.5"
+          title="Cetak Formulir Rekap Penagihan RT dengan Kolom Tanda Tangan Warga"
+        >
+          <span>✍️</span>
+          <span>Rekap RT (TTD)</span>
+        </Link>
+        </div>
+      </div>
+
+      {/* Cashflow Summary Bar */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 rounded-2xl p-4 shadow-xs">
+          <div className="text-[11px] font-medium text-slate-500 dark:text-zinc-400 uppercase tracking-wider">Total Tagihan</div>
+          <div className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-zinc-100 mt-1 tabular-nums">
+            {formatRupiah(summaryCashflow.totalTagihan)}
+          </div>
+          <div className="text-[10px] text-slate-500 dark:text-zinc-400 mt-1">
+            {tagihan.length} tagihan terdata
+          </div>
+        </div>
+
+        <div className="bg-sky-50/60 dark:bg-sky-950/30 border border-sky-200/80 dark:border-sky-800/50 rounded-2xl p-4 shadow-xs">
+          <div className="text-[11px] font-semibold text-sky-800 dark:text-sky-300 uppercase tracking-wider flex items-center gap-1">
+            <span>⚡</span> Penerimaan Digital
+          </div>
+          <div className="text-lg sm:text-xl font-extrabold text-sky-900 dark:text-sky-100 mt-1 tabular-nums">
+            {formatRupiah(summaryCashflow.digitalTotal)}
+          </div>
+          <div className="text-[10px] text-sky-700/80 dark:text-sky-300/80 mt-1">
+            QRIS / Duitku / Transfer
+          </div>
+        </div>
+
+        <div className="bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/50 rounded-2xl p-4 shadow-xs">
+          <div className="text-[11px] font-semibold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider flex items-center gap-1">
+            <span>💵</span> Tunai Lapangan
+          </div>
+          <div className="text-lg sm:text-xl font-extrabold text-emerald-900 dark:text-emerald-100 mt-1 tabular-nums">
+            {formatRupiah(summaryCashflow.tunaiTotal)}
+          </div>
+          <div className="text-[10px] text-emerald-700/80 dark:text-emerald-300/80 mt-1">
+            Diterima tunai oleh petugas
+          </div>
+        </div>
+
+        <div className="bg-rose-50/60 dark:bg-rose-950/30 border border-rose-200/80 dark:border-rose-800/50 rounded-2xl p-4 shadow-xs">
+          <div className="text-[11px] font-semibold text-rose-800 dark:text-rose-300 uppercase tracking-wider flex items-center gap-1">
+            <span>⚠️</span> Piutang Tertunggak
+          </div>
+          <div className="text-lg sm:text-xl font-extrabold text-rose-900 dark:text-rose-100 mt-1 tabular-nums">
+            {formatRupiah(summaryCashflow.tunggakanTotal)}
+          </div>
+          <div className="text-[10px] text-rose-700/80 dark:text-rose-300/80 mt-1">
+            {summaryCashflow.tunggakanCount} tagihan belum lunas
+          </div>
         </div>
       </div>
 
@@ -1202,7 +1349,19 @@ export default function TagihanPage() {
                       {t.status !== "lunas" ? (
                         <div className="inline-flex items-center gap-1.5 justify-center flex-wrap">
                           <button
-                            onClick={() => { setFormBayar({ metode: isPetugas ? "tunai" : "transfer", catatan: isPetugas ? "Bayar tunai via petugas tagih" : "", buktiBayar: "" }); setShowBayar({ tagihanId: t.id, pelangganId: t.pelanggan.id, jumlah: hitungRincian(t.jumlah, t.denda).total }); }}
+                            onClick={() => {
+                              setDurasiBulan(1);
+                              setFormBayar({
+                                metode: isPetugas ? "tunai" : "transfer",
+                                catatan: isPetugas ? "Bayar tunai via petugas tagih" : "",
+                                buktiBayar: "",
+                              });
+                              setShowBayar({
+                                tagihanId: t.id,
+                                pelangganId: t.pelanggan.id,
+                                jumlah: hitungRincian(t.jumlah, t.denda).total,
+                              });
+                            }}
                             className="text-xs font-semibold bg-emerald-700 hover:bg-emerald-800 text-white px-2.5 py-1.5 rounded-lg shadow-sm hover:shadow active:scale-95 transition-all inline-flex items-center gap-1"
                             title="Input Pembayaran"
                           >
@@ -1220,6 +1379,18 @@ export default function TagihanPage() {
                               <span className="text-emerald-700 text-sm">💬</span>
                               <span>WA</span>
                             </a>
+                          )}
+                          {t.noInvoice && (
+                            <button
+                              type="button"
+                              onClick={() => handleCheckGateway(t.id)}
+                              disabled={checkingGatewayId === t.id}
+                              className="text-xs font-semibold bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200/80 px-2.5 py-1.5 rounded-lg shadow-sm active:scale-95 transition-all inline-flex items-center gap-1 disabled:opacity-50"
+                              title="Cek Status Pembayaran Gateway Duitku"
+                            >
+                              <RefreshCw size={12} className={checkingGatewayId === t.id ? "animate-spin" : ""} />
+                              <span className="hidden xl:inline">Cek Gateway</span>
+                            </button>
                           )}
                           {!isPetugas && (
                             <button
@@ -1386,9 +1557,10 @@ export default function TagihanPage() {
 
                   <div className="pt-1 flex items-center justify-end gap-2">
                     {t.status !== "lunas" ? (
-                      <div className="w-full flex items-center gap-2">
+                      <div className="w-full flex items-center gap-2 flex-wrap">
                         <button
                           onClick={() => {
+                            setDurasiBulan(1);
                             setFormBayar({
                               metode: isPetugas ? "tunai" : "transfer",
                               catatan: isPetugas ? "Bayar tunai via petugas tagih" : "",
@@ -1400,7 +1572,7 @@ export default function TagihanPage() {
                               jumlah: hitungRincian(t.jumlah, t.denda).total,
                             });
                           }}
-                          className="flex-1 text-center text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white py-2.5 rounded-xl shadow-sm active:scale-[0.98] transition flex items-center justify-center gap-1.5"
+                          className="flex-1 text-center text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white py-2.5 rounded-xl shadow-sm active:scale-[0.98] transition flex items-center justify-center gap-1.5 min-w-[130px]"
                         >
                           <span>💳</span>
                           <span>Input Pembayaran</span>
@@ -1416,6 +1588,18 @@ export default function TagihanPage() {
                             <span className="text-emerald-700">💬</span>
                             <span>WA</span>
                           </a>
+                        )}
+                        {t.noInvoice && (
+                          <button
+                            type="button"
+                            onClick={() => handleCheckGateway(t.id)}
+                            disabled={checkingGatewayId === t.id}
+                            className="px-3 py-2.5 rounded-xl bg-sky-50 border border-sky-200/80 text-sky-700 hover:bg-sky-100 font-semibold text-xs flex items-center gap-1 transition shadow-sm active:scale-[0.98] disabled:opacity-50"
+                            title="Cek Status Gateway Duitku"
+                          >
+                            <RefreshCw size={13} className={checkingGatewayId === t.id ? "animate-spin" : ""} />
+                            <span>Gateway</span>
+                          </button>
                         )}
                         {!isPetugas && (
                           <button
@@ -1977,9 +2161,48 @@ export default function TagihanPage() {
             </div>
             <form id="bayar-modal-form" onSubmit={handleBayar} className="flex flex-col flex-1 overflow-hidden min-h-0">
               <div className="p-6 space-y-4 flex-1 overflow-y-auto min-h-0">
+                {/* Durasi Pembayaran (Advance Billing) */}
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">
+                    Durasi Pembayaran
+                  </label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {[1, 3, 6, 12].map((m) => (
+                      <button
+                        key={m}
+                        type="button"
+                        onClick={() => setDurasiBulan(m)}
+                        className={`py-2 text-xs font-bold rounded-lg border transition ${
+                          durasiBulan === m
+                            ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
+                            : "bg-slate-50 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-700 hover:bg-slate-100"
+                        }`}
+                      >
+                        {m === 1 ? "1 Bulan" : `${m} Bulan`}
+                      </button>
+                    ))}
+                  </div>
+                  {durasiBulan > 1 && (
+                    <p className="text-[11px] text-emerald-700 dark:text-emerald-400 mt-1 font-medium">
+                      Melunasi bulan berjalan + {durasiBulan - 1} bulan ke depan sekaligus
+                    </p>
+                  )}
+                </div>
+
                 <div className="bg-slate-50 dark:bg-zinc-950 rounded-lg p-4 border border-slate-100 dark:border-zinc-800">
-                  <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Jumlah Tagihan</p>
-                  <p className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 tracking-tight mt-0.5 tabular-nums">{formatRupiah(showBayar.jumlah)}</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">
+                      Total Pembayaran {durasiBulan > 1 ? `(${durasiBulan} Bulan)` : ""}
+                    </p>
+                    {durasiBulan > 1 && (
+                      <span className="text-[10px] bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 px-2 py-0.5 rounded-full font-bold">
+                        Bayar di Muka
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 tracking-tight mt-0.5 tabular-nums">
+                    {formatRupiah(showBayar.jumlah * durasiBulan)}
+                  </p>
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Metode Pembayaran</label>
@@ -2317,6 +2540,24 @@ export default function TagihanPage() {
                       {blastRt ? ` · RT ${blastRt}` : ""}
                     </p>
                   </div>
+                </div>
+              )}
+
+              {/* Anti-Banned Safe Delivery Protection */}
+              {blastPreview && (
+                <div className="p-3.5 rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-50/70 dark:bg-zinc-950/60 flex items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-2.5">
+                    <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
+                    <div>
+                      <span className="font-semibold text-slate-800 dark:text-zinc-200">Mode Proteksi Anti-Banned WhatsApp</span>
+                      <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-0.5">
+                        Mengaktifkan antrean bertahap berjarak aman antar pesan agar nomor operasional UPS HERU tidak diblokir.
+                      </p>
+                    </div>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 font-semibold text-[10px]">
+                    Aktif (Aman)
+                  </span>
                 </div>
               )}
 
