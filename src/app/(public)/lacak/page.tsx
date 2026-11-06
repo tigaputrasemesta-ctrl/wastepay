@@ -84,7 +84,7 @@ export default function LacakPage() {
             <Info className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
             <div>
               <p className="font-bold mb-1">Informasi Pembaruan Sinyal GPS</p>
-              <p className="text-amber-800/90 text-[11px]">
+              <p className="text-amber-800/90 text-xs">
                 Posisi live hanya tampil ketika petugas armada sedang beroperasi dan mengaktifkan pelacak tugas. Jika armada belum jalan, sistem akan menampilkan jadwal resmi pengangkutan.
               </p>
             </div>
@@ -96,7 +96,7 @@ export default function LacakPage() {
           >
             <div>
               <p className="text-xs font-bold text-slate-900">Ingin Bayar Iuran Retribusi?</p>
-              <p className="text-[11px] text-slate-500">Cek tagihan bulanan dan bayar instan via QRIS</p>
+              <p className="text-xs text-slate-600">Cek tagihan bulanan dan bayar instan via QRIS</p>
             </div>
             <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-800 group-hover:translate-x-0.5 transition-all" />
           </Link>

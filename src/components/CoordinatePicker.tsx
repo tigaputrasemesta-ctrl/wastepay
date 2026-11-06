@@ -146,7 +146,7 @@ export default function CoordinatePicker({ latitude, longitude, onChange }: Prop
             </svg>
             <span className="font-semibold text-emerald-900">Lokasi tersimpan</span>
           </div>
-          <p className="font-mono text-[11px] text-emerald-700">
+          <p className="font-mono text-xs text-emerald-800">
             {latitude}, {longitude}
           </p>
         </div>

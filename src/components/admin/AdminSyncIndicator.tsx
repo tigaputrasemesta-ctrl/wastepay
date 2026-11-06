@@ -75,7 +75,7 @@ export default function AdminSyncIndicator() {
             ? `HP Sync (${totalPelanggan})`
             : "Simpan ke HP"}
         </span>
-        <span className="sm:hidden text-[10px]">
+        <span className="sm:hidden text-xs">
           {isSyncing ? "Sync" : isOfflineReady ? "HP" : "Cache"}
         </span>
       </button>
@@ -94,7 +94,7 @@ export default function AdminSyncIndicator() {
                   <h3 className="font-bold text-slate-900 dark:text-zinc-100 text-sm">
                     Penyimpanan Data di HP (Offline)
                   </h3>
-                  <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                  <p className="text-xs text-slate-500 dark:text-zinc-400">
                     Akses cepat 0 detik tanpa tarik ulang Supabase
                   </p>
                 </div>
@@ -113,7 +113,7 @@ export default function AdminSyncIndicator() {
               {/* Status Ringkasan */}
               <div className="grid grid-cols-2 gap-2.5">
                 <div className="p-3 rounded-xl bg-slate-50 dark:bg-zinc-950/70 border border-slate-200/80 dark:border-zinc-800">
-                  <span className="text-[10px] text-slate-500 dark:text-zinc-400 font-medium block">
+                  <span className="text-xs text-slate-500 dark:text-zinc-400 font-medium block">
                     Koneksi Server
                   </span>
                   <div className="flex items-center gap-1.5 mt-1 font-bold">
@@ -132,7 +132,7 @@ export default function AdminSyncIndicator() {
                 </div>
 
                 <div className="p-3 rounded-xl bg-slate-50 dark:bg-zinc-950/70 border border-slate-200/80 dark:border-zinc-800">
-                  <span className="text-[10px] text-slate-500 dark:text-zinc-400 font-medium block">
+                  <span className="text-xs text-slate-500 dark:text-zinc-400 font-medium block">
                     Tersimpan di Memori HP
                   </span>
                   <div className="flex items-center gap-1.5 mt-1 font-bold text-slate-800 dark:text-zinc-200">
@@ -144,7 +144,7 @@ export default function AdminSyncIndicator() {
 
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-zinc-950/70 border border-slate-200/80 dark:border-zinc-800 flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] text-slate-500 dark:text-zinc-400 font-medium block">
+                  <span className="text-xs text-slate-500 dark:text-zinc-400 font-medium block">
                     Terakhir Sinkronisasi
                   </span>
                   <span className="font-semibold text-slate-700 dark:text-zinc-300">
@@ -152,7 +152,7 @@ export default function AdminSyncIndicator() {
                   </span>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] text-slate-500 dark:text-zinc-400 font-medium block">
+                  <span className="text-xs text-slate-500 dark:text-zinc-400 font-medium block">
                     Metode Update
                   </span>
                   <span className="font-semibold text-emerald-700 dark:text-emerald-400">
@@ -163,7 +163,7 @@ export default function AdminSyncIndicator() {
 
               {/* Status Message */}
               {lastMessage && (
-                <div className="p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-[11px] font-medium">
+                <div className="p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-medium">
                   {lastMessage}
                 </div>
               )}
@@ -199,7 +199,7 @@ export default function AdminSyncIndicator() {
                     type="button"
                     disabled={isSyncing}
                     onClick={clearCache}
-                    className="w-full py-2 px-3 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-[11px] font-medium flex items-center justify-center gap-1.5 transition"
+                    className="w-full py-2 px-3 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-xs font-medium flex items-center justify-center gap-1.5 transition"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     <span>Bersihkan Cache Memori HP</span>
@@ -209,7 +209,7 @@ export default function AdminSyncIndicator() {
             </div>
 
             {/* Modal Footer Note */}
-            <div className="px-5 py-3 bg-slate-50 dark:bg-zinc-950/80 border-t border-slate-100 dark:border-zinc-800 text-[10px] text-slate-500 dark:text-zinc-400 leading-relaxed">
+            <div className="px-5 py-3 bg-slate-50 dark:bg-zinc-950/80 border-t border-slate-100 dark:border-zinc-800 text-xs text-slate-500 dark:text-zinc-400 leading-relaxed">
               💡 <b>Tips</b>: Data yang tersimpan di HP memungkinkan Admin mencari pelanggan &amp; memeriksa data tanpa koneksi internet serta hemat kuota 99%.
             </div>
           </div>

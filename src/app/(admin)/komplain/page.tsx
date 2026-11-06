@@ -605,10 +605,10 @@ export default function KomplainPage() {
       {/* MODAL 1: TERUSKAN KE PETUGAS FORMAT WHATSAPP                    */}
       {/* ============================================================== */}
       {showForward && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150 overflow-y-auto">
-          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-2xl my-6 text-slate-900 dark:text-zinc-100">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-2xl max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
             {/* Header Modal */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200/50 dark:border-emerald-900 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                   <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
@@ -629,7 +629,7 @@ export default function KomplainPage() {
               </button>
             </div>
 
-            <div className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+            <div className="p-6 space-y-4 flex-1 overflow-y-auto min-h-0">
               {/* Petugas Rekomendasi Badge jika ada */}
               {recommendedPetugas && (
                 <div className="bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900 p-3 rounded-lg flex items-center justify-between text-xs text-indigo-900 dark:text-indigo-200">
@@ -790,46 +790,46 @@ export default function KomplainPage() {
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Action Buttons */}
-              <div className="pt-3 border-t border-slate-100 dark:border-zinc-800 flex flex-col sm:flex-row items-center gap-2 justify-end">
+            {/* Modal Footer (Pinned / Sticky Bottom) */}
+            <div className="px-6 py-3.5 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-950/80 shrink-0 flex flex-col sm:flex-row items-center gap-2 justify-end">
+              <button
+                type="button"
+                onClick={() => setShowForward(null)}
+                className="w-full sm:w-auto px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 font-semibold text-xs rounded-lg transition"
+              >
+                Batal
+              </button>
+
+              {!currentTarget.isGroup && (
                 <button
                   type="button"
-                  onClick={() => setShowForward(null)}
-                  className="w-full sm:w-auto px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 font-semibold text-xs rounded-lg transition"
+                  onClick={handleOpenWaMe}
+                  className="w-full sm:w-auto px-4 py-2 bg-white dark:bg-zinc-900 border border-emerald-600 hover:bg-emerald-50 dark:hover:bg-zinc-800 text-emerald-700 dark:text-emerald-400 font-semibold text-xs rounded-lg shadow-xs transition flex items-center justify-center gap-1.5"
                 >
-                  Batal
+                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.969.54 1.771.814 2.791.814 3.18 0 5.766-2.587 5.767-5.767.001-3.18-2.585-5.766-5.767-5.767zm7.502 5.766c-.001 4.14-3.364 7.503-7.502 7.503-1.282 0-2.482-.323-3.539-.893l-4.492 1.178 1.198-4.377c-.636-1.096-.97-2.355-.97-3.411 0-4.14 3.363-7.503 7.503-7.503 4.139 0 7.502 3.363 7.502 7.502z" />
+                  </svg>
+                  <span>Buka di WhatsApp (wa.me)</span>
                 </button>
+              )}
 
-                {!currentTarget.isGroup && (
-                  <button
-                    type="button"
-                    onClick={handleOpenWaMe}
-                    className="w-full sm:w-auto px-4 py-2 bg-white dark:bg-zinc-900 border border-emerald-600 hover:bg-emerald-50 dark:hover:bg-zinc-800 text-emerald-700 dark:text-emerald-400 font-semibold text-xs rounded-lg shadow-xs transition flex items-center justify-center gap-1.5"
-                  >
-                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.969.54 1.771.814 2.791.814 3.18 0 5.766-2.587 5.767-5.767.001-3.18-2.585-5.766-5.767-5.767zm7.502 5.766c-.001 4.14-3.364 7.503-7.502 7.503-1.282 0-2.482-.323-3.539-.893l-4.492 1.178 1.198-4.377c-.636-1.096-.97-2.355-.97-3.411 0-4.14 3.363-7.503 7.503-7.503 4.139 0 7.502 3.363 7.502 7.502z" />
-                    </svg>
-                    <span>Buka di WhatsApp (wa.me)</span>
-                  </button>
+              <button
+                type="button"
+                disabled={forwarding}
+                onClick={handleSendGateway}
+                className="w-full sm:w-auto px-5 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold text-xs rounded-lg shadow-xs active:scale-95 transition flex items-center justify-center gap-1.5"
+              >
+                {forwarding ? (
+                  <>
+                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Mengirim Pesan...</span>
+                  </>
+                ) : (
+                  <span>🚀 Kirim Otomatis (Gateway)</span>
                 )}
-
-                <button
-                  type="button"
-                  disabled={forwarding}
-                  onClick={handleSendGateway}
-                  className="w-full sm:w-auto px-5 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold text-xs rounded-lg shadow-xs active:scale-95 transition flex items-center justify-center gap-1.5"
-                >
-                  {forwarding ? (
-                    <>
-                      <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>Mengirim Pesan...</span>
-                    </>
-                  ) : (
-                    <span>🚀 Kirim Otomatis (Gateway)</span>
-                  )}
-                </button>
-              </div>
+              </button>
             </div>
           </div>
         </div>
@@ -839,9 +839,9 @@ export default function KomplainPage() {
       {/* MODAL 2: SELESAIKAN STATUS KOMPLAIN                            */}
       {/* ============================================================== */}
       {showResolve && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-lg text-slate-900 dark:text-zinc-100">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-lg max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <h2 className="font-semibold text-base tracking-tight text-slate-900 dark:text-zinc-100">Update Status Pengaduan</h2>
               <button
                 type="button"
@@ -851,52 +851,56 @@ export default function KomplainPage() {
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <form onSubmit={handleResolve} className="p-6 space-y-4">
-              <div className="bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 p-4 rounded-lg text-xs space-y-2">
-                <p className="font-bold text-slate-900 dark:text-zinc-100 text-sm">{showResolve.pelanggan.nama}</p>
-                <p className="text-slate-600 dark:text-zinc-400 font-normal leading-relaxed">{showResolve.deskripsi}</p>
-                {showResolve.foto && (
-                  <div className="mt-2">
-                    <img
-                      src={showResolve.foto}
-                      alt="Dokumentasi komplain"
-                      className="w-full max-h-48 object-cover rounded-lg border border-slate-200 dark:border-zinc-800 shadow-xs"
-                    />
-                  </div>
-                )}
+            <form id="resolve-form" onSubmit={handleResolve} className="flex flex-col flex-1 overflow-hidden min-h-0">
+              <div className="p-6 space-y-4 flex-1 overflow-y-auto min-h-0">
+                <div className="bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 p-4 rounded-lg text-xs space-y-2">
+                  <p className="font-bold text-slate-900 dark:text-zinc-100 text-sm">{showResolve.pelanggan.nama}</p>
+                  <p className="text-slate-600 dark:text-zinc-400 font-normal leading-relaxed">{showResolve.deskripsi}</p>
+                  {showResolve.foto && (
+                    <div className="mt-2">
+                      <img
+                        src={showResolve.foto}
+                        alt="Dokumentasi komplain"
+                        className="w-full max-h-48 object-cover rounded-lg border border-slate-200 dark:border-zinc-800 shadow-xs"
+                      />
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Status Penyelesaian</label>
+                  <select
+                    value={formResolve.status}
+                    onChange={(e) => setFormResolve({ ...formResolve, status: e.target.value })}
+                    className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900 dark:text-zinc-100"
+                  >
+                    <option value="diproses">Diproses</option>
+                    <option value="selesai">Selesai</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Tanggapan / Catatan Penyelesaian</label>
+                  <textarea
+                    value={formResolve.tanggapan}
+                    onChange={(e) => setFormResolve({ ...formResolve, tanggapan: e.target.value })}
+                    className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500"
+                    rows={3}
+                    placeholder="Berikan tanggapan untuk warga atau catatan armada..."
+                  />
+                </div>
               </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Status Penyelesaian</label>
-                <select
-                  value={formResolve.status}
-                  onChange={(e) => setFormResolve({ ...formResolve, status: e.target.value })}
-                  className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900 dark:text-zinc-100"
-                >
-                  <option value="diproses">Diproses</option>
-                  <option value="selesai">Selesai</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Tanggapan / Catatan Penyelesaian</label>
-                <textarea
-                  value={formResolve.tanggapan}
-                  onChange={(e) => setFormResolve({ ...formResolve, tanggapan: e.target.value })}
-                  className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500"
-                  rows={3}
-                  placeholder="Berikan tanggapan untuk warga atau catatan armada..."
-                />
-              </div>
-              <div className="flex gap-2.5 pt-3 border-t border-slate-100 dark:border-zinc-800">
+
+              <div className="flex items-center justify-end gap-2.5 px-6 py-3.5 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-950/80 shrink-0">
                 <button
                   type="button"
                   onClick={() => setShowResolve(null)}
-                  className="flex-1 px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 font-semibold text-xs rounded-lg transition-colors"
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 font-semibold text-xs rounded-lg transition-colors"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-xs active:scale-95 transition-all"
+                  form="resolve-form"
+                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-xs active:scale-95 transition-all"
                 >
                   Simpan Status
                 </button>

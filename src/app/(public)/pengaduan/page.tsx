@@ -76,7 +76,7 @@ export default function PengaduanPage() {
 
           <div className="p-5 rounded-3xl bg-amber-50/80 border border-amber-200/80 text-xs text-amber-900 leading-relaxed space-y-1">
             <p className="font-bold">Notifikasi Otomatis WhatsApp</p>
-            <p className="text-amber-800/90 text-[11px]">
+            <p className="text-amber-800/90 text-xs">
               Sistem akan mengirimkan konfirmasi nomor tiket laporan ke WhatsApp Anda serta pemberitahuan ketika pengangkutan susulan telah diselesaikan.
             </p>
           </div>
@@ -87,7 +87,7 @@ export default function PengaduanPage() {
           >
             <div>
               <p className="text-xs font-bold text-slate-900">Ingin Memantau Armada?</p>
-              <p className="text-[11px] text-slate-500">Cek posisi truk penjemputan di peta live</p>
+              <p className="text-xs text-slate-600">Cek posisi truk penjemputan di peta live</p>
             </div>
             <span className="text-xs font-bold text-emerald-700 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
           </Link>

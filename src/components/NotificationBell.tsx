@@ -138,7 +138,7 @@ export default function NotificationBell() {
                 🔔 Notifikasi Butuh Aksi
               </span>
               {totalCount > 0 && (
-                <span className="bg-rose-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                <span className="bg-rose-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
                   {totalCount}
                 </span>
               )}
@@ -172,7 +172,7 @@ export default function NotificationBell() {
               onClick={() => setIsOpen(false)}
               className="p-2 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200/80 dark:border-zinc-800 flex flex-col items-center justify-center hover:border-amber-300 dark:hover:border-amber-700 hover:bg-amber-50/50 dark:hover:bg-amber-950/20 shadow-xs transition-all"
             >
-              <span className="text-slate-500 dark:text-zinc-400 text-[10px] font-medium">BAYAR PENDING</span>
+              <span className="text-slate-500 dark:text-zinc-400 text-xs font-medium">BAYAR PENDING</span>
               <span className="text-base font-bold text-amber-600 dark:text-amber-400 mt-0.5">{counts.pembayaran}</span>
             </Link>
             <Link
@@ -180,7 +180,7 @@ export default function NotificationBell() {
               onClick={() => setIsOpen(false)}
               className="p-2 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200/80 dark:border-zinc-800 flex flex-col items-center justify-center hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 shadow-xs transition-all"
             >
-              <span className="text-slate-500 dark:text-zinc-400 text-[10px] font-medium">CALON WARGA</span>
+              <span className="text-slate-500 dark:text-zinc-400 text-xs font-medium">CALON WARGA</span>
               <span className="text-base font-bold text-blue-600 dark:text-blue-400 mt-0.5">{counts.pendaftaran}</span>
             </Link>
             <Link
@@ -188,7 +188,7 @@ export default function NotificationBell() {
               onClick={() => setIsOpen(false)}
               className="p-2 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200/80 dark:border-zinc-800 flex flex-col items-center justify-center hover:border-rose-300 dark:hover:border-rose-700 hover:bg-rose-50/50 dark:hover:bg-rose-950/20 shadow-xs transition-all"
             >
-              <span className="text-slate-500 dark:text-zinc-400 text-[10px] font-medium">KOMPLAIN BARU</span>
+              <span className="text-slate-500 dark:text-zinc-400 text-xs font-medium">KOMPLAIN BARU</span>
               <span className="text-base font-bold text-rose-600 dark:text-rose-400 mt-0.5">{counts.komplain}</span>
             </Link>
           </div>
@@ -222,7 +222,7 @@ export default function NotificationBell() {
                 >
                   <div className="flex items-start justify-between gap-2 mb-1">
                     <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                      className={`text-xs font-bold px-2 py-0.5 rounded-full ${
                         item.category === "pembayaran"
                           ? "bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300"
                           : item.category === "pendaftaran"
@@ -232,7 +232,7 @@ export default function NotificationBell() {
                     >
                       {item.badge}
                     </span>
-                    <span className="text-[10px] text-slate-400 dark:text-zinc-500">
+                    <span className="text-xs text-slate-400 dark:text-zinc-500">
                       {waktuLalu(item.time)}
                     </span>
                   </div>
@@ -257,7 +257,7 @@ export default function NotificationBell() {
             >
               📢 Buka Pusat Pesan &amp; Blast WA →
             </Link>
-            <span className="text-slate-400 dark:text-zinc-500 text-[10px]">Auto-refresh: 30s</span>
+            <span className="text-slate-400 dark:text-zinc-500 text-xs">Auto-refresh: 30s</span>
           </div>
         </div>
       )}

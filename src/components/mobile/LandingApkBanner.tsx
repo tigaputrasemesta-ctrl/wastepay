@@ -51,11 +51,11 @@ export default function LandingApkBanner() {
               <span className="font-bold text-white truncate">
                 Aplikasi Android UPS HERU Driver & Petugas
               </span>
-              <span className="hidden sm:inline-block px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono border border-emerald-400/20">
+              <span className="hidden sm:inline-block px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-mono border border-emerald-400/20">
                 v{MOBILE_VERSION.versionName} (b{MOBILE_VERSION.versionCode})
               </span>
             </div>
-            <p className="text-[11px] text-slate-300 truncate font-normal">
+            <p className="text-xs text-slate-300 truncate font-normal">
               Navigasi rute jemput OSRM, pelacakan live GPS, dan absensi selfie presisi tinggi.
             </p>
           </div>

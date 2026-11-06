@@ -221,10 +221,10 @@ export default function CoverageLeafletMap({
               <Tooltip direction="top" offset={[0, -14]} className="clean-tooltip">
                 <div className="text-center font-sans">
                   <p className="font-extrabold text-slate-900 text-xs">{block.nama}</p>
-                  <p className="text-[10px] text-emerald-700 font-bold">
+                  <p className="text-xs text-emerald-800 font-bold">
                     {block.pelangganCount} KK Aktif • {block.jadwal}
                   </p>
-                  <p className="text-[9px] text-slate-400">
+                  <p className="text-xs text-slate-600">
                     {block.armada} • Kel. {block.kelurahan}
                   </p>
                 </div>
@@ -252,7 +252,7 @@ export default function CoverageLeafletMap({
       </MapContainer>
 
       {/* Floating Info Pill at Bottom-Left of Map */}
-      <div className="absolute left-3 bottom-3 z-20 pointer-events-none bg-white/95 backdrop-blur-md border border-slate-200/90 py-1.5 px-3 rounded-xl shadow-sm text-[11px] text-slate-600 font-medium hidden sm:flex items-center gap-1.5">
+      <div className="absolute left-3 bottom-3 z-20 pointer-events-none bg-white/95 backdrop-blur-md border border-slate-200/90 py-1.5 px-3 rounded-xl shadow-sm text-xs text-slate-600 font-medium hidden sm:flex items-center gap-1.5">
         <span>💡</span>
         <span>Klik pin klaster atau klik titik mana saja di peta untuk cek jadwal.</span>
       </div>

@@ -208,10 +208,7 @@ function BayarPortalContent() {
         url += `?merchantOrderId=${encodeURIComponent(merchantOrderId)}`;
       }
 
-      const [res] = await Promise.all([
-        fetch(url),
-        new Promise((resolve) => setTimeout(resolve, 1500)) // Delay agar animasi truk terlihat jelas dan mulus
-      ]);
+      const res = await fetch(url);
       const data = await res.json();
       if (!res.ok) {
         setErrorInvoice(data.error || "Tagihan invoice tidak ditemukan");
@@ -271,7 +268,6 @@ function BayarPortalContent() {
     // Jika user mengetik invoice, alihkan langsung ke tampilan invoice
     if (query.toUpperCase().startsWith("INV")) {
       setMencari(true);
-      await new Promise(r => setTimeout(r, 1500)); // Animasi truk keren terlihat sebelum redirect
 
       let invoiceUrl = query.toUpperCase();
       // Normalisasi jika user mengetik INV- menjadi INV/
@@ -288,11 +284,7 @@ function BayarPortalContent() {
     setMencari(true);
 
     try {
-      // Pastikan animasi terlihat minimal 1.5 detik
-      const [res] = await Promise.all([
-        fetch(`/api/publik/tagihan?kode=${encodeURIComponent(query)}`),
-        new Promise((resolve) => setTimeout(resolve, 1500))
-      ]);
+      const res = await fetch(`/api/publik/tagihan?kode=${encodeURIComponent(query)}`);
       
       const data = await res.json();
       if (!res.ok) {
@@ -458,9 +450,10 @@ function BayarPortalContent() {
                 setPilihTagihan(null);
                 setKirimError("");
               }}
-              className="text-slate-400 hover:text-slate-600 font-bold p-1 text-lg leading-none"
+              aria-label="Tutup dialog konfirmasi pembayaran"
+              className="text-slate-400 hover:text-slate-600 font-bold p-1.5 rounded-lg hover:bg-slate-100 text-lg leading-none transition-colors"
             >
-              ✕
+              <span aria-hidden="true">✕</span>
             </button>
           </div>
 
@@ -469,11 +462,12 @@ function BayarPortalContent() {
               <span>⚡</span>
               <span>Disarankan: Bayar via QRIS (Langsung Lunas Otomatis)</span>
             </div>
-            <p className="text-[11px] text-emerald-800 leading-relaxed">
+            <p className="text-xs text-emerald-800 leading-relaxed">
               Agar tidak perlu antri verifikasi admin, kami sangat menyarankan memakai tombol hijau <strong>&quot;Bayar via QRIS / Bank&quot;</strong>. Cukup scan dari m-banking apa saja atau e-wallet (BCA, Mandiri, BRI, DANA, GoPay), tagihan Anda langsung otomatis lunas seketika!
             </p>
           </div>
 
+          <p className="text-xs text-slate-500 mb-1">Kolom bertanda <span className="text-rose-500 font-bold">*</span> wajib diisi.</p>
           <form onSubmit={kirimBuktiManual} className="space-y-4">
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1">Pilihan Cara Pembayaran yang Dilakukan</label>
@@ -489,7 +483,7 @@ function BayarPortalContent() {
             </div>
 
             {isTunai && (
-              <div className="p-3.5 bg-amber-50 border border-amber-200/80 rounded-2xl text-[11px] text-amber-900 leading-relaxed flex items-start gap-2.5">
+              <div className="p-3.5 bg-amber-50 border border-amber-200/80 rounded-2xl text-xs text-amber-900 leading-relaxed flex items-start gap-2.5">
                 <span className="text-base shrink-0">💵</span>
                 <div>
                   <span className="font-bold">Info Titip Tunai ke Petugas Lapangan:</span>
@@ -509,9 +503,10 @@ function BayarPortalContent() {
                 type="file"
                 accept="image/*"
                 onChange={handleFile}
+                aria-required={!isTunai}
                 className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer"
               />
-              <p className="text-[10px] text-slate-400 mt-1">Maksimal ukuran file: 2MB (format JPG, PNG, WEBP)</p>
+              <p className="text-xs text-slate-500 mt-1">Maksimal ukuran file: 2MB (format JPG, PNG, WEBP)</p>
             </div>
 
             {bukti && (
@@ -681,7 +676,7 @@ function BayarPortalContent() {
               <h4 className="font-bold">Sesi Transaksi Sebelumnya Dibatalkan / Berakhir</h4>
               <p className="mt-0.5">Tagihan Anda tetap aman. Silakan pilih kembali metode pembayaran di bawah untuk melanjutkan.</p>
             </div>
-            <button onClick={() => setStatusBatal(false)} className="font-bold text-amber-700">✕</button>
+            <button onClick={() => setStatusBatal(false)} aria-label="Tutup peringatan pembayaran" className="font-bold text-amber-700 p-1 rounded hover:bg-amber-100 transition-colors"><span aria-hidden="true">✕</span></button>
           </div>
         )}
 
@@ -692,7 +687,7 @@ function BayarPortalContent() {
               <h4 className="font-bold">Pembayaran Sedang Diverifikasi</h4>
               <p className="mt-0.5">Pembayaran Anda telah diterima oleh gateway dan sedang diverifikasi otomatis oleh sistem.</p>
             </div>
-            <button onClick={() => setStatusSukses(false)} className="font-bold text-emerald-700">✕</button>
+            <button onClick={() => setStatusSukses(false)} aria-label="Tutup notifikasi pembayaran" className="font-bold text-emerald-700 p-1 rounded hover:bg-emerald-100 transition-colors"><span aria-hidden="true">✕</span></button>
           </div>
         )}
 
@@ -700,7 +695,7 @@ function BayarPortalContent() {
         <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="px-6 py-4 bg-slate-50/80 border-b border-slate-100 flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Nomor Invoice</p>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Nomor Invoice</p>
               <p className="font-mono font-bold text-sm text-slate-800">{detail.noInvoice}</p>
             </div>
             <span className={`text-xs font-bold px-3 py-1 rounded-full ${
@@ -717,12 +712,12 @@ function BayarPortalContent() {
           <div className="p-6 space-y-4">
             <div className="grid grid-cols-2 gap-4 pb-4 border-b border-slate-100 text-xs">
               <div>
-                <p className="text-slate-400 font-medium">Pelanggan</p>
+                <p className="text-slate-500 font-medium">Pelanggan</p>
                 <p className="text-sm font-bold text-slate-900 mt-0.5">{detail.pelanggan.nama}</p>
-                <p className="font-mono text-slate-500">ID: {detail.pelanggan.kodePelanggan}</p>
+                <p className="font-mono text-slate-600">ID: {detail.pelanggan.kodePelanggan}</p>
               </div>
               <div>
-                <p className="text-slate-400 font-medium">Periode Retribusi</p>
+                <p className="text-slate-500 font-medium">Periode Retribusi</p>
                 <p className="text-sm font-bold text-slate-900 mt-0.5">{namaPeriode}</p>
                 <p className="text-rose-600 font-semibold">Jatuh Tempo: {formatTanggalIndo(detail.jatuhTempo)}</p>
               </div>
@@ -763,7 +758,7 @@ function BayarPortalContent() {
                     ⏳
                   </div>
                   <div className="space-y-1">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-md inline-block">
+                    <span className="text-xs font-bold uppercase tracking-wider text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-md inline-block">
                       Status Transaksi
                     </span>
                     <h3 className="font-extrabold text-amber-950 text-base sm:text-lg">
@@ -789,7 +784,7 @@ function BayarPortalContent() {
                     Petugas administrasi kasir kami sedang mencocokkan mutasi rekening bank / tanda terima fisik dari armada penjemput. Status invoice ini akan otomatis berubah menjadi <strong>LUNAS</strong> setelah diverifikasi. Anda tidak perlu mengunggah ulang bukti pembayaran.
                   </p>
                   {detail.pembayaranPending.catatan && (
-                    <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-500">
+                    <div className="pt-2 border-t border-slate-100 text-xs text-slate-600">
                       <span className="font-semibold text-slate-700">Catatan Pengirim:</span> {detail.pembayaranPending.catatan}
                     </div>
                   )}
@@ -818,7 +813,7 @@ function BayarPortalContent() {
             <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="font-bold text-slate-900 text-sm">Metode Pembayaran Resmi</h3>
-                <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
                   ⚡ Verifikasi Otomatis
                 </span>
               </div>
@@ -847,11 +842,11 @@ function BayarPortalContent() {
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-extrabold text-slate-900">{m.label}</span>
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                          <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
                             Rekomendasi
                           </span>
                         </div>
-                        <p className="text-[11px] font-medium text-slate-500 mt-0.5">
+                        <p className="text-xs font-medium text-slate-600 mt-0.5">
                           {m.sublabel || "Scan pakai m-Banking (BCA, Mandiri, BRI, BNI) atau E-Wallet (DANA, GoPay, OVO, ShopeePay)"}
                         </p>
                       </div>
@@ -861,7 +856,7 @@ function BayarPortalContent() {
                         <span className="text-xs font-bold text-slate-700 block">
                           {m.totalFee === "0" ? "Gratis" : `+Rp ${parseInt(m.totalFee).toLocaleString("id-ID")}`}
                         </span>
-                        <span className="text-[10px] text-slate-400 block">biaya layanan web</span>
+                        <span className="text-xs text-slate-500 block">biaya layanan web</span>
                       </div>
                     )}
                   </button>
@@ -888,7 +883,7 @@ function BayarPortalContent() {
                   return (
                     <>
                       <span>Bayar Sekarang ({formatRupiahSkylite(grandTotal)})</span>
-                      {fee > 0 && <span className="text-[10px] font-normal opacity-80">termasuk biaya layanan sistem web Rp {fee.toLocaleString("id-ID")}</span>}
+                      {fee > 0 && <span className="text-xs font-normal opacity-80">termasuk biaya layanan sistem web Rp {fee.toLocaleString("id-ID")}</span>}
                     </>
                   );
                 })()}
@@ -1001,7 +996,7 @@ function BayarPortalContent() {
             {/* Steps Status Indicators */}
             <div className="mt-6 flex flex-col sm:flex-row items-center gap-3 sm:gap-6 bg-slate-50/90 border border-slate-200/70 px-5 py-2.5 rounded-2xl shadow-xs">
               <div className="flex items-center gap-2">
-                <span className="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+                <span className="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold">✓</span>
                 <span className="text-xs font-semibold text-slate-700">Koneksi Server Stabil</span>
               </div>
               <div className="hidden sm:block w-1 h-1 rounded-full bg-slate-300"></div>
@@ -1065,7 +1060,7 @@ function BayarPortalContent() {
                 🔍
               </div>
               <div>
-                <div className="text-[10px] uppercase font-bold text-rose-500 tracking-wider">Hasil Analisa Sistem</div>
+                <div className="text-xs font-bold text-rose-600 tracking-wider">Hasil Analisa Sistem</div>
                 <h3 className="text-base sm:text-lg font-extrabold text-slate-900">Data Tagihan Tidak Ditemukan</h3>
               </div>
             </div>
@@ -1078,20 +1073,20 @@ function BayarPortalContent() {
             <div className="grid grid-cols-2 gap-2.5 pt-1">
               <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
                 <span className="text-xs">📱</span>
-                <h5 className="text-[11px] font-bold text-slate-800">Format Nomor</h5>
-                <p className="text-[10px] text-slate-500 leading-tight">Pastikan nomor aktif WhatsApp (08xx / 628xx).</p>
+                <h5 className="text-xs font-bold text-slate-800">Format Nomor</h5>
+                <p className="text-xs text-slate-600 leading-tight">Pastikan nomor aktif WhatsApp (08xx / 628xx).</p>
               </div>
 
               <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
                 <span className="text-xs">⏳</span>
-                <h5 className="text-[11px] font-bold text-slate-800">Status Warga</h5>
-                <p className="text-[10px] text-slate-500 leading-tight">Calon warga memerlukan approval admin pusat.</p>
+                <h5 className="text-xs font-bold text-slate-800">Status Warga</h5>
+                <p className="text-xs text-slate-600 leading-tight">Calon warga memerlukan approval admin pusat.</p>
               </div>
 
               <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
                 <span className="text-xs">🧾</span>
-                <h5 className="text-[11px] font-bold text-slate-800">No. Invoice</h5>
-                <p className="text-[10px] text-slate-500 leading-tight">Bisa memasukkan no. invoice (INV/...) resmi.</p>
+                <h5 className="text-xs font-bold text-slate-800">No. Invoice</h5>
+                <p className="text-xs text-slate-600 leading-tight">Bisa memasukkan no. invoice (INV/...) resmi.</p>
               </div>
 
               <a
@@ -1101,8 +1096,8 @@ function BayarPortalContent() {
                 className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200/80 hover:bg-emerald-100 text-emerald-800 space-y-1 transition-colors block"
               >
                 <span className="text-xs">💬</span>
-                <h5 className="text-[11px] font-bold text-emerald-900">Bantuan CS</h5>
-                <p className="text-[10px] text-emerald-700 leading-tight">Chat langsung petugas pelayanan Depok.</p>
+                <h5 className="text-xs font-bold text-emerald-900">Bantuan CS</h5>
+                <p className="text-xs text-emerald-700 leading-tight">Chat langsung petugas pelayanan Depok.</p>
               </a>
             </div>
           </div>
@@ -1119,9 +1114,9 @@ function BayarPortalContent() {
           <div className="space-y-6 animate-in fade-in duration-200">
             <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Identitas Pelanggan</p>
+                <p className="text-xs uppercase font-bold text-slate-500 tracking-wider">Identitas Pelanggan</p>
                 <h3 className="text-xl font-extrabold text-slate-900">{hasil.pelanggan.nama}</h3>
-                <p className="text-xs text-slate-500 mt-0.5">{hasil.pelanggan.alamat}</p>
+                <p className="text-xs text-slate-600 mt-0.5">{hasil.pelanggan.alamat}</p>
               </div>
               <div className="text-left sm:text-right">
                 <span className="inline-block px-3 py-1 rounded-xl bg-slate-100 border border-slate-200 text-xs font-mono font-bold text-slate-800">
@@ -1221,7 +1216,7 @@ function BayarPortalContent() {
 
                     <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                       <div className="text-left sm:text-right">
-                        <p className="text-[10px] uppercase font-bold text-slate-400">Total Tagihan</p>
+                        <p className="text-xs uppercase font-bold text-slate-500">Total Tagihan</p>
                         <p className="text-xl font-extrabold text-slate-900">
                           {formatRupiah(t.total ?? (t.jumlah + (t.denda || 0)))}
                         </p>
@@ -1234,7 +1229,7 @@ function BayarPortalContent() {
                               <span className="text-base shrink-0 animate-pulse">⏳</span>
                               <div>
                                 <p className="font-extrabold leading-tight">Bukti Terkirim (Sedang Diverifikasi)</p>
-                                <p className="text-[10px] text-amber-800 leading-tight mt-0.5">
+                                <p className="text-xs text-amber-800 leading-tight mt-0.5">
                                   {t.pendingPayment.metode === "tunai" ? "Titip Tunai Petugas" : "Transfer Bank"} • Admin sedang memproses
                                 </p>
                               </div>
@@ -1259,7 +1254,7 @@ function BayarPortalContent() {
                                 <span className="text-sm">💳</span>
                                 <div className="text-left">
                                   <span className="block leading-tight font-extrabold">Bayar via QRIS / Bank</span>
-                                  <span className="text-[10px] font-normal text-emerald-100 block leading-tight">Otomatis Lunas • Scan QR</span>
+                                  <span className="text-xs font-normal text-emerald-100 block leading-tight">Otomatis Lunas • Scan QR</span>
                                 </div>
                               </Link>
                             )}

@@ -82,7 +82,7 @@ export default async function ArtikelPage() {
                     fallbackCategory={artikel.kategori}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 bg-black/60 backdrop-blur-md text-white text-[10px] font-extrabold uppercase rounded-md z-10">
+                  <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 bg-black/60 backdrop-blur-md text-white text-xs font-extrabold uppercase rounded-md z-10">
                     {artikel.kategori}
                   </span>
                 </div>

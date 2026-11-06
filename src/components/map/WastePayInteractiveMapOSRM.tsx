@@ -780,7 +780,7 @@ export default function WastePayInteractiveMapOSRM({
       )}
 
       {/* Legenda Navigasi Solid vs Antrean Dashed (Commit 833ca12) */}
-      <div className="absolute top-16 left-3 z-[400] bg-slate-950/85 backdrop-blur-md px-3 py-2 rounded-xl shadow-lg border border-slate-800 text-[11px] space-y-1 text-white">
+      <div className="absolute top-16 left-3 z-[400] bg-slate-950/85 backdrop-blur-md px-3 py-2 rounded-xl shadow-lg border border-slate-800 text-xs space-y-1 text-white">
         <div className="flex items-center gap-2">
           <span className="w-5 h-1 bg-emerald-500 rounded-full inline-block" />
           <span className="font-semibold text-slate-200">Rute Aktif OSRM (Solid)</span>
@@ -1102,7 +1102,7 @@ export default function WastePayInteractiveMapOSRM({
             <div className="px-5 py-3.5 border-b border-slate-800 flex items-center justify-between text-white">
               <div>
                 <h4 className="text-sm font-bold text-white">{selectedPin?.nama}</h4>
-                <p className="text-[11px] text-slate-400">Verifikasi Visual Lokasi Rumah Warga</p>
+                <p className="text-xs text-slate-400">Verifikasi Visual Lokasi Rumah Warga</p>
               </div>
               <button
                 type="button"

@@ -1026,9 +1026,9 @@ export default function ZonasiPage() {
 
       {/* ── MODAL: KELURAHAN (CREATE / EDIT) ── */}
       {modalKelurahan.isOpen && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md text-slate-900 dark:text-zinc-100">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div className="flex items-center gap-2">
                 <Building2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 <h3 className="font-semibold text-slate-900 dark:text-zinc-100 text-base">
@@ -1043,65 +1043,67 @@ export default function ZonasiPage() {
               </button>
             </div>
 
-            <form onSubmit={handleSaveKelurahan} className="p-6 space-y-4 text-xs font-medium text-slate-700 dark:text-zinc-300">
-              <div>
-                <label className="block font-semibold mb-1 text-slate-700 dark:text-zinc-300">Nama Kelurahan *</label>
-                <input
-                  type="text"
-                  required
-                  value={formKelurahan.nama}
-                  onChange={(e) => setFormKelurahan({ ...formKelurahan, nama: e.target.value })}
-                  placeholder="Contoh: Kalibaru"
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
+            <form id="kelurahan-modal-form" onSubmit={handleSaveKelurahan} className="flex flex-col flex-1 overflow-hidden min-h-0">
+              <div className="p-6 space-y-4 flex-1 overflow-y-auto min-h-0 text-xs font-medium text-slate-700 dark:text-zinc-300">
                 <div>
-                  <label className="block font-semibold mb-1 text-slate-700 dark:text-zinc-300">Kode Singkat (3 Huruf)</label>
+                  <label className="block font-semibold mb-1 text-slate-700 dark:text-zinc-300">Nama Kelurahan *</label>
                   <input
                     type="text"
-                    maxLength={5}
-                    value={formKelurahan.kode}
-                    onChange={(e) => setFormKelurahan({ ...formKelurahan, kode: e.target.value.toUpperCase() })}
-                    placeholder="KAL"
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 text-sm font-mono uppercase focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
-                  />
-                  <span className="text-[10px] text-slate-400 dark:text-zinc-500">Digunakan di kode pelanggan</span>
-                </div>
-
-                <div>
-                  <label className="block font-semibold mb-1 text-slate-700 dark:text-zinc-300">Kota</label>
-                  <input
-                    type="text"
-                    value={formKelurahan.kota}
-                    onChange={(e) => setFormKelurahan({ ...formKelurahan, kota: e.target.value })}
+                    required
+                    value={formKelurahan.nama}
+                    onChange={(e) => setFormKelurahan({ ...formKelurahan, nama: e.target.value })}
+                    placeholder="Contoh: Kalibaru"
                     className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
                   />
                 </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-semibold mb-1 text-slate-700 dark:text-zinc-300">Kode Singkat (3 Huruf)</label>
+                    <input
+                      type="text"
+                      maxLength={5}
+                      value={formKelurahan.kode}
+                      onChange={(e) => setFormKelurahan({ ...formKelurahan, kode: e.target.value.toUpperCase() })}
+                      placeholder="KAL"
+                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 text-sm font-mono uppercase focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+                    />
+                    <span className="text-[10px] text-slate-400 dark:text-zinc-500">Digunakan di kode pelanggan</span>
+                  </div>
+
+                  <div>
+                    <label className="block font-semibold mb-1 text-slate-700 dark:text-zinc-300">Kota</label>
+                    <input
+                      type="text"
+                      value={formKelurahan.kota}
+                      onChange={(e) => setFormKelurahan({ ...formKelurahan, kota: e.target.value })}
+                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-semibold mb-1 text-slate-700 dark:text-zinc-300">Kecamatan</label>
+                  <input
+                    type="text"
+                    list="kecamatan-suggestions"
+                    value={formKelurahan.kecamatan}
+                    onChange={(e) => setFormKelurahan({ ...formKelurahan, kecamatan: e.target.value })}
+                    placeholder="Pilih atau ketik nama kecamatan..."
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+                  />
+                  <datalist id="kecamatan-suggestions">
+                    {distinctKecamatan.map((kec) => (
+                      <option key={kec} value={kec} />
+                    ))}
+                  </datalist>
+                  <span className="text-[10px] text-slate-400 dark:text-zinc-500">
+                    Contoh: Cilodong, Pancoran Mas, Sukmajaya, Beji, Tapos
+                  </span>
+                </div>
               </div>
 
-              <div>
-                <label className="block font-semibold mb-1 text-slate-700 dark:text-zinc-300">Kecamatan</label>
-                <input
-                  type="text"
-                  list="kecamatan-suggestions"
-                  value={formKelurahan.kecamatan}
-                  onChange={(e) => setFormKelurahan({ ...formKelurahan, kecamatan: e.target.value })}
-                  placeholder="Pilih atau ketik nama kecamatan..."
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
-                />
-                <datalist id="kecamatan-suggestions">
-                  {distinctKecamatan.map((kec) => (
-                    <option key={kec} value={kec} />
-                  ))}
-                </datalist>
-                <span className="text-[10px] text-slate-400 dark:text-zinc-500">
-                  Contoh: Cilodong, Pancoran Mas, Sukmajaya, Beji, Tapos
-                </span>
-              </div>
-
-              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100 dark:border-zinc-800">
+              <div className="flex items-center justify-end gap-2.5 px-6 py-3.5 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-950/80 shrink-0">
                 <button
                   type="button"
                   onClick={() => setModalKelurahan({ isOpen: false, data: null })}
@@ -1111,6 +1113,7 @@ export default function ZonasiPage() {
                 </button>
                 <button
                   type="submit"
+                  form="kelurahan-modal-form"
                   disabled={saving}
                   className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors disabled:opacity-60"
                 >
@@ -1146,8 +1149,9 @@ export default function ZonasiPage() {
               </button>
             </div>
 
-            <form onSubmit={handleSaveZona} className="p-6 space-y-4 overflow-y-auto text-xs font-medium text-slate-700 dark:text-zinc-300">
-              {/* Pilihan Kelurahan */}
+            <form id="zona-modal-form" onSubmit={handleSaveZona} className="flex flex-col flex-1 overflow-hidden min-h-0">
+              <div className="p-6 space-y-4 flex-1 overflow-y-auto min-h-0 text-xs font-medium text-slate-700 dark:text-zinc-300">
+                {/* Pilihan Kelurahan */}
               <div>
                 <label className="block font-semibold mb-1 text-slate-700 dark:text-zinc-300">Kelurahan Wilayah Induk *</label>
                 <select
@@ -1323,8 +1327,10 @@ export default function ZonasiPage() {
                 )}
               </div>
 
+              </div>
+
               {/* Submit Buttons */}
-              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100 dark:border-zinc-800">
+              <div className="flex items-center justify-end gap-2.5 px-6 py-3.5 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-950/80 shrink-0">
                 <button
                   type="button"
                   onClick={() => setModalZona({ isOpen: false, data: null, kelurahanId: null })}
@@ -1334,6 +1340,7 @@ export default function ZonasiPage() {
                 </button>
                 <button
                   type="submit"
+                  form="zona-modal-form"
                   disabled={saving}
                   className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors disabled:opacity-60"
                 >
@@ -1347,9 +1354,9 @@ export default function ZonasiPage() {
 
       {/* ── MODAL: TAMBAH RT / WILAYAH ── */}
       {modalRT.isOpen && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-sm text-slate-900 dark:text-zinc-100">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-sm max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <h3 className="font-semibold text-slate-900 dark:text-zinc-100 text-base">Tambah RT / Wilayah Baru</h3>
               <button
                 onClick={() => setModalRT({ isOpen: false, kelurahanId: null, zonaId: null })}
@@ -1359,78 +1366,80 @@ export default function ZonasiPage() {
               </button>
             </div>
 
-            <form onSubmit={handleSaveRT} className="p-6 space-y-4 text-xs font-medium text-slate-700 dark:text-zinc-300">
-              <div>
-                <label className="block font-semibold mb-1 text-slate-700 dark:text-zinc-300">Kelurahan *</label>
-                <select
-                  required
-                  value={formRT.kelurahanId}
-                  onChange={(e) => setFormRT({ ...formRT, kelurahanId: e.target.value, zonaId: "" })}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
-                >
-                  <option value="">Pilih Kelurahan...</option>
-                  {kelurahanList.map((k) => (
-                    <option key={k.id} value={k.id}>
-                      Kel. {k.nama}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
+            <form id="rt-modal-form" onSubmit={handleSaveRT} className="flex flex-col flex-1 overflow-hidden min-h-0">
+              <div className="p-6 space-y-4 flex-1 overflow-y-auto min-h-0 text-xs font-medium text-slate-700 dark:text-zinc-300">
                 <div>
-                  <label className="block font-semibold mb-1 text-slate-700 dark:text-zinc-300">Nomor RT</label>
-                  <input
-                    type="text"
-                    value={formRT.rt}
-                    onChange={(e) => setFormRT({ ...formRT, rt: e.target.value })}
-                    placeholder="001"
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="block font-semibold mb-1 text-slate-700 dark:text-zinc-300">Nomor RW</label>
-                  <input
-                    type="text"
-                    value={formRT.rw}
-                    onChange={(e) => setFormRT({ ...formRT, rw: e.target.value })}
-                    placeholder="003"
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block font-semibold mb-1 text-slate-700 dark:text-zinc-300">Nama Tampilan Wilayah (Opsional)</label>
-                <input
-                  type="text"
-                  value={formRT.nama}
-                  onChange={(e) => setFormRT({ ...formRT, nama: e.target.value })}
-                  placeholder="Kosongkan untuk otomatis 'RT 01 / RW 03'"
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
-                />
-              </div>
-
-              {/* Hubungkan ke Zona */}
-              <div>
-                <label className="block font-semibold mb-1 text-slate-700 dark:text-zinc-300">Masukkan ke Zona Angkut (Opsional)</label>
-                <select
-                  value={formRT.zonaId}
-                  onChange={(e) => setFormRT({ ...formRT, zonaId: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
-                >
-                  <option value="">-- Belum ada zona --</option>
-                  {kelurahanList
-                    .find((k) => k.id === parseInt(formRT.kelurahanId))
-                    ?.zona?.map((z) => (
-                      <option key={z.id} value={z.id}>
-                        {z.nama}
+                  <label className="block font-semibold mb-1 text-slate-700 dark:text-zinc-300">Kelurahan *</label>
+                  <select
+                    required
+                    value={formRT.kelurahanId}
+                    onChange={(e) => setFormRT({ ...formRT, kelurahanId: e.target.value, zonaId: "" })}
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+                  >
+                    <option value="">Pilih Kelurahan...</option>
+                    {kelurahanList.map((k) => (
+                      <option key={k.id} value={k.id}>
+                        Kel. {k.nama}
                       </option>
                     ))}
-                </select>
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-semibold mb-1 text-slate-700 dark:text-zinc-300">Nomor RT</label>
+                    <input
+                      type="text"
+                      value={formRT.rt}
+                      onChange={(e) => setFormRT({ ...formRT, rt: e.target.value })}
+                      placeholder="001"
+                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-semibold mb-1 text-slate-700 dark:text-zinc-300">Nomor RW</label>
+                    <input
+                      type="text"
+                      value={formRT.rw}
+                      onChange={(e) => setFormRT({ ...formRT, rw: e.target.value })}
+                      placeholder="003"
+                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-semibold mb-1 text-slate-700 dark:text-zinc-300">Nama Tampilan Wilayah (Opsional)</label>
+                  <input
+                    type="text"
+                    value={formRT.nama}
+                    onChange={(e) => setFormRT({ ...formRT, nama: e.target.value })}
+                    placeholder="Kosongkan untuk otomatis 'RT 01 / RW 03'"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+                  />
+                </div>
+
+                {/* Hubungkan ke Zona */}
+                <div>
+                  <label className="block font-semibold mb-1 text-slate-700 dark:text-zinc-300">Masukkan ke Zona Angkut (Opsional)</label>
+                  <select
+                    value={formRT.zonaId}
+                    onChange={(e) => setFormRT({ ...formRT, zonaId: e.target.value })}
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+                  >
+                    <option value="">-- Belum ada zona --</option>
+                    {kelurahanList
+                      .find((k) => k.id === parseInt(formRT.kelurahanId))
+                      ?.zona?.map((z) => (
+                        <option key={z.id} value={z.id}>
+                          {z.nama}
+                        </option>
+                      ))}
+                  </select>
+                </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100 dark:border-zinc-800">
+              <div className="flex items-center justify-end gap-2.5 px-6 py-3.5 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-950/80 shrink-0">
                 <button
                   type="button"
                   onClick={() => setModalRT({ isOpen: false, kelurahanId: null, zonaId: null })}
@@ -1440,6 +1449,7 @@ export default function ZonasiPage() {
                 </button>
                 <button
                   type="submit"
+                  form="rt-modal-form"
                   disabled={saving}
                   className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors disabled:opacity-60"
                 >
@@ -1453,9 +1463,9 @@ export default function ZonasiPage() {
 
       {/* ── MODAL: ATUR RT CAKUPAN ZONA ── */}
       {modalAturRT.isOpen && modalAturRT.zona && modalAturRT.kelurahan && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md text-slate-900 dark:text-zinc-100">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div>
                 <h3 className="font-semibold text-slate-900 dark:text-zinc-100 text-base">Atur Cakupan RT</h3>
                 <p className="text-[11px] text-slate-500 dark:text-zinc-400">
@@ -1470,7 +1480,7 @@ export default function ZonasiPage() {
               </button>
             </div>
 
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-4 flex-1 overflow-y-auto min-h-0 text-xs font-medium text-slate-700 dark:text-zinc-300">
               <p className="text-xs text-slate-600 dark:text-zinc-400">
                 Pilih RT mana saja di Kelurahan{" "}
                 <span className="font-semibold text-slate-900 dark:text-zinc-100">{modalAturRT.kelurahan.nama}</span> yang masuk ke dalam{" "}
@@ -1512,24 +1522,24 @@ export default function ZonasiPage() {
                   })}
                 </div>
               )}
+            </div>
 
-              <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100 dark:border-zinc-800">
-                <button
-                  type="button"
-                  onClick={() => setModalAturRT({ isOpen: false, zona: null, kelurahan: null })}
-                  className="px-4 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg text-xs font-semibold bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
-                >
-                  Batal
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSaveAturRT}
-                  disabled={saving}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors disabled:opacity-60"
-                >
-                  {saving ? "Menyimpan…" : "Simpan Cakupan RT"}
-                </button>
-              </div>
+            <div className="flex items-center justify-end gap-2.5 px-6 py-3.5 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-950/80 shrink-0">
+              <button
+                type="button"
+                onClick={() => setModalAturRT({ isOpen: false, zona: null, kelurahan: null })}
+                className="px-4 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg text-xs font-semibold bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveAturRT}
+                disabled={saving}
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors disabled:opacity-60"
+              >
+                {saving ? "Menyimpan…" : "Simpan Cakupan RT"}
+              </button>
             </div>
           </div>
         </div>

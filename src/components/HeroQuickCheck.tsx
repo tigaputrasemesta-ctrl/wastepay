@@ -23,7 +23,7 @@ export default function HeroQuickCheck() {
             Cek Tagihan Cepat & Praktis
           </span>
         </div>
-        <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-1 border border-emerald-200 rounded-full">
+        <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-1 border border-emerald-200 rounded-full">
           Khusus Warga Depok
         </span>
       </div>
@@ -52,17 +52,14 @@ export default function HeroQuickCheck() {
         </div>
 
         {/* Quick sample chips */}
-        <div className="flex items-center gap-2 flex-wrap text-xs text-slate-500 pt-1">
+        <div className="flex items-center gap-2 flex-wrap text-xs text-slate-600 pt-1">
           <span>Contoh kode:</span>
           {["DPK-001", "DPK-002", "DPK-003"].map((sample) => (
             <button
               key={sample}
               type="button"
-              onClick={() => {
-                setKode(sample);
-                router.push(`/bayar?kode=${sample}`);
-              }}
-              className="px-2.5 py-1 border border-slate-200 bg-white hover:border-emerald-300 hover:bg-emerald-50/50 text-slate-600 hover:text-emerald-700 rounded-lg text-xs font-mono font-medium transition-colors"
+              onClick={() => setKode(sample)}
+              className="px-3 py-2 border border-slate-200 bg-white hover:border-emerald-300 hover:bg-emerald-50/50 text-slate-700 hover:text-emerald-800 rounded-lg text-xs font-mono font-medium transition-colors min-h-[44px] flex items-center justify-center"
             >
               {sample}
             </button>
@@ -80,22 +77,22 @@ export default function HeroQuickCheck() {
               </div>
               <div>
                 <p className="text-xs font-bold text-slate-900">Kartu Anggota UPS HERU</p>
-                <p className="text-[11px] text-emerald-700 font-medium">Pengelolaan Sampah Kota Depok</p>
+                <p className="text-xs text-emerald-800 font-medium">Pengelolaan Sampah Kota Depok</p>
               </div>
             </div>
-            <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">
+            <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">
               ● Layanan Aktif
             </span>
           </div>
 
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div className="border border-slate-100 p-3 bg-slate-50/70 rounded-xl">
-              <span className="text-[10px] text-slate-500 block font-semibold mb-1">JADWAL ANGKUT</span>
+              <span className="text-xs text-slate-600 block font-semibold mb-1">JADWAL ANGKUT</span>
               <span className="text-slate-900 font-bold">2× / Minggu (Rutin)</span>
             </div>
             <div className="border border-slate-100 p-3 bg-slate-50/70 rounded-xl">
-              <span className="text-[10px] text-slate-500 block font-semibold mb-1">METODE BAYAR</span>
-              <span className="text-emerald-700 font-bold">QRIS Instant Otomatis</span>
+              <span className="text-xs text-slate-600 block font-semibold mb-1">METODE BAYAR</span>
+              <span className="text-emerald-800 font-bold">QRIS Instant Otomatis</span>
             </div>
           </div>
         </div>

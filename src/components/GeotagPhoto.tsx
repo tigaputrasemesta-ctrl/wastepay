@@ -258,15 +258,15 @@ export default function GeotagPhoto({
               </svg>
               Lokasi tersimpan
             </span>
-            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
               koordinatSumber === "exif_foto" || koordinatSumber === "gps_perangkat"
-                ? "bg-emerald-100 text-emerald-700"
+                ? "bg-emerald-100 text-emerald-800"
                 : "bg-slate-200 text-slate-700"
             }`}>
               {SUMBER_LABEL[koordinatSumber] || "Manual"}
             </span>
             {koordinatAkurasi && (
-              <span className="text-emerald-700">± {koordinatAkurasi} m</span>
+              <span className="text-emerald-800 font-medium">± {koordinatAkurasi} m</span>
             )}
           </div>
           <p className="font-mono">{latitude}, {longitude}</p>
@@ -283,7 +283,7 @@ export default function GeotagPhoto({
         </div>
       )}
 
-      <p className="text-[11px] text-slate-500">
+      <p className="text-xs text-slate-600 leading-relaxed">
         Saat memotret dengan kamera, koordinat GPS di dalam foto otomatis terbaca (geotag) dan menjadi acuan
         titik pengambilan sampah untuk rute pengangkutan. Pastikan lokasi kamera aktif.
       </p>

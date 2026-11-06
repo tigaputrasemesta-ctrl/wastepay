@@ -276,12 +276,12 @@ export default function CoverageExplorer() {
           {/* Autocomplete Suggestions Dropdown */}
           {isSearchFocused && combinedSuggestions.length > 0 && (
             <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden z-50">
-              <div className="px-3.5 py-1.5 bg-slate-50 border-b border-slate-100 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+              <div className="px-3.5 py-1.5 bg-slate-50 border-b border-slate-100 text-xs font-extrabold uppercase tracking-wider text-slate-500 flex items-center justify-between">
                 <span>Pilihan Lokasi</span>
                 <button
                   type="button"
                   onClick={() => setIsSearchFocused(false)}
-                  className="text-slate-400 hover:text-slate-700 font-bold"
+                  className="text-slate-500 hover:text-slate-800 font-bold"
                 >
                   Tutup
                 </button>
@@ -297,7 +297,7 @@ export default function CoverageExplorer() {
                       <MapPin className="w-4 h-4 text-emerald-600 shrink-0" />
                       <div className="min-w-0">
                         <p className="text-xs font-bold text-slate-900 truncate">{loc.label}</p>
-                        <p className="text-[10px] text-slate-500 truncate">{loc.sublabel}</p>
+                        <p className="text-xs text-slate-600 truncate">{loc.sublabel}</p>
                       </div>
                     </button>
                   </li>
@@ -323,7 +323,7 @@ export default function CoverageExplorer() {
 
         {/* Filter Kelurahan Chips */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 clean-scrollbar">
-          <span className="text-[11px] font-bold text-slate-400 whitespace-nowrap pl-0.5">
+          <span className="text-xs font-bold text-slate-500 whitespace-nowrap pl-0.5">
             Wilayah:
           </span>
           {["SEMUA", "Kalibaru", "Cilodong", "Kalimulya", "Jatimulya", "Mekar Jaya"].map((area) => (
@@ -358,7 +358,7 @@ export default function CoverageExplorer() {
             <div className="space-y-1.5">
               <div className="flex items-center gap-2">
                 <span
-                  className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border ${
+                  className={`px-2.5 py-0.5 rounded-full text-xs font-black uppercase tracking-wider border ${
                     verdict.status === "AKTIF"
                       ? "bg-emerald-700 text-white border-emerald-800"
                       : verdict.status === "PERLUASAN"
@@ -480,12 +480,12 @@ export default function CoverageExplorer() {
                       <span className="text-sm">🏡</span>
                       <span>{b.nama}</span>
                     </h3>
-                    <p className="text-[11px] text-slate-500 font-medium">
+                    <p className="text-xs text-slate-600 font-medium">
                       Kel. {b.kelurahan}
                     </p>
                   </div>
                   <span
-                    className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold shrink-0 ${
+                    className={`px-2 py-0.5 rounded-full text-xs font-extrabold shrink-0 ${
                       b.status === "AKTIF"
                         ? "bg-emerald-100 text-emerald-800"
                         : "bg-amber-100 text-amber-800"
@@ -495,7 +495,7 @@ export default function CoverageExplorer() {
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between text-[11px] text-slate-600 pt-1.5 border-t border-slate-100 mt-1">
+                <div className="flex items-center justify-between text-xs text-slate-600 pt-1.5 border-t border-slate-100 mt-1">
                   <span className="font-semibold text-slate-700 truncate">
                     📅 {b.jadwal}
                   </span>

@@ -102,7 +102,7 @@ export default async function TarifPage() {
           <div className="bg-gradient-to-br from-emerald-50 to-teal-50/50 border border-emerald-200 rounded-2xl p-5 md:text-right shadow-sm shrink-0">
             <p className="text-xs font-semibold uppercase tracking-wider text-emerald-800 mb-1">Mulai Dari</p>
             <p className="text-3xl font-extrabold text-emerald-700 tracking-tight">{formatRupiah(tarifMin)}</p>
-            <span className="inline-block mt-1 text-[11px] font-medium text-emerald-700 bg-emerald-100/70 px-2 py-0.5 rounded-md">
+            <span className="inline-block mt-1 text-xs font-medium text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded-md">
               per bulan / KK
             </span>
           </div>
@@ -171,7 +171,7 @@ export default async function TarifPage() {
                       <p className="font-extrabold text-base text-emerald-700">
                         {p.harga != null ? formatRupiah(p.harga) : "Negosiasi"}
                       </p>
-                      <span className="text-[10px] font-medium text-slate-500 uppercase">{p.harga != null ? "per bulan" : "sesuai volume"}</span>
+                      <span className="text-xs font-medium text-slate-500 uppercase">{p.harga != null ? "per bulan" : "sesuai volume"}</span>
                     </div>
                   </div>
                 ))

@@ -104,11 +104,11 @@ export default function PublicNavbar() {
               <span className="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight leading-none">
                 UPS HERU<span className="text-emerald-700">.</span>
               </span>
-              <span className="px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-bold leading-none">
+              <span className="px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-xs font-bold leading-none">
                 Depok
               </span>
             </div>
-            <p className="text-[10px] text-slate-500 font-medium truncate leading-normal mt-0.5">Pengelolaan Sampah Terpadu Kota Depok</p>
+            <p className="text-xs text-slate-600 font-medium truncate leading-normal mt-0.5">Pengelolaan Sampah Terpadu Kota Depok</p>
           </div>
         </Link>
 
@@ -158,7 +158,7 @@ export default function PublicNavbar() {
         <div className="flex md:hidden items-center gap-2 shrink-0">
           <Link
             href="/daftar"
-            className="px-2.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold rounded-lg shadow-sm active:scale-95 transition-all"
+            className="px-3 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shadow-sm active:scale-95 transition-all min-w-[44px] min-h-[44px] flex items-center justify-center"
           >
             Daftar
           </Link>
@@ -190,7 +190,7 @@ export default function PublicNavbar() {
           <div className="relative z-40 bg-white border-b border-slate-200 shadow-xl max-h-[calc(100vh-65px)] overflow-y-auto px-4 py-4 space-y-4">
             {/* Nav Items */}
             <div className="space-y-1">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-2 block mb-1">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-slate-400 px-2 block mb-1">
                 Layanan Publik Warga
               </span>
               {NAV_ITEMS.map((item) => {
@@ -222,7 +222,7 @@ export default function PublicNavbar() {
                         <p className="text-sm font-bold truncate leading-tight">
                           {item.label}
                         </p>
-                        <p className="text-[11px] text-slate-500 truncate leading-normal mt-0.5">
+                        <p className="text-xs text-slate-600 truncate leading-normal mt-0.5">
                           {item.description}
                         </p>
                       </div>
@@ -268,7 +268,7 @@ export default function PublicNavbar() {
                   </div>
                   <div>
                     <p className="font-bold text-emerald-950">Pengaduan</p>
-                    <p className="text-[10px] text-emerald-700">Hubungi WhatsApp Bot CS 24 Jam</p>
+                    <p className="text-xs text-emerald-700">Hubungi WhatsApp Bot CS 24 Jam</p>
                   </div>
                 </div>
                 <ChevronRight className="w-4 h-4 text-emerald-700" />

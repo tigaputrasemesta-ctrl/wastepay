@@ -1728,9 +1728,9 @@ export default function TagihanPage() {
 
       {/* Modal Generate */}
       {showGenerate && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md text-slate-900 dark:text-zinc-100">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div>
                 <h2 className="font-semibold text-slate-900 dark:text-zinc-100 text-base tracking-tight">Generate Tagihan Manual</h2>
                 <p className="text-xs text-slate-500 dark:text-zinc-400">Buat tagihan seragam untuk periode tertentu</p>
@@ -1743,120 +1743,123 @@ export default function TagihanPage() {
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <form onSubmit={handleGenerate} className="p-6 space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Periode Tagihan</label>
-                <div className="grid grid-cols-2 gap-3">
-                  <select
-                    value={formGenerate.bulan}
-                    onChange={(e) => setFormGenerate({ ...formGenerate, bulan: e.target.value })}
-                    className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-slate-800 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
-                    required
-                  >
-                    {bulanList.map((b) => <option key={b.value} value={b.value}>{b.label}</option>)}
-                  </select>
-                  <select
-                    value={formGenerate.tahun}
-                    onChange={(e) => setFormGenerate({ ...formGenerate, tahun: e.target.value })}
-                    className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-slate-800 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
-                    required
-                  >
-                    {[2024, 2025, 2026, 2027, 2028].map((t) => <option key={t} value={t}>{t}</option>)}
-                  </select>
+            <form id="manual-generate-form" onSubmit={handleGenerate} className="flex flex-col flex-1 overflow-hidden min-h-0">
+              <div className="p-6 space-y-4 flex-1 overflow-y-auto min-h-0">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Periode Tagihan</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <select
+                      value={formGenerate.bulan}
+                      onChange={(e) => setFormGenerate({ ...formGenerate, bulan: e.target.value })}
+                      className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-slate-800 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                      required
+                    >
+                      {bulanList.map((b) => <option key={b.value} value={b.value}>{b.label}</option>)}
+                    </select>
+                    <select
+                      value={formGenerate.tahun}
+                      onChange={(e) => setFormGenerate({ ...formGenerate, tahun: e.target.value })}
+                      className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-slate-800 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                      required
+                    >
+                      {[2024, 2025, 2026, 2027, 2028].map((t) => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                  </div>
                 </div>
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Jumlah Tagihan (Rp)</label>
-                <input
-                  type="number"
-                  value={formGenerate.jumlah}
-                  onChange={(e) => setFormGenerate({ ...formGenerate, jumlah: e.target.value })}
-                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-slate-800 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
-                  placeholder="50000"
-                  required
-                />
-              </div>
-              <div className="flex items-center gap-2 pt-1">
-                <input
-                  type="checkbox"
-                  id="untukSemua"
-                  checked={formGenerate.untukSemua}
-                  onChange={(e) => setFormGenerate({ ...formGenerate, untukSemua: e.target.checked })}
-                  className="rounded border-slate-300 dark:border-zinc-700 accent-emerald-600 w-4 h-4"
-                />
-                <label htmlFor="untukSemua" className="text-sm text-slate-700 dark:text-zinc-300 font-medium cursor-pointer">
-                  Generate untuk semua pelanggan aktif
-                </label>
-              </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Jumlah Tagihan (Rp)</label>
+                  <input
+                    type="number"
+                    value={formGenerate.jumlah}
+                    onChange={(e) => setFormGenerate({ ...formGenerate, jumlah: e.target.value })}
+                    className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-slate-800 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    placeholder="50000"
+                    required
+                  />
+                </div>
+                <div className="flex items-center gap-2 pt-1">
+                  <input
+                    type="checkbox"
+                    id="untukSemua"
+                    checked={formGenerate.untukSemua}
+                    onChange={(e) => setFormGenerate({ ...formGenerate, untukSemua: e.target.checked })}
+                    className="rounded border-slate-300 dark:border-zinc-700 accent-emerald-600 w-4 h-4"
+                  />
+                  <label htmlFor="untukSemua" className="text-sm text-slate-700 dark:text-zinc-300 font-medium cursor-pointer">
+                    Generate untuk semua pelanggan aktif
+                  </label>
+                </div>
 
-              {!formGenerate.untukSemua && (
-                <div className="space-y-2 p-3 bg-slate-50 dark:bg-zinc-950 rounded-xl border border-slate-200 dark:border-zinc-800">
-                  <div className="flex items-center justify-between">
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300">Pilih Pelanggan *</label>
-                    {formGenerate.pelangganId && (
-                      <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-                        Dipilih: {pelangganList.find(p => p.id.toString() === formGenerate.pelangganId)?.nama || formGenerate.pelangganId}
-                      </span>
-                    )}
-                  </div>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-zinc-500" />
-                    <input
-                      type="text"
-                      placeholder="Cari nama atau kode pelanggan..."
-                      value={searchPelanggan}
-                      onChange={(e) => setSearchPelanggan(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
-                    />
-                  </div>
-                  <div className="max-h-36 overflow-y-auto divide-y divide-slate-100 dark:divide-zinc-800 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
-                    {pelangganList
-                      .filter((p) =>
-                        !searchPelanggan ||
-                        p.nama.toLowerCase().includes(searchPelanggan.toLowerCase()) ||
-                        p.kodePelanggan.toLowerCase().includes(searchPelanggan.toLowerCase())
-                      )
-                      .slice(0, 50)
-                      .map((p) => {
-                        const isSelected = formGenerate.pelangganId === p.id.toString();
-                        return (
-                          <div
-                            key={p.id}
-                            onClick={() => setFormGenerate({ ...formGenerate, pelangganId: p.id.toString() })}
-                            className={`p-2 flex items-center justify-between text-xs cursor-pointer transition-colors ${
-                              isSelected
-                                ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 font-bold"
-                                : "hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-800 dark:text-zinc-200"
-                            }`}
-                          >
-                            <div>
-                              <span className="font-semibold">{p.nama}</span>
-                              <span className="ml-1.5 font-mono text-[10px] text-slate-500 dark:text-zinc-400">({p.kodePelanggan})</span>
+                {!formGenerate.untukSemua && (
+                  <div className="space-y-2 p-3 bg-slate-50 dark:bg-zinc-950 rounded-xl border border-slate-200 dark:border-zinc-800">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300">Pilih Pelanggan *</label>
+                      {formGenerate.pelangganId && (
+                        <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                          Dipilih: {pelangganList.find(p => p.id.toString() === formGenerate.pelangganId)?.nama || formGenerate.pelangganId}
+                        </span>
+                      )}
+                    </div>
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-zinc-500" />
+                      <input
+                        type="text"
+                        placeholder="Cari nama atau kode pelanggan..."
+                        value={searchPelanggan}
+                        onChange={(e) => setSearchPelanggan(e.target.value)}
+                        className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                      />
+                    </div>
+                    <div className="max-h-36 overflow-y-auto divide-y divide-slate-100 dark:divide-zinc-800 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+                      {pelangganList
+                        .filter((p) =>
+                          !searchPelanggan ||
+                          p.nama.toLowerCase().includes(searchPelanggan.toLowerCase()) ||
+                          p.kodePelanggan.toLowerCase().includes(searchPelanggan.toLowerCase())
+                        )
+                        .slice(0, 50)
+                        .map((p) => {
+                          const isSelected = formGenerate.pelangganId === p.id.toString();
+                          return (
+                            <div
+                              key={p.id}
+                              onClick={() => setFormGenerate({ ...formGenerate, pelangganId: p.id.toString() })}
+                              className={`p-2 flex items-center justify-between text-xs cursor-pointer transition-colors ${
+                                isSelected
+                                  ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 font-bold"
+                                  : "hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-800 dark:text-zinc-200"
+                              }`}
+                            >
+                              <div>
+                                <span className="font-semibold">{p.nama}</span>
+                                <span className="ml-1.5 font-mono text-[10px] text-slate-500 dark:text-zinc-400">({p.kodePelanggan})</span>
+                              </div>
+                              {isSelected && <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />}
                             </div>
-                            {isSelected && <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />}
-                          </div>
-                        );
-                      })}
-                    {pelangganList.length === 0 && (
-                      <p className="p-3 text-center text-xs text-slate-500 dark:text-zinc-400">Memuat data pelanggan...</p>
-                    )}
+                          );
+                        })}
+                      {pelangganList.length === 0 && (
+                        <p className="p-3 text-center text-xs text-slate-500 dark:text-zinc-400">Memuat data pelanggan...</p>
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
 
-              <div className="flex gap-2.5 pt-2">
+              <div className="flex items-center justify-end gap-2.5 px-6 py-3.5 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-950/80 shrink-0">
                 <button
                   type="button"
                   onClick={() => setShowGenerate(false)}
-                  className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded-lg text-sm text-slate-700 dark:text-zinc-200 font-semibold transition-all"
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded-lg text-xs text-slate-700 dark:text-zinc-200 font-semibold transition-all"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm hover:shadow active:scale-[0.98] transition-all text-sm font-semibold"
+                  form="manual-generate-form"
+                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm hover:shadow active:scale-[0.98] transition-all text-xs font-semibold"
                 >
-                  Generate
+                  Generate Tagihan
                 </button>
               </div>
             </form>
@@ -1957,9 +1960,9 @@ export default function TagihanPage() {
 
       {/* Modal Bayar */}
       {showBayar && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md text-slate-900 dark:text-zinc-100">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div>
                 <h2 className="font-semibold text-slate-900 dark:text-zinc-100 text-base tracking-tight">Catat Pembayaran</h2>
                 <p className="text-xs text-slate-500 dark:text-zinc-400">Konfirmasi pelunasan tagihan pelanggan</p>
@@ -1972,102 +1975,106 @@ export default function TagihanPage() {
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <form onSubmit={handleBayar} className="p-6 space-y-4">
-              <div className="bg-slate-50 dark:bg-zinc-950 rounded-lg p-4 border border-slate-100 dark:border-zinc-800">
-                <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Jumlah Tagihan</p>
-                <p className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 tracking-tight mt-0.5 tabular-nums">{formatRupiah(showBayar.jumlah)}</p>
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Metode Pembayaran</label>
-                <select
-                  value={formBayar.metode}
-                  onChange={(e) => setFormBayar({ ...formBayar, metode: e.target.value })}
-                  className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-slate-800 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
-                  required
-                  disabled={isPetugas}
-                >
-                  {isPetugas ? (
-                    <option value="tunai">Tunai (diterima petugas)</option>
-                  ) : (
-                    <>
-                      <option value="transfer">Transfer Bank</option>
-                      <option value="ewallet">E-Wallet</option>
-                      <option value="qris">QRIS</option>
-                      <option value="virtual_account">Virtual Account</option>
-                      <option value="tunai">Tunai</option>
-                    </>
+            <form id="bayar-modal-form" onSubmit={handleBayar} className="flex flex-col flex-1 overflow-hidden min-h-0">
+              <div className="p-6 space-y-4 flex-1 overflow-y-auto min-h-0">
+                <div className="bg-slate-50 dark:bg-zinc-950 rounded-lg p-4 border border-slate-100 dark:border-zinc-800">
+                  <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Jumlah Tagihan</p>
+                  <p className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 tracking-tight mt-0.5 tabular-nums">{formatRupiah(showBayar.jumlah)}</p>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Metode Pembayaran</label>
+                  <select
+                    value={formBayar.metode}
+                    onChange={(e) => setFormBayar({ ...formBayar, metode: e.target.value })}
+                    className="w-full rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-slate-800 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    required
+                    disabled={isPetugas}
+                  >
+                    {isPetugas ? (
+                      <option value="tunai">Tunai (diterima petugas)</option>
+                    ) : (
+                      <>
+                        <option value="transfer">Transfer Bank</option>
+                        <option value="ewallet">E-Wallet</option>
+                        <option value="qris">QRIS</option>
+                        <option value="virtual_account">Virtual Account</option>
+                        <option value="tunai">Tunai</option>
+                      </>
+                    )}
+                  </select>
+                  {isPetugas && (
+                    <p className="text-xs text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 rounded-lg px-3 py-2 mt-2">
+                      Anda mencatat <b>pembayaran tunai</b> — tercatat atas nama Anda & langsung lunas.
+                    </p>
                   )}
-                </select>
-                {isPetugas && (
-                  <p className="text-xs text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 rounded-lg px-3 py-2 mt-2">
-                    Anda mencatat <b>pembayaran tunai</b> — tercatat atas nama Anda & langsung lunas.
-                  </p>
-                )}
-                {formBayar.metode !== "tunai" ? (
-                  <p className="text-xs text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 rounded-lg px-3 py-2 mt-2">
-                    Pembayaran non-tunai dicatat sebagai <b>pending</b> dan perlu diverifikasi admin di antrean verifikasi di atas.
-                  </p>
-                ) : !isPetugas ? (
-                  <p className="text-xs text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 rounded-lg px-3 py-2 mt-2">
-                    Pembayaran tunai langsung diverifikasi <b>lunas</b> ke pembukuan kas.
-                  </p>
-                ) : null}
-                <div className="mt-3">
-                  <label className="block text-xs font-bold text-slate-700 dark:text-zinc-300 mb-1">
-                    {formBayar.metode === "tunai"
-                      ? "Upload Foto Bukti/Nota Tunai (Opsional)"
-                      : "Upload Bukti Transfer"}
-                  </label>
-                  <input 
-                    type="file" 
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        if (file.size > 2_000_000) {
-                          showToast("File terlalu besar, maksimal 2MB", "error");
-                          e.target.value = "";
-                          return;
+                  {formBayar.metode !== "tunai" ? (
+                    <p className="text-xs text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 rounded-lg px-3 py-2 mt-2">
+                      Pembayaran non-tunai dicatat sebagai <b>pending</b> dan perlu diverifikasi admin di antrean verifikasi di atas.
+                    </p>
+                  ) : !isPetugas ? (
+                    <p className="text-xs text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 rounded-lg px-3 py-2 mt-2">
+                      Pembayaran tunai langsung diverifikasi <b>lunas</b> ke pembukuan kas.
+                    </p>
+                  ) : null}
+                  <div className="mt-3">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-zinc-300 mb-1">
+                      {formBayar.metode === "tunai"
+                        ? "Upload Foto Bukti/Nota Tunai (Opsional)"
+                        : "Upload Bukti Transfer"}
+                    </label>
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          if (file.size > 2_000_000) {
+                            showToast("File terlalu besar, maksimal 2MB", "error");
+                            e.target.value = "";
+                            return;
+                          }
+                          const reader = new FileReader();
+                          reader.onload = () => {
+                            setFormBayar((prev) => ({ ...prev, buktiBayar: reader.result as string }));
+                          };
+                          reader.readAsDataURL(file);
+                        } else {
+                          setFormBayar((prev) => ({ ...prev, buktiBayar: "" }));
                         }
-                        const reader = new FileReader();
-                        reader.onload = () => {
-                          setFormBayar((prev) => ({ ...prev, buktiBayar: reader.result as string }));
-                        };
-                        reader.readAsDataURL(file);
-                      } else {
-                        setFormBayar((prev) => ({ ...prev, buktiBayar: "" }));
-                      }
-                    }}
-                    className="w-full text-xs text-slate-500 dark:text-zinc-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 dark:file:bg-emerald-950 file:text-emerald-700 dark:file:text-emerald-300 hover:file:bg-emerald-100"
+                      }}
+                      className="w-full text-xs text-slate-500 dark:text-zinc-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 dark:file:bg-emerald-950 file:text-emerald-700 dark:file:text-emerald-300 hover:file:bg-emerald-100"
+                    />
+                    {formBayar.buktiBayar && (
+                      <div className="mt-2">
+                        <img src={formBayar.buktiBayar} alt="Preview" className="h-24 object-cover rounded-lg border border-slate-200 dark:border-zinc-800" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-zinc-300 mb-1">Catatan (opsional)</label>
+                  <input
+                    type="text"
+                    value={formBayar.catatan}
+                    onChange={(e) => setFormBayar({ ...formBayar, catatan: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-lg text-xs font-medium text-slate-800 dark:text-zinc-100 outline-none focus:ring-2 focus:ring-emerald-500/20"
+                    placeholder="Bayar tunai via petugas"
                   />
-                  {formBayar.buktiBayar && (
-                    <div className="mt-2">
-                      <img src={formBayar.buktiBayar} alt="Preview" className="h-24 object-cover rounded-lg border border-slate-200 dark:border-zinc-800" />
-                    </div>
-                  )}
                 </div>
               </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-zinc-300 mb-1">Catatan (opsional)</label>
-                <input
-                  type="text"
-                  value={formBayar.catatan}
-                  onChange={(e) => setFormBayar({ ...formBayar, catatan: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-lg text-xs font-medium text-slate-800 dark:text-zinc-100 outline-none focus:ring-2 focus:ring-emerald-500/20"
-                  placeholder="Bayar tunai via petugas"
-                />
-              </div>
-              <div className="flex gap-2.5 pt-2">
+
+              <div className="flex items-center justify-end gap-2.5 px-6 py-3.5 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-950/80 shrink-0">
                 <button
                   type="button"
                   onClick={() => setShowBayar(null)}
-                  className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 text-xs font-bold rounded-lg transition-colors"
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 text-xs font-bold rounded-lg transition-colors"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow-sm active:scale-95 transition-all"
+                  form="bayar-modal-form"
+                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow-sm active:scale-95 transition-all"
                 >
                   Konfirmasi Bayar
                 </button>

@@ -308,11 +308,11 @@ export default function LacakJemputan() {
               <div className="grid grid-cols-2 gap-2.5">
                 <div className="bg-emerald-50 rounded-2xl border border-emerald-100 p-3 text-center">
                   <p className="text-2xl font-extrabold text-emerald-800 leading-none tabular-nums">{etaMenit}</p>
-                  <p className="text-[10px] font-bold uppercase text-emerald-700 mt-1">Perkiraan Menit</p>
+                  <p className="text-xs font-bold uppercase text-emerald-800 mt-1">Perkiraan Menit</p>
                 </div>
                 <div className="bg-slate-50 rounded-2xl border border-slate-200/70 p-3 text-center">
                   <p className="text-2xl font-extrabold text-slate-800 leading-none tabular-nums">{formatJarak(jarak)}</p>
-                  <p className="text-[10px] font-bold uppercase text-slate-500 mt-1">Jarak dari Rumah</p>
+                  <p className="text-xs font-bold uppercase text-slate-600 mt-1">Jarak dari Rumah</p>
                 </div>
               </div>
             )}
@@ -325,7 +325,7 @@ export default function LacakJemputan() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="font-bold text-xs text-slate-900 truncate">{data.kendaraan.nama}</p>
-                  <p className="text-[10px] text-slate-500 font-medium">
+                  <p className="text-xs text-slate-600 font-medium">
                     {data.kendaraan.platNomor ? `Plat: ${data.kendaraan.platNomor} • ` : ""}
                     {data.kendaraan.jenis.replace(/_/g, " ")}
                   </p>
@@ -346,19 +346,19 @@ export default function LacakJemputan() {
             <div className="flex gap-2">
               <a
                 href="/pengaduan"
-                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] rounded-xl py-2.5 px-2 text-center flex items-center justify-center gap-1.5 transition-colors"
+                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl py-2.5 px-2 text-center flex items-center justify-center gap-1.5 transition-colors min-h-[44px]"
               >
                 <CircleOff className="w-3.5 h-3.5" /> Lapor Kendala
               </a>
               <button
                 onClick={() => fetchLacak(kodeRef.current)}
-                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] rounded-xl py-2.5 px-2 flex items-center justify-center gap-1.5 transition-colors"
+                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl py-2.5 px-2 flex items-center justify-center gap-1.5 transition-colors min-h-[44px]"
               >
                 <RefreshCw className="w-3.5 h-3.5" /> Perbarui
               </button>
               <a
                 href="/bayar"
-                className="flex-1 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-[11px] rounded-xl py-2.5 px-2 text-center flex items-center justify-center gap-1.5 shadow-sm transition-colors"
+                className="flex-1 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl py-2.5 px-2 text-center flex items-center justify-center gap-1.5 shadow-sm transition-colors min-h-[44px]"
               >
                 <PackageOpen className="w-3.5 h-3.5" /> Bayar
               </a>

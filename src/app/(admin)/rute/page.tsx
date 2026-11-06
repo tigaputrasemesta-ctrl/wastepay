@@ -1336,8 +1336,8 @@ function RuteContent() {
                 onClick={() => setRuteModalTab("jadwal")}
                 className={`flex items-center gap-2 py-3 px-3 text-xs sm:text-sm font-bold border-b-2 transition whitespace-nowrap ${
                   ruteModalTab === "jadwal"
-                    ? "border-emerald-600 text-emerald-800"
-                    : "border-transparent text-slate-500 hover:text-slate-800"
+                    ? "border-emerald-600 text-emerald-800 dark:text-emerald-400"
+                    : "border-transparent text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200"
                 }`}
               >
                 <Calendar className="w-4 h-4" />
@@ -1348,16 +1348,16 @@ function RuteContent() {
                 onClick={() => setRuteModalTab("zona")}
                 className={`flex items-center gap-2 py-3 px-3 text-xs sm:text-sm font-bold border-b-2 transition whitespace-nowrap ${
                   ruteModalTab === "zona"
-                    ? "border-emerald-600 text-emerald-800"
-                    : "border-transparent text-slate-500 hover:text-slate-800"
+                    ? "border-emerald-600 text-emerald-800 dark:text-emerald-400"
+                    : "border-transparent text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200"
                 }`}
               >
                 <MapPin className="w-4 h-4" />
                 <span>2. Cakupan Zona & Blok</span>
                 <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
                   ruteForm.zonaIds.length > 0
-                    ? "bg-emerald-100 text-emerald-800"
-                    : "bg-slate-100 text-slate-500"
+                    ? "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300"
+                    : "bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400"
                 }`}>
                   {ruteForm.zonaIds.length} Zona
                 </span>
@@ -1818,7 +1818,7 @@ function RuteContent() {
                   <button
                     type="button"
                     onClick={() => { setShowRuteForm(false); setEditingRute(null); }}
-                    className="px-4 py-2 border border-slate-200 text-slate-700 rounded-xl text-xs sm:text-sm font-semibold hover:bg-slate-50 transition"
+                    className="px-4 py-2 border border-slate-200 dark:border-zinc-800 text-slate-700 dark:text-zinc-300 rounded-xl text-xs sm:text-sm font-semibold hover:bg-slate-50 dark:hover:bg-zinc-800 transition"
                   >
                     Batal
                   </button>
@@ -1826,7 +1826,7 @@ function RuteContent() {
                     <button
                       type="button"
                       onClick={() => setRuteModalTab("zona")}
-                      className="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition flex items-center gap-1"
+                      className="px-4 py-2 bg-slate-800 hover:bg-slate-900 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition flex items-center gap-1"
                     >
                       <span>Cakupan Zona</span>
                       <span>→</span>
@@ -1834,7 +1834,7 @@ function RuteContent() {
                   ) : null}
                   <button
                     type="submit"
-                    className="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs sm:text-sm font-bold shadow-sm hover:shadow active:scale-[0.98] transition flex items-center gap-2"
+                    className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-sm hover:shadow active:scale-[0.98] transition flex items-center gap-2"
                   >
                     <Truck className="w-4 h-4" />
                     <span>{editingRute ? "Simpan Perubahan" : "Buat Rute"}</span>
@@ -1850,9 +1850,9 @@ function RuteContent() {
       {/* MODAL FORM JADWAL PELANGGAN */}
       {/* ========================================================================= */}
       {showJadwalForm && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden text-slate-900 dark:text-zinc-100">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150">
+          <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <h2 className="text-base font-semibold text-slate-900 dark:text-zinc-100 tracking-tight">{editingJadwal ? "Edit Jadwal Pelanggan" : "Tambah Jadwal Pelanggan"}</h2>
               <button
                 type="button"
@@ -1863,133 +1863,147 @@ function RuteContent() {
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <form onSubmit={handleJadwalSubmit} className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Pelanggan <span className="text-red-500">*</span></label>
-                <select
-                  value={jadwalForm.pelangganId}
-                  onChange={(e) => setJadwalForm({ ...jadwalForm, pelangganId: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white"
-                  required
-                >
-                  <option value="">-- Pilih Pelanggan --</option>
-                  {pelangganList.map((p) => (
-                    <option key={p.id} value={p.id}>{p.nama} — {p.alamat}</option>
-                  ))}
-                </select>
-              </div>
+            <form id="jadwal-pelanggan-form" onSubmit={handleJadwalSubmit} className="flex flex-col flex-1 overflow-hidden min-h-0">
+              <div className="p-6 space-y-4 flex-1 overflow-y-auto min-h-0 text-slate-700 dark:text-zinc-300 text-xs sm:text-sm">
+                <div>
+                  <label className="block text-xs sm:text-sm font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Pelanggan <span className="text-red-500">*</span></label>
+                  <select
+                    value={jadwalForm.pelangganId}
+                    onChange={(e) => setJadwalForm({ ...jadwalForm, pelangganId: e.target.value })}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-zinc-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100"
+                    required
+                  >
+                    <option value="">-- Pilih Pelanggan --</option>
+                    {pelangganList.map((p) => (
+                      <option key={p.id} value={p.id}>{p.nama} — {p.alamat}</option>
+                    ))}
+                  </select>
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Rute Armada <span className="text-red-500">*</span></label>
-                <select
-                  value={jadwalForm.ruteId}
-                  onChange={(e) => {
-                    const newRuteId = e.target.value;
-                    const targetR = rute.find((r) => r.id.toString() === newRuteId);
-                    const routeDays = targetR && targetR.hari
-                      ? targetR.hari.split(",").map((s) => s.trim()).filter(Boolean)
-                      : ["Senin"];
-                    setJadwalForm((prev) => ({
-                      ...prev,
-                      ruteId: newRuteId,
-                      hari: routeDays[0] || "Senin",
-                      selectedHariList: routeDays,
-                    }));
-                  }}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white"
-                  required
-                >
-                  <option value="">-- Pilih Rute --</option>
-                  {rute.map((r) => (
-                    <option key={r.id} value={r.id}>{r.nama} ({r.hari})</option>
-                  ))}
-                </select>
-              </div>
+                <div>
+                  <label className="block text-xs sm:text-sm font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Rute Armada <span className="text-red-500">*</span></label>
+                  <select
+                    value={jadwalForm.ruteId}
+                    onChange={(e) => {
+                      const newRuteId = e.target.value;
+                      const targetR = rute.find((r) => r.id.toString() === newRuteId);
+                      const routeDays = targetR && targetR.hari
+                        ? targetR.hari.split(",").map((s) => s.trim()).filter(Boolean)
+                        : ["Senin"];
+                      setJadwalForm((prev) => ({
+                        ...prev,
+                        ruteId: newRuteId,
+                        hari: routeDays[0] || "Senin",
+                        selectedHariList: routeDays,
+                      }));
+                    }}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-zinc-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100"
+                    required
+                  >
+                    <option value="">-- Pilih Rute --</option>
+                    {rute.map((r) => (
+                      <option key={r.id} value={r.id}>{r.nama} ({r.hari})</option>
+                    ))}
+                  </select>
+                </div>
 
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-sm font-medium text-slate-700">
-                    Hari Layanan Pickup <span className="text-red-500">*</span>
-                  </label>
-                  {!editingJadwal && jadwalForm.ruteId && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const targetR = rute.find((r) => r.id.toString() === jadwalForm.ruteId);
-                        if (targetR && targetR.hari) {
-                          const days = targetR.hari.split(",").map((s) => s.trim()).filter(Boolean);
-                          setJadwalForm((prev) => ({ ...prev, selectedHariList: days }));
-                        }
-                      }}
-                      className="text-[11px] text-emerald-700 hover:text-emerald-800 font-semibold"
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-xs sm:text-sm font-semibold text-slate-700 dark:text-zinc-300">
+                      Hari Layanan Pickup <span className="text-red-500">*</span>
+                    </label>
+                    {!editingJadwal && jadwalForm.ruteId && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const targetR = rute.find((r) => r.id.toString() === jadwalForm.ruteId);
+                          if (targetR && targetR.hari) {
+                            const days = targetR.hari.split(",").map((s) => s.trim()).filter(Boolean);
+                            setJadwalForm((prev) => ({ ...prev, selectedHariList: days }));
+                          }
+                        }}
+                        className="text-[11px] text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 font-semibold"
+                      >
+                        Ikuti Hari Rute
+                      </button>
+                    )}
+                  </div>
+
+                  {editingJadwal ? (
+                    <select
+                      value={jadwalForm.hari}
+                      onChange={(e) => setJadwalForm({ ...jadwalForm, hari: e.target.value })}
+                      className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-zinc-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100"
+                      required
                     >
-                      Ikuti Hari Rute
-                    </button>
+                      {HARI_LIST.map((h) => (
+                        <option key={h} value={h}>{h}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <div>
+                      <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5 mb-2">
+                        {HARI_LIST.map((h) => {
+                          const selected = jadwalForm.selectedHariList.includes(h);
+                          return (
+                            <button
+                              key={h}
+                              type="button"
+                              onClick={() => {
+                                const next = selected
+                                  ? jadwalForm.selectedHariList.filter((x) => x !== h)
+                                  : [...jadwalForm.selectedHariList, h];
+                                setJadwalForm((prev) => ({
+                                  ...prev,
+                                  selectedHariList: next,
+                                  hari: next[0] || "Senin",
+                                }));
+                              }}
+                              className={`py-2 px-1 text-xs rounded-xl font-bold transition border text-center ${
+                                selected
+                                  ? "bg-emerald-600 border-emerald-700 text-white shadow-xs"
+                                  : "bg-white dark:bg-zinc-950 border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-800"
+                              }`}
+                            >
+                              {h.slice(0, 3)}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                        Pilih satu atau beberapa hari sekaligus untuk jadwal penjemputan warga ini.
+                      </p>
+                    </div>
                   )}
                 </div>
 
-                {editingJadwal ? (
-                  <select
-                    value={jadwalForm.hari}
-                    onChange={(e) => setJadwalForm({ ...jadwalForm, hari: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white"
-                    required
-                  >
-                    {HARI_LIST.map((h) => (
-                      <option key={h} value={h}>{h}</option>
-                    ))}
-                  </select>
-                ) : (
-                  <div>
-                    <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5 mb-2">
-                      {HARI_LIST.map((h) => {
-                        const selected = jadwalForm.selectedHariList.includes(h);
-                        return (
-                          <button
-                            key={h}
-                            type="button"
-                            onClick={() => {
-                              const next = selected
-                                ? jadwalForm.selectedHariList.filter((x) => x !== h)
-                                : [...jadwalForm.selectedHariList, h];
-                              setJadwalForm((prev) => ({
-                                ...prev,
-                                selectedHariList: next,
-                                hari: next[0] || "Senin",
-                              }));
-                            }}
-                            className={`py-2 px-1 text-xs rounded-xl font-bold transition border text-center ${
-                              selected
-                                ? "bg-emerald-700 border-emerald-800 text-white shadow-xs"
-                                : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
-                            }`}
-                          >
-                            {h.slice(0, 3)}
-                          </button>
-                        );
-                      })}
-                    </div>
-                    <p className="text-[11px] text-slate-500">
-                      Pilih satu atau beberapa hari sekaligus untuk jadwal penjemputan warga ini.
-                    </p>
-                  </div>
-                )}
+                <div>
+                  <label className="block text-xs sm:text-sm font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Estimasi Jam</label>
+                  <input
+                    type="text"
+                    value={jadwalForm.jam}
+                    onChange={(e) => setJadwalForm({ ...jadwalForm, jam: e.target.value })}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-zinc-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500"
+                    placeholder="08:00"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Estimasi Jam</label>
-                <input
-                  type="text"
-                  value={jadwalForm.jam}
-                  onChange={(e) => setJadwalForm({ ...jadwalForm, jam: e.target.value })}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white"
-                  placeholder="08:00"
-                />
-              </div>
-
-              <div className="flex gap-2 pt-2">
-                <button type="button" onClick={() => { setShowJadwalForm(false); setEditingJadwal(null); }} className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-50 transition">Batal</button>
-                <button type="submit" className="flex-1 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-sm font-semibold shadow-sm hover:shadow transition">{editingJadwal ? "Simpan Jadwal" : "Tambah Jadwal"}</button>
+              <div className="flex items-center justify-end gap-2.5 px-6 py-3.5 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-950/80 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => { setShowJadwalForm(false); setEditingJadwal(null); }}
+                  className="px-4 py-2 border border-slate-200 dark:border-zinc-800 rounded-lg text-xs font-semibold bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  form="jadwal-pelanggan-form"
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors"
+                >
+                  {editingJadwal ? "Simpan Jadwal" : "Tambah Jadwal"}
+                </button>
               </div>
             </form>
           </div>
@@ -2050,14 +2064,14 @@ function RuteContent() {
             </div>
 
             {/* Info & Sync Action Bar */}
-            <div className="bg-emerald-50/70 border-b border-emerald-100/80 px-6 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs">
-              <div className="space-y-0.5 text-emerald-950">
+            <div className="bg-emerald-50/70 dark:bg-emerald-950/40 border-b border-emerald-100/80 dark:border-emerald-900/50 px-6 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs shrink-0">
+              <div className="space-y-0.5 text-emerald-950 dark:text-emerald-200">
                 <div className="flex items-center gap-1.5 font-semibold flex-wrap">
                   <span>🚛 Armada: {modalPelangganRute.rute.kendaraan ? `${modalPelangganRute.rute.kendaraan.nama} (${modalPelangganRute.rute.kendaraan.platNomor || "-"})` : "Belum ditentukan"}</span>
                   <span>•</span>
-                  <span>📅 Master Hari: <strong className="font-bold text-emerald-900">{modalPelangganRute.rute.hari}</strong></span>
+                  <span>📅 Master Hari: <strong className="font-bold text-emerald-900 dark:text-emerald-300">{modalPelangganRute.rute.hari}</strong></span>
                 </div>
-                <div className="text-[11px] text-emerald-800">
+                <div className="text-[11px] text-emerald-800 dark:text-emerald-400">
                   Wilayah/Zona: {modalPelangganRute.rute.zonas && modalPelangganRute.rute.zonas.length > 0
                     ? modalPelangganRute.rute.zonas.map((z) => z.nama).join(", ")
                     : modalPelangganRute.rute.kelurahans && modalPelangganRute.rute.kelurahans.length > 0
@@ -2069,7 +2083,7 @@ function RuteContent() {
                 type="button"
                 disabled={syncingRuteId === modalPelangganRute.rute.id}
                 onClick={() => handleSyncSingleRute(modalPelangganRute.rute!.id, modalPelangganRute.rute!.nama)}
-                className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-bold shadow-xs flex items-center gap-1.5 shrink-0 self-start sm:self-auto transition disabled:opacity-50"
+                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-xs flex items-center gap-1.5 shrink-0 self-start sm:self-auto transition disabled:opacity-50"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${syncingRuteId === modalPelangganRute.rute.id ? "animate-spin" : ""}`} />
                 <span>Sinkronkan Warga Baru</span>
@@ -2077,32 +2091,32 @@ function RuteContent() {
             </div>
 
             {/* Search Bar */}
-            <div className="px-6 py-3 border-b border-slate-100 bg-white">
+            <div className="px-6 py-3 border-b border-slate-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 shrink-0">
               <div className="relative">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Search className="w-4 h-4 text-slate-400 dark:text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   value={modalPelangganRute.search}
                   onChange={(e) => setModalPelangganRute((prev) => ({ ...prev, search: e.target.value }))}
                   placeholder="Cari nama warga, nomor telepon, alamat, atau zona..."
-                  className="w-full pl-9 pr-4 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 font-medium transition"
+                  className="w-full pl-9 pr-4 py-2 text-xs bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-xl focus:bg-white dark:focus:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 font-medium transition"
                 />
               </div>
             </div>
 
             {/* List Pelanggan */}
-            <div className="p-6 overflow-y-auto space-y-3 flex-1 bg-slate-50/50">
+            <div className="p-6 overflow-y-auto space-y-3 flex-1 bg-slate-50/50 dark:bg-zinc-950/50 min-h-0">
               {modalPelangganRute.loading ? (
-                <div className="py-12 text-center text-slate-500 text-xs flex flex-col items-center justify-center gap-2">
-                  <RefreshCw className="w-5 h-5 animate-spin text-emerald-700" />
+                <div className="py-12 text-center text-slate-500 dark:text-zinc-400 text-xs flex flex-col items-center justify-center gap-2">
+                  <RefreshCw className="w-5 h-5 animate-spin text-emerald-600 dark:text-emerald-400" />
                   <span>Memuat data pelanggan rute ini...</span>
                 </div>
               ) : displayedPelangganRute.length === 0 ? (
-                <div className="py-10 text-center bg-white rounded-2xl border border-dashed border-slate-200 p-6 text-xs text-slate-500">
+                <div className="py-10 text-center bg-white dark:bg-zinc-900 rounded-2xl border border-dashed border-slate-200 dark:border-zinc-800 p-6 text-xs text-slate-500 dark:text-zinc-400">
                   {modalPelangganRute.pelanggan.length === 0 ? (
                     <div className="space-y-2">
-                      <p className="font-semibold text-slate-700">Belum ada pelanggan aktif di cakupan rute ini.</p>
-                      <p className="text-[11px] text-slate-400">
+                      <p className="font-semibold text-slate-700 dark:text-zinc-300">Belum ada pelanggan aktif di cakupan rute ini.</p>
+                      <p className="text-[11px] text-slate-400 dark:text-zinc-500">
                         Pastikan pelanggan di kelurahan atau zona terkait berstatus aktif, lalu klik tombol <strong>"Sinkronkan Warga Baru"</strong> di atas.
                       </p>
                     </div>
@@ -2125,19 +2139,19 @@ function RuteContent() {
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3">
                         <div>
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-bold text-sm text-slate-900">{p.nama}</span>
+                            <span className="font-bold text-sm text-slate-900 dark:text-zinc-100">{p.nama}</span>
                             {zonaName && (
-                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
                                 Zona: {zonaName}
                               </span>
                             )}
                             {kelName && (
-                              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-sky-700 border border-sky-200">
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
                                 {kelName}
                               </span>
                             )}
                           </div>
-                          <div className="text-xs text-slate-500 mt-0.5 flex items-center gap-3 flex-wrap">
+                          <div className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5 flex items-center gap-3 flex-wrap">
                             <span>📍 {p.alamat}</span>
                             {p.noTelepon && <span>📞 {p.noTelepon}</span>}
                           </div>
@@ -2149,7 +2163,7 @@ function RuteContent() {
                             type="button"
                             disabled={isSavingThis}
                             onClick={() => handleApplyDefaultRouteDays(modalPelangganRute.rute!.id, p.id, modalPelangganRute.rute!.hari)}
-                            className="text-[11px] px-2.5 py-1 font-semibold rounded-lg border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 transition disabled:opacity-50"
+                            className="text-[11px] px-2.5 py-1 font-semibold rounded-lg border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-700 transition disabled:opacity-50"
                             title="Set hari sesuai master rute"
                           >
                             Ikuti Rute
@@ -2158,7 +2172,7 @@ function RuteContent() {
                             type="button"
                             disabled={isSavingThis}
                             onClick={() => handleApplyDefaultRouteDays(modalPelangganRute.rute!.id, p.id, "")}
-                            className="text-[11px] px-2 py-1 font-semibold rounded-lg border border-slate-200 text-rose-600 hover:bg-rose-50 transition disabled:opacity-50"
+                            className="text-[11px] px-2 py-1 font-semibold rounded-lg border border-slate-200 dark:border-zinc-700 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition disabled:opacity-50"
                             title="Kosongkan hari (jangan dijemput)"
                           >
                             Kosongkan
@@ -2167,8 +2181,8 @@ function RuteContent() {
                       </div>
 
                       {/* Day Selector Chips */}
-                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
-                        <span className="text-[11px] font-semibold text-slate-500">
+                      <div className="pt-2 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-between gap-2 flex-wrap">
+                        <span className="text-[11px] font-semibold text-slate-500 dark:text-zinc-400">
                           Hari Penjemputan:
                         </span>
                         <div className="flex items-center gap-1.5 flex-wrap">
@@ -2182,8 +2196,8 @@ function RuteContent() {
                                 onClick={() => handleToggleHariPelanggan(modalPelangganRute.rute!.id, p.id, activeDays, h)}
                                 className={`px-2.5 py-1 rounded-xl text-xs font-bold transition border ${
                                   isSelected
-                                    ? "bg-emerald-700 border-emerald-800 text-white shadow-xs"
-                                    : "bg-white border-slate-200 text-slate-600 hover:bg-slate-100"
+                                    ? "bg-emerald-600 border-emerald-700 text-white shadow-xs"
+                                    : "bg-white dark:bg-zinc-800 border-slate-200 dark:border-zinc-700 text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-700"
                                 } disabled:opacity-50`}
                               >
                                 {h.slice(0, 3)}
@@ -2199,14 +2213,14 @@ function RuteContent() {
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-3.5 border-t border-slate-100 bg-slate-50/80 flex items-center justify-between text-xs">
-              <span className="text-slate-500">
+            <div className="px-6 py-3.5 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-950/80 flex items-center justify-between text-xs shrink-0">
+              <span className="text-slate-500 dark:text-zinc-400">
                 Menampilkan <strong>{displayedPelangganRute.length}</strong> dari <strong>{modalPelangganRute.pelanggan.length}</strong> warga aktif di cakupan rute ini.
               </span>
               <button
                 type="button"
                 onClick={() => setModalPelangganRute((prev) => ({ ...prev, isOpen: false, rute: null }))}
-                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-xs transition"
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-xs transition"
               >
                 Selesai
               </button>

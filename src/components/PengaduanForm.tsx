@@ -84,7 +84,7 @@ export default function PengaduanForm() {
           <h2 className="font-extrabold text-base text-slate-900">Formulir Laporan Kendala</h2>
           <p className="text-xs text-slate-500">Sampaikan detail kendala pengangkutan sampah Anda</p>
         </div>
-        <span className="font-bold text-[10px] tracking-wide bg-rose-50 text-rose-800 border border-rose-200 px-2.5 py-1 rounded-full">
+        <span className="font-bold text-xs tracking-wide bg-rose-50 text-rose-800 border border-rose-200 px-2.5 py-1 rounded-full">
           BANTUAN
         </span>
       </div>
@@ -143,7 +143,7 @@ export default function PengaduanForm() {
           <label className="block text-xs font-bold text-slate-700">
             Foto Bukti / Dokumentasi (Opsional)
           </label>
-          <span className="text-[10px] text-slate-400">Maks. 5MB (JPG/PNG)</span>
+          <span className="text-xs text-slate-500">Maks. 5MB (JPG/PNG)</span>
         </div>
 
         {foto ? (
@@ -152,19 +152,19 @@ export default function PengaduanForm() {
             <button
               type="button"
               onClick={() => setFoto("")}
+              aria-label="Hapus Foto"
               className="absolute top-2 right-2 bg-slate-900/70 hover:bg-rose-600 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold text-xs shadow-md transition-colors"
-              title="Hapus Foto"
             >
-              ✕
+              <span aria-hidden="true">✕</span>
             </button>
             <div className="p-2 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-2">
-              <span className="text-[11px] font-semibold text-emerald-700 flex items-center gap-1">
+              <span className="text-xs font-semibold text-emerald-700 flex items-center gap-1">
                 <span>✓</span> Foto terlampir
               </span>
               <button
                 type="button"
                 onClick={() => setFoto("")}
-                className="text-[11px] font-semibold text-rose-600 hover:text-rose-700"
+                className="text-xs font-semibold text-rose-600 hover:text-rose-700"
               >
                 Hapus
               </button>

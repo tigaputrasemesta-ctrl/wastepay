@@ -151,7 +151,7 @@ export function PanduanCaraBayarQris({ defaultOpen = false }: { defaultOpen?: bo
           <div>
             <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
               <span>Panduan Cara Bayar QRIS (How to Pay)</span>
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 hidden sm:inline-block">
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 hidden sm:inline-block">
                 Semua Bank & E-Wallet
               </span>
             </h3>
@@ -232,7 +232,7 @@ export function PanduanCaraBayarQris({ defaultOpen = false }: { defaultOpen?: bo
                 <h4 className="font-bold text-slate-900 text-sm">{currentGuide.name}</h4>
               </div>
               {currentGuide.badge && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
                   {currentGuide.badge}
                 </span>
               )}
@@ -241,7 +241,7 @@ export function PanduanCaraBayarQris({ defaultOpen = false }: { defaultOpen?: bo
             <ol className="space-y-2 text-xs text-slate-700">
               {currentGuide.steps.map((step, idx) => (
                 <li key={idx} className="flex items-start gap-2.5 leading-relaxed">
-                  <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center shrink-0 text-[11px] mt-0.5">
+                  <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center shrink-0 text-xs mt-0.5">
                     {idx + 1}
                   </span>
                   <span>{step}</span>

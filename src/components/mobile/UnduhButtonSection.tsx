@@ -34,7 +34,7 @@ export default function UnduhButtonSection({
           <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>Aplikasi Sudah Terpasang (Native Mode)</span>
         </div>
-        <p className="text-[11px] sm:text-xs text-slate-600 max-w-sm mx-auto leading-relaxed">
+        <p className="text-xs text-slate-600 max-w-sm mx-auto leading-relaxed">
           Anda sedang menjalankan WastePay v{versionName} (Build {versionCode}) di dalam aplikasi Android. Pembaruan sistem akan diperiksa secara otomatis.
         </p>
       </div>

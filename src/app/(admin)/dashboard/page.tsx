@@ -439,7 +439,7 @@ export default async function DashboardPage() {
               <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
               <h2 className="text-xs font-semibold text-slate-900 dark:text-zinc-100 uppercase tracking-wider">Perlu Tindak Lanjut</h2>
             </div>
-            <span className="text-[11px] font-mono text-slate-500 dark:text-zinc-400 font-medium">Realtime Queue</span>
+            <span className="text-xs font-mono text-slate-500 dark:text-zinc-400 font-medium">Realtime Queue</span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-100 dark:bg-zinc-800">
             {stats.pembayaranPending > 0 && (
@@ -450,7 +450,7 @@ export default async function DashboardPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-slate-900 dark:text-zinc-100 text-xs">{stats.pembayaranPending} Pembayaran Pending</h3>
-                    <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-0.5 font-normal">Menunggu verifikasi bukti transfer</p>
+                    <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5 font-normal">Menunggu verifikasi bukti transfer</p>
                   </div>
                 </div>
                 <Link href="/tagihan" className="text-amber-800 dark:text-amber-300 bg-amber-50/80 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/60 border border-amber-200/60 dark:border-amber-800/60 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1.5 w-full">
@@ -468,7 +468,7 @@ export default async function DashboardPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-slate-900 dark:text-zinc-100 text-xs">{stats.klaimMenunggu} Klaim Petugas</h3>
-                    <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-0.5 font-normal">Menunggu persetujuan klaim dana</p>
+                    <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5 font-normal">Menunggu persetujuan klaim dana</p>
                   </div>
                 </div>
                 <Link href="/klaim" className="text-orange-800 dark:text-orange-300 bg-orange-50/80 dark:bg-orange-950/40 hover:bg-orange-100 dark:hover:bg-orange-900/60 border border-orange-200/60 dark:border-orange-800/60 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1.5 w-full">
@@ -486,7 +486,7 @@ export default async function DashboardPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-slate-900 dark:text-zinc-100 text-xs">{stats.chatBelumDibaca} Pesan Petugas</h3>
-                    <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-0.5 font-normal">Laporan pesan lapangan masuk</p>
+                    <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5 font-normal">Laporan pesan lapangan masuk</p>
                   </div>
                 </div>
                 <Link href="/chat" className="text-blue-800 dark:text-blue-300 bg-blue-50/80 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/60 border border-blue-200/60 dark:border-blue-800/60 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1.5 w-full">
@@ -504,7 +504,7 @@ export default async function DashboardPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-slate-900 dark:text-zinc-100 text-xs">{stats.tidakDiangkut} Titik Terlewat</h3>
-                    <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-0.5 font-normal">Pengangkutan sampah terlewat hari ini</p>
+                    <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5 font-normal">Pengangkutan sampah terlewat hari ini</p>
                   </div>
                 </div>
                 <Link href="/pengangkutan?status=tidak_diangkut" className="text-rose-800 dark:text-rose-300 bg-rose-50/80 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 border border-rose-200/60 dark:border-rose-800/60 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1.5 w-full">
@@ -522,7 +522,7 @@ export default async function DashboardPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-slate-900 dark:text-zinc-100 text-xs">{stats.notifGagal} Notifikasi Gagal</h3>
-                    <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-0.5 font-normal">Pesan WhatsApp gateway terhambat</p>
+                    <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5 font-normal">Pesan WhatsApp gateway terhambat</p>
                   </div>
                 </div>
                 <Link href="/notifikasi" className="text-red-800 dark:text-red-300 bg-red-50/80 dark:bg-red-950/40 hover:bg-red-100 dark:hover:bg-red-900/60 border border-red-200/60 dark:border-red-800/60 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1.5 w-full">
@@ -538,7 +538,7 @@ export default async function DashboardPage() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60 mb-2">
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60 mb-2">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             Live Operation &amp; Dispatch Center
           </div>
@@ -567,7 +567,7 @@ export default async function DashboardPage() {
         {cards.map((c) => (
           <div key={c.no} className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 p-4.5 shadow-xs hover:border-slate-300 dark:hover:border-zinc-700 transition-all flex flex-col justify-between relative overflow-hidden">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400 uppercase tracking-wider">{c.label}</span>
+              <span className="text-xs font-medium text-slate-600 dark:text-zinc-400 uppercase tracking-wider">{c.label}</span>
               <div className={`w-9 h-9 rounded-xl border flex items-center justify-center ${c.iconBg}`}>
                 {c.icon}
               </div>
@@ -581,7 +581,7 @@ export default async function DashboardPage() {
                   {c.badgeText ? <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5" /> : null}
                   {c.sub}
                 </span>
-                <span className={`text-[10px] font-mono font-medium px-1.5 py-0.2 rounded ${c.badgeBg}`}>
+                <span className={`text-xs font-mono font-medium px-1.5 py-0.5 rounded ${c.badgeBg}`}>
                   {c.no}
                 </span>
               </div>
@@ -614,28 +614,28 @@ export default async function DashboardPage() {
           <div className="flex items-center gap-2.5">
             <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
             <div>
-              <span className="text-slate-500 dark:text-zinc-400 block text-[11px] font-normal">Dana Terkumpul</span>
+              <span className="text-slate-600 dark:text-zinc-300 block text-xs font-normal">Dana Terkumpul</span>
               <span className="font-semibold text-slate-900 dark:text-zinc-100 text-xs font-mono tabular-nums">{formatRupiah(terkumpul)}</span>
             </div>
           </div>
           <div className="flex items-center gap-2.5">
             <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
             <div>
-              <span className="text-slate-500 dark:text-zinc-400 block text-[11px] font-normal">Sisa Belum Terbayar</span>
+              <span className="text-slate-600 dark:text-zinc-300 block text-xs font-normal">Sisa Belum Terbayar</span>
               <span className="font-semibold text-slate-900 dark:text-zinc-100 text-xs font-mono tabular-nums">{formatRupiah(sisa)}</span>
             </div>
           </div>
           <div className="flex items-center gap-2.5">
             <span className="w-2 h-2 rounded-full bg-slate-400 dark:bg-zinc-500 shrink-0" />
             <div>
-              <span className="text-slate-500 dark:text-zinc-400 block text-[11px] font-normal">Target Tagihan Terbit</span>
+              <span className="text-slate-600 dark:text-zinc-300 block text-xs font-normal">Target Tagihan Terbit</span>
               <span className="font-semibold text-slate-900 dark:text-zinc-100 text-xs font-mono tabular-nums">{formatRupiah(tagihanBulanIni)}</span>
             </div>
           </div>
           <div className="flex items-center gap-2.5 sm:justify-end">
             <span className={`w-2 h-2 rounded-full shrink-0 ${stats.totalDendaBulanIni > 0 ? "bg-amber-500" : "bg-emerald-500"}`} />
             <div>
-              <span className="text-slate-500 dark:text-zinc-400 block text-[11px] font-normal">Denda Terakumulasi</span>
+              <span className="text-slate-600 dark:text-zinc-300 block text-xs font-normal">Denda Terakumulasi</span>
               <span className={`font-semibold text-xs font-mono tabular-nums ${stats.totalDendaBulanIni > 0 ? "text-amber-600 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400"}`}>
                 {formatRupiah(stats.totalDendaBulanIni)}
               </span>
@@ -653,7 +653,7 @@ export default async function DashboardPage() {
               <h2 className="text-xs font-semibold text-slate-900 dark:text-zinc-100 uppercase tracking-wider">Tren Pemasukan vs Pengeluaran</h2>
               <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5 font-normal">Historis arus kas 6 bulan terakhir</p>
             </div>
-            <div className="flex items-center gap-3 text-[11px] font-normal text-slate-500 dark:text-zinc-400">
+            <div className="flex items-center gap-3 text-xs font-normal text-slate-500 dark:text-zinc-400">
               <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500" /> Pemasukan</span>
               <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-rose-400" /> Pengeluaran</span>
             </div>
@@ -677,7 +677,7 @@ export default async function DashboardPage() {
           </div>
 
           <div className="flex items-center gap-2 sm:gap-4 mt-2">
-            {bulanLabels.map((m) => <span key={m.label} className="flex-1 text-center text-[11px] font-mono text-slate-500 dark:text-zinc-400 pt-1">{m.label}</span>)}
+            {bulanLabels.map((m) => <span key={m.label} className="flex-1 text-center text-xs font-mono text-slate-500 dark:text-zinc-400 pt-1">{m.label}</span>)}
           </div>
         </div>
 
@@ -688,7 +688,7 @@ export default async function DashboardPage() {
               <h2 className="text-xs font-semibold text-slate-900 dark:text-zinc-100 uppercase tracking-wider">Breakdown Pengeluaran Bulan Ini</h2>
               <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5 font-normal">Proporsi biaya operasional per kategori</p>
             </div>
-            <span className="text-[11px] font-mono text-slate-600 dark:text-zinc-300 bg-slate-100 dark:bg-zinc-800 border border-slate-200/60 dark:border-zinc-700 px-2.5 py-0.5 rounded-lg">Bulan Ini</span>
+            <span className="text-xs font-mono text-slate-600 dark:text-zinc-300 bg-slate-100 dark:bg-zinc-800 border border-slate-200/60 dark:border-zinc-700 px-2.5 py-0.5 rounded-lg">Bulan Ini</span>
           </div>
 
           <div className="flex-1 space-y-4">
@@ -743,19 +743,19 @@ export default async function DashboardPage() {
             {topTunggakan.length === 0 ? (
               <div className="text-center py-10">
                 <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400">Nihil Tunggakan Kritis</p>
-                <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-0.5 font-normal">Semua pelanggan tertib bayar tepat waktu</p>
+                <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5 font-normal">Semua pelanggan tertib bayar tepat waktu</p>
               </div>
             ) : (
               topTunggakan.map((t, i) => (
                 <div key={t.kode} className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50/60 dark:bg-zinc-800/40 border border-slate-200/70 dark:border-zinc-700/60 hover:border-slate-300 dark:hover:border-zinc-600 hover:bg-white dark:hover:bg-zinc-800 transition-all">
-                  <span className="w-6 h-6 rounded-lg bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-700 flex items-center justify-center text-[11px] font-mono font-medium text-slate-700 dark:text-zinc-300 shrink-0">{i + 1}</span>
+                  <span className="w-6 h-6 rounded-lg bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-700 flex items-center justify-center text-xs font-mono font-medium text-slate-700 dark:text-zinc-300 shrink-0">{i + 1}</span>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-semibold text-slate-900 dark:text-zinc-100 truncate">{t.nama}</p>
-                    <p className="text-[10px] text-slate-500 dark:text-zinc-400 font-mono truncate mt-0.5">{t.kode} · {t.wilayah || "—"}</p>
+                    <p className="text-xs text-slate-500 dark:text-zinc-400 font-mono truncate mt-0.5">{t.kode} · {t.wilayah || "—"}</p>
                   </div>
                   <div className="text-right shrink-0">
                     <p className="text-xs font-bold text-rose-600 dark:text-rose-400 font-mono tabular-nums">{formatRupiah(t.total)}</p>
-                    <span className="text-[10px] text-slate-500 dark:text-zinc-400 block font-normal">{t.jumlahTagihan} bulan</span>
+                    <span className="text-xs text-slate-500 dark:text-zinc-400 block font-normal">{t.jumlahTagihan} bulan</span>
                   </div>
                 </div>
               ))
@@ -787,11 +787,11 @@ export default async function DashboardPage() {
                 <div className="w-12 text-right text-xs font-mono tabular-nums font-semibold text-slate-800 dark:text-zinc-200">{k.persen_lunas}%</div>
                 <div className="w-14 shrink-0 text-right">
                   {k.persen_lunas < 70 ? (
-                    <span className="text-[10px] font-medium text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/50 border border-amber-200/60 dark:border-amber-800/60 px-1.5 py-0.2 rounded">Rendah</span>
+                    <span className="text-xs font-semibold text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/50 border border-amber-200/60 dark:border-amber-800/60 px-1.5 py-0.5 rounded">Rendah</span>
                   ) : k.persen_lunas >= 90 ? (
-                    <span className="text-[10px] font-medium text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200/60 dark:border-emerald-800/60 px-1.5 py-0.2 rounded">Optimal</span>
+                    <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200/60 dark:border-emerald-800/60 px-1.5 py-0.5 rounded">Optimal</span>
                   ) : (
-                    <span className="text-[10px] font-medium text-slate-600 dark:text-zinc-400 bg-slate-100 dark:bg-zinc-800 px-1.5 py-0.2 rounded">Sedang</span>
+                    <span className="text-xs font-semibold text-slate-600 dark:text-zinc-400 bg-slate-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded">Sedang</span>
                   )}
                 </div>
               </div>
@@ -822,17 +822,17 @@ export default async function DashboardPage() {
               <div key={r.referal} className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2">
                   {i === 0 ? (
-                    <span className="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 flex items-center justify-center text-[10px] font-bold">1</span>
+                    <span className="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 flex items-center justify-center text-xs font-bold">1</span>
                   ) : i === 1 ? (
-                    <span className="w-5 h-5 rounded-full bg-slate-200 dark:bg-zinc-700 text-slate-700 dark:text-zinc-200 border border-slate-300 dark:border-zinc-600 flex items-center justify-center text-[10px] font-bold">2</span>
+                    <span className="w-5 h-5 rounded-full bg-slate-200 dark:bg-zinc-700 text-slate-700 dark:text-zinc-200 border border-slate-300 dark:border-zinc-600 flex items-center justify-center text-xs font-bold">2</span>
                   ) : i === 2 ? (
-                    <span className="w-5 h-5 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-400 border border-amber-200 dark:border-amber-800 flex items-center justify-center text-[10px] font-bold">3</span>
+                    <span className="w-5 h-5 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-400 border border-amber-200 dark:border-amber-800 flex items-center justify-center text-xs font-bold">3</span>
                   ) : (
-                    <span className="w-5 h-5 text-center text-slate-400 dark:text-zinc-500 font-mono text-[10px]">{i+1}</span>
+                    <span className="w-5 h-5 text-center text-slate-500 dark:text-zinc-400 font-mono text-xs">{i+1}</span>
                   )}
                   <span className="font-medium text-slate-800 dark:text-zinc-200">{r.referal}</span>
                 </div>
-                <span className="text-slate-500 dark:text-zinc-400 font-mono text-[11px] font-medium">{r._count.id} pelanggan</span>
+                <span className="text-slate-500 dark:text-zinc-400 font-mono text-xs font-medium">{r._count.id} pelanggan</span>
               </div>
             ))}
           </div>
@@ -892,7 +892,7 @@ export default async function DashboardPage() {
                 <span className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-zinc-800 border border-slate-200/80 dark:border-zinc-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">{a.icon}</span>
                 <span className="flex-1 min-w-0">
                   <span className="block text-xs font-medium text-slate-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">{a.label}</span>
-                  <span className="block text-[11px] text-slate-500 dark:text-zinc-400 mt-0.5 truncate font-normal">{a.desc}</span>
+                  <span className="block text-xs text-slate-500 dark:text-zinc-400 mt-0.5 truncate font-normal">{a.desc}</span>
                 </span>
               </Link>
             ))}

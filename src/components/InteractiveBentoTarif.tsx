@@ -49,23 +49,23 @@ export default function InteractiveBentoTarif({ tarifList }: { tarifList: Katego
       {/* Active Category Details Showcase */}
       <div className="grid sm:grid-cols-3 gap-4 pt-2 relative z-10">
         <div className="p-4 rounded-xl bg-[#090b0e] border border-white/10 space-y-1">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">KATEGORI PILIHAN</span>
+          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">KATEGORI PILIHAN</span>
           <p className="text-lg font-bold text-white">{activeItem.label}</p>
-          <span className="text-[11px] font-medium text-lime-400">Kode Kategori: <span className="font-mono font-semibold">{activeItem.kategori}</span></span>
+          <span className="text-xs font-medium text-lime-400">Kode Kategori: <span className="font-mono font-semibold">{activeItem.kategori}</span></span>
         </div>
 
         <div className="p-4 rounded-xl bg-[#090b0e] border border-lime-400/30 space-y-1">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">IURAN HANYA</span>
+          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">IURAN HANYA</span>
           <p className="text-3xl font-extrabold text-lime-400 tracking-tight">
             {formatRupiah(activeItem.tarif)}
             <span className="text-xs text-slate-400 font-normal"> /bulan</span>
           </p>
-          <span className="text-[10px] text-slate-400">Fixed rate, gak bakal naik mendadak</span>
+          <span className="text-xs text-slate-400">Fixed rate, gak bakal naik mendadak</span>
         </div>
 
         <div className="p-4 rounded-xl bg-[#090b0e] border border-white/10 space-y-1 flex flex-col justify-between">
           <div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">JADWAL PENGAMBILAN</span>
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">JADWAL PENGAMBILAN</span>
             <p className="text-base font-bold text-emerald-400">Rutin 2x – 3x / Minggu</p>
           </div>
           <Link

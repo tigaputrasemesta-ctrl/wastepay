@@ -119,7 +119,7 @@ export default async function ArtikelDetail({ params }: { params: Promise<{ slug
         {/* Article Header */}
         <header className="space-y-4">
           <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
-            <span className="px-3 py-1 bg-emerald-100/80 text-emerald-800 font-extrabold rounded-full tracking-wide uppercase text-[11px]">
+            <span className="px-3 py-1 bg-emerald-100/80 text-emerald-800 font-extrabold rounded-full tracking-wide uppercase text-xs">
               {artikel.kategori}
             </span>
             <span className="text-slate-400">•</span>
@@ -139,7 +139,7 @@ export default async function ArtikelDetail({ params }: { params: Promise<{ slug
             </div>
             <div>
               <div className="font-bold text-slate-900">{artikel.penulis?.nama || "Tim Editorial UPS HERU"}</div>
-              <div className="text-[11px] text-slate-500">
+              <div className="text-xs text-slate-500">
                 Dipublikasikan pada {formatDate(artikel.createdAt)} • Kota Depok
               </div>
             </div>
@@ -155,7 +155,7 @@ export default async function ArtikelDetail({ params }: { params: Promise<{ slug
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent pointer-events-none" />
-          <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 flex items-center justify-between text-white/95 text-[11px] font-medium backdrop-blur-md bg-black/40 px-3.5 py-1.5 rounded-xl border border-white/20 z-10">
+          <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 flex items-center justify-between text-white/95 text-xs font-medium backdrop-blur-md bg-black/40 px-3.5 py-1.5 rounded-xl border border-white/20 z-10">
             <span>Foto: Layanan Kebersihan & Edukasi Lingkungan UPS HERU</span>
             <span className="hidden sm:inline-block">Kota Depok</span>
           </div>

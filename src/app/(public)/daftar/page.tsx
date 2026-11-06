@@ -83,7 +83,7 @@ export default async function DaftarPage({
       {/* Header Section */}
       {!isPetugas && (
         <div className="max-w-3xl mb-6 sm:mb-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-100/60 border border-emerald-200 text-emerald-800 text-[11px] sm:text-xs font-bold mb-3 sm:mb-4 shadow-xs">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-100/60 border border-emerald-200 text-emerald-800 text-xs sm:text-sm font-bold mb-3 sm:mb-4 shadow-xs">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>Bebas Biaya Registrasi Awal</span>
           </div>
@@ -137,7 +137,7 @@ export default async function DaftarPage({
                 <span className="w-2 h-2 rounded-full bg-amber-500" />
                 <p className="font-bold text-xs sm:text-sm">Informasi Penting</p>
               </div>
-              <ul className="space-y-1.5 sm:space-y-2 text-amber-800/90 text-[11px] sm:text-xs list-disc pl-4 font-medium leading-relaxed">
+              <ul className="space-y-1.5 sm:space-y-2 text-amber-800/90 text-xs sm:text-sm list-disc pl-4 font-medium leading-relaxed">
                 <li>Layanan langsung aktif segera setelah verifikasi rute selesai oleh tim.</li>
                 <li>Pastikan nomor WhatsApp aktif untuk pengiriman kode pelanggan dan struk resmi.</li>
                 <li>Jadwal menyesuaikan wilayah RT/Perumahan Anda.</li>
@@ -150,7 +150,7 @@ export default async function DaftarPage({
             >
               <div>
                 <p className="text-xs sm:text-sm font-black text-slate-900 group-hover:text-emerald-800 transition-colors">Sudah Pernah Mendaftar?</p>
-                <p className="text-[11px] sm:text-xs text-slate-500 font-medium mt-0.5">Cek nomor pelanggan & tagihan Anda</p>
+                <p className="text-xs sm:text-sm text-slate-600 font-medium mt-0.5">Cek nomor pelanggan & tagihan Anda</p>
               </div>
               <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-50 group-hover:bg-emerald-100 flex items-center justify-center transition-colors">
                 <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400 group-hover:text-emerald-700 transition-colors" />

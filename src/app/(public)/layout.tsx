@@ -31,7 +31,7 @@ export default function PublicLayout({
       {/* Modern Responsive Navbar (Desktop + Mobile Drawer) */}
       <PublicNavbar />
 
-      <main className="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6">
+      <main id="main-content" className="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 focus:outline-none">
         {children}
       </main>
 
@@ -47,14 +47,14 @@ export default function PublicLayout({
                 UPS HERU<span className="text-emerald-700">.</span>
               </span>
             </div>
-            <p className="text-xs text-slate-500 leading-relaxed font-medium">
+            <p className="text-xs text-slate-600 leading-relaxed font-medium">
               Sistem Pengelolaan Sampah & Retribusi Terpadu Kota Depok. Layanan jemput sampah terjadwal, pelacakan armada transparan, dan pembayaran iuran bulanan yang mudah.
             </p>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 text-xs font-medium">
             <div className="space-y-2.5">
-              <p className="font-bold text-slate-900 uppercase tracking-wider text-[11px]">Layanan Warga</p>
+              <p className="font-bold text-slate-900 uppercase tracking-wider text-xs">Layanan Warga</p>
               <ul className="space-y-2 text-slate-600">
                 <li><Link href="/coverage" className="hover:text-emerald-800 text-emerald-700 font-bold">Peta Jangkauan (Coverage)</Link></li>
                 <li><Link href="/lacak" className="hover:text-emerald-800">Lacak Truk Sampah</Link></li>
@@ -64,7 +64,7 @@ export default function PublicLayout({
               </ul>
             </div>
             <div className="space-y-2.5">
-              <p className="font-bold text-slate-900 uppercase tracking-wider text-[11px]">Pendaftaran</p>
+              <p className="font-bold text-slate-900 uppercase tracking-wider text-xs">Pendaftaran</p>
               <ul className="space-y-2 text-slate-600">
                 <li><Link href="/daftar" className="hover:text-emerald-800">Daftar Rumah Tangga</Link></li>
                 <li><Link href="/daftar" className="hover:text-emerald-800">Daftar Toko / Usaha</Link></li>
@@ -72,7 +72,7 @@ export default function PublicLayout({
               </ul>
             </div>
             <div className="space-y-2.5 col-span-2 sm:col-span-1">
-              <p className="font-bold text-slate-900 uppercase tracking-wider text-[11px]">Kontak Bantuan</p>
+              <p className="font-bold text-slate-900 uppercase tracking-wider text-xs">Kontak Bantuan</p>
               <ul className="space-y-2 text-slate-600">
                 <li>
                   <a href="https://wa.me/6281400782617" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-emerald-700 font-bold hover:underline">

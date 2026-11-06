@@ -259,7 +259,7 @@ export default function AdminMobileResponsiveShell({
                       <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-emerald-600 dark:bg-emerald-400 rounded-full" />
                     )}
                   </div>
-                  <span className="text-[10px] tracking-tight mt-0.5 leading-none">
+                  <span className="text-xs tracking-tight mt-0.5 leading-none">
                     {tab.label}
                   </span>
                 </Link>
@@ -284,6 +284,7 @@ export default function AdminMobileResponsiveShell({
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
                 onClick={() => setDrawerOpen(false)}
+                aria-hidden="true"
                 className="absolute inset-0 bg-slate-950/60 dark:bg-black/75 backdrop-blur-sm"
               />
 
@@ -317,7 +318,7 @@ export default function AdminMobileResponsiveShell({
                 <div className="p-4 sm:p-6 overflow-y-auto space-y-5 flex-1 pb-safe">
                   {SECONDARY_MENU_ITEMS.map((section, sIdx) => (
                     <div key={sIdx} className="space-y-2">
-                      <h4 className="text-[11px] font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-wider px-2">
+                      <h4 className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider px-2">
                         {section.title}
                       </h4>
                       <div className="grid grid-cols-1 gap-1.5">
@@ -349,12 +350,12 @@ export default function AdminMobileResponsiveShell({
                                       {item.label}
                                     </span>
                                     {item.badge && (
-                                      <span className="px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 text-[9px] font-bold">
+                                      <span className="px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 text-xs font-bold">
                                         {item.badge}
                                       </span>
                                     )}
                                   </div>
-                                  <p className="text-[11px] text-slate-500 dark:text-zinc-400 truncate mt-0.5">
+                                  <p className="text-xs text-slate-500 dark:text-zinc-400 truncate mt-0.5">
                                     {item.desc}
                                   </p>
                                 </div>
@@ -380,7 +381,7 @@ export default function AdminMobileResponsiveShell({
                         </div>
                         <div>
                           <div className="text-xs font-bold">Cetak Laporan Pembayaran</div>
-                          <div className="text-[10px] text-slate-400">Rekapitulasi cetak formal &amp; export PDF</div>
+                          <div className="text-xs text-slate-400">Rekapitulasi cetak formal &amp; export PDF</div>
                         </div>
                       </div>
                       <span className="text-xs font-bold text-emerald-400">Buka ↗</span>

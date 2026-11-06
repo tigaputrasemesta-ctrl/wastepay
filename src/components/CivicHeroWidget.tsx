@@ -87,11 +87,11 @@ export default function CivicHeroWidget() {
             <span className="w-2.5 h-2.5 rounded-full bg-slate-300" />
             <span className="w-2.5 h-2.5 rounded-full bg-slate-300" />
           </div>
-          <span className="text-[11px] font-semibold text-slate-500 pl-2 border-l border-slate-200 truncate">
+          <span className="text-xs font-semibold text-slate-500 pl-2 border-l border-slate-200 truncate">
             UPS HERU <span className="hidden sm:inline">• Control Console</span>
           </span>
         </div>
-        <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#0d7a75] bg-[#e6f5f4] px-2 py-0.5 rounded-md shrink-0">
+        <div className="flex items-center gap-1.5 text-xs font-bold text-[#0d7a75] bg-[#e6f5f4] px-2 py-0.5 rounded-md shrink-0">
           <span className="w-1.5 h-1.5 rounded-full bg-[#0d7a75] animate-pulse" />
           <span>Sistem Aktif</span>
         </div>
@@ -100,15 +100,15 @@ export default function CivicHeroWidget() {
       {/* Mini KPI Highlights Row (Inspired by BeCycle Dashboard) */}
       <div className="grid grid-cols-3 divide-x divide-slate-100 border-b border-slate-100 bg-[#fbfdfd] px-2 py-2.5 text-center">
         <div className="px-1.5 sm:px-2">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Olah Harian</span>
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Olah Harian</span>
           <span className="text-xs sm:text-sm font-extrabold text-slate-800">15.4 Ton</span>
         </div>
         <div className="px-1.5 sm:px-2">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Daur Ulang</span>
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Daur Ulang</span>
           <span className="text-xs sm:text-sm font-extrabold text-[#0d7a75]">82.4%</span>
         </div>
         <div className="px-1.5 sm:px-2">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Pelanggan</span>
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Pelanggan</span>
           <span className="text-xs sm:text-sm font-extrabold text-slate-800">2.450+ KK</span>
         </div>
       </div>
@@ -118,7 +118,7 @@ export default function CivicHeroWidget() {
         <button
           type="button"
           onClick={() => setTab("tagihan")}
-          className={`flex-1 py-2 px-2.5 sm:px-3 text-[11px] sm:text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1 sm:gap-1.5 ${
+          className={`flex-1 py-2 px-2.5 sm:px-3 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1 sm:gap-1.5 ${
             tab === "tagihan"
               ? "bg-white text-[#0d7a75] shadow-xs border border-slate-200/80"
               : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
@@ -130,7 +130,7 @@ export default function CivicHeroWidget() {
         <button
           type="button"
           onClick={() => setTab("jadwal")}
-          className={`flex-1 py-2 px-2.5 sm:px-3 text-[11px] sm:text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1 sm:gap-1.5 ${
+          className={`flex-1 py-2 px-2.5 sm:px-3 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1 sm:gap-1.5 ${
             tab === "jadwal"
               ? "bg-white text-[#0d7a75] shadow-xs border border-slate-200/80"
               : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
@@ -150,7 +150,7 @@ export default function CivicHeroWidget() {
                 <h3 className="text-sm font-extrabold text-slate-900 tracking-tight">
                   Status Iuran & Kwitansi Digital
                 </h3>
-                <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                   QRIS Instant
                 </span>
               </div>
@@ -179,7 +179,7 @@ export default function CivicHeroWidget() {
               </button>
             </form>
 
-            <div className="pt-2 border-t border-slate-100 flex items-center text-[11px] text-slate-500">
+            <div className="pt-2 border-t border-slate-100 flex items-center text-xs text-slate-500">
               <span className="flex items-center gap-1 text-[#0d7a75] font-semibold">
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 Terhubung WhatsApp Bot
@@ -193,7 +193,7 @@ export default function CivicHeroWidget() {
                 <h3 className="text-sm font-extrabold text-slate-900 tracking-tight">
                   Pilih Kelurahan Tempat Tinggal
                 </h3>
-                <span className="text-[10px] font-bold text-sky-800 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200">
+                <span className="text-xs font-bold text-sky-800 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200">
                   Rute Terjadwal
                 </span>
               </div>
@@ -234,7 +234,7 @@ export default function CivicHeroWidget() {
                 <span className="text-slate-500 font-medium">Jenis Armada:</span>
                 <span className="text-slate-700 font-medium">{currentJadwal.armada}</span>
               </div>
-              <p className="text-[11px] text-slate-500 pt-1.5 border-t border-slate-200/80">
+              <p className="text-xs text-slate-500 pt-1.5 border-t border-slate-200/80">
                 {currentJadwal.catatan}
               </p>
             </div>
@@ -251,7 +251,7 @@ export default function CivicHeroWidget() {
       </div>
 
       {/* Widget Footer Status */}
-      <div className="px-5 py-3 bg-slate-50 border-t border-slate-200/80 flex items-center justify-end text-[11px] text-slate-500">
+      <div className="px-5 py-3 bg-slate-50 border-t border-slate-200/80 flex items-center justify-end text-xs text-slate-500">
         <a
           href="https://wa.me/6281400782617"
           target="_blank"

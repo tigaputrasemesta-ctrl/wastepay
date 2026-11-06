@@ -443,7 +443,7 @@ export default function AdminCommandSearch() {
           <Search className="w-3.5 h-3.5 shrink-0" />
           <span className="truncate">Cari menu &amp; aksi...</span>
         </span>
-        <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-[10px] font-semibold text-slate-500 dark:text-zinc-400 font-mono shadow-xs">
+        <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs font-semibold text-slate-500 dark:text-zinc-400 font-mono shadow-xs">
           <Command className="w-2.5 h-2.5" />K
         </kbd>
       </button>
@@ -472,7 +472,7 @@ export default function AdminCommandSearch() {
               />
               <kbd
                 onClick={() => setOpen(false)}
-                className="cursor-pointer text-[10px] font-semibold text-slate-400 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-zinc-300 px-1.5 py-0.5 rounded border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 font-mono"
+                className="cursor-pointer text-xs font-semibold text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200 px-1.5 py-0.5 rounded border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 font-mono"
               >
                 ESC
               </kbd>
@@ -525,13 +525,13 @@ export default function AdminCommandSearch() {
                               {item.title}
                             </span>
                             {item.badge && (
-                              <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300">
+                              <span className="px-1.5 py-0.5 rounded text-xs font-bold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300">
                                 {item.badge}
                               </span>
                             )}
                           </div>
                           {item.desc && (
-                            <p className="text-[11px] text-slate-400 dark:text-zinc-400 truncate">
+                            <p className="text-xs text-slate-500 dark:text-zinc-400 truncate">
                               {item.desc}
                             </p>
                           )}
@@ -539,7 +539,7 @@ export default function AdminCommandSearch() {
                       </div>
 
                       <div className="flex items-center gap-2 shrink-0 ml-3">
-                        <span className="text-[10px] font-medium text-slate-400 dark:text-zinc-400 uppercase tracking-wider">
+                        <span className="text-xs font-medium text-slate-500 dark:text-zinc-400 uppercase tracking-wider">
                           {item.category}
                         </span>
                         {isSelected && (
@@ -553,22 +553,22 @@ export default function AdminCommandSearch() {
             </div>
 
             {/* Modal Footer */}
-            <div className="px-4 py-2.5 bg-slate-50 dark:bg-zinc-950 border-t border-slate-200 dark:border-zinc-800 flex items-center justify-between text-[11px] text-slate-400 dark:text-zinc-400">
+            <div className="px-4 py-2.5 bg-slate-50 dark:bg-zinc-950 border-t border-slate-200 dark:border-zinc-800 flex items-center justify-between text-xs text-slate-500 dark:text-zinc-400">
               <div className="flex items-center gap-3">
                 <span className="flex items-center gap-1">
-                  <kbd className="px-1 py-0.5 rounded bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 font-mono text-[9px]">
+                  <kbd className="px-1 py-0.5 rounded bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 font-mono text-xs">
                     ↑↓
                   </kbd>{" "}
                   Pilih
                 </span>
                 <span className="flex items-center gap-1">
-                  <kbd className="px-1 py-0.5 rounded bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 font-mono text-[9px]">
+                  <kbd className="px-1 py-0.5 rounded bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 font-mono text-xs">
                     ↵
                   </kbd>{" "}
                   Buka
                 </span>
               </div>
-              <span className="text-[10px] text-slate-400 dark:text-zinc-400">
+              <span className="text-xs text-slate-500 dark:text-zinc-400">
                 UPS HERU Quick Command
               </span>
             </div>

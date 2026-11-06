@@ -211,11 +211,11 @@ export default function Sidebar({
                 <span className="font-semibold text-sm tracking-tight text-slate-900 dark:text-zinc-100 leading-none">
                   UPS HERU
                 </span>
-                <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/60">
+                <span className="px-1.5 py-0.5 rounded text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/60">
                   TPS 3R
                 </span>
               </div>
-              <span className="text-[11px] text-slate-500 dark:text-zinc-400 font-normal truncate mt-0.5">
+              <span className="text-xs text-slate-500 dark:text-zinc-400 font-normal truncate mt-0.5">
                 Kota Depok
               </span>
             </div>
@@ -260,7 +260,7 @@ export default function Sidebar({
               </p>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                <span className="text-[10px] text-slate-500 dark:text-zinc-400 capitalize truncate font-medium">
+                <span className="text-xs text-slate-500 dark:text-zinc-400 capitalize truncate font-medium">
                   {ROLE_LABELS[user.role as keyof typeof ROLE_LABELS] || user.role}
                 </span>
               </div>
@@ -283,7 +283,9 @@ export default function Sidebar({
                 <button
                   type="button"
                   onClick={() => toggleGroup(group.key)}
-                  className="w-full flex items-center justify-between text-[10px] font-semibold tracking-wider text-slate-400 dark:text-zinc-400 hover:text-slate-700 dark:hover:text-zinc-200 px-2.5 py-1 uppercase rounded-md transition-colors"
+                  aria-expanded={!isGroupCollapsed}
+                  aria-controls={`menu-group-${group.key}`}
+                  className="w-full flex items-center justify-between text-xs font-semibold tracking-wider text-slate-400 dark:text-zinc-400 hover:text-slate-700 dark:hover:text-zinc-200 px-2.5 py-2 uppercase rounded-md transition-colors min-h-[36px]"
                 >
                   <span>{group.label}</span>
                   <ChevronDown
@@ -298,7 +300,7 @@ export default function Sidebar({
               )}
 
               {(!isGroupCollapsed || isCollapsedEffective) && (
-                <div className="space-y-0.5">
+                <div id={`menu-group-${group.key}`} className="space-y-0.5">
                   {group.items.map((item) => {
                     const Icon = item.icon;
                     const isActive =
@@ -338,6 +340,9 @@ export default function Sidebar({
                           <span className="truncate tracking-normal text-slate-800 dark:text-zinc-200">
                             {item.label}
                           </span>
+                        )}
+                        {isCollapsedEffective && isActive && (
+                          <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-emerald-500" />
                         )}
                       </Link>
                     );

@@ -42,7 +42,7 @@ export default function UnduhPage() {
               <span className="font-extrabold text-slate-900 text-lg tracking-tight">
                 UPS HERU
               </span>
-              <span className="block text-[10px] font-semibold text-emerald-700 uppercase tracking-wider">
+              <span className="block text-xs font-semibold text-emerald-700 uppercase tracking-wider">
                 Aplikasi Android Resmi
               </span>
             </div>
@@ -83,7 +83,7 @@ export default function UnduhPage() {
                     <Smartphone className="w-6 h-6" />
                   </div>
                   <div>
-                    <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider block">
+                    <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider block">
                       Khusus Pengemudi / Supir
                     </span>
                     <h2 className="text-lg font-extrabold text-slate-900">
@@ -91,7 +91,7 @@ export default function UnduhPage() {
                     </h2>
                   </div>
                 </div>
-                <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
+                <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
                   v{MOBILE_VERSION.versionName}
                 </span>
               </div>
@@ -102,7 +102,7 @@ export default function UnduhPage() {
                 </p>
                 <ul className="text-xs text-slate-600 space-y-2">
                   <li className="flex items-start gap-2">
-                    <span className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-[10px] mt-0.5 shrink-0">
+                    <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-xs mt-0.5 shrink-0">
                       ✓
                     </span>
                     <span>
@@ -110,7 +110,7 @@ export default function UnduhPage() {
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-[10px] mt-0.5 shrink-0">
+                    <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-xs mt-0.5 shrink-0">
                       ✓
                     </span>
                     <span>
@@ -118,7 +118,7 @@ export default function UnduhPage() {
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-[10px] mt-0.5 shrink-0">
+                    <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-xs mt-0.5 shrink-0">
                       ✓
                     </span>
                     <span>
@@ -137,7 +137,7 @@ export default function UnduhPage() {
                 label="Unduh APK Driver (Flutter Native)"
                 colorClass="bg-emerald-700 hover:bg-emerald-800"
               />
-              <p className="text-center text-[10px] text-slate-400 mt-3">
+              <p className="text-center text-xs text-slate-500 mt-3">
                 ID Paket: <code className="font-mono text-slate-500">id.o2whero.mobile_petugas</code>
               </p>
             </div>
@@ -154,7 +154,7 @@ export default function UnduhPage() {
                     <Database className="w-6 h-6" />
                   </div>
                   <div>
-                    <span className="text-[11px] font-bold text-blue-700 uppercase tracking-wider block">
+                    <span className="text-xs font-bold text-blue-700 uppercase tracking-wider block">
                       Khusus Pengelola Backoffice (Flutter Native)
                     </span>
                     <h2 className="text-lg font-extrabold text-slate-900">
@@ -162,7 +162,7 @@ export default function UnduhPage() {
                     </h2>
                   </div>
                 </div>
-                <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-100 text-blue-800">
+                <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800">
                   v{ADMIN_VERSION.versionName}
                 </span>
               </div>
@@ -173,7 +173,7 @@ export default function UnduhPage() {
                 </p>
                 <ul className="text-xs text-slate-600 space-y-2">
                   <li className="flex items-start gap-2">
-                    <span className="w-4 h-4 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-[10px] mt-0.5 shrink-0">
+                    <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-xs mt-0.5 shrink-0">
                       ✓
                     </span>
                     <span>
@@ -181,7 +181,7 @@ export default function UnduhPage() {
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="w-4 h-4 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-[10px] mt-0.5 shrink-0">
+                    <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-xs mt-0.5 shrink-0">
                       ✓
                     </span>
                     <span>
@@ -189,7 +189,7 @@ export default function UnduhPage() {
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="w-4 h-4 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-[10px] mt-0.5 shrink-0">
+                    <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-xs mt-0.5 shrink-0">
                       ✓
                     </span>
                     <span>
@@ -208,7 +208,7 @@ export default function UnduhPage() {
                 label="Unduh APK Admin (Flutter Native)"
                 colorClass="bg-blue-600 hover:bg-blue-700"
               />
-              <p className="text-center text-[10px] text-slate-400 mt-3">
+              <p className="text-center text-xs text-slate-500 mt-3">
                 ID Paket: <code className="font-mono text-slate-500">id.o2whero.admin</code>
               </p>
             </div>
