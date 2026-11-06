@@ -78,9 +78,15 @@ export async function POST(
     const isSuccess = isSuccessStatusCode(duitkuStatus.statusCode);
 
     // Cari transaksi Duitku di database jika ada
-    const dt = await prisma.duitkuTransaction.findUnique({
-      where: { merchantOrderId: tagihan.noInvoice },
+    const dt = await prisma.duitkuTransaction.findFirst({
+      where: {
+        OR: [
+          { orderId: tagihan.noInvoice },
+          { pembayaran: { tagihanId: tagihan.id } },
+        ],
+      },
       include: { pembayaran: true },
+      orderBy: { id: "desc" },
     });
 
     if (dt) {
