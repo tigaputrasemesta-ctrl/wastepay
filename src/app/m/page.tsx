@@ -17,7 +17,12 @@ import {
   Share2,
   Copy,
   Check,
-  Users
+  Users,
+  FileText,
+  AlertCircle,
+  Calendar,
+  Layers,
+  ArrowRight
 } from "lucide-react";
 
 type Profil = {
@@ -37,6 +42,36 @@ type ReferralData = {
   daftarTerbaru: { id: number; nama: string; alamat: string; status: string; createdAt: string }[];
 } | null;
 
+type KendaraanItem = {
+  id: number;
+  nama: string;
+  platNomor: string;
+  jenis: string;
+  kapasitas?: number;
+};
+
+type ArmadaReportData = {
+  allKendaraan: KendaraanItem[];
+  kendaraan: KendaraanItem;
+  hari: string;
+  activeRute: {
+    id: number;
+    nama: string;
+    hari: string;
+  } | null;
+  cakupanZonas: string[];
+  summary: {
+    totalTugas: number;
+    selesai: number;
+    kosong: number;
+    terlewat: number;
+    belum: number;
+    persentase: number;
+    totalVolumeM3: number;
+    ritCount: number;
+  };
+};
+
 export default function MobileHome() {
   const [profil, setProfil] = useState<Profil | null>(null);
   const [absen, setAbsen] = useState<StatusAbsen>(null);
@@ -44,6 +79,12 @@ export default function MobileHome() {
   const [jumlahCalon, setJumlahCalon] = useState<number | null>(null);
   const [referralData, setReferralData] = useState<ReferralData>(null);
   const [copiedRef, setCopiedRef] = useState(false);
+
+  // Khusus Armada & Rute Operasional
+  const [kendaraanList, setKendaraanList] = useState<KendaraanItem[]>([]);
+  const [selectedKendaraanId, setSelectedKendaraanId] = useState<number | null>(null);
+  const [armadaData, setArmadaData] = useState<ArmadaReportData | null>(null);
+  const [openKomplainCount, setOpenKomplainCount] = useState<number>(0);
 
   useEffect(() => {
     fetch("/api/petugas/me")
@@ -79,6 +120,62 @@ export default function MobileHome() {
         .catch(() => setJumlahCalon(0));
     }
   }, [isAngkut, isSurvei]);
+
+  // Inisialisasi ID Armada dari LocalStorage atau default
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("o2w_kendaraan_id");
+      if (saved) {
+        setSelectedKendaraanId(parseInt(saved, 10));
+      }
+    }
+  }, []);
+
+  // Fetch data armada & komplain rute
+  useEffect(() => {
+    if (!isAngkut) return;
+
+    const urlReport = selectedKendaraanId
+      ? `/api/m/report-armada?kendaraanId=${selectedKendaraanId}`
+      : "/api/m/report-armada";
+
+    fetch(urlReport)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: ArmadaReportData | null) => {
+        if (!data) return;
+        setArmadaData(data);
+        if (data.allKendaraan) {
+          setKendaraanList(data.allKendaraan);
+        }
+        if (!selectedKendaraanId && data.kendaraan) {
+          setSelectedKendaraanId(data.kendaraan.id);
+          if (typeof window !== "undefined") {
+            localStorage.setItem("o2w_kendaraan_id", String(data.kendaraan.id));
+          }
+        }
+      })
+      .catch(() => {});
+
+    const urlKomplain = selectedKendaraanId
+      ? `/api/m/komplain-armada?kendaraanId=${selectedKendaraanId}&status=aktif`
+      : "/api/m/komplain-armada?status=aktif";
+
+    fetch(urlKomplain)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data && typeof data.totalAktif === "number") {
+          setOpenKomplainCount(data.totalAktif);
+        }
+      })
+      .catch(() => {});
+  }, [isAngkut, selectedKendaraanId]);
+
+  function handleSelectKendaraan(id: number) {
+    setSelectedKendaraanId(id);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("o2w_kendaraan_id", String(id));
+    }
+  }
 
   const sudahMasuk = Boolean(absen?.waktuMasuk);
   const sudahSelesai = Boolean(absen?.waktuSelesai);
@@ -149,6 +246,131 @@ export default function MobileHome() {
           </Link>
         </div>
       </div>
+
+      {/* Kartu Khusus Armada & Rute Operasional Hari Ini */}
+      {isAngkut && (
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-3.5 shadow-sm space-y-3">
+          {/* Header & Kendaraan Selector */}
+          <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+                <Truck className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                  Armada Operasional
+                </span>
+                <span className="text-xs font-black text-slate-900 truncate block">
+                  {armadaData?.kendaraan ? `${armadaData.kendaraan.platNomor} (${armadaData.kendaraan.nama})` : "Pilih Armada"}
+                </span>
+              </div>
+            </div>
+
+            {/* Selector Dropdown */}
+            {kendaraanList.length > 0 && (
+              <select
+                value={selectedKendaraanId || ""}
+                onChange={(e) => handleSelectKendaraan(Number(e.target.value))}
+                className="text-xs font-bold bg-slate-100 border border-slate-200 rounded-xl px-2.5 py-1.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 shrink-0"
+              >
+                {kendaraanList.map((k) => (
+                  <option key={k.id} value={k.id}>
+                    {k.platNomor} - {k.nama.split(" ")[0]}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+
+          {/* Info Rute & Cakupan Hari Ini */}
+          <div>
+            <div className="flex items-center justify-between text-xs mb-1">
+              <span className="text-[11px] font-semibold text-slate-500 flex items-center gap-1">
+                <Calendar className="w-3 h-3 text-slate-400" />
+                Jadwal Rute {armadaData?.hari ? `(${armadaData.hari})` : ""}:
+              </span>
+              <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${
+                armadaData?.activeRute ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-600"
+              }`}>
+                {armadaData?.activeRute ? "Rute Aktif" : "Libur / Off"}
+              </span>
+            </div>
+
+            <p className="text-xs font-bold text-slate-800">
+              {armadaData?.activeRute ? armadaData.activeRute.nama : "Tidak ada jadwal rute untuk armada ini pada hari ini"}
+            </p>
+
+            {armadaData?.cakupanZonas && armadaData.cakupanZonas.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-1.5">
+                {armadaData.cakupanZonas.map((z, i) => (
+                  <span key={i} className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium">
+                    {z}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Progress Angkut Hari Ini */}
+          {armadaData?.summary && (
+            <div className="bg-slate-50 rounded-xl p-2.5 border border-slate-100 space-y-1.5">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-[11px] font-bold text-slate-600">Progress Penjemputan</span>
+                <span className="text-xs font-black text-emerald-700">
+                  {armadaData.summary.selesai} / {armadaData.summary.totalTugas} Titik ({armadaData.summary.persentase}%)
+                </span>
+              </div>
+              <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                <div
+                  className="bg-emerald-600 h-2 rounded-full transition-all duration-500"
+                  style={{ width: `${armadaData.summary.persentase}%` }}
+                />
+              </div>
+              <div className="flex items-center justify-between text-[10px] text-slate-500 font-medium pt-0.5">
+                <span>Rit: <strong className="text-slate-800">{armadaData.summary.ritCount} rit</strong></span>
+                <span>Volume: <strong className="text-slate-800">{armadaData.summary.totalVolumeM3.toFixed(1)} m³</strong></span>
+                <span>Lewat: <strong className="text-slate-800">{armadaData.summary.terlewat}</strong></span>
+              </div>
+            </div>
+          )}
+
+          {/* 3 Quick Action Buttons for Armada */}
+          <div className="grid grid-cols-3 gap-2 pt-1">
+            <Link
+              href={selectedKendaraanId ? `/m/angkut?kendaraanId=${selectedKendaraanId}` : "/m/angkut"}
+              className="flex flex-col items-center justify-center p-2 rounded-xl bg-emerald-700 text-white shadow-xs hover:bg-emerald-800 active:scale-95 transition-all"
+            >
+              <Truck className="w-4 h-4 mb-1" />
+              <span className="text-[10px] font-extrabold leading-tight text-center">Jemput Rute</span>
+            </Link>
+
+            <Link
+              href="/m/report"
+              className="flex flex-col items-center justify-center p-2 rounded-xl bg-sky-50 text-sky-800 border border-sky-200/80 hover:bg-sky-100 active:scale-95 transition-all"
+            >
+              <FileText className="w-4 h-4 mb-1 text-sky-700" />
+              <span className="text-[10px] font-extrabold leading-tight text-center">Report Rit</span>
+            </Link>
+
+            <Link
+              href="/m/pengaduan"
+              className={`flex flex-col items-center justify-center p-2 rounded-xl border relative transition-all active:scale-95 ${
+                openKomplainCount > 0
+                  ? "bg-rose-50 text-rose-800 border-rose-300 hover:bg-rose-100"
+                  : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+              }`}
+            >
+              {openKomplainCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-600 text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-xs animate-bounce">
+                  {openKomplainCount}
+                </span>
+              )}
+              <AlertCircle className={`w-4 h-4 mb-1 ${openKomplainCount > 0 ? "text-rose-600" : "text-slate-600"}`} />
+              <span className="text-[10px] font-extrabold leading-tight text-center">Aduan Warga</span>
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Metrics Bar */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -223,6 +445,49 @@ export default function MobileHome() {
               <div>
                 <p className="text-xs font-bold text-slate-900 leading-tight">Tugas Angkut</p>
                 <p className="text-[10px] text-slate-500 truncate">Rute jemputan & radar</p>
+              </div>
+            </Link>
+          )}
+
+          {isAngkut && (
+            <Link
+              href="/m/report"
+              className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-sm hover:border-sky-400 hover:shadow-sm active:scale-[0.98] transition-all flex flex-col justify-between h-[84px]"
+            >
+              <div className="flex items-center justify-between">
+                <div className="w-8 h-8 rounded-xl bg-sky-600 text-white flex items-center justify-center shadow-sm">
+                  <FileText className="w-4 h-4" />
+                </div>
+                <ChevronRight className="w-4 h-4 text-slate-300" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-900 leading-tight">Report Rit</p>
+                <p className="text-[10px] text-slate-500 truncate">Rekap harian & volume</p>
+              </div>
+            </Link>
+          )}
+
+          {isAngkut && (
+            <Link
+              href="/m/pengaduan"
+              className="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-sm hover:border-rose-400 hover:shadow-sm active:scale-[0.98] transition-all flex flex-col justify-between h-[84px]"
+            >
+              <div className="flex items-center justify-between">
+                <div className="w-8 h-8 rounded-xl bg-rose-600 text-white flex items-center justify-center shadow-sm">
+                  <AlertCircle className="w-4 h-4" />
+                </div>
+                <div className="flex items-center gap-1">
+                  {openKomplainCount > 0 && (
+                    <span className="w-4 h-4 rounded-full bg-rose-600 text-white text-[9px] font-black flex items-center justify-center">
+                      {openKomplainCount}
+                    </span>
+                  )}
+                  <ChevronRight className="w-4 h-4 text-slate-300" />
+                </div>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-900 leading-tight">Pengaduan Rute</p>
+                <p className="text-[10px] text-slate-500 truncate">Aduan warga jalur ini</p>
               </div>
             </Link>
           )}

@@ -118,19 +118,29 @@ export async function getSession(request?: Request): Promise<SessionUser | null>
 }
 
 export async function login(
-  email: string,
+  identifier: string,
   password: string
 ): Promise<{ user: SessionUser; token: string } | { error: string }> {
-  const cleanEmail = email.trim();
+  const cleanId = identifier.trim();
+  const digits = cleanId.replace(/\D/g, "");
+
   const user = await prisma.user.findFirst({
     where: {
-      email: { equals: cleanEmail, mode: "insensitive" },
+      OR: [
+        { email: { equals: cleanId, mode: "insensitive" } },
+        ...(digits.length >= 8
+          ? [
+              { noTelepon: { contains: digits } },
+              { petugasProfiles: { some: { noTelepon: { contains: digits } } } },
+            ]
+          : []),
+      ],
     },
   });
-  if (!user || !user.aktif) return { error: "Email atau password salah" };
+  if (!user || !user.aktif) return { error: "Email/No. HP atau password salah" };
 
   const valid = await verifyPassword(password, user.password);
-  if (!valid) return { error: "Email atau password salah" };
+  if (!valid) return { error: "Email/No. HP atau password salah" };
 
   const sessionUser: SessionUser = {
     id: user.id,
