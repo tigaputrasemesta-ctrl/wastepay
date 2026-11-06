@@ -54,6 +54,7 @@ export async function POST(request: Request) {
 
         await tx.pembayaran.create({
           data: {
+            pelangganId: pelanggan.id,
             tagihanId: currentTagihan.id,
             jumlah: monthlyAmount,
             metode,
@@ -120,6 +121,7 @@ export async function POST(request: Request) {
 
         await tx.pembayaran.create({
           data: {
+            pelangganId: pelanggan.id,
             tagihanId: nextTagihan.id,
             jumlah: monthlyAmount,
             metode,
