@@ -583,14 +583,29 @@ export function generateVCard(pelangganList, categoryLabel = "Pelanggan WastePay
 // DATABASE & CLI RUNNER
 // ============================================================================
 
+let globalPool = null;
+
 function getPrisma() {
   const dbUrl = process.env.DATABASE_URL?.trim() || "";
-  const pool = new Pool({
+  globalPool = new Pool({
     connectionString: dbUrl.replace(/[?&]sslmode=[^&]+/g, "").replace(/\?$/, ""),
     ssl: { rejectUnauthorized: false },
   });
-  const adapter = new PrismaPg(pool);
+  const adapter = new PrismaPg(globalPool);
   return new PrismaClient({ adapter });
+}
+
+async function closePrisma(prisma) {
+  if (prisma) {
+    try {
+      await prisma.$disconnect();
+    } catch {}
+  }
+  if (globalPool) {
+    try {
+      await globalPool.end();
+    } catch {}
+  }
 }
 
 const C = {
@@ -718,10 +733,11 @@ async function main() {
 
   let prisma = null;
   try {
-    prisma = getPrisma();
-  } catch (err) {
-    // Abaikan jika database belum siap
-  }
+    try {
+      prisma = getPrisma();
+    } catch (err) {
+      // Abaikan jika database belum siap
+    }
 
   const config = await getOAuthConfig(prisma);
 
@@ -974,7 +990,10 @@ async function main() {
     return;
   }
 
-  showHelp();
+    showHelp();
+  } finally {
+    await closePrisma(prisma);
+  }
 }
 
 main()
