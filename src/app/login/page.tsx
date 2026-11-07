@@ -7,14 +7,13 @@ import { Truck, LogIn, Smartphone, ShieldCheck, Loader2 } from "lucide-react";
 import { NativeGuardedLink } from "@/components/mobile/LandingApkBanner";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("raka@hero.com");
+  const [password, setPassword] = useState("123456");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function performLogin(targetEmail: string, targetPass: string) {
     setError("");
     setLoading(true);
 
@@ -22,7 +21,7 @@ export default function LoginPage() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: targetEmail, password: targetPass }),
       });
 
       const data = await res.json();
@@ -41,7 +40,6 @@ export default function LoginPage() {
               localStorage.setItem("wp_mobile_token", data.token);
               localStorage.setItem("wp_mobile_user", JSON.stringify(data.user));
             } else {
-              // Bersihkan token dari localStorage jika login di browser desktop biasa
               localStorage.removeItem("wp_mobile_token");
               localStorage.removeItem("wp_mobile_user");
             }
@@ -62,6 +60,11 @@ export default function LoginPage() {
     }
   }
 
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    await performLogin(email, password);
+  }
+
   return (
     <main className="min-h-screen bg-[#F8FAFC] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -78,6 +81,59 @@ export default function LoginPage() {
         </div>
 
         <div className="bg-white px-6 sm:px-10 py-10 shadow-sm border border-slate-200/60 rounded-2xl">
+          {/* Quick Access Driver Mode Terbuka */}
+          <div className="mb-6 p-4 rounded-xl bg-emerald-50/80 border border-emerald-200/90">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-1.5 font-bold text-xs text-emerald-900 tracking-tight">
+                <span className="px-1.5 py-0.5 rounded bg-emerald-700 text-white text-[10px] font-black uppercase">
+                  ⚡ Mode Terbuka
+                </span>
+                <span>Akses Cepat 1-Ketukan</span>
+              </div>
+            </div>
+            <p className="text-[11px] text-emerald-800 mb-3 leading-relaxed">
+              Klik nama supir armada di bawah untuk langsung masuk tanpa perlu mengetik kata sandi:
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => performLogin("raka@hero.com", "123456")}
+                disabled={loading}
+                className="p-2.5 rounded-lg bg-white border border-emerald-300 hover:border-emerald-600 hover:bg-emerald-50/50 text-left transition-all active:scale-95 shadow-xs flex flex-col justify-between"
+              >
+                <div>
+                  <div className="font-bold text-xs text-slate-900">🚛 Raka Driver</div>
+                  <div className="text-[10px] text-slate-500">Grandmax Astroboy</div>
+                </div>
+                <div className="mt-2 text-[10px] font-bold text-emerald-700">Masuk Langsung ➔</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => performLogin("ago@hero.com", "123456")}
+                disabled={loading}
+                className="p-2.5 rounded-lg bg-white border border-emerald-300 hover:border-emerald-600 hover:bg-emerald-50/50 text-left transition-all active:scale-95 shadow-xs flex flex-col justify-between"
+              >
+                <div>
+                  <div className="font-bold text-xs text-slate-900">🚛 Ago Driver</div>
+                  <div className="text-[10px] text-slate-500">Grandmax B 1999</div>
+                </div>
+                <div className="mt-2 text-[10px] font-bold text-emerald-700">Masuk Langsung ➔</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => performLogin("piat@hero.com", "123456")}
+                disabled={loading}
+                className="p-2.5 rounded-lg bg-white border border-emerald-300 hover:border-emerald-600 hover:bg-emerald-50/50 text-left transition-all active:scale-95 shadow-xs flex flex-col justify-between"
+              >
+                <div>
+                  <div className="font-bold text-xs text-slate-900">🚛 Piat Driver</div>
+                  <div className="text-[10px] text-slate-500">Carry Futura B 2000</div>
+                </div>
+                <div className="mt-2 text-[10px] font-bold text-emerald-700">Masuk Langsung ➔</div>
+              </button>
+            </div>
+          </div>
+
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-semibold text-slate-700 mb-2">
