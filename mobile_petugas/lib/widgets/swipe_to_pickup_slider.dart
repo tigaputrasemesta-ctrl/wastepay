@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../core/constants/app_colors.dart';
 
 class SwipeToPickupSlider extends StatefulWidget {
   final Future<void> Function() onConfirmed;

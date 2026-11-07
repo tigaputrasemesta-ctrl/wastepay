@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import '../models/tugas_model.dart';
 import '../services/pengangkutan_service.dart';
+import '../services/offline_queue_service.dart';
 
 class PengangkutanProvider with ChangeNotifier {
   List<TugasModel> _tugasList = [];
@@ -10,6 +11,7 @@ class PengangkutanProvider with ChangeNotifier {
   String _searchQuery = '';
   String _selectedFilter = 'semua'; // 'semua', 'terjadwal', 'diambil', 'dilewati'
   String _currentDateISO = DateFormat('yyyy-MM-dd').format(DateTime.now());
+  int _pendingOfflineCount = 0;
 
   List<TugasModel> get tugasList => _tugasList;
   bool get isLoading => _isLoading;
@@ -17,6 +19,7 @@ class PengangkutanProvider with ChangeNotifier {
   String get searchQuery => _searchQuery;
   String get selectedFilter => _selectedFilter;
   String get currentDateISO => _currentDateISO;
+  int get pendingOfflineCount => _pendingOfflineCount;
   bool get isToday => _currentDateISO == DateFormat('yyyy-MM-dd').format(DateTime.now());
 
   String get besokISO {
@@ -131,10 +134,22 @@ class PengangkutanProvider with ChangeNotifier {
     loadTugas();
   }
 
+  Future<void> checkPendingOffline() async {
+    _pendingOfflineCount = await OfflineQueueService.getPendingCount();
+    notifyListeners();
+  }
+
   Future<void> loadTugas() async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
+
+    // Coba sync antrean offline dulu jika ada koneksi
+    try {
+      await OfflineQueueService.syncQueue();
+    } catch (_) {}
+
+    await checkPendingOffline();
 
     try {
       _tugasList = await PengangkutanService.getTugasHariIni(_currentDateISO);
@@ -147,8 +162,32 @@ class PengangkutanProvider with ChangeNotifier {
     }
   }
 
-  /// 1-Tap Quick Pickup Cepat
+  /// Update state lokal secara instan (optimistic UI update untuk pengemudi)
+  void _updateLocalTaskStatus(int taskId, String newStatus, {String? catatan}) {
+    final idx = _tugasList.indexWhere((t) => t.id == taskId);
+    if (idx != -1) {
+      final old = _tugasList[idx];
+      _tugasList[idx] = TugasModel(
+        id: old.id,
+        tanggal: old.tanggal,
+        status: newStatus,
+        volume: old.volume,
+        berat: old.berat,
+        jenisSampah: old.jenisSampah,
+        catatan: catatan ?? old.catatan,
+        urutan: old.urutan,
+        pelanggan: old.pelanggan,
+        tunggakan: old.tunggakan,
+      );
+      notifyListeners();
+    }
+  }
+
+  /// 1-Tap Quick Pickup Cepat (Offline-Resilient)
   Future<bool> quickPickup(int taskId, {double? lat, double? lng}) async {
+    // 1. Optimistic Update di UI driver
+    _updateLocalTaskStatus(taskId, 'diambil');
+
     try {
       await PengangkutanService.updateStatus(
         taskId: taskId,
@@ -158,32 +197,47 @@ class PengangkutanProvider with ChangeNotifier {
         longitude: lng,
         jenisSampah: 'campuran',
       );
-
-      // Refresh data
-      await loadTugas();
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
-      notifyListeners();
-      return false;
+      // Jika jaringan gagal, simpan ke antrean offline
+      await OfflineQueueService.enqueue(
+        OfflinePickupItem(
+          taskId: taskId,
+          status: 'diambil',
+          catatan: 'Pickup offline tersimpan',
+          latitude: lat,
+          longitude: lng,
+          jenisSampah: 'campuran',
+          timestamp: DateTime.now().toIso8601String(),
+        ),
+      );
+      await checkPendingOffline();
+      return true; // Tetap sukses bagi supir agar tidak menghambat operasional
     }
   }
 
-  /// Lewati rumah menunggak atau rumah kosong
+  /// Lewati rumah menunggak atau rumah kosong (Offline-Resilient)
   Future<bool> lewatiRumah(int taskId, String status, String alasan) async {
+    _updateLocalTaskStatus(taskId, status, catatan: alasan);
+
     try {
       await PengangkutanService.updateStatus(
         taskId: taskId,
         status: status, // "tidak_diangkut" atau "kosong"
         catatan: alasan,
       );
-
-      await loadTugas();
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
-      notifyListeners();
-      return false;
+      await OfflineQueueService.enqueue(
+        OfflinePickupItem(
+          taskId: taskId,
+          status: status,
+          catatan: alasan,
+          timestamp: DateTime.now().toIso8601String(),
+        ),
+      );
+      await checkPendingOffline();
+      return true;
     }
   }
 }

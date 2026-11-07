@@ -11,7 +11,7 @@ import 'providers/rute_provider.dart';
 import 'providers/update_provider.dart';
 import 'providers/admin_provider.dart';
 import 'screens/auth/login_screen.dart';
-import 'screens/dashboard/dashboard_screen.dart';
+import 'screens/cockpit/driver_cockpit_screen.dart';
 import 'screens/admin/admin_dashboard_screen.dart';
 
 void main() {
@@ -85,7 +85,7 @@ class AuthGate extends StatelessWidget {
         if (auth.user?.role == 'admin' || auth.user?.role == 'superadmin') {
           return const AdminDashboardScreen();
         }
-        return const DashboardScreen();
+        return const DriverCockpitScreen();
       case AuthStatus.unauthenticated:
         return const LoginScreen();
     }
