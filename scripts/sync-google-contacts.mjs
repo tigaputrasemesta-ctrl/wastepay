@@ -12,12 +12,24 @@
  *   node scripts/sync-google-contacts.mjs --export-vcf [namafile.vcf]
  */
 
-import "dotenv/config";
 import fs from "fs";
 import path from "path";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
+
+// Load .env secara aman tanpa dependensi eksternal (menggunakan Node 20+ loadEnvFile jika ada)
+try {
+  if (typeof process.loadEnvFile === "function") {
+    if (fs.existsSync(".env.local")) {
+      process.loadEnvFile(".env.local");
+    } else if (fs.existsSync(".env")) {
+      process.loadEnvFile(".env");
+    }
+  }
+} catch {
+  // Abaikan jika .env tidak ada atau env sudah terinjeksi oleh runtime/container
+}
 
 // ============================================================================
 // HELPER MURNI GOOGLE CONTACTS
