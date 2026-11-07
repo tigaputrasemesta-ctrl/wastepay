@@ -86,6 +86,18 @@ type GojekDriverCockpitProps = {
   totalCount?: number;
   percentComplete?: number;
   onRadiusChange?: (radius: number) => void;
+  // Offline-First queue & Incident radar
+  offlineQueueCount?: number;
+  nearbyComplaint?: {
+    id: number;
+    nama: string;
+    jenis: string;
+    deskripsi: string;
+    jarakM: number;
+    alamat: string;
+  } | null;
+  activeArmadaPlate?: string;
+  onMarkEmpty?: (taskId: number) => Promise<void>;
 };
 
 const PUSAT_DEPOK: [number, number] = [-6.424838, 106.832667];

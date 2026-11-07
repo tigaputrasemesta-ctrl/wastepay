@@ -74,7 +74,37 @@ interface SummaryStats {
   blastPendingResendCount?: number;
 }
 
-const DEFAULT_BLAST_MESSAGE = `*PEMBERITAHUAN RESMI — UPS HERU DEPOK* 🚛
+const TEMPLATE_RAMAH_WARGA = `*PEMBERITAHUAN RESMI — UPS HERU DEPOK* 🚛
+Layanan Pengangkutan Sampah Warga
+
+Halo Bapak/Ibu {nama} yang baik, salam sehat selalu yaa! 😊🙏
+
+Mohon izin mengganggu sebentar. Ini pesan resmi dari *Admin Pusat UPS HERU* (Nomor Resmi: 0814-0078-2617).
+
+Bapak/Ibu jangan kaget yaa menerima pesan dari nomor resmi ini. Petugas lapangan yang biasa keliling angkut sampah di rumah Bapak/Ibu tetap tim kesayangan kita, yaitu *Mas Doyok / Nopi* (WhatsApp: 0896-8815-1473).
+
+Sekarang jadwal penjemputan dan pencatatan pembayaran sampah warga sudah masuk ke sistem online rapi, biar sampah rumah Bapak/Ibu tidak pernah kelewat lagi!
+
+Bagi rumah Bapak/Ibu yang nomornya belum tercatat di sistem, yuk luangkan waktu *1 menit* untuk daftar mandiri (GRATIS tanpa biaya):
+
+👉 *Klik Link Daftar Cepat:*
+{link_daftar}
+_(Cukup isi nama & alamat saja, gampang banget kok!)_
+
+✨ *Kenapa Enak Banget Kalau Sudah Terdaftar?*
+1. 🚛 *Sampah Pasti Terjemput:* Rumah Bapak/Ibu otomatis muncul di peta GPS supir truk kami. Jadi sampah dijamin rutin diangkut walau supir berganti.
+2. 🧾 *Kuitansi Rapi Langsung di WA:* Bukti pembayaran otomatis terkirim ke WhatsApp Bapak/Ibu. Iuran tetap sama, bisa bayar tunai ke Mas Doyok / Nopi atau transfer/QRIS tanpa takut kuitansi kertas hilang/basah lagi.
+3. ⚡ *Lapor Sampah Cepat:* Kalau ada sampah ketinggalan, tinggal lapor lewat WA langsung cepat dijemput kembali.
+
+💡 *Bingung atau Gaptek Mau Daftar?*
+Tenang saja yaa, Bapak/Ibu bisa:
+• Balas langsung pesan WA ini dengan sebutkan nama & alamat rumah, ATAU
+• Hubungi / titip minta tolong didaftarkan sama *Mas Doyok / Nopi* di WhatsApp: 0896-8815-1473 saat jadwal jemput sampah di depan rumah.
+
+Terima kasih banyak atas dukungannya menjaga kebersihan lingkungan bersama kami! 💚
+_Salam hangat, Tim UPS HERU & Mas Doyok / Nopi_`;
+
+const TEMPLATE_FORMAL = `*PEMBERITAHUAN RESMI — UPS HERU DEPOK* 🚛
 Layanan Terpadu Pengangkutan Sampah Warga
 
 Yth. Bapak/Ibu {nama},
@@ -100,9 +130,12 @@ Jika sampah belum terangkut atau ada kendala, laporan langsung mendapat *Nomor T
 
 📞 *Pusat Bantuan & Layanan Pelanggan:*
 WhatsApp Admin: https://wa.me/6281400782617 (0814-0078-2617)
+Petugas Survei & Lapangan (Novi/Doyok): 0896-8815-1473
 
 Terima kasih atas kerja samanya dalam menjaga kebersihan lingkungan bersama kami. 🙏
 _Manajemen UPS HERU (WastePay)_`;
+
+const DEFAULT_BLAST_MESSAGE = TEMPLATE_RAMAH_WARGA;
 
 export default function DataKontrolPage() {
   const [contacts, setContacts] = useState<KontrolContact[]>([]);
@@ -122,7 +155,7 @@ export default function DataKontrolPage() {
 
   // Blast Modal State
   const [isBlastModalOpen, setIsBlastModalOpen] = useState(false);
-  const [senderMode, setSenderMode] = useState<"auto" | "hp_petugas" | "hp_admin">("auto");
+  const [senderMode, setSenderMode] = useState<"auto" | "hp_petugas" | "hp_admin">("hp_admin");
   const [blastMessage, setBlastMessage] = useState(DEFAULT_BLAST_MESSAGE);
   const [isSendingBlast, setIsSendingBlast] = useState(false);
   const [blastResult, setBlastResult] = useState<any | null>(null);
@@ -1019,6 +1052,35 @@ export default function DataKontrolPage() {
                       <code className="bg-slate-100 dark:bg-zinc-800 px-1 py-0.5 rounded text-emerald-600 dark:text-emerald-400">{"{wilayah}"}</code>
                       <code className="bg-slate-100 dark:bg-zinc-800 px-1 py-0.5 rounded text-emerald-600 dark:text-emerald-400">{"{link_daftar}"}</code>
                     </div>
+                  </div>
+
+                  {/* Preset Template Switcher */}
+                  <div className="flex items-center gap-2 pt-0.5 pb-1 flex-wrap">
+                    <span className="text-[11px] text-slate-500 dark:text-zinc-400 font-medium">Gaya Pesan:</span>
+                    <button
+                      type="button"
+                      onClick={() => setBlastMessage(TEMPLATE_RAMAH_WARGA)}
+                      className={`px-2.5 py-1 text-xs rounded-md transition font-medium flex items-center gap-1 ${
+                        blastMessage === TEMPLATE_RAMAH_WARGA
+                          ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200 border border-emerald-400 font-semibold"
+                          : "bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-zinc-300 hover:bg-slate-200 dark:hover:bg-zinc-700"
+                      }`}
+                    >
+                      <span>👶</span>
+                      <span>Ramah Warga (Mas Doyok / Nopi)</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setBlastMessage(TEMPLATE_FORMAL)}
+                      className={`px-2.5 py-1 text-xs rounded-md transition font-medium flex items-center gap-1 ${
+                        blastMessage === TEMPLATE_FORMAL
+                          ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200 border border-emerald-400 font-semibold"
+                          : "bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-zinc-300 hover:bg-slate-200 dark:hover:bg-zinc-700"
+                      }`}
+                    >
+                      <span>🏢</span>
+                      <span>Formal Kantor</span>
+                    </button>
                   </div>
 
                   <textarea
