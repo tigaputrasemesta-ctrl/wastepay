@@ -90,6 +90,15 @@ export async function PUT(
             },
           });
         }
+      } else if (existing.status === "lunas" && (status === "belum_bayar" || status === "tunggakan")) {
+        // Jika status dibatalkan dari lunas menjadi belum bayar/tunggakan,
+        // hapus pembayaran manual/non-gateway terkait agar tidak terjadi selisih kas pembukuan
+        await tx.pembayaran.deleteMany({
+          where: {
+            tagihanId: id,
+            NOT: { metode: { startsWith: "duitku" } },
+          },
+        });
       }
 
       return updated;

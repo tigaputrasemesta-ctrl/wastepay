@@ -98,6 +98,15 @@ export default function DetailPelangganPage() {
   const [loading, setLoading] = useState(true);
   const [showApprovalModal, setShowApprovalModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
+  const [editTagihanModal, setEditTagihanModal] = useState<{
+    id: number;
+    bulan: number;
+    tahun: number;
+    jumlah: number;
+    status: string;
+  } | null>(null);
+  const [statusBaru, setStatusBaru] = useState<string>("");
+  const [isUpdatingTagihan, setIsUpdatingTagihan] = useState(false);
   const [previewBuktiModal, setPreviewBuktiModal] = useState<{
     url: string;
     nama: string;
@@ -105,6 +114,38 @@ export default function DetailPelangganPage() {
     metode?: string;
     nominal?: number;
   } | null>(null);
+
+  async function handleUpdateStatusTagihan() {
+    if (!editTagihanModal || !statusBaru) return;
+    setIsUpdatingTagihan(true);
+    try {
+      const res = await fetch(`/api/tagihan/${editTagihanModal.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: statusBaru }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || "Gagal mengubah status tagihan");
+      }
+      showToast(
+        `Status tagihan ${bulanList[editTagihanModal.bulan - 1]} ${editTagihanModal.tahun} berhasil diubah ke ${
+          statusBaru === "belum_bayar" ? "Belum Bayar" : statusBaru === "lunas" ? "Lunas" : "Tunggakan"
+        }`,
+        "success"
+      );
+      // Refresh data pelanggan agar status tagihan & riwayat pembayaran langsung sinkron
+      const freshRes = await fetch(`/api/pelanggan/${params.id}`);
+      if (freshRes.ok) {
+        setData(await freshRes.json());
+      }
+      setEditTagihanModal(null);
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : "Terjadi kesalahan", "error");
+    } finally {
+      setIsUpdatingTagihan(false);
+    }
+  }
 
   useEffect(() => {
     async function fetchData() {
@@ -598,6 +639,7 @@ export default function DetailPelangganPage() {
                       <th className="text-right px-3 py-2 font-semibold">Jumlah</th>
                       <th className="text-left px-3 py-2 font-semibold">Jatuh Tempo</th>
                       <th className="text-center px-3 py-2 font-semibold">Status</th>
+                      <th className="text-center px-3 py-2 font-semibold">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -616,6 +658,20 @@ export default function DetailPelangganPage() {
                           }`}>
                             {t.status === "belum_bayar" ? "Belum Bayar" : t.status === "lunas" ? "Lunas" : "Tunggakan"}
                           </span>
+                        </td>
+                        <td className="px-3 py-2.5 text-center">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditTagihanModal(t);
+                              setStatusBaru(t.status);
+                            }}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-700 transition active:scale-95 shadow-sm"
+                            title="Kelola status tagihan periode ini"
+                          >
+                            <span>⚙️</span>
+                            <span>Ubah Status</span>
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -801,6 +857,122 @@ export default function DetailPelangganPage() {
         }}
         showToast={showToast}
       />
+      {/* Modal Kelola Status Tagihan (Disimpan Khusus di View Pelanggan) */}
+      {editTagihanModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150"
+          onClick={() => !isUpdatingTagihan && setEditTagihanModal(null)}
+        >
+          <div
+            className="bg-white dark:bg-zinc-900 rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-zinc-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+              <div>
+                <h3 className="font-bold text-slate-900 dark:text-zinc-100 text-base">
+                  Kelola Status Tagihan
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
+                  Periode {bulanList[editTagihanModal.bulan - 1]} {editTagihanModal.tahun} • {data.nama}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditTagihanModal(null)}
+                disabled={isUpdatingTagihan}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors disabled:opacity-50"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div className="bg-slate-50 dark:bg-zinc-950/60 p-3.5 rounded-xl border border-slate-200/80 dark:border-zinc-800 text-xs space-y-1.5">
+                <div className="flex justify-between">
+                  <span className="text-slate-500 dark:text-zinc-400">Nominal Tagihan:</span>
+                  <span className="font-bold tabular-nums text-slate-800 dark:text-zinc-200">{formatRupiah(editTagihanModal.jumlah)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500 dark:text-zinc-400">Status Saat Ini:</span>
+                  <span className={`font-semibold capitalize px-2 py-0.5 rounded-md text-[11px] ${
+                    editTagihanModal.status === "lunas" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300" :
+                    editTagihanModal.status === "tunggakan" ? "bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300" :
+                    "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
+                  }`}>
+                    {editTagihanModal.status === "belum_bayar" ? "Belum Bayar" : editTagihanModal.status === "lunas" ? "Lunas" : "Tunggakan"}
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-zinc-300 mb-2">
+                  Pilih Status Baru:
+                </label>
+                <div className="space-y-2">
+                  {[
+                    { value: "belum_bayar", label: "Belum Bayar", desc: "Tagihan belum dibayar pelanggan" },
+                    { value: "tunggakan", label: "Tunggakan", desc: "Status tagihan tertunggak" },
+                    { value: "lunas", label: "Lunas", desc: "Tagihan sudah lunas dibayar" },
+                  ].map((opt) => (
+                    <label
+                      key={opt.value}
+                      className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition ${
+                        statusBaru === opt.value
+                          ? "border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-900 dark:text-emerald-200"
+                          : "border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-800/40 text-slate-700 dark:text-zinc-300"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="statusBaru"
+                        value={opt.value}
+                        checked={statusBaru === opt.value}
+                        onChange={(e) => setStatusBaru(e.target.value)}
+                        className="mt-0.5 text-emerald-600 focus:ring-emerald-500"
+                      />
+                      <div className="text-xs">
+                        <p className="font-bold">{opt.label}</p>
+                        <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-0.5">{opt.desc}</p>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {editTagihanModal.status === "lunas" && statusBaru !== "lunas" && (
+                <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 rounded-xl text-amber-800 dark:text-amber-200 text-xs">
+                  <p className="font-semibold flex items-center gap-1.5 mb-1">
+                    <span>⚠️</span> Perhatian:
+                  </p>
+                  <p className="text-[11px] leading-relaxed">
+                    Mengubah status dari <strong>Lunas</strong> ke <strong>Belum Bayar / Tunggakan</strong> akan membatalkan pelunasan dan menghapus pencatatan transaksi kas pembayaran tunai terkait agar pembukuan tetap sinkron dan tidak ada selisih.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 px-6 py-4 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+              <button
+                type="button"
+                onClick={() => setEditTagihanModal(null)}
+                disabled={isUpdatingTagihan}
+                className="px-4 py-2 text-xs font-semibold rounded-xl border border-slate-200 dark:border-zinc-700 hover:bg-slate-100 dark:hover:bg-zinc-800 transition disabled:opacity-50"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleUpdateStatusTagihan}
+                disabled={isUpdatingTagihan || statusBaru === editTagihanModal.status}
+                className="px-4 py-2 text-xs font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isUpdatingTagihan ? "Menyimpan…" : "Simpan Perubahan"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Modal Lightbox Foto Bukti Pembayaran */}
       {previewBuktiModal && (
         <div
