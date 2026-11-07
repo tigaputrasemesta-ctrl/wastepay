@@ -35,6 +35,29 @@ const nextConfig: NextConfig = {
 
   async redirects() {
     return [
+      // Redirect traffic dari domain Vercel (tpsheru.vercel.app dan *.vercel.app) ke domain resmi https://upsheru.com
+      {
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: "tpsheru.vercel.app",
+          },
+        ],
+        destination: "https://upsheru.com/:path*",
+        permanent: true,
+      },
+      {
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: "(?<host>.*\\.vercel\\.app)",
+          },
+        ],
+        destination: "https://upsheru.com/:path*",
+        permanent: true,
+      },
       {
         source: "/jangkauan",
         destination: "/coverage",
