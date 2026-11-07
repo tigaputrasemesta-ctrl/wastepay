@@ -20,6 +20,23 @@ import '../../widgets/swipe_to_pickup_slider.dart';
 import '../absensi/absensi_screen.dart';
 import '../pengangkutan/pengangkutan_detail_screen.dart';
 
+/// Model insiden kendala jalan ala Waze (Community Hazard Pin)
+class HazardIncident {
+  final String id;
+  final String label;
+  final String emoji;
+  final LatLng point;
+  final DateTime time;
+
+  HazardIncident({
+    required this.id,
+    required this.label,
+    required this.emoji,
+    required this.point,
+    required this.time,
+  });
+}
+
 class DriverCockpitScreen extends StatefulWidget {
   const DriverCockpitScreen({super.key});
 
@@ -31,8 +48,12 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
   final MapController _mapController = MapController();
   final TextEditingController _searchController = TextEditingController();
 
-  // State tampilan
+  // State tampilan & Waze / Gojek Modul
   String _activeView = "peta"; // "peta" atau "daftar"
+  bool _isOnline = true; // Toggle Siap Angkut / Istirahat (Gojek Driver)
+  bool _useDarkMap = true; // Tactical Dark Navigation Tiles (Waze / Cyberpunk HUD)
+  final List<HazardIncident> _hazardIncidents = []; // Radar Kendala Waze
+
   TugasModel? _activeTarget;
   RouteResult? _currentRoadRoute;
   bool _isLoadingRoute = false;
@@ -215,6 +236,9 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
     if (!mounted) return;
 
     if (ok) {
+      HapticFeedback.heavyImpact();
+      SystemSound.play(SystemSoundType.click);
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("✓ Pengambilan di $targetName berhasil dicatat!"),
@@ -230,6 +254,316 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
 
       _selectNextTarget();
     }
+  }
+
+  /// Konversi arah manuver belokan OSRM ke ikon panah Waze
+  IconData _getManeuverIcon(String? modifier) {
+    final mod = (modifier ?? '').toLowerCase();
+    if (mod.contains('sharp left')) return Icons.turn_sharp_left_rounded;
+    if (mod.contains('slight left')) return Icons.turn_slight_left_rounded;
+    if (mod.contains('left')) return Icons.turn_left_rounded;
+    if (mod.contains('sharp right')) return Icons.turn_sharp_right_rounded;
+    if (mod.contains('slight right')) return Icons.turn_slight_right_rounded;
+    if (mod.contains('right')) return Icons.turn_right_rounded;
+    if (mod.contains('u-turn') || mod.contains('uturn')) return Icons.u_turn_left_rounded;
+    return Icons.straight_rounded;
+  }
+
+  /// Speedometer Waze dengan peringatan batas kecepatan gang komplek
+  Widget _buildWazeSpeedometer(double speedKmH) {
+    final isSpeeding = speedKmH > 25.0;
+    return Container(
+      width: 66,
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0F172A).withValues(alpha: 0.92),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isSpeeding ? Colors.redAccent : const Color(0xFF0284C7),
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isSpeeding ? Colors.red.withValues(alpha: 0.5) : Colors.black45,
+            blurRadius: 8,
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            "${speedKmH.round()}",
+            style: TextStyle(
+              color: isSpeeding ? Colors.redAccent : Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const Text(
+            "km/h",
+            style: TextStyle(color: Colors.white70, fontSize: 9, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 4),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+            decoration: BoxDecoration(
+              color: isSpeeding ? Colors.red : const Color(0xFF1E293B),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              isSpeeding ? "BAHAYA" : "MAKS 20",
+              style: TextStyle(
+                color: isSpeeding ? Colors.white : Colors.amber,
+                fontSize: 8,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Modal Lapor Rintangan Jalan ala Waze (Community Hazard Radar)
+  void _showWazeHazardReportModal(LatLng driverPos) {
+    final hazardOptions = [
+      {"label": "Portal Dikunci", "emoji": "🚧", "desc": "Portal komplek digembok / terkunci"},
+      {"label": "Gang Sempit", "emoji": "🚗", "desc": "Mobil parkir / jalan terhalang"},
+      {"label": "Hajatan Warga", "emoji": "⚠️", "desc": "Tenda hajatan menutup jalan"},
+      {"label": "Kabel Rendah", "emoji": "⚡", "desc": "Kabel melintang rawan nyangkut armada"},
+      {"label": "Sampah Liar", "emoji": "🗑️", "desc": "Tumpukan sampah liar baru warga"},
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF0F172A),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.amber.shade900.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(Icons.warning_amber_rounded, color: Colors.amber, size: 20),
+                    ),
+                    const SizedBox(width: 10),
+                    const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Lapor Rintangan Jalan (Waze Radar)",
+                          style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          "Peringatan real-time untuk armada lain",
+                          style: TextStyle(color: Colors.white60, fontSize: 11),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                IconButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  icon: const Icon(Icons.close, color: Colors.white60),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ...hazardOptions.map((opt) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: InkWell(
+                onTap: () {
+                  Navigator.pop(ctx);
+                  setState(() {
+                    _hazardIncidents.add(HazardIncident(
+                      id: DateTime.now().millisecondsSinceEpoch.toString(),
+                      label: opt["label"]!,
+                      emoji: opt["emoji"]!,
+                      point: driverPos,
+                      time: DateTime.now(),
+                    ));
+                  });
+                  HapticFeedback.heavyImpact();
+                  SystemSound.play(SystemSoundType.click);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("${opt["emoji"]} Radar Waze: Kendala '${opt["label"]}' berhasil dilaporkan!"),
+                      backgroundColor: Colors.amber.shade900,
+                      duration: const Duration(seconds: 3),
+                    ),
+                  );
+                },
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E293B),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.amber.withValues(alpha: 0.2)),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(opt["emoji"]!, style: const TextStyle(fontSize: 22)),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              opt["label"]!,
+                              style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              opt["desc"]!,
+                              style: const TextStyle(color: Colors.white60, fontSize: 11),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(Icons.add_location_alt_rounded, color: Colors.amber, size: 18),
+                    ],
+                  ),
+                ),
+              ),
+            )),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Drawer Pesan Cepat WhatsApp 1-Ketukan ala GrabChat
+  void _showGrabMessageChooser(TugasModel t) {
+    final isMenunggak = t.tunggakan.isMenunggak;
+    final templates = [
+      {
+        "title": "Armada Tiba di Depan Rumah",
+        "icon": Icons.home_rounded,
+        "color": const Color(0xFF00AA13),
+        "text": isMenunggak
+            ? "Halo Bpk/Ibu ${t.pelanggan.nama}, armada kebersihan UPS HERU sudah tiba di depan rumah (${t.pelanggan.alamat}). Namun ada catatan tunggakan iuran di sistem, mohon konfirmasinya ya 🙏"
+            : "Halo Bpk/Ibu ${t.pelanggan.nama}, armada kebersihan UPS HERU sudah tiba di depan rumah (${t.pelanggan.alamat}). Mohon dibukakan gerbang atau sampah dikeluarkan ya 🙏",
+      },
+      {
+        "title": "Tolong Buka Portal Komplek RT",
+        "icon": Icons.fence_rounded,
+        "color": const Color(0xFF0284C7),
+        "text": "Halo Bpk/Ibu ${t.pelanggan.nama}, armada kami tertahan di portal komplek/RT. Mohon izin dibantu koordinasi bukakan portal ya, terima kasih 🙏",
+      },
+      {
+        "title": "Sampah Belum Ada di Luar Pagar",
+        "icon": Icons.delete_outline_rounded,
+        "color": Colors.amber.shade700,
+        "text": "Halo Bpk/Ibu ${t.pelanggan.nama}, kami sudah standby di depan rumah namun sampah belum terlihat di luar pagar. Mohon segera dikeluarkan ya 🙏",
+      },
+      {
+        "title": "Sampah Berhasil Diangkut Bersih",
+        "icon": Icons.check_circle_rounded,
+        "color": const Color(0xFF10B981),
+        "text": "Halo Bpk/Ibu ${t.pelanggan.nama}, pengangkutan sampah rumah Anda hari ini telah selesai kami angkut bersih. Terima kasih atas kerjasamanya 🙏",
+      },
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF0F172A),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF25D366).withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(Icons.chat_rounded, color: Color(0xFF25D366), size: 18),
+                    ),
+                    const SizedBox(width: 10),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Pesan Cepat WhatsApp (Grab Style)",
+                          style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          "Ke: ${t.pelanggan.nama}",
+                          style: const TextStyle(color: Colors.white60, fontSize: 11),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                IconButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  icon: const Icon(Icons.close, color: Colors.white60),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ...templates.map((tpl) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: InkWell(
+                onTap: () {
+                  Navigator.pop(ctx);
+                  DriverActionsService.openCustomWhatsApp(
+                    phone: t.pelanggan.noTelepon,
+                    message: tpl["text"] as String,
+                  );
+                },
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E293B),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: (tpl["color"] as Color).withValues(alpha: 0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(tpl["icon"] as IconData, color: tpl["color"] as Color, size: 20),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          tpl["title"] as String,
+                          style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                      const Icon(Icons.send_rounded, color: Colors.white38, size: 16),
+                    ],
+                  ),
+                ),
+              ),
+            )),
+          ],
+        ),
+      ),
+    );
   }
 
   void _showLewatiModal(TugasModel tugas) {
@@ -431,6 +765,9 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
       _checkProximityAlert(driverPos);
     }
 
+    final double speedMps = driverGeo?.speed ?? 0.0;
+    final double speedKmH = speedMps > 0 ? (speedMps * 3.6) : 0.0;
+
     final totalCount = pengangkutan.totalTugas;
     final completedCount = pengangkutan.totalSelesai;
     final percentComplete = totalCount > 0 ? ((completedCount / totalCount) * 100).round() : 0;
@@ -454,7 +791,7 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
             // ── 2. VIEW CONTENT (Peta Navigasi ATAU Daftar Tugas) ──
             Expanded(
               child: _activeView == "peta"
-                  ? _buildMapView(driverPos, pengangkutan)
+                  ? _buildMapView(driverPos, pengangkutan, speedKmH)
                   : _buildListView(pengangkutan),
             ),
           ],
@@ -463,7 +800,7 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
     );
   }
 
-  // ── 1. TOP COCKPIT HEADER ──
+  // ── 1. TOP COCKPIT HEADER (Gojek Status Online & Waze Telemetry) ──
   Widget _buildTopCockpitBar({
     required dynamic user,
     required dynamic petugas,
@@ -522,22 +859,71 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
                 ],
               ),
 
-              // Tombol Absen & Status Offline
+              // Switch Online Gojek & Tombol Absen
               Row(
                 children: [
+                  // Toggle Status Siap Kerja (Gojek Partner Style)
+                  InkWell(
+                    onTap: () {
+                      setState(() => _isOnline = !_isOnline);
+                      HapticFeedback.selectionClick();
+                      if (_isOnline) {
+                        context.read<TrackingProvider>().startTracking();
+                      } else {
+                        context.read<TrackingProvider>().stopTracking();
+                      }
+                    },
+                    borderRadius: BorderRadius.circular(10),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: _isOnline ? const Color(0xFF065F46) : const Color(0xFF334155),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: _isOnline ? const Color(0xFF10B981) : Colors.white24,
+                          width: 1.2,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 7,
+                            height: 7,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: _isOnline ? const Color(0xFF34D399) : Colors.amber,
+                            ),
+                          ),
+                          const SizedBox(width: 5),
+                          Text(
+                            _isOnline ? "ONLINE" : "OFFLINE",
+                            style: TextStyle(
+                              color: _isOnline ? const Color(0xFF34D399) : Colors.white70,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(width: 6),
+
                   if (pendingOffline > 0)
                     Container(
-                      margin: const EdgeInsets.only(right: 8),
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      margin: const EdgeInsets.only(right: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                       decoration: BoxDecoration(
                         color: Colors.amber.shade900,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.cloud_off_rounded, size: 12, color: Colors.white),
-                          const SizedBox(width: 4),
-                          Text("$pendingOffline offline", style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                          const Icon(Icons.cloud_off_rounded, size: 11, color: Colors.white),
+                          const SizedBox(width: 3),
+                          Text("$pendingOffline", style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ),
@@ -550,7 +936,7 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
                     ),
                     borderRadius: BorderRadius.circular(8),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                       decoration: BoxDecoration(
                         color: isAbsenMasuk ? const Color(0xFF065F46) : const Color(0xFF1E293B),
                         borderRadius: BorderRadius.circular(8),
@@ -562,15 +948,15 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
                         children: [
                           Icon(
                             isAbsenMasuk ? Icons.check_circle_rounded : Icons.camera_alt_rounded,
-                            size: 13,
+                            size: 12,
                             color: isAbsenMasuk ? const Color(0xFF34D399) : Colors.white70,
                           ),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: 4),
                           Text(
-                            isAbsenMasuk ? "Shift Aktif" : "Absen",
+                            isAbsenMasuk ? "Shift OK" : "Absen",
                             style: TextStyle(
                               color: isAbsenMasuk ? Colors.white : Colors.white70,
-                              fontSize: 11,
+                              fontSize: 10,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -579,11 +965,11 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
                     ),
                   ),
 
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 6),
 
                   // Menu Logout / Profil
                   IconButton(
-                    icon: const Icon(Icons.logout_rounded, color: Colors.white54, size: 20),
+                    icon: const Icon(Icons.logout_rounded, color: Colors.white54, size: 18),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                     onPressed: () => context.read<AuthProvider>().logout(),
@@ -614,7 +1000,7 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    "• $completedCount/$totalCount Rumah ($percentComplete%)",
+                    "• $completedCount/$totalCount ($percentComplete%)",
                     style: const TextStyle(color: Colors.white70, fontSize: 11),
                   ),
                 ],
@@ -699,7 +1085,7 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
   }
 
   // ── 2. VIEW PETA INTERAKTIF (Gojek / Grab / Waze) ──
-  Widget _buildMapView(LatLng driverPos, PengangkutanProvider pengangkutan) {
+  Widget _buildMapView(LatLng driverPos, PengangkutanProvider pengangkutan, double speedKmH) {
     final tasks = pengangkutan.tugasList;
     final isArrived = _hasAlertedCurrentTarget;
 
@@ -741,6 +1127,28 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
         ),
       ),
     );
+
+    // Marker Laporan Kendala Waze Radar
+    for (final hz in _hazardIncidents) {
+      markers.add(
+        Marker(
+          point: hz.point,
+          width: 38,
+          height: 38,
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.amber.shade900,
+              border: Border.all(color: Colors.white, width: 2),
+              boxShadow: const [BoxShadow(color: Colors.black54, blurRadius: 6)],
+            ),
+            child: Center(
+              child: Text(hz.emoji, style: const TextStyle(fontSize: 18)),
+            ),
+          ),
+        ),
+      );
+    }
 
     // Filter stop pelanggan
     final pendingStops = tasks.where((t) => t.isTerjadwal && t.pelanggan.hasCoordinates).toList();
@@ -870,7 +1278,7 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
 
     return Stack(
       children: [
-        // 1. KANVAS PETA LEAFLET / OSM
+        // 1. KANVAS PETA LEAFLET / OSM (Dukungan Dark Tactical Waze)
         FlutterMap(
           mapController: _mapController,
           options: MapOptions(
@@ -881,7 +1289,9 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
           ),
           children: [
             TileLayer(
-              urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+              urlTemplate: _useDarkMap
+                  ? "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
+                  : "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
               userAgentPackageName: "com.wastepay.petugas",
             ),
 
@@ -892,7 +1302,7 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
                   Polyline(
                     points: _currentRoadRoute!.points,
                     color: const Color(0xFF0284C7),
-                    strokeWidth: 5.0,
+                    strokeWidth: 5.5,
                   ),
                 ],
               )
@@ -938,9 +1348,13 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      isArrived ? Icons.location_on_rounded : Icons.navigation_rounded,
+                      isArrived
+                          ? Icons.location_on_rounded
+                          : (_currentRoadRoute != null && _currentRoadRoute!.steps.isNotEmpty
+                              ? _getManeuverIcon(_currentRoadRoute!.steps.first.modifier)
+                              : Icons.navigation_rounded),
                       color: Colors.white,
-                      size: 20,
+                      size: 22,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -964,7 +1378,7 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
                         ),
                         if (_currentRoadRoute != null)
                           Text(
-                            "${_currentRoadRoute!.formattedDistance} • ${_currentRoadRoute!.formattedDuration}",
+                            "${_currentRoadRoute!.formattedDistance} • ${_currentRoadRoute!.formattedDuration}${_currentRoadRoute!.steps.isNotEmpty ? " • ${_currentRoadRoute!.steps.first.distanceMeters.round()}m lagi" : ""}",
                             style: const TextStyle(color: Colors.white70, fontSize: 11),
                           ),
                       ],
@@ -981,12 +1395,42 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
             ),
           ),
 
-        // 3. FLOATING ACTION BUTTONS (KANAN)
+        // 3. SPEEDOMETER WAZE DIGITAL (KIRI BAWAH)
+        Positioned(
+          left: 12,
+          bottom: 240,
+          child: _buildWazeSpeedometer(speedKmH),
+        ),
+
+        // 4. FLOATING ACTION BUTTONS (KANAN)
         Positioned(
           right: 12,
           bottom: 240,
           child: Column(
             children: [
+              // Waze Hazard Community Reporter (Tombol Oranye Lapor Kendala)
+              FloatingActionButton.small(
+                heroTag: "wazeHazardBtn",
+                backgroundColor: Colors.amber.shade900,
+                onPressed: () => _showWazeHazardReportModal(driverPos),
+                tooltip: "Lapor Kendala Jalan (Waze)",
+                child: const Icon(Icons.warning_amber_rounded, color: Colors.white),
+              ),
+              const SizedBox(height: 8),
+
+              // Toggle Peta Dark Mode / Light Mode
+              FloatingActionButton.small(
+                heroTag: "mapThemeBtn",
+                backgroundColor: const Color(0xFF1E293B),
+                onPressed: () {
+                  setState(() => _useDarkMap = !_useDarkMap);
+                  HapticFeedback.selectionClick();
+                },
+                tooltip: _useDarkMap ? "Mode Peta Terang" : "Mode Peta Gelap (Tactical)",
+                child: Icon(_useDarkMap ? Icons.nightlight_round : Icons.wb_sunny_rounded, color: Colors.amber),
+              ),
+              const SizedBox(height: 8),
+
               // Buka Waze / Google Maps Eksternal
               FloatingActionButton.small(
                 heroTag: "navChooser",
@@ -1002,6 +1446,7 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
                     );
                   }
                 },
+                tooltip: "Buka Navigasi Eksternal",
                 child: const Icon(Icons.near_me_rounded, color: Colors.white),
               ),
               const SizedBox(height: 8),
@@ -1147,20 +1592,12 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
           // Baris 2: Quick Action Bar (WhatsApp, Telepon, Lewati)
           Row(
             children: [
-              // WhatsApp Warga
+              // WhatsApp Warga (GrabChat Instant Action Templates)
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () {
-                    DriverActionsService.openWhatsApp(
-                      phone: t.pelanggan.noTelepon,
-                      nama: t.pelanggan.nama,
-                      alamat: t.pelanggan.alamat,
-                      patokan: t.pelanggan.patokanLokasi,
-                      isMenunggak: isMenunggak,
-                    );
-                  },
+                  onPressed: () => _showGrabMessageChooser(t),
                   icon: const Icon(Icons.chat_rounded, color: Color(0xFF25D366), size: 16),
-                  label: const Text("WhatsApp", style: TextStyle(color: Colors.white, fontSize: 11)),
+                  label: const Text("Pesan Cepat", style: TextStyle(color: Colors.white, fontSize: 11)),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Color(0xFF334155)),
                     padding: const EdgeInsets.symmetric(vertical: 8),

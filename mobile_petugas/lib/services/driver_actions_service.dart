@@ -61,4 +61,20 @@ class DriverActionsService {
       return false;
     }
   }
+
+  /// Buka WhatsApp dengan pesan kustom instan (Template Grab/Gojek)
+  static Future<bool> openCustomWhatsApp({
+    required String? phone,
+    required String message,
+  }) async {
+    final cleanPhone = cleanIndoPhone(phone);
+    if (cleanPhone == null) return false;
+
+    final url = Uri.parse("https://wa.me/$cleanPhone?text=${Uri.encodeComponent(message)}");
+    try {
+      return await launchUrl(url, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      return false;
+    }
+  }
 }
