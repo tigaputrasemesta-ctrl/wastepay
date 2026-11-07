@@ -610,14 +610,12 @@ export function generateGoogleContactsCsv(
   const rows: string[] = [headers.join(",")];
 
   for (const p of pelangganList) {
-    const nameParts = (p.nama || "").trim().split(/\s+/);
-    const givenName = nameParts[0] || "Pelanggan";
-    const familyName = nameParts.slice(1).join(" ") || "";
     const kelurahan = p.kelurahan?.nama || "";
     const zona = p.wilayah?.zona?.nama || p.wilayah?.nama || "";
+    // Nama + Zona agar langsung terdeteksi di kontak WhatsApp & HP
     const fullName = zona
-      ? `${p.nama} - ${zona} [${p.kodePelanggan}]`
-      : `${p.nama} [${p.kodePelanggan}]`;
+      ? `${p.nama} - ${zona}`
+      : (p.kodePelanggan ? `${p.nama} [${p.kodePelanggan}]` : p.nama);
     const phone = formatPhoneE164(p.noTelepon);
     const kategori = p.kategori ? p.kategori.replace(/_/g, " ").toUpperCase() : "";
 
@@ -641,9 +639,9 @@ export function generateGoogleContactsCsv(
 
     const row = [
       escapeCsv(fullName), // Name
-      escapeCsv(givenName), // Given Name
+      escapeCsv(fullName), // Given Name (disetel Nama + Zona agar WhatsApp membaca lengkap)
       "", // Additional Name
-      escapeCsv(familyName), // Family Name
+      "", // Family Name
       "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
       escapeCsv(notesLines.join("\n")), // Notes
       "", "",
@@ -661,7 +659,7 @@ export function generateGoogleContactsCsv(
       "Indonesia", // Country
       escapeCsv(p.patokanLokasi || (p.rtRw ? `RT/RW ${p.rtRw}` : "")), // Extended Address
       "WastePay", // Organization 1 - Name
-      escapeCsv(`Pelanggan ${kategori}`), // Organization 1 - Title
+      escapeCsv(zona ? `Pelanggan - ${zona}` : `Pelanggan ${kategori}`), // Organization 1 - Title
       escapeCsv(zona), // Organization 1 - Department
     ];
 
@@ -681,14 +679,12 @@ export function generateVCard(
   const vcards: string[] = [];
 
   for (const p of pelangganList) {
-    const nameParts = (p.nama || "").trim().split(/\s+/);
-    const givenName = nameParts[0] || "Pelanggan";
-    const familyName = nameParts.slice(1).join(" ") || "";
     const kelurahan = p.kelurahan?.nama || "";
     const zona = p.wilayah?.zona?.nama || p.wilayah?.nama || "";
+    // Nama + Zona agar mudah dideteksi langsung di WhatsApp
     const fullName = zona
-      ? `${p.nama} - ${zona} [${p.kodePelanggan}]`
-      : `${p.nama} [${p.kodePelanggan}]`;
+      ? `${p.nama} - ${zona}`
+      : (p.kodePelanggan ? `${p.nama} [${p.kodePelanggan}]` : p.nama);
     const phone = formatPhoneE164(p.noTelepon);
     const kategori = p.kategori ? p.kategori.replace(/_/g, " ").toUpperCase() : "";
 
@@ -708,13 +704,13 @@ export function generateVCard(
       "BEGIN:VCARD",
       "VERSION:3.0",
       `FN:${fullName}`,
-      `N:${familyName};${givenName};;;`,
+      `N:;${fullName.replace(/;/g, " ")};;;`,
       phone ? `TEL;TYPE=CELL,VOICE:${phone}` : "",
       p.alamat
         ? `ADR;TYPE=HOME:;;${p.alamat.replace(/;/g, " ")};${kelurahan || "Depok"};Jawa Barat;;Indonesia`
         : "",
       "ORG:WastePay",
-      `TITLE:${zona ? `Pelanggan ${kategori} - ${zona}` : `Pelanggan ${kategori}`}`,
+      `TITLE:${zona ? `Pelanggan - ${zona}` : `Pelanggan ${kategori}`}`,
       `NOTE:${notesLines.join("\\n")}`,
       `CATEGORIES:${categoryLabel}`,
       "END:VCARD",

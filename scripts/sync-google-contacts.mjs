@@ -17,7 +17,6 @@ import fs from "fs";
 import path from "path";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaLibSql } from "@prisma/adapter-libsql";
 import { Pool } from "pg";
 
 // ============================================================================
@@ -472,14 +471,12 @@ export function generateGoogleContactsCsv(pelangganList, groupLabel = "Pelanggan
   const rows = [headers.join(",")];
 
   for (const p of pelangganList) {
-    const nameParts = (p.nama || "").trim().split(/\s+/);
-    const givenName = nameParts[0] || "Pelanggan";
-    const familyName = nameParts.slice(1).join(" ") || "";
     const kelurahan = p.kelurahan?.nama || "";
     const zona = p.wilayah?.zona?.nama || p.wilayah?.nama || "";
+    // Nama + Zona agar langsung terdeteksi di kontak WhatsApp & HP
     const fullName = zona
-      ? `${p.nama} - ${zona} [${p.kodePelanggan}]`
-      : `${p.nama} [${p.kodePelanggan}]`;
+      ? `${p.nama} - ${zona}`
+      : (p.kodePelanggan ? `${p.nama} [${p.kodePelanggan}]` : p.nama);
     const phone = formatPhoneE164(p.noTelepon);
     const kategori = p.kategori ? p.kategori.replace(/_/g, " ").toUpperCase() : "";
 
@@ -502,10 +499,10 @@ export function generateGoogleContactsCsv(pelangganList, groupLabel = "Pelanggan
     ].filter(Boolean).join(", ");
 
     const row = [
-      escapeCsv(fullName),
-      escapeCsv(givenName),
-      "",
-      escapeCsv(familyName),
+      escapeCsv(fullName), // Name
+      escapeCsv(fullName), // Given Name (disetel Nama + Zona agar WhatsApp membaca lengkap)
+      "", // Additional Name
+      "", // Family Name
       "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
       escapeCsv(notesLines.join("\n")),
       "", "",
@@ -523,7 +520,7 @@ export function generateGoogleContactsCsv(pelangganList, groupLabel = "Pelanggan
       "Indonesia",
       escapeCsv(p.patokanLokasi || (p.rtRw ? `RT/RW ${p.rtRw}` : "")),
       "WastePay",
-      escapeCsv(`Pelanggan ${kategori}`),
+      escapeCsv(zona ? `Pelanggan - ${zona}` : `Pelanggan ${kategori}`),
       escapeCsv(zona),
     ];
 
@@ -537,14 +534,12 @@ export function generateVCard(pelangganList, categoryLabel = "Pelanggan WastePay
   const vcards = [];
 
   for (const p of pelangganList) {
-    const nameParts = (p.nama || "").trim().split(/\s+/);
-    const givenName = nameParts[0] || "Pelanggan";
-    const familyName = nameParts.slice(1).join(" ") || "";
     const kelurahan = p.kelurahan?.nama || "";
     const zona = p.wilayah?.zona?.nama || p.wilayah?.nama || "";
+    // Nama + Zona agar mudah dideteksi langsung di WhatsApp
     const fullName = zona
-      ? `${p.nama} - ${zona} [${p.kodePelanggan}]`
-      : `${p.nama} [${p.kodePelanggan}]`;
+      ? `${p.nama} - ${zona}`
+      : (p.kodePelanggan ? `${p.nama} [${p.kodePelanggan}]` : p.nama);
     const phone = formatPhoneE164(p.noTelepon);
     const kategori = p.kategori ? p.kategori.replace(/_/g, " ").toUpperCase() : "";
 
@@ -564,13 +559,13 @@ export function generateVCard(pelangganList, categoryLabel = "Pelanggan WastePay
       "BEGIN:VCARD",
       "VERSION:3.0",
       `FN:${fullName}`,
-      `N:${familyName};${givenName};;;`,
+      `N:;${fullName.replace(/;/g, " ")};;;`,
       phone ? `TEL;TYPE=CELL,VOICE:${phone}` : "",
       p.alamat
         ? `ADR;TYPE=HOME:;;${p.alamat.replace(/;/g, " ")};${kelurahan || "Depok"};Jawa Barat;;Indonesia`
         : "",
       "ORG:WastePay",
-      `TITLE:${zona ? `Pelanggan ${kategori} - ${zona}` : `Pelanggan ${kategori}`}`,
+      `TITLE:${zona ? `Pelanggan - ${zona}` : `Pelanggan ${kategori}`}`,
       `NOTE:${notesLines.join("\\n")}`,
       `CATEGORIES:${categoryLabel}`,
       "END:VCARD",
@@ -589,20 +584,12 @@ export function generateVCard(pelangganList, categoryLabel = "Pelanggan WastePay
 // ============================================================================
 
 function getPrisma() {
-  const dbUrl = process.env.DATABASE_URL?.trim() || "file:./dev.db";
-  let adapter;
-  if (dbUrl.startsWith("postgres")) {
-    const pool = new Pool({
-      connectionString: dbUrl.replace(/[?&]sslmode=[^&]+/g, "").replace(/\?$/, ""),
-      ssl:
-        process.env.NODE_ENV === "production" || dbUrl.includes("supabase.com")
-          ? { rejectUnauthorized: false }
-          : undefined,
-    });
-    adapter = new PrismaPg(pool);
-  } else {
-    adapter = new PrismaLibSql({ url: dbUrl });
-  }
+  const dbUrl = process.env.DATABASE_URL?.trim() || "";
+  const pool = new Pool({
+    connectionString: dbUrl.replace(/[?&]sslmode=[^&]+/g, "").replace(/\?$/, ""),
+    ssl: { rejectUnauthorized: false },
+  });
+  const adapter = new PrismaPg(pool);
   return new PrismaClient({ adapter });
 }
 
