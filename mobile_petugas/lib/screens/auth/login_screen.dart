@@ -14,8 +14,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController(text: "raka@hero.com");
-  final _passwordController = TextEditingController(text: "123456");
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   final _urlController = TextEditingController(text: ApiEndpoints.baseUrl);
   bool _obscurePassword = true;
   bool _showServerConfig = false;
@@ -55,100 +55,6 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     }
-  }
-
-  Future<void> _quickLogin(String email, String password) async {
-    _emailController.text = email;
-    _passwordController.text = password;
-    final authProvider = context.read<AuthProvider>();
-    final success = await authProvider.login(email, password);
-
-    if (!mounted) return;
-
-    if (!success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(authProvider.errorMessage ?? "Gagal login"),
-          backgroundColor: AppColors.danger,
-        ),
-      );
-    }
-  }
-
-  Widget _buildQuickDriverCard({
-    required String title,
-    required String subtitle,
-    required String email,
-    required Color color,
-    required AuthProvider auth,
-  }) {
-    return InkWell(
-      onTap: auth.isLoading ? null : () => _quickLogin(email, "123456"),
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withValues(alpha: 0.35)),
-          boxShadow: [
-            BoxShadow(
-              color: color.withValues(alpha: 0.06),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(Icons.local_shipping_rounded, color: color, size: 18),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(fontSize: 10, color: AppColors.textSecondary),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: color,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Text(
-                "Masuk ➔",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   @override
@@ -203,90 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: AppColors.textSecondary,
                   ),
                 ),
-                const SizedBox(height: 24),
-
-                // ⚡ MODE TERBUKA: Akses Cepat Supir Tanpa Perlu Mengetik Kata Sandi
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF0FDF4),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: const Color(0xFF86EFAC), width: 1.5),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF00AA13),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: const Icon(Icons.bolt_rounded, color: Colors.white, size: 14),
-                          ),
-                          const SizedBox(width: 8),
-                          const Text(
-                            "MODE TERBUKA (AKSES CEPAT)",
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 0.5,
-                              color: Color(0xFF14532D),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      const Text(
-                        "Pilih supir armada Anda untuk masuk instan ke Cockpit:",
-                        style: TextStyle(fontSize: 11, color: Color(0xFF166534)),
-                      ),
-                      const SizedBox(height: 10),
-                      _buildQuickDriverCard(
-                        title: "Raka Driver (Astroboy)",
-                        subtitle: "Grandmax Astroboy • B 2021 HRR",
-                        email: "raka@hero.com",
-                        color: const Color(0xFF00AA13),
-                        auth: auth,
-                      ),
-                      const SizedBox(height: 6),
-                      _buildQuickDriverCard(
-                        title: "Ago Driver (Grandmax)",
-                        subtitle: "Grandmax • B 1999 HRR",
-                        email: "ago@hero.com",
-                        color: const Color(0xFF0284C7),
-                        auth: auth,
-                      ),
-                      const SizedBox(height: 6),
-                      _buildQuickDriverCard(
-                        title: "Piat Driver (Carry)",
-                        subtitle: "Carry Futura • B 2000 HRR",
-                        email: "piat@hero.com",
-                        color: const Color(0xFFD97706),
-                        auth: auth,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // Pemisah Atau Masuk Manual
-                const Row(
-                  children: [
-                    Expanded(child: Divider(color: Color(0xFFE2E8F0))),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        "atau masuk akun manual",
-                        style: TextStyle(fontSize: 10, color: AppColors.textMuted, fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                    Expanded(child: Divider(color: Color(0xFFE2E8F0))),
-                  ],
-                ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 36),
 
                 // Input Email
                 CustomTextField(

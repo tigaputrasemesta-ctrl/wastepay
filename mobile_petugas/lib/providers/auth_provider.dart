@@ -35,21 +35,9 @@ class AuthProvider with ChangeNotifier {
 
     final token = await TokenStorage.getToken();
     if (token == null || token.isEmpty) {
-      // MODE TERBUKA: Coba auto-login otomatis sebagai Raka Driver agar aplikasi langsung terbuka
-      try {
-        final autoUser = await AuthService.login("raka@hero.com", "123456");
-        _user = autoUser;
-        try {
-          _petugas = await AuthService.getProfile();
-        } catch (_) {}
-        _status = AuthStatus.authenticated;
-        notifyListeners();
-        return;
-      } catch (_) {
-        _status = AuthStatus.unauthenticated;
-        notifyListeners();
-        return;
-      }
+      _status = AuthStatus.unauthenticated;
+      notifyListeners();
+      return;
     }
 
     // Coba baca cache user
@@ -67,17 +55,7 @@ class AuthProvider with ChangeNotifier {
       // Jika token expired (401)
       if (e.toString().contains('401') || e.toString().contains('Sesi login berakhir')) {
         await TokenStorage.clear();
-        // MODE TERBUKA: Refresh otomatis saat sesi berakhir
-        try {
-          final autoUser = await AuthService.login("raka@hero.com", "123456");
-          _user = autoUser;
-          try {
-            _petugas = await AuthService.getProfile();
-          } catch (_) {}
-          _status = AuthStatus.authenticated;
-        } catch (_) {
-          _status = AuthStatus.unauthenticated;
-        }
+        _status = AuthStatus.unauthenticated;
       } else {
         // Offline / gangguan jaringan: tetap izinkan masuk jika ada cache
         if (_user != null) {
