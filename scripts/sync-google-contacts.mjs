@@ -14,8 +14,6 @@
 
 import fs from "fs";
 import path from "path";
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 
 // Load .env secara aman tanpa dependensi eksternal (menggunakan Node 20+ loadEnvFile jika ada)
@@ -595,27 +593,20 @@ export function generateVCard(pelangganList, categoryLabel = "Pelanggan WastePay
 // DATABASE & CLI RUNNER
 // ============================================================================
 
-let globalPool = null;
-
-function getPrisma() {
+function getDbPool() {
   const dbUrl = process.env.DATABASE_URL?.trim() || "";
-  globalPool = new Pool({
+  if (!dbUrl) return null;
+  return new Pool({
     connectionString: dbUrl.replace(/[?&]sslmode=[^&]+/g, "").replace(/\?$/, ""),
     ssl: { rejectUnauthorized: false },
+    connectionTimeoutMillis: 10000,
   });
-  const adapter = new PrismaPg(globalPool);
-  return new PrismaClient({ adapter });
 }
 
-async function closePrisma(prisma) {
-  if (prisma) {
+async function closeDbPool(pool) {
+  if (pool) {
     try {
-      await prisma.$disconnect();
-    } catch {}
-  }
-  if (globalPool) {
-    try {
-      await globalPool.end();
+      await pool.end();
     } catch {}
   }
 }
@@ -671,32 +662,45 @@ function showHelp() {
 `);
 }
 
-async function getOAuthConfig(prisma) {
+async function getOAuthConfig(pool) {
   let clientId = process.env.GOOGLE_CLIENT_ID || "";
   let clientSecret = process.env.GOOGLE_CLIENT_SECRET || "";
   let redirectUri = process.env.GOOGLE_REDIRECT_URI || "http://localhost:3000/api/integrasi/google-contacts/callback";
   let refreshToken = process.env.GOOGLE_REFRESH_TOKEN;
   let syncEmail = process.env.GOOGLE_SYNC_EMAIL;
 
-  if (prisma) {
+  if (pool) {
     try {
-      const dbClientId = await prisma.pengaturan.findUnique({ where: { key: "GOOGLE_CLIENT_ID" } });
-      const dbClientSecret = await prisma.pengaturan.findUnique({ where: { key: "GOOGLE_CLIENT_SECRET" } });
-      const dbRedirectUri = await prisma.pengaturan.findUnique({ where: { key: "GOOGLE_REDIRECT_URI" } });
-      const dbRefreshToken = await prisma.pengaturan.findUnique({ where: { key: "GOOGLE_REFRESH_TOKEN" } });
-      const dbSyncEmail = await prisma.pengaturan.findUnique({ where: { key: "GOOGLE_SYNC_EMAIL" } });
-
-      if (dbClientId?.value) clientId = dbClientId.value;
-      if (dbClientSecret?.value) clientSecret = dbClientSecret.value;
-      if (dbRedirectUri?.value) redirectUri = dbRedirectUri.value;
-      if (dbRefreshToken?.value) refreshToken = dbRefreshToken.value;
-      if (dbSyncEmail?.value) syncEmail = dbSyncEmail.value;
+      const res = await pool.query(
+        `SELECT key, value FROM "Pengaturan" WHERE key IN ('GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GOOGLE_REDIRECT_URI', 'GOOGLE_REFRESH_TOKEN', 'GOOGLE_SYNC_EMAIL')`
+      );
+      const map = new Map(res.rows.map((r) => [r.key, r.value]));
+      if (map.get("GOOGLE_CLIENT_ID")) clientId = map.get("GOOGLE_CLIENT_ID");
+      if (map.get("GOOGLE_CLIENT_SECRET")) clientSecret = map.get("GOOGLE_CLIENT_SECRET");
+      if (map.get("GOOGLE_REDIRECT_URI")) redirectUri = map.get("GOOGLE_REDIRECT_URI");
+      if (map.get("GOOGLE_REFRESH_TOKEN")) refreshToken = map.get("GOOGLE_REFRESH_TOKEN");
+      if (map.get("GOOGLE_SYNC_EMAIL")) syncEmail = map.get("GOOGLE_SYNC_EMAIL");
     } catch {
       // Abaikan
     }
   }
 
   return { clientId, clientSecret, redirectUri, refreshToken, syncEmail };
+}
+
+async function upsertPengaturan(pool, key, value) {
+  if (!pool) return;
+  try {
+    await pool.query(
+      `INSERT INTO "Pengaturan" (key, value, "updatedAt")
+       VALUES ($1, $2, NOW())
+       ON CONFLICT (key) DO UPDATE
+       SET value = EXCLUDED.value, "updatedAt" = NOW()`,
+      [key, value]
+    );
+  } catch (e) {
+    console.warn(`Peringatan saat menyimpan ke DB (${key}):`, e.message);
+  }
 }
 
 function saveToEnv(key, value) {
@@ -718,20 +722,56 @@ function saveToEnv(key, value) {
   }
 }
 
-async function fetchPelangganList(prisma) {
-  return prisma.pelanggan.findMany({
-    where: { deletedAt: null },
-    include: {
-      kelurahan: true,
-      wilayah: {
-        include: {
-          zona: true,
-        },
-      },
-      paket: true,
-    },
-    orderBy: [{ kelurahanId: "asc" }, { nama: "asc" }],
-  });
+async function fetchPelangganList(pool) {
+  const query = `
+    SELECT 
+      p.id,
+      p.nama,
+      p."noTelepon",
+      p."kodePelanggan",
+      p.kategori,
+      p.alamat,
+      p."rtRw",
+      p."patokanLokasi",
+      p.penanggungjawab,
+      p.status,
+      p.latitude,
+      p.longitude,
+      k.nama AS kelurahan_nama,
+      w.nama AS wilayah_nama,
+      z.nama AS zona_nama,
+      pk.nama AS paket_nama
+    FROM "Pelanggan" p
+    LEFT JOIN "Kelurahan" k ON p."kelurahanId" = k.id
+    LEFT JOIN "Wilayah" w ON p."wilayahId" = w.id
+    LEFT JOIN "Zona" z ON w."zonaId" = z.id
+    LEFT JOIN "Paket" pk ON p."paketId" = pk.id
+    WHERE p."deletedAt" IS NULL
+    ORDER BY p."kelurahanId" ASC NULLS LAST, p.nama ASC;
+  `;
+  const res = await pool.query(query);
+  return res.rows.map((row) => ({
+    id: row.id,
+    nama: row.nama,
+    noTelepon: row.noTelepon,
+    kodePelanggan: row.kodePelanggan,
+    kategori: row.kategori,
+    alamat: row.alamat,
+    rtRw: row.rtRw,
+    patokanLokasi: row.patokanLokasi,
+    penanggungjawab: row.penanggungjawab,
+    status: row.status,
+    latitude: row.latitude,
+    longitude: row.longitude,
+    kelurahan: row.kelurahan_nama ? { nama: row.kelurahan_nama } : null,
+    wilayah: (row.wilayah_nama || row.zona_nama)
+      ? {
+          nama: row.wilayah_nama || "",
+          zona: row.zona_nama ? { nama: row.zona_nama } : null,
+        }
+      : null,
+    paket: row.paket_nama ? { nama: row.paket_nama } : null,
+  }));
 }
 
 async function main() {
@@ -743,268 +783,248 @@ async function main() {
     return;
   }
 
-  let prisma = null;
+  let pool = null;
   try {
     try {
-      prisma = getPrisma();
+      pool = getDbPool();
     } catch (err) {
       // Abaikan jika database belum siap
     }
 
-  const config = await getOAuthConfig(prisma);
+    const config = await getOAuthConfig(pool);
 
-  if (command === "--status") {
-    logHeader("Status Integrasi Google Contacts");
-    console.log(`• GOOGLE_CLIENT_ID     : ${config.clientId ? C.green + "Tersedia" : C.red + "Belum disetel"}${C.reset}`);
-    console.log(`• GOOGLE_CLIENT_SECRET : ${config.clientSecret ? C.green + "Tersedia" : C.red + "Belum disetel"}${C.reset}`);
-    console.log(`• GOOGLE_REDIRECT_URI  : ${C.yellow}${config.redirectUri}${C.reset}`);
-    console.log(`• GOOGLE_REFRESH_TOKEN : ${config.refreshToken ? C.green + "Tersedia (Sudah Otorisasi)" : C.yellow + "Belum ada otorisasi"}${C.reset}`);
-    console.log(`• Email Tersambung     : ${config.syncEmail ? C.cyan + C.bright + config.syncEmail : C.gray + "-"}${C.reset}`);
+    if (command === "--status") {
+      logHeader("Status Integrasi Google Contacts");
+      console.log(`• GOOGLE_CLIENT_ID     : ${config.clientId ? C.green + "Tersedia" : C.red + "Belum disetel"}${C.reset}`);
+      console.log(`• GOOGLE_CLIENT_SECRET : ${config.clientSecret ? C.green + "Tersedia" : C.red + "Belum disetel"}${C.reset}`);
+      console.log(`• GOOGLE_REDIRECT_URI  : ${C.yellow}${config.redirectUri}${C.reset}`);
+      console.log(`• GOOGLE_REFRESH_TOKEN : ${config.refreshToken ? C.green + "Tersedia (Sudah Otorisasi)" : C.yellow + "Belum ada otorisasi"}${C.reset}`);
+      console.log(`• Email Tersambung     : ${config.syncEmail ? C.cyan + C.bright + config.syncEmail : C.gray + "-"}${C.reset}`);
 
-    if (prisma) {
-      try {
-        const total = await prisma.pelanggan.count({ where: { deletedAt: null } });
-        console.log(`• Total Pelanggan di DB: ${C.bright}${total} data${C.reset}`);
-      } catch (e) {
-        console.log(`• Total Pelanggan di DB: ${C.red}Koneksi DB bermasalah (${e.message})${C.reset}`);
+      if (pool) {
+        try {
+          const countRes = await pool.query('SELECT count(*) FROM "Pelanggan" WHERE "deletedAt" IS NULL');
+          console.log(`• Total Pelanggan di DB: ${C.bright}${countRes.rows[0].count} data${C.reset}`);
+        } catch (e) {
+          console.log(`• Total Pelanggan di DB: ${C.red}Koneksi DB bermasalah (${e.message})${C.reset}`);
+        }
       }
-    }
-    return;
-  }
-
-  if (command === "--auth") {
-    logHeader("Otorisasi Akun Google (Google Contacts)");
-    if (!config.clientId || !config.clientSecret) {
-      console.log(`${C.red}Error: GOOGLE_CLIENT_ID dan GOOGLE_CLIENT_SECRET belum disetel!${C.reset}`);
-      console.log(`\nSilakan isi terlebih dahulu di file .env atau database Pengaturan.`);
-      console.log(`Panduan membuat kredensial: buka docs/GOOGLE-CONTACTS-SETUP.md`);
       return;
     }
 
-    const authUrl = getGoogleAuthUrl({
-      clientId: config.clientId,
-      clientSecret: config.clientSecret,
-      redirectUri: config.redirectUri,
-    });
+    if (command === "--auth") {
+      logHeader("Otorisasi Akun Google (Google Contacts)");
+      if (!config.clientId || !config.clientSecret) {
+        console.log(`${C.red}Error: GOOGLE_CLIENT_ID dan GOOGLE_CLIENT_SECRET belum disetel!${C.reset}`);
+        console.log(`\nSilakan isi terlebih dahulu di file .env atau database Pengaturan.`);
+        console.log(`Panduan membuat kredensial: buka docs/GOOGLE-CONTACTS-SETUP.md`);
+        return;
+      }
 
-    console.log(`Langkah Otorisasi Akun Google:`);
-    console.log(`1. Buka tautan berikut di browser:`);
-    console.log(`\n${C.cyan}${C.bright}${authUrl}${C.reset}\n`);
-    console.log(`2. Login menggunakan akun Google/Gmail tempat kontak ingin disimpan.`);
-    console.log(`3. Izinkan akses kontak (Google Contacts).`);
-    console.log(`4. Setelah dialihkan atau menerima kode otorisasi (code), salin kodenya.`);
-    console.log(`5. Jalankan perintah:`);
-    console.log(`   ${C.green}node scripts/sync-google-contacts.mjs --code <KODE_OTORISASI>${C.reset}\n`);
-    return;
-  }
-
-  if (command === "--code") {
-    const code = args[1];
-    if (!code) {
-      console.log(`${C.red}Error: Harap sertakan kode otorisasi.${C.reset}`);
-      console.log(`Contoh: node scripts/sync-google-contacts.mjs --code 4/0AbCdEf123...`);
-      return;
-    }
-
-    logHeader("Menukar Kode Otorisasi...");
-    try {
-      const tokens = await exchangeGoogleAuthCode(code, {
+      const authUrl = getGoogleAuthUrl({
         clientId: config.clientId,
         clientSecret: config.clientSecret,
         redirectUri: config.redirectUri,
       });
 
-      console.log(`${C.green}✓ Berhasil mendapatkan token dari Google!${C.reset}`);
-      if (tokens.email) {
-        console.log(`• Akun Email Terhubung: ${C.bright}${C.cyan}${tokens.email}${C.reset}`);
+      console.log(`Langkah Otorisasi Akun Google:`);
+      console.log(`1. Buka tautan berikut di browser:`);
+      console.log(`\n${C.cyan}${C.bright}${authUrl}${C.reset}\n`);
+      console.log(`2. Login menggunakan akun Google/Gmail tempat kontak ingin disimpan.`);
+      console.log(`3. Izinkan akses kontak (Google Contacts).`);
+      console.log(`4. Setelah dialihkan atau menerima kode otorisasi (code), salin kodenya.`);
+      console.log(`5. Jalankan perintah:`);
+      console.log(`   ${C.green}node scripts/sync-google-contacts.mjs --code <KODE_OTORISASI>${C.reset}\n`);
+      return;
+    }
+
+    if (command === "--code") {
+      const code = args[1];
+      if (!code) {
+        console.log(`${C.red}Error: Harap sertakan kode otorisasi.${C.reset}`);
+        console.log(`Contoh: node scripts/sync-google-contacts.mjs --code 4/0AbCdEf123...`);
+        return;
       }
 
-      saveToEnv("GOOGLE_REFRESH_TOKEN", tokens.refreshToken);
-      if (tokens.email) saveToEnv("GOOGLE_SYNC_EMAIL", tokens.email);
+      logHeader("Menukar Kode Otorisasi...");
+      try {
+        const tokens = await exchangeGoogleAuthCode(code, {
+          clientId: config.clientId,
+          clientSecret: config.clientSecret,
+          redirectUri: config.redirectUri,
+        });
 
-      if (prisma) {
-        try {
-          await prisma.pengaturan.upsert({
-            where: { key: "GOOGLE_REFRESH_TOKEN" },
-            update: { value: tokens.refreshToken },
-            create: { key: "GOOGLE_REFRESH_TOKEN", value: tokens.refreshToken },
-          });
+        console.log(`${C.green}✓ Berhasil mendapatkan token dari Google!${C.reset}`);
+        if (tokens.email) {
+          console.log(`• Akun Email Terhubung: ${C.bright}${C.cyan}${tokens.email}${C.reset}`);
+        }
+
+        saveToEnv("GOOGLE_REFRESH_TOKEN", tokens.refreshToken);
+        if (tokens.email) saveToEnv("GOOGLE_SYNC_EMAIL", tokens.email);
+
+        if (pool) {
+          await upsertPengaturan(pool, "GOOGLE_REFRESH_TOKEN", tokens.refreshToken);
           if (tokens.email) {
-            await prisma.pengaturan.upsert({
-              where: { key: "GOOGLE_SYNC_EMAIL" },
-              update: { value: tokens.email },
-              create: { key: "GOOGLE_SYNC_EMAIL", value: tokens.email },
-            });
+            await upsertPengaturan(pool, "GOOGLE_SYNC_EMAIL", tokens.email);
           }
           console.log(`${C.green}✓ Refresh token dan email tersimpan di database & .env${C.reset}`);
-        } catch (e) {
-          console.warn("Peringatan saat menyimpan ke DB:", e.message);
+        }
+
+        console.log(`\nSekarang Anda dapat menjalankan sinkronisasi dengan perintah:`);
+        console.log(`  ${C.green}node scripts/sync-google-contacts.mjs --sync${C.reset}\n`);
+      } catch (err) {
+        console.log(`${C.red}Gagal menukar kode otorisasi: ${err.message}${C.reset}`);
+      }
+      return;
+    }
+
+    if (command === "--dry-run") {
+      logHeader("Pratinjau Data Pelanggan (Dry Run)");
+      if (!pool) {
+        console.log(`${C.red}Error: Koneksi DB belum tersedia.${C.reset}`);
+        return;
+      }
+
+      const pelangganList = await fetchPelangganList(pool);
+      console.log(`Ditemukan ${C.bright}${pelangganList.length} pelanggan${C.reset} di database.\n`);
+
+      const sample = pelangganList.slice(0, 5);
+      console.log(`Contoh 5 kontak yang akan dibuat di Google Contacts:`);
+      sample.forEach((p, idx) => {
+        const formatted = formatPelangganToGoogleContact(p);
+        console.log(`\n[${idx + 1}] ${C.bright}${formatted.names?.[0]?.displayName}${C.reset}`);
+        console.log(`    Telepon   : ${formatted.phoneNumbers?.[0]?.value || "-"}`);
+        console.log(`    Alamat    : ${formatted.addresses?.[0]?.formattedValue || "-"}`);
+        console.log(`    Kelurahan : ${p.kelurahan?.nama || "-"}`);
+        console.log(`    Status    : ${p.status}`);
+      });
+
+      if (pelangganList.length > 5) {
+        console.log(`\n... dan ${pelangganList.length - 5} pelanggan lainnya.`);
+      }
+      return;
+    }
+
+    if (command === "--export-csv") {
+      const filename = args[1] || `google_contacts_${new Date().toISOString().split("T")[0]}.csv`;
+      logHeader(`Mengekspor ke Google Contacts CSV: ${filename}`);
+
+      if (!pool) {
+        console.log(`${C.red}Error: Koneksi DB belum tersedia.${C.reset}`);
+        return;
+      }
+
+      const pelangganList = await fetchPelangganList(pool);
+      const csvData = generateGoogleContactsCsv(pelangganList, "Pelanggan WastePay");
+
+      fs.writeFileSync(filename, "\uFEFF" + csvData, "utf8");
+      console.log(`${C.green}✓ Berhasil mengekspor ${pelangganList.length} pelanggan ke file:${C.reset}`);
+      console.log(`  ${path.resolve(filename)}`);
+      console.log(`\nCara Impor di Google Contacts:`);
+      console.log(`1. Buka https://contacts.google.com/`);
+      console.log(`2. Klik menu 'Impor' di panel kiri.`);
+      console.log(`3. Pilih file '${filename}'.`);
+      console.log(`4. Selesai! Semua kontak akan masuk dengan label 'Pelanggan WastePay'.\n`);
+      return;
+    }
+
+    if (command === "--export-vcf") {
+      const filename = args[1] || `google_contacts_${new Date().toISOString().split("T")[0]}.vcf`;
+      logHeader(`Mengekspor ke vCard (.vcf): ${filename}`);
+
+      if (!pool) {
+        console.log(`${C.red}Error: Koneksi DB belum tersedia.${C.reset}`);
+        return;
+      }
+
+      const pelangganList = await fetchPelangganList(pool);
+      const vcfData = generateVCard(pelangganList, "Pelanggan WastePay");
+
+      fs.writeFileSync(filename, vcfData, "utf8");
+      console.log(`${C.green}✓ Berhasil mengekspor ${pelangganList.length} pelanggan ke file:${C.reset}`);
+      console.log(`  ${path.resolve(filename)}`);
+      return;
+    }
+
+    if (command === "--sync") {
+      logHeader("Sinkronisasi Pelanggan ke Google Contacts via People API");
+
+      if (!config.clientId || !config.clientSecret) {
+        console.log(`${C.red}Error: GOOGLE_CLIENT_ID atau GOOGLE_CLIENT_SECRET belum disetel!${C.reset}`);
+        return;
+      }
+
+      if (!config.refreshToken) {
+        console.log(`${C.red}Error: Belum ada otorisasi akun Google (GOOGLE_REFRESH_TOKEN tidak ditemukan).${C.reset}`);
+        console.log(`Jalankan langkah otorisasi terlebih dahulu:`);
+        console.log(`  node scripts/sync-google-contacts.mjs --auth`);
+        return;
+      }
+
+      if (!pool) {
+        console.log(`${C.red}Error: Koneksi DB belum tersedia.${C.reset}`);
+        return;
+      }
+
+      console.log(`1. Merefresh Access Token Google...`);
+      let accessToken = "";
+      try {
+        accessToken = await refreshGoogleAccessToken(config.refreshToken, {
+          clientId: config.clientId,
+          clientSecret: config.clientSecret,
+          redirectUri: config.redirectUri,
+        });
+        console.log(`${C.green}✓ Access Token berhasil didapatkan.${C.reset}`);
+      } catch (err) {
+        console.log(`${C.red}Gagal merefresh access token: ${err.message}${C.reset}`);
+        console.log(`Silakan lakukan otorisasi ulang dengan: node scripts/sync-google-contacts.mjs --auth`);
+        return;
+      }
+
+      const currentEmail = await getUserEmail(accessToken);
+      if (currentEmail) {
+        console.log(`• Target Akun Email: ${C.cyan}${C.bright}${currentEmail}${C.reset}`);
+      }
+
+      console.log(`\n2. Mengambil data pelanggan dari database...`);
+      const pelangganList = await fetchPelangganList(pool);
+      console.log(`• Ditemukan ${C.bright}${pelangganList.length} pelanggan${C.reset}`);
+
+      console.log(`\n3. Menjalankan sinkronisasi via Google People API...`);
+      const updateExisting = args.includes("--update");
+      const syncRes = await syncPelangganToGooglePeopleApi({
+        customers: pelangganList,
+        accessToken,
+        groupName: "Pelanggan WastePay",
+        updateExisting,
+      });
+
+      console.log(`\n${C.green}${C.bright}══════════════════════════════════════════════════════════${C.reset}`);
+      console.log(`${C.green}${C.bright}  HASIL SINKRONISASI GOOGLE CONTACTS${C.reset}`);
+      console.log(`${C.green}${C.bright}══════════════════════════════════════════════════════════${C.reset}`);
+      console.log(`• Total Pelanggan       : ${syncRes.total}`);
+      console.log(`• Kontak Baru Dibuat    : ${C.green}${syncRes.created}${C.reset}`);
+      console.log(`• Kontak Diperbarui     : ${C.yellow}${syncRes.updated}${C.reset}`);
+      console.log(`• Kontak Dilewati (Ada) : ${C.gray}${syncRes.skipped}${C.reset}`);
+      console.log(`• Gagal                 : ${syncRes.failed > 0 ? C.red + syncRes.failed : C.green + 0}${C.reset}`);
+
+      if (syncRes.errors.length > 0) {
+        console.log(`\n${C.red}Rincian Error:${C.reset}`);
+        syncRes.errors.slice(0, 5).forEach((e) => console.log(` - ${e}`));
+        if (syncRes.errors.length > 5) {
+          console.log(` ... dan ${syncRes.errors.length - 5} error lainnya.`);
         }
       }
 
-      console.log(`\nSekarang Anda dapat menjalankan sinkronisasi dengan perintah:`);
-      console.log(`  ${C.green}node scripts/sync-google-contacts.mjs --sync${C.reset}\n`);
-    } catch (err) {
-      console.log(`${C.red}Gagal menukar kode otorisasi: ${err.message}${C.reset}`);
-    }
-    return;
-  }
+      await upsertPengaturan(pool, "GOOGLE_LAST_SYNC_AT", new Date().toISOString());
 
-  if (command === "--dry-run") {
-    logHeader("Pratinjau Data Pelanggan (Dry Run)");
-    if (!prisma) {
-      console.log(`${C.red}Error: Koneksi DB belum tersedia.${C.reset}`);
+      console.log(`\n${C.green}✓ Selesai! Silakan cek di https://contacts.google.com/${C.reset}\n`);
       return;
     }
-
-    const pelangganList = await fetchPelangganList(prisma);
-    console.log(`Ditemukan ${C.bright}${pelangganList.length} pelanggan${C.reset} di database.\n`);
-
-    const sample = pelangganList.slice(0, 5);
-    console.log(`Contoh 5 kontak yang akan dibuat di Google Contacts:`);
-    sample.forEach((p, idx) => {
-      const formatted = formatPelangganToGoogleContact(p);
-      console.log(`\n[${idx + 1}] ${C.bright}${formatted.names?.[0]?.displayName}${C.reset}`);
-      console.log(`    Telepon   : ${formatted.phoneNumbers?.[0]?.value || "-"}`);
-      console.log(`    Alamat    : ${formatted.addresses?.[0]?.formattedValue || "-"}`);
-      console.log(`    Kelurahan : ${p.kelurahan?.nama || "-"}`);
-      console.log(`    Status    : ${p.status}`);
-    });
-
-    if (pelangganList.length > 5) {
-      console.log(`\n... dan ${pelangganList.length - 5} pelanggan lainnya.`);
-    }
-    return;
-  }
-
-  if (command === "--export-csv") {
-    const filename = args[1] || `google_contacts_${new Date().toISOString().split("T")[0]}.csv`;
-    logHeader(`Mengekspor ke Google Contacts CSV: ${filename}`);
-
-    if (!prisma) {
-      console.log(`${C.red}Error: Koneksi DB belum tersedia.${C.reset}`);
-      return;
-    }
-
-    const pelangganList = await fetchPelangganList(prisma);
-    const csvData = generateGoogleContactsCsv(pelangganList, "Pelanggan WastePay");
-
-    fs.writeFileSync(filename, "\uFEFF" + csvData, "utf8");
-    console.log(`${C.green}✓ Berhasil mengekspor ${pelangganList.length} pelanggan ke file:${C.reset}`);
-    console.log(`  ${path.resolve(filename)}`);
-    console.log(`\nCara Impor di Google Contacts:`);
-    console.log(`1. Buka https://contacts.google.com/`);
-    console.log(`2. Klik menu 'Impor' di panel kiri.`);
-    console.log(`3. Pilih file '${filename}'.`);
-    console.log(`4. Selesai! Semua kontak akan masuk dengan label 'Pelanggan WastePay'.\n`);
-    return;
-  }
-
-  if (command === "--export-vcf") {
-    const filename = args[1] || `google_contacts_${new Date().toISOString().split("T")[0]}.vcf`;
-    logHeader(`Mengekspor ke vCard (.vcf): ${filename}`);
-
-    if (!prisma) {
-      console.log(`${C.red}Error: Koneksi DB belum tersedia.${C.reset}`);
-      return;
-    }
-
-    const pelangganList = await fetchPelangganList(prisma);
-    const vcfData = generateVCard(pelangganList, "Pelanggan WastePay");
-
-    fs.writeFileSync(filename, vcfData, "utf8");
-    console.log(`${C.green}✓ Berhasil mengekspor ${pelangganList.length} pelanggan ke file:${C.reset}`);
-    console.log(`  ${path.resolve(filename)}`);
-    return;
-  }
-
-  if (command === "--sync") {
-    logHeader("Sinkronisasi Pelanggan ke Google Contacts via People API");
-
-    if (!config.clientId || !config.clientSecret) {
-      console.log(`${C.red}Error: GOOGLE_CLIENT_ID atau GOOGLE_CLIENT_SECRET belum disetel!${C.reset}`);
-      return;
-    }
-
-    if (!config.refreshToken) {
-      console.log(`${C.red}Error: Belum ada otorisasi akun Google (GOOGLE_REFRESH_TOKEN tidak ditemukan).${C.reset}`);
-      console.log(`Jalankan langkah otorisasi terlebih dahulu:`);
-      console.log(`  node scripts/sync-google-contacts.mjs --auth`);
-      return;
-    }
-
-    if (!prisma) {
-      console.log(`${C.red}Error: Koneksi DB belum tersedia.${C.reset}`);
-      return;
-    }
-
-    console.log(`1. Merefresh Access Token Google...`);
-    let accessToken = "";
-    try {
-      accessToken = await refreshGoogleAccessToken(config.refreshToken, {
-        clientId: config.clientId,
-        clientSecret: config.clientSecret,
-        redirectUri: config.redirectUri,
-      });
-      console.log(`${C.green}✓ Access Token berhasil didapatkan.${C.reset}`);
-    } catch (err) {
-      console.log(`${C.red}Gagal merefresh access token: ${err.message}${C.reset}`);
-      console.log(`Silakan lakukan otorisasi ulang dengan: node scripts/sync-google-contacts.mjs --auth`);
-      return;
-    }
-
-    const currentEmail = await getUserEmail(accessToken);
-    if (currentEmail) {
-      console.log(`• Target Akun Email: ${C.cyan}${C.bright}${currentEmail}${C.reset}`);
-    }
-
-    console.log(`\n2. Mengambil data pelanggan dari database...`);
-    const pelangganList = await fetchPelangganList(prisma);
-    console.log(`• Ditemukan ${C.bright}${pelangganList.length} pelanggan${C.reset}`);
-
-    console.log(`\n3. Menjalankan sinkronisasi via Google People API...`);
-    const updateExisting = args.includes("--update");
-    const syncRes = await syncPelangganToGooglePeopleApi({
-      customers: pelangganList,
-      accessToken,
-      groupName: "Pelanggan WastePay",
-      updateExisting,
-    });
-
-    console.log(`\n${C.green}${C.bright}══════════════════════════════════════════════════════════${C.reset}`);
-    console.log(`${C.green}${C.bright}  HASIL SINKRONISASI GOOGLE CONTACTS${C.reset}`);
-    console.log(`${C.green}${C.bright}══════════════════════════════════════════════════════════${C.reset}`);
-    console.log(`• Total Pelanggan       : ${syncRes.total}`);
-    console.log(`• Kontak Baru Dibuat    : ${C.green}${syncRes.created}${C.reset}`);
-    console.log(`• Kontak Diperbarui     : ${C.yellow}${syncRes.updated}${C.reset}`);
-    console.log(`• Kontak Dilewati (Ada) : ${C.gray}${syncRes.skipped}${C.reset}`);
-    console.log(`• Gagal                 : ${syncRes.failed > 0 ? C.red + syncRes.failed : C.green + 0}${C.reset}`);
-
-    if (syncRes.errors.length > 0) {
-      console.log(`\n${C.red}Rincian Error:${C.reset}`);
-      syncRes.errors.slice(0, 5).forEach((e) => console.log(` - ${e}`));
-      if (syncRes.errors.length > 5) {
-        console.log(` ... dan ${syncRes.errors.length - 5} error lainnya.`);
-      }
-    }
-
-    try {
-      await prisma.pengaturan.upsert({
-        where: { key: "GOOGLE_LAST_SYNC_AT" },
-        update: { value: new Date().toISOString() },
-        create: { key: "GOOGLE_LAST_SYNC_AT", value: new Date().toISOString() },
-      });
-    } catch {
-      // Abaikan jika gagal update timestamp
-    }
-
-    console.log(`\n${C.green}✓ Selesai! Silakan cek di https://contacts.google.com/${C.reset}\n`);
-    return;
-  }
 
     showHelp();
   } finally {
-    await closePrisma(prisma);
+    await closeDbPool(pool);
   }
 }
 
