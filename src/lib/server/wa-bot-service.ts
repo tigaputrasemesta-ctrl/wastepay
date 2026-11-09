@@ -743,7 +743,7 @@ export async function processIncomingWaMessage(
   }
 
   // Intent F: MENU UTAMA / BANTUAN SPESIFIK
-  // Hanya membalas jika pengguna secara eksplisit meminta panduan / menu / salam
+  // Membalas jika pengguna meminta panduan / menu / salam / sapaan / kata kunci test
   const isMenuTrigger =
     strippedMsg === "menu" ||
     strippedMsg === "#menu" ||
@@ -755,10 +755,21 @@ export async function processIncomingWaMessage(
     strippedMsg === "panduan" ||
     strippedMsg === "info" ||
     strippedMsg === "pilihan" ||
+    strippedMsg === "test" ||
+    strippedMsg === "tes" ||
+    strippedMsg === "testing" ||
+    strippedMsg === "ping" ||
+    strippedMsg === "bot" ||
     strippedMsg === "halo" ||
     strippedMsg === "halo bot" ||
     strippedMsg === "hai" ||
     strippedMsg === "hello" ||
+    strippedMsg === "assalamualaikum" ||
+    strippedMsg === "assalamu'alaikum" ||
+    strippedMsg === "selamat pagi" ||
+    strippedMsg === "selamat siang" ||
+    strippedMsg === "selamat sore" ||
+    strippedMsg === "selamat malam" ||
     strippedMsg.startsWith("halo ") ||
     strippedMsg.startsWith("hai ");
 

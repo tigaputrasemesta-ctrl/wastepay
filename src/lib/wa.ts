@@ -223,13 +223,15 @@ export function paymentLink(noInvoice: string): string {
 /** Kirim WA via provider API. Mengembalikan { ok, error? }. */
 export async function kirimWhatsApp(
   noTelepon: string,
-  pesan: string
+  pesan: string,
+  options?: { delay?: string | number }
 ): Promise<{ ok: boolean; error?: string }> {
   const apiKey = getWaApiKey();
   if (!apiKey || !WA_API_URL) {
     return { ok: false, error: "WA_API_KEY belum dikonfigurasi" };
   }
   try {
+    const delayVal = options?.delay !== undefined ? String(options.delay) : "1";
     const res = await fetch(WA_API_URL, {
       method: "POST",
       headers: {
@@ -241,6 +243,7 @@ export async function kirimWhatsApp(
         target: noTelepon,
         message: pesan,
         countryCode: "62",
+        delay: delayVal,
       }),
       signal: AbortSignal.timeout(8000),
     });
