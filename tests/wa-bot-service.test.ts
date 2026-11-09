@@ -13,6 +13,8 @@ vi.mock("../src/lib/prisma", () => ({
     },
     komplain: {
       create: vi.fn(),
+      findFirst: vi.fn(),
+      update: vi.fn(),
     },
   },
 }));
@@ -313,5 +315,154 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
       expect(res.reply).toContain("Upload Galeri");
       expect(res.reply).toContain("https://upsheru.com/bayar?kode=087881536978");
     }
+  });
+
+  it("14. Mencegah duplikasi komplain aktif dalam 24 jam terakhir (deduplikasi anti-spam/retry)", async () => {
+    (prisma.pelanggan.findFirst as any).mockResolvedValue({
+      id: 301,
+      nama: "Ibu Fatimah",
+      noTelepon: "081299991111",
+      alamat: "Kalibaru RT 02",
+      wilayah: { zona: { nama: "Zona Kalibaru" } },
+    });
+
+    (prisma.komplain.findFirst as any).mockResolvedValue({
+      id: 99,
+      status: "proses",
+      pelangganId: 301,
+      createdAt: new Date(),
+    });
+
+    const res = await processIncomingWaMessage({
+      sender: "081299991111",
+      message: "sampah belum diangkut min tolong ya",
+    });
+
+    expect(res.intent).toBe("KOMPLAIN");
+    expect(res.komplainId).toBe(99);
+    expect(res.reply).toContain("LAPORAN ANDA SEDANG DALAM PROSES");
+    expect(res.reply).toContain("#KMP-99");
+    expect(prisma.komplain.create).not.toHaveBeenCalled();
+  });
+
+  it("15. Otomatis membuat tiket komplain jika warga mengirim foto tanpa teks", async () => {
+    (prisma.pelanggan.findFirst as any).mockResolvedValue({
+      id: 302,
+      nama: "Pak Joko",
+      noTelepon: "081388882222",
+      alamat: "Cilodong Blok C",
+      wilayah: { zona: { nama: "Zona Cilodong" } },
+    });
+
+    (prisma.komplain.findFirst as any).mockResolvedValue(null);
+    (prisma.komplain.create as any).mockResolvedValue({
+      id: 105,
+      jenis: "sampah_menumpuk",
+      foto: "https://media.fonnte.com/photo-sampah.jpg",
+      status: "baru",
+    });
+
+    const res = await processIncomingWaMessage({
+      sender: "081388882222",
+      message: "",
+      url: "https://media.fonnte.com/photo-sampah.jpg",
+    });
+
+    expect(res.intent).toBe("KOMPLAIN");
+    expect(res.komplainId).toBe(105);
+    expect(res.reply).toContain("FOTO SAMPAH BERHASIL DILAPORKAN");
+    expect(res.reply).toContain("#KMP-105");
+  });
+
+  it("16. Mendukung input angka dengan format markdown WhatsApp (*1*, *3*, *5*)", async () => {
+    (prisma.pelanggan.findFirst as any).mockResolvedValue({
+      id: 303,
+      nama: "Bpk Hendra",
+      noTelepon: "081577773333",
+    });
+
+    const res1 = await processIncomingWaMessage({
+      sender: "081577773333",
+      message: "*5*",
+    });
+    expect(res1.intent).toBe("CARA_BAYAR");
+
+    const res2 = await processIncomingWaMessage({
+      sender: "081577773333",
+      message: "*4*",
+    });
+    expect(res2.intent).toBe("ADMIN");
+  });
+
+  it("17. Menangani variasi slang dan typo warga (komplen, blm diangkut, gak diangkut)", async () => {
+    (prisma.pelanggan.findFirst as any).mockResolvedValue({
+      id: 304,
+      nama: "Pak RT",
+      noTelepon: "081766664444",
+      alamat: "Kalimulya No 9",
+      wilayah: { zona: { nama: "Zona Kalimulya" } },
+    });
+    (prisma.komplain.findFirst as any).mockResolvedValue(null);
+    (prisma.komplain.create as any).mockResolvedValue({ id: 110, status: "baru" });
+
+    const slangs = [
+      "komplen dong min",
+      "sampah blm diangkut ya",
+      "kenapa sampah gak diangkut",
+      "sampah bau busuk tolong ambil",
+    ];
+
+    for (const slang of slangs) {
+      const res = await processIncomingWaMessage({
+        sender: "081766664444",
+        message: slang,
+      });
+      expect(res.intent).toBe("KOMPLAIN");
+    }
+  });
+
+  it("18. Memprioritaskan komplain saat warga komplain sampah belum diangkut meski menyebut kata tagihan", async () => {
+    (prisma.pelanggan.findFirst as any).mockResolvedValue({
+      id: 305,
+      nama: "Ibu Desi",
+      noTelepon: "081855555555",
+      alamat: "Jatimulya",
+      wilayah: { zona: { nama: "Zona Jatimulya" } },
+    });
+    (prisma.komplain.findFirst as any).mockResolvedValue(null);
+    (prisma.komplain.create as any).mockResolvedValue({ id: 115, status: "baru" });
+
+    const res = await processIncomingWaMessage({
+      sender: "081855555555",
+      message: "Min tagihan saya sudah lunas tapi kok sampah belum diangkut?",
+    });
+
+    expect(res.intent).toBe("KOMPLAIN");
+    expect(res.komplainId).toBe(115);
+  });
+
+  it("19. Berhasil membersihkan suffix JID WhatsApp Multi-Device (:1 / @s.whatsapp.net)", async () => {
+    (prisma.pelanggan.findFirst as any).mockResolvedValue({
+      id: 306,
+      nama: "Bpk Rahmat",
+      noTelepon: "08123456789",
+    });
+
+    const res = await processIncomingWaMessage({
+      sender: "628123456789:1@s.whatsapp.net",
+      message: "halo",
+    });
+
+    expect(res.intent).toBe("MENU");
+    expect(prisma.pelanggan.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          OR: expect.arrayContaining([
+            { noTelepon: "628123456789" },
+            { kodePelanggan: "628123456789" },
+          ]),
+        }),
+      })
+    );
   });
 });

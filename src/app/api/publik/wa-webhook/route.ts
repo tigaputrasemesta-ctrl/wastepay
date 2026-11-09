@@ -1,10 +1,21 @@
 import { NextResponse } from "next/server";
 import { processIncomingWaMessage } from "@/lib/server/wa-bot-service";
 import { kirimWhatsApp } from "@/lib/wa";
-import { timingSafeEqual } from "node:crypto";
+import { createHash, timingSafeEqual } from "node:crypto";
 import { allowAttempt } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
+
+/**
+ * Verifikasi secret webhook secara konstan (SHA-256 timing-safe compare)
+ * untuk mencegah serangan timing attack dan buffer-length exception.
+ */
+function verifySecret(supplied: string, expected: string): boolean {
+  if (!supplied || !expected) return false;
+  const hashSupplied = createHash("sha256").update(supplied).digest();
+  const hashExpected = createHash("sha256").update(expected).digest();
+  return timingSafeEqual(hashSupplied, hashExpected);
+}
 
 /**
  * OPTIONS /api/publik/wa-webhook
@@ -16,7 +27,7 @@ export async function OPTIONS() {
     headers: {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization, x-webhook-secret",
     },
   });
 }
@@ -49,77 +60,77 @@ export async function GET() {
  */
 export async function POST(request: Request) {
   const secret = process.env.WA_WEBHOOK_SECRET?.trim();
-  const isTest = process.env.NODE_ENV === "test";
 
-  if (isTest) {
-    if (!secret || secret.length < 32) {
-      return NextResponse.json({ error: "Webhook belum dikonfigurasi" }, { status: 503 });
-    }
-    // Prefer header; query token supports providers configured only with a webhook URL.
-    const supplied = request.headers.get("x-webhook-secret") ||
-      request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ||
-      new URL(request.url).searchParams.get("token") || "";
-    const expected = Buffer.from(secret);
-    const received = Buffer.from(supplied);
-    if (received.length !== expected.length || !timingSafeEqual(received, expected)) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-  } else {
-    // Pada production / runtime:
-    // Jika admin mengonfigurasi WA_WEBHOOK_SECRET di Vercel, validasi secret tersebut.
-    // Jika belum diset di Vercel, webhook tetap menerima request dari Fonnte dengan aman.
-    if (secret && secret.length >= 8) {
-      const supplied = request.headers.get("x-webhook-secret") ||
-        request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ||
-        new URL(request.url).searchParams.get("token") || "";
-      const expected = Buffer.from(secret);
-      const received = Buffer.from(supplied);
-      if (received.length !== expected.length || !timingSafeEqual(received, expected)) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      }
-    }
+  // Fail-closed di semua environment (minimal 32 karakter untuk jaminan keamanan)
+  if (!secret || secret.length < 32) {
+    return NextResponse.json({ error: "Webhook belum dikonfigurasi" }, { status: 503 });
   }
+
+  // Prefer header; query token supports providers configured only with a webhook URL.
+  const supplied =
+    request.headers.get("x-webhook-secret") ||
+    request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ||
+    new URL(request.url).searchParams.get("token") ||
+    "";
+
+  if (!verifySecret(supplied, secret)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Rate limit global IP untuk mencegah network flood DoS
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  if (!(await allowAttempt(`wa-webhook:${ip}`, { max: 120, windowMs: 60_000 }))) {
+  if (!(await allowAttempt(`wa-webhook:${ip}`, { max: 300, windowMs: 60_000 }))) {
     return NextResponse.json({ error: "Terlalu banyak permintaan" }, { status: 429 });
   }
+
   try {
-    let sender = "";
+    let rawSender = "";
     let message = "";
     let name = "";
     let url = "";
     let isGroup = false;
     let fromMe = false;
+    let device = "";
 
     const contentType = request.headers.get("content-type") || "";
 
     if (contentType.includes("application/json")) {
       const body = await request.json().catch(() => ({}));
-      sender = String(body.sender || body.from || body.phone || "");
+      rawSender = String(body.sender || body.from || body.phone || "");
       message = String(body.message || body.text || body.msg || "");
       name = String(body.name || body.pushname || "");
       url = String(body.url || body.media_url || body.image || "");
-      isGroup = Boolean(body.isGroup || body.group || sender.includes("-") || sender.includes("@g.us"));
-      fromMe = Boolean(body.fromMe || body.from_me || (body.device && sender === String(body.device)));
+      device = String(body.device || "");
+      isGroup = Boolean(body.isGroup || body.group || body.member || rawSender.includes("-") || rawSender.includes("@g.us"));
+      fromMe = Boolean(body.fromMe || body.from_me);
     } else {
       // Form-data atau x-www-form-urlencoded
       const formData = await request.formData().catch(() => null);
       if (formData) {
-        sender = String(formData.get("sender") || formData.get("from") || formData.get("phone") || "");
+        rawSender = String(formData.get("sender") || formData.get("from") || formData.get("phone") || "");
         message = String(formData.get("message") || formData.get("text") || formData.get("msg") || "");
         name = String(formData.get("name") || formData.get("pushname") || "");
         url = String(formData.get("url") || formData.get("media_url") || formData.get("image") || "");
-        const rawDevice = formData.get("device") ? String(formData.get("device")) : "";
-        isGroup = Boolean(formData.get("isGroup") || formData.get("group") || sender.includes("-") || sender.includes("@g.us"));
-        fromMe = Boolean(formData.get("fromMe") || formData.get("from_me") || (rawDevice && sender === rawDevice));
+        device = String(formData.get("device") || "");
+        isGroup = Boolean(formData.get("isGroup") || formData.get("group") || formData.get("member") || rawSender.includes("-") || rawSender.includes("@g.us"));
+        fromMe = Boolean(formData.get("fromMe") || formData.get("from_me"));
       }
     }
 
-    if (!sender) {
+    // Sanitasi nomor pengirim: buang JID multi-device (:1, @s.whatsapp.net, @c.us)
+    const cleanSender = rawSender.split("@")[0].split(":")[0].replace(/\D/g, "");
+    const cleanDevice = device.split("@")[0].split(":")[0].replace(/\D/g, "");
+
+    if (!cleanSender) {
       return NextResponse.json(
         { error: "Sender number is required" },
         { status: 400 }
       );
+    }
+
+    // Cek jika pengirim adalah perangkat bot itu sendiri (hindari infinite loop / echo)
+    if (cleanDevice && cleanSender === cleanDevice) {
+      fromMe = true;
     }
 
     // Abaikan pesan grup atau pesan keluar dari perangkat sendiri agar bot tidak spam
@@ -139,9 +150,14 @@ export async function POST(request: Request) {
       });
     }
 
+    // Rate-limit per pengirim (30 pesan/menit per nomor WA agar gateway Fonnte tidak dicekik bersama)
+    if (!(await allowAttempt(`wa-sender:${cleanSender}`, { max: 30, windowMs: 60_000 }))) {
+      return NextResponse.json({ error: "Terlalu banyak permintaan dari nomor ini" }, { status: 429 });
+    }
+
     // Eksekusi kecerdasan bot berbasis database WastePay
     const result = await processIncomingWaMessage({
-      sender,
+      sender: cleanSender,
       message,
       name,
       url,
@@ -150,11 +166,10 @@ export async function POST(request: Request) {
     // Kirim pesan balasan secara langsung via API Fonnte jika reply tidak kosong
     let sent = false;
     let sendError: string | undefined;
-    const cleanTarget = sender.replace(/[^\d]/g, "");
 
     if (result.reply) {
       try {
-        const sendRes = await kirimWhatsApp(cleanTarget || sender, result.reply);
+        const sendRes = await kirimWhatsApp(cleanSender, result.reply);
         sent = sendRes.ok;
         sendError = sendRes.error;
         if (!sendRes.ok) {
@@ -166,21 +181,14 @@ export async function POST(request: Request) {
       }
     }
 
-    if (isTest) {
-      return NextResponse.json({
-        status: true,
-        sent,
-        // Acknowledge delivery only; private bot data must not be echoed over HTTP.
-      });
-    }
-
+    // Response HTTP 200 bersih:
+    // Tidak mengembalikan key 'reply', 'message', atau 'response' di JSON body
+    // untuk mencegah Fonnte mengirim balasan kedua (Double-Reply elimination)
+    // dan melindungi kerahasiaan data (PII) dari HTTP response.
     return NextResponse.json({
       status: true,
       sent,
       error: sendError,
-      reply: result.reply || undefined,
-      message: result.reply || undefined,
-      response: result.reply ? [{ message: result.reply, target: cleanTarget || sender }] : undefined,
     });
   } catch (err: any) {
     console.error("Error in wa-webhook handler:", err);

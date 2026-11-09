@@ -25,10 +25,16 @@ export async function processIncomingWaMessage(
   payload: IncomingWaPayload
 ): Promise<BotProcessResult> {
   const rawSender = String(payload.sender || "").trim();
-  const cleanSender = rawSender.replace(/\D/g, "");
+  const baseSender = rawSender.split("@")[0].split(":")[0];
+  const cleanSender = baseSender.replace(/\D/g, "");
   const rawMessage = String(payload.message || "").trim();
   const lowerMsg = rawMessage.toLowerCase();
+  const strippedMsg = lowerMsg.replace(/[*_~`]/g, "").trim();
   const mediaUrl = payload.url && typeof payload.url === "string" ? payload.url.trim() : undefined;
+
+  // Deteksi digit menu (mendukung format *1*, [1], (1), 1., 1)
+  const menuDigitMatch = strippedMsg.match(/^[(\[]?([1-5])[)\]\.\s]*$/);
+  const selectedDigit = menuDigitMatch ? menuDigitMatch[1] : null;
 
   // 1. Identifikasi Pelanggan via Nomor WhatsApp (toleran 08xx / 628xx / +628xx)
   const tail10 = extractTail10Digits(cleanSender);
@@ -63,10 +69,103 @@ export async function processIncomingWaMessage(
   const sapaanNama = pelanggan ? `*Bpk/Ibu ${pelanggan.nama}*` : payload.name ? `*Kak ${payload.name}*` : "*Bpk/Ibu*";
   const namaZona = pelanggan?.wilayah?.zona?.nama || pelanggan?.kelurahan?.nama || "Area Layanan Depok";
 
+  // 1b. Penanganan khusus: Foto/Media tanpa teks / pesan singkat
+  if (mediaUrl && (!lowerMsg || lowerMsg.length <= 3)) {
+    if (pelanggan) {
+      const activeKomplain = typeof prisma.komplain.findFirst === "function"
+        ? await prisma.komplain.findFirst({
+            where: {
+              pelangganId: pelanggan.id,
+              status: { in: ["baru", "proses"] },
+              createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+            },
+            orderBy: { createdAt: "desc" },
+          })
+        : null;
+
+      if (activeKomplain) {
+        if (!activeKomplain.foto && typeof prisma.komplain.update === "function") {
+          await prisma.komplain.update({
+            where: { id: activeKomplain.id },
+            data: { foto: mediaUrl },
+          });
+        }
+        const reply = [
+          `📸 *FOTO BUKTI PENGADUAN DITERIMA*`,
+          ``,
+          `Halo ${sapaanNama},`,
+          `Foto kondisi sampah Anda telah kami tambahkan ke tiket pengaduan aktif:`,
+          `🆔 *Tiket: #KMP-${activeKomplain.id}*`,
+          `📍 *Zona Wilayah:* ${namaZona}`,
+          `Status: *${activeKomplain.status === "proses" ? "Sedang Ditindaklanjuti Armada Lapangan 🚛" : "Dalam Antrean Armada 📋"}*`,
+          ``,
+          `Petugas armada rute wilayah Anda sedang bergerak menangani. Terima kasih atas kerja samanya! 🙏`,
+        ].join("\n");
+        return { reply, intent: "KOMPLAIN", pelangganId: pelanggan.id, komplainId: activeKomplain.id };
+      }
+
+      const komplain = await prisma.komplain.create({
+        data: {
+          jenis: "sampah_menumpuk",
+          deskripsi: "Laporan foto sampah via WhatsApp",
+          foto: mediaUrl,
+          status: "baru",
+          pelangganId: pelanggan.id,
+        },
+      });
+
+      if (isWaEnabled() && adminPhone()) {
+        const pesanAdmin = [
+          `🚨 *PENGADUAN FOTO SAMPAH (#KMP-${komplain.id})*`,
+          `👤 Pelanggan: ${pelanggan.nama}`,
+          `📱 Telp: ${pelanggan.noTelepon}`,
+          `📍 Zona: ${namaZona}`,
+          `🏠 Alamat: ${pelanggan.alamat}`,
+          `📸 Media Foto: ${mediaUrl}`,
+          `🌐 Link Web: https://upsheru.com/pengaduan`,
+        ].join("\n");
+        kirimWhatsApp(adminPhone(), pesanAdmin).catch(() => {});
+      }
+
+      const linkWebPengaduan = pelanggan.noTelepon
+        ? `https://upsheru.com/pengaduan?kode=${pelanggan.noTelepon}`
+        : `https://upsheru.com/pengaduan`;
+
+      const reply = [
+        `📸 *FOTO SAMPAH BERHASIL DILAPORKAN*`,
+        ``,
+        `Halo ${sapaanNama},`,
+        `Foto kondisi sampah Anda telah kami terima dan tercatat di sistem:`,
+        `🆔 *Tiket Pengaduan: #KMP-${komplain.id}*`,
+        `📍 *Zona Wilayah:* ${namaZona}`,
+        ``,
+        `Petugas armada telah menerima laporan ini dan akan segera melakukan pengecekan ke lokasi.`,
+        `👉 *${linkWebPengaduan}*`,
+        ``,
+        `Terima kasih telah membantu menjaga kebersihan lingkungan! 🙏`,
+      ].join("\n");
+
+      return { reply, intent: "KOMPLAIN", pelangganId: pelanggan.id, komplainId: komplain.id };
+    } else {
+      const reply = [
+        `Halo! 👋 Kami telah menerima kiriman foto dari Anda.`,
+        ``,
+        `Nomor Anda belum terdaftar di sistem pelanggan kami. Silakan pilih menu bantuan:`,
+        `1️⃣ *Cek Tagihan* (Ketik: 1 / Tagihan)`,
+        `2️⃣ *Jadwal Pengangkutan* (Ketik: 2 / Jadwal)`,
+        `3️⃣ *Form Pengaduan Sampah* (Akses: https://upsheru.com/pengaduan)`,
+        `4️⃣ *Bicara dengan Admin/CS* (Ketik: 4 / Admin)`,
+        `👉 Ketik *DAFTAR* untuk registrasi layanan angkut sampah rutin di rumah Anda.`,
+      ].join("\n");
+      return { reply, intent: "MENU" };
+    }
+  }
+
   // 2. Intent Parsing (Klasifikasi Kebutuhan)
 
   // Intent A: DAFTAR BARU
   const isDaftarTrigger =
+    strippedMsg === "daftar" ||
     lowerMsg === "daftar" ||
     lowerMsg.startsWith("daftar ") ||
     lowerMsg.startsWith("daftar-") ||
@@ -96,8 +195,8 @@ export async function processIncomingWaMessage(
   }
 
   // Intent: COVERAGE AREA / JANGKAUAN WILAYAH
-  // Hindari over-matching kata umum seperti "lokasi", "area", "daerah" yang sering dipakai saat chat biasa
   const isCoverageTrigger =
+    strippedMsg === "coverage" ||
     lowerMsg === "coverage" ||
     lowerMsg.includes("coverage area") ||
     lowerMsg.includes("jangkauan") ||
@@ -146,15 +245,17 @@ export async function processIncomingWaMessage(
   }
 
   // Intent B: BICARA DENGAN ADMIN / CS
-  if (
-    lowerMsg === "4" ||
-    lowerMsg === "admin" ||
-    lowerMsg === "cs" ||
-    lowerMsg === "operator" ||
+  const isAdminTrigger =
+    selectedDigit === "4" ||
+    strippedMsg === "4" ||
+    strippedMsg === "admin" ||
+    strippedMsg === "cs" ||
+    strippedMsg === "operator" ||
     lowerMsg.includes("bicara dengan admin") ||
     lowerMsg.includes("hubungi admin") ||
-    lowerMsg.includes("manusia")
-  ) {
+    lowerMsg.includes("manusia");
+
+  if (isAdminTrigger) {
     const reply = [
       `Halo ${sapaanNama},`,
       ``,
@@ -170,8 +271,9 @@ export async function processIncomingWaMessage(
   }
 
   // Intent C: JADWAL PENGANGKUTAN
-  if (
-    lowerMsg === "2" ||
+  const isJadwalTrigger =
+    selectedDigit === "2" ||
+    strippedMsg === "2" ||
     lowerMsg.includes("jadwal") ||
     lowerMsg.includes("kapan diangkut") ||
     lowerMsg.includes("kapan diambil") ||
@@ -179,8 +281,9 @@ export async function processIncomingWaMessage(
     lowerMsg.includes("diangkut kapan") ||
     lowerMsg.includes("hari apa") ||
     lowerMsg.includes("jadwal angkut") ||
-    lowerMsg.includes("jadwal sampah")
-  ) {
+    lowerMsg.includes("jadwal sampah");
+
+  if (isJadwalTrigger) {
     if (!pelanggan) {
       const reply = [
         `Halo ${sapaanNama},`,
@@ -235,6 +338,7 @@ export async function processIncomingWaMessage(
   // Intent: TATACARA PEMBAYARAN QRIS & M-BANKING
   const cleanFormattedMsg = lowerMsg.replace(/[*_~`]/g, "").trim();
   const isCaraBayarTrigger =
+    selectedDigit === "5" ||
     cleanFormattedMsg === "5" ||
     cleanFormattedMsg === "cara bayar" ||
     cleanFormattedMsg.startsWith("cara bayar") ||
@@ -319,16 +423,192 @@ export async function processIncomingWaMessage(
     return { reply, intent: "CARA_BAYAR", pelangganId: pelanggan?.id };
   }
 
+  // Intent E: PENGADUAN / KOMPLAIN SAMPAH (Diprioritaskan sebelum tagihan agar komplain warga tidak keliru dianggap cek tagihan)
+  const isKomplainTrigger =
+    !isJadwalTrigger && (
+      selectedDigit === "3" ||
+      strippedMsg === "3" ||
+      lowerMsg.startsWith("komplain") ||
+      lowerMsg.includes("komplain") ||
+      lowerMsg.includes("komplen") ||
+      lowerMsg.startsWith("lapor") ||
+      lowerMsg.includes("lapor") ||
+      lowerMsg.startsWith("pengaduan") ||
+      lowerMsg.includes("pengaduan") ||
+      lowerMsg.startsWith("keluhan") ||
+      lowerMsg.includes("keluhan") ||
+      lowerMsg.includes("belum diangkut") ||
+      lowerMsg.includes("blm diangkut") ||
+      lowerMsg.includes("belum di angkut") ||
+      lowerMsg.includes("blm di angkut") ||
+      lowerMsg.includes("tidak diangkut") ||
+      lowerMsg.includes("gak diangkut") ||
+      lowerMsg.includes("ga diangkut") ||
+      lowerMsg.includes("belum diambil") ||
+      lowerMsg.includes("blm diambil") ||
+      lowerMsg.includes("belum di ambil") ||
+      lowerMsg.includes("blm di ambil") ||
+      lowerMsg.includes("tidak diambil") ||
+      lowerMsg.includes("gak diambil") ||
+      lowerMsg.includes("ga diambil") ||
+      lowerMsg.includes("sampah menumpuk") ||
+      lowerMsg.includes("sampah numpuk") ||
+      lowerMsg.includes("numpuk") ||
+      lowerMsg.includes("menumpuk") ||
+      lowerMsg.includes("terlewat") ||
+      lowerMsg.includes("bau busuk") ||
+      lowerMsg.includes("bau bgt")
+    );
+
+  if (isKomplainTrigger) {
+    const linkWebPengaduan = pelanggan?.noTelepon
+      ? `https://upsheru.com/pengaduan?kode=${pelanggan.noTelepon}`
+      : `https://upsheru.com/pengaduan`;
+
+    // Jika pesan hanya pemicu menu (3 / lapor / komplain / pengaduan / keluhan)
+    const isSimpleTrigger =
+      selectedDigit === "3" ||
+      strippedMsg === "3" ||
+      strippedMsg === "komplain" ||
+      strippedMsg === "komplen" ||
+      strippedMsg === "lapor" ||
+      strippedMsg === "pengaduan" ||
+      strippedMsg === "keluhan" ||
+      strippedMsg === "laporan";
+
+    if (isSimpleTrigger || !pelanggan) {
+      const reply = [
+        `📢 *PUSAT PENGADUAN LAYANAN SAMPAH — UPS HERU* 🚛`,
+        ``,
+        `Halo ${sapaanNama},`,
+        ``,
+        `Untuk menyampaikan laporan sampah belum diangkut, sampah menumpuk, atau kendala layanan lainnya, silakan isi formulir pengaduan online resmi kami di:`,
+        `👉 *${linkWebPengaduan}*`,
+        ``,
+        `✨ *Keunggulan Pengaduan Online di Website:*`,
+        `• Laporan otomatis terhubung langsung ke tablet navigasi petugas armada yang bertugas hari ini`,
+        `• Dapat melampirkan foto bukti kondisi sampah di lokasi`,
+        `• Memperoleh nomor tiket resmi untuk memantau status penanganan secara real-time`,
+        ``,
+        `Silakan klik link di atas untuk menyampaikan laporan Anda. Tim kami siap segera menindaklanjuti ke lokasi. Terima kasih! 🙏`,
+      ].join("\n");
+      return { reply, intent: "KOMPLAIN", pelangganId: pelanggan?.id };
+    }
+
+    // Cek apakah ada komplain aktif dalam 24 jam terakhir (deduplikasi anti-spam / retry)
+    const activeKomplain = typeof prisma.komplain.findFirst === "function"
+      ? await prisma.komplain.findFirst({
+          where: {
+            pelangganId: pelanggan.id,
+            status: { in: ["baru", "proses"] },
+            createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+          },
+          orderBy: { createdAt: "desc" },
+        })
+      : null;
+
+    if (activeKomplain) {
+      if (mediaUrl && !activeKomplain.foto && typeof prisma.komplain.update === "function") {
+        await prisma.komplain.update({
+          where: { id: activeKomplain.id },
+          data: { foto: mediaUrl },
+        });
+      }
+
+      const statusDesc = activeKomplain.status === "proses"
+        ? "Sedang Ditindaklanjuti Armada Lapangan 🚛"
+        : "Menunggu Penjadwalan Armada Lapangan 📋";
+
+      const reply = [
+        `ℹ️ *LAPORAN ANDA SEDANG DALAM PROSES*`,
+        ``,
+        `Halo ${sapaanNama},`,
+        `Laporan kendala sampah Anda sebelumnya telah tercatat dan sedang dalam penanganan armada:`,
+        `🆔 *Tiket: #KMP-${activeKomplain.id}*`,
+        `📍 *Zona Wilayah:* ${namaZona}`,
+        `Status: *${statusDesc}*`,
+        ``,
+        `Petugas rute wilayah kami telah menerima informasi ini dan sedang bergerak menuju lokasi. Anda tidak perlu membuat tiket baru ya.`,
+        ``,
+        `📋 Pantau status penanganan:`,
+        `👉 *${linkWebPengaduan}*`,
+        ``,
+        `Terima kasih atas kesabarannya! 🙏`,
+      ].join("\n");
+
+      return {
+        reply,
+        intent: "KOMPLAIN",
+        pelangganId: pelanggan.id,
+        komplainId: activeKomplain.id,
+      };
+    }
+
+    // Jika pelanggan mengetikkan pesan kendala lengkap langsung di WhatsApp:
+    // Tetap catat tiket di database agar tidak ada laporan warga yang tercecer
+    const jenis =
+      lowerMsg.includes("numpuk") || lowerMsg.includes("menumpuk")
+        ? "sampah_menumpuk"
+        : "tidak_diangkut";
+
+    const komplain = await prisma.komplain.create({
+      data: {
+        jenis,
+        deskripsi: rawMessage,
+        foto: mediaUrl || null,
+        status: "baru",
+        pelangganId: pelanggan.id,
+      },
+    });
+
+    // Teruskan notifikasi pengaduan ke nomor WA admin bila terkonfigurasi
+    if (isWaEnabled() && adminPhone()) {
+      const pesanAdmin = [
+        `🚨 *PENGADUAN BARU (#KMP-${komplain.id})*`,
+        `👤 Pelanggan: ${pelanggan.nama}`,
+        `📱 Telp: ${pelanggan.noTelepon}`,
+        `📍 Zona: ${namaZona}`,
+        `🏠 Alamat: ${pelanggan.alamat}`,
+        `📝 Isi: ${rawMessage.slice(0, 200)}`,
+        `🌐 Link Web: https://upsheru.com/pengaduan`,
+      ].join("\n");
+      kirimWhatsApp(adminPhone(), pesanAdmin).catch(() => {});
+    }
+
+    const reply = [
+      `✅ *PENGADUAN BERHASIL DICATAT*`,
+      ``,
+      `Halo ${sapaanNama},`,
+      `Laporan Anda telah tercatat di sistem dengan nomor tiket:`,
+      `🆔 *Tiket Pengaduan: #KMP-${komplain.id}*`,
+      `📍 *Zona Wilayah:* ${namaZona}`,
+      ``,
+      `📋 Untuk melampirkan foto bukti sampah atau memantau status penanganan armada, silakan buka link pengaduan online:`,
+      `👉 *${linkWebPengaduan}*`,
+      ``,
+      `Petugas armada telah menerima laporan ini dan akan segera melakukan pengecekan ke lokasi. Terima kasih atas kerja samanya! 🙏`,
+    ].join("\n");
+
+    return {
+      reply,
+      intent: "KOMPLAIN",
+      pelangganId: pelanggan.id,
+      komplainId: komplain.id,
+    };
+  }
+
   // Intent D: CEK TAGIHAN & PEMBAYARAN
-  if (
-    lowerMsg === "1" ||
+  const isTagihanTrigger =
+    selectedDigit === "1" ||
+    strippedMsg === "1" ||
     lowerMsg.includes("tagihan") ||
     lowerMsg.includes("bayar") ||
     lowerMsg.includes("iuran") ||
     lowerMsg.includes("invoice") ||
     lowerMsg.includes("rekening") ||
-    lowerMsg.includes("transfer")
-  ) {
+    lowerMsg.includes("transfer");
+
+  if (isTagihanTrigger) {
     if (!pelanggan) {
       const reply = [
         `Halo ${sapaanNama},`,
@@ -416,128 +696,25 @@ export async function processIncomingWaMessage(
     return { reply, intent: "TAGIHAN", pelangganId: pelanggan.id };
   }
 
-  // Intent E: PENGADUAN / KOMPLAIN SAMPAH
-  const isKomplainTrigger =
-    lowerMsg === "3" ||
-    lowerMsg.startsWith("komplain") ||
-    lowerMsg.includes("komplain") ||
-    lowerMsg.startsWith("lapor") ||
-    lowerMsg.includes("lapor") ||
-    lowerMsg.startsWith("pengaduan") ||
-    lowerMsg.includes("pengaduan") ||
-    lowerMsg.startsWith("keluhan") ||
-    lowerMsg.includes("keluhan") ||
-    lowerMsg.includes("belum diangkut") ||
-    lowerMsg.includes("belum diambil") ||
-    lowerMsg.includes("sampah menumpuk") ||
-    lowerMsg.includes("sampah numpuk") ||
-    lowerMsg.includes("numpuk") ||
-    lowerMsg.includes("menumpuk") ||
-    lowerMsg.includes("terlewat");
-
-  if (isKomplainTrigger) {
-    const linkWebPengaduan = pelanggan?.noTelepon
-      ? `https://upsheru.com/pengaduan?kode=${pelanggan.noTelepon}`
-      : `https://upsheru.com/pengaduan`;
-
-    // Jika pesan hanya pemicu menu (3 / lapor / komplain / pengaduan / keluhan)
-    const isSimpleTrigger =
-      lowerMsg === "3" ||
-      lowerMsg === "komplain" ||
-      lowerMsg === "lapor" ||
-      lowerMsg === "pengaduan" ||
-      lowerMsg === "keluhan" ||
-      lowerMsg === "laporan";
-
-    if (isSimpleTrigger || !pelanggan) {
-      const reply = [
-        `📢 *PUSAT PENGADUAN LAYANAN SAMPAH — UPS HERU* 🚛`,
-        ``,
-        `Halo ${sapaanNama},`,
-        ``,
-        `Untuk menyampaikan laporan sampah belum diangkut, sampah menumpuk, atau kendala layanan lainnya, silakan isi formulir pengaduan online resmi kami di:`,
-        `👉 *${linkWebPengaduan}*`,
-        ``,
-        `✨ *Keunggulan Pengaduan Online di Website:*`,
-        `• Laporan otomatis terhubung langsung ke tablet navigasi petugas armada yang bertugas hari ini`,
-        `• Dapat melampirkan foto bukti kondisi sampah di lokasi`,
-        `• Memperoleh nomor tiket resmi untuk memantau status penanganan secara real-time`,
-        ``,
-        `Silakan klik link di atas untuk menyampaikan laporan Anda. Tim kami siap segera menindaklanjuti ke lokasi. Terima kasih! 🙏`,
-      ].join("\n");
-      return { reply, intent: "KOMPLAIN", pelangganId: pelanggan?.id };
-    }
-
-    // Jika pelanggan mengetikkan pesan kendala lengkap langsung di WhatsApp:
-    // Tetap catat tiket di database agar tidak ada laporan warga yang tercecer
-    const jenis =
-      lowerMsg.includes("numpuk") || lowerMsg.includes("menumpuk")
-        ? "sampah_menumpuk"
-        : "tidak_diangkut";
-
-    const komplain = await prisma.komplain.create({
-      data: {
-        jenis,
-        deskripsi: rawMessage,
-        foto: mediaUrl || null,
-        status: "baru",
-        pelangganId: pelanggan.id,
-      },
-    });
-
-    // Teruskan notifikasi pengaduan ke nomor WA admin bila terkonfigurasi
-    if (isWaEnabled() && adminPhone()) {
-      const pesanAdmin = [
-        `🚨 *PENGADUAN BARU (#KMP-${komplain.id})*`,
-        `👤 Pelanggan: ${pelanggan.nama}`,
-        `📱 Telp: ${pelanggan.noTelepon}`,
-        `📍 Zona: ${namaZona}`,
-        `🏠 Alamat: ${pelanggan.alamat}`,
-        `📝 Isi: ${rawMessage.slice(0, 200)}`,
-        `🌐 Link Web: https://upsheru.com/pengaduan`,
-      ].join("\n");
-      kirimWhatsApp(adminPhone(), pesanAdmin).catch(() => {});
-    }
-
-    const reply = [
-      `✅ *PENGADUAN BERHASIL DICATAT*`,
-      ``,
-      `Halo ${sapaanNama},`,
-      `Laporan Anda telah tercatat di sistem dengan nomor tiket:`,
-      `🆔 *Tiket Pengaduan: #KMP-${komplain.id}*`,
-      `📍 *Zona Wilayah:* ${namaZona}`,
-      ``,
-      `📋 Untuk melampirkan foto bukti sampah atau memantau status penanganan armada, silakan buka link pengaduan online:`,
-      `👉 *${linkWebPengaduan}*`,
-      ``,
-      `Petugas armada telah menerima laporan ini dan akan segera melakukan pengecekan ke lokasi. Terima kasih atas kerja samanya! 🙏`,
-    ].join("\n");
-
-    return {
-      reply,
-      intent: "KOMPLAIN",
-      pelangganId: pelanggan.id,
-      komplainId: komplain.id,
-    };
-  }
-
   // Intent F: MENU UTAMA / BANTUAN SPESIFIK
-  // Hanya membalas jika pengguna secara eksplisit meminta panduan / menu
+  // Hanya membalas jika pengguna secara eksplisit meminta panduan / menu / salam
   const isMenuTrigger =
-    lowerMsg === "menu" ||
-    lowerMsg === "#menu" ||
-    lowerMsg === "/menu" ||
-    lowerMsg === "/help" ||
-    lowerMsg === "/start" ||
-    lowerMsg === "bantuan" ||
-    lowerMsg === "help" ||
-    lowerMsg === "panduan" ||
-    lowerMsg === "info" ||
-    lowerMsg === "pilihan" ||
-    lowerMsg === "halo" ||
-    lowerMsg === "halo bot" ||
-    lowerMsg === "hai" ||
-    lowerMsg === "hello";
+    strippedMsg === "menu" ||
+    strippedMsg === "#menu" ||
+    strippedMsg === "/menu" ||
+    strippedMsg === "/help" ||
+    strippedMsg === "/start" ||
+    strippedMsg === "bantuan" ||
+    strippedMsg === "help" ||
+    strippedMsg === "panduan" ||
+    strippedMsg === "info" ||
+    strippedMsg === "pilihan" ||
+    strippedMsg === "halo" ||
+    strippedMsg === "halo bot" ||
+    strippedMsg === "hai" ||
+    strippedMsg === "hello" ||
+    strippedMsg.startsWith("halo ") ||
+    strippedMsg.startsWith("hai ");
 
   if (isMenuTrigger) {
     const reply = [

@@ -47,12 +47,14 @@ export function adminPhone(): string {
 }
 
 /** Bersihkan target: jika WhatsApp Group (@g.us), pertahankan; jika no HP, bersihkan digit */
-function cleanTarget(target: string): string {
+export function cleanTarget(target: string): string {
   const trimmed = target.trim();
   if (trimmed.includes("@g.us")) {
     return trimmed;
   }
-  return trimmed.replace(/[^\d]/g, "").replace(/^62/, "0");
+  // Hilangkan suffix JID multi-device (misal :1 atau @s.whatsapp.net / @c.us) sebelum ekstrak digit
+  const base = trimmed.split("@")[0].split(":")[0];
+  return base.replace(/[^\d]/g, "").replace(/^62/, "0");
 }
 
 /**
@@ -240,6 +242,7 @@ export async function kirimWhatsApp(
         message: pesan,
         countryCode: "62",
       }),
+      signal: AbortSignal.timeout(8000),
     });
     const data = await res.json().catch(() => null);
     if (res.ok && data && data.status !== false) return { ok: true };
