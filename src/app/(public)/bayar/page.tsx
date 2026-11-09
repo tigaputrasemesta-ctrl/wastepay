@@ -93,6 +93,12 @@ type DetailTagihan = {
     tanggal: string;
     catatan?: string | null;
   } | null;
+  sesiGatewayAktif?: {
+    id: number;
+    metode: string;
+    jumlah: number;
+    tanggal: string;
+  } | null;
 };
 
 const BULAN = [
@@ -373,7 +379,7 @@ function BayarPortalContent() {
     }
   }
 
-  async function bayarOnlineDuitku() {
+  async function bayarOnlineDuitku(forceNew = false) {
     if (!detail) return;
     if (!pilihMetode) {
       setBayarError("Metode pembayaran belum dipilih");
@@ -389,6 +395,7 @@ function BayarPortalContent() {
           kode: detail.pelanggan.kodePelanggan,
           tagihanId: detail.id,
           paymentMethod: pilihMetode,
+          forceNew,
         }),
       });
       const data = await res.json();
@@ -869,25 +876,51 @@ function BayarPortalContent() {
                 </p>
               )}
 
-              <button
-                type="button"
-                disabled={bayarLoading || !pilihMetode}
-                onClick={bayarOnlineDuitku}
-                className="w-full py-3.5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white font-bold text-sm shadow-sm transition active:scale-95 flex flex-col items-center justify-center gap-0.5"
-              >
-                {(() => {
-                  if (bayarLoading) return <span>Menghubungkan ke Gateway...</span>;
-                  const selected = metodeList.find((m) => m.value === pilihMetode);
-                  const fee = selected?.totalFee ? parseInt(selected.totalFee) || 0 : 0;
-                  const grandTotal = detail.total + fee;
-                  return (
-                    <>
-                      <span>Bayar Sekarang ({formatRupiahSkylite(grandTotal)})</span>
-                      {fee > 0 && <span className="text-xs font-normal opacity-80">termasuk biaya layanan sistem web Rp {fee.toLocaleString("id-ID")}</span>}
-                    </>
-                  );
-                })()}
-              </button>
+              {detail.sesiGatewayAktif && (
+                <div className="p-3.5 bg-sky-50 border border-sky-200/90 rounded-2xl text-xs text-sky-950 flex items-start gap-2.5">
+                  <span className="text-base shrink-0">ℹ️</span>
+                  <div className="space-y-0.5">
+                    <p className="font-bold">Sesi QRIS Sebelumnya Belum Diselesaikan</p>
+                    <p className="text-sky-800 text-xs leading-relaxed">
+                      Jika Anda lupa kode atau barcode lama hilang/rusak, silakan klik <strong>Cetak QRIS Baru</strong> di bawah. Sesi lama otomatis dibatalkan dan tidak menumpuk.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <button
+                  type="button"
+                  disabled={bayarLoading || !pilihMetode}
+                  onClick={() => bayarOnlineDuitku(false)}
+                  className="w-full py-3.5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white font-bold text-sm shadow-sm transition active:scale-95 flex flex-col items-center justify-center gap-0.5"
+                >
+                  {(() => {
+                    if (bayarLoading) return <span>Menghubungkan ke Gateway...</span>;
+                    const selected = metodeList.find((m) => m.value === pilihMetode);
+                    const fee = selected?.totalFee ? parseInt(selected.totalFee) || 0 : 0;
+                    const grandTotal = detail.total + fee;
+                    return (
+                      <>
+                        <span>{detail.sesiGatewayAktif ? "Buka / Lanjutkan Pembayaran" : "Bayar Sekarang"} ({formatRupiahSkylite(grandTotal)})</span>
+                        {fee > 0 && <span className="text-xs font-normal opacity-80">termasuk biaya layanan sistem web Rp {fee.toLocaleString("id-ID")}</span>}
+                      </>
+                    );
+                  })()}
+                </button>
+
+                {detail.sesiGatewayAktif && (
+                  <button
+                    type="button"
+                    disabled={bayarLoading || !pilihMetode}
+                    onClick={() => bayarOnlineDuitku(true)}
+                    className="w-full py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition active:scale-95 flex items-center justify-center gap-1.5 border border-slate-200"
+                  >
+                    <span>🔄</span>
+                    <span>Cetak QRIS Baru (Ganti Barcode Lama)</span>
+                  </button>
+                )}
+              </div>
 
               <div className="pt-2 border-t border-slate-100 flex flex-col items-center">
                 <button

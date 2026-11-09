@@ -41,11 +41,11 @@ export async function GET() {
       calonList,
       komplainList,
     ] = await Promise.all([
-      prisma.pembayaran.count({ where: { status: "pending" } }),
+      prisma.pembayaran.count({ where: { status: "pending", metode: { not: "duitku" } } }),
       prisma.pelanggan.count({ where: { status: "calon", deletedAt: null } }),
       prisma.komplain.count({ where: { status: "baru" } }),
       prisma.pembayaran.findMany({
-        where: { status: "pending" },
+        where: { status: "pending", metode: { not: "duitku" } },
         include: {
           pelanggan: { select: { nama: true } },
           tagihan: { select: { id: true, noInvoice: true } },

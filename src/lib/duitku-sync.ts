@@ -88,6 +88,20 @@ export async function syncDuitkuPayment(
             data: { status: "lunas", tanggalLunas: new Date() },
           });
         }
+
+        // Otomatis batalkan seluruh sesi pembayaran pending lainnya untuk tagihan ini agar bersih & tidak numpuk
+        await tx.pembayaran.updateMany({
+          where: {
+            tagihanId: pembayaran.tagihanId,
+            id: { not: pembayaran.id },
+            status: "pending",
+          },
+          data: {
+            status: "ditolak",
+            catatan: `Dibatalkan otomatis: Tagihan telah lunas via pembayaran #${pembayaran.id} (${result.paymentMethod || "Duitku"})`,
+          },
+        });
+
         await logAudit(
           "update",
           "Pembayaran",

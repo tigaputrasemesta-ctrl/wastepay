@@ -359,7 +359,14 @@ export async function handlePublicSearchPayment(request: Request): Promise<NextR
   });
 
   const tagihanWithRincian = tagihanList.map((t) => {
-    const pendingPayment = t.pembayaran.find((p) => p.status === 'pending');
+    // Hanya pembayaran manual (transfer/tunai/ewallet) yang membutuhkan verifikasi admin.
+    // Transaksi 'duitku' adalah pembayaran gateway otomatis mandiri yang belum dibayar warga.
+    const pendingPayment = t.pembayaran.find(
+      (p) => p.status === 'pending' && p.metode !== 'duitku'
+    );
+    const activeGateway = t.pembayaran.find(
+      (p) => p.status === 'pending' && p.metode === 'duitku'
+    );
     return {
       id: t.id,
       noInvoice: t.noInvoice,
@@ -376,6 +383,13 @@ export async function handlePublicSearchPayment(request: Request): Promise<NextR
             metode: pendingPayment.metode,
             createdAt: pendingPayment.createdAt.toISOString(),
             catatan: pendingPayment.catatan,
+          }
+        : null,
+      activeGateway: activeGateway
+        ? {
+            id: activeGateway.id,
+            metode: activeGateway.metode,
+            createdAt: activeGateway.createdAt.toISOString(),
           }
         : null,
     };

@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { kode, tagihanId, paymentMethod } = body;
+    const { kode, tagihanId, paymentMethod, forceNew } = body;
     if (!kode || !tagihanId || !paymentMethod) {
       return NextResponse.json(
         { error: "Data tidak lengkap (kode, tagihanId, paymentMethod wajib)" },
@@ -104,33 +104,35 @@ export async function POST(request: Request) {
     const biayaAdmin = isQris ? 1500 : 0;
     const total = totalTagihan + biayaAdmin;
 
-    // Reuse transaksi pending yang masih aktif jika metode pembayarannya sama & dibuat dalam 30 menit
-    const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
-    const existing = await prisma.pembayaran.findFirst({
-      where: {
-        tagihanId: tagihan.id,
-        metode: "duitku",
-        status: "pending",
-        createdAt: { gte: thirtyMinutesAgo },
-        duitkuTransaction: {
-          is: {
-            paymentMethod: metodeUpper,
-            // Selama bukan status final gagal/expired ("02"), paymentUrl masih aktif
-            NOT: { statusCode: "02" },
+    // Reuse transaksi pending yang masih aktif jika metode pembayarannya sama & dibuat dalam 30 menit (kecuali diminta cetak baru: forceNew === true)
+    if (!forceNew) {
+      const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+      const existing = await prisma.pembayaran.findFirst({
+        where: {
+          tagihanId: tagihan.id,
+          metode: "duitku",
+          status: "pending",
+          createdAt: { gte: thirtyMinutesAgo },
+          duitkuTransaction: {
+            is: {
+              paymentMethod: metodeUpper,
+              // Selama bukan status final gagal/expired ("02"), paymentUrl masih aktif
+              NOT: { statusCode: "02" },
+            },
           },
         },
-      },
-      include: { duitkuTransaction: true },
-      orderBy: { id: "desc" },
-    });
-    if (existing?.duitkuTransaction?.paymentUrl) {
-      return NextResponse.json({
-        paymentUrl: existing.duitkuTransaction.paymentUrl,
-        orderId: existing.duitkuTransaction.orderId,
-        reference: existing.duitkuTransaction.reference,
-        pembayaranId: existing.id,
-        reused: true,
+        include: { duitkuTransaction: true },
+        orderBy: { id: "desc" },
       });
+      if (existing?.duitkuTransaction?.paymentUrl) {
+        return NextResponse.json({
+          paymentUrl: existing.duitkuTransaction.paymentUrl,
+          orderId: existing.duitkuTransaction.orderId,
+          reference: existing.duitkuTransaction.reference,
+          pembayaranId: existing.id,
+          reused: true,
+        });
+      }
     }
 
     // OrderId acak (tidak dapat ditebak/enumerasi) — hindari IDOR via endpoint status publik

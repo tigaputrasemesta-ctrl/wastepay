@@ -73,8 +73,13 @@ export async function GET(request: Request) {
   const pembayaranLunas = tagihan.pembayaran.find(
     (p) => p.status === "terverifikasi" || p.status === "lunas"
   );
+  // Hanya pembayaran manual (transfer/tunai) yang butuh review verifikasi admin
   const pembayaranPending = tagihan.pembayaran.find(
-    (p) => p.status === "pending"
+    (p) => p.status === "pending" && p.metode !== "duitku"
+  );
+  // Sesi gateway QRIS/Duitku yang masih aktif (belum dibayar warga)
+  const sesiGatewayAktif = tagihan.pembayaran.find(
+    (p) => p.status === "pending" && p.metode === "duitku"
   );
 
   return NextResponse.json({
@@ -113,6 +118,14 @@ export async function GET(request: Request) {
           jumlah: pembayaranPending.jumlah,
           tanggal: pembayaranPending.createdAt,
           catatan: pembayaranPending.catatan,
+        }
+      : null,
+    sesiGatewayAktif: sesiGatewayAktif
+      ? {
+          id: sesiGatewayAktif.id,
+          metode: sesiGatewayAktif.metode,
+          jumlah: sesiGatewayAktif.jumlah,
+          tanggal: sesiGatewayAktif.createdAt,
         }
       : null,
   }, {

@@ -110,8 +110,8 @@ async function getStats() {
       prisma.komplain.count({ where: { status: "baru" } }),
       prisma.petugas.count({ where: { aktif: true, deletedAt: null } }),
       
-      prisma.pembayaran.count({ where: { status: "pending" } }),
-      prisma.pembayaran.aggregate({ where: { status: "pending" }, _sum: { jumlah: true } }),
+      prisma.pembayaran.count({ where: { status: "pending", metode: { not: "duitku" } } }),
+      prisma.pembayaran.aggregate({ where: { status: "pending", metode: { not: "duitku" } }, _sum: { jumlah: true } }),
       
       prisma.klaimPetugas.count({ where: { status: "menunggu" } }),
       prisma.klaimPetugas.aggregate({ where: { status: "menunggu" }, _sum: { nominal: true } }),

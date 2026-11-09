@@ -64,19 +64,6 @@ export async function POST(
       });
     }
 
-    // Periksa status ke Duitku API
-    const duitkuStatus = await getDuitkuTransactionStatus(tagihan.noInvoice);
-
-    if (!duitkuStatus) {
-      return NextResponse.json({
-        success: false,
-        isLunas: false,
-        message: "Belum ada catatan transaksi di payment gateway Duitku untuk invoice ini",
-      });
-    }
-
-    const isSuccess = isSuccessStatusCode(duitkuStatus.statusCode);
-
     // Cari transaksi Duitku di database jika ada
     const dt = await prisma.duitkuTransaction.findFirst({
       where: {
@@ -88,6 +75,21 @@ export async function POST(
       include: { pembayaran: true },
       orderBy: { id: "desc" },
     });
+
+    const orderIdToCheck = dt?.orderId || tagihan.noInvoice;
+
+    // Periksa status ke Duitku API
+    const duitkuStatus = await getDuitkuTransactionStatus(orderIdToCheck);
+
+    if (!duitkuStatus) {
+      return NextResponse.json({
+        success: false,
+        isLunas: false,
+        message: "Belum ada catatan transaksi di payment gateway Duitku untuk invoice ini",
+      });
+    }
+
+    const isSuccess = isSuccessStatusCode(duitkuStatus.statusCode);
 
     if (dt) {
       await syncDuitkuPayment(
