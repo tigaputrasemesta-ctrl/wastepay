@@ -3,8 +3,22 @@ import { processIncomingWaMessage } from "@/lib/server/wa-bot-service";
 import { kirimWhatsApp } from "@/lib/wa";
 import { createHash, timingSafeEqual } from "node:crypto";
 import { allowAttempt } from "@/lib/rate-limit";
+import { appendFileSync, mkdirSync, readFileSync, existsSync } from "node:fs";
+import { join } from "node:path";
 
 export const dynamic = "force-dynamic";
+
+function logWebhookHit(data: any) {
+  try {
+    const dir = join(process.cwd(), "public", "uploads");
+    mkdirSync(dir, { recursive: true });
+    const logPath = join(dir, "webhook_hits.log");
+    const line = `[${new Date().toISOString()}] ${JSON.stringify(data)}\n`;
+    appendFileSync(logPath, line, "utf8");
+  } catch (e) {
+    console.error("Failed to write webhook log:", e);
+  }
+}
 
 /**
  * Verifikasi secret webhook secara konstan (SHA-256 timing-safe compare)
@@ -47,7 +61,28 @@ export async function OPTIONS() {
  * GET /api/publik/wa-webhook
  * Endpoint pengujian / verifikasi ketersediaan webhook oleh admin / Fonnte.
  */
-export async function GET() {
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  if (url.searchParams.get("debug") === "1") {
+    try {
+      const logPath = join(process.cwd(), "public", "uploads", "webhook_hits.log");
+      if (existsSync(logPath)) {
+        const content = readFileSync(logPath, "utf8");
+        const lines = content.trim().split("\n").filter(Boolean).slice(-30);
+        return NextResponse.json({
+          status: "ok",
+          totalLines: lines.length,
+          recentHits: lines.map((l) => {
+            try { return JSON.parse(l.replace(/^\[[^\]]+\]\s*/, "")); } catch { return l; }
+          }),
+        });
+      }
+      return NextResponse.json({ status: "ok", recentHits: [], message: "Log file empty / belum ada hit" });
+    } catch (e: any) {
+      return NextResponse.json({ status: "error", error: e.message });
+    }
+  }
+
   return NextResponse.json(
     {
       status: "ok",
@@ -70,6 +105,12 @@ export async function GET() {
  * Mendukung format JSON dan form-data / x-www-form-urlencoded.
  */
 export async function POST(request: Request) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const userAgent = request.headers.get("user-agent") || "unknown";
+  const contentType = request.headers.get("content-type") || "";
+
+  logWebhookHit({ event: "incoming_post", ip, userAgent, contentType });
+
   const secret = process.env.WA_WEBHOOK_SECRET?.trim();
   const isTest = process.env.NODE_ENV === "test";
 
@@ -106,7 +147,6 @@ export async function POST(request: Request) {
   }
 
   // Rate limit global IP untuk mencegah network flood DoS
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   if (!(await allowAttempt(`wa-webhook:${ip}`, { max: 300, windowMs: 60_000 }))) {
     return NextResponse.json({ error: "Terlalu banyak permintaan" }, { status: 429 });
   }
@@ -169,6 +209,16 @@ export async function POST(request: Request) {
       fromMe = true;
     }
 
+    logWebhookHit({
+      event: "parsed_incoming",
+      rawSender,
+      cleanSender,
+      message,
+      device,
+      isGroup,
+      fromMe,
+    });
+
     // Abaikan pesan grup atau pesan keluar dari perangkat sendiri agar bot tidak spam
     if (isGroup) {
       return NextResponse.json({
@@ -225,6 +275,14 @@ export async function POST(request: Request) {
         sendError = err instanceof Error ? err.message : String(err);
       }
     }
+
+    logWebhookHit({
+      event: "reply_dispatched",
+      cleanSender,
+      sent,
+      sendError,
+      hasReply: Boolean(result.reply),
+    });
 
     // Response HTTP 200 bersih:
     // Tidak mengembalikan key 'reply', 'message', atau 'response' di JSON body
