@@ -161,119 +161,122 @@ export async function processIncomingWaMessage(
     }
   }
 
-  // 2. Intent Parsing (Klasifikasi Kebutuhan)
+  // 2. Intent Parsing (Klasifikasi Kebutuhan Terpadu 1 s/d 6 dan 0)
 
-  // Intent A: DAFTAR BARU
-  const isDaftarTrigger =
-    strippedMsg === "daftar" ||
-    lowerMsg === "daftar" ||
-    lowerMsg.startsWith("daftar ") ||
-    lowerMsg.startsWith("daftar-") ||
-    lowerMsg.includes("registrasi") ||
-    lowerMsg.includes("pasang baru") ||
-    lowerMsg.includes("daftar baru") ||
-    lowerMsg.includes("mau langganan") ||
-    lowerMsg.includes("mau berlangganan") ||
-    lowerMsg.includes("cara daftar");
-
-  if (isDaftarTrigger && !lowerMsg.includes("tagihan") && !lowerMsg.includes("jadwal")) {
-    const reply = [
-      `Halo ${sapaanNama}, selamat datang di layanan pengangkutan sampah resmi *UPS HERU Depok*! 🚛`,
-      ``,
-      `Untuk pendaftaran pelanggan baru, silakan isi formulir online cepat melalui tautan resmi kami:`,
-      `👉 *https://upsheru.com/daftar*`,
-      ``,
-      `📋 *Keuntungan Berlangganan:*`,
-      `• Pengangkutan terjadwal rutin langsung di depan rumah`,
-      `• Pembayaran mudah via online (QRIS/VA/e-Wallet)`,
-      `• Sistem pemantauan armada dan pelaporan komplain responsif`,
-      ``,
-      `Setelah mengisi form, petugas survei kami akan segera memverifikasi titik lokasi rumah Anda. Terima kasih! 🙏`,
-    ].join("\n");
-
-    return { reply, intent: "DAFTAR", pelangganId: pelanggan?.id };
-  }
-
-  // Intent: COVERAGE AREA / JANGKAUAN WILAYAH
-  const isCoverageTrigger =
-    strippedMsg === "coverage" ||
-    lowerMsg === "coverage" ||
-    lowerMsg.includes("coverage area") ||
-    lowerMsg.includes("jangkauan") ||
-    lowerMsg.includes("melayani mana") ||
-    lowerMsg.includes("apakah melayani") ||
-    lowerMsg.includes("bisa diangkut gak") ||
-    lowerMsg.includes("bisa angkut gak") ||
-    lowerMsg.includes("area layanan") ||
-    lowerMsg.includes("wilayah layanan") ||
-    lowerMsg.includes("cakupan area") ||
-    lowerMsg.includes("cakupan wilayah") ||
-    (lowerMsg.includes("area") && (lowerMsg.includes("mana") || lowerMsg.includes("bisa") || lowerMsg.includes("tercover") || lowerMsg.includes("masuk"))) ||
-    (lowerMsg.includes("wilayah") && (lowerMsg.includes("mana") || lowerMsg.includes("bisa") || lowerMsg.includes("tercover") || lowerMsg.includes("masuk")));
-
-  if (isCoverageTrigger) {
-    const reply = [
-      `📍 *WILAYAH JANGKAUAN LAYANAN (COVERAGE AREA) — UPS HERU DEPOK* 🚛`,
-      ``,
-      `Halo ${sapaanNama},`,
-      `Saat ini armada UPS HERU aktif melayani pengangkutan sampah di wilayah *Kota Depok*, khususnya:`,
-      ``,
-      `🏙 *Kelurahan Utama Terlayani (Kecamatan Cilodong):*`,
-      `• Kelurahan Kalibaru`,
-      `• Kelurahan Kalimulya`,
-      `• Kelurahan Cilodong`,
-      `• Kelurahan Jatimulya`,
-      ``,
-      `🏘 *Blok & Zona Perumahan Aktif:*`,
-      `• Blok Bawah Dmiles + SMP 6`,
-      `• Blok H Puah & Blok Gg Niman`,
-      `• Blok Bakung & Jl. Raya Bakung`,
-      `• Blok Jalan Raya Cilodong`,
-      `• Blok Kebon Duren & Kp Bulak`,
-      `• Blok Sasak & Gg Umar`,
-      `• Blok Setu + Rafael Pete`,
-      `• Blok THR & YKP Kelapa`,
-      ``,
-      `🔍 *Lihat Peta Rute & Titik Live:*`,
-      `👉 *https://upsheru.com/peta*`,
-      ``,
-      `Ingin mendaftar atau memastikan apakah rumah Anda terjangkau?`,
-      `Ketik *DAFTAR* untuk registrasi online mandiri, atau ketik *ADMIN* untuk berbicara dengan tim survei kami. 🙏`,
-    ].join("\n");
-
-    return { reply, intent: "COVERAGE", pelangganId: pelanggan?.id };
-  }
-
-  // Intent B: BICARA DENGAN ADMIN / CS
-  const isAdminTrigger =
-    selectedDigit === "4" ||
-    strippedMsg === "4" ||
-    strippedMsg === "admin" ||
-    strippedMsg === "cs" ||
-    strippedMsg === "operator" ||
-    lowerMsg.includes("bicara dengan admin") ||
-    lowerMsg.includes("hubungi admin") ||
-    lowerMsg.includes("manusia");
-
-  if (isAdminTrigger) {
-    const reply = [
-      `Halo ${sapaanNama},`,
-      ``,
-      `Pesan Anda telah diteruskan ke tim *Helpdesk & Admin Pusat UPS HERU* 👨‍💼.`,
-      `Petugas kami akan segera membaca dan merespons chat Anda pada jam operasional:`,
-      `🕒 *Senin - Sabtu: 08.00 - 17.00 WIB*`,
-      ``,
-      `Silakan ketikkan pertanyaan atau keperluan Anda secara lengkap di bawah ini ya.`,
-      `🌐 Portal Resmi: https://upsheru.com`,
-    ].join("\n");
-
-    return { reply, intent: "ADMIN", pelangganId: pelanggan?.id };
-  }
-
-  // Intent C: JADWAL PENGANGKUTAN
-  const isJadwalTrigger =
+  // Intent: TATACARA PEMBAYARAN & CETAK QRIS (Menu 2)
+  const cleanFormattedMsg = lowerMsg.replace(/[*_~`]/g, "").trim();
+  const isCaraBayarTrigger =
     selectedDigit === "2" ||
     strippedMsg === "2" ||
+    cleanFormattedMsg === "cara bayar" ||
+    cleanFormattedMsg.startsWith("cara bayar") ||
+    cleanFormattedMsg.includes("cara bayar") ||
+    cleanFormattedMsg.includes("carabayar") ||
+    cleanFormattedMsg.includes("cara pembayaran") ||
+    cleanFormattedMsg.includes("tatacara bayar") ||
+    cleanFormattedMsg.includes("tata cara bayar") ||
+    cleanFormattedMsg.includes("tata cara pembayaran") ||
+    cleanFormattedMsg.includes("tatacara pembayaran") ||
+    cleanFormattedMsg.includes("panduan bayar") ||
+    cleanFormattedMsg.includes("panduan pembayaran") ||
+    cleanFormattedMsg.includes("tutorial bayar") ||
+    cleanFormattedMsg.includes("tutorial pembayaran") ||
+    cleanFormattedMsg.includes("cara qris") ||
+    cleanFormattedMsg.includes("cara scan") ||
+    cleanFormattedMsg.includes("panduan qris") ||
+    cleanFormattedMsg.includes("tutorial qris") ||
+    cleanFormattedMsg === "qris" ||
+    cleanFormattedMsg.includes("bayar qris") ||
+    cleanFormattedMsg.includes("cetak qris") ||
+    cleanFormattedMsg.includes("cetak pembayaran") ||
+    cleanFormattedMsg.includes("print qris") ||
+    cleanFormattedMsg.includes("cetak invoice") ||
+    cleanFormattedMsg.includes("cetak faktur") ||
+    cleanFormattedMsg.includes("cetak tagihan") ||
+    cleanFormattedMsg.includes("cetak struk") ||
+    cleanFormattedMsg.includes("cetak nota") ||
+    cleanFormattedMsg === "cara transfer" ||
+    cleanFormattedMsg === "cara tf" ||
+    cleanFormattedMsg.includes("gimana bayar") ||
+    cleanFormattedMsg.includes("bagaimana bayar");
+
+  if (isCaraBayarTrigger) {
+    let unpaidInvoiceNo: string | null = null;
+    let latestPaidInvoiceNo: string | null = null;
+    if (pelanggan?.id) {
+      try {
+        const tagihan = await prisma.tagihan.findMany({
+          where: { pelangganId: pelanggan.id, deletedAt: null },
+          orderBy: [{ tahun: "desc" }, { bulan: "desc" }],
+          select: { noInvoice: true, status: true },
+        });
+        const unpaid = tagihan.find((t: any) => t.status === "belum_bayar" || t.status === "tunggakan");
+        const paid = tagihan.find((t: any) => t.status === "lunas");
+        if (unpaid?.noInvoice) unpaidInvoiceNo = unpaid.noInvoice;
+        if (paid?.noInvoice) latestPaidInvoiceNo = paid.noInvoice;
+      } catch (e) {
+        console.error("Gagal mengambil tagihan untuk cara bayar:", e);
+      }
+    }
+
+    const paymentLinkStr = unpaidInvoiceNo
+      ? `https://upsheru.com/bayar?invoice=${encodeURIComponent(unpaidInvoiceNo)}`
+      : (pelanggan?.noTelepon ? `https://upsheru.com/bayar?kode=${pelanggan.noTelepon}` : `https://upsheru.com/bayar`);
+
+    const printInvoiceLinkStr = unpaidInvoiceNo
+      ? `https://upsheru.com/invoice-tagihan?invoice=${encodeURIComponent(unpaidInvoiceNo)}`
+      : paymentLinkStr;
+
+    const reply = [
+      `📱 *PANDUAN PRAKTIS CARA BAYAR & CETAK QRIS*`,
+      ``,
+      `Halo ${sapaanNama}! 👋`,
+      `Iuran retribusi sampah UPS HERU dapat dibayar instan melalui *seluruh aplikasi m-Banking* (BCA, Mandiri Livin', BRImo, BNI, Seabank, Jago, dll.) atau *Dompet Digital* (GoPay, OVO, DANA, ShopeePay).`,
+      ``,
+      `━━━━━━━━━━━━━━━━━━━━`,
+      `▶️ *CARA 1: Bayar Langsung dari 1 HP (Upload Galeri)*`,
+      `━━━━━━━━━━━━━━━━━━━━`,
+      `1️⃣ Buka tautan pembayaran tagihan Anda:`,
+      `   👉 *${paymentLinkStr}*`,
+      `2️⃣ Saat kode QRIS muncul di layar, ambil *Screenshot (Tangkapan Layar)* kode QR tersebut.`,
+      `3️⃣ Buka aplikasi m-Banking atau E-Wallet pilihan Anda.`,
+      `4️⃣ Pilih menu *QRIS / Bayar / Scan*.`,
+      `5️⃣ Tekan ikon *Galeri / Foto* (di pojok layar atau dekat bidik kamera).`,
+      `6️⃣ Pilih gambar hasil *Screenshot* kode QRIS tadi.`,
+      `7️⃣ Periksa nama merchant (*UPS HERU*), lalu masukkan PIN Anda.`,
+      `8️⃣ *SELESAI!* Sistem otomatis LUNAS dalam hitungan detik tanpa perlu konfirmasi manual.`,
+      ``,
+      `━━━━━━━━━━━━━━━━━━━━`,
+      `▶️ *CARA 2: Scan Menggunakan HP Lain / Laptop*`,
+      `━━━━━━━━━━━━━━━━━━━━`,
+      `1️⃣ Buka link tagihan di HP keluarga atau laptop/komputer: *${paymentLinkStr}*`,
+      `2️⃣ Buka aplikasi m-Banking / E-Wallet di HP Anda, buka menu *Scan QRIS*.`,
+      `3️⃣ Arahkan kamera HP ke kode QRIS di layar dan selesaikan pembayaran.`,
+      ``,
+      `━━━━━━━━━━━━━━━━━━━━`,
+      `▶️ *CARA 3: Cetak Lembar Faktur / Barcode QRIS Fisik*`,
+      `━━━━━━━━━━━━━━━━━━━━`,
+      `🖨️ Butuh mencetak lembaran tagihan fisik berbarcode QRIS (untuk ditempel di rumah, toko, atau diserahkan ke keluarga)?`,
+      `Klik tautan lembar cetak resmi berikut:`,
+      `👉 *${printInvoiceLinkStr}*`,
+      `_(Tersedia tombol Cetak / Simpan PDF langsung dari browser)_.`,
+      ...(latestPaidInvoiceNo ? [
+        ``,
+        `🧾 *Cetak Kuitansi / Bukti Pembayaran Lunas Terakhir:*`,
+        `👉 *https://upsheru.com/invoice-tagihan?invoice=${encodeURIComponent(latestPaidInvoiceNo)}*`,
+      ] : []),
+      ``,
+      `📢 Jika mengalami kendala teknis saat pembayaran, hubungi kami di:`,
+      `👉 https://upsheru.com/pengaduan atau balas pesan ini dengan *0*.`,
+    ].join("\n");
+
+    return { reply, intent: "CARA_BAYAR", pelangganId: pelanggan?.id };
+  }
+
+  // Intent C: JADWAL PENGANGKUTAN (Menu 3)
+  const isJadwalTrigger =
+    selectedDigit === "3" ||
+    strippedMsg === "3" ||
     lowerMsg.includes("jadwal") ||
     lowerMsg.includes("kapan diangkut") ||
     lowerMsg.includes("kapan diambil") ||
@@ -293,7 +296,7 @@ export async function processIncomingWaMessage(
         `📍 Secara umum, penjemputan sampah UPS HERU beroperasi terjadwal di wilayah:`,
         `*Kalibaru, Kalimulya, Cilodong, dan sekitarnya (Kota Depok).*`,
         ``,
-        `Ketik *DAFTAR* untuk registrasi rumah Anda, atau ketik *ADMIN* jika nomor Anda sudah terdaftar dengan nomor lain.`,
+        `Ketik *5* untuk registrasi rumah Anda, atau ketik *0* jika nomor Anda sudah terdaftar dengan nomor lain.`,
       ].join("\n");
       return { reply, intent: "JADWAL" };
     }
@@ -328,106 +331,18 @@ export async function processIncomingWaMessage(
         `Halo ${sapaanNama},`,
         `Alamat Anda terdaftar di *${namaZona}*. Armada kami beroperasi secara berkala 2-3 kali seminggu untuk area ini.`,
         ``,
-        `Jika ingin memastikan jadwal spesifik rute rumah Anda, ketik *ADMIN* untuk dibantu konfirmasi penugasan armada petugas.`,
+        `Jika ingin memastikan jadwal spesifik rute rumah Anda, ketik *0* untuk dibantu konfirmasi penugasan armada petugas.`,
       ].join("\n");
 
       return { reply, intent: "JADWAL", pelangganId: pelanggan.id };
     }
   }
 
-  // Intent: TATACARA PEMBAYARAN QRIS & M-BANKING
-  const cleanFormattedMsg = lowerMsg.replace(/[*_~`]/g, "").trim();
-  const isCaraBayarTrigger =
-    selectedDigit === "5" ||
-    cleanFormattedMsg === "5" ||
-    cleanFormattedMsg === "cara bayar" ||
-    cleanFormattedMsg.startsWith("cara bayar") ||
-    cleanFormattedMsg.includes("cara bayar") ||
-    cleanFormattedMsg.includes("carabayar") ||
-    cleanFormattedMsg.includes("cara pembayaran") ||
-    cleanFormattedMsg.includes("tatacara bayar") ||
-    cleanFormattedMsg.includes("tata cara bayar") ||
-    cleanFormattedMsg.includes("tata cara pembayaran") ||
-    cleanFormattedMsg.includes("tatacara pembayaran") ||
-    cleanFormattedMsg.includes("panduan bayar") ||
-    cleanFormattedMsg.includes("panduan pembayaran") ||
-    cleanFormattedMsg.includes("tutorial bayar") ||
-    cleanFormattedMsg.includes("tutorial pembayaran") ||
-    cleanFormattedMsg.includes("cara qris") ||
-    cleanFormattedMsg.includes("cara scan") ||
-    cleanFormattedMsg.includes("panduan qris") ||
-    cleanFormattedMsg.includes("tutorial qris") ||
-    cleanFormattedMsg === "qris" ||
-    cleanFormattedMsg === "cara transfer" ||
-    cleanFormattedMsg === "cara tf" ||
-    cleanFormattedMsg.includes("gimana bayar") ||
-    cleanFormattedMsg.includes("bagaimana bayar") ||
-    cleanFormattedMsg.includes("bayar qris");
-
-  if (isCaraBayarTrigger) {
-    let directInvoiceUrl: string | null = null;
-    if (pelanggan?.id) {
-      try {
-        const unpaid = await prisma.tagihan.findFirst({
-          where: {
-            pelangganId: pelanggan.id,
-            deletedAt: null,
-            status: { in: ["belum_bayar", "tunggakan"] },
-          },
-          orderBy: [{ tahun: "desc" }, { bulan: "desc" }],
-          select: { noInvoice: true },
-        });
-        if (unpaid?.noInvoice) {
-          directInvoiceUrl = `https://upsheru.com/bayar-tagihan?invoice=${encodeURIComponent(unpaid.noInvoice)}`;
-        }
-      } catch (e) {
-        console.error("Gagal mengambil tagihan untuk cara bayar:", e);
-      }
-    }
-
-    const paymentLinkStr = directInvoiceUrl || (pelanggan?.noTelepon
-      ? `https://upsheru.com/bayar?kode=${pelanggan.noTelepon}`
-      : `https://upsheru.com/bayar`);
-
-    const reply = [
-      `📱 *PANDUAN PRAKTIS CARA BAYAR VIA QRIS*`,
-      ``,
-      `Halo ${sapaanNama}! 👋`,
-      `Pembayaran iuran sampah UPS HERU dapat dilakukan menggunakan *seluruh aplikasi m-Banking* (BCA, Mandiri Livin', BRImo, BNI, Seabank, Jago, dll.) atau *Dompet Digital* (GoPay, OVO, DANA, ShopeePay).`,
-      ``,
-      `━━━━━━━━━━━━━━━━━━━━`,
-      `▶️ *CARA 1: Bayar Langsung dari 1 HP (Upload Galeri)*`,
-      `━━━━━━━━━━━━━━━━━━━━`,
-      `1️⃣ Buka link tagihan Anda:`,
-      `   👉 *${paymentLinkStr}*`,
-      `2️⃣ Saat kode QRIS muncul di layar, ambil *Screenshot (Tangkapan Layar)* kode QR tersebut.`,
-      `3️⃣ Buka aplikasi m-Banking atau E-Wallet Anda.`,
-      `4️⃣ Pilih menu *QRIS / Bayar / Scan*.`,
-      `5️⃣ Tekan ikon *Galeri / Foto* (biasanya di samping tombol bidik kamera atau pojok atas layar).`,
-      `6️⃣ Pilih gambar hasil *Screenshot* kode QRIS tadi.`,
-      `7️⃣ Periksa nama penerima (*UPS HERU*), lalu masukkan PIN Anda.`,
-      `8️⃣ *SELESAI!* Sistem otomatis LUNAS dalam hitungan detik tanpa perlu konfirmasi manual.`,
-      ``,
-      `━━━━━━━━━━━━━━━━━━━━`,
-      `▶️ *CARA 2: Scan Menggunakan HP Lain / Laptop*`,
-      `━━━━━━━━━━━━━━━━━━━━`,
-      `1️⃣ Buka link tagihan di HP keluarga atau laptop/komputer.`,
-      `2️⃣ Buka aplikasi m-Banking / E-Wallet di HP Anda, buka menu *Scan QRIS*.`,
-      `3️⃣ Arahkan kamera HP ke kode QRIS di layar.`,
-      `4️⃣ Masukkan PIN Anda dan pembayaran selesai.`,
-      ``,
-      `📢 Jika mengalami kendala teknis saat pembayaran, silakan hubungi kami di:`,
-      `👉 https://upsheru.com/pengaduan`,
-    ].join("\n");
-
-    return { reply, intent: "CARA_BAYAR", pelangganId: pelanggan?.id };
-  }
-
-  // Intent E: PENGADUAN / KOMPLAIN SAMPAH (Diprioritaskan sebelum tagihan agar komplain warga tidak keliru dianggap cek tagihan)
+  // Intent E: PENGADUAN / KOMPLAIN SAMPAH (Menu 4 - Diprioritaskan sebelum tagihan agar keluhan warga tidak tertukar)
   const isKomplainTrigger =
     !isJadwalTrigger && (
-      selectedDigit === "3" ||
-      strippedMsg === "3" ||
+      selectedDigit === "4" ||
+      strippedMsg === "4" ||
       lowerMsg.startsWith("komplain") ||
       lowerMsg.includes("komplain") ||
       lowerMsg.includes("komplen") ||
@@ -465,10 +380,10 @@ export async function processIncomingWaMessage(
       ? `https://upsheru.com/pengaduan?kode=${pelanggan.noTelepon}`
       : `https://upsheru.com/pengaduan`;
 
-    // Jika pesan hanya pemicu menu (3 / lapor / komplain / pengaduan / keluhan)
+    // Jika pesan hanya pemicu menu (4 / lapor / komplain / pengaduan / keluhan)
     const isSimpleTrigger =
-      selectedDigit === "3" ||
-      strippedMsg === "3" ||
+      selectedDigit === "4" ||
+      strippedMsg === "4" ||
       strippedMsg === "komplain" ||
       strippedMsg === "komplen" ||
       strippedMsg === "lapor" ||
@@ -597,7 +512,127 @@ export async function processIncomingWaMessage(
     };
   }
 
-  // Intent D: CEK TAGIHAN & PEMBAYARAN
+  // Intent A: DAFTAR BARU (Menu 5)
+  const isDaftarTrigger =
+    selectedDigit === "5" ||
+    strippedMsg === "5" ||
+    strippedMsg === "daftar" ||
+    lowerMsg === "daftar" ||
+    lowerMsg.startsWith("daftar ") ||
+    lowerMsg.startsWith("daftar-") ||
+    lowerMsg.includes("registrasi") ||
+    lowerMsg.includes("pasang baru") ||
+    lowerMsg.includes("daftar baru") ||
+    lowerMsg.includes("mau langganan") ||
+    lowerMsg.includes("mau berlangganan") ||
+    lowerMsg.includes("cara daftar");
+
+  if (isDaftarTrigger && !lowerMsg.includes("tagihan") && !lowerMsg.includes("jadwal")) {
+    const reply = [
+      `Halo ${sapaanNama}, selamat datang di layanan pengangkutan sampah resmi *UPS HERU Depok*! 🚛`,
+      ``,
+      `Untuk pendaftaran pelanggan baru, silakan isi formulir online cepat melalui tautan resmi kami:`,
+      `👉 *https://upsheru.com/daftar*`,
+      ``,
+      `📋 *Keuntungan Berlangganan:*`,
+      `• Pengangkutan terjadwal rutin 2-3 kali seminggu langsung di depan rumah`,
+      `• Pembayaran mudah via online (QRIS/VA/e-Wallet)`,
+      `• Sistem pemantauan armada dan pelaporan komplain responsif`,
+      ``,
+      `Setelah mengisi form, petugas survei kami akan segera memverifikasi titik lokasi rumah Anda. Terima kasih! 🙏`,
+    ].join("\n");
+
+    return { reply, intent: "DAFTAR", pelangganId: pelanggan?.id };
+  }
+
+  // Intent: INFO LAYANAN, WILAYAH & TARIF (Menu 6)
+  const isTarifTrigger =
+    selectedDigit === "6" ||
+    strippedMsg === "6" ||
+    strippedMsg === "tarif" ||
+    strippedMsg === "layanan" ||
+    strippedMsg === "info layanan" ||
+    strippedMsg === "coverage" ||
+    lowerMsg.includes("tarif") ||
+    lowerMsg.includes("biaya") ||
+    lowerMsg.includes("harga") ||
+    lowerMsg.includes("paket") ||
+    lowerMsg.includes("coverage") ||
+    lowerMsg.includes("jangkauan") ||
+    lowerMsg.includes("melayani mana") ||
+    lowerMsg.includes("apakah melayani") ||
+    lowerMsg.includes("bisa diangkut gak") ||
+    lowerMsg.includes("bisa angkut gak") ||
+    lowerMsg.includes("area layanan") ||
+    lowerMsg.includes("wilayah layanan") ||
+    lowerMsg.includes("cakupan area") ||
+    lowerMsg.includes("cakupan wilayah") ||
+    (lowerMsg.includes("area") && (lowerMsg.includes("mana") || lowerMsg.includes("bisa") || lowerMsg.includes("tercover") || lowerMsg.includes("masuk"))) ||
+    (lowerMsg.includes("wilayah") && (lowerMsg.includes("mana") || lowerMsg.includes("bisa") || lowerMsg.includes("tercover") || lowerMsg.includes("masuk")));
+
+  if (isTarifTrigger) {
+    const reply = [
+      `📍 *INFORMASI LAYANAN, WILAYAH & TARIF (COVERAGE AREA) — UPS HERU DEPOK* 🚛`,
+      ``,
+      `Halo ${sapaanNama},`,
+      `Berikut rincian lengkap seputar wilayah jangkauan dan paket iuran pengangkutan sampah resmi UPS HERU di Kota Depok:`,
+      ``,
+      `🏙 *Wilayah Jangkauan Layanan (Coverage Area):*`,
+      `Armada aktif melayani Kecamatan Cilodong & sekitarnya:`,
+      `• Kelurahan Kalibaru`,
+      `• Kelurahan Kalimulya`,
+      `• Kelurahan Cilodong`,
+      `• Kelurahan Jatimulya`,
+      `• Blok Perumahan: Dmiles + SMP 6, H Puah, Gg Niman, Bakung, Jl. Raya Cilodong, Kebon Duren, Kp Bulak, Sasak, Setu, THR & YKP Kelapa.`,
+      ``,
+      `💰 *Daftar Paket Retribusi Iuran Bulanan:*`,
+      `• *Rumah Tinggal Standar* (Vol. Kecil-Sedang): Rp35.000 - Rp50.000/bln`,
+      `• *Rumah Tinggal Besar* (Vol. Sedang-Besar): Rp50.000 - Rp75.000/bln`,
+      `• *Usaha Kecil / Warung / Toko*: Rp50.000 - Rp100.000/bln`,
+      `• *Komersial / Ruko / Sentra Bisnis*: Rp100.000 - Rp250.000/bln`,
+      `_(Tarif dapat disesuaikan dengan volume sampah & hasil survei lapangan)_.`,
+      ``,
+      `✨ *Fasilitas Berlangganan:*`,
+      `• Pengangkutan rutin terjadwal langsung di depan rumah`,
+      `• Pembayaran online otomatis QRIS (BCA, Mandiri, BRI, DANA, GoPay)`,
+      `• Layanan respons pengaduan cepat via web & WhatsApp`,
+      ``,
+      `🔍 *Tautan Resmi:*`,
+      `👉 Peta Rute & Armada Live: https://upsheru.com/peta`,
+      `👉 Info Tarif Lengkap: https://upsheru.com/tarif`,
+      `👉 Pendaftaran Baru: https://upsheru.com/daftar (atau ketik *5*)`,
+    ].join("\n");
+
+    return { reply, intent: "COVERAGE", pelangganId: pelanggan?.id };
+  }
+
+  // Intent B: BICARA DENGAN ADMIN / CS (Menu 0)
+  const isAdminTrigger =
+    selectedDigit === "0" ||
+    strippedMsg === "0" ||
+    strippedMsg === "admin" ||
+    strippedMsg === "cs" ||
+    strippedMsg === "operator" ||
+    lowerMsg.includes("bicara dengan admin") ||
+    lowerMsg.includes("hubungi admin") ||
+    lowerMsg.includes("manusia");
+
+  if (isAdminTrigger) {
+    const reply = [
+      `Halo ${sapaanNama},`,
+      ``,
+      `Pesan Anda telah diteruskan ke tim *Helpdesk & Admin Pusat UPS HERU* 👨‍💼.`,
+      `Petugas kami akan segera membaca dan merespons chat Anda pada jam operasional:`,
+      `🕒 *Senin - Sabtu: 08.00 - 17.00 WIB*`,
+      ``,
+      `Silakan ketikkan pertanyaan atau keperluan Anda secara lengkap di bawah ini ya.`,
+      `🌐 Portal Resmi: https://upsheru.com`,
+    ].join("\n");
+
+    return { reply, intent: "ADMIN", pelangganId: pelanggan?.id };
+  }
+
+  // Intent D: CEK TAGIHAN & PEMBAYARAN (Menu 1)
   const isTagihanTrigger =
     selectedDigit === "1" ||
     strippedMsg === "1" ||
@@ -625,7 +660,7 @@ export async function processIncomingWaMessage(
     const tagihanList = await prisma.tagihan.findMany({
       where: { pelangganId: pelanggan.id, deletedAt: null },
       orderBy: [{ tahun: "desc" }, { bulan: "desc" }],
-      select: { id: true, bulan: true, tahun: true, jumlah: true, status: true },
+      select: { id: true, bulan: true, tahun: true, jumlah: true, status: true, noInvoice: true },
     });
 
     // Jika belum pernah ada tagihan yang diterbitkan (misal calon pelanggan / pendaftar baru)
@@ -642,7 +677,7 @@ export async function processIncomingWaMessage(
         `ID Pelanggan: *${pelanggan.kodePelanggan || pelanggan.noTelepon}*`,
         `Zona: *${namaZona}*`,
         ``,
-        `💡 _Untuk konfirmasi aktivasi layanan pengangkutan sampah atau jadwal survei, silakan balas pesan ini dengan mengetik *ADMIN*._ 🙏`,
+        `💡 _Untuk konfirmasi aktivasi layanan pengangkutan sampah atau jadwal survei, silakan balas pesan ini dengan mengetik *0* (Admin)._ 🙏`,
         `🌐 Portal: https://upsheru.com/bayar?kode=${pelanggan.noTelepon}`,
       ].join("\n");
 
@@ -650,10 +685,15 @@ export async function processIncomingWaMessage(
     }
 
     const unpaid = tagihanList.filter(
-      (t) => t.status === "belum_bayar" || t.status === "tunggakan"
+      (t: any) => t.status === "belum_bayar" || t.status === "tunggakan"
     );
 
     if (unpaid.length === 0) {
+      const latestInvoice = tagihanList[0]?.noInvoice;
+      const cetakKuitansiStr = latestInvoice
+        ? `\n🧾 *Unduh / Cetak Bukti Pembayaran Lunas:*\n👉 *https://upsheru.com/invoice-tagihan?invoice=${encodeURIComponent(latestInvoice)}*\n`
+        : "";
+
       const reply = [
         `✅ *TAGIHAN ANDA LUNAS*`,
         ``,
@@ -662,20 +702,25 @@ export async function processIncomingWaMessage(
         ``,
         `ID Pelanggan: *${pelanggan.kodePelanggan || pelanggan.noTelepon}*`,
         `Zona: *${namaZona}*`,
-        ``,
+        cetakKuitansiStr,
         `Terima kasih atas partisipasi aktif Anda dalam menjaga kebersihan lingkungan bersama UPS HERU. 🙏`,
-        `🌐 Portal: https://upsheru.com/bayar?kode=${pelanggan.noTelepon}`,
-      ].join("\n");
+        `🌐 Portal Pembayaran: https://upsheru.com/bayar?kode=${pelanggan.noTelepon}`,
+      ].filter(Boolean).join("\n");
 
       return { reply, intent: "TAGIHAN", pelangganId: pelanggan.id };
     }
 
     // Ada tagihan yang belum dibayar
-    const totalSemua = unpaid.reduce((sum, t) => sum + t.jumlah, 0);
-    const rincianTagihan = unpaid.slice(0, 6).map((t) => {
+    const totalSemua = unpaid.reduce((sum: number, t: any) => sum + t.jumlah, 0);
+    const rincianTagihan = unpaid.slice(0, 6).map((t: any) => {
       const statusLabel = t.status === "tunggakan" ? "⚠️ (Menunggak)" : "⏳ (Berjalan)";
       return `• Periode *${t.bulan}/${t.tahun}*: ${formatRupiahSkylite(t.jumlah)} ${statusLabel}`;
     });
+
+    const activeInvoice = unpaid[0]?.noInvoice;
+    const cetakFakturStr = activeInvoice
+      ? `\n🖨️ *Cetak / Download Faktur Tagihan QRIS:*\n👉 *https://upsheru.com/invoice-tagihan?invoice=${encodeURIComponent(activeInvoice)}*\n`
+      : "";
 
     const reply = [
       `💳 *RINCIAN TAGIHAN RETRIBUSI SAMPAH*`,
@@ -687,11 +732,12 @@ export async function processIncomingWaMessage(
       `----------------------------------`,
       `*Total yang Harus Dibayar: ${formatRupiahSkylite(totalSemua)}*`,
       ``,
-      `💳 *Bayar Online Otomatis (QRIS / VA / e-Wallet):*`,
+      `💳 *Bayar Online Instan (QRIS / VA / e-Wallet):*`,
       `👉 *https://upsheru.com/bayar?kode=${pelanggan.noTelepon}*`,
-      ``,
+      cetakFakturStr,
       `💡 _Pembayaran melalui link di atas langsung terverifikasi otomatis oleh sistem dalam hitungan detik tanpa perlu konfirmasi manual._`,
-    ].join("\n");
+      `💡 _Ketik *2* untuk panduan lengkap tutorial cara bayar via QRIS._`,
+    ].filter(Boolean).join("\n");
 
     return { reply, intent: "TAGIHAN", pelangganId: pelanggan.id };
   }
@@ -718,19 +764,35 @@ export async function processIncomingWaMessage(
 
   if (isMenuTrigger) {
     const reply = [
+      `🌿 *PUSAT INFORMASI & LAYANAN RESMI — UPS HERU DEPOK* 🚛`,
+      ``,
       `Halo ${sapaanNama}! 👋`,
       `Selamat datang di Layanan WhatsApp Otomatis *UPS HERU (WastePay Depok)*.`,
-      ...(pelanggan ? [`📍 _Terdaftar: ${namaZona}_`] : []),
+      ...(pelanggan ? [`📍 _Wilayah Layanan: ${namaZona}_\n`] : [``]),
+      `Silakan pilih menu bantuan dengan membalas *ANGKA* atau *KATA KUNCI* di bawah ini:`,
       ``,
-      `Silakan pilih menu bantuan dengan membalas angka atau kata kunci:`,
-      `1️⃣ *Cek Tagihan & Bayar Online* (Ketik: 1 / Tagihan)`,
-      `2️⃣ *Jadwal Penjemputan Sampah* (Ketik: 2 / Jadwal)`,
-      `3️⃣ *Pusat Pengaduan / Lapor Sampah* (Akses: https://upsheru.com/pengaduan)`,
-      `4️⃣ *Bicara dengan Admin/CS* (Ketik: 4 / Admin)`,
-      `5️⃣ *Panduan Cara Bayar QRIS* (Ketik: 5 / Cara Bayar)`,
+      `1️⃣ *Cek Tagihan & Bayar Online*`,
+      `   ↳ Ketik: *1* atau *Tagihan* (Cek iuran & bayar instan)`,
       ``,
-      `Atau akses langsung portal resmi kami di:`,
-      `🌐 *https://upsheru.com*`,
+      `2️⃣ *Cara Bayar & Cetak QRIS*`,
+      `   ↳ Ketik: *2* atau *Cara Bayar* (Tutorial bayar & cetak lembar QRIS)`,
+      ``,
+      `3️⃣ *Jadwal Penjemputan Sampah*`,
+      `   ↳ Ketik: *3* atau *Jadwal* (Cek hari penjemputan armada rute Anda)`,
+      ``,
+      `4️⃣ *Lapor Sampah & Pengaduan*`,
+      `   ↳ Ketik: *4* atau *Lapor* (Sampah belum diangkut / menumpuk)`,
+      ``,
+      `5️⃣ *Cara Daftar Berlangganan Baru*`,
+      `   ↳ Ketik: *5* atau *Daftar* (Syarat & formulir registrasi online)`,
+      ``,
+      `6️⃣ *Info Layanan, Wilayah & Tarif*`,
+      `   ↳ Ketik: *6* atau *Tarif* (Cakupan area Depok & paket iuran)`,
+      ``,
+      `0️⃣ *Bicara dengan Admin / CS*`,
+      `   ↳ Ketik: *0* atau *Admin* (Bantuan petugas manusia)`,
+      ``,
+      `🌐 Portal Web Resmi: https://upsheru.com`,
     ].join("\n");
 
     return { reply, intent: "MENU", pelangganId: pelanggan?.id };

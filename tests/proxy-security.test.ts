@@ -24,6 +24,16 @@ describe("proxy authorization boundaries", () => {
   it("blocks collector payment approval", async () => {
     expect((await proxy(request("/api/pembayaran/2", await createSession(user), "PUT"))).status).toBe(403);
   });
+  it("allows kasir to check gateway on tagihan", async () => {
+    const kasirUser = { ...user, role: "kasir" };
+    lookup.mockResolvedValue(kasirUser as never);
+    // Not 403 (will proceed or fail in handler without real params)
+    const res = await proxy(request("/api/tagihan/1/check-gateway", await createSession(kasirUser), "POST"));
+    expect(res.status).not.toBe(403);
+  });
+  it("blocks petugas from checking gateway on tagihan", async () => {
+    expect((await proxy(request("/api/tagihan/1/check-gateway", await createSession(user), "POST"))).status).toBe(403);
+  });
   it.each(["missing", "db-error"])("fails closed for %s user lookup", async (scenario) => {
     const token = await createSession(user);
     if (scenario === "missing") lookup.mockResolvedValue(null);

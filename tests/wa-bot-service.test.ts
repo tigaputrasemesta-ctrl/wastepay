@@ -202,10 +202,10 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
     expect(res.reply).toContain("https://upsheru.com/daftar");
   });
 
-  it("7. Meneruskan ke Helpdesk Admin saat pelanggan ketik 'admin'", async () => {
+  it("7. Meneruskan ke Helpdesk Admin saat pelanggan ketik 'admin' atau '0'", async () => {
     const res = await processIncomingWaMessage({
       sender: "081299998888",
-      message: "4",
+      message: "admin",
     });
 
     expect(res.intent).toBe("ADMIN");
@@ -295,14 +295,14 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
     }
   });
 
-  it("13. Merespons panduan pembayaran QRIS jika pengguna mengetik 'cara bayar' atau 'qris'", async () => {
+  it("13. Merespons panduan pembayaran QRIS jika pengguna mengetik 'cara bayar' atau 'qris' atau '2'", async () => {
     (prisma.pelanggan.findFirst as any).mockResolvedValue({
       id: 201,
       nama: "Pak RT Heru",
       noTelepon: "087881536978",
     });
 
-    const variations = ["cara bayar", "CARA BAYAR", "qris", "panduan bayar", "tutorial bayar", "tata cara pembayaran", "5"];
+    const variations = ["cara bayar", "CARA BAYAR", "qris", "panduan bayar", "tutorial bayar", "tata cara pembayaran", "2", "cetak qris"];
 
     for (const msg of variations) {
       const res = await processIncomingWaMessage({
@@ -310,10 +310,10 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
         message: msg,
       });
       expect(res.intent).toBe("CARA_BAYAR");
-      expect(res.reply).toContain("PANDUAN PRAKTIS CARA BAYAR VIA QRIS");
+      expect(res.reply).toContain("PANDUAN PRAKTIS CARA BAYAR");
       expect(res.reply).toContain("Screenshot (Tangkapan Layar)");
       expect(res.reply).toContain("Upload Galeri");
-      expect(res.reply).toContain("https://upsheru.com/bayar?kode=087881536978");
+      expect(res.reply).toContain("https://upsheru.com/bayar");
     }
   });
 
@@ -374,7 +374,7 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
     expect(res.reply).toContain("#KMP-105");
   });
 
-  it("16. Mendukung input angka dengan format markdown WhatsApp (*1*, *3*, *5*)", async () => {
+  it("16. Mendukung input angka dengan format markdown WhatsApp (*2*, *4*, *6*, *0*)", async () => {
     (prisma.pelanggan.findFirst as any).mockResolvedValue({
       id: 303,
       nama: "Bpk Hendra",
@@ -383,15 +383,22 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
 
     const res1 = await processIncomingWaMessage({
       sender: "081577773333",
-      message: "*5*",
+      message: "*2*",
     });
     expect(res1.intent).toBe("CARA_BAYAR");
 
     const res2 = await processIncomingWaMessage({
       sender: "081577773333",
-      message: "*4*",
+      message: "*0*",
     });
     expect(res2.intent).toBe("ADMIN");
+
+    const res3 = await processIncomingWaMessage({
+      sender: "081577773333",
+      message: "*6*",
+    });
+    expect(res3.intent).toBe("COVERAGE");
+    expect(res3.reply).toContain("INFORMASI LAYANAN, WILAYAH & TARIF");
   });
 
   it("17. Menangani variasi slang dan typo warga (komplen, blm diangkut, gak diangkut)", async () => {
