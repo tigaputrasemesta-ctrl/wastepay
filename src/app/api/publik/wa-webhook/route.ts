@@ -191,8 +191,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Terlalu banyak permintaan dari nomor ini" }, { status: 429 });
     }
 
-    // Anti-burst cooldown: redam pesan bertubi-tubi dari pengirim yang sama dalam < 1.5 detik agar tidak spamming
-    if (!(await allowAttempt(`wa-cooldown:${cleanSender}`, { max: 1, windowMs: 1500 }))) {
+    // Anti-burst cooldown: redam pesan duplikat dari network retry dalam < 500ms
+    if (!(await allowAttempt(`wa-cooldown:${cleanSender}`, { max: 1, windowMs: 500 }))) {
       return NextResponse.json({
         status: true,
         sent: false,
@@ -214,7 +214,7 @@ export async function POST(request: Request) {
 
     if (result.reply) {
       try {
-        const sendRes = await kirimWhatsApp(cleanSender, result.reply);
+        const sendRes = await kirimWhatsApp(cleanSender, result.reply, { delay: "0" });
         sent = sendRes.ok;
         sendError = sendRes.error;
         if (!sendRes.ok) {

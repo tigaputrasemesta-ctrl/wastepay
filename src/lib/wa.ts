@@ -231,7 +231,7 @@ export async function kirimWhatsApp(
     return { ok: false, error: "WA_API_KEY belum dikonfigurasi" };
   }
   try {
-    const delayVal = options?.delay !== undefined ? String(options.delay) : "1";
+    const delayVal = options?.delay !== undefined ? String(options.delay) : "0";
     const res = await fetch(WA_API_URL, {
       method: "POST",
       headers: {
