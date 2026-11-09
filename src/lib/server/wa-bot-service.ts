@@ -32,8 +32,8 @@ export async function processIncomingWaMessage(
   const strippedMsg = lowerMsg.replace(/[*_~`]/g, "").trim();
   const mediaUrl = payload.url && typeof payload.url === "string" ? payload.url.trim() : undefined;
 
-  // Deteksi digit menu (mendukung format *1*, [1], (1), 1., 1)
-  const menuDigitMatch = strippedMsg.match(/^[(\[]?([1-5])[)\]\.\s]*$/);
+  // Deteksi digit menu (mendukung format *1*, [1], (1), 1., 1, angka 0-6)
+  const menuDigitMatch = strippedMsg.match(/^[(\[]?([0-6])[)\]\.\s]*$/);
   const selectedDigit = menuDigitMatch ? menuDigitMatch[1] : null;
 
   // 1. Identifikasi Pelanggan via Nomor WhatsApp (toleran 08xx / 628xx / +628xx)

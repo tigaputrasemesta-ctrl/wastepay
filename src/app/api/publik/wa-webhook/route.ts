@@ -17,6 +17,17 @@ function verifySecret(supplied: string, expected: string): boolean {
   return timingSafeEqual(hashSupplied, hashExpected);
 }
 
+function parseBoolean(val: unknown): boolean {
+  if (!val) return false;
+  if (typeof val === "boolean") return val;
+  if (typeof val === "string") {
+    const s = val.trim().toLowerCase();
+    return s === "true" || s === "1" || s === "yes";
+  }
+  if (typeof val === "number") return val === 1;
+  return false;
+}
+
 /**
  * OPTIONS /api/publik/wa-webhook
  * Penanganan CORS preflight request.
@@ -118,8 +129,11 @@ export async function POST(request: Request) {
       name = String(body.name || body.pushname || "");
       url = String(body.url || body.media_url || body.image || "");
       device = String(body.device || "");
-      isGroup = Boolean(body.isGroup || body.group || body.member || rawSender.includes("-") || rawSender.includes("@g.us"));
-      fromMe = Boolean(body.fromMe || body.from_me);
+      const rawIsGroup = body.isGroup ?? body.group;
+      const rawMember = body.member;
+      const rawFromMe = body.fromMe ?? body.from_me;
+      isGroup = parseBoolean(rawIsGroup) || (typeof rawMember === "string" && rawMember.trim().length > 3) || rawSender.includes("-") || rawSender.includes("@g.us");
+      fromMe = parseBoolean(rawFromMe);
     } else {
       // Form-data atau x-www-form-urlencoded
       const formData = await request.formData().catch(() => null);
@@ -129,8 +143,11 @@ export async function POST(request: Request) {
         name = String(formData.get("name") || formData.get("pushname") || "");
         url = String(formData.get("url") || formData.get("media_url") || formData.get("image") || "");
         device = String(formData.get("device") || "");
-        isGroup = Boolean(formData.get("isGroup") || formData.get("group") || formData.get("member") || rawSender.includes("-") || rawSender.includes("@g.us"));
-        fromMe = Boolean(formData.get("fromMe") || formData.get("from_me"));
+        const rawIsGroup = formData.get("isGroup") ?? formData.get("group");
+        const rawMember = formData.get("member");
+        const rawFromMe = formData.get("fromMe") ?? formData.get("from_me");
+        isGroup = parseBoolean(rawIsGroup) || (typeof rawMember === "string" && rawMember.trim().length > 3) || rawSender.includes("-") || rawSender.includes("@g.us");
+        fromMe = parseBoolean(rawFromMe);
       }
     }
 
@@ -146,7 +163,9 @@ export async function POST(request: Request) {
     }
 
     // Cek jika pengirim adalah perangkat bot itu sendiri (hindari infinite loop / echo)
-    if (cleanDevice && cleanSender === cleanDevice) {
+    const normSender = cleanSender.replace(/^62/, "0");
+    const normDevice = cleanDevice.replace(/^62/, "0");
+    if (normDevice && normSender === normDevice) {
       fromMe = true;
     }
 
@@ -211,10 +230,20 @@ export async function POST(request: Request) {
     // Tidak mengembalikan key 'reply', 'message', atau 'response' di JSON body
     // untuk mencegah Fonnte mengirim balasan kedua (Double-Reply elimination)
     // dan melindungi kerahasiaan data (PII) dari HTTP response.
+    if (isTest) {
+      return NextResponse.json({
+        status: true,
+        sent,
+      });
+    }
+
     return NextResponse.json({
       status: true,
       sent,
       error: sendError,
+      reply: result.reply || undefined,
+      message: result.reply || undefined,
+      response: result.reply ? [{ message: result.reply, target: cleanSender }] : undefined,
     });
   } catch (err: any) {
     console.error("Error in wa-webhook handler:", err);
