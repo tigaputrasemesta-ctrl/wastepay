@@ -398,106 +398,115 @@
     color-scheme: dark;
   }
 
-  .dark main,
-  .dark aside,
-  .dark header,
-  .dark nav,
-  .dark [role="dialog"],
-  .dark .modal-content {
-    /* Auto dark cards and surface panels */
-    .bg-white {
-      background-color: #18181b !important; /* zinc-900 */
-    }
+  /* Auto dark cards and surface panels */
+  .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) .bg-white {
+    background-color: #18181b !important; /* zinc-900 */
+  }
 
+  .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) :is(
     .bg-slate-50,
     .bg-slate-50\/60,
     .bg-slate-50\/70,
     .bg-slate-50\/80,
-    .bg-slate-50\/90 {
-      background-color: #09090b !important; /* zinc-950 */
-    }
+    .bg-slate-50\/90
+  ) {
+    background-color: #09090b !important; /* zinc-950 */
+  }
 
+  .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) :is(
     .bg-slate-100,
     .bg-slate-100\/70,
-    .bg-slate-100\/80 {
-      background-color: #27272a !important; /* zinc-800 */
-    }
+    .bg-slate-100\/80
+  ) {
+    background-color: #27272a !important; /* zinc-800 */
+  }
 
-    /* Auto dark borders */
+  /* Auto dark borders */
+  .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) :is(
     .border-slate-100,
     .border-slate-200,
     .border-slate-200\/60,
     .border-slate-200\/70,
     .border-slate-200\/80,
     .border-slate-200\/90,
-    .border-slate-300 {
-      border-color: #27272a !important; /* zinc-800 */
-    }
+    .border-slate-300
+  ) {
+    border-color: #27272a !important; /* zinc-800 */
+  }
 
+  .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) :is(
     .divide-slate-100,
-    .divide-slate-200 {
-      border-color: #27272a !important;
-    }
+    .divide-slate-200
+  ) {
+    border-color: #27272a !important;
+  }
 
-    /* Auto dark text contrast */
+  /* Auto dark text contrast */
+  .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) :is(
     .text-slate-900,
-    .text-slate-800 {
-      color: #fafafa !important; /* zinc-50 */
-    }
+    .text-slate-800
+  ) {
+    color: #fafafa !important; /* zinc-50 */
+  }
 
+  .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) :is(
     .text-slate-700,
-    .text-slate-600 {
-      color: #d4d4d8 !important; /* zinc-300 */
-    }
+    .text-slate-600
+  ) {
+    color: #d4d4d8 !important; /* zinc-300 */
+  }
 
+  .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) :is(
     .text-slate-500,
-    .text-slate-400 {
-      color: #a1a1aa !important; /* zinc-400 */
-    }
+    .text-slate-400
+  ) {
+    color: #a1a1aa !important; /* zinc-400 */
+  }
 
-    /* Auto dark form controls */
+  /* Auto dark form controls */
+  .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) :is(
     input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="color"]),
     select,
-    textarea {
-      background-color: #18181b !important;
-      color: #f4f4f5 !important;
-      border-color: #3f3f46 !important; /* zinc-700 */
-    }
+    textarea
+  ) {
+    background-color: #18181b !important;
+    color: #f4f4f5 !important;
+    border-color: #3f3f46 !important; /* zinc-700 */
+  }
 
-    input::placeholder,
-    textarea::placeholder {
-      color: #71717a !important; /* zinc-500 */
-    }
+  .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) input::placeholder,
+  .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) textarea::placeholder {
+    color: #71717a !important; /* zinc-500 */
+  }
 
-    /* Auto dark tables */
-    table thead tr,
-    table thead tr.bg-black {
-      background-color: #09090b !important; /* zinc-950 */
-      border-bottom-color: #27272a !important;
-    }
+  /* Auto dark tables */
+  .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) table thead tr,
+  .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) table thead tr.bg-black {
+    background-color: #09090b !important; /* zinc-950 */
+    border-bottom-color: #27272a !important;
+  }
 
-    table thead th {
-      color: #a1a1aa !important; /* zinc-400 */
-    }
+  .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) table thead th {
+    color: #a1a1aa !important; /* zinc-400 */
+  }
 
-    table tbody tr {
-      border-bottom-color: #27272a !important;
-    }
+  .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) table tbody tr {
+    border-bottom-color: #27272a !important;
+  }
 
-    table tbody tr:hover {
-      background-color: rgba(39, 39, 42, 0.6) !important; /* zinc-800 */
-    }
+  .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) table tbody tr:hover {
+    background-color: rgba(39, 39, 42, 0.6) !important; /* zinc-800 */
+  }
 
-    table tbody td {
-      border-color: #27272a !important;
-      color: #e4e4e7 !important;
-    }
+  .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) table tbody td {
+    border-color: #27272a !important;
+    color: #e4e4e7 !important;
+  }
 
-    /* Auto dark hover states */
-    .hover\:bg-slate-50:hover,
-    .hover\:bg-slate-100:hover {
-      background-color: #27272a !important; /* zinc-800 */
-    }
+  /* Auto dark hover states */
+  .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) .hover\:bg-slate-50:hover,
+  .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) .hover\:bg-slate-100:hover {
+    background-color: #27272a !important; /* zinc-800 */
   }
 
   /* Enforce Shadcn button proportions and radius across all buttons */

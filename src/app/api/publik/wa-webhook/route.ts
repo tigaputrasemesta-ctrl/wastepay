@@ -5,6 +5,11 @@ import { createHash, timingSafeEqual } from "node:crypto";
 import { allowAttempt } from "@/lib/rate-limit";
 import { appendFileSync, mkdirSync, readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import {
+  getAllActiveTakeovers,
+  releaseTakeover,
+  setTakeover,
+} from "@/lib/server/wa-takeover-service";
 
 export const dynamic = "force-dynamic";
 
@@ -63,21 +68,40 @@ export async function OPTIONS() {
  */
 export async function GET(request: Request) {
   const url = new URL(request.url);
+
+  // Aksi operasional via URL (misal: lepaskan bot tidur secara manual)
+  if (url.searchParams.get("action") === "release") {
+    const phone = url.searchParams.get("phone") || "";
+    const released = releaseTakeover(phone);
+    return NextResponse.json({ status: "ok", action: "release", released, phone });
+  }
+
+  if (url.searchParams.get("action") === "takeover") {
+    const phone = url.searchParams.get("phone") || "";
+    const hours = Number(url.searchParams.get("hours")) || 12;
+    setTakeover(phone, hours, "manual_pause");
+    return NextResponse.json({ status: "ok", action: "takeover", set: true, phone, hours });
+  }
+
   if (url.searchParams.get("debug") === "1") {
     try {
+      const activeTakeovers = getAllActiveTakeovers();
       const logPath = join(process.cwd(), "public", "uploads", "webhook_hits.log");
+      let recentHits: any[] = [];
       if (existsSync(logPath)) {
         const content = readFileSync(logPath, "utf8");
         const lines = content.trim().split("\n").filter(Boolean).slice(-30);
-        return NextResponse.json({
-          status: "ok",
-          totalLines: lines.length,
-          recentHits: lines.map((l) => {
-            try { return JSON.parse(l.replace(/^\[[^\]]+\]\s*/, "")); } catch { return l; }
-          }),
+        recentHits = lines.map((l) => {
+          try { return JSON.parse(l.replace(/^\[[^\]]+\]\s*/, "")); } catch { return l; }
         });
       }
-      return NextResponse.json({ status: "ok", recentHits: [], message: "Log file empty / belum ada hit" });
+      return NextResponse.json({
+        status: "ok",
+        activeTakeoversCount: activeTakeovers.length,
+        activeTakeovers,
+        totalLines: recentHits.length,
+        recentHits,
+      });
     } catch (e: any) {
       return NextResponse.json({ status: "error", error: e.message });
     }
@@ -153,6 +177,7 @@ export async function POST(request: Request) {
 
   try {
     let rawSender = "";
+    let rawTarget = "";
     let message = "";
     let name = "";
     let url = "";
@@ -165,6 +190,7 @@ export async function POST(request: Request) {
     if (contentType.includes("application/json")) {
       const body = await request.json().catch(() => ({}));
       rawSender = String(body.sender || body.from || body.phone || "");
+      rawTarget = String(body.target || body.to || body.recipient || "");
       message = String(body.message || body.text || body.msg || "");
       name = String(body.name || body.pushname || "");
       url = String(body.url || body.media_url || body.image || "");
@@ -179,6 +205,7 @@ export async function POST(request: Request) {
       const formData = await request.formData().catch(() => null);
       if (formData) {
         rawSender = String(formData.get("sender") || formData.get("from") || formData.get("phone") || "");
+        rawTarget = String(formData.get("target") || formData.get("to") || formData.get("recipient") || "");
         message = String(formData.get("message") || formData.get("text") || formData.get("msg") || "");
         name = String(formData.get("name") || formData.get("pushname") || "");
         url = String(formData.get("url") || formData.get("media_url") || formData.get("image") || "");
@@ -193,6 +220,7 @@ export async function POST(request: Request) {
 
     // Sanitasi nomor pengirim: buang JID multi-device (:1, @s.whatsapp.net, @c.us)
     const cleanSender = rawSender.split("@")[0].split(":")[0].replace(/\D/g, "");
+    const cleanTarget = rawTarget.split("@")[0].split(":")[0].replace(/\D/g, "");
     const cleanDevice = device.split("@")[0].split(":")[0].replace(/\D/g, "");
 
     if (!cleanSender) {
@@ -213,6 +241,8 @@ export async function POST(request: Request) {
       event: "parsed_incoming",
       rawSender,
       cleanSender,
+      rawTarget,
+      cleanTarget,
       message,
       device,
       isGroup,
@@ -229,10 +259,19 @@ export async function POST(request: Request) {
     }
 
     if (fromMe) {
+      // Petugas/Admin membalas chat pelanggan langsung dari HP / WhatsApp Web.
+      // Aktifkan mode Human Takeover otomatis selama 12 jam untuk pelanggan ini,
+      // sehingga bot diam dan tidak spam / menyela pembicaraan petugas.
+      const customerPhone = cleanTarget && cleanTarget !== cleanDevice ? cleanTarget : (cleanSender !== cleanDevice ? cleanSender : "");
+      if (customerPhone) {
+        setTakeover(customerPhone, 12, "admin_chatting", message);
+      }
+
       return NextResponse.json({
         status: true,
         sent: false,
-        message: "Pesan keluar dari perangkat sendiri diabaikan",
+        message: "Pesan keluar dari admin diabaikan & Human Takeover otomatis aktif",
+        takeoverTarget: customerPhone || undefined,
       });
     }
 

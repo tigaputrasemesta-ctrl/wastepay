@@ -104,11 +104,8 @@ export default function PublicNavbar() {
               <span className="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight leading-none">
                 UPS HERU<span className="text-emerald-700">.</span>
               </span>
-              <span className="px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-xs font-bold leading-none">
-                Depok
-              </span>
             </div>
-            <p className="text-xs text-slate-600 font-medium truncate leading-normal mt-0.5">Pengelolaan Sampah Terpadu Kota Depok</p>
+            <p className="text-xs text-slate-500 font-medium truncate leading-normal mt-0.5">Layanan Pengangkutan Sampah & Retribusi</p>
           </div>
         </Link>
 

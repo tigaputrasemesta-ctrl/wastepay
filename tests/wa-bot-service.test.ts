@@ -1,6 +1,14 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { processIncomingWaMessage } from "../src/lib/server/wa-bot-service";
 import { prisma } from "../src/lib/prisma";
+import {
+  clearTakeoverStateForTest,
+  isTakeoverActive,
+  setTakeover,
+  releaseTakeover,
+  getTakeoverInfo,
+  getAllActiveTakeovers,
+} from "../src/lib/server/wa-takeover-service";
 
 vi.mock("../src/lib/prisma", () => ({
   prisma: {
@@ -28,6 +36,7 @@ vi.mock("../src/lib/wa", () => ({
 describe("WhatsApp Bot Service (Fonnte Integration)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    clearTakeoverStateForTest();
   });
 
   it("1. Menyajikan Menu Utama jika pengguna mengetik 'menu' atau 'halo'", async () => {
@@ -393,6 +402,9 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
     });
     expect(res2.intent).toBe("ADMIN");
 
+    // Release takeover dari trigger menu 0 agar pengujian digit *6* berikutnya dapat diproses
+    releaseTakeover("081577773333");
+
     const res3 = await processIncomingWaMessage({
       sender: "081577773333",
       message: "*6*",
@@ -471,5 +483,128 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
         }),
       })
     );
+  });
+
+  it("20. Menu 0 (Admin Trigger) mengaktifkan Human Takeover dan memberitahu pelanggan", async () => {
+    const sender = "081299998888";
+    expect(isTakeoverActive(sender)).toBe(false);
+
+    const res = await processIncomingWaMessage({
+      sender,
+      message: "0",
+    });
+
+    expect(res.intent).toBe("ADMIN");
+    expect(res.reply).toContain("Helpdesk & Admin Pusat UPS HERU");
+    expect(res.reply).toContain("Bot otomatis dinonaktifkan sementara");
+    expect(res.reply).toContain("#bot");
+    expect(isTakeoverActive(sender)).toBe(true);
+
+    const info = getTakeoverInfo(sender);
+    expect(info.active).toBe(true);
+    expect(info.reason).toBe("requested_admin");
+    expect(info.remainingMinutes).toBeGreaterThan(0);
+  });
+
+  it("21. Bot DIAM sepenuhnya (reply kosong) saat mode Human Takeover aktif", async () => {
+    const sender = "081299997777";
+    setTakeover(sender, 12, "requested_admin");
+    expect(isTakeoverActive(sender)).toBe(true);
+
+    // Chat kata kunci tagihan
+    const res1 = await processIncomingWaMessage({
+      sender,
+      message: "tagihan",
+    });
+    expect(res1.reply).toBe("");
+    expect(res1.intent).toBe("NONE");
+
+    // Chat kata kunci menu
+    const res2 = await processIncomingWaMessage({
+      sender,
+      message: "menu",
+    });
+    expect(res2.reply).toBe("");
+    expect(res2.intent).toBe("NONE");
+
+    // Chat digit 1
+    const res3 = await processIncomingWaMessage({
+      sender,
+      message: "1",
+    });
+    expect(res3.reply).toBe("");
+    expect(res3.intent).toBe("NONE");
+  });
+
+  it("22. Perintah #bot, /bot, atau 'aktifkan bot' membangunkan bot kembali dari mode Takeover", async () => {
+    const sender = "081299996666";
+    setTakeover(sender, 12, "admin_chatting");
+    expect(isTakeoverActive(sender)).toBe(true);
+
+    const wakeCommands = ["#bot", "/bot", "aktifkan bot"];
+    for (const cmd of wakeCommands) {
+      setTakeover(sender, 12, "admin_chatting");
+      expect(isTakeoverActive(sender)).toBe(true);
+
+      const res = await processIncomingWaMessage({
+        sender,
+        message: cmd,
+      });
+
+      expect(isTakeoverActive(sender)).toBe(false);
+      expect(res.intent).toBe("MENU");
+      expect(res.reply).toContain("LAYANAN BOT OTOMATIS DIAKTIFKAN KEMBALI");
+      expect(res.reply).toContain("Cek Tagihan & Bayar Online");
+    }
+  });
+
+  it("23. Anti-Spam Menu (Frequency Capping): sapaan berulang menyajikan compact menu, #menu menyajikan full menu", async () => {
+    const sender = "081299995555";
+
+    // Kirim pertama kali: menu lengkap
+    const res1 = await processIncomingWaMessage({
+      sender,
+      message: "halo",
+    });
+    expect(res1.intent).toBe("MENU");
+    expect(res1.reply).toContain("PUSAT INFORMASI & LAYANAN RESMI");
+    expect(res1.reply).toContain("Cek Tagihan & Bayar Online");
+
+    // Kirim kedua kali dalam waktu dekat: compact quick menu
+    const res2 = await processIncomingWaMessage({
+      sender,
+      message: "halo",
+    });
+    expect(res2.intent).toBe("MENU");
+    expect(res2.reply).toContain("Ada yang bisa kami bantu?");
+    expect(res2.reply).toContain("1️⃣ *Tagihan* | 2️⃣ *Cara Bayar QRIS*");
+    expect(res2.reply).not.toContain("PUSAT INFORMASI & LAYANAN RESMI");
+
+    // Kirim eksplisit '#menu': selalu menu lengkap
+    const res3 = await processIncomingWaMessage({
+      sender,
+      message: "#menu",
+    });
+    expect(res3.intent).toBe("MENU");
+    expect(res3.reply).toContain("PUSAT INFORMASI & LAYANAN RESMI");
+  });
+
+  it("24. Unit test wa-takeover-service: releaseTakeover & getAllActiveTakeovers", () => {
+    const phone1 = "081111111111";
+    const phone2 = "628222222222";
+
+    setTakeover(phone1, 5, "manual_pause", "pause test 1");
+    setTakeover(phone2, 10, "admin_chatting", "pause test 2");
+
+    expect(isTakeoverActive(phone1)).toBe(true);
+    expect(isTakeoverActive(phone2)).toBe(true);
+
+    const activeList = getAllActiveTakeovers();
+    expect(activeList.length).toBeGreaterThanOrEqual(2);
+    expect(activeList.some((e) => e.sender === phone1)).toBe(true);
+
+    const released = releaseTakeover(phone1);
+    expect(released).toBe(true);
+    expect(isTakeoverActive(phone1)).toBe(false);
   });
 });

@@ -2,6 +2,13 @@ import { prisma } from "@/lib/prisma";
 import { extractTail10Digits } from "@/lib/server/wastepay-backend-core-services";
 import { formatRupiahSkylite, formatTanggalIndo } from "@/lib/invoice";
 import { adminPhone, isWaEnabled, kirimWhatsApp } from "@/lib/wa";
+import {
+  isTakeoverActive,
+  setTakeover,
+  releaseTakeover,
+  shouldSendFullMenu,
+  recordFullMenuSent,
+} from "@/lib/server/wa-takeover-service";
 
 export interface IncomingWaPayload {
   sender: string;
@@ -69,7 +76,47 @@ export async function processIncomingWaMessage(
   const sapaanNama = pelanggan ? `*Bpk/Ibu ${pelanggan.nama}*` : payload.name ? `*Kak ${payload.name}*` : "*Bpk/Ibu*";
   const namaZona = pelanggan?.wilayah?.zona?.nama || pelanggan?.kelurahan?.nama || "Area Layanan Depok";
 
-  // 1b. Penanganan khusus: Foto/Media tanpa teks / pesan singkat
+  // 1a. Perintah Bangunkan Bot Kembali (Wake-Up Command)
+  // Memungkinkan warga / admin mengaktifkan kembali bot setelah fase Human Takeover selesai
+  const isWakeCommand =
+    strippedMsg === "#bot" ||
+    strippedMsg === "/bot" ||
+    strippedMsg === "!bot" ||
+    strippedMsg === "aktifkan bot" ||
+    strippedMsg === "buka bot" ||
+    strippedMsg === "bot aktif";
+
+  if (isWakeCommand) {
+    releaseTakeover(cleanSender);
+    recordFullMenuSent(cleanSender);
+    const reply = [
+      `🤖 *LAYANAN BOT OTOMATIS DIAKTIFKAN KEMBALI*`,
+      ``,
+      `Halo ${sapaanNama}! 👋`,
+      `Bot asisten *UPS HERU (WastePay)* siap melayani Anda kembali.`,
+      ...(pelanggan ? [`📍 _Wilayah Layanan: ${namaZona}_\n`] : [``]),
+      `Silakan pilih menu bantuan:`,
+      `1️⃣ *Cek Tagihan & Bayar Online* (Ketik: 1 / Tagihan)`,
+      `2️⃣ *Cara Bayar & Cetak QRIS* (Ketik: 2 / Cara Bayar)`,
+      `3️⃣ *Jadwal Penjemputan Sampah* (Ketik: 3 / Jadwal)`,
+      `4️⃣ *Lapor Sampah & Pengaduan* (Ketik: 4 / Lapor)`,
+      `5️⃣ *Pendaftaran Berlangganan Baru* (Ketik: 5 / Daftar)`,
+      `6️⃣ *Info Layanan, Wilayah & Tarif* (Ketik: 6 / Tarif)`,
+      `0️⃣ *Bicara dengan Admin / CS* (Ketik: 0 / Admin)`,
+      ``,
+      `🌐 Portal Resmi: https://upsheru.com`,
+    ].join("\n");
+
+    return { reply, intent: "MENU", pelangganId: pelanggan?.id };
+  }
+
+  // 1b. Mode Human Takeover (Bot Tidur)
+  // Jika nomor pengirim sedang ditangani admin manusia, bot DIAM sepenuhnya agar tidak menyela obrolan.
+  if (isTakeoverActive(cleanSender)) {
+    return { reply: "", intent: "NONE", pelangganId: pelanggan?.id };
+  }
+
+  // 1c. Penanganan khusus: Foto/Media tanpa teks / pesan singkat
   if (mediaUrl && (!lowerMsg || lowerMsg.length <= 3)) {
     if (pelanggan) {
       const activeKomplain = typeof prisma.komplain.findFirst === "function"
@@ -618,6 +665,9 @@ export async function processIncomingWaMessage(
     lowerMsg.includes("manusia");
 
   if (isAdminTrigger) {
+    // Aktifkan Human Takeover selama 12 jam agar chat lanjutan pelanggan tidak dijawab oleh bot
+    setTakeover(cleanSender, 12, "requested_admin", rawMessage);
+
     const reply = [
       `Halo ${sapaanNama},`,
       ``,
@@ -626,6 +676,9 @@ export async function processIncomingWaMessage(
       `🕒 *Senin - Sabtu: 08.00 - 17.00 WIB*`,
       ``,
       `Silakan ketikkan pertanyaan atau keperluan Anda secara lengkap di bawah ini ya.`,
+      ``,
+      `💡 _Bot otomatis dinonaktifkan sementara untuk percakapan ini agar Anda dapat langsung dilayani oleh petugas kami tanpa gangguan pesan bot. Ketik *#bot* kapan saja untuk mengaktifkan bot kembali._`,
+      ``,
       `🌐 Portal Resmi: https://upsheru.com`,
     ].join("\n");
 
@@ -774,6 +827,44 @@ export async function processIncomingWaMessage(
     strippedMsg.startsWith("hai ");
 
   if (isMenuTrigger) {
+    const isCasualGreeting =
+      strippedMsg === "halo" ||
+      strippedMsg === "halo bot" ||
+      strippedMsg === "hai" ||
+      strippedMsg === "hello" ||
+      strippedMsg === "test" ||
+      strippedMsg === "tes" ||
+      strippedMsg === "testing" ||
+      strippedMsg === "ping" ||
+      strippedMsg === "bot" ||
+      strippedMsg === "assalamualaikum" ||
+      strippedMsg === "assalamu'alaikum" ||
+      strippedMsg === "selamat pagi" ||
+      strippedMsg === "selamat siang" ||
+      strippedMsg === "selamat sore" ||
+      strippedMsg === "selamat malam" ||
+      strippedMsg.startsWith("halo ") ||
+      strippedMsg.startsWith("hai ");
+
+    // Frequency Capping: Jika pesan sapaan/tes santai berulang dalam kurun 8 jam,
+    // sajikan ringkasan cepat agar tidak membanjiri layar chat pelanggan (anti-spam).
+    // Jika warga meminta secara eksplisit ('menu', 'bantuan', 'help', 'panduan', '#menu'), selalu sajikan menu lengkap.
+    if (isCasualGreeting && !shouldSendFullMenu(cleanSender, 8)) {
+      const compactReply = [
+        `Halo ${sapaanNama}! 👋 Ada yang bisa kami bantu?`,
+        ``,
+        `Ketik angka pilihan kebutuhan Anda:`,
+        `1️⃣ *Tagihan* | 2️⃣ *Cara Bayar QRIS* | 3️⃣ *Jadwal* | 4️⃣ *Lapor* | 5️⃣ *Daftar* | 6️⃣ *Tarif* | 0️⃣ *Admin*`,
+        ``,
+        `💡 _Ketik *#menu* untuk melihat rincian menu lengkap, atau *0* jika ingin dibantu Admin._`,
+        `🌐 Portal Resmi: https://upsheru.com`,
+      ].join("\n");
+
+      return { reply: compactReply, intent: "MENU", pelangganId: pelanggan?.id };
+    }
+
+    recordFullMenuSent(cleanSender);
+
     const reply = [
       `🌿 *PUSAT INFORMASI & LAYANAN RESMI — UPS HERU DEPOK* 🚛`,
       ``,
