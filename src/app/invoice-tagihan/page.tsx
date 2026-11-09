@@ -151,9 +151,13 @@ export default async function InvoiceTagihanPage({
               </div>
 
               <div className="invoice-header-title">
-                <div className="doc-badge">SURAT TAGIHAN RESMI</div>
-                <h1 className="doc-title">FAKTUR RETRIBUSI</h1>
-                <p className="doc-sub">OFFICIAL WASTE RETRIBUTION INVOICE</p>
+                <div className="doc-badge">{lunas ? "BUKTI PEMBAYARAN SAH" : "SURAT TAGIHAN RESMI"}</div>
+                <h1 className="doc-title">{lunas ? "KUITANSI RETRIBUSI" : "FAKTUR RETRIBUSI & QRIS"}</h1>
+                <p className="doc-sub">
+                  {lunas
+                    ? `OFFICIAL RECEIPT — BULAN ${namaPeriode.toUpperCase()}`
+                    : `OFFICIAL RETRIBUTION INVOICE & QRIS — BULAN ${namaPeriode.toUpperCase()}`}
+                </p>
                 <div className="doc-invoice-no">
                   <span>No. Faktur:</span>
                   <strong>{tagihan.noInvoice}</strong>
@@ -388,11 +392,15 @@ export default async function InvoiceTagihanPage({
               <div className="invoice-qr-box">
                 <div className="qr-frame">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={qrUrl} width={110} height={110} alt="QR-Code Verifikasi Faktur" />
+                  <img src={qrUrl} width={110} height={110} alt="QR-Code Verifikasi Faktur & Pembayaran" />
                 </div>
                 <div className="qr-text">
-                  <span className="qr-headline">VALIDASI KEASLIAN</span>
-                  <span className="qr-sub">Scan QR Code untuk memverifikasi dokumen di portal resmi</span>
+                  <span className="qr-headline">{lunas ? "VALIDASI KEASLIAN" : "SCAN QRIS PEMBAYARAN"}</span>
+                  <span className="qr-sub">
+                    {lunas
+                      ? "Scan QR Code untuk memverifikasi keabsahan kuitansi lunas di portal resmi"
+                      : `Scan QR dengan kamera HP / m-Banking untuk bayar iuran bulan ${namaPeriode}`}
+                  </span>
                 </div>
               </div>
 

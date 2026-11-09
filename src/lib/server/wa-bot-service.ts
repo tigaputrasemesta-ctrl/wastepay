@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { extractTail10Digits } from "@/lib/server/wastepay-backend-core-services";
-import { formatRupiahSkylite, formatTanggalIndo } from "@/lib/invoice";
+import { formatRupiahSkylite, formatTanggalIndo, BULAN_INDO } from "@/lib/invoice";
 import { adminPhone, isWaEnabled, kirimWhatsApp } from "@/lib/wa";
 import {
   isTakeoverActive,
@@ -22,6 +22,49 @@ export interface BotProcessResult {
   intent: "MENU" | "TAGIHAN" | "JADWAL" | "KOMPLAIN" | "DAFTAR" | "ADMIN" | "COVERAGE" | "FAQ" | "CARA_BAYAR" | "NONE";
   pelangganId?: number;
   komplainId?: number;
+}
+
+/**
+ * Mendeteksi nama/angka bulan dari teks pesan WhatsApp (misal: "cetak qris november", "bulan 10", "bulan ini").
+ */
+export function extractTargetMonth(text: string): { bulan: number; tahun?: number; isBulanIni?: boolean } | null {
+  const t = text.toLowerCase();
+  const now = new Date();
+
+  if (t.includes("bulan ini") || t.includes("bln ini") || t.includes("tagihan ini")) {
+    return { bulan: now.getMonth() + 1, tahun: now.getFullYear(), isBulanIni: true };
+  }
+
+  if (t.includes("bulan lalu") || t.includes("bln lalu")) {
+    const prevMonth = now.getMonth() === 0 ? 12 : now.getMonth();
+    const prevYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+    return { bulan: prevMonth, tahun: prevYear };
+  }
+
+  const monthRegexes: Array<{ bulan: number; regex: RegExp }> = [
+    { bulan: 1, regex: /\b(januari|jan|bln 1|bulan 1|bulan 01)\b/ },
+    { bulan: 2, regex: /\b(februari|feb|bln 2|bulan 2|bulan 02)\b/ },
+    { bulan: 3, regex: /\b(maret|mar|bln 3|bulan 3|bulan 03)\b/ },
+    { bulan: 4, regex: /\b(april|apr|bln 4|bulan 4|bulan 04)\b/ },
+    { bulan: 5, regex: /\b(mei|bln 5|bulan 5|bulan 05)\b/ },
+    { bulan: 6, regex: /\b(juni|jun|bln 6|bulan 6|bulan 06)\b/ },
+    { bulan: 7, regex: /\b(juli|jul|bln 7|bulan 7|bulan 07)\b/ },
+    { bulan: 8, regex: /\b(agustus|agust|agu|ags|bln 8|bulan 8|bulan 08)\b/ },
+    { bulan: 9, regex: /\b(september|sept|sep|bln 9|bulan 9|bulan 09)\b/ },
+    { bulan: 10, regex: /\b(oktober|okt|bln 10|bulan 10)\b/ },
+    { bulan: 11, regex: /\b(november|nov|nopember|nop|bln 11|bulan 11)\b/ },
+    { bulan: 12, regex: /\b(desember|des|bln 12|bulan 12)\b/ },
+  ];
+
+  for (const m of monthRegexes) {
+    if (m.regex.test(t)) {
+      const yearMatch = t.match(/\b(202[4-9])\b/);
+      const tahun = yearMatch ? parseInt(yearMatch[1], 10) : undefined;
+      return { bulan: m.bulan, tahun };
+    }
+  }
+
+  return null;
 }
 
 /**
@@ -237,32 +280,104 @@ export async function processIncomingWaMessage(
     cleanFormattedMsg.includes("cetak qris") ||
     cleanFormattedMsg.includes("cetak pembayaran") ||
     cleanFormattedMsg.includes("print qris") ||
+    cleanFormattedMsg.includes("cetak qr") ||
+    cleanFormattedMsg.includes("print qr") ||
+    cleanFormattedMsg.includes("cetak barcode") ||
+    cleanFormattedMsg.includes("print barcode") ||
     cleanFormattedMsg.includes("cetak invoice") ||
     cleanFormattedMsg.includes("cetak faktur") ||
     cleanFormattedMsg.includes("cetak tagihan") ||
     cleanFormattedMsg.includes("cetak struk") ||
     cleanFormattedMsg.includes("cetak nota") ||
+    cleanFormattedMsg.includes("cetak lembar") ||
+    cleanFormattedMsg.includes("lembar qris") ||
+    cleanFormattedMsg.includes("lembar faktur") ||
+    cleanFormattedMsg.includes("lembar tagihan") ||
+    cleanFormattedMsg.includes("qris bulan") ||
+    cleanFormattedMsg.includes("qris bln") ||
     cleanFormattedMsg === "cara transfer" ||
     cleanFormattedMsg === "cara tf" ||
     cleanFormattedMsg.includes("gimana bayar") ||
     cleanFormattedMsg.includes("bagaimana bayar");
 
   if (isCaraBayarTrigger) {
-    let unpaidInvoiceNo: string | null = null;
-    let latestPaidInvoiceNo: string | null = null;
+    let tagihanList: any[] = [];
     if (pelanggan?.id) {
       try {
-        const tagihan = await prisma.tagihan.findMany({
+        tagihanList = await prisma.tagihan.findMany({
           where: { pelangganId: pelanggan.id, deletedAt: null },
           orderBy: [{ tahun: "desc" }, { bulan: "desc" }],
-          select: { noInvoice: true, status: true },
+          select: {
+            id: true,
+            noInvoice: true,
+            status: true,
+            bulan: true,
+            tahun: true,
+            jumlah: true,
+            denda: true,
+            jatuhTempo: true,
+          },
         });
-        const unpaid = tagihan.find((t: any) => t.status === "belum_bayar" || t.status === "tunggakan");
-        const paid = tagihan.find((t: any) => t.status === "lunas");
-        if (unpaid?.noInvoice) unpaidInvoiceNo = unpaid.noInvoice;
-        if (paid?.noInvoice) latestPaidInvoiceNo = paid.noInvoice;
       } catch (e) {
         console.error("Gagal mengambil tagihan untuk cara bayar:", e);
+      }
+    }
+
+    const unpaid = tagihanList.filter((t: any) => t.status === "belum_bayar" || t.status === "tunggakan");
+    const paid = tagihanList.filter((t: any) => t.status === "lunas");
+    const unpaidInvoiceNo = unpaid[0]?.noInvoice || null;
+    const latestPaidInvoiceNo = paid[0]?.noInvoice || null;
+
+    // Deteksi jika pengguna secara spesifik meminta cetak QRIS bulan tertentu (misal: "cetak qris november", "cetak qris bulan 10", "cetak qris bulan ini")
+    const targetMonth = extractTargetMonth(cleanFormattedMsg);
+    if (targetMonth && pelanggan?.id && tagihanList.length > 0) {
+      const matched = tagihanList.find((t: any) => {
+        const matchMonth = t.bulan === targetMonth.bulan;
+        const matchYear = targetMonth.tahun ? t.tahun === targetMonth.tahun : true;
+        return matchMonth && matchYear;
+      });
+
+      if (matched && matched.noInvoice) {
+        const namaBulan = BULAN_INDO[matched.bulan - 1] || `Bulan ${matched.bulan}`;
+        const isLunas = matched.status === "lunas";
+        const statusLabel = isLunas
+          ? "✅ *LUNAS*"
+          : matched.status === "tunggakan"
+          ? "⚠️ *TERTUNGGAK*"
+          : "⏳ *BELUM BAYAR*";
+        const totalNominal = matched.jumlah + (matched.denda || 0);
+        const printUrl = `https://upsheru.com/invoice-tagihan?invoice=${encodeURIComponent(matched.noInvoice)}`;
+        const payUrl = `https://upsheru.com/bayar?invoice=${encodeURIComponent(matched.noInvoice)}`;
+
+        const reply = [
+          `🖨️ *LEMBAR CETAK QRIS — PERIODE ${namaBulan.toUpperCase()} ${matched.tahun}*`,
+          ``,
+          `Halo ${sapaanNama},`,
+          `Berikut tautan cetak faktur berbarcode QRIS resmi untuk tagihan bulan *${namaBulan} ${matched.tahun}*:`,
+          ``,
+          `🆔 ID Pelanggan: *${pelanggan.kodePelanggan || pelanggan.noTelepon}*`,
+          `📅 Periode: *${namaBulan} ${matched.tahun}*`,
+          `💰 Total Tagihan: *${formatRupiahSkylite(totalNominal)}*`,
+          `📊 Status: ${statusLabel}`,
+          ``,
+          `🖨️ *Tautan Lembar Cetak QRIS / Faktur Resmi:*`,
+          `👉 *${printUrl}*`,
+          ``,
+          ...(!isLunas
+            ? [
+                `💳 *Bayar Langsung Online (QRIS / VA / e-Wallet):*`,
+                `👉 *${payUrl}*`,
+                ``,
+                `💡 _Scan kode QRIS pada tautan di atas menggunakan aplikasi m-Banking (BCA, Mandiri, BRI, BNI) atau E-Wallet (DANA, GoPay, OVO, ShopeePay). Tagihan langsung terverifikasi lunas otomatis._`,
+              ]
+            : [
+                `🧾 _Faktur di atas berfungsi sebagai bukti kuitansi pembayaran resmi yang sah dari UPS HERU._`,
+              ]),
+          ``,
+          `🌐 Portal Web: https://upsheru.com`,
+        ].join("\n");
+
+        return { reply, intent: "CARA_BAYAR", pelangganId: pelanggan.id };
       }
     }
 
@@ -273,6 +388,25 @@ export async function processIncomingWaMessage(
     const printInvoiceLinkStr = unpaidInvoiceNo
       ? `https://upsheru.com/invoice-tagihan?invoice=${encodeURIComponent(unpaidInvoiceNo)}`
       : paymentLinkStr;
+
+    // Rincian tautan cetak QRIS per bulan tagihan
+    const daftarCetakPerBulan = unpaid.length > 0
+      ? [
+          `*Pilih bulan tagihan yang ingin Anda cetak:*`,
+          ...unpaid.slice(0, 4).map((t: any) => {
+            const namaBulan = BULAN_INDO[t.bulan - 1] || `Bulan ${t.bulan}`;
+            const statusLabel = t.status === "tunggakan" ? "⚠️ Menunggak" : "⏳ Berjalan";
+            const totalNominal = t.jumlah + (t.denda || 0);
+            const linkFaktur = t.noInvoice
+              ? `https://upsheru.com/invoice-tagihan?invoice=${encodeURIComponent(t.noInvoice)}`
+              : paymentLinkStr;
+            return `• *Periode ${namaBulan} ${t.tahun}* (${formatRupiahSkylite(totalNominal)} — ${statusLabel}):\n  👉 *${linkFaktur}*`;
+          }),
+        ]
+      : [
+          `Klik tautan lembar cetak resmi berikut:`,
+          `👉 *${printInvoiceLinkStr}*`,
+        ];
 
     const reply = [
       `📱 *PANDUAN PRAKTIS CARA BAYAR & CETAK QRIS*`,
@@ -304,9 +438,10 @@ export async function processIncomingWaMessage(
       `▶️ *CARA 3: Cetak Lembar Faktur / Barcode QRIS Fisik*`,
       `━━━━━━━━━━━━━━━━━━━━`,
       `🖨️ Butuh mencetak lembaran tagihan fisik berbarcode QRIS (untuk ditempel di rumah, toko, atau diserahkan ke keluarga)?`,
-      `Klik tautan lembar cetak resmi berikut:`,
-      `👉 *${printInvoiceLinkStr}*`,
+      ``,
+      ...daftarCetakPerBulan,
       `_(Tersedia tombol Cetak / Simpan PDF langsung dari browser)_.`,
+      `💡 _Ketik *cetak qris [nama bulan]* (contoh: *cetak qris november*) untuk mencetak bulan tertentu secara instan._`,
       ...(latestPaidInvoiceNo ? [
         ``,
         `🧾 *Cetak Kuitansi / Bukti Pembayaran Lunas Terakhir:*`,
@@ -767,7 +902,10 @@ export async function processIncomingWaMessage(
     const totalSemua = unpaid.reduce((sum: number, t: any) => sum + t.jumlah, 0);
     const rincianTagihan = unpaid.slice(0, 6).map((t: any) => {
       const statusLabel = t.status === "tunggakan" ? "⚠️ (Menunggak)" : "⏳ (Berjalan)";
-      return `• Periode *${t.bulan}/${t.tahun}*: ${formatRupiahSkylite(t.jumlah)} ${statusLabel}`;
+      const cetakBulanStr = t.noInvoice
+        ? `\n   ↳ 🖨️ Cetak QRIS: https://upsheru.com/invoice-tagihan?invoice=${encodeURIComponent(t.noInvoice)}`
+        : "";
+      return `• Periode *${t.bulan}/${t.tahun}*: ${formatRupiahSkylite(t.jumlah)} ${statusLabel}${cetakBulanStr}`;
     });
 
     const activeInvoice = unpaid[0]?.noInvoice;
@@ -789,7 +927,7 @@ export async function processIncomingWaMessage(
       `👉 *https://upsheru.com/bayar?kode=${pelanggan.noTelepon}*`,
       cetakFakturStr,
       `💡 _Pembayaran melalui link di atas langsung terverifikasi otomatis oleh sistem dalam hitungan detik tanpa perlu konfirmasi manual._`,
-      `💡 _Ketik *2* untuk panduan lengkap tutorial cara bayar via QRIS._`,
+      `💡 _Ketik *2* atau *cetak qris [nama bulan]* (contoh: *cetak qris november*) untuk mencetak QRIS bulan tagihan tertentu._`,
     ].filter(Boolean).join("\n");
 
     return { reply, intent: "TAGIHAN", pelangganId: pelanggan.id };

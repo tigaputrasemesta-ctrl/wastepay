@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import { processIncomingWaMessage } from "../src/lib/server/wa-bot-service";
+import { processIncomingWaMessage, extractTargetMonth } from "../src/lib/server/wa-bot-service";
 import { prisma } from "../src/lib/prisma";
 import {
   clearTakeoverStateForTest,
@@ -606,5 +606,157 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
     const released = releaseTakeover(phone1);
     expect(released).toBe(true);
     expect(isTakeoverActive(phone1)).toBe(false);
+  });
+
+  it("25. Unit test extractTargetMonth: deteksi bulan nama, angka berawalan 'bulan', bulan ini/lalu, dan toleransi non-bulan", () => {
+    expect(extractTargetMonth("cetak qris november")).toEqual({ bulan: 11, tahun: undefined });
+    expect(extractTargetMonth("cetak qris nov 2026")).toEqual({ bulan: 11, tahun: 2026 });
+    expect(extractTargetMonth("cetak qris bulan 10")).toEqual({ bulan: 10, tahun: undefined });
+    expect(extractTargetMonth("cetak qris bln 5")).toEqual({ bulan: 5, tahun: undefined });
+    expect(extractTargetMonth("cetak qris januari")).toEqual({ bulan: 1, tahun: undefined });
+    expect(extractTargetMonth("cetak qris des")).toEqual({ bulan: 12, tahun: undefined });
+
+    const now = new Date();
+    const blnIni = extractTargetMonth("cetak qris bulan ini");
+    expect(blnIni?.bulan).toBe(now.getMonth() + 1);
+    expect(blnIni?.isBulanIni).toBe(true);
+
+    // Pastikan angka menu tunggal "2" atau kalimat umum tidak salah dideteksi sebagai bulan
+    expect(extractTargetMonth("2")).toBeNull();
+    expect(extractTargetMonth("cara bayar")).toBeNull();
+    expect(extractTargetMonth("qris")).toBeNull();
+  });
+
+  it("26. Cetak QRIS bulan spesifik: mengembalikan link faktur QRIS bulan yang diminta secara langsung", async () => {
+    (prisma.pelanggan.findFirst as any).mockResolvedValue({
+      id: 501,
+      nama: "Pak Hendra Wijaya",
+      noTelepon: "081288776655",
+      kodePelanggan: "081288776655",
+    });
+
+    (prisma.tagihan.findMany as any).mockResolvedValue([
+      {
+        id: 701,
+        noInvoice: "INV/081288776655/202611",
+        status: "belum_bayar",
+        bulan: 11,
+        tahun: 2026,
+        jumlah: 50000,
+        denda: 0,
+        jatuhTempo: new Date("2026-11-20"),
+      },
+      {
+        id: 702,
+        noInvoice: "INV/081288776655/202610",
+        status: "tunggakan",
+        bulan: 10,
+        tahun: 2026,
+        jumlah: 50000,
+        denda: 1000,
+        jatuhTempo: new Date("2026-10-20"),
+      },
+    ]);
+
+    const resNov = await processIncomingWaMessage({
+      sender: "081288776655",
+      message: "cetak qris november",
+    });
+
+    expect(resNov.intent).toBe("CARA_BAYAR");
+    expect(resNov.reply).toContain("LEMBAR CETAK QRIS — PERIODE NOVEMBER 2026");
+    expect(resNov.reply).toContain("INV%2F081288776655%2F202611");
+    expect(resNov.reply).toContain("https://upsheru.com/invoice-tagihan?invoice=");
+    expect(resNov.reply).toContain("Total Tagihan: *Rp50.000,-*");
+
+    // Request untuk bulan Oktober (tunggakan)
+    const resOkt = await processIncomingWaMessage({
+      sender: "081288776655",
+      message: "cetak qris bulan 10",
+    });
+    expect(resOkt.intent).toBe("CARA_BAYAR");
+    expect(resOkt.reply).toContain("LEMBAR CETAK QRIS — PERIODE OKTOBER 2026");
+    expect(resOkt.reply).toContain("INV%2F081288776655%2F202610");
+    expect(resOkt.reply).toContain("TERTUNGGAK");
+    expect(resOkt.reply).toContain("Rp51.000,-"); // 50000 + 1000 denda
+  });
+
+  it("27. Panduan Cara Bayar umum (Menu 2) menyajikan daftar link cetak QRIS per bulan tagihan yang belum lunas", async () => {
+    (prisma.pelanggan.findFirst as any).mockResolvedValue({
+      id: 502,
+      nama: "Ibu Nurhayati",
+      noTelepon: "081377889900",
+      kodePelanggan: "081377889900",
+    });
+
+    (prisma.tagihan.findMany as any).mockResolvedValue([
+      {
+        id: 703,
+        noInvoice: "INV/081377889900/202611",
+        status: "belum_bayar",
+        bulan: 11,
+        tahun: 2026,
+        jumlah: 45000,
+        denda: 0,
+        jatuhTempo: new Date("2026-11-20"),
+      },
+      {
+        id: 704,
+        noInvoice: "INV/081377889900/202610",
+        status: "tunggakan",
+        bulan: 10,
+        tahun: 2026,
+        jumlah: 45000,
+        denda: 900,
+        jatuhTempo: new Date("2026-10-20"),
+      },
+    ]);
+
+    const res = await processIncomingWaMessage({
+      sender: "081377889900",
+      message: "2",
+    });
+
+    expect(res.intent).toBe("CARA_BAYAR");
+    expect(res.reply).toContain("PANDUAN PRAKTIS CARA BAYAR & CETAK QRIS");
+    expect(res.reply).toContain("Pilih bulan tagihan yang ingin Anda cetak:");
+    expect(res.reply).toContain("Periode November 2026");
+    expect(res.reply).toContain("Periode Oktober 2026");
+    expect(res.reply).toContain("invoice-tagihan?invoice=INV%2F081377889900%2F202611");
+    expect(res.reply).toContain("invoice-tagihan?invoice=INV%2F081377889900%2F202610");
+  });
+
+  it("28. Menu Cek Tagihan (Menu 1) menyajikan link 🖨️ Cetak QRIS di setiap baris periode tagihan", async () => {
+    (prisma.pelanggan.findFirst as any).mockResolvedValue({
+      id: 503,
+      nama: "Bpk Slamet",
+      noTelepon: "081512345678",
+      kodePelanggan: "081512345678",
+      alamat: "Jl. Dahlia 5",
+      wilayah: { zona: { nama: "Zona Kalimulya" } },
+    });
+
+    (prisma.tagihan.findMany as any).mockResolvedValue([
+      {
+        id: 705,
+        noInvoice: "INV/081512345678/202611",
+        status: "belum_bayar",
+        bulan: 11,
+        tahun: 2026,
+        jumlah: 50000,
+        denda: 0,
+      },
+    ]);
+
+    const res = await processIncomingWaMessage({
+      sender: "081512345678",
+      message: "1",
+    });
+
+    expect(res.intent).toBe("TAGIHAN");
+    expect(res.reply).toContain("RINCIAN TAGIHAN RETRIBUSI SAMPAH");
+    expect(res.reply).toContain("Periode *11/2026*: Rp50.000,-");
+    expect(res.reply).toContain("↳ 🖨️ Cetak QRIS: https://upsheru.com/invoice-tagihan?invoice=INV%2F081512345678%2F202611");
+    expect(res.reply).toContain("Cetak / Download Faktur Tagihan QRIS:");
   });
 });

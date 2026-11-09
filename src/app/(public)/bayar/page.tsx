@@ -1291,6 +1291,17 @@ function BayarPortalContent() {
                                 </div>
                               </Link>
                             )}
+                            {t.noInvoice && (
+                              <Link
+                                href={`/invoice-tagihan?invoice=${encodeURIComponent(t.noInvoice)}`}
+                                target="_blank"
+                                className="px-3.5 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 hover:text-slate-900 rounded-xl text-xs font-bold shadow-2xs transition active:scale-95 flex items-center justify-center gap-1.5"
+                                title={`Cetak Lembar QRIS Bulan ${BULAN[t.bulan - 1]} ${t.tahun}`}
+                              >
+                                <span>🖨️</span>
+                                <span>Cetak QRIS</span>
+                              </Link>
+                            )}
                             <button
                               type="button"
                               onClick={() => {
@@ -1306,6 +1317,20 @@ function BayarPortalContent() {
                             </button>
                           </div>
                         )
+                      )}
+
+                      {t.status === "lunas" && t.noInvoice && (
+                        <div className="flex items-center gap-2">
+                          <Link
+                            href={`/invoice-tagihan?invoice=${encodeURIComponent(t.noInvoice)}`}
+                            target="_blank"
+                            className="px-3 py-1.5 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 text-emerald-800 rounded-xl text-xs font-semibold transition flex items-center gap-1.5"
+                            title={`Cetak Kuitansi Lunas Bulan ${BULAN[t.bulan - 1]} ${t.tahun}`}
+                          >
+                            <span>🧾</span>
+                            <span>Cetak Kuitansi Lunas</span>
+                          </Link>
+                        </div>
                       )}
                     </div>
                   </div>
