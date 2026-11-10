@@ -1,7 +1,7 @@
 "use client";
 
 import "leaflet/dist/leaflet.css";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import {
   MapContainer,
@@ -91,6 +91,21 @@ export default function PetaLokasi({
   className = "h-64",
   scrollWheelZoom = false,
 }: Props) {
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const updateTheme = () => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    };
+    updateTheme();
+    const observer = new MutationObserver(updateTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    return () => observer.disconnect();
+  }, []);
+
   const valid =
     latitude != null &&
     longitude != null &&
@@ -106,8 +121,8 @@ export default function PetaLokasi({
       center={center}
       zoom={15}
       scrollWheelZoom={scrollWheelZoom}
-      className={`w-full ${className}`}
-      style={{ background: "#f8fafc" }}
+      className={`w-full ${className} ${isDark ? "dark-map-tiles" : ""}`}
+      style={{ background: isDark ? "#09090b" : "#f8fafc" }}
     >
       <TileLayer
         attribution={tileConfig.attribution}
