@@ -759,4 +759,22 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
     expect(res.reply).toContain("↳ 🖨️ Cetak QRIS: https://upsheru.com/invoice-tagihan?invoice=INV%2F081512345678%2F202611");
     expect(res.reply).toContain("Cetak / Download Faktur Tagihan QRIS:");
   });
+
+  it("29. Mengarahkan ke pendaftaran mandiri saat nomor belum terdaftar meminta tagihan / point 1", async () => {
+    (prisma.pelanggan.findFirst as any).mockResolvedValue(null);
+
+    const res = await processIncomingWaMessage({
+      sender: "089988776655",
+      message: "1",
+      name: "O M A R",
+    });
+
+    expect(res.intent).toBe("TAGIHAN");
+    expect(res.reply).toContain("Halo *Kak O M A R*! 👋");
+    expect(res.reply).toContain("belum terdaftar");
+    expect(res.reply).toContain("https://www.upsheru.com/daftar");
+    expect(res.reply).toContain("Jadwal Pengambilan Tertib & Pasti");
+    expect(res.reply).toContain("Kemudahan Bayar Tagihan Online");
+    expect(res.reply).toContain("Layanan Pengaduan Cepat & Responsif");
+  });
 });

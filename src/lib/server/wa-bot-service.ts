@@ -834,12 +834,22 @@ export async function processIncomingWaMessage(
   if (isTagihanTrigger) {
     if (!pelanggan) {
       const reply = [
-        `Halo ${sapaanNama},`,
+        `Halo ${sapaanNama}! 👋`,
         ``,
-        `Nomor WhatsApp Anda belum terdaftar di sistem kami. Untuk mengecek dan membayar tagihan secara mandiri, silakan akses portal pembayaran resmi:`,
-        `👉 *https://upsheru.com/bayar*`,
+        `Nomor WhatsApp Anda saat ini *belum terdaftar* di sistem layanan pengangkutan sampah *UPS HERU*.`,
         ``,
-        `Masukkan nomor WhatsApp atau kode pelanggan Anda pada halaman tersebut untuk melihat rincian tagihan.`,
+        `Agar rumah Anda terlayani dengan optimal dan bisa menikmati seluruh kemudahan layanan kami, yuk lakukan *pendaftaran mandiri* melalui link resmi berikut:`,
+        `👉 *https://www.upsheru.com/daftar*`,
+        ``,
+        `✨ *Mengapa Harus Daftar Mandiri?*`,
+        `1️⃣ *Jadwal Pengambilan Tertib & Pasti:* Rumah Anda resmi terdata pada rute armada penjemputan kami sehingga pengambilan sampah rutin dan tertib.`,
+        `2️⃣ *Kemudahan Bayar Tagihan Online:* Cek & bayar iuran bulanan kapan saja secara praktis lewat QRIS, Virtual Account, atau E-Wallet tanpa perlu repot kirim bukti transfer.`,
+        `3️⃣ *Layanan Pengaduan Cepat & Responsif:* Jika ada sampah belum terangkut atau menumpuk, Anda bisa langsung melapor secara online dan langsung terpantau oleh petugas di lapangan.`,
+        ``,
+        `Pendaftarannya sangat cepat dan mudah, cukup klik tautan resmi di bawah ini:`,
+        `🌐 *https://www.upsheru.com/daftar*`,
+        ``,
+        `_(Catatan: Jika Anda sudah menjadi pelanggan namun nomor WA berbeda dari yang terdaftar, silakan ketik *ADMIN* untuk kami bantu sambungkan data Anda.)_ 🙏`,
       ].join("\n");
       return { reply, intent: "TAGIHAN" };
     }
