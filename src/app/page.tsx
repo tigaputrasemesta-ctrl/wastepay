@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Truck,
   MapPin,
@@ -34,6 +35,7 @@ import { DEFAULT_ARTIKEL, getArticleCoverImage, cleanArticleSnippet } from "@/li
 import ArticleImage from "@/components/ArticleImage";
 import { NativeGuardedLink } from "@/components/mobile/LandingApkBanner";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
+import { getLayananImages } from "@/lib/layanan-images";
 
 export const dynamic = "force-dynamic";
 
@@ -89,6 +91,17 @@ export default async function LandingPage() {
     // ignore
   }
 
+  let layananImages = {
+    rumahTangga: "/images/layanan/rumah-tangga.jpg",
+    niaga: "/images/layanan/niaga-usaha.jpg",
+    rtRw: "/images/layanan/rt-rw-kolektif.jpg",
+  };
+  try {
+    layananImages = await getLayananImages();
+  } catch {
+    // fallback to default
+  }
+
   return (
     <div className="min-h-screen bg-[#f8fafb] text-slate-900 font-sans selection:bg-[#0d7a75] selection:text-white overflow-x-hidden">
       <JsonLd data={generateLocalBusinessJsonLd()} />
@@ -117,22 +130,33 @@ export default async function LandingPage() {
               </p>
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 pt-1 sm:pt-2">
-                <Link
-                  href="/daftar"
-                  className="w-full sm:w-auto px-6 py-3.5 bg-[#0d7a75] hover:bg-[#0b6460] text-white rounded-xl font-bold text-xs sm:text-sm shadow-sm transition-all flex items-center justify-center gap-2 active:scale-95"
-                >
-                  <Home className="w-4 h-4 shrink-0" />
-                  <span>Daftar Langganan Baru</span>
-                </Link>
+              <div className="space-y-3 pt-1 sm:pt-2">
+                <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3">
+                  <Link
+                    href="/daftar"
+                    className="w-full sm:w-auto px-6 py-3.5 bg-[#0d7a75] hover:bg-[#0b6460] text-white rounded-xl font-bold text-xs sm:text-sm shadow-sm transition-all flex items-center justify-center gap-2 active:scale-95"
+                  >
+                    <Home className="w-4 h-4 shrink-0" />
+                    <span>Daftar Langganan Baru</span>
+                  </Link>
 
-                <Link
-                  href="/pengaduan"
-                  className="w-full sm:w-auto px-6 py-3.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-sm shadow-red-600/20 active:scale-95"
-                >
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>Pengaduan Warga</span>
-                </Link>
+                  <Link
+                    href="/coverage"
+                    className="w-full sm:w-auto px-6 py-3.5 bg-white hover:bg-slate-50 text-slate-800 border-2 border-slate-200 hover:border-slate-300 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-xs active:scale-95"
+                  >
+                    <Navigation className="w-4 h-4 text-[#0d7a75] shrink-0" />
+                    <span>Cek Jadwal & Rute</span>
+                  </Link>
+                </div>
+
+                {/* Subtil Pengaduan Warga */}
+                <p className="text-xs text-slate-500 flex items-center gap-1.5 pt-0.5">
+                  <span>Sudah berlangganan dan ada kendala sampah?</span>
+                  <Link href="/pengaduan" className="text-rose-600 hover:text-rose-700 font-bold hover:underline inline-flex items-center gap-0.5">
+                    <span>Pengaduan Warga</span>
+                    <ChevronRight className="w-3 h-3" />
+                  </Link>
+                </p>
               </div>
 
               {/* Metadata strip (Inspired by BeCycle specs row) */}
@@ -159,6 +183,23 @@ export default async function LandingPage() {
             {/* Right Column: Interactive Console (5 cols) */}
             <div className="md:col-span-5">
               <CivicHeroWidget />
+            </div>
+          </div>
+
+          {/* Municipal Trust Badge Bar */}
+          <div className="mt-8 p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 font-black shadow-xs">
+                ✓
+              </div>
+              <div>
+                <span className="font-extrabold text-slate-900 block">Fasilitas Resmi TPS 3R Kalibaru Kota Depok</span>
+                <span className="text-slate-500 text-[11px]">Binaan DLHK Kota Depok • Pengolahan Terintegrasi Kompos & Daur Ulang</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 font-bold text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200/60 shrink-0">
+              <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>Garansi Jemput Susulan 1x24 Jam</span>
             </div>
           </div>
         </section>
@@ -480,140 +521,247 @@ export default async function LandingPage() {
 
             <div className="grid md:grid-cols-3 gap-6 items-stretch">
               {/* Tier 1: Warga Rumah Tangga */}
-              <div className="bg-white border-2 border-[#0d7a75] rounded-2xl p-5 sm:p-8 flex flex-col justify-between shadow-sm relative mt-5 md:mt-0">
-                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 md:left-6 md:translate-x-0 bg-[#0d7a75] text-white text-[10px] font-extrabold uppercase px-4 py-1 rounded-full tracking-wider shadow-md border border-[#0b6460]">
-                  Paling Banyak Dipilih
+              <div className="group bg-white border-2 border-[#0d7a75] rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm relative mt-5 md:mt-0 hover:shadow-lg transition-all duration-300">
+                {/* Popular Ribbon Header */}
+                <div className="bg-[#0d7a75] text-white text-[11px] font-extrabold uppercase py-1.5 px-4 text-center tracking-wider flex items-center justify-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+                  <span>Pilihan Terpopuler Warga Depok</span>
                 </div>
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-lg font-extrabold text-slate-900">Rumah Tangga / Warga</h3>
-                    <p className="text-xs text-slate-500 mt-1">Untuk pemukiman warga perorangan & komplek cluster</p>
-                  </div>
-                  <div className="py-2.5 border-y border-slate-100">
-                    <span className="text-xs text-slate-400 font-medium">Mulai dari</span>
-                    <div className="flex items-baseline gap-1 mt-0.5">
-                      <span className="text-3xl font-extrabold text-slate-900">Rp 40.000</span>
-                      <span className="text-xs text-slate-500">/ bulan</span>
+
+                {/* Banner Visual Layanan */}
+                <div className="relative aspect-[16/9] w-full bg-slate-900 overflow-hidden border-b border-slate-100">
+                  <Image
+                    src={layananImages.rumahTangga}
+                    alt="Layanan Pengangkutan Sampah Rumah Tangga UPS HERU Kota Depok"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-95"
+                    priority
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
+                  <span className="absolute bottom-2.5 left-3.5 text-[11px] font-bold text-white drop-shadow flex items-center gap-1.5 z-10">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    Penjemputan Depan Pagar (2–3x / mgg)
+                  </span>
+                </div>
+
+                <div className="p-5 sm:p-7 flex-1 flex flex-col justify-between space-y-4">
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-lg font-extrabold text-slate-900">Rumah Tangga / Warga</h3>
+                      <p className="text-xs text-slate-500 mt-1">Untuk pemukiman warga perorangan & komplek cluster</p>
                     </div>
+                    <div className="py-2.5 border-y border-slate-100">
+                      <span className="text-xs text-slate-400 font-medium">Mulai dari</span>
+                      <div className="flex items-baseline gap-1 mt-0.5">
+                        <span className="text-3xl font-extrabold text-slate-900">Rp 40.000</span>
+                        <span className="text-xs text-slate-500">/ bulan</span>
+                      </div>
+                    </div>
+                    <ul className="space-y-2.5 text-xs text-slate-600 font-medium">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                        <span>Penjemputan rutin 2–3 kali seminggu</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                        <span>Diambil langsung di depan pagar rumah</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                        <span>Notifikasi tagihan WhatsApp & kwitansi</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                        <span>Akses penuh pelacakan truk di peta live</span>
+                      </li>
+                    </ul>
                   </div>
-                  <ul className="space-y-2.5 text-xs text-slate-600 font-medium">
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
-                      <span>Penjemputan rutin 2–3 kali seminggu</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
-                      <span>Diambil langsung di depan pagar rumah</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
-                      <span>Notifikasi tagihan WhatsApp & kwitansi</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
-                      <span>Akses penuh pelacakan truk di peta live</span>
-                    </li>
-                  </ul>
-                </div>
-                <div className="pt-6">
-                  <Link
-                    href="/daftar?kategori=R1"
-                    className="w-full py-3 bg-[#0d7a75] hover:bg-[#0b6460] text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 active:scale-95"
-                  >
-                    <span>Daftar Rumah Tangga</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
+                  <div className="pt-4">
+                    <Link
+                      href="/daftar?kategori=R1"
+                      className="w-full py-3 bg-[#0d7a75] hover:bg-[#0b6460] text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 active:scale-95"
+                    >
+                      <span>Daftar Rumah Tangga</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
                 </div>
               </div>
 
               {/* Tier 2: Niaga & Toko */}
-              <div className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-8 flex flex-col justify-between shadow-xs">
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-lg font-extrabold text-slate-900">Niaga, Ruko & Usaha</h3>
-                    <p className="text-xs text-slate-500 mt-1">Untuk toko retail, warung makan, kafe, kantor & UMKM</p>
-                  </div>
-                  <div className="py-2.5 border-y border-slate-100">
-                    <span className="text-xs text-slate-400 font-medium">Mulai dari</span>
-                    <div className="flex items-baseline gap-1 mt-0.5">
-                      <span className="text-3xl font-extrabold text-slate-900">Rp 100.000</span>
-                      <span className="text-xs text-slate-500">/ bulan</span>
-                    </div>
-                  </div>
-                  <ul className="space-y-2.5 text-xs text-slate-600 font-medium">
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
-                      <span>Kapasitas penjemputan volume komersial</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
-                      <span>Frekuensi harian atau sesuai jadwal usaha</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
-                      <span>Invoice resmi untuk pembukuan operasional</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
-                      <span>Bukti pengelolaan sampah legal & teratur</span>
-                    </li>
-                  </ul>
+              <div className="group bg-white border border-slate-200/90 rounded-2xl overflow-hidden flex flex-col justify-between shadow-xs hover:border-slate-400 hover:shadow-lg transition-all duration-300">
+                {/* Banner Visual Layanan */}
+                <div className="relative aspect-[16/9] w-full bg-slate-900 overflow-hidden border-b border-slate-100">
+                  <Image
+                    src={layananImages.niaga}
+                    alt="Layanan Pengangkutan Sampah Usaha & Toko Niaga UPS HERU"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-95"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
+                  <span className="absolute bottom-2.5 left-3.5 text-[11px] font-bold text-white drop-shadow flex items-center gap-1.5 z-10">
+                    <span className="w-2 h-2 rounded-full bg-sky-400" />
+                    Volume Komersial & Jadwal Rutin
+                  </span>
                 </div>
-                <div className="pt-6">
-                  <Link
-                    href="/daftar?kategori=B1"
-                    className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 active:scale-95"
-                  >
-                    <span>Daftar Unit Usaha</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
+
+                <div className="p-5 sm:p-7 flex-1 flex flex-col justify-between space-y-4">
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-lg font-extrabold text-slate-900">Niaga, Ruko & Usaha</h3>
+                      <p className="text-xs text-slate-500 mt-1">Untuk toko retail, warung makan, kafe, kantor & UMKM</p>
+                    </div>
+                    <div className="py-2.5 border-y border-slate-100">
+                      <span className="text-xs text-slate-400 font-medium">Mulai dari</span>
+                      <div className="flex items-baseline gap-1 mt-0.5">
+                        <span className="text-3xl font-extrabold text-slate-900">Rp 100.000</span>
+                        <span className="text-xs text-slate-500">/ bulan</span>
+                      </div>
+                    </div>
+                    <ul className="space-y-2.5 text-xs text-slate-600 font-medium">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                        <span>Kapasitas penjemputan volume komersial</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                        <span>Frekuensi harian atau sesuai jadwal usaha</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                        <span>Invoice resmi untuk pembukuan operasional</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                        <span>Bukti pengelolaan sampah legal & teratur</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="pt-4">
+                    <Link
+                      href="/daftar?kategori=B1"
+                      className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 active:scale-95"
+                    >
+                      <span>Daftar Unit Usaha</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
                 </div>
               </div>
 
               {/* Tier 3: RT/RW & Kolektif */}
-              <div className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-8 flex flex-col justify-between shadow-xs">
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-lg font-extrabold text-slate-900">Kerjasama Pengurus RT/RW</h3>
-                    <p className="text-xs text-slate-500 mt-1">Skema kolektif perumahan, paguyuban & komplek</p>
-                  </div>
-                  <div className="py-2.5 border-y border-slate-100">
-                    <span className="text-xs text-slate-400 font-medium">Skema Pembayaran</span>
-                    <div className="flex items-baseline gap-1 mt-0.5">
-                      <span className="text-2xl font-extrabold text-slate-900">Kolektif Lingkungan</span>
-                    </div>
-                  </div>
-                  <ul className="space-y-2.5 text-xs text-slate-600 font-medium">
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
-                      <span>Tarif hemat per KK untuk seluruh lingkungan</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
-                      <span>Laporan rekap pembayaran rutin bagi pengurus RT</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
-                      <span>Penetapan rute khusus seluruh jalan komplek</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
-                      <span>Dukungan tong komunal bila dibutuhkan</span>
-                    </li>
-                  </ul>
+              <div className="group bg-white border border-slate-200/90 rounded-2xl overflow-hidden flex flex-col justify-between shadow-xs hover:border-slate-400 hover:shadow-lg transition-all duration-300">
+                {/* Banner Visual Layanan */}
+                <div className="relative aspect-[16/9] w-full bg-slate-900 overflow-hidden border-b border-slate-100">
+                  <Image
+                    src={layananImages.rtRw}
+                    alt="Kerjasama Pengelolaan Sampah Lingkungan RT/RW Paguyuban UPS HERU"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-95"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
+                  <span className="absolute bottom-2.5 left-3.5 text-[11px] font-bold text-white drop-shadow flex items-center gap-1.5 z-10">
+                    <span className="w-2 h-2 rounded-full bg-amber-400" />
+                    Skema Kolektif Lingkungan
+                  </span>
                 </div>
-                <div className="pt-6">
-                  <a
-                    href="https://wa.me/6281400782617?text=Halo%20UPS%20HERU,%20kami%20pengurus%20RT/RW%20ingin%20konsultasi%20kerjasama%20pengangkutan%20lingkungan"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-full py-3 bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 font-bold text-xs rounded-xl transition-all shadow-xs flex items-center justify-center gap-1.5 active:scale-95"
-                  >
-                    <span>Konsultasi Pengurus RT</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </a>
+
+                <div className="p-5 sm:p-7 flex-1 flex flex-col justify-between space-y-4">
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-lg font-extrabold text-slate-900">Kerjasama Pengurus RT/RW</h3>
+                      <p className="text-xs text-slate-500 mt-1">Skema kolektif perumahan, paguyuban & komplek</p>
+                    </div>
+                    <div className="py-2.5 border-y border-slate-100">
+                      <span className="text-xs text-slate-400 font-medium">Skema Pembayaran</span>
+                      <div className="flex items-baseline gap-1 mt-0.5">
+                        <span className="text-2xl font-extrabold text-slate-900">Kolektif Lingkungan</span>
+                      </div>
+                    </div>
+                    <ul className="space-y-2.5 text-xs text-slate-600 font-medium">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                        <span>Tarif hemat per KK untuk seluruh lingkungan</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                        <span>Laporan rekap pembayaran rutin bagi pengurus RT</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                        <span>Penetapan rute khusus seluruh jalan komplek</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                        <span>Dukungan tong komunal bila dibutuhkan</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="pt-4">
+                    <a
+                      href="https://wa.me/6281400782617?text=Halo%20UPS%20HERU,%20kami%20pengurus%20RT/RW%20ingin%20konsultasi%20kerjasama%20pengangkutan%20lingkungan"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-full py-3 bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 font-bold text-xs rounded-xl transition-all shadow-xs flex items-center justify-center gap-1.5 active:scale-95"
+                    >
+                      <span>Konsultasi Pengurus RT</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── 7. Cakupan Wilayah & Rute Operasional Depok ── */}
+        <section className="py-14 sm:py-18 px-4 sm:px-6 bg-[#f8fafb] border-b border-slate-200">
+          <div className="max-w-6xl mx-auto space-y-8">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+              <div className="space-y-1.5 max-w-2xl">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#0d7a75] block">
+                  Jangkauan Armada Depok
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                  Wilayah Operasional Aktif Terlayani
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-600">
+                  Penjemputan rutin armada truk pickup & motor roda 3 melintasi kelurahan berikut di Kota Depok:
+                </p>
+              </div>
+              <Link
+                href="/coverage"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0d7a75] hover:underline shrink-0"
+              >
+                <span>Buka Peta Jangkauan Interaktif</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+              {[
+                { name: "Kalibaru", days: "Sen, Rab, Jum", area: "Zona Inti TPS 3R & Poros Utama" },
+                { name: "Cilodong", days: "Sel, Kam, Sab", area: "Pemukiman Warga & Ruko Raya" },
+                { name: "Jatimulya", days: "Sen, Rab, Jum", area: "Cluster Perumahan & Perkampungan" },
+                { name: "Sukamaju", days: "Sel, Kam, Sab", area: "Poros Tole Iskandar & Sekitarnya" },
+                { name: "Kalimulya", days: "Sen, Kam, Sab", area: "Kebon Duren & Sektor Pemukiman" },
+              ].map((w, i) => (
+                <div key={i} className="p-3.5 sm:p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs space-y-1.5 hover:border-[#0d7a75]/40 transition-all">
+                  <div className="flex items-center gap-1.5 text-xs font-extrabold text-slate-900">
+                    <MapPin className="w-3.5 h-3.5 text-[#0d7a75] shrink-0" />
+                    <span>Kel. {w.name}</span>
+                  </div>
+                  <p className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md inline-block">
+                    {w.days}
+                  </p>
+                  <p className="text-[10px] text-slate-500 leading-tight">
+                    {w.area}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
         </section>

@@ -2,6 +2,11 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { getPengaturanNumber, getPengaturanString, setPengaturan } from '@/lib/pengaturan';
+import {
+  DEFAULT_IMG_RUMAH_TANGGA,
+  DEFAULT_IMG_NIAGA,
+  DEFAULT_IMG_RT_RW,
+} from '@/lib/layanan-images';
 import { updateTunggakan } from '@/lib/tagihan';
 import { hitungRincian } from '@/lib/invoice';
 import {
@@ -54,6 +59,18 @@ export async function handlePengaturanGet(request: Request): Promise<NextRespons
     'WA_TEMPLATE_TAGIHAN',
     'Halo Bpk/Ibu *{nama}* ({kode_pelanggan}),\n\nBerikut rincian tagihan retribusi sampah CV Tiga Putra Semesta (UPS HERU) untuk periode *{bulan}*:\n\n• Tarif Pokok: *{nominal_pokok}*\n• Pajak Daerah ({pajak_persen}%): *{pajak_daerah}*\n• Denda Keterlambatan: *{denda}*\n----------------------------------\n*Total Tagihan: {total_tagihan}*\n\nJatuh tempo: *{jatuh_tempo}*\nLink pembayaran & rincian: {link_pembayaran}\n\nTerima kasih atas partisipasi Anda dalam menjaga kebersihan lingkungan.'
   );
+  const landingImgRumahTangga = await getPengaturanString(
+    'LANDING_IMG_RUMAH_TANGGA',
+    DEFAULT_IMG_RUMAH_TANGGA
+  );
+  const landingImgNiaga = await getPengaturanString(
+    'LANDING_IMG_NIAGA',
+    DEFAULT_IMG_NIAGA
+  );
+  const landingImgRtRw = await getPengaturanString(
+    'LANDING_IMG_RT_RW',
+    DEFAULT_IMG_RT_RW
+  );
 
   return NextResponse.json(
     {
@@ -62,6 +79,9 @@ export async function handlePengaturanGet(request: Request): Promise<NextRespons
       BATAS_BULAN_STOP_ANGKUT: batasBulanStop,
       BIAYA_ADMIN: biayaAdmin,
       WA_TEMPLATE_TAGIHAN: waTemplateTagihan,
+      LANDING_IMG_RUMAH_TANGGA: landingImgRumahTangga,
+      LANDING_IMG_NIAGA: landingImgNiaga,
+      LANDING_IMG_RT_RW: landingImgRtRw,
     },
     { headers: buildCorsHeaders(request) }
   );
@@ -90,6 +110,15 @@ export async function handlePengaturanPost(request: Request): Promise<NextRespon
     }
     if (typeof body.WA_TEMPLATE_TAGIHAN !== 'undefined') {
       await setPengaturan('WA_TEMPLATE_TAGIHAN', String(body.WA_TEMPLATE_TAGIHAN));
+    }
+    if (typeof body.LANDING_IMG_RUMAH_TANGGA !== 'undefined') {
+      await setPengaturan('LANDING_IMG_RUMAH_TANGGA', String(body.LANDING_IMG_RUMAH_TANGGA));
+    }
+    if (typeof body.LANDING_IMG_NIAGA !== 'undefined') {
+      await setPengaturan('LANDING_IMG_NIAGA', String(body.LANDING_IMG_NIAGA));
+    }
+    if (typeof body.LANDING_IMG_RT_RW !== 'undefined') {
+      await setPengaturan('LANDING_IMG_RT_RW', String(body.LANDING_IMG_RT_RW));
     }
 
     return NextResponse.json({ success: true }, { headers: buildCorsHeaders(request) });

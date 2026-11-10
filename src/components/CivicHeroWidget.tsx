@@ -118,7 +118,7 @@ export default function CivicHeroWidget() {
         <button
           type="button"
           onClick={() => setTab("tagihan")}
-          className={`flex-1 py-2 px-2.5 sm:px-3 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1 sm:gap-1.5 ${
+          className={`flex-1 min-h-[44px] py-2.5 px-2.5 sm:px-3 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1 sm:gap-1.5 ${
             tab === "tagihan"
               ? "bg-white text-[#0d7a75] shadow-xs border border-slate-200/80"
               : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
@@ -130,7 +130,7 @@ export default function CivicHeroWidget() {
         <button
           type="button"
           onClick={() => setTab("jadwal")}
-          className={`flex-1 py-2 px-2.5 sm:px-3 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1 sm:gap-1.5 ${
+          className={`flex-1 min-h-[44px] py-2.5 px-2.5 sm:px-3 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1 sm:gap-1.5 ${
             tab === "jadwal"
               ? "bg-white text-[#0d7a75] shadow-xs border border-slate-200/80"
               : "text-slate-600 hover:text-slate-900 hover:bg-white/60"

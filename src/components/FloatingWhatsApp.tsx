@@ -15,7 +15,7 @@ export default function FloatingWhatsApp({ phoneNumber }: { phoneNumber: string 
   if (!show) return null;
 
   return (
-    <div className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-40 flex flex-col items-end gap-2 animate-in slide-in-from-bottom-5 fade-in duration-500">
+    <div className="fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-40 flex flex-col items-end gap-2 animate-in slide-in-from-bottom-5 fade-in duration-500">
       {/* Tooltip: Hanya muncul di Desktop (sm:flex), di HP (mobile) disembunyikan agar TIDAK menutupi layar */}
       {!tooltipDismissed && (
         <div className="hidden sm:flex items-center gap-2 bg-white px-3.5 py-2 rounded-xl shadow-lg border border-slate-200 text-xs font-semibold text-slate-700 relative animate-in fade-in slide-in-from-bottom-2">
