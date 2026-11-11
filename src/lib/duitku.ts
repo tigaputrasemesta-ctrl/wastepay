@@ -121,6 +121,8 @@ export type CreatePaymentParams = {
   phoneNumber?: string;
   /** Masa berlaku transaksi dalam MENIT (default 1440 = 24 jam). */
   expiryPeriod?: number;
+  returnUrl?: string;
+  callbackUrl?: string;
 };
 
 export type DuitkuCreateResponse = {
@@ -157,8 +159,8 @@ export async function createPayment(params: CreatePaymentParams): Promise<Duitku
     merchantOrderId: params.orderId,
     productDetails: params.productDetails,
     customerVaName: params.customerVaName,
-    callbackUrl: duitkuCallbackUrl(),
-    returnUrl: duitkuReturnUrl(),
+    callbackUrl: params.callbackUrl || duitkuCallbackUrl(),
+    returnUrl: params.returnUrl || duitkuReturnUrl(),
     signature,
     expiryPeriod: params.expiryPeriod ?? 1440, // 24 jam — cukup untuk iuran bulanan
   };

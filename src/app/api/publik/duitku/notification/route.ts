@@ -37,11 +37,62 @@ export async function POST(request: Request) {
     return NextResponse.json({ status: "error", message: "Signature tidak valid" }, { status: 400 });
   }
 
-  // 3. Cari transaksi
+  // 3. Cari transaksi tagihan retribusi iuran
   const dt = await prisma.duitkuTransaction.findUnique({
     where: { orderId: merchantOrderId },
   });
+
   if (!dt) {
+    // 3b. Cek apakah ini transaksi marketplace toko resmi (UPS HERU TPS 3R)
+    const normalizedOrderId = merchantOrderId.replace(/-/g, "/");
+    const mktOrder = await prisma.marketplaceOrder.findFirst({
+      where: {
+        OR: [
+          { noPesanan: merchantOrderId },
+          { noPesanan: normalizedOrderId },
+          { buktiBayar: { contains: merchantOrderId } },
+        ],
+      },
+    });
+
+    if (mktOrder) {
+      const callbackAmount = Number(amount);
+      if (!Number.isFinite(callbackAmount) || Math.round(callbackAmount) !== Math.round(mktOrder.totalHarga)) {
+        console.warn(`[Duitku Callback] Mismatch nominal marketplace: diharapkan ${mktOrder.totalHarga}, diterima ${callbackAmount}`);
+        return NextResponse.json(
+          { status: "error", message: "Jumlah pembayaran tidak cocok dengan tagihan pesanan" },
+          { status: 400 }
+        );
+      }
+
+      if (resultCode === "00") {
+        await prisma.marketplaceOrder.update({
+          where: { id: mktOrder.id },
+          data: {
+            status: "diproses",
+            tanggalBayar: new Date(),
+            metodeBayar: paymentCode ? `duitku_${paymentCode}` : "duitku",
+            catatan: mktOrder.catatan
+              ? `${mktOrder.catatan} | Lunas Duitku Ref: ${reference || "-"}`
+              : `Lunas Duitku Ref: ${reference || "-"}`,
+            buktiBayar: JSON.stringify({
+              gateway: "duitku",
+              reference: reference || null,
+              merchantOrderId,
+              paymentCode: paymentCode || null,
+              amount: callbackAmount,
+              paidAt: new Date().toISOString(),
+            }),
+          },
+        });
+
+        console.log(`[Duitku Callback] Pesanan marketplace #${mktOrder.noPesanan} berhasil diverifikasi lunas.`);
+        return NextResponse.json({ status: "success", message: "Pesanan marketplace terverifikasi lunas" });
+      }
+
+      return NextResponse.json({ status: "success", message: "Status callback Duitku dicatat" });
+    }
+
     return NextResponse.json({ status: "error", message: "Transaksi tidak ditemukan" }, { status: 404 });
   }
 

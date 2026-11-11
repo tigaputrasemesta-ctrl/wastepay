@@ -3,7 +3,6 @@
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import PublicNavbar from "@/components/PublicNavbar";
 import {
   ShoppingBag,
@@ -20,7 +19,10 @@ import {
   ChevronRight,
   AlertCircle,
   PackageCheck,
-  Share2,
+  CreditCard,
+  Building2,
+  MapPin,
+  ExternalLink,
 } from "lucide-react";
 
 interface Produk {
@@ -50,14 +52,18 @@ export default function ProdukDetailPage({
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
-  // Direct Checkout Form
+  // Form State
   const [qty, setQty] = useState(1);
   const [namaPembeli, setNamaPembeli] = useState("");
   const [noTelepon, setNoTelepon] = useState("");
+  const [email, setEmail] = useState("");
   const [alamat, setAlamat] = useState("");
   const [kelurahan, setKelurahan] = useState("");
   const [catatan, setCatatan] = useState("");
-  const [metodeBayar, setMetodeBayar] = useState("cod");
+
+  // Opsi Pengiriman & Pembayaran
+  const [opsiPengiriman, setOpsiPengiriman] = useState<"kurir_depok" | "ambil_sendiri">("kurir_depok");
+  const [metodeBayar, setMetodeBayar] = useState<"duitku" | "cod">("duitku");
 
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -95,13 +101,26 @@ export default function ProdukDetailPage({
     }
   }, [slug]);
 
+  // Akumulasi Perhitungan Terpisah
+  const hargaSatuan = product?.harga || 0;
+  const subtotalProduk = hargaSatuan * qty;
+  const isAmbilSendiri = opsiPengiriman === "ambil_sendiri";
+  const isGratisOngkir = !isAmbilSendiri && subtotalProduk >= 150000;
+  const ongkir = isAmbilSendiri ? 0 : isGratisOngkir ? 0 : 10000;
+  const totalBayar = subtotalProduk + ongkir;
+
   // Handle Direct Buy Submit
   const handleDirectBuy = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!product) return;
 
-    if (!namaPembeli.trim() || !noTelepon.trim() || !alamat.trim()) {
-      setErrorMsg("Nama, No WhatsApp, dan Alamat Pengiriman wajib diisi.");
+    if (!namaPembeli.trim() || !noTelepon.trim()) {
+      setErrorMsg("Nama pembeli dan Nomor WhatsApp wajib diisi.");
+      return;
+    }
+
+    if (!isAmbilSendiri && !alamat.trim()) {
+      setErrorMsg("Alamat pengiriman wajib diisi untuk opsi antar kurir.");
       return;
     }
 
@@ -115,17 +134,26 @@ export default function ProdukDetailPage({
         body: JSON.stringify({
           namaPembeli: namaPembeli.trim(),
           noTelepon: noTelepon.trim(),
-          alamat: alamat.trim(),
+          email: email.trim() || null,
+          alamat: isAmbilSendiri ? "Ambil Mandiri di TPS 3R Kalibaru" : alamat.trim(),
           kelurahan: kelurahan.trim() || null,
           catatan: catatan.trim() || null,
-          items: [{ produkId: product.id, jumlah: qty }],
+          opsiPengiriman,
           metodeBayar,
+          items: [{ produkId: product.id, jumlah: qty }],
         }),
       });
 
       const json = await res.json();
-      if (json.ok && json.data?.noPesanan) {
-        router.push(`/marketplace/order/${encodeURIComponent(json.data.noPesanan)}`);
+      const orderData = json.order || json.data;
+
+      if (json.ok && orderData?.noPesanan) {
+        // Jika pilih Duitku dan menerima paymentUrl, redirect ke gateway Duitku
+        if (json.paymentUrl && metodeBayar === "duitku") {
+          window.location.href = json.paymentUrl;
+        } else {
+          router.push(`/marketplace/order/${encodeURIComponent(orderData.noPesanan)}`);
+        }
       } else {
         setErrorMsg(json.error || "Gagal memproses pesanan.");
       }
@@ -142,7 +170,7 @@ export default function ProdukDetailPage({
         <PublicNavbar />
         <div className="max-w-6xl mx-auto px-4 py-20 text-center">
           <div className="w-10 h-10 border-4 border-[#0d7a75] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-xs font-bold text-slate-500">Memuat informasi produk...</p>
+          <p className="text-xs font-bold text-slate-500">Memuat informasi produk resmi...</p>
         </div>
       </div>
     );
@@ -158,23 +186,22 @@ export default function ProdukDetailPage({
           </div>
           <h2 className="text-xl font-black text-slate-900 dark:text-white">Produk Tidak Ditemukan</h2>
           <p className="text-xs text-slate-500 dark:text-zinc-400">
-            Produk yang Anda cari mungkin sudah tidak aktif atau tautan telah berpindah.
+            Produk olahan yang Anda cari mungkin sedang habis atau tautan telah berpindah.
           </p>
           <Link
             href="/marketplace"
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0d7a75] text-white rounded-xl text-xs font-bold shadow-xs hover:bg-[#0b6460] transition-all"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Kembali ke Katalog Produk</span>
+            <span>Kembali ke Katalog Toko</span>
           </Link>
         </div>
       </div>
     );
   }
 
-  const subtotal = product.harga * qty;
   const waContactUrl = `https://wa.me/6281400782617?text=${encodeURIComponent(
-    `Halo UPS HERU, saya tertarik membeli "${product.nama}" seharga Rp ${product.harga.toLocaleString("id-ID")}/${product.satuan}. Bisa info ketersediaan stok & pengirimannya?`
+    `Halo Admin Toko Resmi UPS HERU, saya tertarik memesan "${product.nama}" seharga Rp ${product.harga.toLocaleString("id-ID")}/${product.satuan}. Bisa info ketersediaan stok & pengirimannya?`
   )}`;
 
   return (
@@ -190,7 +217,7 @@ export default function ProdukDetailPage({
             </Link>
             <ChevronRight className="w-3.5 h-3.5" />
             <Link href="/marketplace" className="hover:text-[#0d7a75] dark:hover:text-emerald-400">
-              Marketplace
+              Marketplace Toko Resmi
             </Link>
             <ChevronRight className="w-3.5 h-3.5" />
             <span className="font-bold text-slate-800 dark:text-zinc-200 truncate max-w-xs sm:max-w-md">
@@ -202,7 +229,7 @@ export default function ProdukDetailPage({
         {/* Main Product Container */}
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-12 space-y-12">
           <div className="grid md:grid-cols-12 gap-8 lg:gap-12 items-start">
-            {/* Left Column: Visual & Specs (7 cols) */}
+            {/* Left Column: Visual, Seller Info & Specs (7 cols) */}
             <div className="md:col-span-7 space-y-6">
               {/* Product Visual Box */}
               <div className="relative aspect-4/3 sm:aspect-16/10 w-full rounded-3xl overflow-hidden bg-slate-100 dark:bg-zinc-800 border-2 border-slate-200/90 dark:border-zinc-800 shadow-sm">
@@ -215,7 +242,7 @@ export default function ProdukDetailPage({
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">
                     <Leaf className="w-16 h-16 text-emerald-600/40 mb-2" />
-                    <span className="text-xs font-bold">Foto Produk UPS HERU</span>
+                    <span className="text-xs font-bold">Produk Olahan Organik UPS HERU</span>
                   </div>
                 )}
 
@@ -224,20 +251,20 @@ export default function ProdukDetailPage({
                   <span className="px-3 py-1 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md rounded-full text-xs font-black text-emerald-800 dark:text-emerald-300 shadow-sm border border-emerald-200 dark:border-emerald-800/60 uppercase tracking-wider">
                     {product.kategori.replace(/_/g, " ")}
                   </span>
-                  <span className="px-3 py-1 bg-[#0d7a75]/90 text-white backdrop-blur-md rounded-full text-xs font-bold shadow-sm flex items-center gap-1">
+                  <span className="px-3 py-1 bg-[#0d7a75]/95 text-white backdrop-blur-md rounded-full text-xs font-bold shadow-sm flex items-center gap-1">
                     <ShieldCheck className="w-3.5 h-3.5 text-amber-300" />
-                    <span>Resmi TPS 3R</span>
+                    <span>Official Store TPS 3R</span>
                   </span>
                 </div>
 
                 <div className="absolute bottom-4 right-4">
                   <span className="px-3 py-1 bg-black/70 text-white backdrop-blur-md rounded-full text-xs font-bold">
-                    Stok Tersedia: {product.stok} {product.satuan}
+                    Stok Siap: {product.stok} {product.satuan}
                   </span>
                 </div>
               </div>
 
-              {/* Title & Price Header (Mobile only, desktop has in right box too) */}
+              {/* Title & Price Header */}
               <div className="space-y-2">
                 <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                   {product.nama}
@@ -247,6 +274,42 @@ export default function ProdukDetailPage({
                     Rp {product.harga.toLocaleString("id-ID")}
                   </span>
                   <span className="text-xs font-bold text-slate-500">/{product.satuan}</span>
+                </div>
+              </div>
+
+              {/* Box Info Penjual Tunggal (Single Seller Official) */}
+              <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-slate-50 dark:from-zinc-900 dark:to-zinc-800/80 border border-emerald-200 dark:border-emerald-800/60 rounded-2xl p-5 shadow-xs space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-2xl bg-[#0d7a75] text-white flex items-center justify-center font-black text-lg shadow-sm shrink-0">
+                      UPS
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-sm font-black text-slate-900 dark:text-white">
+                          Toko Resmi UPS HERU
+                        </span>
+                        <span className="px-2 py-0.5 bg-emerald-600 text-white text-[10px] font-bold rounded-full">
+                          Terverifikasi
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-600 dark:text-zinc-400 flex items-center gap-1 mt-0.5">
+                        <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span>TPS 3R Kalibaru, Jl. H. Asmawi No. 1, Kec. Cilodong, Kota Depok</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="pt-2.5 border-t border-emerald-100 dark:border-zinc-800 flex flex-wrap gap-4 text-[11px] font-bold text-slate-700 dark:text-zinc-300">
+                  <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> 100% Penjual Tunggal Resmi Pemerintah
+                  </span>
+                  <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Pengiriman Langsung Armada UPS HERU
+                  </span>
+                  <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Bisa Ambil Sendiri di TPS 3R
+                  </span>
                 </div>
               </div>
 
@@ -264,19 +327,19 @@ export default function ProdukDetailPage({
                 <div className="pt-3 border-t border-slate-100 dark:border-zinc-800 grid sm:grid-cols-2 gap-3 text-xs text-slate-700 dark:text-zinc-300">
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
-                    <span>100% Hasil Olahan Sampah Terpilah Organik</span>
+                    <span>100% Olahan Sampah Terpilah Organik TPS 3R</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
-                    <span>Mendukung Sirkular Ekonomi Kota Depok</span>
+                    <span>Mendukung Sirkular Ekonomi Berkelanjutan Kota Depok</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
-                    <span>Kemasan Rapi & Siap Kirim ke Seluruh Depok</span>
+                    <span>Kemasan Tebal, Rapi, Siap Kirim ke Seluruh Area</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
-                    <span>Dapat Diambil Langsung di Fasilitas TPS 3R</span>
+                    <span>Didukung Payment Gateway Duitku (QRIS & VA)</span>
                   </div>
                 </div>
               </div>
@@ -302,7 +365,7 @@ export default function ProdukDetailPage({
                     </span>
                   </div>
                   <div className="p-3 rounded-xl bg-slate-50 dark:bg-zinc-800/60">
-                    <span className="text-[10px] text-slate-400 block uppercase font-bold">Produksi</span>
+                    <span className="text-[10px] text-slate-400 block uppercase font-bold">Produsen</span>
                     <span className="font-bold text-slate-800 dark:text-zinc-200">
                       UPS HERU Depok
                     </span>
@@ -329,7 +392,7 @@ export default function ProdukDetailPage({
                     Form Pembelian Produk
                   </h3>
                   <p className="text-[11px] text-slate-500">
-                    Tanpa perlu mendaftar akun. Pesanan langsung diverifikasi oleh admin.
+                    Toko Resmi UPS HERU — didukung Duitku Payment Gateway & COD.
                   </p>
                 </div>
 
@@ -375,12 +438,60 @@ export default function ProdukDetailPage({
                     </div>
                   </div>
 
-                  {/* Total Calculation Highlight */}
-                  <div className="flex items-center justify-between py-2 border-y border-slate-100 dark:border-zinc-800">
-                    <span className="text-xs font-bold text-slate-500">Total Tagihan:</span>
-                    <span className="text-xl font-black text-[#0d7a75] dark:text-emerald-400">
-                      Rp {subtotal.toLocaleString("id-ID")}
-                    </span>
+                  {/* Opsi Pengiriman */}
+                  <div>
+                    <label className="font-bold text-slate-700 dark:text-zinc-300 block mb-1.5">
+                      Pilihan Pengiriman
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <label
+                        className={`p-2.5 rounded-xl border text-xs font-bold cursor-pointer transition-all flex flex-col justify-between ${
+                          opsiPengiriman === "kurir_depok"
+                            ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 text-emerald-800 dark:text-emerald-300"
+                            : "border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-400"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="opsiPengiriman"
+                          value="kurir_depok"
+                          checked={opsiPengiriman === "kurir_depok"}
+                          onChange={() => setOpsiPengiriman("kurir_depok")}
+                          className="sr-only"
+                        />
+                        <div className="flex items-center gap-1.5">
+                          <Truck className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>Kurir Armada</span>
+                        </div>
+                        <span className="text-[10px] font-normal text-slate-500 mt-1">
+                          {isGratisOngkir ? "GRATIS Promo" : "Rp 10.000 (Depok)"}
+                        </span>
+                      </label>
+
+                      <label
+                        className={`p-2.5 rounded-xl border text-xs font-bold cursor-pointer transition-all flex flex-col justify-between ${
+                          opsiPengiriman === "ambil_sendiri"
+                            ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 text-emerald-800 dark:text-emerald-300"
+                            : "border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-400"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="opsiPengiriman"
+                          value="ambil_sendiri"
+                          checked={opsiPengiriman === "ambil_sendiri"}
+                          onChange={() => setOpsiPengiriman("ambil_sendiri")}
+                          className="sr-only"
+                        />
+                        <div className="flex items-center gap-1.5">
+                          <Building2 className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>Ambil di TPS 3R</span>
+                        </div>
+                        <span className="text-[10px] font-normal text-slate-500 mt-1">
+                          GRATIS (Jl. H. Asmawi)
+                        </span>
+                      </label>
+                    </div>
                   </div>
 
                   {/* Customer Form Fields */}
@@ -416,39 +527,67 @@ export default function ProdukDetailPage({
                       </span>
                     </div>
 
-                    <div>
-                      <label className="font-bold text-slate-700 dark:text-zinc-300 block mb-1">
-                        Alamat Pengiriman Lengkap *
-                      </label>
-                      <textarea
-                        rows={2}
-                        required
-                        placeholder="Jalan, Nomor Rumah, RT/RW, Patokan..."
-                        value={alamat}
-                        onChange={(e) => setAlamat(e.target.value)}
-                        className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0d7a75]"
-                      />
-                    </div>
+                    {!isAmbilSendiri && (
+                      <>
+                        <div>
+                          <label className="font-bold text-slate-700 dark:text-zinc-300 block mb-1">
+                            Alamat Pengiriman Lengkap *
+                          </label>
+                          <textarea
+                            rows={2}
+                            required
+                            placeholder="Jalan, Nomor Rumah, RT/RW, Patokan..."
+                            value={alamat}
+                            onChange={(e) => setAlamat(e.target.value)}
+                            className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0d7a75]"
+                          />
+                        </div>
 
-                    <div>
-                      <label className="font-bold text-slate-700 dark:text-zinc-300 block mb-1">
-                        Kelurahan di Kota Depok
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Misal: Kalibaru, Cilodong, Jatimulya"
-                        value={kelurahan}
-                        onChange={(e) => setKelurahan(e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0d7a75]"
-                      />
-                    </div>
+                        <div>
+                          <label className="font-bold text-slate-700 dark:text-zinc-300 block mb-1">
+                            Kelurahan di Kota Depok
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Misal: Kalibaru, Cilodong, Jatimulya"
+                            value={kelurahan}
+                            onChange={(e) => setKelurahan(e.target.value)}
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0d7a75]"
+                          />
+                        </div>
+                      </>
+                    )}
 
-                    {/* Payment Method */}
+                    {/* Payment Method Selection (Duitku vs COD) */}
                     <div>
                       <label className="font-bold text-slate-700 dark:text-zinc-300 block mb-1.5">
-                        Pilihan Metode Pembayaran
+                        Metode Pembayaran
                       </label>
                       <div className="grid grid-cols-2 gap-2">
+                        <label
+                          className={`p-2.5 rounded-xl border text-xs font-bold cursor-pointer transition-all flex flex-col justify-between ${
+                            metodeBayar === "duitku"
+                              ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 text-emerald-800 dark:text-emerald-300"
+                              : "border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-400"
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="metodeBayar"
+                            value="duitku"
+                            checked={metodeBayar === "duitku"}
+                            onChange={() => setMetodeBayar("duitku")}
+                            className="sr-only"
+                          />
+                          <div className="flex items-center gap-1.5">
+                            <CreditCard className="w-3.5 h-3.5 text-emerald-600" />
+                            <span>Duitku Payment</span>
+                          </div>
+                          <span className="text-[10px] font-normal text-slate-500 mt-1">
+                            QRIS Semua Bank & E-Wallet
+                          </span>
+                        </label>
+
                         <label
                           className={`p-2.5 rounded-xl border text-xs font-bold cursor-pointer transition-all flex flex-col justify-between ${
                             metodeBayar === "cod"
@@ -461,44 +600,78 @@ export default function ProdukDetailPage({
                             name="metodeBayar"
                             value="cod"
                             checked={metodeBayar === "cod"}
-                            onChange={(e) => setMetodeBayar(e.target.value)}
+                            onChange={() => setMetodeBayar("cod")}
                             className="sr-only"
                           />
-                          <span>COD (Tunai ke Kurir)</span>
-                          <span className="text-[10px] font-normal text-slate-400 mt-1">Bayar saat sampai</span>
-                        </label>
-
-                        <label
-                          className={`p-2.5 rounded-xl border text-xs font-bold cursor-pointer transition-all flex flex-col justify-between ${
-                            metodeBayar === "qris"
-                              ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 text-emerald-800 dark:text-emerald-300"
-                              : "border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-400"
-                          }`}
-                        >
-                          <input
-                            type="radio"
-                            name="metodeBayar"
-                            value="qris"
-                            checked={metodeBayar === "qris"}
-                            onChange={(e) => setMetodeBayar(e.target.value)}
-                            className="sr-only"
-                          />
-                          <span>QRIS / Transfer Bank</span>
-                          <span className="text-[10px] font-normal text-slate-400 mt-1">Scan otomatis</span>
+                          <div className="flex items-center gap-1.5">
+                            <Truck className="w-3.5 h-3.5 text-emerald-600" />
+                            <span>COD / Tunai</span>
+                          </div>
+                          <span className="text-[10px] font-normal text-slate-500 mt-1">
+                            Bayar saat barang diterima
+                          </span>
                         </label>
                       </div>
                     </div>
                   </div>
 
+                  {/* AKUMULASI PERHITUNGAN TERPISAH (SEPARATED CALCULATION SUMMARY) */}
+                  <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-zinc-800/60 border border-slate-200/80 dark:border-zinc-700/80 space-y-2">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block pb-1 border-b border-slate-200 dark:border-zinc-700">
+                      Rincian Perhitungan Tagihan
+                    </span>
+                    <div className="flex justify-between text-slate-600 dark:text-zinc-400">
+                      <span>Subtotal Produk ({qty} {product.satuan}):</span>
+                      <span className="font-bold text-slate-900 dark:text-white">
+                        Rp {subtotalProduk.toLocaleString("id-ID")}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-slate-600 dark:text-zinc-400">
+                      <span>Biaya Pengiriman:</span>
+                      <span className="font-bold text-slate-900 dark:text-white">
+                        {isAmbilSendiri
+                          ? "Rp 0 (Ambil di TPS)"
+                          : isGratisOngkir
+                          ? "Rp 0 (Promo Belanja ≥ 150rb)"
+                          : `Rp ${ongkir.toLocaleString("id-ID")}`}
+                      </span>
+                    </div>
+                    {isGratisOngkir && !isAmbilSendiri && (
+                      <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-medium">
+                        <span>Diskon Ongkir:</span>
+                        <span>-Rp 10.000</span>
+                      </div>
+                    )}
+                    <div className="pt-2 border-t border-slate-200 dark:border-zinc-700 flex justify-between items-baseline">
+                      <span className="font-extrabold text-slate-900 dark:text-white text-xs">
+                        Total Pembayaran:
+                      </span>
+                      <span className="text-xl font-black text-[#0d7a75] dark:text-emerald-400">
+                        Rp {totalBayar.toLocaleString("id-ID")}
+                      </span>
+                    </div>
+                  </div>
+
                   {/* Submit Button */}
-                  <div className="pt-2">
+                  <div className="pt-1">
                     <button
                       type="submit"
                       disabled={submitting || product.stok <= 0}
                       className="w-full py-3.5 bg-[#0d7a75] hover:bg-[#0b6460] text-white rounded-xl font-black text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
                     >
-                      <ShoppingBag className="w-4 h-4" />
-                      <span>{submitting ? "Memproses Pesanan..." : "Beli Sekarang Langsung"}</span>
+                      {submitting ? (
+                        <span>Memproses Pesanan...</span>
+                      ) : metodeBayar === "duitku" ? (
+                        <>
+                          <CreditCard className="w-4 h-4" />
+                          <span>Bayar via Duitku (QRIS / VA)</span>
+                        </>
+                      ) : (
+                        <>
+                          <ShoppingBag className="w-4 h-4" />
+                          <span>Beli Sekarang (COD)</span>
+                        </>
+                      )}
                     </button>
                   </div>
                 </form>
@@ -512,7 +685,7 @@ export default function ProdukDetailPage({
                     className="w-full py-2.5 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-200 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2"
                   >
                     <MessageCircle className="w-4 h-4 text-emerald-600" />
-                    <span>Tanya Produk / Custom via WhatsApp</span>
+                    <span>Konsultasi Produk Resmi via WhatsApp</span>
                   </a>
                 </div>
               </div>

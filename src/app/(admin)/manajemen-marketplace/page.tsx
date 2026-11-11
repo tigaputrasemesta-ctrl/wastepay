@@ -586,20 +586,44 @@ export default function ManajemenMarketplacePage() {
                         </div>
                       </div>
 
-                      {/* Total & Kurir */}
-                      <div className="bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/40 rounded-xl p-2.5 text-xs space-y-1">
+                      {/* Akumulasi Perhitungan Terpisah & Kurir */}
+                      <div className="bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/40 rounded-xl p-3 text-xs space-y-1.5">
                         <div className="flex items-center justify-between">
-                          <span className="text-slate-500">Metode Bayar:</span>
-                          <span className="font-bold text-slate-800 dark:text-zinc-200 uppercase">
-                            {order.metodeBayar}
+                          <span className="text-slate-500">Subtotal Produk:</span>
+                          <span className="font-bold text-slate-800 dark:text-zinc-200">
+                            Rp {(order.totalHarga - order.ongkir).toLocaleString("id-ID")}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-slate-500">Biaya Pengiriman:</span>
+                          <span className="font-bold text-slate-800 dark:text-zinc-200">
+                            {order.ongkir === 0 ? "GRATIS" : `Rp ${order.ongkir.toLocaleString("id-ID")}`}
                           </span>
                         </div>
                         <div className="flex items-center justify-between pt-1 border-t border-emerald-100 dark:border-emerald-900/40">
-                          <span className="font-bold text-slate-800 dark:text-zinc-200">Total Tagihan:</span>
-                          <span className="font-black text-emerald-800 dark:text-emerald-300 text-sm">
+                          <span className="font-bold text-slate-800 dark:text-zinc-200">Total Akhir:</span>
+                          <span className="font-black text-[#0d7a75] dark:text-emerald-300 text-sm">
                             Rp {order.totalHarga.toLocaleString("id-ID")}
                           </span>
                         </div>
+                        <div className="flex items-center justify-between pt-1 text-[11px] text-slate-500">
+                          <span>Metode Pembayaran:</span>
+                          <span className={`font-bold px-1.5 py-0.5 rounded ${
+                            order.metodeBayar.includes("duitku") || order.metodeBayar.includes("qris")
+                              ? "bg-teal-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300"
+                              : "bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300"
+                          }`}>
+                            {order.metodeBayar.includes("duitku") || order.metodeBayar.includes("qris")
+                              ? "Duitku Gateway (QRIS/VA)"
+                              : "COD (Tunai ke Kurir)"}
+                          </span>
+                        </div>
+                        {order.tanggalBayar && (
+                          <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1 pt-0.5">
+                            <CheckCircle2 className="w-3 h-3" />
+                            <span>Lunas: {new Date(order.tanggalBayar).toLocaleDateString("id-ID")}</span>
+                          </div>
+                        )}
                         {order.kurirNama && (
                           <div className="flex items-center justify-between text-[11px] pt-1 text-slate-500">
                             <span>Kurir / Resi:</span>
@@ -791,6 +815,38 @@ export default function ManajemenMarketplacePage() {
             </div>
 
             <div className="space-y-3 text-xs">
+              {/* Ringkasan Akumulasi Terpisah */}
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-zinc-800/60 border border-slate-200 dark:border-zinc-700/60 space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Pembeli:</span>
+                  <span className="font-bold text-slate-800 dark:text-zinc-200">{selectedOrder.namaPembeli} ({selectedOrder.noTelepon})</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Subtotal Produk:</span>
+                  <span className="font-bold text-slate-800 dark:text-zinc-200">
+                    Rp {(selectedOrder.totalHarga - selectedOrder.ongkir).toLocaleString("id-ID")}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Biaya Kirim:</span>
+                  <span className="font-bold text-slate-800 dark:text-zinc-200">
+                    {selectedOrder.ongkir === 0 ? "GRATIS" : `Rp ${selectedOrder.ongkir.toLocaleString("id-ID")}`}
+                  </span>
+                </div>
+                <div className="flex justify-between pt-1 border-t border-slate-200 dark:border-zinc-700 font-extrabold text-slate-900 dark:text-white">
+                  <span>Total Tagihan:</span>
+                  <span className="text-emerald-600 dark:text-emerald-400">
+                    Rp {selectedOrder.totalHarga.toLocaleString("id-ID")}
+                  </span>
+                </div>
+                <div className="flex justify-between pt-1 text-[11px] text-slate-500">
+                  <span>Metode:</span>
+                  <span className="font-bold uppercase text-slate-700 dark:text-zinc-300">
+                    {selectedOrder.metodeBayar}
+                  </span>
+                </div>
+              </div>
+
               <div>
                 <label className="font-bold text-slate-700 dark:text-zinc-300 block mb-1">
                   Status Pesanan

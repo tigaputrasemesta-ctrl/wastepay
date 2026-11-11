@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { handleCorsPreflight, buildCorsHeaders } from '@/lib/server/wastepay-backend-core-services';
+import { createPayment, isDuitkuEnabled, getAppBaseUrl } from '@/lib/duitku';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,17 +30,19 @@ export async function POST(request: Request) {
       kecamatan,
       catatan,
       items, // array of { produkId: number, jumlah: number }
-      metodeBayar,
+      metodeBayar, // 'duitku' | 'qris' | 'cod'
+      opsiPengiriman, // 'kurir_depok' | 'ambil_sendiri'
+      duitkuChannel, // 'SP' | 'VA' | dll
     } = body;
 
     if (!namaPembeli || !noTelepon || !alamat || !items || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json(
-        { ok: false, error: 'Nama, No WhatsApp, Alamat lengkap, dan item produk wajib diisi.' },
+        { ok: false, error: 'Nama pembeli, No WhatsApp, Alamat lengkap, dan item produk wajib diisi.' },
         { status: 400, headers: buildCorsHeaders(request) }
       );
     }
 
-    // Ambil data produk yang dibeli
+    // Ambil data produk yang dibeli dari database (Official Store UPS HERU)
     const productIds = items.map((i: any) => Number(i.produkId));
     const productsInDb = await prisma.produk.findMany({
       where: { id: { in: productIds } },
@@ -47,7 +50,7 @@ export async function POST(request: Request) {
 
     const productMap = new Map(productsInDb.map((p) => [p.id, p]));
 
-    let calculatedTotal = 0;
+    let subtotalProduk = 0;
     const validatedItems: { produkId: number; jumlah: number; hargaSatuan: number; subtotal: number }[] = [];
 
     for (const item of items) {
@@ -57,31 +60,39 @@ export async function POST(request: Request) {
 
       if (!prod) {
         return NextResponse.json(
-          { ok: false, error: `Produk ID #${pid} tidak ditemukan.` },
+          { ok: false, error: `Produk ID #${pid} tidak ditemukan di katalog resmi UPS HERU.` },
           { status: 400, headers: buildCorsHeaders(request) }
         );
       }
 
       if (prod.stok < qty) {
         return NextResponse.json(
-          { ok: false, error: `Stok produk "${prod.nama}" tidak mencukupi (tersedia: ${prod.stok}).` },
+          { ok: false, error: `Stok produk "${prod.nama}" tidak mencukupi (tersedia: ${prod.stok} ${prod.satuan}).` },
           { status: 400, headers: buildCorsHeaders(request) }
         );
       }
 
-      const subtotal = prod.harga * qty;
-      calculatedTotal += subtotal;
+      const itemSubtotal = prod.harga * qty;
+      subtotalProduk += itemSubtotal;
       validatedItems.push({
         produkId: pid,
         jumlah: qty,
         hargaSatuan: prod.harga,
-        subtotal,
+        subtotal: itemSubtotal,
       });
     }
 
-    // Hitung ongkos kirim standar (flat 10.000 atau gratis jika di atas 100.000)
-    const ongkir = calculatedTotal >= 150000 ? 0 : 10000;
-    const totalHarga = calculatedTotal + ongkir;
+    // ==========================================
+    // AKUMULASI PERHITUNGAN TERPISAH
+    // ==========================================
+    // 1. Subtotal Produk: akumulasi harga item murni dari DB
+    // 2. Ongkos Kirim:
+    //    - 'ambil_sendiri' => Rp 0 (ambil mandiri di TPS 3R Kalibaru)
+    //    - 'kurir_depok'   => Rp 0 jika subtotal >= 150.000 (promo gratis ongkir), selain itu Rp 10.000 flat
+    const isAmbilSendiri = opsiPengiriman === 'ambil_sendiri';
+    const isGratisOngkir = !isAmbilSendiri && subtotalProduk >= 150000;
+    const ongkir = isAmbilSendiri ? 0 : isGratisOngkir ? 0 : 10000;
+    const totalHarga = subtotalProduk + ongkir;
 
     let noPesanan = generateNoPesanan();
     let existing = await prisma.marketplaceOrder.findUnique({ where: { noPesanan } });
@@ -89,6 +100,59 @@ export async function POST(request: Request) {
       noPesanan = generateNoPesanan();
       existing = await prisma.marketplaceOrder.findUnique({ where: { noPesanan } });
     }
+
+    const shippingLabel = isAmbilSendiri
+      ? '[Ambil Sendiri di TPS 3R Kalibaru]'
+      : '[Diantar Armada Kurir UPS HERU Depok]';
+    const finalCatatan = catatan?.trim() ? `${shippingLabel} ${catatan.trim()}` : shippingLabel;
+
+    // ==========================================
+    // INTEGRASI PEMBAYARAN VIA DUITKU
+    // ==========================================
+    const isDuitku = metodeBayar === 'duitku' || metodeBayar === 'qris';
+    let paymentUrl: string | null = null;
+    let duitkuReference: string | null = null;
+    const merchantOrderId = noPesanan.replace(/\//g, '-');
+    const selectedChannel = duitkuChannel || 'SP'; // SP: ShopeePay QRIS (semua bank & e-wallet)
+
+    if (isDuitku && isDuitkuEnabled()) {
+      try {
+        const duitkuRes = await createPayment({
+          orderId: merchantOrderId,
+          amount: Math.round(totalHarga),
+          paymentMethod: selectedChannel,
+          productDetails: `Marketplace UPS HERU - ${noPesanan}`.slice(0, 100),
+          customerVaName: namaPembeli.trim().slice(0, 30),
+          phoneNumber: noTelepon.trim(),
+          email: email?.trim() || undefined,
+          returnUrl: `${getAppBaseUrl()}/marketplace/order/${encodeURIComponent(noPesanan)}`,
+        });
+
+        if (duitkuRes.paymentUrl) {
+          paymentUrl = duitkuRes.paymentUrl;
+          duitkuReference = duitkuRes.reference || null;
+        }
+      } catch (err: any) {
+        console.error('[Marketplace] Gagal generate Duitku paymentUrl:', err?.message || err);
+        // Lanjutkan order agar pembeli tidak kehilangan data pesanan
+      }
+    }
+
+    const initialStatus = 'menunggu_pembayaran';
+    const finalMetodeBayar = isDuitku
+      ? `duitku_${selectedChannel}`
+      : (metodeBayar || 'cod');
+
+    const buktiBayarData = paymentUrl
+      ? JSON.stringify({
+          gateway: 'duitku',
+          merchantOrderId,
+          paymentUrl,
+          reference: duitkuReference,
+          channel: selectedChannel,
+          createdAt: new Date().toISOString(),
+        })
+      : null;
 
     // Buat order dan kurangi stok dalam Prisma transaction
     const order = await prisma.$transaction(async (tx) => {
@@ -101,11 +165,12 @@ export async function POST(request: Request) {
           alamat: alamat.trim(),
           kelurahan: kelurahan ? kelurahan.trim() : null,
           kecamatan: kecamatan ? kecamatan.trim() : null,
-          catatan: catatan ? catatan.trim() : null,
+          catatan: finalCatatan,
           totalHarga,
           ongkir,
-          status: 'menunggu_pembayaran',
-          metodeBayar: metodeBayar || 'cod',
+          status: initialStatus,
+          metodeBayar: finalMetodeBayar,
+          buktiBayar: buktiBayarData,
           items: {
             create: validatedItems,
           },
@@ -133,6 +198,15 @@ export async function POST(request: Request) {
         ok: true,
         message: 'Pesanan marketplace berhasil dibuat!',
         order,
+        data: order, // Dukung pemanggil yang membaca response.order maupun response.data
+        paymentUrl,
+        rincianPerhitungan: {
+          subtotalProduk,
+          ongkir,
+          isGratisOngkir,
+          opsiPengiriman: isAmbilSendiri ? 'ambil_sendiri' : 'kurir_depok',
+          totalHarga,
+        },
       },
       { status: 201, headers: buildCorsHeaders(request) }
     );
