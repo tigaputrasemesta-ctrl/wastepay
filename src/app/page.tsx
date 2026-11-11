@@ -301,8 +301,8 @@ export default async function LandingPage() {
                     Penjemputan rutin 2–3x seminggu di depan pagar rumah. Pantau pergerakan truk langsung di peta untuk estimasi kedatangan.
                   </p>
                 </div>
-                <Link href="/lacak" className="text-xs font-bold text-[#0d7a75] hover:underline inline-flex items-center gap-1">
-                  <span>Lihat Peta Armada</span>
+                <Link href="#jadwal" className="text-xs font-bold text-[#0d7a75] hover:underline inline-flex items-center gap-1">
+                  <span>Lihat Jadwal Penjemputan</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
@@ -819,13 +819,15 @@ export default async function LandingPage() {
                   Penjemputan rutin armada truk pickup & motor roda 3 melintasi kelurahan berikut di Kota Depok:
                 </p>
               </div>
-              <Link
-                href="/coverage"
+              <a
+                href="https://wa.me/6281400782617?text=Halo%20UPS%20HERU,%20apakah%20lingkungan%20saya%20sudah%20termasuk%20wilayah%20layanan%20pengangkutan?"
+                target="_blank"
+                rel="noreferrer"
                 className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0d7a75] hover:underline shrink-0"
               >
-                <span>Buka Peta Jangkauan Interaktif</span>
+                <span>Konsultasi Jangkauan Wilayah via WA</span>
                 <ArrowRight className="w-4 h-4" />
-              </Link>
+              </a>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
@@ -1173,11 +1175,6 @@ export default async function LandingPage() {
                 <li>
                   <Link href="/marketplace" className="hover:text-white transition-colors">
                     Toko Pupuk Kompos & Daur Ulang
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/lacak" className="hover:text-white transition-colors">
-                    Pelacakan Truk Real-Time
                   </Link>
                 </li>
                 <li>

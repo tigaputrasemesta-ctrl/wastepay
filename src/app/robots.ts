@@ -10,7 +10,8 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: "*",
         allow: [
           "/",
-          "/lacak",
+          "/pickup",
+          "/marketplace",
           "/bayar",
           "/tarif",
           "/daftar",

@@ -82,12 +82,12 @@ export default function PengaduanPage() {
           </div>
           
           <Link
-            href="/lacak"
+            href="/pickup"
             className="flex items-center justify-between p-4 bg-white hover:bg-slate-50 border border-slate-200/80 rounded-2xl transition-all shadow-sm group"
           >
             <div>
-              <p className="text-xs font-bold text-slate-900">Ingin Memantau Armada?</p>
-              <p className="text-xs text-slate-600">Cek posisi truk penjemputan di peta live</p>
+              <p className="text-xs font-bold text-slate-900">Butuh Pengangkutan Khusus?</p>
+              <p className="text-xs text-slate-600">Pesan penjemputan puing, ranting & kasur sekali angkut</p>
             </div>
             <span className="text-xs font-bold text-emerald-700 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
           </Link>

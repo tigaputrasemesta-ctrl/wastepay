@@ -56,8 +56,8 @@ export default function PublicLayout({
             <div className="space-y-2.5">
               <p className="font-bold text-slate-900 dark:text-zinc-200 uppercase tracking-wider text-xs">Layanan Warga</p>
               <ul className="space-y-2 text-slate-600 dark:text-zinc-400">
-                <li><Link href="/coverage" className="hover:text-emerald-800 dark:hover:text-emerald-400 text-emerald-700 dark:text-emerald-400 font-bold">Peta Jangkauan (Coverage)</Link></li>
-                <li><Link href="/lacak" className="hover:text-emerald-800 dark:hover:text-emerald-400">Lacak Truk Sampah</Link></li>
+                <li><Link href="/pickup" className="hover:text-emerald-800 dark:hover:text-emerald-400 text-emerald-700 dark:text-emerald-400 font-bold">Pickup Sekali Angkut</Link></li>
+                <li><Link href="/marketplace" className="hover:text-emerald-800 dark:hover:text-emerald-400 font-bold">Toko Resmi UPS HERU</Link></li>
                 <li><Link href="/bayar" className="hover:text-emerald-800 dark:hover:text-emerald-400">Cek Tagihan Bulanan</Link></li>
                 <li><Link href="/tarif" className="hover:text-emerald-800 dark:hover:text-emerald-400">Daftar Paket Retribusi</Link></li>
                 <li><Link href="/pengaduan" className="hover:text-emerald-800 dark:hover:text-emerald-400">Lapor Sampah Menumpuk</Link></li>

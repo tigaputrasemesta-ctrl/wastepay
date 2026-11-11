@@ -13,13 +13,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1.0,
     },
     {
-      url: `${baseUrl}/lacak`,
+      url: `${baseUrl}/pickup`,
       lastModified: now,
       changeFrequency: "daily",
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/coverage`,
+      url: `${baseUrl}/marketplace`,
       lastModified: now,
       changeFrequency: "daily",
       priority: 0.9,

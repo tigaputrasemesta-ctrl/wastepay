@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ArrowRight, Info, MapPin, Smartphone, Clock } from "lucide-react";
 import LacakJemputan from "@/components/LacakJemputan";
 
@@ -39,6 +40,9 @@ const PANDUAN = [
 ];
 
 export default function LacakPage() {
+  // Fitur Live Tracking GPS disimpan & di-hide sementara sesuai permintaan user
+  redirect("/");
+
   return (
     <div className="py-8 md:py-12 space-y-8 md:space-y-10">
       {/* Header Section */}

@@ -239,13 +239,16 @@ export default function CivicHeroWidget() {
               </p>
             </div>
 
-            <Link
-              href="/lacak"
+            {/* Fitur /lacak disimpan & di-hide sementara */}
+            <a
+              href="https://wa.me/6281400782617?text=Halo%20UPS%20HERU,%20apakah%20truk%20sampah%20hari%20ini%20sudah%20melintas%20di%20lingkungan%20saya?"
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-full h-10 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5"
             >
               <MapPin className="w-3.5 h-3.5 text-[#0d7a75]" />
-              <span>Pantau Peta Live Truk Hari Ini</span>
-            </Link>
+              <span>Konfirmasi Posisi Truk via WhatsApp</span>
+            </a>
           </>
         )}
       </div>

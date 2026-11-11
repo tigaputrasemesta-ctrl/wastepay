@@ -42,18 +42,7 @@ const NAV_ITEMS: NavItem[] = [
     description: "Pupuk kompos TPS 3R & produk olahan organik",
     icon: <ShoppingBag className="w-5 h-5" />,
   },
-  {
-    label: "Cek Jangkauan",
-    href: "/coverage",
-    description: "Peta wilayah layanan & jadwal pengangkutan Depok",
-    icon: <Compass className="w-5 h-5" />,
-  },
-  {
-    label: "Lacak Armada",
-    href: "/lacak",
-    description: "Pantau posisi truk sampah real-time di peta",
-    icon: <Truck className="w-5 h-5" />,
-  },
+  // Fitur Cek Jangkauan (/coverage) & Lacak Armada (/lacak) disimpan & di-hide sementara
   {
     label: "Cek Tagihan",
     href: "/bayar",

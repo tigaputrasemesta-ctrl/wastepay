@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { MessageCircle } from "lucide-react";
 import CoverageExplorer from "@/components/coverage/CoverageExplorer";
 
@@ -29,6 +30,9 @@ export const metadata: Metadata = {
 };
 
 export default function CoveragePage() {
+  // Fitur Peta Jangkauan Layanan disimpan & di-hide sementara sesuai permintaan user
+  redirect("/");
+
   return (
     <div className="py-6 md:py-8 space-y-8">
       {/* ── BREADCRUMB & HEADER ── */}
