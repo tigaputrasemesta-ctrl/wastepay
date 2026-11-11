@@ -169,6 +169,7 @@ model Pelanggan {
   komplain       Komplain[]
   liburSementara LiburSementara[]
   notifikasi     Notifikasi[]
+  pesananPickup  PesananPickup[]
 
   @@index([deletedAt])
   @@index([status])
@@ -203,6 +204,7 @@ model Petugas {
   klaim        KlaimPetugas[]
   chat         ChatPesan[]
   zona         ZonaPetugas[] // zona angkut yang ditugaskan (angkut)
+  pesananPickup PesananPickup[]
 
   @@index([wilayahId])
   @@index([kelurahanId])
@@ -238,6 +240,7 @@ model Kendaraan {
   pengangkutan Pengangkutan[]
   lokasi       LokasiKendaraan[]
   rute         Rute[]
+  pesananPickup PesananPickup[]
 }
 
 model LokasiKendaraan {
@@ -585,4 +588,138 @@ model Artikel {
 
   @@index([slug])
   @@index([diterbitkan, createdAt])
+}
+
+// ==========================================
+// MARKETPLACE PRODUK RESMI UPS HERU
+// ==========================================
+
+model Produk {
+  id          Int      @id @default(autoincrement())
+  nama        String
+  slug        String   @unique
+  kategori    String   // pupuk_kompos | pupuk_cair | maggot | alat_kebersihan | tempat_sampah | kantong_sampah | lainnya
+  harga       Float
+  stok        Int      @default(0)
+  satuan      String   @default("sak") // sak | botol | kg | pcs | paket
+  beratGram   Int      @default(1000)
+  deskripsi   String
+  foto        String?
+  aktif       Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  orderItems  MarketplaceOrderItem[]
+
+  @@index([kategori, aktif])
+}
+
+model MarketplaceOrder {
+  id           Int                    @id @default(autoincrement())
+  noPesanan    String                 @unique // format: ORD/YYYYMMDD/XXXX
+  namaPembeli  String
+  noTelepon    String
+  email        String?
+  alamat       String
+  kelurahan    String?
+  kecamatan    String?
+  catatan      String?
+  totalHarga   Float
+  ongkir       Float                  @default(0)
+  status       String                 @default("menunggu_pembayaran") // menunggu_pembayaran | diproses | dikirim | selesai | dibatalkan
+  metodeBayar  String                 // qris | transfer | cod | duitku
+  buktiBayar   String?
+  tanggalBayar DateTime?
+  kurirNama    String?
+  noResi       String?
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+
+  items        MarketplaceOrderItem[]
+
+  @@index([status, createdAt])
+  @@index([noTelepon])
+}
+
+model MarketplaceOrderItem {
+  id          Int              @id @default(autoincrement())
+  orderId     Int
+  order       MarketplaceOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  produkId    Int
+  produk      Produk           @relation(fields: [produkId], references: [id])
+  jumlah      Int
+  hargaSatuan Float
+  subtotal    Float
+
+  @@index([orderId])
+  @@index([produkId])
+}
+
+// ==========================================
+// LAYANAN PICKUP SAMPAH SEKALI ANGKUT
+// ==========================================
+
+model KategoriPickup {
+  id            Int             @id @default(autoincrement())
+  kode          String          @unique // puing | ranting | bulky | event | ewaste
+  nama          String          // "Puing Bangunan & Renovasi"
+  deskripsi     String?
+  satuanMuatan  String          // karung | rit_pickup | rit_truk | unit
+  tarifDasar    Float           // Biaya dasar (misal Rp 100.000)
+  tarifPerUnit  Float?          // Biaya per unit/karung/barang (misal Rp 15.000)
+  armadaStandar String?         // pickup | dump_truck | tossa
+  icon          String?         // Lucide icon name
+  aktif         Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  pesananPickup PesananPickup[]
+}
+
+model PesananPickup {
+  id               Int            @id @default(autoincrement())
+  noOrder          String         @unique // format: PKP/YYYYMMDD/XXXX
+  namaPemesan      String
+  noTelepon        String
+  alamat           String
+  patokan          String?
+  kelurahan        String?
+  kecamatan        String?
+  latitude         Float?
+  longitude        Float?
+  
+  kategoriPickupId Int
+  kategoriPickup   KategoriPickup @relation(fields: [kategoriPickupId], references: [id])
+  
+  estimasiMuatan   String         // e.g. "10 karung", "1 kasur + 1 sofa"
+  fotoSampah       String?
+  tanggalJemput    DateTime
+  waktuJemput      String?        // pagi | siang | fleksibel
+  
+  estimasiBiaya    Float
+  biayaFinal       Float?
+  
+  metodeBayar      String         @default("cod") // cod | qris | transfer | duitku
+  statusBayar      String         @default("belum_bayar") // belum_bayar | lunas
+  buktiBayar       String?
+  
+  status           String         @default("menunggu_konfirmasi") // menunggu_konfirmasi | dikonfirmasi | ditugaskan | otw | dijemput | selesai | dibatalkan
+  catatanPetugas   String?
+  fotoSelesai      String?
+  
+  petugasId        Int?
+  petugas          Petugas?       @relation(fields: [petugasId], references: [id])
+  kendaraanId      Int?
+  kendaraan        Kendaraan?     @relation(fields: [kendaraanId], references: [id])
+  pelangganId      Int?
+  pelanggan        Pelanggan?     @relation(fields: [pelangganId], references: [id])
+  
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  selesaiAt        DateTime?
+
+  @@index([status, tanggalJemput])
+  @@index([noTelepon])
+  @@index([petugasId])
+  @@index([kategoriPickupId])
 }

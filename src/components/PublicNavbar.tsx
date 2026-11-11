@@ -18,6 +18,8 @@ import {
   MessageCircle,
   ChevronRight,
   Compass,
+  PackageCheck,
+  ShoppingBag,
 } from "lucide-react";
 
 interface NavItem {
@@ -28,6 +30,18 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
+  {
+    label: "Pickup Sekali Angkut",
+    href: "/pickup",
+    description: "Jemput puing, ranting, kasur & sampah besar",
+    icon: <PackageCheck className="w-5 h-5" />,
+  },
+  {
+    label: "Toko UPS HERU",
+    href: "/marketplace",
+    description: "Pupuk kompos TPS 3R & produk olahan organik",
+    icon: <ShoppingBag className="w-5 h-5" />,
+  },
   {
     label: "Cek Jangkauan",
     href: "/coverage",

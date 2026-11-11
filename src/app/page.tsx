@@ -17,6 +17,8 @@ import {
   ChevronRight,
   Sparkles,
   AlertCircle,
+  ShoppingBag,
+  PackageCheck,
 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
@@ -125,21 +127,29 @@ export default async function LandingPage() {
 
               {/* Action Buttons */}
               <div className="space-y-3 pt-1 sm:pt-2">
-                <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3">
+                <div className="flex flex-col sm:flex-row flex-wrap gap-2.5 sm:gap-3">
                   <Link
                     href="/daftar"
-                    className="w-full sm:w-auto px-6 py-3.5 bg-[#0d7a75] hover:bg-[#0b6460] text-white rounded-xl font-bold text-xs sm:text-sm shadow-sm transition-all flex items-center justify-center gap-2 active:scale-95"
+                    className="w-full sm:w-auto px-5 py-3.5 bg-[#0d7a75] hover:bg-[#0b6460] text-white rounded-xl font-bold text-xs sm:text-sm shadow-sm transition-all flex items-center justify-center gap-2 active:scale-95"
                   >
                     <Home className="w-4 h-4 shrink-0" />
-                    <span>Daftar Langganan Baru</span>
+                    <span>Daftar Langganan</span>
                   </Link>
 
                   <Link
-                    href="/coverage"
-                    className="w-full sm:w-auto px-6 py-3.5 bg-white hover:bg-slate-50 text-slate-800 border-2 border-slate-200 hover:border-slate-300 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-xs active:scale-95"
+                    href="/pickup"
+                    className="w-full sm:w-auto px-5 py-3.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-2 border-emerald-400 dark:border-emerald-700 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-xs active:scale-95"
                   >
-                    <Navigation className="w-4 h-4 text-[#0d7a75] shrink-0" />
-                    <span>Cek Jadwal & Rute</span>
+                    <PackageCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                    <span>Pickup Sekali Angkut</span>
+                  </Link>
+
+                  <Link
+                    href="/marketplace"
+                    className="w-full sm:w-auto px-5 py-3.5 bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-800 dark:text-zinc-200 border-2 border-slate-200 dark:border-zinc-700 hover:border-slate-300 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-xs active:scale-95"
+                  >
+                    <ShoppingBag className="w-4 h-4 text-[#0d7a75] dark:text-emerald-400 shrink-0" />
+                    <span>Toko Kompos & Produk</span>
                   </Link>
                 </div>
 
@@ -910,6 +920,16 @@ export default async function LandingPage() {
             <div className="space-y-3">
               <p className="font-bold text-slate-200 uppercase tracking-wider text-[11px]">Layanan Warga</p>
               <ul className="space-y-2 text-slate-400 font-medium">
+                <li>
+                  <Link href="/pickup" className="hover:text-white transition-colors">
+                    Pickup Sampah Sekali Angkut
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/marketplace" className="hover:text-white transition-colors">
+                    Toko Pupuk Kompos & Daur Ulang
+                  </Link>
+                </li>
                 <li>
                   <Link href="/lacak" className="hover:text-white transition-colors">
                     Pelacakan Truk Real-Time

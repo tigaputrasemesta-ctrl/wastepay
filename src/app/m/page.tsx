@@ -22,7 +22,8 @@ import {
   AlertCircle,
   Calendar,
   Layers,
-  ArrowRight
+  ArrowRight,
+  PackageCheck,
 } from "lucide-react";
 
 type Profil = {
@@ -431,6 +432,35 @@ export default function MobileHome() {
         </p>
 
         <div className="grid grid-cols-2 gap-2">
+          {isAngkut && (
+            <Link
+              href="/m/pickup"
+              className="bg-white border border-teal-200/90 dark:border-teal-900/60 rounded-2xl p-3 shadow-xs hover:border-teal-400 hover:shadow-xs active:scale-[0.98] transition-all flex flex-col justify-between h-[84px] col-span-2 bg-gradient-to-r from-teal-50/60 to-emerald-50/40 dark:from-teal-950/20 dark:to-emerald-950/20"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-teal-700 text-white flex items-center justify-center shadow-xs">
+                    <PackageCheck className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
+                      Pickup Sekali Angkut
+                    </p>
+                    <p className="text-[10px] text-teal-800 dark:text-teal-300 font-semibold truncate">
+                      Puing, ranting & bulky on-demand
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-teal-600 text-white shadow-2xs">
+                    On-Demand
+                  </span>
+                  <ChevronRight className="w-4 h-4 text-teal-700" />
+                </div>
+              </div>
+            </Link>
+          )}
+
           {isAngkut && (
             <Link
               href="/m/angkut"

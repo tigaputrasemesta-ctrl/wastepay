@@ -39,6 +39,8 @@ import {
   ShieldAlert,
   UserCog,
   Smartphone,
+  PackageCheck,
+  ShoppingBag,
 } from "lucide-react";
 
 export type AdminMobileResponsiveShellProps = {
@@ -90,6 +92,7 @@ const SECONDARY_MENU_ITEMS = [
   {
     title: "Operasional & Penjemputan",
     items: [
+      { label: "Pickup Sekali Angkut", href: "/pickup-insidental", icon: PackageCheck, desc: "Order penjemputan puing & sampah insidental", badge: "Baru" },
       { label: "Pengangkutan Sampah", href: "/pengangkutan", icon: Trash2, desc: "Log ritase, volume m³ & penjemputan warga", badge: "Live" },
       { label: "Rute & Jadwal Armada", href: "/rute", icon: Route, desc: "Penjadwalan zona armada pickup & dump truck", badge: "Armada" },
       { label: "Absensi Petugas", href: "/absensi", icon: Clock, desc: "Presensi GPS & status kerja hari ini", badge: "Live GPS" },
@@ -101,6 +104,7 @@ const SECONDARY_MENU_ITEMS = [
   {
     title: "Keuangan & Pelayanan Warga",
     items: [
+      { label: "Marketplace UPS HERU", href: "/manajemen-marketplace", icon: ShoppingBag, desc: "Katalog produk olahan pupuk & pesanan warga", badge: "Toko" },
       { label: "Komplain & Masalah", href: "/komplain", icon: MessageSquare, desc: "Tiket keluhan & aduan warga", badge: null },
       { label: "Laporan & Rekapitulasi", href: "/laporan", icon: BarChart3, desc: "Analitik retribusi, tonase & performa", badge: "Laporan" },
       { label: "Pengeluaran Operasional", href: "/pengeluaran", icon: Wallet, desc: "Biaya solar, tol & pemeliharaan armada", badge: null },

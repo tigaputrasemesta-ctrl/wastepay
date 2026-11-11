@@ -37,6 +37,8 @@ import {
   ShieldCheck,
   FileText,
   Smartphone,
+  PackageCheck,
+  ShoppingBag,
   ChevronDown,
   LogOut,
   PanelLeftClose,
@@ -88,6 +90,8 @@ const menuConfig: Record<string, MenuItemDef> = {
   users: { label: "Kelola Akun Admin", href: "/users", icon: ShieldCheck },
   "audit-log": { label: "Audit Log Sistem", href: "/audit-log", icon: FileText },
   "data-kontrol": { label: "Kontrol Kontak WA", href: "/data-kontrol", icon: Smartphone },
+  "pickup-insidental": { label: "Pickup Sekali Angkut", href: "/pickup-insidental", icon: PackageCheck },
+  "manajemen-marketplace": { label: "Marketplace UPS HERU", href: "/manajemen-marketplace", icon: ShoppingBag },
 };
 
 // Pengelompokan 5 grup menu ergonomis dan rapi
@@ -103,6 +107,7 @@ const MENU_GROUP: Record<string, string> = {
   transit: "operasional",
   tpa: "operasional",
   zona: "operasional",
+  "pickup-insidental": "operasional",
 
   // Pelanggan & Layanan
   pelanggan: "pelanggan",
@@ -120,6 +125,7 @@ const MENU_GROUP: Record<string, string> = {
   laporan: "keuangan",
   rekonsiliasi: "keuangan",
   klaim: "keuangan",
+  "manajemen-marketplace": "keuangan",
 
   // Sistem & Personalia
   absensi: "sistem",
