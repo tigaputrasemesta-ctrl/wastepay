@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import {
   PackageCheck,
   Search,
@@ -281,6 +282,13 @@ export default function PickupInsidentalPage() {
         </div>
 
         <div className="flex items-center gap-2 self-start md:self-auto">
+          <Link
+            href="/manajemen-tarif?tab=pickup"
+            className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 active:scale-95 transition-all shadow-xs"
+          >
+            <DollarSign className="w-3.5 h-3.5" />
+            <span>Pengaturan Tarif Pickup</span>
+          </Link>
           <button
             onClick={() => fetchOrders()}
             disabled={refreshing}

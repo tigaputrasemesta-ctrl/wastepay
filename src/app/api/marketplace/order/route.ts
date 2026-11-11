@@ -48,7 +48,7 @@ export async function POST(request: Request) {
       where: { id: { in: productIds } },
     });
 
-    const productMap = new Map(productsInDb.map((p) => [p.id, p]));
+    const productMap = new Map<number, any>(productsInDb.map((p: any) => [p.id, p]));
 
     let subtotalProduk = 0;
     const validatedItems: { produkId: number; jumlah: number; hargaSatuan: number; subtotal: number }[] = [];
