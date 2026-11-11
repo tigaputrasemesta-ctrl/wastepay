@@ -82,7 +82,7 @@ function BottomNav({ pathname, jabatan }: { pathname: string; jabatan: string[] 
   ].filter((i) => i.show);
 
   return (
-    <nav aria-label="Navigasi utama" className="absolute bottom-0 inset-x-0 z-50 glass-bottom-nav pb-safe pt-1.5 px-1 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-lg">
+    <nav aria-label="Navigasi utama" className="absolute bottom-0 inset-x-0 z-50 glass-bottom-nav pb-safe pt-1.5 px-1 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border-t border-slate-200/90 dark:border-zinc-800 shadow-lg">
       <div className="w-full flex justify-around items-center">
         {items.map((it) => {
           const active = pathname === it.href || (it.href !== "/m" && pathname.startsWith(it.href));
@@ -94,8 +94,8 @@ function BottomNav({ pathname, jabatan }: { pathname: string; jabatan: string[] 
               className={cn(
                 "flex-1 flex flex-col items-center justify-center py-1 px-0.5 rounded-xl text-[9px] font-bold transition-all min-w-0",
                 active
-                  ? "text-emerald-700 bg-emerald-50 font-black"
-                  : "text-slate-500 hover:text-slate-900 active:scale-95"
+                  ? "text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 font-black"
+                  : "text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200 active:scale-95"
               )}
             >
               <div className={cn("transition-transform", active && "scale-105")}>
@@ -192,9 +192,9 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
         </div>
 
         {/* Smartphone Frame */}
-        <div className="w-full max-w-[430px] h-dvh sm:h-[880px] sm:max-h-[96dvh] bg-slate-50 text-slate-900 flex flex-col overflow-hidden relative sm:rounded-[38px] sm:shadow-[0_25px_70px_rgba(0,0,0,0.8)] sm:border-[7px] sm:border-slate-800">
+        <div className="w-full max-w-[430px] h-dvh sm:h-[880px] sm:max-h-[96dvh] bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 flex flex-col overflow-hidden relative sm:rounded-[38px] sm:shadow-[0_25px_70px_rgba(0,0,0,0.8)] sm:border-[7px] sm:border-slate-800 dark:sm:border-zinc-800 transition-colors">
           {/* Simulated Speaker / Camera Notch on Desktop view */}
-          <div className="hidden sm:flex justify-center pt-2 pb-0.5 bg-white shrink-0">
+          <div className="hidden sm:flex justify-center pt-2 pb-0.5 bg-white dark:bg-zinc-950 shrink-0">
             <div className="w-24 h-4 bg-slate-900 rounded-full flex items-center justify-center gap-2">
               <div className="w-2.5 h-2.5 rounded-full bg-slate-800" />
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/80 animate-pulse" />
@@ -202,7 +202,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
           </div>
 
           {/* Top bar (GoPartner Style) */}
-          <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-3.5 py-2 flex items-center justify-between gap-2 shadow-sm shrink-0">
+          <header className="sticky top-0 z-40 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border-b border-slate-200/80 dark:border-zinc-800 px-3.5 py-2 flex items-center justify-between gap-2 shadow-sm shrink-0 transition-colors">
             <div className="flex items-center gap-2 min-w-0">
               <div className="relative shrink-0">
                 <div className="w-8 h-8 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-xs shadow-sm">
@@ -210,20 +210,20 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
                 </div>
                 <span
                   aria-hidden="true"
-                  className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 ring-2 ring-white rounded-full animate-pulse"
+                  className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 ring-2 ring-white dark:ring-zinc-950 rounded-full animate-pulse"
                   title="GPS Lapangan Aktif"
                 />
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-bold text-slate-900 truncate">
+                  <span className="text-xs font-bold text-slate-900 dark:text-zinc-100 truncate">
                     {profil ? profil.nama : user.nama}
                   </span>
-                  <span className="px-1.5 py-0.2 text-[8px] font-extrabold bg-emerald-100 text-emerald-800 rounded-full shrink-0">
+                  <span className="px-1.5 py-0.2 text-[8px] font-extrabold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 rounded-full shrink-0">
                     {user.role === "petugas" ? "Partner" : "Admin"}
                   </span>
                 </div>
-                <p className="text-[10px] font-medium text-slate-500 truncate">
+                <p className="text-[10px] font-medium text-slate-500 dark:text-zinc-400 truncate">
                   {jabatan.join(" • ") || "Petugas Lapangan"}
                 </p>
               </div>
@@ -233,7 +233,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
               {user.role !== "petugas" && (
                 <Link
                   href="/dashboard"
-                  className="px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] font-bold rounded-lg transition-all"
+                  className="px-2 py-1 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 text-[10px] font-bold rounded-lg transition-all"
                   title="Kembali ke Dashboard Web"
                 >
                   Web ↗
@@ -241,7 +241,7 @@ export default function MobileLayout({ children }: { children: React.ReactNode }
               )}
               <button
                 onClick={logout}
-                className="shrink-0 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl active:scale-95 transition-all"
+                className="shrink-0 px-2.5 py-1 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 text-xs font-semibold rounded-xl active:scale-95 transition-all"
               >
                 Keluar
               </button>

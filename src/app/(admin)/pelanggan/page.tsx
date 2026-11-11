@@ -129,8 +129,8 @@ function StickerBarcodeItem({ p, idx }: { p: Pelanggan; idx: number }) {
 
   return (
     <div
-      className="relative w-[92mm] h-[54mm] bg-white text-black p-2.5 flex flex-col overflow-hidden border border-slate-300 rounded-xl shadow-xs print:shadow-none print:border-black print:rounded-none select-none"
-      style={{ breakInside: "avoid" }}
+      className="print-card print-preserve relative w-[92mm] h-[54mm] !bg-white !text-black p-2.5 flex flex-col overflow-hidden border border-slate-300 rounded-xl shadow-xs print:shadow-none print:border-black print:rounded-none select-none"
+      style={{ breakInside: "avoid", backgroundColor: "#ffffff", color: "#000000" }}
     >
       <div className="flex items-center justify-between border-b-2 border-black pb-1">
         <span className="font-extrabold uppercase text-[9px] tracking-wider">UPS HERU DEPOK</span>

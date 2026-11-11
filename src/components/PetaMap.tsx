@@ -2,6 +2,7 @@
 
 import { Component, useCallback, useEffect, useMemo, useState, useRef } from "react";
 import dynamic from "next/dynamic";
+import { useTheme } from "@/components/ThemeProvider";
 import {
   Truck,
   ShieldAlert,
@@ -190,12 +191,21 @@ export default function PetaMap({
   kendaraanSaya = [],
 }: Props) {
   // Navigation & Layout State
+  const { resolvedTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<ConsoleTab>("armada");
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [tileMode, setTileMode] = useState<MapTileType>("osm");
+  const [tileMode, setTileMode] = useState<MapTileType>(() => (typeof window !== "undefined" && document.documentElement.classList.contains("dark") ? "dark" : "osm"));
   const [layerMenuOpen, setLayerMenuOpen] = useState(false);
   const layerMenuRef = useRef<HTMLDivElement>(null);
-  const isDark = tileMode === "dark";
+  const isDark = resolvedTheme === "dark" || tileMode === "dark";
+
+  useEffect(() => {
+    if (resolvedTheme === "dark") {
+      setTileMode("dark");
+    } else if (resolvedTheme === "light") {
+      setTileMode("osm");
+    }
+  }, [resolvedTheme]);
 
   // Online status
   const [isOnlineStatus, setIsOnlineStatus] = useState(true);

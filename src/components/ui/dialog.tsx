@@ -82,7 +82,7 @@ export function DialogHeader({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`px-6 py-4 border-b border-slate-100 dark:border-zinc-850 bg-slate-50/50 dark:bg-zinc-900/50 flex items-center justify-between ${className}`}
+      className={`px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/50 flex items-center justify-between ${className}`}
       {...props}
     >
       {children}
@@ -127,7 +127,7 @@ export function DialogFooter({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`px-6 py-4 border-t border-slate-100 dark:border-zinc-850 bg-slate-50/50 dark:bg-zinc-900/50 flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 ${className}`}
+      className={`px-6 py-4 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/50 flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 ${className}`}
       {...props}
     >
       {children}

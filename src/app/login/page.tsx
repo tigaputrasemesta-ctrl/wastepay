@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Truck, LogIn, Smartphone, ShieldCheck, Loader2 } from "lucide-react";
 import { NativeGuardedLink } from "@/components/mobile/LandingApkBanner";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -63,24 +64,28 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F8FAFC] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
+    <main className="relative min-h-screen bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans transition-colors">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
+
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex flex-col items-center mb-8">
           <div className="w-12 h-12 bg-emerald-700 text-white rounded-lg flex items-center justify-center mb-4 shadow-sm">
             <Truck strokeWidth={2.5} className="w-6 h-6" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-zinc-100">
             UPS HERU Portal
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-slate-500 dark:text-zinc-400 mt-1">
             Sistem Informasi Pengelolaan & Retribusi
           </p>
         </div>
 
-        <div className="bg-white px-6 sm:px-10 py-10 shadow-sm border border-slate-200/60 rounded-2xl">
+        <div className="bg-white dark:bg-zinc-900 px-6 sm:px-10 py-10 shadow-sm border border-slate-200/60 dark:border-zinc-800 rounded-2xl">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-slate-700 mb-2">
+              <label htmlFor="email" className="block text-sm font-semibold text-slate-700 dark:text-zinc-300 mb-2">
                 Alamat Email atau No. HP
               </label>
               <input
@@ -91,13 +96,13 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-slate-900 text-sm outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 transition-all placeholder:text-slate-400"
+                className="w-full bg-white dark:bg-zinc-950 border border-slate-300 dark:border-zinc-700 rounded-lg px-4 py-2.5 text-slate-900 dark:text-zinc-100 text-sm outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 transition-all placeholder:text-slate-400 dark:placeholder-zinc-500"
                 placeholder="nama@hero.com atau 0812xxxx"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-slate-700 mb-2">
+              <label htmlFor="password" className="block text-sm font-semibold text-slate-700 dark:text-zinc-300 mb-2">
                 Kata Sandi
               </label>
               <input
@@ -108,13 +113,13 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-slate-900 text-sm outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 transition-all placeholder:text-slate-400"
+                className="w-full bg-white dark:bg-zinc-950 border border-slate-300 dark:border-zinc-700 rounded-lg px-4 py-2.5 text-slate-900 dark:text-zinc-100 text-sm outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 transition-all placeholder:text-slate-400 dark:placeholder-zinc-500"
                 placeholder="••••••••"
               />
             </div>
 
             {error && (
-              <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50 border border-red-100 text-red-600 text-sm">
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-100 dark:border-red-900/60 text-red-600 dark:text-red-400 text-sm">
                 <ShieldCheck className="w-4 h-4 shrink-0" />
                 <span className="font-medium">{error}</span>
               </div>
@@ -143,7 +148,7 @@ export default function LoginPage() {
         <div className="mt-6 flex justify-center">
           <NativeGuardedLink
             href="/unduh"
-            className="group flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 hover:text-emerald-700 transition-colors"
+            className="group flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 dark:text-zinc-400 hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors"
           >
             <Smartphone className="w-4 h-4 text-slate-400 group-hover:text-emerald-800 transition-colors" />
             <span>Unduh Aplikasi Mobile</span>

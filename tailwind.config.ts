@@ -33,7 +33,7 @@ export default {
         surface: {
           DEFAULT: '#ffffff',
           dim: '#f8fafc',
-          dark: '#f1f5f9',
+          dark: '#18181b',
         },
         ink: {
           DEFAULT: '#0f172a',

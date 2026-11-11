@@ -108,15 +108,15 @@
 @layer components {
   /* ===== CleanTech Mobility / Gojek & GoPartner Design System V2 ===== */
   .app-card {
-    @apply bg-white rounded-2xl border border-slate-200/70 shadow-sm p-4 sm:p-5 transition-all;
+    @apply bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/70 dark:border-zinc-800 shadow-sm p-4 sm:p-5 transition-all text-slate-800 dark:text-zinc-100;
   }
 
   .app-card-interactive {
-    @apply bg-white rounded-2xl border border-slate-200/70 shadow-sm hover:shadow-md hover:border-emerald-300/80 active:scale-[0.99] transition-all;
+    @apply bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/70 dark:border-zinc-800 shadow-sm hover:shadow-md hover:border-emerald-300/80 active:scale-[0.99] transition-all text-slate-800 dark:text-zinc-100;
   }
 
   .glass-bottom-nav {
-    @apply backdrop-blur-xl bg-white/95 border-t border-slate-200/80 shadow-[0_-4px_24px_rgba(0,0,0,0.06)];
+    @apply backdrop-blur-xl bg-white/95 dark:bg-zinc-950/95 border-t border-slate-200/80 dark:border-zinc-800/80 shadow-[0_-4px_24px_rgba(0,0,0,0.06)];
   }
 
   .thumb-button-primary {
@@ -124,7 +124,7 @@
   }
 
   .thumb-button-secondary {
-    @apply h-12 sm:h-14 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-sm tracking-wide active:scale-[0.98] transition-all flex items-center justify-center gap-2 select-none;
+    @apply h-12 sm:h-14 rounded-2xl bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-200 font-bold text-sm tracking-wide active:scale-[0.98] transition-all flex items-center justify-center gap-2 select-none;
   }
 
   .pill-badge {
@@ -132,7 +132,7 @@
   }
 
   .hm-border {
-    @apply border border-slate-200;
+    @apply border border-slate-200 dark:border-zinc-800;
   }
   
   .hm-btn {
@@ -172,11 +172,11 @@
   }
 
   .hm-card {
-    @apply bg-white rounded-2xl border border-slate-200/80 p-6 md:p-8 shadow-sm hover:shadow-md transition-all;
+    @apply bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 p-6 md:p-8 shadow-sm hover:shadow-md transition-all text-slate-800 dark:text-zinc-100;
   }
 
   .input, input.input, select.input, textarea.input {
-    @apply w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all;
+    @apply w-full px-3.5 py-2.5 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-slate-800 dark:text-zinc-100 text-sm placeholder-slate-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all;
   }
 
   .stencil {
@@ -399,16 +399,23 @@
   }
 
   /* Auto dark cards and surface panels */
-  .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) .bg-white {
+  .dark :is(main, aside, header, footer, nav, [role="dialog"], .modal-content) .bg-white:not(.print-preserve):not(.print-card) {
     background-color: #18181b !important; /* zinc-900 */
   }
 
-  .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) :is(
+  .dark :is(main, aside, header, footer, nav, [role="dialog"], .modal-content) :is(
     .bg-slate-50,
     .bg-slate-50\/60,
     .bg-slate-50\/70,
     .bg-slate-50\/80,
-    .bg-slate-50\/90
+    .bg-slate-50\/90,
+    .sm\:bg-slate-50,
+    .sm\:bg-slate-50\/60,
+    .sm\:bg-slate-50\/80,
+    .bg-\[\#f8fafb\],
+    .bg-\[\#F8FAFC\],
+    .bg-\[\#f8fafb\]\/90,
+    .bg-\[\#F8FAFC\]\/90
   ) {
     background-color: #09090b !important; /* zinc-950 */
   }
@@ -528,6 +535,21 @@
   .dark a.bg-slate-900:hover {
     background-color: #3f3f46 !important; /* zinc-700 */
     color: #ffffff !important;
+  }
+
+  /* Isolate print documents and barcode ID cards from dark mode inversion */
+  .print-preserve,
+  .print-card,
+  .dark .print-preserve,
+  .dark .print-card {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+  .print-preserve *,
+  .print-card *,
+  .dark .print-preserve *,
+  .dark .print-card * {
+    color: inherit;
   }
 }
 

@@ -443,7 +443,7 @@ export default async function DashboardPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-100 dark:bg-zinc-800">
             {stats.pembayaranPending > 0 && (
-              <div className="bg-white dark:bg-zinc-900 p-4 flex flex-col justify-between hover:bg-slate-50/70 dark:hover:bg-zinc-850 transition-colors">
+              <div className="bg-white dark:bg-zinc-900 p-4 flex flex-col justify-between hover:bg-slate-50/70 dark:hover:bg-zinc-800 transition-colors">
                 <div className="flex items-start gap-3 mb-3">
                   <div className="w-8 h-8 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200/60 dark:border-amber-800/60 flex items-center justify-center shrink-0">
                     <Clock size={16} strokeWidth={2} />
@@ -461,7 +461,7 @@ export default async function DashboardPage() {
             )}
             
             {stats.klaimMenunggu > 0 && (
-              <div className="bg-white dark:bg-zinc-900 p-4 flex flex-col justify-between hover:bg-slate-50/70 dark:hover:bg-zinc-850 transition-colors">
+              <div className="bg-white dark:bg-zinc-900 p-4 flex flex-col justify-between hover:bg-slate-50/70 dark:hover:bg-zinc-800 transition-colors">
                 <div className="flex items-start gap-3 mb-3">
                   <div className="w-8 h-8 rounded-xl bg-orange-50 dark:bg-orange-950/60 text-orange-700 dark:text-orange-400 border border-orange-200/60 dark:border-orange-800/60 flex items-center justify-center shrink-0">
                     <Receipt size={16} strokeWidth={2} />
@@ -479,7 +479,7 @@ export default async function DashboardPage() {
             )}
 
             {stats.chatBelumDibaca > 0 && (
-              <div className="bg-white dark:bg-zinc-900 p-4 flex flex-col justify-between hover:bg-slate-50/70 dark:hover:bg-zinc-850 transition-colors">
+              <div className="bg-white dark:bg-zinc-900 p-4 flex flex-col justify-between hover:bg-slate-50/70 dark:hover:bg-zinc-800 transition-colors">
                 <div className="flex items-start gap-3 mb-3">
                   <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 border border-blue-200/60 dark:border-blue-800/60 flex items-center justify-center shrink-0">
                     <MessageSquare size={16} strokeWidth={2} />
@@ -497,7 +497,7 @@ export default async function DashboardPage() {
             )}
 
             {stats.tidakDiangkut > 0 && (
-              <div className="bg-white dark:bg-zinc-900 p-4 flex flex-col justify-between hover:bg-slate-50/70 dark:hover:bg-zinc-850 transition-colors">
+              <div className="bg-white dark:bg-zinc-900 p-4 flex flex-col justify-between hover:bg-slate-50/70 dark:hover:bg-zinc-800 transition-colors">
                 <div className="flex items-start gap-3 mb-3">
                   <div className="w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200/60 dark:border-rose-800/60 flex items-center justify-center shrink-0">
                     <AlertTriangle size={16} strokeWidth={2} />
@@ -515,7 +515,7 @@ export default async function DashboardPage() {
             )}
 
             {stats.notifGagal > 0 && (
-              <div className="bg-white dark:bg-zinc-900 p-4 flex flex-col justify-between hover:bg-slate-50/70 dark:hover:bg-zinc-850 transition-colors">
+              <div className="bg-white dark:bg-zinc-900 p-4 flex flex-col justify-between hover:bg-slate-50/70 dark:hover:bg-zinc-800 transition-colors">
                 <div className="flex items-start gap-3 mb-3">
                   <div className="w-8 h-8 rounded-xl bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-400 border border-red-200/60 dark:border-red-800/60 flex items-center justify-center shrink-0">
                     <PhoneOff size={16} strokeWidth={2} />

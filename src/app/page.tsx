@@ -97,7 +97,7 @@ export default async function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8fafb] text-slate-900 font-sans selection:bg-[#0d7a75] selection:text-white overflow-x-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 font-sans selection:bg-[#0d7a75] selection:text-white overflow-x-hidden transition-colors">
       <JsonLd data={generateLocalBusinessJsonLd()} />
 
       {/* ── Primary Public Navbar ── */}
@@ -259,14 +259,14 @@ export default async function LandingPage() {
         </section>
 
         {/* ── 5. Solution & Core Ecosystem (Clean White Cards ala BeCycle img3) ── */}
-        <section className="py-16 md:py-20 px-4 sm:px-6 bg-[#f8fafb] border-b border-slate-200">
+        <section className="py-16 md:py-20 px-4 sm:px-6 bg-slate-50 dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800">
           <div className="max-w-6xl mx-auto space-y-12">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
               <div className="max-w-2xl space-y-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#0d7a75] block">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#0d7a75] dark:text-emerald-400 block">
                   Solusi Terintegrasi
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-zinc-100 tracking-tight">
                   Pengelolaan Sampah Mandiri & Berkelanjutan
                 </h2>
                 <p className="text-sm text-slate-600">
@@ -337,13 +337,13 @@ export default async function LandingPage() {
         </section>
 
         {/* ── 6. Paket & Kategori Layanan (Inspired by BeCycle Waste Registry) ── */}
-        <section className="py-16 md:py-20 px-4 sm:px-6 bg-[#f8fafb] border-b border-slate-200">
+        <section className="py-16 md:py-20 px-4 sm:px-6 bg-slate-50 dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800">
           <div className="max-w-6xl mx-auto space-y-12">
             <div className="text-center max-w-2xl mx-auto space-y-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#0d7a75]">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#0d7a75] dark:text-emerald-400">
                 Pilihan Retribusi
               </span>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-zinc-100 tracking-tight">
                 Paket Layanan Sesuai Kebutuhan Anda
               </h2>
               <p className="text-sm text-slate-600">
@@ -550,14 +550,14 @@ export default async function LandingPage() {
         </section>
 
         {/* ── 7. Cakupan Wilayah & Rute Operasional Depok ── */}
-        <section className="py-14 sm:py-18 px-4 sm:px-6 bg-[#f8fafb] border-b border-slate-200">
+        <section className="py-14 sm:py-18 px-4 sm:px-6 bg-slate-50 dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800">
           <div className="max-w-6xl mx-auto space-y-8">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
               <div className="space-y-1.5 max-w-2xl">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#0d7a75] block">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#0d7a75] dark:text-emerald-400 block">
                   Jangkauan Armada Depok
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-zinc-100 tracking-tight">
                   Wilayah Operasional Aktif Terlayani
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-600">
@@ -614,49 +614,49 @@ export default async function LandingPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-              <div className="p-4 sm:p-6 rounded-2xl border border-slate-200/90 bg-[#f8fafb] flex sm:flex-col items-start gap-3.5 sm:gap-0 sm:space-y-3">
+              <div className="p-4 sm:p-6 rounded-2xl border border-slate-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex sm:flex-col items-start gap-3.5 sm:gap-0 sm:space-y-3">
                 <span className="w-8 h-8 rounded-lg bg-[#0d7a75] text-white font-extrabold text-sm flex items-center justify-center shrink-0">
                   1
                 </span>
                 <div className="space-y-1">
-                  <h3 className="text-sm font-bold text-slate-900">Pendaftaran Online</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-zinc-100">Pendaftaran Online</h3>
+                  <p className="text-xs text-slate-600 dark:text-zinc-400 leading-relaxed font-normal">
                     Isi formulir pendaftaran dengan nama, alamat rumah/usaha, RT/RW, dan nomor WhatsApp aktif Anda.
                   </p>
                 </div>
               </div>
 
-              <div className="p-4 sm:p-6 rounded-2xl border border-slate-200/90 bg-[#f8fafb] flex sm:flex-col items-start gap-3.5 sm:gap-0 sm:space-y-3">
+              <div className="p-4 sm:p-6 rounded-2xl border border-slate-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex sm:flex-col items-start gap-3.5 sm:gap-0 sm:space-y-3">
                 <span className="w-8 h-8 rounded-lg bg-[#0d7a75] text-white font-extrabold text-sm flex items-center justify-center shrink-0">
                   2
                 </span>
                 <div className="space-y-1">
-                  <h3 className="text-sm font-bold text-slate-900">Verifikasi & Penentuan Rute</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-zinc-100">Verifikasi & Penentuan Rute</h3>
+                  <p className="text-xs text-slate-600 dark:text-zinc-400 leading-relaxed font-normal">
                     Petugas operasional memvalidasi lokasi penjemputan dan menetapkan hari jadwal rute yang melintas.
                   </p>
                 </div>
               </div>
 
-              <div className="p-4 sm:p-6 rounded-2xl border border-slate-200/90 bg-[#f8fafb] flex sm:flex-col items-start gap-3.5 sm:gap-0 sm:space-y-3">
+              <div className="p-4 sm:p-6 rounded-2xl border border-slate-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex sm:flex-col items-start gap-3.5 sm:gap-0 sm:space-y-3">
                 <span className="w-8 h-8 rounded-lg bg-[#0d7a75] text-white font-extrabold text-sm flex items-center justify-center shrink-0">
                   3
                 </span>
                 <div className="space-y-1">
-                  <h3 className="text-sm font-bold text-slate-900">Penjemputan Rutin</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-zinc-100">Penjemputan Rutin</h3>
+                  <p className="text-xs text-slate-600 dark:text-zinc-400 leading-relaxed font-normal">
                     Letakkan wadah sampah di depan pagar pada hari jadwal; armada kami akan mengangkut sampah secara teratur.
                   </p>
                 </div>
               </div>
 
-              <div className="p-4 sm:p-6 rounded-2xl border border-slate-200/90 bg-[#f8fafb] flex sm:flex-col items-start gap-3.5 sm:gap-0 sm:space-y-3">
+              <div className="p-4 sm:p-6 rounded-2xl border border-slate-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex sm:flex-col items-start gap-3.5 sm:gap-0 sm:space-y-3">
                 <span className="w-8 h-8 rounded-lg bg-[#0d7a75] text-white font-extrabold text-sm flex items-center justify-center shrink-0">
                   4
                 </span>
                 <div className="space-y-1">
-                  <h3 className="text-sm font-bold text-slate-900">Tagihan WhatsApp & QRIS</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-zinc-100">Tagihan WhatsApp & QRIS</h3>
+                  <p className="text-xs text-slate-600 dark:text-zinc-400 leading-relaxed font-normal">
                     Terima rincian tagihan via WhatsApp di awal bulan dan selesaikan pembayaran instan via QRIS kapan saja.
                   </p>
                 </div>
@@ -711,14 +711,14 @@ export default async function LandingPage() {
         )}
 
         {/* ── 10. Edukasi Lingkungan (Kabar & Panduan Praktis) ── */}
-        <section className="py-16 md:py-20 px-4 sm:px-6 bg-[#f8fafb] border-b border-slate-200">
+        <section className="py-16 md:py-20 px-4 sm:px-6 bg-slate-50 dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800">
           <div className="max-w-6xl mx-auto space-y-10">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
               <div className="max-w-2xl space-y-1">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#0d7a75] block">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#0d7a75] dark:text-emerald-400 block">
                   Edukasi Lingkungan
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-zinc-100 tracking-tight">
                   Kabar & Panduan Praktis Kebersihan
                 </h2>
                 <p className="text-sm text-slate-600">
@@ -797,52 +797,52 @@ export default async function LandingPage() {
             </div>
 
             <div className="space-y-3">
-              <details className="group bg-[#f8fafb] border border-slate-200 rounded-xl p-4 sm:p-5 transition-all open:bg-white open:ring-1 open:ring-[#0d7a75]">
-                <summary className="font-bold text-xs sm:text-sm text-slate-900 cursor-pointer list-none flex items-center justify-between gap-3">
+              <details className="group bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-4 sm:p-5 transition-all open:ring-1 open:ring-[#0d7a75]">
+                <summary className="font-bold text-xs sm:text-sm text-slate-900 dark:text-zinc-100 cursor-pointer list-none flex items-center justify-between gap-3">
                   <span>1. Berapa kali dalam seminggu sampah rumah tangga saya dijemput?</span>
                   <ChevronRight className="w-4 h-4 text-slate-400 group-open:rotate-90 transition-transform shrink-0" />
                 </summary>
-                <p className="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed pt-2 border-t border-slate-200/80">
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-zinc-400 mt-3 leading-relaxed pt-2 border-t border-slate-200/80 dark:border-zinc-800">
                   Untuk paket rumah tangga standar, penjemputan dilakukan secara rutin 2 hingga 3 kali seminggu sesuai jadwal zona jalan Anda (misal Senin–Rabu–Jumat atau Selasa–Kamis–Sabtu). Jam operasional armada berlangsung mulai pukul 07.00 hingga 17.00 WIB.
                 </p>
               </details>
 
-              <details className="group bg-[#f8fafb] border border-slate-200 rounded-xl p-4 sm:p-5 transition-all open:bg-white open:ring-1 open:ring-[#0d7a75]">
-                <summary className="font-bold text-xs sm:text-sm text-slate-900 cursor-pointer list-none flex items-center justify-between gap-3">
+              <details className="group bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-4 sm:p-5 transition-all open:ring-1 open:ring-[#0d7a75]">
+                <summary className="font-bold text-xs sm:text-sm text-slate-900 dark:text-zinc-100 cursor-pointer list-none flex items-center justify-between gap-3">
                   <span>2. Bagaimana jika sampah saya terlewat dan belum terangkut oleh petugas?</span>
                   <ChevronRight className="w-4 h-4 text-slate-400 group-open:rotate-90 transition-transform shrink-0" />
                 </summary>
-                <p className="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed pt-2 border-t border-slate-200/80">
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-zinc-400 mt-3 leading-relaxed pt-2 border-t border-slate-200/80 dark:border-zinc-800">
                   Bila pintu pagar terkunci atau armada belum sempat melintas, Anda dapat langsung membuat laporan melalui menu &quot;Pengaduan&quot; di situs ini atau chat ke WhatsApp CS resmi. Tim reaksi cepat kami akan melakukan penjemputan susulan maksimal 1x24 jam.
                 </p>
               </details>
 
-              <details className="group bg-[#f8fafb] border border-slate-200 rounded-xl p-4 sm:p-5 transition-all open:bg-white open:ring-1 open:ring-[#0d7a75]">
-                <summary className="font-bold text-xs sm:text-sm text-slate-900 cursor-pointer list-none flex items-center justify-between gap-3">
+              <details className="group bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-4 sm:p-5 transition-all open:ring-1 open:ring-[#0d7a75]">
+                <summary className="font-bold text-xs sm:text-sm text-slate-900 dark:text-zinc-100 cursor-pointer list-none flex items-center justify-between gap-3">
                   <span>3. Apakah UPS HERU melayani sampah skala besar (puing renovasi / tebangan pohon)?</span>
                   <ChevronRight className="w-4 h-4 text-slate-400 group-open:rotate-90 transition-transform shrink-0" />
                 </summary>
-                <p className="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed pt-2 border-t border-slate-200/80">
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-zinc-400 mt-3 leading-relaxed pt-2 border-t border-slate-200/80 dark:border-zinc-800">
                   Ya, kami melayani pengangkutan khusus volume besar (insidental) seperti puing bangunan, dahan/pohon tebangan, atau pembersihan gudang dengan tarif borongan terpisah menggunakan truk engkel/dump truck. Silakan hubungi Call Center WhatsApp untuk survei volume dan estimasi biaya.
                 </p>
               </details>
 
-              <details className="group bg-[#f8fafb] border border-slate-200 rounded-xl p-4 sm:p-5 transition-all open:bg-white open:ring-1 open:ring-[#0d7a75]">
-                <summary className="font-bold text-xs sm:text-sm text-slate-900 cursor-pointer list-none flex items-center justify-between gap-3">
+              <details className="group bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-4 sm:p-5 transition-all open:ring-1 open:ring-[#0d7a75]">
+                <summary className="font-bold text-xs sm:text-sm text-slate-900 dark:text-zinc-100 cursor-pointer list-none flex items-center justify-between gap-3">
                   <span>4. Bagaimana cara pembayaran tagihan jika warga tidak memiliki mobile banking?</span>
                   <ChevronRight className="w-4 h-4 text-slate-400 group-open:rotate-90 transition-transform shrink-0" />
                 </summary>
-                <p className="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed pt-2 border-t border-slate-200/80">
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-zinc-400 mt-3 leading-relaxed pt-2 border-t border-slate-200/80 dark:border-zinc-800">
                   Pembayaran QRIS dapat di-scan melalui dompet digital apa pun (GoPay, OVO, ShopeePay, Dana, LinkAja) atau dibantu oleh gerai minimarket/agen pembayaran terdekat. Warga juga dapat melakukan pembayaran tunai langsung di kantor operasional UPS HERU atau melalui petugas resmi berbekal kwitansi digital.
                 </p>
               </details>
 
-              <details className="group bg-[#f8fafb] border border-slate-200 rounded-xl p-4 sm:p-5 transition-all open:bg-white open:ring-1 open:ring-[#0d7a75]">
-                <summary className="font-bold text-xs sm:text-sm text-slate-900 cursor-pointer list-none flex items-center justify-between gap-3">
+              <details className="group bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-4 sm:p-5 transition-all open:ring-1 open:ring-[#0d7a75]">
+                <summary className="font-bold text-xs sm:text-sm text-slate-900 dark:text-zinc-100 cursor-pointer list-none flex items-center justify-between gap-3">
                   <span>5. Bagaimana prosedur pendaftaran kolektif satu lingkungan RT atau perumahan?</span>
                   <ChevronRight className="w-4 h-4 text-slate-400 group-open:rotate-90 transition-transform shrink-0" />
                 </summary>
-                <p className="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed pt-2 border-t border-slate-200/80">
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-zinc-400 mt-3 leading-relaxed pt-2 border-t border-slate-200/80 dark:border-zinc-800">
                   Pengurus RT/RW atau perwakilan paguyuban cluster dapat menghubungi tim kami. Kami akan melakukan survei jalur jalan, penentuan armada penjemput yang sesuai (motor roda 3 atau truk pickup), dan memberikan tarif kolektif terpadu dengan laporan rekapitulasi pembayaran bulanan.
                 </p>
               </details>
