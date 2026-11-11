@@ -32,6 +32,9 @@ model User {
   klaimDiperiksa       KlaimPetugas[] @relation("KlaimDiperiksa")
   chat                 ChatPesan[]    @relation("ChatUser")
   artikel              Artikel[]
+  sellerProfile        SellerProfile?
+  carts                Cart[]
+  orders               Order[]
 }
 
 model Kelurahan {
@@ -722,4 +725,245 @@ model PesananPickup {
   @@index([noTelepon])
   @@index([petugasId])
   @@index([kategoriPickupId])
+}
+
+// ==========================================
+// MARKETPLACE MULTI-SELLER (EKONOMI SIRKULAR)
+// ==========================================
+
+model SellerProfile {
+  id           Int           @id @default(autoincrement())
+  uuid         String        @unique @default(uuid())
+  userId       Int           @unique
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  namaToko     String
+  slug         String        @unique
+  deskripsi    String?
+  logo         String?
+  banner       String?
+  alamat       String
+  kelurahan    String?
+  kecamatan    String?
+  kota         String        @default("Kota Depok")
+  noTelepon    String
+  status       String        @default("pending") // pending | aktif | suspended | ditolak
+  bankNama     String?
+  bankRekening String?
+  bankAtasNama String?
+  saldo        Float         @default(0)
+  rating       Float         @default(5.0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  products     Product[]
+  sellerOrders SellerOrder[]
+
+  @@index([status, createdAt])
+  @@index([slug])
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  uuid      String    @unique @default(uuid())
+  nama      String
+  slug      String    @unique
+  deskripsi String?
+  icon      String?
+  aktif     Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  products  Product[]
+
+  @@index([slug, aktif])
+}
+
+model Product {
+  id          Int            @id @default(autoincrement())
+  uuid        String         @unique @default(uuid())
+  sellerId    Int
+  seller      SellerProfile  @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  categoryId  Int
+  category    Category       @relation(fields: [categoryId], references: [id])
+  nama        String
+  slug        String         @unique
+  deskripsi   String
+  harga       Float
+  stok        Int            @default(0)
+  satuan      String         @default("pcs")
+  beratGram   Int            @default(1000)
+  status      String         @default("aktif") // draft | aktif | nonaktif | arsip
+  rating      Float          @default(5.0)
+  terjual     Int            @default(0)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  images      ProductImage[]
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+
+  @@index([sellerId, status])
+  @@index([categoryId, status])
+  @@index([status, createdAt])
+  @@index([slug])
+}
+
+model ProductImage {
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique @default(uuid())
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  urutan    Int      @default(0)
+  isPrimary Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([productId, urutan])
+}
+
+model Cart {
+  id        Int        @id @default(autoincrement())
+  uuid      String     @unique @default(uuid())
+  userId    Int?
+  user      User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionId String?    @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  items     CartItem[]
+
+  @@index([userId])
+  @@index([sessionId])
+}
+
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  cartId    Int
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  jumlah    Int      @default(1)
+  catatan   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([cartId])
+  @@index([productId])
+}
+
+model Order {
+  id               Int           @id @default(autoincrement())
+  uuid             String        @unique @default(uuid())
+  noOrder          String        @unique
+  userId           Int?
+  user             User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  namaPembeli      String
+  noTelepon        String
+  email            String?
+  alamatPengiriman String
+  kelurahan        String?
+  kecamatan        String?
+  kodePos          String?
+  totalProduk      Float
+  totalOngkir      Float         @default(0)
+  totalBayar       Float
+  status           String        @default("pending_payment") // pending_payment | paid | processing | shipped | completed | cancelled | expired
+  catatan          String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  sellerOrders     SellerOrder[]
+  payments         Payment[]
+
+  @@index([status, createdAt])
+  @@index([userId])
+  @@index([noOrder])
+  @@index([noTelepon])
+}
+
+model SellerOrder {
+  id            Int           @id @default(autoincrement())
+  uuid          String        @unique @default(uuid())
+  noSubOrder    String        @unique
+  orderId       Int
+  order         Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  sellerId      Int
+  seller        SellerProfile @relation(fields: [sellerId], references: [id])
+  totalHarga    Float
+  ongkir        Float         @default(0)
+  status        String        @default("pending_payment") // pending_payment | paid | processing | shipped | completed | cancelled
+  catatanSeller String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  items         OrderItem[]
+  shipment      Shipment?
+
+  @@index([orderId])
+  @@index([sellerId, status])
+  @@index([noSubOrder])
+}
+
+model OrderItem {
+  id            Int         @id @default(autoincrement())
+  uuid          String      @unique @default(uuid())
+  sellerOrderId Int
+  sellerOrder   SellerOrder @relation(fields: [sellerOrderId], references: [id], onDelete: Cascade)
+  productId     Int?
+  product       Product?    @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  namaProduk    String
+  hargaSatuan   Float
+  beratGram     Int         @default(1000)
+  satuan        String      @default("pcs")
+  foto          String?
+
+  jumlah        Int         @default(1)
+  subtotal      Float
+  createdAt     DateTime    @default(now())
+
+  @@index([sellerOrderId])
+  @@index([productId])
+}
+
+model Payment {
+  id           Int       @id @default(autoincrement())
+  uuid         String    @unique @default(uuid())
+  orderId      Int
+  order        Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  noTransaksi  String    @unique
+  metodeBayar  String
+  nominal      Float
+  status       String    @default("pending") // pending | success | failed | expired | refunded
+  gatewayRef   String?
+  vaNumber     String?
+  qrString     String?
+  waktuExpired DateTime?
+  waktuBayar   DateTime?
+  rawResponse  String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([orderId])
+  @@index([noTransaksi])
+  @@index([status])
+}
+
+model Shipment {
+  id            Int         @id @default(autoincrement())
+  uuid          String      @unique @default(uuid())
+  sellerOrderId Int         @unique
+  sellerOrder   SellerOrder @relation(fields: [sellerOrderId], references: [id], onDelete: Cascade)
+  kurirNama     String      @default("Kurir Toko")
+  noResi        String?
+  ongkir        Float       @default(0)
+  estimasiTiba  String?
+  status        String      @default("menunggu_dikirim") // menunggu_dikirim | dalam_pengiriman | terkirim | gagal
+  dikirimAt     DateTime?
+  diterimaAt    DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([status])
+  @@index([noResi])
 }
