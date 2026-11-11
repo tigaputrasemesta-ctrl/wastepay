@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import PublicNavbar from "@/components/PublicNavbar";
 import {
   ShoppingBag,
@@ -271,12 +272,12 @@ export default function MarketplacePage() {
                 >
                   <div>
                     {/* Foto Produk */}
-                    <div className="h-48 w-full bg-slate-100 dark:bg-zinc-800 relative overflow-hidden">
+                    <Link href={`/marketplace/${p.slug}`} className="block h-48 w-full bg-slate-100 dark:bg-zinc-800 relative overflow-hidden group/img">
                       {p.foto ? (
                         <img
                           src={p.foto}
                           alt={p.nama}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-slate-400">
@@ -288,25 +289,27 @@ export default function MarketplacePage() {
                           Stok: {p.stok} {p.satuan}
                         </span>
                       </div>
-                    </div>
+                    </Link>
 
                     {/* Konten */}
                     <div className="p-4">
                       <div className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide mb-1">
                         {p.kategori.replace(/_/g, " ")}
                       </div>
-                      <h3 className="font-bold text-sm text-slate-900 dark:text-zinc-100 mb-2 line-clamp-1">
-                        {p.nama}
-                      </h3>
-                      <p className="text-xs text-slate-500 dark:text-zinc-400 line-clamp-3 leading-relaxed mb-3">
+                      <Link href={`/marketplace/${p.slug}`}>
+                        <h3 className="font-bold text-sm text-slate-900 dark:text-zinc-100 mb-2 line-clamp-1 hover:text-emerald-600 transition-colors">
+                          {p.nama}
+                        </h3>
+                      </Link>
+                      <p className="text-xs text-slate-500 dark:text-zinc-400 line-clamp-2 leading-relaxed mb-3">
                         {p.deskripsi}
                       </p>
                     </div>
                   </div>
 
                   {/* Footer & Tombol Beli */}
-                  <div className="p-4 pt-0">
-                    <div className="flex items-baseline justify-between mb-3">
+                  <div className="p-4 pt-0 space-y-2.5">
+                    <div className="flex items-baseline justify-between">
                       <div>
                         <span className="text-lg font-extrabold text-emerald-700 dark:text-emerald-400">
                           Rp {p.harga.toLocaleString("id-ID")}
@@ -315,37 +318,35 @@ export default function MarketplacePage() {
                       </div>
                     </div>
 
-                    {inCart ? (
-                      <div className="flex items-center justify-between border border-emerald-600 rounded-xl p-1 bg-emerald-50/50 dark:bg-emerald-950/20">
-                        <button
-                          type="button"
-                          onClick={() => updateQuantity(p.id, -1)}
-                          className="w-8 h-8 rounded-lg bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 font-bold flex items-center justify-center hover:bg-slate-100"
-                        >
-                          <Minus className="w-3.5 h-3.5" />
-                        </button>
-                        <span className="font-bold text-xs text-emerald-800 dark:text-emerald-300">
-                          {inCart.jumlah} di Keranjang
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => updateQuantity(p.id, 1)}
-                          className="w-8 h-8 rounded-lg bg-emerald-600 text-white font-bold flex items-center justify-center hover:bg-emerald-700"
-                        >
-                          <Plus className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => addToCart(p)}
-                        disabled={p.stok <= 0}
-                        className="w-full py-2.5 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-700 text-white text-xs flex items-center justify-center gap-1.5 shadow-sm transition-colors disabled:opacity-50"
+                    <div className="grid grid-cols-2 gap-2">
+                      <Link
+                        href={`/marketplace/${p.slug}`}
+                        className="py-2.5 rounded-xl font-bold bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-200 text-xs flex items-center justify-center gap-1 transition-colors text-center"
                       >
-                        <ShoppingCart className="w-3.5 h-3.5" />
-                        {p.stok <= 0 ? "Habis" : "Beli Sekarang"}
-                      </button>
-                    )}
+                        <span>Buka Produk</span>
+                      </Link>
+
+                      {inCart ? (
+                        <button
+                          type="button"
+                          onClick={() => setCartOpen(true)}
+                          className="py-2.5 rounded-xl font-bold bg-emerald-700 text-white text-xs flex items-center justify-center gap-1 shadow-xs"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>({inCart.jumlah}) Buka</span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => addToCart(p)}
+                          disabled={p.stok <= 0}
+                          className="py-2.5 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-700 text-white text-xs flex items-center justify-center gap-1.5 shadow-xs transition-colors disabled:opacity-50"
+                        >
+                          <ShoppingCart className="w-3.5 h-3.5" />
+                          <span>{p.stok <= 0 ? "Habis" : "+ Keranjang"}</span>
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               );

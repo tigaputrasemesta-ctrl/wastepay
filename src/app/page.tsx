@@ -19,6 +19,7 @@ import {
   AlertCircle,
   ShoppingBag,
   PackageCheck,
+  Leaf,
 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
@@ -143,24 +144,26 @@ export default async function LandingPage() {
                     <PackageCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                     <span>Pickup Sekali Angkut</span>
                   </Link>
-
-                  <Link
-                    href="/marketplace"
-                    className="w-full sm:w-auto px-5 py-3.5 bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-800 dark:text-zinc-200 border-2 border-slate-200 dark:border-zinc-700 hover:border-slate-300 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-xs active:scale-95"
-                  >
-                    <ShoppingBag className="w-4 h-4 text-[#0d7a75] dark:text-emerald-400 shrink-0" />
-                    <span>Toko Kompos & Produk</span>
-                  </Link>
                 </div>
 
-                {/* Subtil Pengaduan Warga */}
-                <p className="text-xs text-slate-500 flex items-center gap-1.5 pt-0.5">
-                  <span>Sudah berlangganan dan ada kendala sampah?</span>
-                  <Link href="/pengaduan" className="text-rose-600 hover:text-rose-700 font-bold hover:underline inline-flex items-center gap-0.5">
-                    <span>Pengaduan Warga</span>
-                    <ChevronRight className="w-3 h-3" />
-                  </Link>
-                </p>
+                {/* Info Marketplace Produk & Pengaduan Warga */}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs text-slate-500 pt-1">
+                  <p className="flex items-center gap-1.5">
+                    <span>Butuh pupuk kompos atau produk olahan?</span>
+                    <a href="#produk-olahan" className="text-[#0d7a75] hover:underline font-bold inline-flex items-center gap-0.5">
+                      <span>Lihat Produk Olahan</span>
+                      <ChevronRight className="w-3 h-3" />
+                    </a>
+                  </p>
+                  <span className="hidden sm:inline text-slate-300 dark:text-zinc-700">•</span>
+                  <p className="flex items-center gap-1.5">
+                    <span>Sudah langganan?</span>
+                    <Link href="/pengaduan" className="text-rose-600 hover:text-rose-700 font-bold hover:underline inline-flex items-center gap-0.5">
+                      <span>Pengaduan Warga</span>
+                      <ChevronRight className="w-3 h-3" />
+                    </Link>
+                  </p>
+                </div>
               </div>
 
               {/* Metadata strip (Inspired by BeCycle specs row) */}
@@ -555,6 +558,248 @@ export default async function LandingPage() {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── 6b. Produk Resmi Olahan TPS 3R UPS HERU (Kotak2 Produk Seperti Paket Layanan) ── */}
+        <section id="produk-olahan" className="py-16 md:py-20 px-4 sm:px-6 bg-white dark:bg-zinc-900 border-b border-slate-200 dark:border-zinc-800">
+          <div className="max-w-6xl mx-auto space-y-12">
+            <div className="text-center max-w-2xl mx-auto space-y-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#0d7a75] dark:text-emerald-400 flex items-center justify-center gap-1.5">
+                <Leaf className="w-3.5 h-3.5" />
+                <span>Ekonomi Sirkular Kota Depok</span>
+              </span>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-zinc-100 tracking-tight">
+                Produk Resmi Olahan TPS 3R UPS HERU
+              </h2>
+              <p className="text-sm text-slate-600 dark:text-zinc-400">
+                Pilih produk turunan hasil biokonversi dan daur ulang sampah terpilah. Setiap pembelian langsung membuka halaman produk resmi untuk pemesanan instan tanpa repot.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6 items-stretch">
+              {/* Box 1: Pupuk Kompos Organik 5kg */}
+              <div className="group bg-slate-50 dark:bg-zinc-950 border-2 border-slate-200 dark:border-zinc-800 hover:border-[#0d7a75] dark:hover:border-emerald-500 rounded-2xl overflow-hidden flex flex-col justify-between shadow-xs hover:shadow-xl transition-all duration-300">
+                <div className="bg-[#0d7a75] text-white text-[11px] font-extrabold uppercase py-1.5 px-4 text-center tracking-wider flex items-center justify-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+                  <span>Pilihan Terfavorit Pekarangan</span>
+                </div>
+
+                <div className="relative aspect-[16/10] w-full bg-slate-900 overflow-hidden border-b border-slate-100 dark:border-zinc-800">
+                  <img
+                    src="https://images.unsplash.com/photo-1585336261026-699708785089?auto=format&fit=crop&w=600&q=80"
+                    alt="Pupuk Kompos Organik TPS 3R UPS HERU 5kg"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-95"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
+                  <span className="absolute bottom-2.5 left-3.5 text-[11px] font-bold text-white drop-shadow flex items-center gap-1.5 z-10">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    Pupuk Organik Matang (5 Kg)
+                  </span>
+                </div>
+
+                <div className="p-5 sm:p-7 flex-1 flex flex-col justify-between space-y-4">
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-lg font-extrabold text-slate-900 dark:text-white">
+                        Pupuk Kompos Organik (5 kg)
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1">
+                        Fermentasi sampah organik dapur warga TPS 3R Kalibaru
+                      </p>
+                    </div>
+                    <div className="py-2.5 border-y border-slate-200/80 dark:border-zinc-800">
+                      <span className="text-xs text-slate-400 font-medium">Harga Resmi</span>
+                      <div className="flex items-baseline gap-1 mt-0.5">
+                        <span className="text-3xl font-extrabold text-slate-900 dark:text-white">Rp 25.000</span>
+                        <span className="text-xs text-slate-500">/ sak</span>
+                      </div>
+                    </div>
+                    <ul className="space-y-2.5 text-xs text-slate-600 dark:text-zinc-300 font-medium">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                        <span>Kaya unsur hara makro & mikro alami</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                        <span>Menggemburkan tanah & menyuburkan tanaman</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                        <span>Steril dari bakteri jahat & bebas biji gulma</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#0d7a75] shrink-0 mt-0.5" />
+                        <span>Bisa diantar kurir atau ambil di lokasi TPS 3R</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="pt-4">
+                    <Link
+                      href="/marketplace/pupuk-kompos-organik-5kg"
+                      className="w-full py-3.5 bg-[#0d7a75] hover:bg-[#0b6460] text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 active:scale-95"
+                    >
+                      <ShoppingBag className="w-4 h-4" />
+                      <span>Buka Produk & Pesan</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              {/* Box 2: Pupuk Organik Cair (POC) 1 Liter */}
+              <div className="group bg-slate-50 dark:bg-zinc-950 border-2 border-slate-200 dark:border-zinc-800 hover:border-emerald-500 rounded-2xl overflow-hidden flex flex-col justify-between shadow-xs hover:shadow-xl transition-all duration-300">
+                <div className="bg-emerald-700 text-white text-[11px] font-extrabold uppercase py-1.5 px-4 text-center tracking-wider flex items-center justify-center gap-1.5">
+                  <Leaf className="w-3.5 h-3.5 text-emerald-300 shrink-0" />
+                  <span>Konsentrat Nutrisi Daun & Akar</span>
+                </div>
+
+                <div className="relative aspect-[16/10] w-full bg-slate-900 overflow-hidden border-b border-slate-100 dark:border-zinc-800">
+                  <img
+                    src="https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=600&q=80"
+                    alt="Pupuk Organik Cair POC UPS HERU 1 Liter"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-95"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
+                  <span className="absolute bottom-2.5 left-3.5 text-[11px] font-bold text-white drop-shadow flex items-center gap-1.5 z-10">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    Bio-Nutrisi Tanaman (1 Liter)
+                  </span>
+                </div>
+
+                <div className="p-5 sm:p-7 flex-1 flex flex-col justify-between space-y-4">
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-lg font-extrabold text-slate-900 dark:text-white">
+                        Pupuk Organik Cair (POC) 1L
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1">
+                        Konsentrat mikroorganisme baik siap campur semprot
+                      </p>
+                    </div>
+                    <div className="py-2.5 border-y border-slate-200/80 dark:border-zinc-800">
+                      <span className="text-xs text-slate-400 font-medium">Harga Resmi</span>
+                      <div className="flex items-baseline gap-1 mt-0.5">
+                        <span className="text-3xl font-extrabold text-slate-900 dark:text-white">Rp 35.000</span>
+                        <span className="text-xs text-slate-500">/ botol</span>
+                      </div>
+                    </div>
+                    <ul className="space-y-2.5 text-xs text-slate-600 dark:text-zinc-300 font-medium">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                        <span>Kaya mikroba aktif pemacu pertumbuhan</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                        <span>Mudah diserap daun melalui stomata</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                        <span>Sangat hemat, 1 botol menghasilkan puluhan liter</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                        <span>Aman untuk tanaman sayur konsumsi & hias</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="pt-4">
+                    <Link
+                      href="/marketplace/poc-nutrisi-tanaman-1l"
+                      className="w-full py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 active:scale-95"
+                    >
+                      <ShoppingBag className="w-4 h-4" />
+                      <span>Buka Produk & Pesan</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              {/* Box 3: Tempat Sampah Pilah 2-in-1 */}
+              <div className="group bg-slate-50 dark:bg-zinc-950 border-2 border-slate-200 dark:border-zinc-800 hover:border-teal-500 rounded-2xl overflow-hidden flex flex-col justify-between shadow-xs hover:shadow-xl transition-all duration-300">
+                <div className="bg-teal-700 text-white text-[11px] font-extrabold uppercase py-1.5 px-4 text-center tracking-wider flex items-center justify-center gap-1.5">
+                  <PackageCheck className="w-3.5 h-3.5 text-teal-300 shrink-0" />
+                  <span>Solusi Pilah Praktis Keluarga</span>
+                </div>
+
+                <div className="relative aspect-[16/10] w-full bg-slate-900 overflow-hidden border-b border-slate-100 dark:border-zinc-800">
+                  <img
+                    src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=600&q=80"
+                    alt="Tempat Sampah Pilah 2 in 1 UPS HERU"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-95"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
+                  <span className="absolute bottom-2.5 left-3.5 text-[11px] font-bold text-white drop-shadow flex items-center gap-1.5 z-10">
+                    <span className="w-2 h-2 rounded-full bg-teal-400" />
+                    Kapasitas 2×20 Liter Pedal
+                  </span>
+                </div>
+
+                <div className="p-5 sm:p-7 flex-1 flex flex-col justify-between space-y-4">
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-lg font-extrabold text-slate-900 dark:text-white">
+                        Tempat Sampah Pilah 2-in-1
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1">
+                        Kompartemen terpisah pedal higienis untuk dapur & ruang kerja
+                      </p>
+                    </div>
+                    <div className="py-2.5 border-y border-slate-200/80 dark:border-zinc-800">
+                      <span className="text-xs text-slate-400 font-medium">Harga Resmi</span>
+                      <div className="flex items-baseline gap-1 mt-0.5">
+                        <span className="text-3xl font-extrabold text-slate-900 dark:text-white">Rp 120.000</span>
+                        <span className="text-xs text-slate-500">/ set</span>
+                      </div>
+                    </div>
+                    <ul className="space-y-2.5 text-xs text-slate-600 dark:text-zinc-300 font-medium">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-teal-600 shrink-0 mt-0.5" />
+                        <span>Dua ruang pisah: Organik & Anorganik</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-teal-600 shrink-0 mt-0.5" />
+                        <span>Sistem pedal kaki higienis tanpa sentuh tangan</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-teal-600 shrink-0 mt-0.5" />
+                        <span>Bahan kokoh berkualitas tahan lama</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-teal-600 shrink-0 mt-0.5" />
+                        <span>Mempermudah pemilahan langsung dari rumah</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="pt-4">
+                    <Link
+                      href="/marketplace/tempat-sampah-pilah-2in1"
+                      className="w-full py-3.5 bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 active:scale-95"
+                    >
+                      <ShoppingBag className="w-4 h-4" />
+                      <span>Buka Produk & Pesan</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Link to Full Marketplace Catalog */}
+            <div className="text-center pt-2">
+              <Link
+                href="/marketplace"
+                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-200 font-bold text-xs sm:text-sm transition-all shadow-xs active:scale-95"
+              >
+                <ShoppingBag className="w-4 h-4 text-[#0d7a75] dark:text-emerald-400" />
+                <span>Lihat Semua Produk (Maggot BSF, Kompos Curah 20kg & Kantong Ramah Lingkungan)</span>
+                <ChevronRight className="w-4 h-4" />
+              </Link>
             </div>
           </div>
         </section>
