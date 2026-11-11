@@ -45,6 +45,8 @@ const PAGE_ROLES: Record<string, number> = {
   "/audit-log": 100, // superadmin only
   "/manajemen-artikel": 50, // admin+: artikel & berita edukasi
   "/data-kontrol": 50, // admin+: kontrol data kontak hp admin & petugas
+  "/manajemen-marketplace": 50, // admin+: kelola toko resmi & pesanan
+  "/pickup-insidental": 50, // admin+: kelola layanan pickup sampah
 };
 
 // API routes that require specific roles.
@@ -270,6 +272,24 @@ const API_ROLE_MAP: Record<string, number> = {
   "PUT:/api/admin/artikel/": 50,
   "DELETE:/api/admin/artikel/": 50,
 
+  // Admin Marketplace
+  "GET:/api/admin/marketplace": 50,
+  "GET:/api/admin/marketplace/": 50,
+  "POST:/api/admin/marketplace": 50,
+  "POST:/api/admin/marketplace/": 50,
+  "PUT:/api/admin/marketplace/": 50,
+  "PATCH:/api/admin/marketplace/": 50,
+  "DELETE:/api/admin/marketplace/": 50,
+
+  // Admin Pickup Insidental
+  "GET:/api/admin/pickup": 50,
+  "GET:/api/admin/pickup/": 50,
+  "POST:/api/admin/pickup": 50,
+  "POST:/api/admin/pickup/": 50,
+  "PUT:/api/admin/pickup/": 50,
+  "PATCH:/api/admin/pickup/": 50,
+  "DELETE:/api/admin/pickup/": 50,
+
   // Peta Pins Ringan (Petugas+)
   "GET:/api/peta": 10,
   "GET:/api/peta/": 10,
@@ -353,6 +373,8 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/publik") ||
     pathname.startsWith("/api/mobile") ||
+    pathname.startsWith("/api/marketplace") ||
+    pathname.startsWith("/api/pickup") ||
     pathname.startsWith("/api/pembayaran/search") ||
     pathname.startsWith("/api/integrasi/google-contacts/callback")
   ) {
