@@ -2,7 +2,6 @@
 
 import { useEffect, useState, use } from "react";
 import Link from "next/link";
-import PublicNavbar from "@/components/PublicNavbar";
 import {
   ShoppingBag,
   CheckCircle2,
@@ -117,39 +116,31 @@ export default function MarketplaceOrderDetailPage({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 flex flex-col font-sans transition-colors">
-        <PublicNavbar />
-        <div className="flex-1 flex items-center justify-center p-8">
-          <div className="text-center space-y-3">
-            <div className="w-10 h-10 border-4 border-[#0d7a75] border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="text-xs font-bold text-slate-500 dark:text-zinc-400">Memuat rincian pesanan toko resmi...</p>
-          </div>
-        </div>
+      <div className="py-20 text-center space-y-3">
+        <div className="w-10 h-10 border-4 border-[#0d7a75] border-t-transparent rounded-full animate-spin mx-auto" />
+        <p className="text-xs font-bold text-slate-500 dark:text-zinc-400">Memuat rincian pesanan toko resmi...</p>
       </div>
     );
   }
 
   if (error || !order) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 flex flex-col font-sans transition-colors">
-        <PublicNavbar />
-        <div className="flex-1 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-sm">
-            <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-3" />
-            <h2 className="text-lg font-bold text-slate-900 dark:text-zinc-100 mb-1">
-              Pesanan Tidak Ditemukan
-            </h2>
-            <p className="text-xs text-slate-500 dark:text-zinc-400 mb-6">
-              Nomor pesanan <strong>{noPesanan}</strong> tidak ditemukan di database resmi.
-            </p>
-            <Link
-              href="/marketplace"
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#0d7a75] text-white text-xs font-bold hover:bg-[#0b6460] w-full"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Kembali ke Katalog Toko
-            </Link>
-          </div>
+      <div className="max-w-md mx-auto py-16 text-center">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-sm">
+          <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-3" />
+          <h2 className="text-lg font-bold text-slate-900 dark:text-zinc-100 mb-1">
+            Pesanan Tidak Ditemukan
+          </h2>
+          <p className="text-xs text-slate-500 dark:text-zinc-400 mb-6">
+            Nomor pesanan <strong>{noPesanan}</strong> tidak ditemukan di database resmi.
+          </p>
+          <Link
+            href="/marketplace"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#0d7a75] text-white text-xs font-bold hover:bg-[#0b6460] w-full"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            Kembali ke Katalog Toko
+          </Link>
         </div>
       </div>
     );
@@ -167,11 +158,8 @@ export default function MarketplaceOrderDetailPage({
   const isAmbilSendiri = (order.catatan || "").includes("Ambil Sendiri");
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 text-slate-800 dark:text-zinc-100 flex flex-col font-sans transition-colors">
-      <PublicNavbar />
-
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8 flex-1 w-full space-y-6">
-        {/* Top Navigation */}
+    <div className="max-w-3xl mx-auto w-full space-y-6">
+      {/* Top Navigation */}
         <div className="flex items-center justify-between gap-3">
           <Link
             href="/marketplace"
@@ -397,7 +385,6 @@ export default function MarketplaceOrderDetailPage({
             <span>Hubungi WhatsApp Admin Toko</span>
           </a>
         </div>
-      </main>
-    </div>
-  );
-}
+      </div>
+    );
+  }

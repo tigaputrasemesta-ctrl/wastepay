@@ -3,7 +3,6 @@
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import PublicNavbar from "@/components/PublicNavbar";
 import {
   ShoppingBag,
   ArrowLeft,
@@ -166,36 +165,30 @@ export default function ProdukDetailPage({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-zinc-950">
-        <PublicNavbar />
-        <div className="max-w-6xl mx-auto px-4 py-20 text-center">
-          <div className="w-10 h-10 border-4 border-[#0d7a75] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-xs font-bold text-slate-500">Memuat informasi produk resmi...</p>
-        </div>
+      <div className="py-20 text-center">
+        <div className="w-10 h-10 border-4 border-[#0d7a75] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+        <p className="text-xs font-bold text-slate-500">Memuat informasi produk resmi...</p>
       </div>
     );
   }
 
   if (notFound || !product) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-zinc-950">
-        <PublicNavbar />
-        <div className="max-w-lg mx-auto px-4 py-24 text-center space-y-4">
-          <div className="w-16 h-16 rounded-3xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 flex items-center justify-center mx-auto">
-            <AlertCircle className="w-8 h-8" />
-          </div>
-          <h2 className="text-xl font-black text-slate-900 dark:text-white">Produk Tidak Ditemukan</h2>
-          <p className="text-xs text-slate-500 dark:text-zinc-400">
-            Produk olahan yang Anda cari mungkin sedang habis atau tautan telah berpindah.
-          </p>
-          <Link
-            href="/marketplace"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0d7a75] text-white rounded-xl text-xs font-bold shadow-xs hover:bg-[#0b6460] transition-all"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Kembali ke Katalog Toko</span>
-          </Link>
+      <div className="max-w-lg mx-auto py-16 text-center space-y-4">
+        <div className="w-16 h-16 rounded-3xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 flex items-center justify-center mx-auto">
+          <AlertCircle className="w-8 h-8" />
         </div>
+        <h2 className="text-xl font-black text-slate-900 dark:text-white">Produk Tidak Ditemukan</h2>
+        <p className="text-xs text-slate-500 dark:text-zinc-400">
+          Produk olahan yang Anda cari mungkin sedang habis atau tautan telah berpindah.
+        </p>
+        <Link
+          href="/marketplace"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0d7a75] text-white rounded-xl text-xs font-bold shadow-xs hover:bg-[#0b6460] transition-all"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Kembali ke Katalog Toko</span>
+        </Link>
       </div>
     );
   }
@@ -205,29 +198,26 @@ export default function ProdukDetailPage({
   )}`;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 flex flex-col justify-between">
-      <div>
-        <PublicNavbar />
-
-        {/* Breadcrumb Navigation */}
-        <div className="bg-white dark:bg-zinc-900 border-b border-slate-200 dark:border-zinc-800 py-3 px-4 sm:px-6">
-          <div className="max-w-6xl mx-auto flex items-center gap-1.5 text-xs text-slate-500 dark:text-zinc-400">
-            <Link href="/" className="hover:text-[#0d7a75] dark:hover:text-emerald-400">
-              Beranda
-            </Link>
-            <ChevronRight className="w-3.5 h-3.5" />
-            <Link href="/marketplace" className="hover:text-[#0d7a75] dark:hover:text-emerald-400">
-              Marketplace Toko Resmi
-            </Link>
-            <ChevronRight className="w-3.5 h-3.5" />
-            <span className="font-bold text-slate-800 dark:text-zinc-200 truncate max-w-xs sm:max-w-md">
-              {product.nama}
-            </span>
-          </div>
+    <div className="space-y-6">
+      {/* Breadcrumb Navigation */}
+      <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl py-3 px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto flex items-center gap-1.5 text-xs text-slate-500 dark:text-zinc-400">
+          <Link href="/" className="hover:text-[#0d7a75] dark:hover:text-emerald-400">
+            Beranda
+          </Link>
+          <ChevronRight className="w-3.5 h-3.5" />
+          <Link href="/marketplace" className="hover:text-[#0d7a75] dark:hover:text-emerald-400">
+            Marketplace Toko Resmi
+          </Link>
+          <ChevronRight className="w-3.5 h-3.5" />
+          <span className="font-bold text-slate-800 dark:text-zinc-200 truncate max-w-xs sm:max-w-md">
+            {product.nama}
+          </span>
         </div>
+      </div>
 
-        {/* Main Product Container */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-12 space-y-12">
+      {/* Main Product Container */}
+      <div className="max-w-6xl mx-auto space-y-12">
           <div className="grid md:grid-cols-12 gap-8 lg:gap-12 items-start">
             {/* Left Column: Visual, Seller Info & Specs (7 cols) */}
             <div className="md:col-span-7 space-y-6">
@@ -755,6 +745,5 @@ export default function ProdukDetailPage({
           )}
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }

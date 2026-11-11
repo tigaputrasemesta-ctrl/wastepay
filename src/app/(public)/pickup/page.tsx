@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import PublicNavbar from "@/components/PublicNavbar";
 import {
   Truck,
   Hammer,
@@ -226,11 +225,9 @@ export default function PickupSekaliAngkutPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 text-slate-800 dark:text-zinc-100 flex flex-col font-sans transition-colors">
-      <PublicNavbar />
-
+    <div className="space-y-8">
       {/* Hero Header */}
-      <section className="bg-gradient-to-b from-emerald-600 via-emerald-700 to-teal-800 text-white py-12 px-4 sm:px-6 relative overflow-hidden">
+      <section className="bg-gradient-to-b from-emerald-600 via-emerald-700 to-teal-800 text-white py-10 px-6 sm:px-8 relative overflow-hidden rounded-3xl shadow-sm text-center">
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-md text-emerald-100 text-xs font-semibold mb-4 border border-white/20">
             <Sparkles className="w-3.5 h-3.5 text-amber-300" />
@@ -246,7 +243,7 @@ export default function PickupSekaliAngkutPage() {
       </section>
 
       {/* Main Container */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 -mt-6 mb-16 relative z-20 w-full">
+      <div className="max-w-4xl mx-auto w-full space-y-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           {errorMsg && (
             <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-sm flex items-start gap-3 shadow-sm">
@@ -751,7 +748,7 @@ export default function PickupSekaliAngkutPage() {
             </div>
           </div>
         </section>
-      </main>
+      </div>
     </div>
   );
 }

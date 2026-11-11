@@ -2,7 +2,6 @@
 
 import { useEffect, useState, use } from "react";
 import Link from "next/link";
-import PublicNavbar from "@/components/PublicNavbar";
 import {
   Truck,
   CheckCircle2,
@@ -69,39 +68,31 @@ export default function PickupOrderDetailPage({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 flex flex-col font-sans transition-colors">
-        <PublicNavbar />
-        <div className="flex-1 flex items-center justify-center p-8">
-          <div className="text-center space-y-3">
-            <div className="w-10 h-10 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="text-sm text-slate-500 dark:text-zinc-400">Memuat status penjemputan...</p>
-          </div>
-        </div>
+      <div className="py-20 text-center space-y-3">
+        <div className="w-10 h-10 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto" />
+        <p className="text-sm text-slate-500 dark:text-zinc-400">Memuat status penjemputan...</p>
       </div>
     );
   }
 
   if (error || !order) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 flex flex-col font-sans transition-colors">
-        <PublicNavbar />
-        <div className="flex-1 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 max-w-md w-full text-center shadow-sm">
-            <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-3" />
-            <h2 className="text-lg font-bold text-slate-900 dark:text-zinc-100 mb-1">
-              Pesanan Tidak Ditemukan
-            </h2>
-            <p className="text-xs text-slate-500 dark:text-zinc-400 mb-6">
-              Nomor order <strong>{noOrder}</strong> tidak terdaftar dalam sistem.
-            </p>
-            <Link
-              href="/pickup"
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700 w-full"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Kembali ke Form Pemesanan
-            </Link>
-          </div>
+      <div className="max-w-md mx-auto py-16 text-center">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 shadow-sm">
+          <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-3" />
+          <h2 className="text-lg font-bold text-slate-900 dark:text-zinc-100 mb-1">
+            Pesanan Tidak Ditemukan
+          </h2>
+          <p className="text-xs text-slate-500 dark:text-zinc-400 mb-6">
+            Nomor order <strong>{noOrder}</strong> tidak terdaftar dalam sistem.
+          </p>
+          <Link
+            href="/pickup"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700 w-full"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            Kembali ke Form Pemesanan
+          </Link>
         </div>
       </div>
     );
@@ -112,11 +103,8 @@ export default function PickupOrderDetailPage({
   const isCanceled = order.status === "dibatalkan";
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 text-slate-800 dark:text-zinc-100 flex flex-col font-sans transition-colors">
-      <PublicNavbar />
-
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8 flex-1 w-full">
-        {/* Header Breadcrumb & Actions */}
+    <div className="max-w-3xl mx-auto w-full space-y-6">
+      {/* Header Breadcrumb & Actions */}
         <div className="flex items-center justify-between gap-3 mb-6">
           <Link
             href="/pickup"
@@ -392,7 +380,6 @@ export default function PickupOrderDetailPage({
             </div>
           </div>
         </div>
-      </main>
-    </div>
-  );
-}
+      </div>
+    );
+  }

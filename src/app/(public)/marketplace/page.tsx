@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import PublicNavbar from "@/components/PublicNavbar";
 import {
   ShoppingBag,
   Sparkles,
@@ -217,11 +216,9 @@ export default function MarketplacePage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 text-slate-800 dark:text-zinc-100 flex flex-col font-sans transition-colors">
-      <PublicNavbar />
-
+    <div className="space-y-8">
       {/* Hero Header with Single Seller Identity */}
-      <section className="bg-gradient-to-b from-[#0a524e] via-[#0d7a75] to-slate-900 text-white py-12 px-4 sm:px-6 relative overflow-hidden">
+      <section className="bg-gradient-to-b from-[#0a524e] via-[#0d7a75] to-slate-900 text-white py-10 px-6 sm:px-8 relative overflow-hidden rounded-3xl shadow-sm">
         <div className="max-w-5xl mx-auto text-center relative z-10 space-y-3">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-md text-emerald-100 text-xs font-bold border border-white/20">
             <ShieldCheck className="w-4 h-4 text-amber-300" />
@@ -265,7 +262,7 @@ export default function MarketplacePage() {
       </section>
 
       {/* Main Content */}
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 flex-1 w-full">
+      <div className="max-w-5xl mx-auto w-full">
         {/* Category Pills */}
         <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 no-scrollbar">
           {KATEGORI_OPTIONS.map((cat) => (
@@ -366,7 +363,7 @@ export default function MarketplacePage() {
             ))}
           </div>
         )}
-      </main>
+      </div>
 
       {/* Floating Cart Button */}
       {cart.length > 0 && (
