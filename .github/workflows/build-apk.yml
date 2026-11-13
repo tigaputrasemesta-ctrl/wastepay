@@ -60,7 +60,7 @@ jobs:
           GRADLE_OPTS: "-Dorg.gradle.jvmargs=\"-Xmx3072m -XX:MaxMetaspaceSize=1024m -XX:+UseG1GC\""
         run: |
           cd mobile_petugas
-          flutter build apk --release
+          flutter build apk --release --android-skip-build-dependency-validation
           cd ..
           mkdir -p public/apk
           
@@ -81,7 +81,7 @@ jobs:
           GRADLE_OPTS: "-Dorg.gradle.jvmargs=\"-Xmx3072m -XX:MaxMetaspaceSize=1024m -XX:+UseG1GC\""
         run: |
           cd mobile_petugas
-          flutter build apk --target lib/main_admin.dart -PcustomAppId=id.o2whero.admin -PcustomAppName="UPS HERU Admin" --release
+          flutter build apk --target lib/main_admin.dart -PcustomAppId=id.o2whero.admin -PcustomAppName="UPS HERU Admin" --release --android-skip-build-dependency-validation
           cd ..
           
           ADMIN_APK=$(find mobile_petugas/build -name "*release*.apk" 2>/dev/null | head -n 1)
