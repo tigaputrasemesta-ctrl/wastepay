@@ -16,27 +16,17 @@ import '../../services/driver_actions_service.dart';
 import '../../services/external_navigation_service.dart';
 import '../../services/routing_service.dart';
 import '../../widgets/status_badge.dart';
-import '../../widgets/swipe_to_pickup_slider.dart';
 import '../absensi/absensi_screen.dart';
 import '../pengangkutan/pengangkutan_detail_screen.dart';
 
-/// Model insiden kendala jalan ala Waze (Community Hazard Pin)
-class HazardIncident {
-  final String id;
-  final String label;
-  final String emoji;
-  final LatLng point;
-  final DateTime time;
-
-  HazardIncident({
-    required this.id,
-    required this.label,
-    required this.emoji,
-    required this.point,
-    required this.time,
-  });
-}
-
+/// Layar Driver Cockpit & Peta Penjemputan Sampah
+/// Dirombak total mengadopsi desain & logika maps OXN VIP / Badhy Maps:
+/// - Fullscreen Immersive Map (Edge-to-Edge)
+/// - Floating Search Pill dengan Autocomplete
+/// - Center Crosshair Pin dengan Animasi Elevasi & Koordinat Live
+/// - Floating Action Buttons di sisi kanan (Recenter, Layer, Favorite, Fit Bounds)
+/// - Bottom Glassmorphic Card dengan Tombol START/STOP Menonjol & Aksi Cepat
+/// - Draggable Floating Mini Widget
 class DriverCockpitScreen extends StatefulWidget {
   const DriverCockpitScreen({super.key});
 
@@ -44,28 +34,43 @@ class DriverCockpitScreen extends StatefulWidget {
   State<DriverCockpitScreen> createState() => _DriverCockpitScreenState();
 }
 
-class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsBindingObserver {
+class _DriverCockpitScreenState extends State<DriverCockpitScreen>
+    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
   final MapController _mapController = MapController();
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
 
-  // State tampilan & Waze / Gojek Modul
-  String _activeView = "peta"; // "peta" atau "daftar"
-  bool _isOnline = true; // Toggle Siap Angkut / Istirahat (Gojek Driver)
-  bool _useDarkMap = true; // Tactical Dark Navigation Tiles (Waze / Cyberpunk HUD)
-  final List<HazardIncident> _hazardIncidents = []; // Radar Kendala Waze
+  // State Peta & Mode Layer
+  String _mapLayer = 'dark'; // 'dark', 'street', 'satellite'
+  bool _isOnline = true; // Toggle Siap Angkut (Online / Offline)
+  bool _isStarted = false; // State Tombol START / STOP Operasi
 
+  // Center Reticle Pin (Badhy Maps Style)
+  LatLng _mapCenter = const LatLng(-6.4025, 106.7942);
+  bool _isDraggingMap = false;
+  Timer? _dragDebounceTimer;
+
+  // Search state
+  bool _isSearching = false;
+  List<TugasModel> _searchResults = [];
+
+  // Target Pelanggan & Routing
   TugasModel? _activeTarget;
   RouteResult? _currentRoadRoute;
   bool _isLoadingRoute = false;
 
+  // Proximity Alert Geofence (30 meter)
+  bool _hasAlertedCurrentTarget = false;
+  static const double _arrivalRadiusMeters = 30.0;
+
   // Telemetri Trip Driver
   Timer? _tripTimer;
   int _tripSeconds = 0;
-  int _muatanTruk = 0; // 0, 25, 50, 75, 100%
+  int _muatanTruk = 25; // persentase 0-100%
 
-  // Proximity Geofence
-  bool _hasAlertedCurrentTarget = false;
-  static const double _arrivalRadiusMeters = 30.0;
+  // Floating Mini Widget (Draggable)
+  bool _showFloatingWidget = true;
+  Offset _floatingWidgetPosition = const Offset(20, 140);
 
   // Pusat default Kota Depok
   static const LatLng _defaultCenter = LatLng(-6.4025, 106.7942);
@@ -75,9 +80,11 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    // Mulai timer durasi kerja driver
+    // Timer trip operasional
     _tripTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted) setState(() => _tripSeconds++);
+      if (mounted && _isStarted) {
+        setState(() => _tripSeconds++);
+      }
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -89,7 +96,9 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _tripTimer?.cancel();
+    _dragDebounceTimer?.cancel();
     _searchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -97,7 +106,9 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
     final auth = context.read<AuthProvider>();
     if (auth.petugas != null) {
       context.read<TrackingProvider>().setContextIds(petugasId: auth.petugas!.id);
-      context.read<TrackingProvider>().startTracking();
+      if (_isOnline) {
+        context.read<TrackingProvider>().startTracking();
+      }
     }
 
     await context.read<AbsensiProvider>().loadStatus();
@@ -128,13 +139,12 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
 
     final tracking = context.read<TrackingProvider>();
     final driverPos = tracking.currentPosition;
-    if (driverPos == null) return;
-
-    setState(() => _isLoadingRoute = true);
-
-    final start = LatLng(driverPos.latitude, driverPos.longitude);
+    final start = driverPos != null
+        ? LatLng(driverPos.latitude, driverPos.longitude)
+        : _mapCenter;
     final end = LatLng(_activeTarget!.pelanggan.latitude!, _activeTarget!.pelanggan.longitude!);
 
+    setState(() => _isLoadingRoute = true);
     final result = await RoutingService.getDrivingRoute(start, end);
 
     if (mounted) {
@@ -160,8 +170,8 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
       HapticFeedback.heavyImpact();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("📍 Tiba di lokasi: ${_activeTarget!.pelanggan.nama}"),
-          backgroundColor: const Color(0xFF047857),
+          content: Text('📍 Tiba di lokasi target: ${_activeTarget!.pelanggan.nama}'),
+          backgroundColor: const Color(0xFF00AA13),
           duration: const Duration(seconds: 3),
         ),
       );
@@ -180,20 +190,28 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
     final h = totalSeconds ~/ 3600;
     final m = (totalSeconds % 3600) ~/ 60;
     final s = totalSeconds % 60;
-    if (h > 0) return "${h}j ${m.toString().padLeft(2, '0')}m";
-    return "${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}";
+    if (h > 0) return '${h}j ${m.toString().padLeft(2, '0')}m';
+    return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
   }
 
-  void _recenterCamera() {
+  void _recenterToDriver() {
     final tracking = context.read<TrackingProvider>();
     final pos = tracking.currentPosition;
     if (pos != null) {
-      _mapController.move(LatLng(pos.latitude, pos.longitude), 17.0);
-    } else if (_activeTarget != null && _activeTarget!.pelanggan.hasCoordinates) {
-      _mapController.move(
-        LatLng(_activeTarget!.pelanggan.latitude!, _activeTarget!.pelanggan.longitude!),
-        17.0,
-      );
+      final target = LatLng(pos.latitude, pos.longitude);
+      _mapController.move(target, 17.5);
+      setState(() => _mapCenter = target);
+    } else {
+      _mapController.move(_defaultCenter, 16.0);
+      setState(() => _mapCenter = _defaultCenter);
+    }
+  }
+
+  void _recenterToActiveTarget() {
+    if (_activeTarget != null && _activeTarget!.pelanggan.hasCoordinates) {
+      final point = LatLng(_activeTarget!.pelanggan.latitude!, _activeTarget!.pelanggan.longitude!);
+      _mapController.move(point, 18.0);
+      setState(() => _mapCenter = point);
     }
   }
 
@@ -214,7 +232,48 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
 
     if (points.isNotEmpty) {
       final bounds = LatLngBounds.fromPoints(points);
-      _mapController.fitCamera(CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(40)));
+      _mapController.fitCamera(CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(50)));
+    }
+  }
+
+  void _onSearchQueryChanged(String query) {
+    final tasks = context.read<PengangkutanProvider>().tugasList;
+    if (query.trim().isEmpty) {
+      setState(() {
+        _isSearching = false;
+        _searchResults = [];
+      });
+      return;
+    }
+
+    final q = query.toLowerCase();
+    final matched = tasks.where((t) {
+      final nama = t.pelanggan.nama.toLowerCase();
+      final alamat = t.pelanggan.alamat.toLowerCase();
+      final kode = t.pelanggan.kodePelanggan.toLowerCase();
+      final patokan = t.pelanggan.patokanLokasi?.toLowerCase() ?? '';
+      return nama.contains(q) || alamat.contains(q) || kode.contains(q) || patokan.contains(q);
+    }).toList();
+
+    setState(() {
+      _isSearching = true;
+      _searchResults = matched;
+    });
+  }
+
+  void _selectSearchResult(TugasModel target) {
+    setState(() {
+      _activeTarget = target;
+      _isSearching = false;
+      _searchController.text = target.pelanggan.nama;
+    });
+    _searchFocusNode.unfocus();
+
+    if (target.pelanggan.hasCoordinates) {
+      final point = LatLng(target.pelanggan.latitude!, target.pelanggan.longitude!);
+      _mapController.move(point, 18.0);
+      setState(() => _mapCenter = point);
+      _fetchRoadRoute();
     }
   }
 
@@ -223,14 +282,13 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
 
     final tracking = context.read<TrackingProvider>();
     final pos = tracking.currentPosition;
-
     final targetId = _activeTarget!.id;
     final targetName = _activeTarget!.pelanggan.nama;
 
     final ok = await context.read<PengangkutanProvider>().quickPickup(
           targetId,
-          lat: pos?.latitude,
-          lng: pos?.longitude,
+          lat: pos?.latitude ?? _mapCenter.latitude,
+          lng: pos?.longitude ?? _mapCenter.longitude,
         );
 
     if (!mounted) return;
@@ -241,869 +299,224 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("✓ Pengambilan di $targetName berhasil dicatat!"),
-          backgroundColor: const Color(0xFF00AA13), // Gojek Green
+          content: Text('✓ Penjemputan di $targetName berhasil!'),
+          backgroundColor: const Color(0xFF00AA13),
           duration: const Duration(seconds: 2),
         ),
       );
 
-      // Auto tambah estimasi muatan truk
-      if (_muatanTruk < 100) {
-        setState(() => _muatanTruk = min(100, _muatanTruk + 5));
-      }
+      setState(() {
+        _muatanTruk = min(100, _muatanTruk + 15);
+      });
 
       _selectNextTarget();
     }
   }
 
-  /// Konversi arah manuver belokan OSRM ke ikon panah Waze
-  IconData _getManeuverIcon(String? modifier) {
-    final mod = (modifier ?? '').toLowerCase();
-    if (mod.contains('sharp left')) return Icons.turn_sharp_left_rounded;
-    if (mod.contains('slight left')) return Icons.turn_slight_left_rounded;
-    if (mod.contains('left')) return Icons.turn_left_rounded;
-    if (mod.contains('sharp right')) return Icons.turn_sharp_right_rounded;
-    if (mod.contains('slight right')) return Icons.turn_slight_right_rounded;
-    if (mod.contains('right')) return Icons.turn_right_rounded;
-    if (mod.contains('u-turn') || mod.contains('uturn')) return Icons.u_turn_left_rounded;
-    return Icons.straight_rounded;
-  }
-
-  /// Speedometer Waze dengan peringatan batas kecepatan gang komplek
-  Widget _buildWazeSpeedometer(double speedKmH) {
-    final isSpeeding = speedKmH > 25.0;
-    return Container(
-      width: 66,
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0F172A).withValues(alpha: 0.92),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isSpeeding ? Colors.redAccent : const Color(0xFF0284C7),
-          width: 2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: isSpeeding ? Colors.red.withValues(alpha: 0.5) : Colors.black45,
-            blurRadius: 8,
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            "${speedKmH.round()}",
-            style: TextStyle(
-              color: isSpeeding ? Colors.redAccent : Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-          const Text(
-            "km/h",
-            style: TextStyle(color: Colors.white70, fontSize: 9, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-            decoration: BoxDecoration(
-              color: isSpeeding ? Colors.red : const Color(0xFF1E293B),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              isSpeeding ? "BAHAYA" : "MAKS 20",
-              style: TextStyle(
-                color: isSpeeding ? Colors.white : Colors.amber,
-                fontSize: 8,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Modal Lapor Rintangan Jalan ala Waze (Community Hazard Radar)
-  void _showWazeHazardReportModal(LatLng driverPos) {
-    final hazardOptions = [
-      {"label": "Portal Dikunci", "emoji": "🚧", "desc": "Portal komplek digembok / terkunci"},
-      {"label": "Gang Sempit", "emoji": "🚗", "desc": "Mobil parkir / jalan terhalang"},
-      {"label": "Hajatan Warga", "emoji": "⚠️", "desc": "Tenda hajatan menutup jalan"},
-      {"label": "Kabel Rendah", "emoji": "⚡", "desc": "Kabel melintang rawan nyangkut armada"},
-      {"label": "Sampah Liar", "emoji": "🗑️", "desc": "Tumpukan sampah liar baru warga"},
-    ];
-
+  void _showFavoritesSheet() {
+    final tasks = context.read<PengangkutanProvider>().tugasList;
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF0F172A),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.amber.shade900.withValues(alpha: 0.3),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(Icons.warning_amber_rounded, color: Colors.amber, size: 20),
-                    ),
-                    const SizedBox(width: 10),
-                    const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Lapor Rintangan Jalan (Waze Radar)",
-                          style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          "Peringatan real-time untuk armada lain",
-                          style: TextStyle(color: Colors.white60, fontSize: 11),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                IconButton(
-                  onPressed: () => Navigator.pop(ctx),
-                  icon: const Icon(Icons.close, color: Colors.white60),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            ...hazardOptions.map((opt) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: InkWell(
-                onTap: () {
-                  Navigator.pop(ctx);
-                  setState(() {
-                    _hazardIncidents.add(HazardIncident(
-                      id: DateTime.now().millisecondsSinceEpoch.toString(),
-                      label: opt["label"]!,
-                      emoji: opt["emoji"]!,
-                      point: driverPos,
-                      time: DateTime.now(),
-                    ));
-                  });
-                  HapticFeedback.heavyImpact();
-                  SystemSound.play(SystemSoundType.click);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text("${opt["emoji"]} Radar Waze: Kendala '${opt["label"]}' berhasil dilaporkan!"),
-                      backgroundColor: Colors.amber.shade900,
-                      duration: const Duration(seconds: 3),
-                    ),
-                  );
-                },
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1E293B),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.amber.withValues(alpha: 0.2)),
-                  ),
-                  child: Row(
-                    children: [
-                      Text(opt["emoji"]!, style: const TextStyle(fontSize: 22)),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              opt["label"]!,
-                              style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              opt["desc"]!,
-                              style: const TextStyle(color: Colors.white60, fontSize: 11),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Icon(Icons.add_location_alt_rounded, color: Colors.amber, size: 18),
-                    ],
-                  ),
-                ),
-              ),
-            )),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Drawer Pesan Cepat WhatsApp 1-Ketukan ala GrabChat
-  void _showGrabMessageChooser(TugasModel t) {
-    final isMenunggak = t.tunggakan.isMenunggak;
-    final templates = [
-      {
-        "title": "Armada Tiba di Depan Rumah",
-        "icon": Icons.home_rounded,
-        "color": const Color(0xFF00AA13),
-        "text": isMenunggak
-            ? "Halo Bpk/Ibu ${t.pelanggan.nama}, armada kebersihan UPS HERU sudah tiba di depan rumah (${t.pelanggan.alamat}). Namun ada catatan tunggakan iuran di sistem, mohon konfirmasinya ya 🙏"
-            : "Halo Bpk/Ibu ${t.pelanggan.nama}, armada kebersihan UPS HERU sudah tiba di depan rumah (${t.pelanggan.alamat}). Mohon dibukakan gerbang atau sampah dikeluarkan ya 🙏",
-      },
-      {
-        "title": "Tolong Buka Portal Komplek RT",
-        "icon": Icons.fence_rounded,
-        "color": const Color(0xFF0284C7),
-        "text": "Halo Bpk/Ibu ${t.pelanggan.nama}, armada kami tertahan di portal komplek/RT. Mohon izin dibantu koordinasi bukakan portal ya, terima kasih 🙏",
-      },
-      {
-        "title": "Sampah Belum Ada di Luar Pagar",
-        "icon": Icons.delete_outline_rounded,
-        "color": Colors.amber.shade700,
-        "text": "Halo Bpk/Ibu ${t.pelanggan.nama}, kami sudah standby di depan rumah namun sampah belum terlihat di luar pagar. Mohon segera dikeluarkan ya 🙏",
-      },
-      {
-        "title": "Sampah Berhasil Diangkut Bersih",
-        "icon": Icons.check_circle_rounded,
-        "color": const Color(0xFF10B981),
-        "text": "Halo Bpk/Ibu ${t.pelanggan.nama}, pengangkutan sampah rumah Anda hari ini telah selesai kami angkut bersih. Terima kasih atas kerjasamanya 🙏",
-      },
-    ];
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF0F172A),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF25D366).withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(Icons.chat_rounded, color: Color(0xFF25D366), size: 18),
-                    ),
-                    const SizedBox(width: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Pesan Cepat WhatsApp (Grab Style)",
-                          style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          "Ke: ${t.pelanggan.nama}",
-                          style: const TextStyle(color: Colors.white60, fontSize: 11),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                IconButton(
-                  onPressed: () => Navigator.pop(ctx),
-                  icon: const Icon(Icons.close, color: Colors.white60),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            ...templates.map((tpl) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: InkWell(
-                onTap: () {
-                  Navigator.pop(ctx);
-                  DriverActionsService.openCustomWhatsApp(
-                    phone: t.pelanggan.noTelepon,
-                    message: tpl["text"] as String,
-                  );
-                },
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1E293B),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: (tpl["color"] as Color).withValues(alpha: 0.3)),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(tpl["icon"] as IconData, color: tpl["color"] as Color, size: 20),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          tpl["title"] as String,
-                          style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700),
-                        ),
-                      ),
-                      const Icon(Icons.send_rounded, color: Colors.white38, size: 16),
-                    ],
-                  ),
-                ),
-              ),
-            )),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showLewatiModal(TugasModel tugas) {
-    String selectedStatus = 'tidak_diangkut';
-    final controller = TextEditingController(text: 'Dilewati: Akses terhalang / Rumah tertutup');
-
-    showModalBottomSheet(
-      context: context,
+      backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF0F172A),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
       builder: (ctx) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return Padding(
-              padding: EdgeInsets.only(
-                left: 20,
-                right: 20,
-                top: 20,
-                bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.65,
+          padding: const EdgeInsets.all(20),
+          decoration: const BoxDecoration(
+            color: Color(0xFF0F172A),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 44,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white24,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Lewati: ${tugas.pelanggan.nama}",
-                        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
-                      ),
-                      IconButton(
-                        onPressed: () => Navigator.pop(ctx),
-                        icon: const Icon(Icons.close, color: Colors.white70),
-                      ),
-                    ],
+                  const Text(
+                    '⭐ Titik Antrean / Drop Point',
+                    style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w800),
                   ),
-                  const SizedBox(height: 12),
-                  const Text("Pilih Alasan Kendala:", style: TextStyle(color: Colors.white70, fontSize: 13)),
-                  const SizedBox(height: 8),
-
-                  RadioListTile<String>(
-                    title: const Text("Tidak Diangkut (Akses / Masalah)", style: TextStyle(color: Colors.white)),
-                    value: "tidak_diangkut",
-                    groupValue: selectedStatus,
-                    activeColor: AppColors.danger,
-                    onChanged: (val) {
-                      if (val != null) {
-                        setModalState(() {
-                          selectedStatus = val;
-                          controller.text = "Tidak Diangkut: Akses terhalang / Jalan ditutup";
-                        });
-                      }
-                    },
-                  ),
-                  RadioListTile<String>(
-                    title: const Text("Rumah Kosong (Tidak ada sampah)", style: TextStyle(color: Colors.white)),
-                    value: "kosong",
-                    groupValue: selectedStatus,
-                    activeColor: AppColors.warning,
-                    onChanged: (val) {
-                      if (val != null) {
-                        setModalState(() {
-                          selectedStatus = val;
-                          controller.text = "Rumah Kosong: Pagar terkunci & nihil sampah";
-                        });
-                      }
-                    },
-                  ),
-
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: controller,
-                    style: const TextStyle(color: Colors.white, fontSize: 13),
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: const Color(0xFF1E293B),
-                      hintText: "Tuliskan keterangan detail...",
-                      hintStyle: const TextStyle(color: Colors.white38),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () async {
-                      Navigator.pop(ctx);
-                      await context.read<PengangkutanProvider>().lewatiRumah(
-                            tugas.id,
-                            selectedStatus,
-                            controller.text,
-                          );
-                      _selectNextTarget();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.warning,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                    child: const Text("Konfirmasi Lewati Rumah", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                  Text(
+                    '${tasks.length} Lokasi',
+                    style: const TextStyle(color: Color(0xFF00AA13), fontSize: 13, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
-            );
-          },
+              const SizedBox(height: 12),
+              Expanded(
+                child: ListView.separated(
+                  itemCount: tasks.length,
+                  separatorBuilder: (_, __) => const Divider(color: Colors.white10),
+                  itemBuilder: (ctx, i) {
+                    final t = tasks[i];
+                    final isCurrent = _activeTarget?.id == t.id;
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: t.isSelesai
+                              ? const Color(0xFF00AA13).withValues(alpha: 0.2)
+                              : isCurrent
+                                  ? const Color(0xFF0284C7).withValues(alpha: 0.2)
+                                  : Colors.white10,
+                          border: Border.all(
+                            color: t.isSelesai
+                                ? const Color(0xFF00AA13)
+                                : isCurrent
+                                    ? const Color(0xFF0284C7)
+                                    : Colors.white24,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            t.isSelesai ? '✓' : '#${t.urutan ?? (i + 1)}',
+                            style: TextStyle(
+                              color: t.isSelesai ? const Color(0xFF00AA13) : Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      title: Text(
+                        t.pelanggan.nama,
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                      ),
+                      subtitle: Text(
+                        t.pelanggan.alamat,
+                        style: const TextStyle(color: Colors.white60, fontSize: 12),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      trailing: Icon(
+                        Icons.chevron_right_rounded,
+                        color: isCurrent ? const Color(0xFF00AA13) : Colors.white38,
+                      ),
+                      onTap: () {
+                        Navigator.pop(ctx);
+                        _selectSearchResult(t);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
   }
 
-  void _showTpaRitaseModal() {
-    showDialog(
+  void _showLayerSelector() {
+    showModalBottomSheet(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF0F172A),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Row(
-          children: [
-            Icon(Icons.fire_truck_rounded, color: Colors.amber),
-            SizedBox(width: 10),
-            Text("Ritase ke TPA", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Bak truk telah penuh dan menuju tempat pembuangan akhir (TPA Cipayung / TPS 3R)?",
-              style: TextStyle(color: Colors.white70, fontSize: 13),
-            ),
-            const SizedBox(height: 14),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF1E293B),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.amber.withValues(alpha: 0.3)),
-              ),
-              child: const Row(
-                children: [
-                  Icon(Icons.info_outline, color: Colors.amber, size: 20),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      "Mencatat ritase ini akan me-reset kapasitas muatan bak truk menjadi 0% untuk putaran berikutnya.",
-                      style: TextStyle(color: Colors.white60, fontSize: 11),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text("Batal", style: TextStyle(color: Colors.white54)),
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: const BoxDecoration(
+            color: Color(0xFF0F172A),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
           ),
-          ElevatedButton(
-            onPressed: () {
-              setState(() => _muatanTruk = 0);
-              Navigator.pop(ctx);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("✓ Ritase TPA berhasil dicatat. Muatan truk dikosongkan (0%)."),
-                  backgroundColor: Color(0xFF047857),
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
-            child: const Text("Catat Ritase & Reset", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                '🗺️ Pilih Tampilan Peta',
+                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              ListTile(
+                leading: const Icon(Icons.dark_mode_rounded, color: Color(0xFF38BDF8)),
+                title: const Text('Dark Tactical (Waze Style)', style: TextStyle(color: Colors.white)),
+                trailing: _mapLayer == 'dark' ? const Icon(Icons.check, color: Color(0xFF00AA13)) : null,
+                onTap: () {
+                  setState(() => _mapLayer = 'dark');
+                  Navigator.pop(ctx);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.map_rounded, color: Colors.amber),
+                title: const Text('Street Normal (OSM)', style: TextStyle(color: Colors.white)),
+                trailing: _mapLayer == 'street' ? const Icon(Icons.check, color: Color(0xFF00AA13)) : null,
+                onTap: () {
+                  setState(() => _mapLayer = 'street');
+                  Navigator.pop(ctx);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.satellite_alt_rounded, color: Colors.lightGreenAccent),
+                title: const Text('Satellite Hybrid (Google)', style: TextStyle(color: Colors.white)),
+                trailing: _mapLayer == 'satellite' ? const Icon(Icons.check, color: Color(0xFF00AA13)) : null,
+                onTap: () {
+                  setState(() => _mapLayer = 'satellite');
+                  Navigator.pop(ctx);
+                },
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
+  }
+
+  String _getTileUrl() {
+    switch (_mapLayer) {
+      case 'satellite':
+        return 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}';
+      case 'street':
+        return 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+      case 'dark':
+      default:
+        return 'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png';
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final pengangkutan = context.watch<PengangkutanProvider>();
-    final absensi = context.watch<AbsensiProvider>();
     final tracking = context.watch<TrackingProvider>();
-    final auth = context.watch<AuthProvider>();
-
-    final user = auth.user;
-    final petugas = auth.petugas;
+    final pengangkutan = context.watch<PengangkutanProvider>();
 
     final driverGeo = tracking.currentPosition;
     final driverPos = driverGeo != null
         ? LatLng(driverGeo.latitude, driverGeo.longitude)
         : _defaultCenter;
 
-    // Cek proximity
     if (driverGeo != null) {
       _checkProximityAlert(driverPos);
     }
 
-    final double speedMps = driverGeo?.speed ?? 0.0;
-    final double speedKmH = speedMps > 0 ? (speedMps * 3.6) : 0.0;
+    final double speedKmH = (driverGeo?.speed ?? 0.0) * 3.6;
 
-    final totalCount = pengangkutan.totalTugas;
-    final completedCount = pengangkutan.totalSelesai;
-    final percentComplete = totalCount > 0 ? ((completedCount / totalCount) * 100).round() : 0;
-
-    return Scaffold(
-      backgroundColor: const Color(0xFF0F172A), // Dark Slate Background
-      body: SafeArea(
-        child: Column(
-          children: [
-            // ── 1. TOP COCKPIT BAR (Driver Telemetry & Controls) ──
-            _buildTopCockpitBar(
-              user: user,
-              petugas: petugas,
-              absensi: absensi,
-              pendingOffline: pengangkutan.pendingOfflineCount,
-              completedCount: completedCount,
-              totalCount: totalCount,
-              percentComplete: percentComplete,
-            ),
-
-            // ── 2. VIEW CONTENT (Peta Navigasi ATAU Daftar Tugas) ──
-            Expanded(
-              child: _activeView == "peta"
-                  ? _buildMapView(driverPos, pengangkutan, speedKmH)
-                  : _buildListView(pengangkutan),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // ── 1. TOP COCKPIT HEADER (Gojek Status Online & Waze Telemetry) ──
-  Widget _buildTopCockpitBar({
-    required dynamic user,
-    required dynamic petugas,
-    required AbsensiProvider absensi,
-    required int pendingOffline,
-    required int completedCount,
-    required int totalCount,
-    required int percentComplete,
-  }) {
-    final isAbsenMasuk = absensi.absensiHariIni?.sudahMasuk == true;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: const BoxDecoration(
-        color: Color(0xFF0F172A),
-        border: Border(bottom: BorderSide(color: Color(0xFF1E293B))),
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Identitas Driver & Armada
-              Row(
-                children: [
-                  Container(
-                    width: 38,
-                    height: 38,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF00AA13).withValues(alpha: 0.2), // Gojek Green Tint
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: const Color(0xFF00AA13), width: 1.5),
-                    ),
-                    child: const Center(
-                      child: Text("🚛", style: TextStyle(fontSize: 20)),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        user?.nama ?? "Driver Armada",
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      Text(
-                        petugas?.kelurahan != null ? "Wilayah ${petugas.kelurahan}" : "UPS HERU Depok",
-                        style: const TextStyle(color: Colors.white60, fontSize: 11),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-
-              // Switch Online Gojek & Tombol Absen
-              Row(
-                children: [
-                  // Toggle Status Siap Kerja (Gojek Partner Style)
-                  InkWell(
-                    onTap: () {
-                      setState(() => _isOnline = !_isOnline);
-                      HapticFeedback.selectionClick();
-                      if (_isOnline) {
-                        context.read<TrackingProvider>().startTracking();
-                      } else {
-                        context.read<TrackingProvider>().stopTracking();
-                      }
-                    },
-                    borderRadius: BorderRadius.circular(10),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: _isOnline ? const Color(0xFF065F46) : const Color(0xFF334155),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: _isOnline ? const Color(0xFF10B981) : Colors.white24,
-                          width: 1.2,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 7,
-                            height: 7,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: _isOnline ? const Color(0xFF34D399) : Colors.amber,
-                            ),
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            _isOnline ? "ONLINE" : "OFFLINE",
-                            style: TextStyle(
-                              color: _isOnline ? const Color(0xFF34D399) : Colors.white70,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(width: 6),
-
-                  if (pendingOffline > 0)
-                    Container(
-                      margin: const EdgeInsets.only(right: 6),
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.amber.shade900,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.cloud_off_rounded, size: 11, color: Colors.white),
-                          const SizedBox(width: 3),
-                          Text("$pendingOffline", style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                    ),
-
-                  // Chip Absensi (1-tap buka kamera absen)
-                  InkWell(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const AbsensiScreen()),
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: isAbsenMasuk ? const Color(0xFF065F46) : const Color(0xFF1E293B),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: isAbsenMasuk ? const Color(0xFF10B981) : Colors.white24,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            isAbsenMasuk ? Icons.check_circle_rounded : Icons.camera_alt_rounded,
-                            size: 12,
-                            color: isAbsenMasuk ? const Color(0xFF34D399) : Colors.white70,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            isAbsenMasuk ? "Shift OK" : "Absen",
-                            style: TextStyle(
-                              color: isAbsenMasuk ? Colors.white : Colors.white70,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(width: 6),
-
-                  // Menu Logout / Profil
-                  IconButton(
-                    icon: const Icon(Icons.logout_rounded, color: Colors.white54, size: 18),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    onPressed: () => context.read<AuthProvider>().logout(),
-                  ),
-                ],
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 10),
-
-          // Strip Bar 2: Durasi Kerja, Muatan Truk Selector, & View Switcher
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Timer & Progres Rumah
-              Row(
-                children: [
-                  const Icon(Icons.timer_outlined, size: 13, color: Color(0xFF34D399)),
-                  const SizedBox(width: 4),
-                  Text(
-                    _formatDuration(_tripSeconds),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    "• $completedCount/$totalCount ($percentComplete%)",
-                    style: const TextStyle(color: Colors.white70, fontSize: 11),
-                  ),
-                ],
-              ),
-
-              // Muatan Truk Popup Selector
-              Row(
-                children: [
-                  PopupMenuButton<int>(
-                    initialValue: _muatanTruk,
-                    onSelected: (val) => setState(() => _muatanTruk = val),
-                    color: const Color(0xFF1E293B),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: _muatanTruk >= 75
-                            ? Colors.red.shade900
-                            : (_muatanTruk >= 50 ? Colors.amber.shade900 : const Color(0xFF065F46)),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.scale_rounded, size: 12, color: Colors.white),
-                          const SizedBox(width: 4),
-                          Text("Bak $_muatanTruk%", style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
-                          const Icon(Icons.arrow_drop_down, size: 12, color: Colors.white70),
-                        ],
-                      ),
-                    ),
-                    itemBuilder: (ctx) => [
-                      const PopupMenuItem(value: 0, child: Text("Muatan 0% (Kosong)", style: TextStyle(color: Colors.white))),
-                      const PopupMenuItem(value: 25, child: Text("Muatan 25% (Seperempat)", style: TextStyle(color: Colors.white))),
-                      const PopupMenuItem(value: 50, child: Text("Muatan 50% (Setengah)", style: TextStyle(color: Colors.white))),
-                      const PopupMenuItem(value: 75, child: Text("Muatan 75% (Hampir Penuh)", style: TextStyle(color: Colors.white))),
-                      const PopupMenuItem(value: 100, child: Text("Muatan 100% (Penuh / Siap TPA)", style: TextStyle(color: Colors.white))),
-                    ],
-                  ),
-
-                  const SizedBox(width: 8),
-
-                  // Toggle View Peta vs Daftar
-                  Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1E293B),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        InkWell(
-                          onTap: () => setState(() => _activeView = "peta"),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                            decoration: BoxDecoration(
-                              color: _activeView == "peta" ? const Color(0xFF00AA13) : Colors.transparent,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Icon(Icons.map_rounded, size: 16, color: _activeView == "peta" ? Colors.white : Colors.white60),
-                          ),
-                        ),
-                        InkWell(
-                          onTap: () => setState(() => _activeView = "daftar"),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                            decoration: BoxDecoration(
-                              color: _activeView == "daftar" ? const Color(0xFF00AA13) : Colors.transparent,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Icon(Icons.format_list_bulleted_rounded, size: 16, color: _activeView == "daftar" ? Colors.white : Colors.white60),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ── 2. VIEW PETA INTERAKTIF (Gojek / Grab / Waze) ──
-  Widget _buildMapView(LatLng driverPos, PengangkutanProvider pengangkutan, double speedKmH) {
-    final tasks = pengangkutan.tugasList;
-    final isArrived = _hasAlertedCurrentTarget;
-
-    // Markers builder
+    // Markers
     final markers = <Marker>[];
 
-    // Marker Driver Truk (Gojek Green Pulsing Radar)
+    // 1. Marker Armada Truk Driver
     markers.add(
       Marker(
         point: driverPos,
-        width: 50,
-        height: 50,
+        width: 52,
+        height: 52,
         child: Stack(
           alignment: Alignment.center,
           children: [
             Container(
-              width: 48,
-              height: 48,
+              width: 50,
+              height: 50,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: const Color(0xFF00AA13).withValues(alpha: 0.25),
@@ -1111,8 +524,8 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
               ),
             ),
             Container(
-              width: 36,
-              height: 36,
+              width: 38,
+              height: 38,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: const Color(0xFF00AA13),
@@ -1120,7 +533,7 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
                 boxShadow: const [BoxShadow(color: Colors.black45, blurRadius: 8, offset: Offset(0, 3))],
               ),
               child: const Center(
-                child: Text("🚛", style: TextStyle(fontSize: 18)),
+                child: Text('🚛', style: TextStyle(fontSize: 20)),
               ),
             ),
           ],
@@ -1128,721 +541,657 @@ class _DriverCockpitScreenState extends State<DriverCockpitScreen> with WidgetsB
       ),
     );
 
-    // Marker Laporan Kendala Waze Radar
-    for (final hz in _hazardIncidents) {
-      markers.add(
-        Marker(
-          point: hz.point,
-          width: 38,
-          height: 38,
-          child: Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.amber.shade900,
-              border: Border.all(color: Colors.white, width: 2),
-              boxShadow: const [BoxShadow(color: Colors.black54, blurRadius: 6)],
-            ),
-            child: Center(
-              child: Text(hz.emoji, style: const TextStyle(fontSize: 18)),
-            ),
-          ),
-        ),
-      );
-    }
+    // 2. Marker Seluruh Rumah Pelanggan
+    for (int i = 0; i < pengangkutan.tugasList.length; i++) {
+      final t = pengangkutan.tugasList[i];
+      if (!t.pelanggan.hasCoordinates) continue;
 
-    // Filter stop pelanggan
-    final pendingStops = tasks.where((t) => t.isTerjadwal && t.pelanggan.hasCoordinates).toList();
-    final completedStops = tasks.where((t) => t.isSelesai && t.pelanggan.hasCoordinates).toList();
+      final isCurrent = _activeTarget?.id == t.id;
+      final isDone = t.isSelesai;
+      final isMenunggak = t.tunggakan.isMenunggak;
 
-    // 1. Selesai -> Dot hijau mini redup
-    for (final t in completedStops) {
       markers.add(
         Marker(
           point: LatLng(t.pelanggan.latitude!, t.pelanggan.longitude!),
-          width: 14,
-          height: 14,
-          child: Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: const Color(0xFF059669).withValues(alpha: 0.5),
-              border: Border.all(color: Colors.white70, width: 1.2),
-            ),
+          width: isCurrent ? 80 : 32,
+          height: isCurrent ? 60 : 32,
+          child: GestureDetector(
+            onTap: () {
+              setState(() => _activeTarget = t);
+              _fetchRoadRoute();
+            },
+            child: isCurrent
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: isMenunggak ? const Color(0xFF991B1B) : const Color(0xFF00AA13),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.white, width: 1.5),
+                          boxShadow: const [BoxShadow(color: Colors.black45, blurRadius: 6)],
+                        ),
+                        child: Text(
+                          t.pelanggan.nama,
+                          style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: isMenunggak ? Colors.red.shade700 : const Color(0xFF00AA13),
+                          border: Border.all(color: Colors.yellowAccent, width: 2.5),
+                          boxShadow: const [BoxShadow(color: Colors.black45, blurRadius: 8)],
+                        ),
+                        child: Center(
+                          child: Text(
+                            '#${t.urutan ?? (i + 1)}',
+                            style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w900),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isDone
+                          ? const Color(0xFF059669)
+                          : isMenunggak
+                              ? Colors.red.shade800
+                              : const Color(0xFF0284C7),
+                      border: Border.all(color: Colors.white, width: 1.8),
+                      boxShadow: const [BoxShadow(color: Colors.black38, blurRadius: 4)],
+                    ),
+                    child: Center(
+                      child: Text(
+                        isDone ? '✓' : '${t.urutan ?? (i + 1)}',
+                        style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
           ),
         ),
       );
     }
 
-    // 2. Pending stops (Target aktif & Upcoming)
-    for (int i = 0; i < pendingStops.length; i++) {
-      final t = pendingStops[i];
-      final isTarget = _activeTarget?.id == t.id;
-      final isUpcoming = !isTarget && i < 4;
-      final isMenunggak = t.tunggakan.isMenunggak;
-
-      if (isTarget) {
-        // Target Aktif: Balon Waze / Pin Besar Berdenyut + Label Nama
-        markers.add(
-          Marker(
-            point: LatLng(t.pelanggan.latitude!, t.pelanggan.longitude!),
-            width: 120,
-            height: 64,
-            child: GestureDetector(
-              onTap: () => setState(() => _activeTarget = t),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: isMenunggak ? const Color(0xFF991B1B) : const Color(0xFF00AA13),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.white, width: 1.5),
-                      boxShadow: const [BoxShadow(color: Colors.black45, blurRadius: 6)],
-                    ),
-                    child: Text(
-                      t.pelanggan.nama,
-                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: isMenunggak ? AppColors.danger : const Color(0xFF00AA13),
-                      border: Border.all(color: Colors.yellow, width: 2.5),
-                      boxShadow: const [BoxShadow(color: Colors.black45, blurRadius: 8)],
-                    ),
-                    child: Center(
-                      child: Text(
-                        isMenunggak ? "⛔" : "#${t.urutan ?? (i + 1)}",
-                        style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w900),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      } else if (isUpcoming) {
-        // 4 Stop Mendatang: Pin Bernomor
-        markers.add(
-          Marker(
-            point: LatLng(t.pelanggan.latitude!, t.pelanggan.longitude!),
-            width: 28,
-            height: 28,
-            child: GestureDetector(
-              onTap: () {
-                setState(() => _activeTarget = t);
-                _fetchRoadRoute();
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isMenunggak ? AppColors.danger : const Color(0xFF0284C7),
-                  border: Border.all(color: Colors.white, width: 2),
-                  boxShadow: const [BoxShadow(color: Colors.black38, blurRadius: 4)],
-                ),
-                child: Center(
-                  child: Text(
-                    "${t.urutan ?? (i + 1)}",
-                    style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      } else {
-        // Antrean Jauh: Titik Halus
-        markers.add(
-          Marker(
-            point: LatLng(t.pelanggan.latitude!, t.pelanggan.longitude!),
-            width: 14,
-            height: 14,
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isMenunggak ? AppColors.danger.withValues(alpha: 0.7) : const Color(0xFF0284C7).withValues(alpha: 0.7),
-                border: Border.all(color: Colors.white, width: 1.5),
-              ),
-            ),
-          ),
-        );
-      }
-    }
-
-    return Stack(
-      children: [
-        // 1. KANVAS PETA LEAFLET / OSM (Dukungan Dark Tactical Waze)
-        FlutterMap(
-          mapController: _mapController,
-          options: MapOptions(
-            initialCenter: driverPos,
-            initialZoom: 16.0,
-            maxZoom: 19.0,
-            minZoom: 11.0,
-          ),
-          children: [
-            TileLayer(
-              urlTemplate: _useDarkMap
-                  ? "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
-                  : "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-              userAgentPackageName: "com.wastepay.petugas",
-            ),
-
-            // Garis Jalan OSRM Driving Route
-            if (_currentRoadRoute != null && _currentRoadRoute!.points.isNotEmpty)
-              PolylineLayer(
-                polylines: [
-                  Polyline(
-                    points: _currentRoadRoute!.points,
-                    color: const Color(0xFF0284C7),
-                    strokeWidth: 5.5,
-                  ),
-                ],
-              )
-            else if (_activeTarget != null && _activeTarget!.pelanggan.hasCoordinates)
-              PolylineLayer(
-                polylines: [
-                  Polyline(
-                    points: [
-                      driverPos,
-                      LatLng(_activeTarget!.pelanggan.latitude!, _activeTarget!.pelanggan.longitude!),
-                    ],
-                    color: const Color(0xFF00AA13).withValues(alpha: 0.7),
-                    strokeWidth: 4.0,
-                  ),
-                ],
-              ),
-
-            MarkerLayer(markers: markers),
-          ],
-        ),
-
-        // 2. BANNER WAZE TURN-BY-TURN NAVIGATION (ATAS)
-        if (_activeTarget != null)
-          Positioned(
-            top: 12,
-            left: 12,
-            right: 12,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: isArrived
-                    ? const Color(0xFF047857) // Emerald Arrived
-                    : const Color(0xFF0284C7), // Navigating Blue
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: const [BoxShadow(color: Colors.black45, blurRadius: 10, offset: Offset(0, 3))],
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      isArrived
-                          ? Icons.location_on_rounded
-                          : (_currentRoadRoute != null && _currentRoadRoute!.steps.isNotEmpty
-                              ? _getManeuverIcon(_currentRoadRoute!.steps.first.modifier)
-                              : Icons.navigation_rounded),
-                      color: Colors.white,
-                      size: 22,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          isArrived
-                              ? "📍 ANDA TELAH TIBA DI LOKASI!"
-                              : (_currentRoadRoute != null && _currentRoadRoute!.steps.isNotEmpty
-                                  ? _currentRoadRoute!.steps.first.instruction
-                                  : "Menuju: ${_activeTarget!.pelanggan.nama}"),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w900,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (_currentRoadRoute != null)
-                          Text(
-                            "${_currentRoadRoute!.formattedDistance} • ${_currentRoadRoute!.formattedDuration}${_currentRoadRoute!.steps.isNotEmpty ? " • ${_currentRoadRoute!.steps.first.distanceMeters.round()}m lagi" : ""}",
-                            style: const TextStyle(color: Colors.white70, fontSize: 11),
-                          ),
-                      ],
-                    ),
-                  ),
-                  if (_isLoadingRoute)
-                    const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                    ),
-                ],
-              ),
-            ),
-          ),
-
-        // 3. SPEEDOMETER WAZE DIGITAL (KIRI BAWAH)
-        Positioned(
-          left: 12,
-          bottom: 240,
-          child: _buildWazeSpeedometer(speedKmH),
-        ),
-
-        // 4. FLOATING ACTION BUTTONS (KANAN)
-        Positioned(
-          right: 12,
-          bottom: 240,
-          child: Column(
-            children: [
-              // Waze Hazard Community Reporter (Tombol Oranye Lapor Kendala)
-              FloatingActionButton.small(
-                heroTag: "wazeHazardBtn",
-                backgroundColor: Colors.amber.shade900,
-                onPressed: () => _showWazeHazardReportModal(driverPos),
-                tooltip: "Lapor Kendala Jalan (Waze)",
-                child: const Icon(Icons.warning_amber_rounded, color: Colors.white),
-              ),
-              const SizedBox(height: 8),
-
-              // Toggle Peta Dark Mode / Light Mode
-              FloatingActionButton.small(
-                heroTag: "mapThemeBtn",
-                backgroundColor: const Color(0xFF1E293B),
-                onPressed: () {
-                  setState(() => _useDarkMap = !_useDarkMap);
-                  HapticFeedback.selectionClick();
-                },
-                tooltip: _useDarkMap ? "Mode Peta Terang" : "Mode Peta Gelap (Tactical)",
-                child: Icon(_useDarkMap ? Icons.nightlight_round : Icons.wb_sunny_rounded, color: Colors.amber),
-              ),
-              const SizedBox(height: 8),
-
-              // Buka Waze / Google Maps Eksternal
-              FloatingActionButton.small(
-                heroTag: "navChooser",
-                backgroundColor: const Color(0xFF0284C7),
-                onPressed: () {
-                  if (_activeTarget != null && _activeTarget!.pelanggan.hasCoordinates) {
-                    ExternalNavigationService.showNavigationChooser(
-                      context,
-                      lat: _activeTarget!.pelanggan.latitude!,
-                      lng: _activeTarget!.pelanggan.longitude!,
-                      namaPelanggan: _activeTarget!.pelanggan.nama,
-                      alamat: _activeTarget!.pelanggan.alamat,
-                    );
+    return Scaffold(
+      backgroundColor: const Color(0xFF0F172A),
+      body: Stack(
+        children: [
+          // ── KANVAS PETA FULLSCREEN (Edge-to-Edge) ──
+          FlutterMap(
+            mapController: _mapController,
+            options: MapOptions(
+              initialCenter: _mapCenter,
+              initialZoom: 16.5,
+              maxZoom: 19.5,
+              minZoom: 10.0,
+              onPositionChanged: (camera, hasGesture) {
+                if (hasGesture) {
+                  if (!_isDraggingMap) {
+                    setState(() => _isDraggingMap = true);
                   }
-                },
-                tooltip: "Buka Navigasi Eksternal",
-                child: const Icon(Icons.near_me_rounded, color: Colors.white),
+                  _dragDebounceTimer?.cancel();
+                  _dragDebounceTimer = Timer(const Duration(milliseconds: 250), () {
+                    if (mounted) {
+                      setState(() {
+                        _isDraggingMap = false;
+                        _mapCenter = camera.center;
+                      });
+                    }
+                  });
+                }
+              },
+            ),
+            children: [
+              TileLayer(
+                urlTemplate: _getTileUrl(),
+                userAgentPackageName: 'id.o2whero.lapangan',
               ),
-              const SizedBox(height: 8),
 
-              // Ritase TPA Modal
-              FloatingActionButton.small(
-                heroTag: "tpaBtn",
-                backgroundColor: Colors.amber.shade800,
-                onPressed: _showTpaRitaseModal,
-                tooltip: "Ritase ke TPA",
-                child: const Icon(Icons.fire_truck_rounded, color: Colors.white),
-              ),
-              const SizedBox(height: 8),
+              // Garis Rute Jalan Raya OSRM
+              if (_currentRoadRoute != null && _currentRoadRoute!.points.isNotEmpty)
+                PolylineLayer(
+                  polylines: [
+                    Polyline(
+                      points: _currentRoadRoute!.points,
+                      color: const Color(0xFF00AA13),
+                      strokeWidth: 6.0,
+                    ),
+                  ],
+                ),
 
-              // Recenter GPS
-              FloatingActionButton.small(
-                heroTag: "recenterBtn",
-                backgroundColor: const Color(0xFF1E293B),
-                onPressed: _recenterCamera,
-                child: const Icon(Icons.my_location_rounded, color: Colors.white),
-              ),
-              const SizedBox(height: 8),
-
-              // Fit Bounds
-              FloatingActionButton.small(
-                heroTag: "fitBoundsBtn",
-                backgroundColor: const Color(0xFF1E293B),
-                onPressed: _fitAllStops,
-                child: const Icon(Icons.zoom_out_map_rounded, color: Colors.white),
-              ),
+              MarkerLayer(markers: markers),
             ],
           ),
-        ),
 
-        // 4. BOTTOM FLOATING SHEET (Gojek / Grab Style Cockpit)
-        Positioned(
-          left: 12,
-          right: 12,
-          bottom: 12,
-          child: _activeTarget != null
-              ? _buildTargetBottomSheet(_activeTarget!)
-              : _buildEmptyTargetSheet(),
-        ),
-      ],
-    );
-  }
-
-  // ── 3. BOTTOM TARGET SHEET (Gojek & Grab Mitra Style) ──
-  Widget _buildTargetBottomSheet(TugasModel t) {
-    final isMenunggak = t.tunggakan.isMenunggak;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0F172A).withValues(alpha: 0.96),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isMenunggak ? Colors.red.shade700 : const Color(0xFF334155),
-          width: isMenunggak ? 1.5 : 1.0,
-        ),
-        boxShadow: const [BoxShadow(color: Colors.black54, blurRadius: 16, offset: Offset(0, 4))],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Baris 1: Urutan Stop & Nama Pelanggan
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: isMenunggak ? const Color(0xFF991B1B) : const Color(0xFF00AA13),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  "#${t.urutan ?? 1}",
-                  style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w900),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
+          // ── CENTER RETICLE PIN DENGAN ANIMASI ELEVASI (Badhy Maps) ──
+          Center(
+            child: IgnorePointer(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                transform: Matrix4.translationValues(0, _isDraggingMap ? -20 : -10, 0),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      t.pelanggan.nama,
-                      style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w800),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    // Badge Koordinat Live di Atas Pin
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0F172A).withValues(alpha: 0.9),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: const Color(0xFF00AA13), width: 1.5),
+                        boxShadow: const [BoxShadow(color: Colors.black54, blurRadius: 8)],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Color(0xFF00AA13),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            '${_mapCenter.latitude.toStringAsFixed(5)}, ${_mapCenter.longitude.toStringAsFixed(5)}',
+                            style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
                     ),
-                    Text(
-                      t.pelanggan.alamat,
-                      style: const TextStyle(color: Colors.white70, fontSize: 11),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    const SizedBox(height: 4),
+                    // Ikon Pin Badhy Maps
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        const Icon(
+                          Icons.location_on,
+                          color: Color(0xFF00AA13),
+                          size: 46,
+                        ),
+                        Container(
+                          width: 12,
+                          height: 12,
+                          margin: const EdgeInsets.only(bottom: 12),
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                    // Bayangan di Bawah Pin
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 150),
+                      width: _isDraggingMap ? 8 : 16,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: _isDraggingMap ? 0.2 : 0.5),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                   ],
                 ),
               ),
-              // Tombol Detail Form
-              IconButton(
-                icon: const Icon(Icons.edit_note_rounded, color: Colors.white70),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => PengangkutanDetailScreen(tugas: t),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-
-          // Peringatan Tunggakan jika ada
-          if (isMenunggak) ...[
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.red.shade900.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.red.shade400, width: 0.8),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.warning_amber_rounded, color: Colors.yellow, size: 16),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      "Warga menunggak ${t.tunggakan.jumlahBulan} bulan (Total: Rp ${t.tunggakan.totalNominal.round()})",
-                      style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-
-          const SizedBox(height: 12),
-
-          // Baris 2: Quick Action Bar (WhatsApp, Telepon, Lewati)
-          Row(
-            children: [
-              // WhatsApp Warga (GrabChat Instant Action Templates)
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () => _showGrabMessageChooser(t),
-                  icon: const Icon(Icons.chat_rounded, color: Color(0xFF25D366), size: 16),
-                  label: const Text("Pesan Cepat", style: TextStyle(color: Colors.white, fontSize: 11)),
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFF334155)),
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-
-              // Panggilan Telepon
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () => DriverActionsService.makePhoneCall(t.pelanggan.noTelepon),
-                  icon: const Icon(Icons.call_rounded, color: Colors.lightBlueAccent, size: 16),
-                  label: const Text("Telepon", style: TextStyle(color: Colors.white, fontSize: 11)),
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFF334155)),
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-
-              // Lewati / Kendala
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () => _showLewatiModal(t),
-                  icon: const Icon(Icons.skip_next_rounded, color: Colors.amber, size: 16),
-                  label: const Text("Lewati", style: TextStyle(color: Colors.white, fontSize: 11)),
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFF334155)),
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 12),
-
-          // Baris 3: SlideToConfirm / Swipe-to-Pickup Slider (Gojek / Grab)
-          SwipeToPickupSlider(
-            onConfirmed: _handleConfirmPickup,
-            label: "Geser Selesai Angkut 🚛",
-            confirmedLabel: "Berhasil Diangkut! ✓",
-            isMenunggak: isMenunggak,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEmptyTargetSheet() {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0F172A),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFF334155)),
-      ),
-      child: const Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.check_circle_outline, color: Color(0xFF34D399), size: 24),
-          SizedBox(width: 10),
-          Text(
-            "Semua rute penjemputan selesai hari ini! 🎉",
-            style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ── 4. VIEW DAFTAR / CHECKLIST TUGAS ──
-  Widget _buildListView(PengangkutanProvider pengangkutan) {
-    final list = pengangkutan.filteredList;
-
-    return Container(
-      color: const Color(0xFF0F172A),
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        children: [
-          // Search Bar
-          TextField(
-            controller: _searchController,
-            style: const TextStyle(color: Colors.white, fontSize: 13),
-            onChanged: (val) => pengangkutan.setSearchQuery(val),
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: const Color(0xFF1E293B),
-              hintText: "Cari nama warga, alamat, kode pelanggan...",
-              hintStyle: const TextStyle(color: Colors.white38, fontSize: 13),
-              prefixIcon: const Icon(Icons.search, color: Colors.white54, size: 20),
-              suffixIcon: _searchController.text.isNotEmpty
-                  ? IconButton(
-                      icon: const Icon(Icons.clear, color: Colors.white54, size: 18),
-                      onPressed: () {
-                        _searchController.clear();
-                        pengangkutan.setSearchQuery('');
-                      },
-                    )
-                  : null,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             ),
           ),
 
-          const SizedBox(height: 10),
-
-          // Filter Chips
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
+          // ── TOP FLOATING SEARCH BAR & AUTOCOMPLETE (Badhy Pill Style) ──
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 10,
+            left: 14,
+            right: 14,
+            child: Column(
               children: [
-                _buildFilterChip("semua", "Semua (${pengangkutan.totalTugas})", pengangkutan),
-                const SizedBox(width: 8),
-                _buildFilterChip("terjadwal", "Terjadwal (${pengangkutan.totalTerjadwal})", pengangkutan),
-                const SizedBox(width: 8),
-                _buildFilterChip("diambil", "Selesai (${pengangkutan.totalSelesai})", pengangkutan),
-                const SizedBox(width: 8),
-                _buildFilterChip("dilewati", "Dilewati (${pengangkutan.totalDilewati})", pengangkutan),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 10),
-
-          // List Items
-          Expanded(
-            child: list.isEmpty
-                ? const Center(
-                    child: Text("Tidak ada tugas ditemukan", style: TextStyle(color: Colors.white54)),
-                  )
-                : ListView.builder(
-                    itemCount: list.length,
-                    itemBuilder: (ctx, i) {
-                      final t = list[i];
-                      return Card(
-                        color: const Color(0xFF1E293B),
-                        margin: const EdgeInsets.only(bottom: 10),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                Container(
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0F172A).withValues(alpha: 0.95),
+                    borderRadius: BorderRadius.circular(26),
+                    border: Border.all(color: Colors.white24, width: 1.2),
+                    boxShadow: const [
+                      BoxShadow(color: Colors.black45, blurRadius: 12, offset: Offset(0, 4)),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      const SizedBox(width: 14),
+                      const Icon(Icons.search_rounded, color: Color(0xFF00AA13), size: 24),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TextField(
+                          controller: _searchController,
+                          focusNode: _searchFocusNode,
+                          onChanged: _onSearchQueryChanged,
+                          style: const TextStyle(color: Colors.white, fontSize: 14),
+                          decoration: const InputDecoration(
+                            hintText: 'Cari alamat, nasabah, atau kode...',
+                            hintStyle: TextStyle(color: Colors.white54, fontSize: 13),
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                      if (_searchController.text.isNotEmpty)
+                        IconButton(
+                          icon: const Icon(Icons.close_rounded, color: Colors.white70, size: 20),
+                          onPressed: () {
+                            _searchController.clear();
+                            _onSearchQueryChanged('');
+                          },
+                        ),
+                      // Indikator Status Driver Online
+                      GestureDetector(
+                        onTap: () {
+                          setState(() => _isOnline = !_isOnline);
+                          HapticFeedback.selectionClick();
+                          if (_isOnline) {
+                            context.read<TrackingProvider>().startTracking();
+                          } else {
+                            context.read<TrackingProvider>().stopTracking();
+                          }
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(right: 8),
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: _isOnline ? const Color(0xFF065F46) : const Color(0xFF334155),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: _isOnline ? const Color(0xFF10B981) : Colors.white24,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xFF00AA13),
-                                          borderRadius: BorderRadius.circular(6),
-                                        ),
-                                        child: Text(
-                                          "#${t.urutan ?? (i + 1)}",
-                                          style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        t.pelanggan.nama,
-                                        style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w700),
-                                      ),
-                                    ],
-                                  ),
-                                  StatusBadge(status: t.status),
-                                ],
+                              Container(
+                                width: 7,
+                                height: 7,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: _isOnline ? const Color(0xFF34D399) : Colors.amber,
+                                ),
                               ),
-                              const SizedBox(height: 4),
+                              const SizedBox(width: 5),
                               Text(
-                                t.pelanggan.alamat,
-                                style: const TextStyle(color: Colors.white70, fontSize: 12),
-                              ),
-                              const SizedBox(height: 10),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  if (t.pelanggan.hasCoordinates)
-                                    IconButton(
-                                      icon: const Icon(Icons.near_me_rounded, color: Color(0xFF38BDF8), size: 20),
-                                      tooltip: "Buka Navigasi Waze / Maps",
-                                      onPressed: () {
-                                        ExternalNavigationService.showNavigationChooser(
-                                          context,
-                                          lat: t.pelanggan.latitude!,
-                                          lng: t.pelanggan.longitude!,
-                                          namaPelanggan: t.pelanggan.nama,
-                                          alamat: t.pelanggan.alamat,
-                                        );
-                                      },
-                                    ),
-                                  IconButton(
-                                    icon: const Icon(Icons.chat_rounded, color: Color(0xFF25D366), size: 20),
-                                    tooltip: "WhatsApp Warga",
-                                    onPressed: () {
-                                      DriverActionsService.openWhatsApp(
-                                        phone: t.pelanggan.noTelepon,
-                                        nama: t.pelanggan.nama,
-                                        alamat: t.pelanggan.alamat,
-                                        patokan: t.pelanggan.patokanLokasi,
-                                        isMenunggak: t.tunggakan.isMenunggak,
-                                      );
-                                    },
-                                  ),
-                                  if (t.isTerjadwal)
-                                    ElevatedButton(
-                                      onPressed: () async {
-                                        await pengangkutan.quickPickup(t.id);
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color(0xFF00AA13),
-                                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                      ),
-                                      child: const Text("1-Tap Pickup", style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
-                                    ),
-                                ],
+                                _isOnline ? 'ON' : 'OFF',
+                                style: TextStyle(
+                                  color: _isOnline ? const Color(0xFF34D399) : Colors.white70,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w900,
+                                ),
                               ),
                             ],
                           ),
                         ),
-                      );
-                    },
+                      ),
+                    ],
                   ),
+                ),
+
+                // Dropdown Autocomplete Search Results
+                if (_isSearching && _searchResults.isNotEmpty)
+                  Container(
+                    margin: const EdgeInsets.only(top: 8),
+                    constraints: const BoxConstraints(maxHeight: 240),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0F172A).withValues(alpha: 0.98),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.white24),
+                      boxShadow: const [BoxShadow(color: Colors.black54, blurRadius: 16)],
+                    ),
+                    child: ListView.separated(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      shrinkWrap: true,
+                      itemCount: _searchResults.length,
+                      separatorBuilder: (_, __) => const Divider(color: Colors.white10, height: 1),
+                      itemBuilder: (ctx, idx) {
+                        final item = _searchResults[idx];
+                        return ListTile(
+                          dense: true,
+                          leading: const Icon(Icons.location_on, color: Color(0xFF00AA13), size: 20),
+                          title: Text(item.pelanggan.nama, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          subtitle: Text(item.pelanggan.alamat, style: const TextStyle(color: Colors.white60, fontSize: 11), maxLines: 1),
+                          onTap: () => _selectSearchResult(item),
+                        );
+                      },
+                    ),
+                  ),
+              ],
+            ),
+          ),
+
+          // ── RIGHT FLOATING ACTION BUTTONS (Badhy FAB Column) ──
+          Positioned(
+            right: 14,
+            top: MediaQuery.of(context).padding.top + 80,
+            child: Column(
+              children: [
+                _buildFloatingButton(
+                  icon: Icons.my_location_rounded,
+                  tooltip: 'Lokasi Driver Saya',
+                  onTap: _recenterToDriver,
+                ),
+                const SizedBox(height: 10),
+                _buildFloatingButton(
+                  icon: Icons.layers_rounded,
+                  tooltip: 'Ganti Layer Peta',
+                  onTap: _showLayerSelector,
+                ),
+                const SizedBox(height: 10),
+                _buildFloatingButton(
+                  icon: Icons.star_rounded,
+                  color: Colors.amber,
+                  tooltip: 'Daftar Drop Point',
+                  onTap: _showFavoritesSheet,
+                ),
+                const SizedBox(height: 10),
+                _buildFloatingButton(
+                  icon: Icons.fullscreen_rounded,
+                  tooltip: 'Lihat Semua Rute',
+                  onTap: _fitAllStops,
+                ),
+                const SizedBox(height: 10),
+                _buildFloatingButton(
+                  icon: Icons.refresh_rounded,
+                  tooltip: 'Refresh Data',
+                  onTap: () => context.read<PengangkutanProvider>().loadTugas(),
+                ),
+              ],
+            ),
+          ),
+
+          // ── FLOATING MINI WIDGET OVERLAY (Draggable) ──
+          if (_showFloatingWidget && _activeTarget != null)
+            Positioned(
+              left: _floatingWidgetPosition.dx,
+              top: _floatingWidgetPosition.dy,
+              child: GestureDetector(
+                onPanUpdate: (details) {
+                  setState(() {
+                    _floatingWidgetPosition += details.delta;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0F172A).withValues(alpha: 0.95),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xFF00AA13), width: 1.5),
+                    boxShadow: const [BoxShadow(color: Colors.black54, blurRadius: 10)],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('🚛', style: TextStyle(fontSize: 18)),
+                      const SizedBox(width: 8),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _activeTarget!.pelanggan.nama,
+                            style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            'Muatan: $_muatanTruk%',
+                            style: const TextStyle(color: Color(0xFF34D399), fontSize: 10),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 6),
+                      InkWell(
+                        onTap: () => setState(() => _showFloatingWidget = false),
+                        child: const Icon(Icons.close, color: Colors.white54, size: 14),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+          // ── BOTTOM FLOATING CONTROL CARD (Badhy Control Sheet) ──
+          Positioned(
+            bottom: 14,
+            left: 14,
+            right: 14,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF0F172A).withValues(alpha: 0.96),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: Colors.white24, width: 1.2),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black54, blurRadius: 20, offset: Offset(0, 6)),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Row 1: Status & Telemetri Real-Time
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: _isStarted
+                                  ? const Color(0xFF00AA13).withValues(alpha: 0.2)
+                                  : Colors.white10,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: _isStarted ? const Color(0xFF00AA13) : Colors.white24,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  _isStarted ? Icons.play_arrow_rounded : Icons.pause_rounded,
+                                  color: _isStarted ? const Color(0xFF00AA13) : Colors.white70,
+                                  size: 14,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  _isStarted ? 'SEDANG JALAN' : 'STANDBY',
+                                  style: TextStyle(
+                                    color: _isStarted ? const Color(0xFF00AA13) : Colors.white70,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '⏱️ ${_formatDuration(_tripSeconds)}',
+                            style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        '⚡ ${speedKmH.toStringAsFixed(0)} km/j',
+                        style: const TextStyle(color: Color(0xFF38BDF8), fontSize: 13, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Row 2: Informasi Target Aktif
+                  if (_activeTarget != null) ...[
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _activeTarget!.pelanggan.nama,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                _activeTarget!.pelanggan.alamat,
+                                style: const TextStyle(color: Colors.white60, fontSize: 12),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Quick Action Buttons (Navigasi GMaps/Waze & WA)
+                        Row(
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.navigation_rounded, color: Color(0xFF38BDF8)),
+                              tooltip: 'Buka Google Maps / Waze',
+                              onPressed: () {
+                                if (_activeTarget!.pelanggan.hasCoordinates) {
+                                  ExternalNavigationService.showNavigationChooser(
+                                    context,
+                                    lat: _activeTarget!.pelanggan.latitude!,
+                                    lng: _activeTarget!.pelanggan.longitude!,
+                                    namaPelanggan: _activeTarget!.pelanggan.nama,
+                                    alamat: _activeTarget!.pelanggan.alamat,
+                                  );
+                                }
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.chat_bubble_rounded, color: Color(0xFF25D366)),
+                              tooltip: 'WhatsApp Nasabah',
+                              onPressed: () {
+                                DriverActionsService.openWhatsApp(
+                                  phone: _activeTarget!.pelanggan.noTelepon,
+                                  nama: _activeTarget!.pelanggan.nama,
+                                  alamat: _activeTarget!.pelanggan.alamat,
+                                  patokan: _activeTarget!.pelanggan.patokanLokasi,
+                                  isMenunggak: _activeTarget!.tunggakan.isMenunggak,
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ] else ...[
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Text(
+                        'Semua antrean penjemputan sampah hari ini sudah selesai!',
+                        style: TextStyle(color: Colors.white70, fontSize: 13),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+
+                  const SizedBox(height: 14),
+
+                  // Row 3: Tombol START / STOP & Selesai Angkut (Badhy Vibrant Buttons)
+                  Row(
+                    children: [
+                      // Tombol Toggle START / STOP
+                      Expanded(
+                        flex: 4,
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _isStarted ? const Color(0xFFDC2626) : const Color(0xFF00AA13),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            elevation: 6,
+                          ),
+                          icon: Icon(_isStarted ? Icons.stop_rounded : Icons.play_arrow_rounded, size: 22),
+                          label: Text(
+                            _isStarted ? 'STOP OPERASI' : 'MULAI ANGKUT (START)',
+                            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 0.5),
+                          ),
+                          onPressed: () {
+                            HapticFeedback.heavyImpact();
+                            setState(() {
+                              _isStarted = !_isStarted;
+                            });
+                            if (_isStarted) {
+                              _recenterToActiveTarget();
+                              _fetchRoadRoute();
+                            }
+                          },
+                        ),
+                      ),
+
+                      if (_activeTarget != null) ...[
+                        const SizedBox(width: 10),
+                        // Tombol Cepat Konfirmasi Pickup
+                        Expanded(
+                          flex: 3,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF0284C7),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                              elevation: 4,
+                            ),
+                            onPressed: _handleConfirmPickup,
+                            child: const Text(
+                              '✓ SELESAI',
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildFilterChip(String key, String label, PengangkutanProvider p) {
-    final isSelected = p.selectedFilter == key;
-    return ChoiceChip(
-      label: Text(label, style: TextStyle(color: isSelected ? Colors.white : Colors.white70, fontSize: 12)),
-      selected: isSelected,
-      selectedColor: const Color(0xFF00AA13),
-      backgroundColor: const Color(0xFF1E293B),
-      onSelected: (_) => p.setFilter(key),
+  Widget _buildFloatingButton({
+    required IconData icon,
+    required VoidCallback onTap,
+    String? tooltip,
+    Color color = Colors.white,
+  }) {
+    return Container(
+      width: 46,
+      height: 46,
+      decoration: BoxDecoration(
+        color: const Color(0xFF0F172A).withValues(alpha: 0.9),
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white24, width: 1.2),
+        boxShadow: const [BoxShadow(color: Colors.black45, blurRadius: 8, offset: Offset(0, 3))],
+      ),
+      child: IconButton(
+        icon: Icon(icon, color: color, size: 22),
+        tooltip: tooltip,
+        onPressed: () {
+          HapticFeedback.selectionClick();
+          onTap();
+        },
+      ),
     );
   }
 }
