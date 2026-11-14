@@ -228,15 +228,16 @@ export function paymentLink(noInvoice: string): string {
 export async function kirimWhatsApp(
   noTelepon: string,
   pesan: string,
-  options?: { delay?: string | number }
+  options?: { delay?: string | number; apiKey?: string; apiUrl?: string }
 ): Promise<{ ok: boolean; error?: string }> {
-  const apiKey = getWaApiKey();
-  if (!apiKey || !WA_API_URL) {
+  const apiKey = options?.apiKey || getWaApiKey();
+  const targetApiUrl = options?.apiUrl || WA_API_URL;
+  if (!apiKey || !targetApiUrl) {
     return { ok: false, error: "WA_API_KEY belum dikonfigurasi" };
   }
   try {
     const delayVal = options?.delay !== undefined ? String(options.delay) : "0";
-    const res = await fetch(WA_API_URL, {
+    const res = await fetch(targetApiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -831,6 +832,10 @@ export type KirimNotifParams = {
   createdById?: number | null;
   /** Override auto-send (default: isWaEnabled()). */
   autoSend?: boolean;
+  /** Dukungan Multi-Tenant: ID Tenant pengirim */
+  tenantId?: string | null;
+  /** Pemilihan Nomor WhatsApp Mitra: "primary" (Nomor 1 - Bot/Tagihan) atau "cs" (Nomor 2 - Layanan/Pengaduan) */
+  deviceType?: "primary" | "cs";
 };
 
 export type KirimNotifResult = {
@@ -854,13 +859,46 @@ export async function kirimNotifikasi(
   let dikirimPada: Date | null = null;
   let link: string | undefined;
 
+  // Resolusi Kredensial WhatsApp Khusus Tenant (Dua Nomor: Device 1 & Device 2)
+  let customApiKey: string | undefined;
+  if (params.tenantId) {
+    try {
+      const cfg = await prisma.tenantWhatsAppConfig.findUnique({
+        where: { tenantId: params.tenantId },
+      });
+      if (cfg) {
+        if (params.deviceType === "cs" && cfg.waApiKey2) {
+          customApiKey = cfg.waApiKey2;
+        } else if (cfg.waApiKey1) {
+          customApiKey = cfg.waApiKey1;
+        }
+      }
+    } catch {
+      // Fallback ke token Fonnte default
+    }
+  }
+
   if (params.noTelepon) {
     if (autoSend) {
       try {
-        const hasil = await kirimWhatsApp(params.noTelepon, params.pesan);
+        const hasil = await kirimWhatsApp(params.noTelepon, params.pesan, {
+          apiKey: customApiKey,
+        });
         if (hasil.ok) {
           status = "terkirim";
           dikirimPada = new Date();
+
+          // Increment Kuota Terkirim Tenant jika tenantId tersedia
+          if (params.tenantId) {
+            try {
+              await prisma.tenantQuotaUsage.updateMany({
+                where: { tenantId: params.tenantId },
+                data: { pesanTerkirim: { increment: 1 } },
+              });
+            } catch {
+              // Non-blocking
+            }
+          }
         } else {
           status = "gagal";
           error = hasil.error;

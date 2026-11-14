@@ -1004,6 +1004,15 @@ model Tenant {
   mitraRegistrasi    MitraRegistration?
   users              User[]
 
+  // Relasi Konfigurasi WhatsApp (2 Nomor Mitra) & Kuota
+  waConfig           TenantWhatsAppConfig?
+  quotaUsage         TenantQuotaUsage?
+
+  // Relasi Konfigurasi Payment Gateway & Komisi
+  paymentConfig      TenantPaymentConfig?
+  ledgers            TenantLedger[]
+  payouts            TenantPayout[]
+
   @@index([slug])
   @@index([customDomain])
   @@index([subdomain])
@@ -1044,4 +1053,149 @@ model MitraRegistration {
 
   @@index([status])
   @@index([noWhatsapp])
+}
+
+// ============================================================================
+// KONFIGURASI WHATSAPP DUA NOMOR & KUOTA BULANAN MULTI-TENANT
+// ============================================================================
+
+model TenantWhatsAppConfig {
+  id                 String   @id @default(uuid())
+  tenantId           String   @unique
+  tenant             Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  gatewayMode        String   @default("dedicated_mitra") // dedicated_mitra | shared_pool
+  provider           String   @default("fonnte") // fonnte | wablas | meta_waba
+  
+  // Nomor WhatsApp 1: Nomor Operasional Utama (Bot, Tagihan & Kuitansi Lunas)
+  waNumber1          String?  // misal "081400782617"
+  waApiKey1          String?  // Token API Device 1
+  waLabel1           String?  @default("Nomor Utama (Bot & Tagihan)")
+  
+  // Nomor WhatsApp 2: Nomor CS & Layanan Pengaduan Warga
+  waNumber2          String?  // misal "081234567890"
+  waApiKey2          String?  // Token API Device 2
+  waLabel2           String?  @default("Nomor CS & Pengaduan")
+  
+  // Nomor Internal Pengelola untuk Notifikasi
+  adminPhone         String?  // Nomor WA Admin Lapangan
+  ownerPhone         String?  // Nomor WA Owner / Direksi Mitra
+  waGroupTagihan     String?  // JID Grup WA Laporan Pembayaran (@g.us)
+  waGroupPengaduan   String?  // JID Grup WA Laporan Pengaduan (@g.us)
+  
+  blastDelayMs       Int      @default(1500)
+  autoSendEnabled    Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([waNumber1])
+  @@index([waNumber2])
+}
+
+model TenantQuotaUsage {
+  id                   String    @id @default(uuid())
+  tenantId             String    @unique
+  tenant               Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  kuotaBulanan         Int       @default(1000) // Kuota dasar per paket (Starter 1000, Pro 5000, Enterprise 20000)
+  kuotaTopup           Int       @default(0)    // Kuota tambahan berbayar (rollover permanen)
+  pesanTerkirim        Int       @default(0)    // Counter pesan sukses terkirim siklus ini
+  pesanGagal           Int       @default(0)    // Counter pesan gagal
+  overdraftUsed        Int       @default(0)    // Pemakaian kuota darurat P0
+  biayaPerPesanOverage Float     @default(150)  // Biaya per pesan ekstra (Rp 150)
+  
+  periodeMulai         DateTime  @default(now())
+  periodeBerakhir      DateTime
+  
+  alert80SentAt        DateTime?
+  alert100SentAt       DateTime?
+  
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@index([tenantId])
+  @@index([periodeBerakhir])
+}
+
+// ============================================================================
+// KONFIGURASI PAYMENT GATEWAY & KOMISI PLATFORM MULTI-TENANT
+// ============================================================================
+
+model TenantPaymentConfig {
+  id                 Int      @id @default(autoincrement())
+  tenantId           String   @unique
+  tenant             Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // Mode Gateway: "centralized_pool" (O2W HERO Pool) atau "dedicated" (Kredensial Mandiri Mitra)
+  gatewayMode        String   @default("centralized_pool")
+  merchantCode       String?  // Terisi jika mode dedicated
+  apiKey             String?  // Terisi jika mode dedicated
+
+  // Kebijakan Pembebanan Biaya: "customer" (ditambah ke warga) | "tenant" (disubsidi) | "hybrid"
+  feeBearerPolicy    String   @default("hybrid")
+  
+  // Biaya Admin yang Ditagihkan ke Warga
+  adminFeeQris       Float    @default(1500) // Default Rp 1.500
+  adminFeeVa         Float    @default(3500) // Default Rp 3.500
+  adminFeeEwallet    Float    @default(2000) // Default Rp 2.000
+
+  // Komisi / Micro-Fee Platform O2W HERO
+  platformFeeNominal Float    @default(1000) // Komisi O2W HERO per transaksi lunas (Rp 1.000)
+  platformFeeRate    Float    @default(0)
+
+  // Rekening Pencairan Kas Mitra
+  bankName           String?  // BCA, Mandiri, BRI, BNI
+  bankAccountNumber  String?
+  bankAccountHolder  String?
+  payoutSchedule     String   @default("weekly") // daily | weekly | manual
+
+  aktif              Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([tenantId])
+}
+
+// ============================================================================
+// ESCROW MUTASI SALDO & SETTLEMENT MITRA (VIRTUAL LEDGER)
+// ============================================================================
+
+model TenantLedger {
+  id                 Int      @id @default(autoincrement())
+  tenantId           String
+  tenant             Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  pembayaranId       Int?
+  
+  tipe               String   // CREDIT_PAYMENT | DEBIT_PAYOUT | ADJUSTMENT
+  nominalGross       Float    // Total uang masuk dari warga
+  feeGateway         Float    // Potongan gateway Duitku
+  feePlatform        Float    // Komisi O2W HERO
+  nominalNet         Float    // Kas bersih hak mitra
+  saldoSetelah       Float    // Saldo berjalan kas mitra di pool O2W
+  keterangan         String?
+  createdAt          DateTime @default(now())
+
+  @@index([tenantId, createdAt])
+}
+
+model TenantPayout {
+  id                 Int      @id @default(autoincrement())
+  tenantId           String
+  tenant             Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  nomorBatch         String   @unique // PO/YYYYMMDD/XXXX
+  totalNominal       Float    // Total dana ditransfer ke mitra
+  biayaTransfer      Float    @default(0)
+  nominalDiterima    Float
+  bankTujuan         String
+  rekeningTujuan     String
+  namaPenerima       String
+  status             String   @default("proses") // proses | berhasil | ditolak
+  buktiTransfer      String?
+  catatan            String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([status])
 }
