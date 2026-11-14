@@ -30,6 +30,11 @@ import {
   ChevronDown,
   Cpu,
   LogIn,
+  Zap,
+  Check,
+  FileText,
+  Award,
+  Gift,
 } from "lucide-react";
 
 export default function O2WHeroCorePortal() {
@@ -43,6 +48,7 @@ export default function O2WHeroCorePortal() {
     kota: "Kota Depok",
     estimasiWarga: "500",
     kebutuhanDb: "dedicated",
+    paketPilihan: "pro",
     catatanAdmin: "",
   });
 
@@ -74,10 +80,15 @@ export default function O2WHeroCorePortal() {
     setSuccessMsg("");
 
     try {
+      const payload = {
+        ...form,
+        catatanAdmin: `[Pilihan Paket: ${form.paketPilihan.toUpperCase()}] ${form.catatanAdmin ? `Catatan: ${form.catatanAdmin}` : ""}`.trim(),
+      };
+
       const res = await fetch("/api/core/mitra/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -97,6 +108,7 @@ export default function O2WHeroCorePortal() {
         kota: "Kota Depok",
         estimasiWarga: "500",
         kebutuhanDb: "dedicated",
+        paketPilihan: "pro",
         catatanAdmin: "",
       });
     } catch (err: any) {
@@ -164,6 +176,9 @@ export default function O2WHeroCorePortal() {
             </a>
             <a href="#kalkulator" className="hover:text-sky-400 transition-colors">
               Kalkulator Potensi
+            </a>
+            <a href="#paket-harga" className="hover:text-amber-400 transition-colors font-bold">
+              Paket Kemitraan
             </a>
             <a href="#faq" className="hover:text-white transition-colors">
               FAQ
@@ -278,7 +293,7 @@ export default function O2WHeroCorePortal() {
               <div className="space-y-4 max-w-2xl">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold uppercase tracking-wider">
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  Mitra Percontohan Pertama (Pilot Showcase)
+                  Mitra Percontohan Pertama (Proof of Concept Live)
                 </div>
 
                 <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
@@ -286,21 +301,29 @@ export default function O2WHeroCorePortal() {
                 </h2>
 
                 <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-                  Bukti nyata keandalan arsitektur O2W Hero di lapangan. Mengelola penjemputan sampah ribuan warga Kalibaru &amp; Cilodong dengan armada dump truck GPS live, WhatsApp bot otomatis, dan pembayaran QRIS langsung di domain mandiri <strong>upsheru.com</strong>.
+                  Bukti nyata keandalan arsitektur O2W Hero yang telah beroperasi di lapangan. Mengelola penjemputan sampah ribuan warga Kalibaru &amp; Cilodong dengan armada dump truck ber-GPS live, WhatsApp bot otomatis, dan pembayaran QRIS langsung di domain mandiri <strong>upsheru.com</strong>.
                 </p>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-2">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
                   <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
-                    <p className="text-[11px] text-slate-400 font-semibold">Cakupan Wilayah</p>
-                    <p className="text-sm font-bold text-white mt-0.5">Kec. Cilodong, Depok</p>
+                    <p className="text-[11px] text-slate-400 font-semibold">Cakupan Warga</p>
+                    <p className="text-base font-extrabold text-white mt-0.5">2.450+ KK</p>
+                    <p className="text-[10px] text-emerald-400">Kalibaru &amp; Cilodong</p>
                   </div>
                   <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
-                    <p className="text-[11px] text-slate-400 font-semibold">Integrasi Gateway</p>
-                    <p className="text-sm font-bold text-emerald-400 mt-0.5">QRIS Duitku Live</p>
+                    <p className="text-[11px] text-slate-400 font-semibold">Armada Aktif</p>
+                    <p className="text-base font-extrabold text-purple-300 mt-0.5">3 Truk Dump</p>
+                    <p className="text-[10px] text-purple-400">Live GPS &amp; Cockpit</p>
                   </div>
-                  <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 col-span-2 sm:col-span-1">
+                  <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
+                    <p className="text-[11px] text-slate-400 font-semibold">Pembayaran</p>
+                    <p className="text-base font-extrabold text-emerald-400 mt-0.5">100% QRIS</p>
+                    <p className="text-[10px] text-slate-400">0% Kas Bocor</p>
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
                     <p className="text-[11px] text-slate-400 font-semibold">Database Tenant</p>
-                    <p className="text-sm font-bold text-sky-400 mt-0.5">PostgreSQL Terisolasi</p>
+                    <p className="text-base font-extrabold text-sky-400 mt-0.5">PostgreSQL</p>
+                    <p className="text-[10px] text-sky-300">Dedicated Sumobase</p>
                   </div>
                 </div>
               </div>
@@ -312,16 +335,29 @@ export default function O2WHeroCorePortal() {
                   rel="noopener noreferrer"
                   className="px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-xl shadow-emerald-600/30 transition-all flex items-center justify-center gap-2"
                 >
-                  Kunjungi Website upsheru.com
+                  Buka Portal upsheru.com
                   <ExternalLink className="w-4 h-4" />
                 </a>
-                <Link
-                  href="/login"
-                  className="px-6 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-sm transition-all flex items-center justify-center gap-2"
+                <a
+                  href="https://upsheru.com/lacak"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-6 py-3 rounded-xl bg-slate-950/80 hover:bg-slate-800 text-emerald-300 border border-emerald-800/80 font-semibold text-xs transition-all flex items-center justify-center gap-2"
                 >
-                  <Lock className="w-4 h-4 text-sky-400" />
-                  Masuk Dashboard Mitra
-                </Link>
+                  <Truck className="w-4 h-4 text-emerald-400" />
+                  Live Lacak Armada Truk
+                  <ExternalLink className="w-3.5 h-3.5 opacity-70" />
+                </a>
+                <a
+                  href="https://upsheru.com/cek-tagihan"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-6 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 font-semibold text-xs transition-all flex items-center justify-center gap-2"
+                >
+                  <QrCode className="w-4 h-4 text-sky-400" />
+                  Uji Cek Tagihan Warga
+                  <ExternalLink className="w-3.5 h-3.5 opacity-70" />
+                </a>
               </div>
             </div>
           </div>
@@ -587,6 +623,275 @@ export default function O2WHeroCorePortal() {
         </div>
       </section>
 
+      {/* Paket Kemitraan Section */}
+      <section id="paket-harga" className="py-20 border-b border-slate-800 bg-slate-900/40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-14">
+            <span className="text-xs font-bold uppercase tracking-widest text-sky-400 mb-2 block">
+              Investasi Transparan &amp; ROI Nyata
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+              Pilihan Skema Paket Kemitraan O2W Hero
+            </h2>
+            <p className="text-sm sm:text-base text-slate-400 mt-3 leading-relaxed">
+              Tingkatkan efisiensi penagihan dan operasional armada Anda. Biaya langganan terjangkau yang menutup sendiri biayanya hanya dari pencegahan kebocoran kas warga.
+            </p>
+          </div>
+
+          {/* Penawaran Emas Banner */}
+          <div className="mb-12 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-emerald-950/60 via-slate-900 to-sky-950/60 border border-emerald-500/30 shadow-2xl relative overflow-hidden">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
+                  <Gift className="w-7 h-7" />
+                </div>
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[11px] font-bold uppercase tracking-wider mb-1">
+                    <Award className="w-3.5 h-3.5" /> Jaminan Bebas Risiko
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-bold text-white">
+                    Garansi 60 Hari Bebas Risiko &amp; Gratis Migrasi Data Warga
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl leading-relaxed">
+                    Coba seluruh fitur Pro tanpa biaya di 60 hari pertama. Tim teknis O2W Hero akan membantu merapikan database warga dari file Excel atau buku fisik Anda hingga sistem siap jalan.
+                  </p>
+                </div>
+              </div>
+
+              <a
+                href="#daftar-mitra"
+                onClick={() => setForm(prev => ({ ...prev, paketPilihan: "pro" }))}
+                className="shrink-0 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold text-xs sm:text-sm shadow-xl shadow-emerald-500/20 transition-all flex items-center gap-2"
+              >
+                <span>Klaim Trial 60 Hari Sekarang</span>
+                <ArrowRight className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
+
+          {/* Grid 3 Paket */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+            {/* Paket Starter */}
+            <div className="rounded-3xl bg-slate-900/80 border border-slate-800 p-8 flex flex-col justify-between hover:border-slate-700 transition-all">
+              <div className="space-y-6">
+                <div>
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                    Bank Sampah &amp; TPS 3R Swadaya
+                  </span>
+                  <h3 className="text-2xl font-black text-white mt-1">Paket Starter</h3>
+                  <p className="text-xs text-slate-400 mt-2">
+                    Solusi terjangkau bagi unit pengelola yang baru memulai transisi dari pencatatan manual ke digital.
+                  </p>
+                </div>
+
+                <div className="pb-6 border-b border-slate-800">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-xs font-bold text-slate-400">Rp</span>
+                    <span className="text-4xl font-black text-white">299.000</span>
+                    <span className="text-xs text-slate-400">/ bulan</span>
+                  </div>
+                  <p className="text-[11px] text-teal-400 mt-1">Hingga 1.000 KK Warga</p>
+                </div>
+
+                <ul className="space-y-3 text-xs text-slate-300">
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
+                    <span>1–2 Armada Operasional (Gerobak Motor/Tossa)</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
+                    <span>Billing Iuran Digital &amp; QRIS Dinamis Otomatis</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
+                    <span>Notifikasi WhatsApp Pengingat Tagihan Warga</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
+                    <span>Subdomain Resmi: <code className="text-teal-300 font-mono">unit.o2whero.com</code></span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
+                    <span>Laporan Kas &amp; Buku Besar Kas Masuk/Keluar</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
+                    <span>Shared High-Performance DB Cluster</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="pt-8">
+                <a
+                  href="#daftar-mitra"
+                  onClick={() => setForm(prev => ({ ...prev, paketPilihan: "starter" }))}
+                  className="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center justify-center gap-2 border border-slate-700 transition-all"
+                >
+                  <span>Pilih Paket Starter</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </div>
+
+            {/* Paket Pro (Featured) */}
+            <div className="rounded-3xl bg-gradient-to-b from-sky-950/60 to-slate-900 border-2 border-sky-500/80 p-8 flex flex-col justify-between shadow-2xl shadow-sky-950/50 relative">
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-sky-500 to-teal-500 text-slate-950 text-[11px] font-black tracking-wider uppercase shadow-lg flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5" /> Paling Diminati / Best Value
+              </div>
+
+              <div className="space-y-6">
+                <div>
+                  <span className="text-xs font-bold uppercase tracking-wider text-sky-400">
+                    Operator Swasta &amp; TPS 3R Mandiri
+                  </span>
+                  <h3 className="text-2xl font-black text-white mt-1">Paket Pro</h3>
+                  <p className="text-xs text-slate-300 mt-2">
+                    Standar lengkap operasional setara <strong>upsheru.com</strong> dengan branding mandiri dan pelacakan GPS live.
+                  </p>
+                </div>
+
+                <div className="pb-6 border-b border-sky-800/60">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-xs font-bold text-slate-400">Rp</span>
+                    <span className="text-4xl font-black text-white">899.000</span>
+                    <span className="text-xs text-slate-400">/ bulan</span>
+                  </div>
+                  <p className="text-[11px] text-sky-400 mt-1">Hingga 3.500 KK Warga</p>
+                </div>
+
+                <ul className="space-y-3 text-xs text-slate-200">
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
+                    <span><strong>Armada Tak Terbatas</strong> + Driver Cockpit Native</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
+                    <span><strong>Live GPS Tracking</strong> Truk Sampah Terbuka untuk Warga</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
+                    <span><strong>Custom Domain Mandiri</strong> (<code className="text-sky-300 font-mono">namaunit.com</code>) + SSL Otomatis</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
+                    <span><strong>Dedicated PostgreSQL</strong> Terisolasi Penuh di Sumobase</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
+                    <span>WhatsApp Bot Interaktif &amp; Multi-Staff Admin Notification</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
+                    <span>Laporan Neraca Sampah &amp; Estimasi Reduksi Karbon DLH</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
+                    <span>Prioritas Bantuan Teknis SLA 4 Jam</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="pt-8">
+                <a
+                  href="#daftar-mitra"
+                  onClick={() => setForm(prev => ({ ...prev, paketPilihan: "pro" }))}
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-teal-500 hover:from-sky-400 hover:to-teal-400 text-slate-950 font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xl shadow-sky-500/25 transition-all"
+                >
+                  <span>Pilih Paket Pro (Trial 60 Hari)</span>
+                  <ArrowRight className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+
+            {/* Paket Enterprise / B2G */}
+            <div className="rounded-3xl bg-slate-900/80 border border-slate-800 p-8 flex flex-col justify-between hover:border-slate-700 transition-all">
+              <div className="space-y-6">
+                <div>
+                  <span className="text-xs font-bold uppercase tracking-wider text-purple-400">
+                    DLH Pemda &amp; Pengembang Kota Mandiri
+                  </span>
+                  <h3 className="text-2xl font-black text-white mt-1">Enterprise / B2G</h3>
+                  <p className="text-xs text-slate-400 mt-2">
+                    Integrasi tata kelola persampahan skala kabupaten/kota dengan command center terpadu.
+                  </p>
+                </div>
+
+                <div className="pb-6 border-b border-slate-800">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-black text-white">Kustom</span>
+                    <span className="text-xs text-slate-400"> / kontrak APBD / CSR</span>
+                  </div>
+                  <p className="text-[11px] text-purple-400 mt-1">Multi-Kecamatan / Tanpa Batas KK</p>
+                </div>
+
+                <ul className="space-y-3 text-xs text-slate-300">
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+                    <span><strong>DLH Command Center Dashboard</strong> Memantau Seluruh TPS</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+                    <span>Standar Integrasi API SIPSN KLHK &amp; Satu Data Pemda</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+                    <span>Pendampingan Lapangan &amp; Pelatihan Driver Bersertifikat</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+                    <span>Opsi On-Premise / Dedicated Sovereign Cloud</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+                    <span>Dedicated Technical Account Manager &amp; Support 24/7</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+                    <span>Jaminan SLA Uptime 99.9%</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="pt-8">
+                <a
+                  href="#daftar-mitra"
+                  onClick={() => setForm(prev => ({ ...prev, paketPilihan: "enterprise" }))}
+                  className="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center justify-center gap-2 border border-slate-700 transition-all"
+                >
+                  <span>Konsultasi Enterprise B2G</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Lead Magnet Box: Pitch Deck & Proposal B2B */}
+          <div className="mt-14 p-6 sm:p-8 rounded-3xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="space-y-2 max-w-2xl">
+              <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-sky-400">
+                <FileText className="w-4 h-4" /> Dokumen Kemitraan Resmi
+              </div>
+              <h3 className="text-xl font-bold text-white">
+                Butuh Proposal Resmi untuk Rapat Pengurus RT/RW, Direksi, atau DLH?
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                Kami siapkan Dokumen Proposal Kemitraan, Ringkasan Kalkulasi ROI, dan Lembar Spesifikasi Teknis O2W Hero dalam format PDF siap presentasi.
+              </p>
+            </div>
+            <a
+              href={`https://wa.me/6281290000000?text=${encodeURIComponent("Halo Tim O2W HERO, mohon kirimkan Dokumen Proposal Kemitraan & Pitch Deck Resmi untuk unit pengelola kami...")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 px-6 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-sky-300 border border-sky-800/70 font-bold text-xs sm:text-sm transition-all flex items-center gap-2"
+            >
+              <FileText className="w-4 h-4 text-sky-400" />
+              <span>Minta Proposal Kemitraan (PDF)</span>
+              <ExternalLink className="w-3.5 h-3.5 opacity-70" />
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* Formulir Pendaftaran Mitra */}
       <section id="daftar-mitra" className="py-20 border-b border-slate-800 bg-slate-900/60">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -619,6 +924,56 @@ export default function O2WHeroCorePortal() {
                     {errorMsg}
                   </div>
                 )}
+
+                {/* Pilihan Paket Kemitraan */}
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                    Pilihan Paket Kemitraan
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, paketPilihan: "starter" })}
+                      className={`p-3.5 rounded-xl border text-left transition-all ${
+                        form.paketPilihan === "starter"
+                          ? "bg-teal-950/60 border-teal-500 text-white shadow-md shadow-teal-500/20"
+                          : "bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700"
+                      }`}
+                    >
+                      <p className="text-xs font-bold">Starter (Rp 299rb/bln)</p>
+                      <p className="text-[11px] text-slate-400 mt-0.5">&lt; 1.000 KK Warga</p>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, paketPilihan: "pro" })}
+                      className={`p-3.5 rounded-xl border text-left transition-all relative ${
+                        form.paketPilihan === "pro"
+                          ? "bg-sky-950/60 border-sky-500 text-white shadow-md shadow-sky-500/20"
+                          : "bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs font-bold text-sky-400">Pro (Rp 899rb/bln)</p>
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 font-bold uppercase">Popular</span>
+                      </div>
+                      <p className="text-[11px] text-slate-400 mt-0.5">3.500 KK + Live GPS</p>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, paketPilihan: "enterprise" })}
+                      className={`p-3.5 rounded-xl border text-left transition-all ${
+                        form.paketPilihan === "enterprise"
+                          ? "bg-purple-950/60 border-purple-500 text-white shadow-md shadow-purple-500/20"
+                          : "bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700"
+                      }`}
+                    >
+                      <p className="text-xs font-bold text-purple-400">Enterprise B2G</p>
+                      <p className="text-[11px] text-slate-400 mt-0.5">DLH / Multi-Kecamatan</p>
+                    </button>
+                  </div>
+                </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>

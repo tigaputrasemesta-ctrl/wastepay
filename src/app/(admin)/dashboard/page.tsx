@@ -261,6 +261,10 @@ async function getCoreStats(): Promise<CoreStatsData> {
     activeTenants: 1,
     pendingRegistrations: 0,
     estimasiWargaEkosistem: 2450,
+    mrrEstimasi: 899000,
+    grossVolumeBulan: 73500000,
+    tonaseSampahBulan: 184,
+    reduksiKarbonTon: 156,
     tenantsList: [],
     recentRegistrations: [],
   };
@@ -293,12 +297,20 @@ async function getCoreStats(): Promise<CoreStatsData> {
 
     // Estimasi cakupan warga ekosistem: data rintisan pilot UPS HERU (~2450) + penambahan mitra baru
     const estimasiWargaEkosistem = (mitraRegistrations._sum.estimasiWarga || 0) + 2450;
+    const mrrEstimasi = Math.max(activeTenants, 1) * 899000;
+    const grossVolumeBulan = estimasiWargaEkosistem * 30000;
+    const tonaseSampahBulan = Math.round((estimasiWargaEkosistem * 2.5 * 30) / 1000);
+    const reduksiKarbonTon = Math.round(tonaseSampahBulan * 0.85);
 
     return {
       totalTenants,
       activeTenants,
       pendingRegistrations,
       estimasiWargaEkosistem,
+      mrrEstimasi,
+      grossVolumeBulan,
+      tonaseSampahBulan,
+      reduksiKarbonTon,
       tenantsList,
       recentRegistrations,
     };

@@ -73,3 +73,42 @@ export async function POST(request: Request) {
     );
   }
 }
+
+export async function PATCH(request: Request) {
+  const corsHeaders = buildCorsHeaders(request);
+
+  try {
+    const body = await request.json();
+    const { id, status, catatanAdmin } = body;
+
+    if (!id || !status) {
+      return NextResponse.json(
+        { error: "ID pendaftaran dan status baru wajib disediakan." },
+        { status: 400, headers: corsHeaders }
+      );
+    }
+
+    const updated = await prisma.mitraRegistration.update({
+      where: { id: Number(id) },
+      data: {
+        status: String(status),
+        ...(catatanAdmin !== undefined ? { catatanAdmin: String(catatanAdmin) } : {}),
+      },
+    });
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: `Status pendaftaran mitra berhasil diubah menjadi ${status}.`,
+        data: updated,
+      },
+      { status: 200, headers: corsHeaders }
+    );
+  } catch (error: any) {
+    console.error("[Core API] Error update registrasi mitra:", error);
+    return NextResponse.json(
+      { error: "Gagal memperbarui status registrasi mitra." },
+      { status: 500, headers: corsHeaders }
+    );
+  }
+}

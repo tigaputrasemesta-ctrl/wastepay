@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Building2,
   Database,
@@ -30,7 +31,8 @@ interface TenantItem {
   isBuiltin: boolean;
 }
 
-export default function TenantsPage() {
+function TenantsContent() {
+  const searchParams = useSearchParams();
   const [tenants, setTenants] = useState<TenantItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -70,6 +72,33 @@ export default function TenantsPage() {
   useEffect(() => {
     fetchTenants();
   }, []);
+
+  // Tangkap query param dari Core Dashboard jika admin mengklik "Buat Tenant Otomatis" dari calon mitra
+  useEffect(() => {
+    if (searchParams && searchParams.get("action") === "create") {
+      const namaMitra = searchParams.get("namaMitra") || "";
+      const penanggungJawab = searchParams.get("penanggungJawab") || "";
+      const noTelepon = searchParams.get("noTelepon") || "";
+      const email = searchParams.get("email") || "";
+      const kota = searchParams.get("kota") || "Kota Depok";
+      const slugAuto = namaMitra
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "");
+
+      setForm((prev) => ({
+        ...prev,
+        namaMitra,
+        penanggungJawab,
+        noTelepon,
+        email,
+        kota,
+        slug: slugAuto,
+      }));
+      setShowModal(true);
+    }
+  }, [searchParams]);
 
   const handleCreateTenant = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -431,5 +460,19 @@ export default function TenantsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function TenantsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="p-8 text-center text-sm text-slate-500 dark:text-zinc-400">
+          Memuat data tenant...
+        </div>
+      }
+    >
+      <TenantsContent />
+    </Suspense>
   );
 }
