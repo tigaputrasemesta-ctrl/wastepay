@@ -41,6 +41,7 @@ import {
   Smartphone,
   PackageCheck,
   ShoppingBag,
+  Building2,
 } from "lucide-react";
 
 export type AdminMobileResponsiveShellProps = {
@@ -127,6 +128,7 @@ const SECONDARY_MENU_ITEMS = [
   {
     title: "Sistem & Keamanan",
     items: [
+      { label: "Manajemen Mitra & DB", href: "/tenants", icon: Building2, desc: "Pendaftaran mitra & database tenant", badge: "SaaS Core" },
       { label: "Kelola Akun Admin", href: "/users", icon: UserCog, desc: "Manajemen user & hak akses role", badge: "Superadmin" },
       { label: "Log Audit Sistem", href: "/audit-log", icon: ShieldAlert, desc: "Histori audit trail & keamanan server", badge: "Audit" },
     ],

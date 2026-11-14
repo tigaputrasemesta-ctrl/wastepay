@@ -9,6 +9,7 @@ import { hitungJatuhTempoKonsumen } from "@/lib/tagihan";
 import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 import { tetapkanJadwalDanPetugasPelanggan } from "@/lib/penugasan-jadwal";
 import { ensureArmadaRuteSchema } from "@/lib/db-patch";
+import { resolveTenantByHost } from "@/lib/tenant";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +29,24 @@ export async function GET(request: Request) {
   const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Isolasi Core Hub vs Tenant: o2whero.com adalah platform SaaS Control Plane, bukan TPS3R operasional
+  const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+  const tenantCtx = resolveTenantByHost(rawHost);
+  if (tenantCtx.isCore) {
+    const tenantIdParam = searchParams.get("tenantId") || searchParams.get("tenantSlug");
+    if (!tenantIdParam) {
+      return NextResponse.json({
+        data: [],
+        total: 0,
+        page: 1,
+        limit: 50,
+        totalPages: 0,
+        statusGroups: { total: 0, aktif: 0, calon: 0, nonaktif: 0 },
+        message: "Data operasional warga dikelola pada masing-masing domain portal tenant mitra (misal: upsheru.com).",
+      });
+    }
   }
 
   if (session.role === "petugas" && !PETUGAS_SCOPE_ALL) {
@@ -189,6 +208,16 @@ export async function POST(request: Request) {
   const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Isolasi Core Hub vs Tenant: o2whero.com adalah platform SaaS Control Plane, bukan TPS3R operasional
+  const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+  const tenantCtx = resolveTenantByHost(rawHost);
+  if (tenantCtx.isCore) {
+    return NextResponse.json(
+      { error: "Pendaftaran warga operasional harus dilakukan melalui domain portal tenant masing-masing (misal: upsheru.com/registrasi)." },
+      { status: 403 }
+    );
   }
 
   try {

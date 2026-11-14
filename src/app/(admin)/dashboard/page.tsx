@@ -3,6 +3,7 @@ import { formatRupiah, KATEGORI_PENGELUARAN } from "@/lib/utils";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { resolveTenantByHost } from "@/lib/tenant";
+import CoreSaaSDashboard, { type CoreStatsData } from "@/components/core/CoreSaaSDashboard";
 import {
   Users,
   FileText,
@@ -254,12 +255,74 @@ async function getStats() {
   }
 }
 
+async function getCoreStats(): Promise<CoreStatsData> {
+  const fallback: CoreStatsData = {
+    totalTenants: 1,
+    activeTenants: 1,
+    pendingRegistrations: 0,
+    estimasiWargaEkosistem: 2450,
+    tenantsList: [],
+    recentRegistrations: [],
+  };
+
+  try {
+    const [
+      totalTenants,
+      activeTenants,
+      pendingRegistrations,
+      mitraRegistrations,
+      tenantsList,
+      recentRegistrations,
+    ] = await Promise.all([
+      prisma.tenant.count(),
+      prisma.tenant.count({ where: { status: "aktif" } }),
+      prisma.mitraRegistration.count({ where: { status: "menunggu_review" } }),
+      prisma.mitraRegistration.aggregate({
+        where: { status: { in: ["disetujui", "provisioned"] } },
+        _sum: { estimasiWarga: true },
+      }),
+      prisma.tenant.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 10,
+      }),
+      prisma.mitraRegistration.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 5,
+      }),
+    ]);
+
+    // Estimasi cakupan warga ekosistem: data rintisan pilot UPS HERU (~2450) + penambahan mitra baru
+    const estimasiWargaEkosistem = (mitraRegistrations._sum.estimasiWarga || 0) + 2450;
+
+    return {
+      totalTenants,
+      activeTenants,
+      pendingRegistrations,
+      estimasiWargaEkosistem,
+      tenantsList,
+      recentRegistrations,
+    };
+  } catch (err) {
+    console.error("getCoreStats dashboard error:", err);
+    return fallback;
+  }
+}
+
 export default async function DashboardPage() {
   const headersList = await headers();
   const host = headersList.get("x-forwarded-host") || headersList.get("host") || "";
   const tenantCtx = resolveTenantByHost(host);
   const isCore = tenantCtx.isCore;
 
+  // JIKA DIAKSES DARI DOMAIN CORE SAAS (o2whero.com / o2w-*.vercel.app),
+  // TAMPILKAN EXECUTIVE SAAS DASHBOARD (ISOLASI KETAT DATA OPERASIONAL WARGA UPS HERU)
+  if (isCore) {
+    const coreStats = await getCoreStats();
+    return <CoreSaaSDashboard stats={coreStats} />;
+  }
+
+  // JIKA DIAKSES DARI TENANT OPERASIONAL (upsheru.com / sub-tenant),
+  // JALANKAN DASHBOARD ASLI UPS HERU DEPOK 100% UNTOUCHED DAN TETAP LIVE
   const stats = await getStats();
   const { bulanLabels, pemasukanTren, pengeluaranTren, maxTren, topTunggakan } = stats;
   const now = new Date();

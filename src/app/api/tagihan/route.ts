@@ -5,6 +5,7 @@ import { getSession } from "@/lib/auth";
 import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 import { updateTunggakan, hitungJatuhTempoKonsumen } from "@/lib/tagihan";
 import { generateNoInvoice } from "@/lib/invoice";
+import { resolveTenantByHost } from "@/lib/tenant";
 import {
   buildTagihanWa,
   isWaEnabled,
@@ -18,6 +19,19 @@ export async function GET(request: Request) {
   await updateTunggakan();
 
   const { searchParams } = new URL(request.url);
+
+  // Isolasi Core Hub vs Tenant: o2whero.com adalah platform SaaS Control Plane, bukan TPS3R operasional
+  const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+  const tenantCtx = resolveTenantByHost(rawHost);
+  if (tenantCtx.isCore) {
+    const tenantIdParam = searchParams.get("tenantId") || searchParams.get("tenantSlug");
+    if (!tenantIdParam) {
+      return NextResponse.json([], {
+        headers: { "X-Total-Count": "0" },
+      });
+    }
+  }
+
   const bulan = searchParams.get("bulan");
   const tahun = searchParams.get("tahun");
   const status = searchParams.get("status");
@@ -192,6 +206,16 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  // Isolasi Core Hub vs Tenant: o2whero.com adalah platform SaaS Control Plane, bukan TPS3R operasional
+  const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+  const tenantCtx = resolveTenantByHost(rawHost);
+  if (tenantCtx.isCore) {
+    return NextResponse.json(
+      { error: "Penerbitan tagihan retribusi warga harus dilakukan melalui portal tenant masing-masing (misal: upsheru.com/tagihan)." },
+      { status: 403 }
+    );
+  }
+
   try {
     const body = await request.json();
     const { bulan, tahun, jumlah, pelangganId } = body;
