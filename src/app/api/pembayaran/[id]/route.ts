@@ -209,7 +209,13 @@ export async function PUT(request: Request, { params }: Params) {
 
           if (tagihan.pelanggan.noTelepon) {
             if (status === "terverifikasi") {
-              const templateData = await templatePembayaranDiterima(tWa, labelMetode);
+              const totalBayar = pembayaran.jumlah || tagihan.jumlah;
+              const adminGateway = Math.max(0, totalBayar - tagihan.jumlah);
+              const templateData = await templatePembayaranDiterima(tWa, labelMetode, {
+                pokok: tagihan.jumlah,
+                biayaAdmin: adminGateway,
+                totalBayar: totalBayar,
+              });
               await kirimNotifikasi({
                 tipe: "pembayaran_diterima",
                 ...templateData,

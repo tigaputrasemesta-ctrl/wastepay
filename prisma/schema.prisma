@@ -967,3 +967,76 @@ model Shipment {
   @@index([status])
   @@index([noResi])
 }
+
+// ============================================================================
+// MULTI-TENANT SAAS ARCHITECTURE MODELS (O2W HERO CORE & MITRA ECOSYSTEM)
+// ============================================================================
+
+model Tenant {
+  id                 String             @id @default(uuid())
+  slug               String             @unique // e.g. "upsheru", "bank-sampah-berkah"
+  namaMitra          String             // e.g. "UPS HERU Kota Depok"
+  penanggungJawab    String?
+  noTelepon          String?
+  email              String?
+  alamat             String?
+  kota               String?            @default("Depok")
+  provinsi           String?            @default("Jawa Barat")
+  tipePengelola      String             @default("tps3r") // tps3r | bank_sampah | pengepul | swasta | dlh
+  status             String             @default("aktif") // aktif | nonaktif | masa_percobaan | suspend
+  paketLangganan     String             @default("percontohan") // percontohan | basic | pro | enterprise
+  dbConnectionString String?            // Kredensial DB terpisah jika Database-per-Tenant
+  dbSchemaName       String?            // Nama skema terpisah jika PostgreSQL Multi-Schema
+  customDomain       String?            @unique // e.g. "upsheru.com"
+  subdomain          String?            @unique // e.g. "upsheru.o2whero.com"
+  logoUrl            String?
+  warnaTema          String?            @default("#059669")
+  fiturAktif         String?            // Konfigurasi fitur aktif (JSON string)
+  catatan            String?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  domains            TenantDomain[]
+  mitraRegistrasi    MitraRegistration?
+
+  @@index([slug])
+  @@index([customDomain])
+  @@index([subdomain])
+  @@index([status])
+}
+
+model TenantDomain {
+  id         Int      @id @default(autoincrement())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  domain     String   @unique // e.g. "upsheru.com", "www.upsheru.com"
+  isPrimary  Boolean  @default(false)
+  isVerified Boolean  @default(true)
+  sslStatus  String   @default("active") // active | pending | failed
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([domain])
+  @@index([tenantId])
+}
+
+model MitraRegistration {
+  id            Int      @id @default(autoincrement())
+  namaLengkap   String
+  namaInstansi  String   // Nama Bank Sampah / TPS / Perusahaan
+  jenisUsaha    String   // bank_sampah | tps3r | pengepul | swasta
+  noWhatsapp    String
+  email         String
+  kota          String
+  estimasiWarga Int      @default(0) // Jumlah nasabah/KK terlayani
+  kebutuhanDb   String   @default("dedicated") // dedicated (db per tenant) | shared
+  status        String   @default("menunggu_review") // menunggu_review | disetujui | ditolak | provisioned
+  catatanAdmin  String?
+  tenantId      String?  @unique
+  tenant        Tenant?  @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([status])
+  @@index([noWhatsapp])
+}

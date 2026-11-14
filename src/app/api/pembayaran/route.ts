@@ -161,7 +161,13 @@ export async function POST(request: Request) {
             },
             tagihan.pelanggan.nama
           );
-          const tPelanggan = await templatePembayaranDiterima(tWa, labelMetode);
+          const totalBayar = pembayaran.jumlah || tagihan.jumlah;
+          const adminGateway = Math.max(0, totalBayar - tagihan.jumlah);
+          const tPelanggan = await templatePembayaranDiterima(tWa, labelMetode, {
+            pokok: tagihan.jumlah,
+            biayaAdmin: adminGateway,
+            totalBayar: totalBayar,
+          });
           await kirimNotifikasi({
             tipe: "pembayaran_diterima",
             ...tPelanggan,

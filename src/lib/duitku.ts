@@ -69,8 +69,18 @@ export function duitkuBaseUrl(): string {
     : "https://sandbox.duitku.com";
 }
 
-/** Menentukan Base URL aplikasi yang valid untuk webhook & return gateway. */
-export function getAppBaseUrl(): string {
+/** Menentukan Base URL aplikasi yang valid untuk webhook & return gateway (multi-tenant aware). */
+export function getAppBaseUrl(host?: string): string {
+  if (host) {
+    const { getTenantAppUrl } = require("@/lib/tenant");
+    return getTenantAppUrl(host);
+  }
+  const envUrl = process.env.NEXT_PUBLIC_APP_URL?.trim() || process.env.APP_URL?.trim();
+  if (envUrl && /^https?:\/\//i.test(envUrl)) {
+    if (!envUrl.includes("vercel.app") && !envUrl.includes("localhost")) {
+      return envUrl.replace(/\/+$/, "");
+    }
+  }
   return "https://upsheru.com";
 }
 

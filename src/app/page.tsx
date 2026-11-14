@@ -33,6 +33,9 @@ import ArticleImage from "@/components/ArticleImage";
 import { NativeGuardedLink } from "@/components/mobile/LandingApkBanner";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import { getLayananImages } from "@/lib/layanan-images";
+import { headers } from "next/headers";
+import { resolveTenantByHost } from "@/lib/tenant";
+import O2WHeroCorePortal from "@/components/core/O2WHeroCorePortal";
 
 export const dynamic = "force-dynamic";
 
@@ -46,6 +49,15 @@ export const metadata: Metadata = {
 };
 
 export default async function LandingPage() {
+  const headersList = await headers();
+  const host = headersList.get("host") || "";
+  const tenantCtx = resolveTenantByHost(host);
+
+  // Jika domain yang diakses adalah Core Hub (o2whero.com)
+  if (tenantCtx.isCore) {
+    return <O2WHeroCorePortal />;
+  }
+
   let artikelTop3: Array<{
     id: number;
     slug: string;

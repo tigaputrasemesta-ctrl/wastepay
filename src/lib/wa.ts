@@ -193,8 +193,12 @@ export function blastDelayMs(): number {
 
 export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-/** Base URL aplikasi untuk link pembayaran di pesan WA (selalu menggunakan domain resmi https://upsheru.com). */
-export function appBaseUrl(): string {
+/** Base URL aplikasi untuk link pembayaran di pesan WA (multi-tenant aware). */
+export function appBaseUrl(host?: string): string {
+  if (host) {
+    const { getTenantAppUrl } = require("@/lib/tenant");
+    return getTenantAppUrl(host);
+  }
   const envUrl = process.env.NEXT_PUBLIC_APP_URL?.trim() || process.env.APP_URL?.trim();
   if (envUrl && /^https?:\/\//i.test(envUrl)) {
     // Larang keras domain vercel.app atau subdomain vercel di lingkungan apapun
@@ -205,8 +209,8 @@ export function appBaseUrl(): string {
     if (process.env.NODE_ENV === "development" && envUrl.includes("localhost")) {
       return envUrl.replace(/\/+$/, "");
     }
-    // Khusus testing atau jika disetel eksplisit ke domain resmi upsheru.com
-    if (envUrl.includes("upsheru.com") || process.env.NODE_ENV === "test") {
+    // Khusus testing atau jika disetel eksplisit ke domain resmi mitra/core
+    if (envUrl.includes("upsheru.com") || envUrl.includes("o2whero.com") || process.env.NODE_ENV === "test") {
       return envUrl.replace(/\/+$/, "");
     }
   }
@@ -437,14 +441,38 @@ export async function templateTunggakan(t: TagihanWa): Promise<{ judul: string; 
   };
 }
 
-export async function templatePembayaranDiterima(t: TagihanWa, metode: string): Promise<{ judul: string; pesan: string }> {
+export async function templatePembayaranDiterima(
+  t: TagihanWa,
+  metode: string,
+  rincian?: {
+    pokok?: number;
+    biayaAdmin?: number;
+    totalBayar?: number;
+  }
+): Promise<{ judul: string; pesan: string }> {
+  const pokok = rincian?.pokok ?? t.total;
+  const admin = rincian?.biayaAdmin ?? 0;
+  const total = rincian?.totalBayar ?? (admin > 0 ? pokok + admin : t.total);
+
+  const rincianLines = admin > 0
+    ? [
+        `💵 Iuran Pokok   : ${formatRupiahSkylite(pokok)}`,
+        `⚡ Biaya Layanan : ${formatRupiahSkylite(admin)}`,
+        `💰 Total Dibayar : *${formatRupiahSkylite(total)}*`,
+      ]
+    : [
+        `💵 Total Diterima: *${formatRupiahSkylite(total)}*`,
+      ];
+
   return {
     judul: `Pembayaran Diterima — ${NAMA()}`,
     pesan: [
       `*PEMBAYARAN DITERIMA ✅*`,
       ``,
       `Halo ${t.nama},`,
-      `Pembayaran tagihan iuran sampah ${t.periode} sebesar ${formatRupiahSkylite(t.total)} telah kami terima via ${metode}.`,
+      `Pembayaran tagihan iuran sampah ${t.periode} telah kami terima via ${metode}.`,
+      ``,
+      ...rincianLines,
       ``,
       `📄 No. Tagihan : ${t.noInvoice}`,
       `📄 Lihat bukti : ${t.link}`,
@@ -454,7 +482,7 @@ export async function templatePembayaranDiterima(t: TagihanWa, metode: string): 
       ``,
       `— ${NAMA()}`,
       `🌐 www.upsheru.com`,
-].join("\n"),
+    ].join("\n"),
   };
 }
 

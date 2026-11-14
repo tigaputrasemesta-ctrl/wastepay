@@ -1,9 +1,14 @@
+import { resolveTenantByHost } from "@/lib/tenant";
+
 /**
- * Konfigurasi & Helper SEO Terpusat UPS HERU (UPS HERU Kota Depok)
- * Memastikan metadata konsisten, canonical URL valid, dan structured data (JSON-LD) sesuai standar Google Search.
+ * Konfigurasi & Helper SEO Terpusat Multi-Tenant (O2W Hero & UPS HERU)
+ * Memastikan metadata konsisten, canonical URL valid, dan structured data (JSON-LD) sesuai domain aktif.
  */
 
-export function getSiteUrl(): string {
+export function getSiteUrl(host?: string | null): string {
+  if (host) {
+    return resolveTenantByHost(host).baseUrl;
+  }
   const envUrl = process.env.NEXT_PUBLIC_APP_URL?.trim() || process.env.APP_URL?.trim();
   if (envUrl && /^https?:\/\//i.test(envUrl)) {
     if (process.env.NODE_ENV === "development" && envUrl.includes("localhost")) {

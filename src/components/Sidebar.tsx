@@ -35,6 +35,7 @@ import {
   Landmark,
   Settings,
   ShieldCheck,
+  Building2,
   FileText,
   Smartphone,
   PackageCheck,
@@ -89,6 +90,7 @@ const menuConfig: Record<string, MenuItemDef> = {
   pengaturan: { label: "Pengaturan Sistem", href: "/pengaturan", icon: Settings },
   users: { label: "Kelola Akun Admin", href: "/users", icon: ShieldCheck },
   "audit-log": { label: "Audit Log Sistem", href: "/audit-log", icon: FileText },
+  tenants: { label: "Mitra & Database", href: "/tenants", icon: Building2 },
   "data-kontrol": { label: "Kontrol Kontak WA", href: "/data-kontrol", icon: Smartphone },
   "pickup-insidental": { label: "Pickup Sekali Angkut", href: "/pickup-insidental", icon: PackageCheck },
   "manajemen-marketplace": { label: "Marketplace UPS HERU", href: "/manajemen-marketplace", icon: ShoppingBag },
@@ -135,6 +137,7 @@ const MENU_GROUP: Record<string, string> = {
   artikel: "sistem",
   users: "sistem",
   "audit-log": "sistem",
+  tenants: "sistem",
   pengaturan: "sistem",
 };
 

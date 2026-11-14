@@ -31,11 +31,13 @@ const ALLOWED_CORS_ORIGINS = [
   'capacitor://localhost',
   'https://upsheru.com',
   'https://www.upsheru.com',
+  'https://o2whero.com',
+  'https://www.o2whero.com',
 ];
 
 /**
  * Membangun header CORS yang aman untuk request dari aplikasi Android WebView (Capacitor)
- * maupun domain web produksi.
+ * maupun domain web produksi multi-tenant.
  */
 export function buildCorsHeaders(request?: Request): Record<string, string> {
   let origin = '*';
@@ -45,7 +47,8 @@ export function buildCorsHeaders(request?: Request): Record<string, string> {
       const isAllowed =
         ALLOWED_CORS_ORIGINS.includes(reqOrigin) ||
         reqOrigin.endsWith('.vercel.app') ||
-        reqOrigin.endsWith('upsheru.com');
+        reqOrigin.endsWith('upsheru.com') ||
+        reqOrigin.endsWith('o2whero.com');
       if (isAllowed) {
         origin = reqOrigin;
       }

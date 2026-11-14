@@ -6,6 +6,7 @@ import { extractOrigin, isSameOriginRequest } from "@/lib/csrf";
 import { ROLE_HIERARCHY, type Role } from "@/lib/rbac";
 import { prisma } from "@/lib/prisma";
 import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
+import { resolveTenantByHost } from "@/lib/tenant";
 
 // Role hierarchy — single source of truth di src/lib/rbac.ts
 // (ROLE_HIERARCHY diimpor agar tidak ada dua definisi yang bisa divergen).
@@ -43,6 +44,7 @@ const PAGE_ROLES: Record<string, number> = {
   "/chat": 50, // admin+: chat petugas ↔ admin
   "/users": 100, // superadmin only
   "/audit-log": 100, // superadmin only
+  "/tenants": 100, // superadmin only: manajemen mitra & database
   "/manajemen-artikel": 50, // admin+: artikel & berita edukasi
   "/data-kontrol": 50, // admin+: kontrol data kontak hp admin & petugas
   "/manajemen-marketplace": 50, // admin+: kelola toko resmi & pesanan
@@ -61,6 +63,10 @@ const API_ROLE_MAP: Record<string, number> = {
   "POST:/api/users": 100,
   "PUT:/api/users": 100,
   "DELETE:/api/users": 100,
+
+  // Tenants & Mitra Multi-Tenant Core (superadmin only)
+  "GET:/api/core/tenants": 50,
+  "POST:/api/core/tenants": 100,
 
   // Data Kontrol Kontak WA & Blast Calon Pelanggan (admin+)
   "GET:/api/data-kontrol": 50,
@@ -376,9 +382,16 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/api/marketplace") ||
     pathname.startsWith("/api/pickup") ||
     pathname.startsWith("/api/pembayaran/search") ||
-    pathname.startsWith("/api/integrasi/google-contacts/callback")
+    pathname.startsWith("/api/integrasi/google-contacts/callback") ||
+    pathname.startsWith("/api/core")
   ) {
-    return NextResponse.next();
+    const host = request.headers.get("host") || "";
+    const tenantCtx = resolveTenantByHost(host);
+    const reqHeaders = new Headers(request.headers);
+    reqHeaders.set("x-tenant-slug", tenantCtx.tenant.slug);
+    reqHeaders.set("x-tenant-id", tenantCtx.tenant.id);
+    reqHeaders.set("x-is-core", tenantCtx.isCore ? "1" : "0");
+    return NextResponse.next({ request: { headers: reqHeaders } });
   }
 
   // ---- CSRF: proteksi request mutasi pada API ber-cookie ----

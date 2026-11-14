@@ -154,11 +154,18 @@ export async function syncDuitkuPayment(
           if (!(await sudahKirimWa("pembayaran_diterima", tagihan.pelanggan.id, kataKunci))) {
             // 1. Kirim WA ke pelanggan (jika punya no telepon)
             if (tagihan.pelanggan.noTelepon) {
+              const totalBayar = pembayaran.jumlah || result.amount || tagihan.jumlah;
+              const adminGateway = Math.max(0, totalBayar - tagihan.jumlah);
               await kirimNotifikasi({
                 tipe: "pembayaran_diterima",
                 ...await templatePembayaranDiterima(
                   wa,
-                  labelMetode
+                  labelMetode,
+                  {
+                    pokok: tagihan.jumlah,
+                    biayaAdmin: adminGateway,
+                    totalBayar: totalBayar,
+                  }
                 ),
                 pelangganId: tagihan.pelanggan.id,
                 noTelepon: tagihan.pelanggan.noTelepon,

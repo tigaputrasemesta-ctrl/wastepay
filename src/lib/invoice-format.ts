@@ -6,15 +6,30 @@
  * src/lib/invoice.ts dan hanya aman dipakai dari Server Components.
  */
 import { duitkuChannelLabel } from "./duitku-channels";
+import { resolveTenantByHost } from "./tenant/config";
 
 /** Persen Pajak Daerah (default 0, bisa diatur di Pengaturan) */
 export const PAJAK_DAERAH_RATE_DEFAULT = 0;
 
 /**
- * Info perusahaan pada invoice — diatur via env (default: contoh).
+ * Info perusahaan pada invoice — diatur via env atau tenant resolver.
  *   COMPANY_NAME / COMPANY_ADDRESS / COMPANY_WHATSAPP / COMPANY_EMAIL
  */
-export function companyInfo() {
+export function companyInfo(host?: string | null) {
+  if (host) {
+    const ctx = resolveTenantByHost(host);
+    return {
+      nama: ctx.tenant.branding.namaMitra,
+      unit: ctx.tenant.branding.tagline,
+      alamat: ctx.tenant.branding.alamat || process.env.COMPANY_ADDRESS?.trim() || "Jl. Kandang Ayam, Kalibaru, Kec. Cilodong, Kota Depok, Jawa Barat 16414",
+      whatsapp: ctx.tenant.branding.whatsappKontak || process.env.COMPANY_WHATSAPP?.trim() || "+62 814-0078-2617",
+      email: ctx.tenant.branding.emailKontak || process.env.COMPANY_EMAIL?.trim() || "kontak@upsheru.com",
+      kota: ctx.tenant.branding.kota || "Kota Depok, Jawa Barat 16414",
+      latitude: -6.424838,
+      longitude: 106.832667,
+    };
+  }
+
   return {
     nama: "UPS HERU",
     unit: "Unit Pengelolaan & Retribusi Kebersihan (TPS 3R)",
@@ -141,16 +156,20 @@ export function buildDirectWaLinkTagihan(t: {
     noTelepon?: string | null;
     kodePelanggan?: string | null;
   };
-}): string {
+}, host?: string | null): string {
   if (!t.pelanggan.noTelepon) return "";
   const phone = t.pelanggan.noTelepon.replace(/\D/g, "").replace(/^0/, "62");
   if (!phone) return "";
+
+  const ctx = resolveTenantByHost(host);
+  const baseUrl = ctx.baseUrl;
+  const brandName = ctx.tenant.branding.namaMitra;
 
   const total = t.jumlah + (t.denda || 0);
   const invoice =
     t.noInvoice ||
     (t.pelanggan.kodePelanggan ? generateNoInvoice(t.pelanggan.kodePelanggan, t.bulan, t.tahun) : "-");
-  const payUrl = `https://upsheru.com/bayar-tagihan?invoice=${encodeURIComponent(invoice)}`;
+  const payUrl = `${baseUrl}/bayar-tagihan?invoice=${encodeURIComponent(invoice)}`;
   const periode = `${BULAN_INDO[t.bulan - 1] || ""} ${t.tahun}`;
   const totalFormatted = formatRupiahSkylite(total);
   const jtFormatted = t.jatuhTempo ? formatTanggalIndo(t.jatuhTempo) : "-";
@@ -158,7 +177,7 @@ export function buildDirectWaLinkTagihan(t: {
   let lines: string[];
   if (t.status === "tunggakan") {
     lines = [
-      `*TAGIHAN MENUNGGAK — UPS HERU*`,
+      `*TAGIHAN MENUNGGAK — ${brandName.toUpperCase()}*`,
       ``,
       `Halo Bapak/Ibu *${t.pelanggan.nama}*,`,
       `Tagihan iuran sampah periode *${periode}* Anda telah melewati batas jatuh tempo.`,
@@ -171,15 +190,15 @@ export function buildDirectWaLinkTagihan(t: {
       `${payUrl}`,
       `*(Bisa bayar via QRIS BCA, Mandiri, BRI, BNI, DANA, GoPay, OVO, ShopeePay)*`,
       ``,
-      `📢 Butuh bantuan atau pengaduan? https://upsheru.com/pengaduan`,
+      `📢 Butuh bantuan atau pengaduan? ${baseUrl}/pengaduan`,
       `Terima kasih! 🙏`,
       ``,
-      `— *Unit Pengelolaan Sampah (UPS HERU)*`,
-      `🌐 https://upsheru.com`,
+      `— *${brandName}*`,
+      `🌐 ${baseUrl}`,
     ];
   } else {
     lines = [
-      `*PENGINGAT TAGIHAN — UPS HERU*`,
+      `*PENGINGAT TAGIHAN — ${brandName.toUpperCase()}*`,
       ``,
       `Halo Bapak/Ibu *${t.pelanggan.nama}*,`,
       `Berikut rincian tagihan iuran sampah periode *${periode}*:`,
@@ -192,11 +211,11 @@ export function buildDirectWaLinkTagihan(t: {
       `${payUrl}`,
       `*(Bisa bayar via QRIS BCA, Mandiri, BRI, BNI, DANA, GoPay, OVO, ShopeePay)*`,
       ``,
-      `📢 Butuh bantuan atau pengaduan? https://upsheru.com/pengaduan`,
+      `📢 Butuh bantuan atau pengaduan? ${baseUrl}/pengaduan`,
       `Terima kasih! 🙏`,
       ``,
-      `— *Unit Pengelolaan Sampah (UPS HERU)*`,
-      `🌐 https://upsheru.com`,
+      `— *${brandName}*`,
+      `🌐 ${baseUrl}`,
     ];
   }
 
