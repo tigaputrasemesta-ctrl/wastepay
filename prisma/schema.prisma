@@ -35,6 +35,10 @@ model User {
   sellerProfile        SellerProfile?
   carts                Cart[]
   orders               Order[]
+  tenantId             String?
+  tenant               Tenant?        @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
 }
 
 model Kelurahan {
@@ -998,6 +1002,7 @@ model Tenant {
 
   domains            TenantDomain[]
   mitraRegistrasi    MitraRegistration?
+  users              User[]
 
   @@index([slug])
   @@index([customDomain])

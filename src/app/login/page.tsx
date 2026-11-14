@@ -19,6 +19,18 @@ export default function LoginPage() {
     if (typeof window !== "undefined") {
       const h = window.location.hostname.toLowerCase();
       setIsCore(h.includes("o2whero.com") || h.startsWith("o2w-") || h.includes("core."));
+
+      const p = new URLSearchParams(window.location.search);
+      const err = p.get("error");
+      if (err === "core_restricted") {
+        setError("Akun operasional mitra tidak diizinkan masuk ke Core SaaS Hub. Silakan buka domain portal resmi mitra Anda.");
+      } else if (err === "tenant_mismatch") {
+        setError("Akun Anda tidak terdaftar pada layanan tenant ini. Silakan hubungi admin atau login melalui domain mitra Anda.");
+      } else if (err === "sesi") {
+        setError("Sesi Anda telah berakhir. Silakan masuk kembali.");
+      } else if (err === "akses") {
+        setError("Anda tidak memiliki hak akses ke halaman tersebut.");
+      }
     }
   }, []);
 

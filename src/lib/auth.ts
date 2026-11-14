@@ -9,6 +9,7 @@ export type SessionUser = {
   email: string;
   nama: string;
   role: string;
+  tenantId?: string | null;
 };
 
 export async function hashPassword(password: string): Promise<string> {
@@ -28,6 +29,7 @@ export async function createSession(user: SessionUser & { tokenVersion: number }
     email: user.email,
     nama: user.nama,
     role: user.role,
+    tenantId: user.tenantId ?? null,
     v: user.tokenVersion,
   })
     .setProtectedHeader({ alg: "HS256" })
@@ -44,6 +46,7 @@ export async function createMobileSession(user: SessionUser & { tokenVersion: nu
     email: user.email,
     nama: user.nama,
     role: user.role,
+    tenantId: user.tenantId ?? null,
     v: user.tokenVersion,
   })
     .setProtectedHeader({ alg: "HS256" })
@@ -63,11 +66,20 @@ export async function verifySessionToken(token: string): Promise<SessionUser | n
 
     const user = await prisma.user.findUnique({
       where: { id: Number(payload.id) },
-      select: { id: true, email: true, nama: true, role: true, tokenVersion: true, aktif: true },
+      select: { id: true, email: true, nama: true, role: true, tenantId: true, tokenVersion: true, aktif: true },
     });
     if (!user || !user.aktif || user.tokenVersion !== payload.v) return null;
 
-    return { id: user.id, email: user.email, nama: user.nama, role: user.role };
+    const res: SessionUser = {
+      id: user.id,
+      email: user.email,
+      nama: user.nama,
+      role: user.role,
+    };
+    if (user.tenantId || payload.tenantId) {
+      res.tenantId = user.tenantId || (payload.tenantId as string);
+    }
+    return res;
   } catch {
     return null;
   }
@@ -142,11 +154,13 @@ export async function login(
   const valid = await verifyPassword(password, user.password);
   if (!valid) return { error: "Email/No. HP atau password salah" };
 
+  const tenantId = user.tenantId || (user.role === "superadmin" ? "tenant-core-o2w" : "tenant-pilot-upsheru");
   const sessionUser: SessionUser = {
     id: user.id,
     email: user.email,
     nama: user.nama,
     role: user.role,
+    tenantId,
   };
 
   const token = await createSession({ ...sessionUser, tokenVersion: user.tokenVersion });

@@ -321,6 +321,7 @@ async function verifyToken(token: string) {
       email: string;
       nama: string;
       role: string;
+      tenantId?: string;
       v?: number;
     };
   } catch {
@@ -333,7 +334,7 @@ async function verifyToken(token: string) {
  * Sesi JWT lama (sebelum ganti/reset password) atau user yang dinonaktifkan ditolak.
  * User hilang atau lookup DB gagal: tolak sesi, jangan fallback ke hak akses JWT lama.
  */
-async function loadSessionUser(payload: { id: number; email?: string; nama?: string; role?: string; v?: number }) {
+async function loadSessionUser(payload: { id: number; email?: string; nama?: string; role?: string; tenantId?: string; v?: number }) {
   try {
     const user = await prisma.user.findUnique({
       where: { id: payload.id },
@@ -342,6 +343,7 @@ async function loadSessionUser(payload: { id: number; email?: string; nama?: str
         email: true,
         nama: true,
         role: true,
+        tenantId: true,
         tokenVersion: true,
         aktif: true,
       },
@@ -349,7 +351,13 @@ async function loadSessionUser(payload: { id: number; email?: string; nama?: str
     if (user) {
       if (!user.aktif) return null;
       if (user.tokenVersion !== payload.v) return null;
-      return { id: user.id, email: user.email, nama: user.nama, role: user.role };
+      return {
+        id: user.id,
+        email: user.email,
+        nama: user.nama,
+        role: user.role,
+        tenantId: user.tenantId ?? payload.tenantId ?? (user.role === "superadmin" ? "tenant-core-o2w" : "tenant-pilot-upsheru"),
+      };
     }
   } catch {
     // Fail closed: revocation cannot be verified while DB is unavailable.
@@ -481,6 +489,22 @@ export async function proxy(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Isolasi Tenant Boundary untuk API
+    if (user.role !== "superadmin") {
+      if (tenantCtx.isCore) {
+        return NextResponse.json(
+          { error: "Forbidden: Akun operasional mitra tidak diizinkan mengakses API Core SaaS." },
+          { status: 403 }
+        );
+      }
+      if (user.tenantId && user.tenantId !== tenantCtx.tenant.id) {
+        return NextResponse.json(
+          { error: "Forbidden: Akun Anda tidak memiliki izin pada tenant ini." },
+          { status: 403 }
+        );
+      }
+    }
+
     const apiKey = `${request.method}:${pathname}`;
     let requiredLevel = API_ROLE_MAP[apiKey];
 
@@ -532,6 +556,20 @@ export async function proxy(request: NextRequest) {
     const url = new URL("/login", request.url);
     url.searchParams.set("error", "sesi");
     return NextResponse.redirect(url);
+  }
+
+  // Isolasi Tenant Boundary untuk Halaman
+  if (pageUser.role !== "superadmin") {
+    if (tenantCtx.isCore) {
+      const url = new URL("/login", request.url);
+      url.searchParams.set("error", "core_restricted");
+      return NextResponse.redirect(url);
+    }
+    if (pageUser.tenantId && pageUser.tenantId !== tenantCtx.tenant.id) {
+      const url = new URL("/login", request.url);
+      url.searchParams.set("error", "tenant_mismatch");
+      return NextResponse.redirect(url);
+    }
   }
 
   // Check page-specific role requirements

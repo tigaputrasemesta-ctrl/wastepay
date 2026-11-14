@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { login } from "@/lib/auth";
 import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
 import { COOKIE_NAME } from "@/lib/secret";
+import { resolveTenantByHost } from "@/lib/tenant";
 
 export async function POST(request: Request) {
   try {
@@ -30,6 +31,25 @@ export async function POST(request: Request) {
 
     if ("error" in result) {
       return NextResponse.json({ error: result.error }, { status: 401 });
+    }
+
+    // Proteksi isolasi login tenant
+    const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+    const tenantCtx = resolveTenantByHost(rawHost);
+
+    if (result.user.role !== "superadmin") {
+      if (tenantCtx.isCore) {
+        return NextResponse.json(
+          { error: "Akun operasional mitra tidak dapat login di Core SaaS Hub. Silakan gunakan portal resmi mitra Anda." },
+          { status: 403 }
+        );
+      }
+      if (result.user.tenantId && result.user.tenantId !== tenantCtx.tenant.id) {
+        return NextResponse.json(
+          { error: `Akun ini tidak terdaftar pada layanan ${tenantCtx.tenant.namaMitra}.` },
+          { status: 403 }
+        );
+      }
     }
 
     // Jika akun petugas, berikan masa berlaku cookie 90 hari agar tidak mudah terlogout
