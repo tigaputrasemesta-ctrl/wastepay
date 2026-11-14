@@ -44,6 +44,32 @@ type DuitkuStatus = {
   webhookUrl: string;
 };
 
+type WhatsAppSettings = {
+  gatewayMode: string;
+  provider: string;
+  waNumber1: string;
+  waApiKey1: string;
+  waLabel1: string;
+  waNumber2: string;
+  waApiKey2: string;
+  waLabel2: string;
+  adminPhone: string;
+  ownerPhone: string;
+  waGroupTagihan: string;
+  waGroupPengaduan: string;
+  blastDelayMs: number;
+  autoSendEnabled: boolean;
+};
+
+type QuotaUsage = {
+  kuotaBulanan: number;
+  kuotaTopup: number;
+  pesanTerkirim: number;
+  pesanGagal: number;
+  biayaPerPesanOverage: number;
+  periodeBerakhir: string;
+};
+
 type GoogleContactsStatus = {
   configured: boolean;
   authorized: boolean;
@@ -90,6 +116,72 @@ export default function PengaturanPage() {
   });
   const [tarifSaving, setTarifSaving] = useState(false);
   const { showToast } = useToast();
+
+  // Konfigurasi Dual WhatsApp (Nomor 1 & Nomor 2) & Kuota
+  const [waSettings, setWaSettings] = useState<WhatsAppSettings>({
+    gatewayMode: "dedicated_mitra",
+    provider: "fonnte",
+    waNumber1: "081400782617",
+    waApiKey1: "yZeWGJymbrnTpub2x5rL",
+    waLabel1: "Nomor Utama (Bot & Tagihan)",
+    waNumber2: "085716251003",
+    waApiKey2: "",
+    waLabel2: "Nomor CS & Pengaduan",
+    adminPhone: "",
+    ownerPhone: "",
+    waGroupTagihan: "120363432695009362@g.us",
+    waGroupPengaduan: "120363430666363149@g.us",
+    blastDelayMs: 1500,
+    autoSendEnabled: true,
+  });
+  const [waQuota, setWaQuota] = useState<QuotaUsage | null>({
+    kuotaBulanan: 5000,
+    kuotaTopup: 0,
+    pesanTerkirim: 0,
+    pesanGagal: 0,
+    biayaPerPesanOverage: 150,
+    periodeBerakhir: new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString(),
+  });
+  const [loadingWa, setLoadingWa] = useState(true);
+  const [savingWa, setSavingWa] = useState(false);
+
+  const fetchWaSettings = useCallback(async () => {
+    try {
+      const res = await fetch("/api/core/tenants/current/settings");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.waConfig) setWaSettings(data.waConfig);
+        if (data.quotaUsage) setWaQuota(data.quotaUsage);
+      }
+    } catch {
+      // fallback to defaults
+    } finally {
+      setLoadingWa(false);
+    }
+  }, []);
+
+  const handleSaveWaSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingWa(true);
+    try {
+      const res = await fetch("/api/core/tenants/current/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ waConfig: waSettings }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast("✓ Konfigurasi Dual WhatsApp berhasil disimpan!", "success");
+        if (data.waConfig) setWaSettings(data.waConfig);
+      } else {
+        showToast(data.error || "Gagal menyimpan konfigurasi WhatsApp", "error");
+      }
+    } catch {
+      showToast("Terjadi kesalahan jaringan saat menyimpan konfigurasi", "error");
+    } finally {
+      setSavingWa(false);
+    }
+  };
 
   // Search & Filter Wilayah
   const [searchWilayah, setSearchWilayah] = useState("");
@@ -221,6 +313,7 @@ export default function PengaturanPage() {
   useEffect(() => {
     (async () => { await fetchWilayah(); })();
     fetchGoogleStatus();
+    fetchWaSettings();
 
     // Feedback dari redirect OAuth Google
     if (typeof window !== "undefined") {
@@ -1036,6 +1129,194 @@ export default function PengaturanPage() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* KONFIGURASI DUAL WHATSAPP MITRA (NOMOR 1 BOT & NOMOR 2 CS) & STATUS KUOTA */}
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 sm:p-6 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-slate-100 mb-6">
+          <div className="flex items-center gap-3">
+            <span className="p-2.5 bg-emerald-50 text-emerald-800 rounded-2xl border border-emerald-100 flex items-center justify-center text-xl">
+              📱
+            </span>
+            <div>
+              <h2 className="font-extrabold text-slate-900 text-lg sm:text-xl tracking-tight">
+                Konfigurasi Dual WhatsApp Mitra & Kuota Layanan
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Pemisahan Nomor 1 (Bot interaktif & tagihan) dan Nomor 2 (CS & pengaduan) untuk keandalan layanan warga
+              </p>
+            </div>
+          </div>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 shrink-0 self-start sm:self-auto">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            2 Nomor Terdedikasi
+          </span>
+        </div>
+
+        {/* METRIK KUOTA BULANAN */}
+        {waQuota && (
+          <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-emerald-50/70 via-teal-50/50 to-sky-50/60 border border-emerald-100">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-2.5">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-slate-800">📊 Pemakaian Kuota WhatsApp Periode Ini</span>
+                <span className="text-[11px] px-2 py-0.5 rounded bg-emerald-600 text-white font-medium">
+                  {waSettings.provider.toUpperCase()}
+                </span>
+              </div>
+              <span className="text-xs text-slate-600 font-medium">
+                Terkirim: <b className="text-emerald-700">{waQuota.pesanTerkirim.toLocaleString("id-ID")}</b> / {(waQuota.kuotaBulanan + waQuota.kuotaTopup).toLocaleString("id-ID")} pesan
+              </span>
+            </div>
+            
+            {/* Progress bar kuota */}
+            <div className="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden mb-2">
+              <div
+                className={`h-2.5 rounded-full transition-all duration-500 ${
+                  waQuota.pesanTerkirim >= (waQuota.kuotaBulanan + waQuota.kuotaTopup)
+                    ? "bg-rose-500"
+                    : waQuota.pesanTerkirim >= (waQuota.kuotaBulanan + waQuota.kuotaTopup) * 0.8
+                    ? "bg-amber-500"
+                    : "bg-emerald-600"
+                }`}
+                style={{
+                  width: `${Math.min(
+                    100,
+                    Math.round((waQuota.pesanTerkirim / Math.max(1, waQuota.kuotaBulanan + waQuota.kuotaTopup)) * 100)
+                  )}%`,
+                }}
+              />
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between text-[11px] text-slate-500">
+              <span>Sisa Kuota: <b className="text-slate-800">{Math.max(0, (waQuota.kuotaBulanan + waQuota.kuotaTopup) - waQuota.pesanTerkirim).toLocaleString("id-ID")} pesan</b></span>
+              <span>Biaya Tambahan (*Overage*): <b className="text-slate-800">Rp {waQuota.biayaPerPesanOverage}/pesan</b></span>
+            </div>
+          </div>
+        )}
+
+        {/* FORM KONFIGURASI DUAL WHATSAPP */}
+        <form onSubmit={handleSaveWaSettings} className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            {/* DEVICE 1: OPERASIONAL UTAMA */}
+            <div className="p-4 rounded-xl border-2 border-emerald-100 bg-emerald-50/20 space-y-3">
+              <div className="flex items-center justify-between pb-2 border-b border-emerald-100">
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">1</span>
+                  <span className="font-bold text-slate-800 text-sm">Nomor 1: Operasional Utama</span>
+                </div>
+                <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                  Bot & Tagihan
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500">
+                Menangani kueri bot otomatis cek saldo warga, blast faktur tagihan bulanan, dan kuitansi lunas QRIS.
+              </p>
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Nomor WhatsApp Utama</label>
+                <input
+                  type="text"
+                  value={waSettings.waNumber1 || ""}
+                  onChange={(e) => setWaSettings({ ...waSettings, waNumber1: e.target.value })}
+                  placeholder="081400782617"
+                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 font-mono"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Token API Fonnte (Device 1)</label>
+                <input
+                  type="password"
+                  value={waSettings.waApiKey1 || ""}
+                  onChange={(e) => setWaSettings({ ...waSettings, waApiKey1: e.target.value })}
+                  placeholder="Masukkan Token Fonnte Device 1"
+                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 font-mono"
+                />
+              </div>
+            </div>
+
+            {/* DEVICE 2: CS & PENGADUAN WARGA */}
+            <div className="p-4 rounded-xl border-2 border-sky-100 bg-sky-50/20 space-y-3">
+              <div className="flex items-center justify-between pb-2 border-b border-sky-100">
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-sky-600 text-white flex items-center justify-center text-xs font-bold">2</span>
+                  <span className="font-bold text-slate-800 text-sm">Nomor 2: CS & Pengaduan Warga</span>
+                </div>
+                <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-sky-100 text-sky-800">
+                  Customer Care
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500">
+                Menangani aduan sampah menumpuk, permintaan pickup khusus/bulky waste, dan koordinasi cepat tim armada.
+              </p>
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Nomor WhatsApp CS</label>
+                <input
+                  type="text"
+                  value={waSettings.waNumber2 || ""}
+                  onChange={(e) => setWaSettings({ ...waSettings, waNumber2: e.target.value })}
+                  placeholder="085716251003"
+                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 font-mono"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Token API Fonnte (Device 2 - Opsional)</label>
+                <input
+                  type="password"
+                  value={waSettings.waApiKey2 || ""}
+                  onChange={(e) => setWaSettings({ ...waSettings, waApiKey2: e.target.value })}
+                  placeholder="Opsional (Kosongkan jika menggunakan token Device 1)"
+                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 font-mono"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* GRUP WHATSAPP & JID LAPORAN INTERNAL */}
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
+            <h3 className="text-xs font-bold text-slate-800">👥 Target Notifikasi Internal & Grup WhatsApp Mitra</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[11px] font-medium text-slate-600 mb-1">JID Grup WhatsApp Laporan Pembayaran Tagihan</label>
+                <input
+                  type="text"
+                  value={waSettings.waGroupTagihan || ""}
+                  onChange={(e) => setWaSettings({ ...waSettings, waGroupTagihan: e.target.value })}
+                  placeholder="120363432695009362@g.us"
+                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg font-mono"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-medium text-slate-600 mb-1">JID Grup WhatsApp Tanggap Pengaduan Warga</label>
+                <input
+                  type="text"
+                  value={waSettings.waGroupPengaduan || ""}
+                  onChange={(e) => setWaSettings({ ...waSettings, waGroupPengaduan: e.target.value })}
+                  placeholder="120363430666363149@g.us"
+                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg font-mono"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-end gap-3 pt-2">
+            <button
+              type="submit"
+              disabled={savingWa}
+              className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-200 transition-all flex items-center gap-2 disabled:opacity-50"
+            >
+              {savingWa ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Menyimpan Konfigurasi...</span>
+                </>
+              ) : (
+                <>
+                  <span>💾</span>
+                  <span>Simpan Konfigurasi WhatsApp</span>
+                </>
+              )}
+            </button>
+          </div>
+        </form>
       </div>
 
       {/* STUDIO PAJAK DAERAH, DENDA & TEMPLATE NOTIFIKASI WHATSAPP (60/40 LAYOUT) */}

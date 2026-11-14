@@ -29,9 +29,19 @@ export async function GET(
       );
     }
 
+    let targetId = id;
+    if (id === "current" || id === "me") {
+      if (session.tenantId) {
+        targetId = session.tenantId;
+      } else {
+        const host = request.headers.get("host") || "";
+        targetId = host.includes("upsheru") ? "upsheru" : "upsheru";
+      }
+    }
+
     const tenant = await prisma.tenant.findFirst({
       where: {
-        OR: [{ id }, { slug: id }],
+        OR: [{ id: targetId }, { slug: targetId }],
       },
       include: {
         waConfig: true,
@@ -161,9 +171,19 @@ export async function PUT(
       );
     }
 
+    let targetId = id;
+    if (id === "current" || id === "me") {
+      if (session.tenantId) {
+        targetId = session.tenantId;
+      } else {
+        const host = request.headers.get("host") || "";
+        targetId = host.includes("upsheru") ? "upsheru" : "upsheru";
+      }
+    }
+
     const tenant = await prisma.tenant.findFirst({
       where: {
-        OR: [{ id }, { slug: id }],
+        OR: [{ id: targetId }, { slug: targetId }],
       },
     });
 
