@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Truck, LogIn, Smartphone, ShieldCheck, Loader2 } from "lucide-react";
+import { Truck, LogIn, Smartphone, ShieldCheck, Loader2, Database, Sparkles } from "lucide-react";
 import { NativeGuardedLink } from "@/components/mobile/LandingApkBanner";
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -12,7 +12,15 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isCore, setIsCore] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const h = window.location.hostname.toLowerCase();
+      setIsCore(h.includes("o2whero.com") || h.startsWith("o2w-") || h.includes("core."));
+    }
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -71,14 +79,22 @@ export default function LoginPage() {
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex flex-col items-center mb-8">
-          <div className="w-12 h-12 bg-emerald-700 text-white rounded-lg flex items-center justify-center mb-4 shadow-sm">
-            <Truck strokeWidth={2.5} className="w-6 h-6" />
+          <div
+            className={`w-12 h-12 text-white rounded-xl flex items-center justify-center mb-4 shadow-sm ${
+              isCore
+                ? "bg-gradient-to-tr from-sky-600 to-teal-500 shadow-sky-600/20 font-black text-lg"
+                : "bg-emerald-700 shadow-emerald-700/20"
+            }`}
+          >
+            {isCore ? "O2W" : <Truck strokeWidth={2.5} className="w-6 h-6" />}
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-zinc-100">
-            UPS HERU Portal
+            {isCore ? "O2W HERO Platform" : "UPS HERU Portal"}
           </h1>
           <p className="text-sm text-slate-500 dark:text-zinc-400 mt-1">
-            Sistem Informasi Pengelolaan & Retribusi
+            {isCore
+              ? "SaaS Management & Multi-Tenant Core Hub"
+              : "Sistem Informasi Pengelolaan & Retribusi"}
           </p>
         </div>
 
@@ -96,7 +112,11 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white dark:bg-zinc-950 border border-slate-300 dark:border-zinc-700 rounded-lg px-4 py-2.5 text-slate-900 dark:text-zinc-100 text-sm outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 transition-all placeholder:text-slate-400 dark:placeholder-zinc-500"
+                className={`w-full bg-white dark:bg-zinc-950 border border-slate-300 dark:border-zinc-700 rounded-lg px-4 py-2.5 text-slate-900 dark:text-zinc-100 text-sm outline-none transition-all placeholder:text-slate-400 dark:placeholder-zinc-500 ${
+                  isCore
+                    ? "focus:ring-2 focus:ring-sky-600/20 focus:border-sky-600"
+                    : "focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600"
+                }`}
                 placeholder="nama@hero.com atau 0812xxxx"
               />
             </div>
@@ -113,7 +133,11 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white dark:bg-zinc-950 border border-slate-300 dark:border-zinc-700 rounded-lg px-4 py-2.5 text-slate-900 dark:text-zinc-100 text-sm outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 transition-all placeholder:text-slate-400 dark:placeholder-zinc-500"
+                className={`w-full bg-white dark:bg-zinc-950 border border-slate-300 dark:border-zinc-700 rounded-lg px-4 py-2.5 text-slate-900 dark:text-zinc-100 text-sm outline-none transition-all placeholder:text-slate-400 dark:placeholder-zinc-500 ${
+                  isCore
+                    ? "focus:ring-2 focus:ring-sky-600/20 focus:border-sky-600"
+                    : "focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600"
+                }`}
                 placeholder="••••••••"
               />
             </div>
@@ -128,7 +152,11 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold rounded-lg text-sm transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+              className={`w-full py-2.5 text-white font-semibold rounded-lg text-sm transition-colors disabled:opacity-60 flex items-center justify-center gap-2 ${
+                isCore
+                  ? "bg-sky-600 hover:bg-sky-500 shadow-md shadow-sky-600/20"
+                  : "bg-emerald-700 hover:bg-emerald-800 shadow-sm"
+              }`}
             >
               {loading ? (
                 <>
