@@ -364,12 +364,35 @@ function getRoleLevel(role: string): number {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // 1. Validasi Keamanan Host & Resolusi Tenant Context (Tolak domain liar)
+  const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+  const tenantCtx = resolveTenantByHost(rawHost);
+
+  if (!tenantCtx.isValid) {
+    return new NextResponse(
+      JSON.stringify({
+        error: "Misdirected Request",
+        message: "Domain tidak terdaftar dalam jaringan resmi O2W HERO / UPS HERU.",
+        host: rawHost,
+      }),
+      {
+        status: 421,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+
+  const reqHeaders = new Headers(request.headers);
+  reqHeaders.set("x-tenant-slug", tenantCtx.tenant.slug);
+  reqHeaders.set("x-tenant-id", tenantCtx.tenant.id);
+  reqHeaders.set("x-is-core", tenantCtx.isCore ? "1" : "0");
+
   // Halaman publik
   // /peta/tv dilindungi token TV (env TV_VIEW_TOKEN) di dalam page-nya sendiri,
   // bukan lewat sesi login — biarkan lolos proxy agar browser kiosk bisa akses.
   const lowerPath = pathname.toLowerCase();
   if (lowerPath === "/login" || lowerPath === "/login/" || lowerPath === "/bayar" || lowerPath === "/bayar/" || lowerPath.startsWith("/peta/tv") || lowerPath.startsWith("/live")) {
-    return NextResponse.next();
+    return NextResponse.next({ request: { headers: reqHeaders } });
   }
 
   // Auth API, publik API, dan API mobile (background GPS) — dicek di handler masing-masing.
@@ -385,12 +408,6 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/api/integrasi/google-contacts/callback") ||
     pathname.startsWith("/api/core")
   ) {
-    const host = request.headers.get("host") || "";
-    const tenantCtx = resolveTenantByHost(host);
-    const reqHeaders = new Headers(request.headers);
-    reqHeaders.set("x-tenant-slug", tenantCtx.tenant.slug);
-    reqHeaders.set("x-tenant-id", tenantCtx.tenant.id);
-    reqHeaders.set("x-is-core", tenantCtx.isCore ? "1" : "0");
     return NextResponse.next({ request: { headers: reqHeaders } });
   }
 

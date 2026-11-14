@@ -100,6 +100,17 @@ export const KNOWN_TENANTS: TenantConfig[] = [
 ];
 
 /**
+ * Daftar domain internal, lokal, dan IP VPS yang sah untuk healthcheck & mobile apps
+ */
+export const ALLOWED_INTERNAL_HOSTS = new Set([
+  "localhost",
+  "127.0.0.1",
+  "0.0.0.0",
+  "43.173.40.166",
+  "capacitor://localhost",
+]);
+
+/**
  * Normalisasi host header (hapus port, whitespace, protocol jika ada)
  */
 export function normalizeHost(rawHost?: string | null): string {
@@ -112,37 +123,42 @@ export function normalizeHost(rawHost?: string | null): string {
 }
 
 /**
- * Resolve Tenant dari hostname atau request header
+ * Resolve Tenant dari hostname atau request header secara ketat (Strict Matching)
  */
 export function resolveTenantByHost(rawHost?: string | null): TenantContext {
   const host = normalizeHost(rawHost);
 
-  // 1. Cek apakah cocok dengan Core Hub (o2whero.com / preview deploy o2w)
+  // 1. Cek Core Platform exact domains
   const isCoreDomain =
-    host.includes("o2whero.com") ||
-    host.startsWith("o2w-") ||
-    host.includes("o2w.vercel.app");
+    CORE_TENANT.domains.includes(host) ||
+    host === "o2whero.com" ||
+    host === "www.o2whero.com" ||
+    host === "core.o2whero.com" ||
+    host === "o2w.vercel.app" ||
+    host === "o2w-o2-w.vercel.app";
 
-  if (isCoreDomain && !host.startsWith("upsheru.")) {
-    const protocol = host.includes("localhost") ? "http" : "https";
+  if (isCoreDomain) {
+    const protocol = host.includes("localhost") || host === "127.0.0.1" ? "http" : "https";
     return {
       tenant: CORE_TENANT,
       isCore: true,
       isPilot: false,
+      isValid: true,
       currentHost: host,
       baseUrl: `${protocol}://${host || CORE_TENANT.primaryDomain}`,
     };
   }
 
-  // 2. Cek apakah cocok dengan daftar domain Known Tenants
+  // 2. Cek apakah cocok dengan daftar domain Known Tenants (misal UPS HERU)
   if (host) {
     for (const t of KNOWN_TENANTS) {
       if (t.domains.includes(host)) {
-        const protocol = host.includes("localhost") ? "http" : "https";
+        const protocol = host.includes("localhost") || host === "127.0.0.1" ? "http" : "https";
         return {
           tenant: t,
           isCore: t.tipe === "core",
           isPilot: t.slug === "upsheru",
+          isValid: true,
           currentHost: host,
           baseUrl: `${protocol}://${host}`,
         };
@@ -150,15 +166,27 @@ export function resolveTenantByHost(rawHost?: string | null): TenantContext {
     }
   }
 
-  // 3. Fallback default ke Pilot Tenant (upsheru.com) untuk backward compatibility
-  const protocol = host.includes("localhost") ? "http" : "https";
-  const defaultHost = host && !host.includes("vercel.app") ? host : PILOT_TENANT.primaryDomain;
+  // 3. Akses internal / development / direct VPS IP / healthcheck
+  if (ALLOWED_INTERNAL_HOSTS.has(host) || !host) {
+    const protocol = host.includes("localhost") || host === "127.0.0.1" ? "http" : "https";
+    const currentHost = host || PILOT_TENANT.primaryDomain;
+    return {
+      tenant: PILOT_TENANT,
+      isCore: false,
+      isPilot: true,
+      isValid: true,
+      currentHost,
+      baseUrl: `${protocol}://${currentHost}`,
+    };
+  }
 
+  // 4. Domain asing / liar tidak dikenal (TOLAK - Menutup celah keamanan)
   return {
     tenant: PILOT_TENANT,
     isCore: false,
-    isPilot: true,
-    currentHost: defaultHost,
-    baseUrl: `${protocol}://${defaultHost}`,
+    isPilot: false,
+    isValid: false,
+    currentHost: host,
+    baseUrl: `https://${host}`,
   };
 }

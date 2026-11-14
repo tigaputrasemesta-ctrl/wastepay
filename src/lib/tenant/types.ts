@@ -53,6 +53,7 @@ export interface TenantContext {
   tenant: TenantConfig;
   isCore: boolean;
   isPilot: boolean;
+  isValid: boolean;
   currentHost: string;
   baseUrl: string;
 }
