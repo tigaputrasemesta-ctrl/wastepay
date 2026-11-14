@@ -10,6 +10,7 @@ import NotificationBell from "@/components/NotificationBell";
 import AdminSyncIndicator from "@/components/admin/AdminSyncIndicator";
 import AdminCommandSearch from "@/components/admin/AdminCommandSearch";
 import ThemeToggle from "@/components/ThemeToggle";
+import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
   MapPin,
@@ -130,6 +131,50 @@ const SECONDARY_MENU_ITEMS = [
     items: [
       { label: "Manajemen Mitra & DB", href: "/tenants", icon: Building2, desc: "Pendaftaran mitra & database tenant", badge: "SaaS Core" },
       { label: "Kelola Akun Admin", href: "/users", icon: UserCog, desc: "Manajemen user & hak akses role", badge: "Superadmin" },
+      { label: "Log Audit Sistem", href: "/audit-log", icon: ShieldAlert, desc: "Histori audit trail & keamanan server", badge: "Audit" },
+    ],
+  },
+];
+
+// Khusus Domain Core SaaS O2W HERO: Hanya Menu Control Plane
+const CORE_PRIMARY_MOBILE_TABS = [
+  {
+    id: "dashboard",
+    label: "Ringkasan",
+    href: "/dashboard",
+    icon: LayoutDashboard,
+    matcher: (path: string) => path === "/dashboard" || path === "/admin" || path === "/",
+  },
+  {
+    id: "tenants",
+    label: "Mitra & DB",
+    href: "/tenants",
+    icon: Building2,
+    matcher: (path: string) => path.startsWith("/tenants"),
+  },
+  {
+    id: "users",
+    label: "Akun Admin",
+    href: "/users",
+    icon: UserCog,
+    matcher: (path: string) => path.startsWith("/users"),
+  },
+  {
+    id: "audit",
+    label: "Audit Log",
+    href: "/audit-log",
+    icon: ShieldAlert,
+    matcher: (path: string) => path.startsWith("/audit-log"),
+  },
+];
+
+const CORE_SECONDARY_MENU_ITEMS = [
+  {
+    title: "SaaS Control Plane",
+    items: [
+      { label: "Dashboard Ekosistem", href: "/dashboard", icon: LayoutDashboard, desc: "Pusat kendali ekosistem & mitra aktif", badge: "Control Hub" },
+      { label: "Manajemen Mitra & DB", href: "/tenants", icon: Building2, desc: "Pendaftaran mitra & database tenant", badge: "SaaS Core" },
+      { label: "Kelola Akun Admin", href: "/users", icon: UserCog, desc: "Manajemen user platform & hak akses role", badge: "Superadmin" },
       { label: "Log Audit Sistem", href: "/audit-log", icon: ShieldAlert, desc: "Histori audit trail & keamanan server", badge: "Audit" },
     ],
   },
@@ -257,8 +302,8 @@ export default function AdminMobileResponsiveShell({
           aria-label="Navigasi Utama Mobile"
           className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl border-t border-slate-200/90 dark:border-zinc-800/90 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] pb-safe select-none"
         >
-          <div className="grid grid-cols-5 h-16 items-center px-1">
-            {PRIMARY_MOBILE_TABS.map((tab) => {
+          <div className={cn("grid h-16 items-center px-1", isCore ? "grid-cols-4" : "grid-cols-5")}>
+            {(isCore ? CORE_PRIMARY_MOBILE_TABS : PRIMARY_MOBILE_TABS).map((tab) => {
               const Icon = tab.icon;
               const isActive = tab.matcher(pathname);
               return (
@@ -336,7 +381,7 @@ export default function AdminMobileResponsiveShell({
 
                 {/* Body List of Modules */}
                 <div className="p-4 sm:p-6 overflow-y-auto space-y-5 flex-1 pb-safe">
-                  {SECONDARY_MENU_ITEMS.map((section, sIdx) => (
+                  {(isCore ? CORE_SECONDARY_MENU_ITEMS : SECONDARY_MENU_ITEMS).map((section, sIdx) => (
                     <div key={sIdx} className="space-y-2">
                       <h4 className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider px-2">
                         {section.title}

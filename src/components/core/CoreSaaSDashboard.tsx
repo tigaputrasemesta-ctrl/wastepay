@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   Building2,
   Database,
@@ -20,7 +21,9 @@ import {
   Activity,
   UserCheck,
   Phone,
-  MapPin
+  MapPin,
+  Info,
+  X
 } from "lucide-react";
 
 export interface CoreStatsData {
@@ -33,8 +36,46 @@ export interface CoreStatsData {
 }
 
 export default function CoreSaaSDashboard({ stats }: { stats: CoreStatsData }) {
+  const searchParams = useSearchParams();
+  const [noticeDismissed, setNoticeDismissed] = useState(false);
+  const showNotice = searchParams.get("notice") === "tenant_scope_only" && !noticeDismissed;
+
   return (
-    <div className="space-y-8 pb-12 font-sans">
+    <div className="space-y-6 pb-12 font-sans">
+      {/* Scope Isolation Notice */}
+      {showNotice && (
+        <div className="flex items-start justify-between gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 backdrop-blur-sm animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="flex items-start gap-3">
+            <div className="w-8 h-8 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0 mt-0.5 text-amber-600 dark:text-amber-400">
+              <Info className="w-4 h-4" />
+            </div>
+            <div className="text-xs space-y-1">
+              <p className="font-bold text-sm">
+                Domain Core SaaS Diisolasi dari Halaman Operasional Mikro
+              </p>
+              <p className="text-slate-600 dark:text-amber-300/80 leading-relaxed">
+                Halaman operasional yang Anda tuju (seperti data warga, tagihan iuran, biaya operasional truk, dan rute) dikelola melalui portal domain masing-masing tenant (misal:{" "}
+                <a
+                  href="https://upsheru.com/dashboard"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-bold underline hover:text-amber-800 dark:hover:text-amber-100"
+                >
+                  upsheru.com
+                </a>
+                ). Domain <strong>o2whero.com</strong> didedikasikan murni untuk <em>Platform Control Hub</em> & Manajemen Multi-Tenant.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setNoticeDismissed(true)}
+            className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-zinc-200 hover:bg-slate-200/50 dark:hover:bg-zinc-800/50 transition-colors"
+            aria-label="Tutup pemberitahuan"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
       {/* SaaS Hub Header */}
       <div className="bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl border border-sky-800/40 relative overflow-hidden">
         <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />

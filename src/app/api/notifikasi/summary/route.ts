@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
+import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { formatRupiah } from "@/lib/utils";
+import { resolveTenantByHost } from "@/lib/tenant";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +32,52 @@ export async function GET() {
   const user = await getSession();
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const headersList = await headers();
+  const host = headersList.get("x-forwarded-host") || headersList.get("host") || "";
+  const tenantCtx = resolveTenantByHost(host);
+
+  // Isolasi Notifikasi untuk Domain Core SaaS (o2whero.com)
+  if (tenantCtx.isCore) {
+    try {
+      const pendingMitraCount = await prisma.mitraRegistration.count({
+        where: { status: "menunggu_review" },
+      });
+      const pendingMitraList = await prisma.mitraRegistration.findMany({
+        where: { status: "menunggu_review" },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+      });
+
+      const items: NotificationItem[] = pendingMitraList.map((m) => ({
+        id: `mitra-${m.id}`,
+        category: "pendaftaran",
+        title: m.namaInstansi,
+        desc: `Permohonan mitra (${m.jenisUsaha}) dari ${m.kota} menunggu review`,
+        time: "Menunggu",
+        link: "/tenants",
+        badge: "Mitra Baru",
+        severity: "warning",
+      }));
+
+      return NextResponse.json({
+        totalCount: pendingMitraCount,
+        counts: {
+          pembayaran: 0,
+          pendaftaran: pendingMitraCount,
+          komplain: 0,
+        },
+        items,
+      });
+    } catch (err) {
+      console.error("Core notifikasi summary error:", err);
+      return NextResponse.json({
+        totalCount: 0,
+        counts: { pembayaran: 0, pendaftaran: 0, komplain: 0 },
+        items: [],
+      });
+    }
   }
 
   try {

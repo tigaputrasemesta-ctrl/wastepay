@@ -195,13 +195,32 @@ export default function Sidebar({
     }));
   }
 
-  const allowedMenus = user ? getAllowedMenus(user.role) : [];
+  const rawAllowedMenus = user ? getAllowedMenus(user.role) : [];
+  // Jika diakses dari domain Core SaaS (o2whero.com), hanya tampilkan menu Control Plane Platform
+  const allowedMenus = isCore
+    ? rawAllowedMenus.filter((key) => ["dashboard", "tenants", "users", "audit-log"].includes(key))
+    : rawAllowedMenus;
+
   const MENU_GROUP_EFFECTIVE: Record<string, string> = {
     ...MENU_GROUP,
-    ...(isCore ? { tenants: "utama" } : {}),
+    ...(isCore
+      ? {
+          dashboard: "utama",
+          tenants: "utama",
+          users: "sistem",
+          "audit-log": "sistem",
+        }
+      : {}),
   };
 
-  const groupedMenus = MENU_GROUPS.map((g) => ({
+  const EFFECTIVE_MENU_GROUPS = isCore
+    ? [
+        { key: "utama", label: "SaaS Control Plane" },
+        { key: "sistem", label: "Sistem & Keamanan" },
+      ]
+    : MENU_GROUPS;
+
+  const groupedMenus = EFFECTIVE_MENU_GROUPS.map((g) => ({
     ...g,
     items: allowedMenus
       .filter((key) => MENU_GROUP_EFFECTIVE[key] === g.key)

@@ -505,6 +505,25 @@ export async function proxy(request: NextRequest) {
       }
     }
 
+    // Khusus Domain Core SaaS (o2whero.com): Tolak akses API operasional lokal tenant mikro
+    if (tenantCtx.isCore) {
+      const isAllowedCoreApi =
+        pathname.startsWith("/api/auth") ||
+        pathname.startsWith("/api/core") ||
+        pathname.startsWith("/api/users") ||
+        pathname.startsWith("/api/audit-log") ||
+        pathname.startsWith("/api/notifikasi/summary") ||
+        pathname === "/api/pelanggan" ||
+        pathname === "/api/tagihan";
+
+      if (!isAllowedCoreApi) {
+        return NextResponse.json(
+          { error: "Forbidden: Endpoint operasional lokal hanya tersedia melalui portal masing-masing tenant mitra." },
+          { status: 403 }
+        );
+      }
+    }
+
     const apiKey = `${request.method}:${pathname}`;
     let requiredLevel = API_ROLE_MAP[apiKey];
 
@@ -568,6 +587,30 @@ export async function proxy(request: NextRequest) {
     if (pageUser.tenantId && pageUser.tenantId !== tenantCtx.tenant.id) {
       const url = new URL("/login", request.url);
       url.searchParams.set("error", "tenant_mismatch");
+      return NextResponse.redirect(url);
+    }
+  }
+
+  // Khusus Domain Core SaaS Hub (o2whero.com):
+  // Blokir semua halaman operasional lokal mikro (pelanggan, tagihan, pengeluaran, laporan, absensi, peta, dll).
+  // Bahkan untuk Superadmin sekalipun, domain Core hanya melayani Control Plane.
+  if (tenantCtx.isCore) {
+    const isAllowedCorePage =
+      pathname === "/" ||
+      pathname === "/login" ||
+      pathname === "/dashboard" ||
+      pathname.startsWith("/dashboard/") ||
+      pathname === "/tenants" ||
+      pathname.startsWith("/tenants/") ||
+      pathname === "/users" ||
+      pathname.startsWith("/users/") ||
+      pathname === "/audit-log" ||
+      pathname.startsWith("/audit-log/") ||
+      pathname.startsWith("/profil");
+
+    if (!isAllowedCorePage) {
+      const url = new URL("/dashboard", request.url);
+      url.searchParams.set("notice", "tenant_scope_only");
       return NextResponse.redirect(url);
     }
   }

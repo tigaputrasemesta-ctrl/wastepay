@@ -28,6 +28,7 @@ import {
   Newspaper,
   Megaphone,
   ShieldCheck,
+  Building2,
   FileText,
   Settings,
   UserPlus,
@@ -56,10 +57,18 @@ export default function AdminCommandSearch() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isCore, setIsCore] = useState(false);
   const router = useRouter();
   const { resolvedTheme, setTheme } = useTheme();
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const h = window.location.hostname.toLowerCase();
+      setIsCore(h.includes("o2whero.com") || h.startsWith("o2w-") || h.includes("core."));
+    }
+  }, []);
 
   const commandItems: CommandItem[] = useMemo(() => {
     return [
@@ -290,6 +299,15 @@ export default function AdminCommandSearch() {
         href: "/audit-log",
       },
       {
+        id: "nav-tenants",
+        title: "Manajemen Mitra & Database",
+        desc: "Pendaftaran tenant baru, domain custom, dan database",
+        category: "Navigasi",
+        keywords: ["tenant", "mitra", "database", "saas", "subdomain", "kemitraan"],
+        icon: Building2,
+        href: "/tenants",
+      },
+      {
         id: "nav-setting",
         title: "Pengaturan Sistem",
         desc: "Konfigurasi instansi UPS HERU, rekening, dan backup",
@@ -347,18 +365,27 @@ export default function AdminCommandSearch() {
     ];
   }, [resolvedTheme, setTheme]);
 
-  // Filter items berdasarkan query pencarian
+  // Filter items berdasarkan konteks Core SaaS vs Tenant dan query pencarian
   const filteredItems = useMemo(() => {
-    if (!query.trim()) return commandItems;
+    const baseItems = isCore
+      ? commandItems.filter((item) => {
+          if (!item.href) return true; // actions (seperti ganti tema) tetap diizinkan
+          return ["/dashboard", "/tenants", "/users", "/audit-log"].some((prefix) =>
+            item.href === prefix || item.href?.startsWith(prefix + "/")
+          );
+        })
+      : commandItems;
+
+    if (!query.trim()) return baseItems;
     const q = query.toLowerCase().trim();
-    return commandItems.filter((item) => {
+    return baseItems.filter((item) => {
       const matchTitle = item.title.toLowerCase().includes(q);
       const matchDesc = item.desc?.toLowerCase().includes(q);
       const matchKeywords = item.keywords.some((k) => k.toLowerCase().includes(q));
       const matchCategory = item.category.toLowerCase().includes(q);
       return matchTitle || matchDesc || matchKeywords || matchCategory;
     });
-  }, [commandItems, query]);
+  }, [commandItems, query, isCore]);
 
   // Keyboard shortcut listener (Ctrl+K / Cmd+K)
   useEffect(() => {
