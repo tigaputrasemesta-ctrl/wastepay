@@ -4,6 +4,8 @@ import { logAudit } from "@/lib/audit";
 import {
   getKatalogProduk,
   saveKatalogProduk,
+} from "@/lib/server/katalog-produk-service";
+import {
   DEFAULT_PRODUK_LIST,
   ProdukSampah,
 } from "@/lib/katalog-produk";
