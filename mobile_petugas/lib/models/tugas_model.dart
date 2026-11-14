@@ -8,6 +8,11 @@ class PelangganTugas {
   final String? patokanLokasi;
   final String? noTelepon;
   final String? fotoRumah;
+  final String? rtRw;
+  final int? zonaId;
+  final String? zonaNama;
+  final String? zonaWarna;
+  final String? wilayahNama;
 
   PelangganTugas({
     required this.id,
@@ -19,9 +24,26 @@ class PelangganTugas {
     this.patokanLokasi,
     this.noTelepon,
     this.fotoRumah,
+    this.rtRw,
+    this.zonaId,
+    this.zonaNama,
+    this.zonaWarna,
+    this.wilayahNama,
   });
 
   factory PelangganTugas.fromJson(Map<String, dynamic> json) {
+    // Parsing zona jika tersedia dari relasi zona atau wilayah.zona
+    final wilayah = json['wilayah'] is Map<String, dynamic> ? json['wilayah'] : null;
+    final zona = json['zona'] is Map<String, dynamic>
+        ? json['zona']
+        : (wilayah != null && wilayah['zona'] is Map<String, dynamic> ? wilayah['zona'] : null);
+
+    final zonaNamaParsed = json['zonaNama']?.toString() ?? zona?['nama']?.toString();
+    final zonaWarnaParsed = json['zonaWarna']?.toString() ?? zona?['warna']?.toString();
+    final zonaIdParsed = json['zonaId'] is int
+        ? json['zonaId']
+        : int.tryParse(json['zonaId']?.toString() ?? zona?['id']?.toString() ?? '');
+
     return PelangganTugas(
       id: json['id'] is int ? json['id'] : int.tryParse(json['id'].toString()) ?? 0,
       nama: json['nama']?.toString() ?? '',
@@ -32,6 +54,11 @@ class PelangganTugas {
       patokanLokasi: json['patokanLokasi']?.toString(),
       noTelepon: json['noTelepon']?.toString(),
       fotoRumah: json['fotoRumah']?.toString(),
+      rtRw: json['rtRw']?.toString(),
+      zonaId: zonaIdParsed,
+      zonaNama: zonaNamaParsed,
+      zonaWarna: zonaWarnaParsed,
+      wilayahNama: json['wilayahNama']?.toString() ?? wilayah?['nama']?.toString(),
     );
   }
 
@@ -96,6 +123,13 @@ class TugasModel {
   });
 
   factory TugasModel.fromJson(Map<String, dynamic> json) {
+    final rawPelanggan = json['pelanggan'] is Map
+        ? Map<String, dynamic>.from(json['pelanggan'])
+        : <String, dynamic>{};
+    if (json['zona'] != null && rawPelanggan['zona'] == null) {
+      rawPelanggan['zona'] = json['zona'];
+    }
+
     return TugasModel(
       id: json['id'] is int ? json['id'] : int.tryParse(json['id'].toString()) ?? 0,
       tanggal: json['tanggal']?.toString() ?? '',
@@ -105,7 +139,7 @@ class TugasModel {
       jenisSampah: json['jenisSampah']?.toString(),
       catatan: json['catatan']?.toString(),
       urutan: json['urutan'] != null ? int.tryParse(json['urutan'].toString()) : null,
-      pelanggan: PelangganTugas.fromJson(json['pelanggan'] is Map ? json['pelanggan'] : {}),
+      pelanggan: PelangganTugas.fromJson(rawPelanggan),
       tunggakan: TunggakanInfo.fromJson(json['tunggakan'] is Map ? json['tunggakan'] : null),
     );
   }

@@ -88,10 +88,31 @@ class _PengangkutanDetailScreenState extends State<PengangkutanDetailScreen> {
       Position? pos;
       try {
         pos = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.medium,
+          desiredAccuracy: LocationAccuracy.high,
           timeLimit: const Duration(seconds: 4),
         );
       } catch (_) {}
+
+      // Validasi ketat radius 20 meter dari titik rumah pelanggan
+      if (_status == 'diambil' && widget.tugas.pelanggan.hasCoordinates) {
+        if (pos == null) {
+          throw Exception(
+            "GPS belum mengunci lokasi Anda. Aktifkan GPS untuk memverifikasi radius lokasi penjemputan.",
+          );
+        }
+        final double dist = Geolocator.distanceBetween(
+          pos.latitude,
+          pos.longitude,
+          widget.tugas.pelanggan.latitude!,
+          widget.tugas.pelanggan.longitude!,
+        );
+        if (dist > 20.0) {
+          throw Exception(
+            "⛔ DI LUAR RADIUS (${dist.toStringAsFixed(1)} m)!\n\n"
+            "Petugas hanya dapat menyelesaikan tugas penjemputan di radius maksimal 20 meter dari rumah pelanggan.",
+          );
+        }
+      }
 
       await PengangkutanService.updateStatus(
         taskId: widget.tugas.id,
@@ -148,22 +169,75 @@ class _PengangkutanDetailScreenState extends State<PengangkutanDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          p.nama,
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                        if (p.fotoRumah != null && p.fotoRumah!.isNotEmpty)
+                          Container(
+                            width: 64,
+                            height: 64,
+                            margin: const EdgeInsets.only(right: 12),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: Colors.grey.shade300),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(9),
+                              child: p.fotoRumah!.startsWith('data:image')
+                                  ? Image.memory(
+                                      base64Decode(p.fotoRumah!.split(',').last),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.network(
+                                      p.fotoRumah!,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => const Icon(Icons.home, color: AppColors.textMuted),
+                                    ),
+                            ),
+                          ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      p.nama,
+                                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  StatusBadge(status: _status),
+                                ],
+                              ),
+                              const SizedBox(height: 2),
+                              Text("ID Pelanggan: ${p.kodePelanggan}", style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                              if (p.zonaNama != null) ...[
+                                const SizedBox(height: 4),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF6366F1).withValues(alpha: 0.12),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    "📍 Zona: ${p.zonaNama}",
+                                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF4F46E5)),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
                         ),
-                        StatusBadge(status: _status),
                       ],
                     ),
-                    const SizedBox(height: 4),
-                    Text("ID Pelanggan: ${p.kodePelanggan}", style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
                     const SizedBox(height: 8),
                     Text(p.alamat, style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
-                    if (p.patokanLokasi != null) ...[
+                    if (p.patokanLokasi != null && p.patokanLokasi!.isNotEmpty) ...[
                       const SizedBox(height: 4),
-                      Text("Patokan: ${p.patokanLokasi}", style: const TextStyle(fontSize: 12, color: AppColors.primaryDark)),
+                      Text("Patokan: ${p.patokanLokasi}", style: const TextStyle(fontSize: 12, color: AppColors.primaryDark, fontWeight: FontWeight.w500)),
                     ],
                   ],
                 ),

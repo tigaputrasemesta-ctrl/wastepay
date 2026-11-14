@@ -2,23 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ExternalNavigationService {
-  /// Buka aplikasi Waze untuk navigasi turn-by-turn
-  static Future<bool> openWaze(double lat, double lng) async {
-    final wazeAppUri = Uri.parse("waze://?ll=$lat,$lng&navigate=yes");
-    final wazeWebUri = Uri.parse("https://waze.com/ul?ll=$lat,$lng&navigate=yes");
-
-    try {
-      if (await canLaunchUrl(wazeAppUri)) {
-        return await launchUrl(wazeAppUri);
-      } else {
-        return await launchUrl(wazeWebUri, mode: LaunchMode.externalApplication);
-      }
-    } catch (_) {
-      return false;
-    }
-  }
-
-  /// Buka aplikasi Google Maps untuk navigasi turn-by-turn
+  /// Buka aplikasi Google Maps untuk navigasi turn-by-turn langsung
   static Future<bool> openGoogleMaps(double lat, double lng) async {
     final gmapsAppUri = Uri.parse("google.navigation:q=$lat,$lng&mode=d");
     final gmapsWebUri = Uri.parse("https://www.google.com/maps/dir/?api=1&destination=$lat,$lng&travelmode=driving");
@@ -34,7 +18,17 @@ class ExternalNavigationService {
     }
   }
 
-  /// Tampilkan BottomSheet pilihan navigasi (Waze vs Google Maps)
+  /// Buka Google Maps Street View / Preview Lokasi
+  static Future<bool> openGoogleMapsPreview(double lat, double lng) async {
+    final uri = Uri.parse("https://www.google.com/maps/search/?api=1&query=$lat,$lng");
+    try {
+      return await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Tampilkan BottomSheet pilihan navigasi terpercaya (Google Maps & Web Maps)
   static void showNavigationChooser(BuildContext context, {
     required double lat,
     required double lng,
@@ -82,7 +76,7 @@ class ExternalNavigationService {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          "Pilih Aplikasi Navigasi",
+                          "Pilih Navigasi Lapangan",
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 15,
@@ -102,19 +96,19 @@ class ExternalNavigationService {
               ),
               const SizedBox(height: 20),
 
-              // Opsi 1: Waze
+              // Opsi 1: Google Maps Navigasi Langsung (Turn-by-turn driving)
               InkWell(
                 onTap: () {
                   Navigator.pop(ctx);
-                  openWaze(lat, lng);
+                  openGoogleMaps(lat, lng);
                 },
                 borderRadius: BorderRadius.circular(14),
                 child: Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1E293B), // Slate 800
+                    color: const Color(0xFF1E293B),
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: const Color(0xFF334155)),
+                    border: Border.all(color: const Color(0xFF00AA13), width: 1.5),
                   ),
                   child: Row(
                     children: [
@@ -122,11 +116,11 @@ class ExternalNavigationService {
                         width: 42,
                         height: 42,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF33CCFF), // Waze Cyan
+                          color: const Color(0xFF00AA13),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: const Center(
-                          child: Text("🚙", style: TextStyle(fontSize: 22)),
+                          child: Icon(Icons.navigation_rounded, color: Colors.white, size: 24),
                         ),
                       ),
                       const SizedBox(width: 14),
@@ -135,7 +129,7 @@ class ExternalNavigationService {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Waze Navigation",
+                              "Google Maps (Petunjuk Arah Live)",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 14,
@@ -144,13 +138,13 @@ class ExternalNavigationService {
                             ),
                             SizedBox(height: 2),
                             Text(
-                              "Info kemacetan & rute tercepat real-time",
+                              "Panduan suara & rute tercepat turn-by-turn",
                               style: TextStyle(color: Colors.white60, fontSize: 11),
                             ),
                           ],
                         ),
                       ),
-                      const Icon(Icons.chevron_right_rounded, color: Colors.white54),
+                      const Icon(Icons.chevron_right_rounded, color: Color(0xFF00AA13)),
                     ],
                   ),
                 ),
@@ -158,11 +152,11 @@ class ExternalNavigationService {
 
               const SizedBox(height: 10),
 
-              // Opsi 2: Google Maps
+              // Opsi 2: Google Maps Preview Titik Lokasi
               InkWell(
                 onTap: () {
                   Navigator.pop(ctx);
-                  openGoogleMaps(lat, lng);
+                  openGoogleMapsPreview(lat, lng);
                 },
                 borderRadius: BorderRadius.circular(14),
                 child: Container(
@@ -178,11 +172,11 @@ class ExternalNavigationService {
                         width: 42,
                         height: 42,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF34A853), // Google Maps Green
+                          color: const Color(0xFF0284C7),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: const Center(
-                          child: Text("📍", style: TextStyle(fontSize: 22)),
+                          child: Icon(Icons.map_rounded, color: Colors.white, size: 22),
                         ),
                       ),
                       const SizedBox(width: 14),
@@ -191,7 +185,7 @@ class ExternalNavigationService {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Google Maps",
+                              "Lihat Titik di Google Maps",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 14,
@@ -200,7 +194,7 @@ class ExternalNavigationService {
                             ),
                             SizedBox(height: 2),
                             Text(
-                              "Navigasi belokan akurat & nomor rumah",
+                              "Lihat foto satelit & detail bangunan sekitar",
                               style: TextStyle(color: Colors.white60, fontSize: 11),
                             ),
                           ],
@@ -212,7 +206,7 @@ class ExternalNavigationService {
                 ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
             ],
           ),
         );

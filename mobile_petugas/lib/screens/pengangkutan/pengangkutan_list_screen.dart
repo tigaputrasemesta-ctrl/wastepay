@@ -18,10 +18,77 @@ class PengangkutanListScreen extends StatefulWidget {
 class _PengangkutanListScreenState extends State<PengangkutanListScreen> {
   final _searchController = TextEditingController();
 
+  String _selectedZona = 'semua';
+  Position? _currentDriverPos;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCurrentPosition();
+  }
+
+  Future<void> _fetchCurrentPosition() async {
+    try {
+      final pos = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+        timeLimit: const Duration(seconds: 4),
+      );
+      if (mounted) {
+        setState(() => _currentDriverPos = pos);
+      }
+    } catch (_) {}
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _showOutsideRadiusDialog(String nama, double distance) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Row(
+          children: [
+            Icon(Icons.gpp_bad_rounded, color: AppColors.danger, size: 28),
+            SizedBox(width: 8),
+            Text("Di Luar Radius 20m", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Jarak HP Anda saat ini berjarak ${distance.toStringAsFixed(1)} meter dari rumah $nama.",
+              style: const TextStyle(fontSize: 13),
+            ),
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppColors.dangerBg,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.danger.withValues(alpha: 0.3)),
+              ),
+              child: const Text(
+                "Kebijakan Sistem: Petugas wajib berada dalam radius maksimal 20 meter dari lokasi pelanggan untuk menyelesaikan tugas penjemputan.",
+                style: TextStyle(fontSize: 12, color: AppColors.danger, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text("Mengerti", style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _handleQuickPickup(TugasModel tugas) async {
@@ -29,10 +96,37 @@ class _PengangkutanListScreenState extends State<PengangkutanListScreen> {
     Position? pos;
     try {
       pos = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.medium,
+        desiredAccuracy: LocationAccuracy.high,
         timeLimit: const Duration(seconds: 4),
       );
     } catch (_) {}
+
+    // Validasi ketat radius 20 meter
+    if (tugas.pelanggan.hasCoordinates) {
+      if (pos == null) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("⚠️ Sinyal GPS tidak terdeteksi. Aktifkan GPS untuk verifikasi radius 20m."),
+            backgroundColor: AppColors.danger,
+          ),
+        );
+        return;
+      }
+
+      final dist = Geolocator.distanceBetween(
+        pos.latitude,
+        pos.longitude,
+        tugas.pelanggan.latitude!,
+        tugas.pelanggan.longitude!,
+      );
+
+      if (dist > 20.0) {
+        if (!mounted) return;
+        _showOutsideRadiusDialog(tugas.pelanggan.nama, dist);
+        return;
+      }
+    }
 
     final success = await provider.quickPickup(
       tugas.id,
@@ -169,7 +263,17 @@ class _PengangkutanListScreenState extends State<PengangkutanListScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<PengangkutanProvider>();
-    final list = provider.filteredList;
+    final allZonas = provider.tugasList
+        .map((t) => t.pelanggan.zonaNama)
+        .where((z) => z != null && z.isNotEmpty)
+        .cast<String>()
+        .toSet()
+        .toList();
+
+    var list = provider.filteredList;
+    if (_selectedZona != 'semua') {
+      list = list.where((t) => t.pelanggan.zonaNama == _selectedZona).toList();
+    }
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -286,7 +390,7 @@ class _PengangkutanListScreenState extends State<PengangkutanListScreen> {
                 ),
                 const SizedBox(height: 10),
 
-                // Filter Chips
+                // Filter Chips Status
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
@@ -301,6 +405,57 @@ class _PengangkutanListScreenState extends State<PengangkutanListScreen> {
                     ],
                   ),
                 ),
+
+                // Filter Zona (Jika Ada Data Zona)
+                if (allZonas.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        const Text("Zona: ", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.textMuted)),
+                        GestureDetector(
+                          onTap: () => setState(() => _selectedZona = 'semua'),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            margin: const EdgeInsets.only(right: 6),
+                            decoration: BoxDecoration(
+                              color: _selectedZona == 'semua' ? const Color(0xFF6366F1) : Colors.grey.shade100,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              "Semua Zona",
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                color: _selectedZona == 'semua' ? Colors.white : AppColors.textSecondary,
+                              ),
+                            ),
+                          ),
+                        ),
+                        ...allZonas.map((zona) => GestureDetector(
+                              onTap: () => setState(() => _selectedZona = zona),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                margin: const EdgeInsets.only(right: 6),
+                                decoration: BoxDecoration(
+                                  color: _selectedZona == zona ? const Color(0xFF6366F1) : Colors.grey.shade100,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  zona,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    color: _selectedZona == zona ? Colors.white : AppColors.textSecondary,
+                                  ),
+                                ),
+                              ),
+                            )),
+                      ],
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -368,9 +523,20 @@ class _PengangkutanListScreenState extends State<PengangkutanListScreen> {
                           separatorBuilder: (_, __) => const SizedBox(height: 12),
                           itemBuilder: (ctx, idx) {
                             final tugas = list[idx];
+                            double? distMeters;
+                            if (_currentDriverPos != null && tugas.pelanggan.hasCoordinates) {
+                              distMeters = Geolocator.distanceBetween(
+                                _currentDriverPos!.latitude,
+                                _currentDriverPos!.longitude,
+                                tugas.pelanggan.latitude!,
+                                tugas.pelanggan.longitude!,
+                              );
+                            }
+
                             return TaskCard(
                               tugas: tugas,
                               index: idx,
+                              driverDistanceMeters: distMeters,
                               onQuickPickup: () => _handleQuickPickup(tugas),
                               onDetailTap: () => Navigator.push(
                                 context,
