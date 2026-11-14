@@ -5,7 +5,7 @@ import { ToastProvider } from "@/components/Toast";
 import { getSession } from "@/lib/auth";
 
 export const metadata: Metadata = {
-  title: "Admin Panel | UPS HERU",
+  title: "Admin Control Hub | WastePay Multi-Tenant",
   robots: {
     index: false,
     follow: false,

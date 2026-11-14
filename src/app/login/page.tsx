@@ -61,7 +61,8 @@ export default function LoginPage() {
         const next = params.get("next");
         const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? next : null;
         
-        const target = safeNext || (data.user?.role === "petugas" ? "/m" : "/dashboard");
+        const defaultTarget = isCore ? "/tenants" : "/dashboard";
+        const target = safeNext || (data.user?.role === "petugas" ? "/m" : defaultTarget);
         window.location.href = target;
       }
     } catch {

@@ -164,6 +164,14 @@ export default function Sidebar({
   const [user, setUser] = useState<User | null>(null);
 
   const isCollapsedEffective = isMobileDrawer ? false : collapsed;
+  const [isCore, setIsCore] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const h = window.location.hostname.toLowerCase();
+      setIsCore(h.includes("o2whero.com") || h.startsWith("o2w-") || h.includes("core."));
+    }
+  }, []);
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -188,10 +196,15 @@ export default function Sidebar({
   }
 
   const allowedMenus = user ? getAllowedMenus(user.role) : [];
+  const MENU_GROUP_EFFECTIVE: Record<string, string> = {
+    ...MENU_GROUP,
+    ...(isCore ? { tenants: "utama" } : {}),
+  };
+
   const groupedMenus = MENU_GROUPS.map((g) => ({
     ...g,
     items: allowedMenus
-      .filter((key) => MENU_GROUP[key] === g.key)
+      .filter((key) => MENU_GROUP_EFFECTIVE[key] === g.key)
       .map((key) => menuConfig[key])
       .filter(Boolean),
   })).filter((g) => g.items.length > 0);
@@ -207,25 +220,44 @@ export default function Sidebar({
       {/* ── BRAND HEADER ── */}
       <div className="flex items-center justify-between px-3.5 h-16 border-b border-slate-100/90 dark:border-zinc-800/80 bg-white dark:bg-zinc-950 shrink-0">
         {isCollapsedEffective ? (
-          <div className="w-10 h-10 mx-auto flex items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800/50 p-1">
-            <img src="/ups-heru-logo.jpg" alt="Logo" className="w-full h-full object-contain rounded-lg" />
-          </div>
+          isCore ? (
+            <div className="w-10 h-10 mx-auto flex items-center justify-center rounded-xl bg-gradient-to-tr from-sky-600 via-teal-500 to-emerald-500 text-white font-black text-sm shadow-sm shadow-sky-600/20">
+              O2W
+            </div>
+          ) : (
+            <div className="w-10 h-10 mx-auto flex items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800/50 p-1">
+              <img src="/ups-heru-logo.jpg" alt="Logo" className="w-full h-full object-contain rounded-lg" />
+            </div>
+          )
         ) : (
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-9 h-9 rounded-lg bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex items-center justify-center p-1 shrink-0 overflow-hidden">
-              <img src="/ups-heru-logo.jpg" alt="Logo" className="w-full h-full object-contain" />
-            </div>
+            {isCore ? (
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-600 via-teal-500 to-emerald-500 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-sm shadow-sky-600/20">
+                O2W
+              </div>
+            ) : (
+              <div className="w-9 h-9 rounded-lg bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex items-center justify-center p-1 shrink-0 overflow-hidden">
+                <img src="/ups-heru-logo.jpg" alt="Logo" className="w-full h-full object-contain" />
+              </div>
+            )}
             <div className="min-w-0 flex flex-col">
               <div className="flex items-center gap-1.5">
-                <span className="font-semibold text-sm tracking-tight text-slate-900 dark:text-zinc-100 leading-none">
-                  UPS HERU
+                <span className="font-bold text-sm tracking-tight text-slate-900 dark:text-zinc-100 leading-none">
+                  {isCore ? "O2W HERO" : "UPS HERU"}
                 </span>
-                <span className="px-1.5 py-0.5 rounded text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/60">
-                  TPS 3R
+                <span
+                  className={cn(
+                    "px-1.5 py-0.5 rounded text-[10px] font-bold",
+                    isCore
+                      ? "bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-400 border border-sky-200/60 dark:border-sky-800/60"
+                      : "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/60"
+                  )}
+                >
+                  {isCore ? "CORE HUB" : "TPS 3R"}
                 </span>
               </div>
-              <span className="text-xs text-slate-500 dark:text-zinc-400 font-normal truncate mt-0.5">
-                Kota Depok
+              <span className="text-[11px] text-slate-500 dark:text-zinc-400 font-normal truncate mt-0.5">
+                {isCore ? "SaaS Multi-Tenant" : "Kota Depok"}
               </span>
             </div>
           </div>
@@ -255,6 +287,23 @@ export default function Sidebar({
           </button>
         )}
       </div>
+
+      {/* ── CORE TENANT SWITCHER INDICATOR ── */}
+      {isCore && !isCollapsedEffective && (
+        <div className="px-3.5 py-2 bg-sky-50/70 dark:bg-sky-950/40 border-b border-sky-100 dark:border-sky-900/40 flex items-center justify-between text-xs shrink-0">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 animate-pulse" />
+            <span className="text-slate-500 dark:text-zinc-400 truncate">Tenant:</span>
+            <span className="font-bold text-slate-800 dark:text-zinc-200 truncate">UPS HERU</span>
+          </div>
+          <Link
+            href="/tenants"
+            className="text-[11px] font-bold text-sky-600 dark:text-sky-400 hover:underline shrink-0"
+          >
+            Kelola Mitra
+          </Link>
+        </div>
+      )}
 
       {/* ── USER PROFILE CHIP ── */}
       {user && !isCollapsedEffective && (

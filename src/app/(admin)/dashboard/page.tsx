@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { formatRupiah, KATEGORI_PENGELUARAN } from "@/lib/utils";
 import Link from "next/link";
+import { headers } from "next/headers";
+import { resolveTenantByHost } from "@/lib/tenant";
 import {
   Users,
   FileText,
@@ -253,6 +255,11 @@ async function getStats() {
 }
 
 export default async function DashboardPage() {
+  const headersList = await headers();
+  const host = headersList.get("x-forwarded-host") || headersList.get("host") || "";
+  const tenantCtx = resolveTenantByHost(host);
+  const isCore = tenantCtx.isCore;
+
   const stats = await getStats();
   const { bulanLabels, pemasukanTren, pengeluaranTren, maxTren, topTunggakan } = stats;
   const now = new Date();
@@ -538,24 +545,55 @@ export default async function DashboardPage() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60 mb-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Live Operation &amp; Dispatch Center
+          <div
+            className={`inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold mb-2 border ${
+              isCore
+                ? "bg-sky-50 dark:bg-sky-950/50 text-sky-800 dark:text-sky-300 border-sky-200/60 dark:border-sky-800/60"
+                : "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border-emerald-200/60 dark:border-emerald-800/60"
+            }`}
+          >
+            <span
+              className={`w-1.5 h-1.5 rounded-full animate-pulse ${
+                isCore ? "bg-sky-500" : "bg-emerald-500"
+              }`}
+            />
+            {isCore
+              ? "O2W HERO Core Platform • Tenant Percontohan: UPS HERU (Depok)"
+              : "Live Operation & Dispatch Center"}
           </div>
           <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-zinc-100 tracking-tight">
-            Ringkasan Operasional — {bulan} {tahun}
+            {isCore
+              ? `Monitoring Operasional Multi-Tenant — ${bulan} ${tahun}`
+              : `Ringkasan Operasional — ${bulan} ${tahun}`}
           </h1>
           <p className="text-slate-500 dark:text-zinc-400 text-xs sm:text-sm mt-1 font-normal">
-            Pantauan retribusi, tren penagihan, dan status operasional armada UPS HERU Kota Depok
+            {isCore
+              ? "Telemetri dan data operasional dari tenant aktif (UPS HERU TPS 3R Kota Depok)"
+              : "Pantauan retribusi, tren penagihan, dan status operasional armada UPS HERU Kota Depok"}
           </p>
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-center">
-          <Link href="/tagihan" className="h-9 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium shadow-xs transition-colors flex items-center gap-1.5 active:scale-[0.98]">
+          {isCore && (
+            <Link
+              href="/tenants"
+              className="h-9 px-4 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-sm transition-colors flex items-center gap-1.5 active:scale-[0.98]"
+            >
+              <Building2 size={14} strokeWidth={2} />
+              <span>Kelola Mitra & Database</span>
+            </Link>
+          )}
+          <Link
+            href="/tagihan"
+            className="h-9 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium shadow-xs transition-colors flex items-center gap-1.5 active:scale-[0.98]"
+          >
             <Plus size={14} strokeWidth={2} />
             <span>Kelola Tagihan</span>
           </Link>
-          <Link href="/laporan" className="h-9 px-4 rounded-lg bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-200 text-xs font-medium border border-slate-200/80 dark:border-zinc-800 shadow-xs transition-colors flex items-center gap-1.5 active:scale-[0.98]">
+          <Link
+            href="/laporan"
+            className="h-9 px-4 rounded-lg bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-200 text-xs font-medium border border-slate-200/80 dark:border-zinc-800 shadow-xs transition-colors flex items-center gap-1.5 active:scale-[0.98]"
+          >
             <Download size={14} className="text-slate-500 dark:text-zinc-400" />
             <span>Unduh Laporan</span>
           </Link>

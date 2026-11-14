@@ -140,6 +140,14 @@ export default function AdminMobileResponsiveShell({
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [prevPath, setPrevPath] = useState(pathname);
+  const [isCore, setIsCore] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const h = window.location.hostname.toLowerCase();
+      setIsCore(h.includes("o2whero.com") || h.startsWith("o2w-") || h.includes("core."));
+    }
+  }, []);
 
   // Tutup drawer secara otomatis ketika rute berganti
   if (pathname !== prevPath) {
@@ -191,13 +199,19 @@ export default function AdminMobileResponsiveShell({
               <Menu className="w-5 h-5" />
             </button>
 
-            {/* Logo UPS HERU Mini di Mobile */}
+            {/* Logo Mini di Mobile */}
             <div className="md:hidden flex items-center gap-2">
-              <span className="w-7 h-7 rounded-lg bg-emerald-700 text-white font-semibold flex items-center justify-center text-xs shadow-xs">
-                W
+              <span
+                className={`w-7 h-7 rounded-lg text-white font-black flex items-center justify-center text-[10px] shadow-xs ${
+                  isCore
+                    ? "bg-gradient-to-tr from-sky-600 to-teal-500 shadow-sky-600/20"
+                    : "bg-emerald-700"
+                }`}
+              >
+                {isCore ? "O2W" : "W"}
               </span>
-              <span className="font-semibold text-xs tracking-tight text-slate-900 dark:text-zinc-100">
-                UPS HERU
+              <span className="font-bold text-xs tracking-tight text-slate-900 dark:text-zinc-100">
+                {isCore ? "O2W HERO" : "UPS HERU"}
               </span>
             </div>
 
