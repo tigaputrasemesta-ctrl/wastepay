@@ -11,7 +11,7 @@ export async function GET() {
     }
 
     const users = await prisma.user.findMany({
-      select: { id: true, email: true, nama: true, role: true, noTelepon: true, aktif: true, createdAt: true },
+      select: { id: true, email: true, nama: true, role: true, noTelepon: true, aktif: true, createdAt: true, tenantId: true },
       orderBy: { createdAt: "asc" },
     });
 
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { email, password, nama, role, noTelepon } = body;
+    const { email, password, nama, role, noTelepon, tenantId } = body;
 
     if (!email || !password || !nama || !role) {
       return NextResponse.json({ error: "Email, password, nama, dan role harus diisi" }, { status: 400 });
@@ -47,6 +47,8 @@ export async function POST(request: Request) {
     }
 
     const hashedPassword = await hashPassword(password);
+    const assignedTenantId = tenantId ? String(tenantId).trim() : (role === "superadmin" ? "tenant-core-o2w" : "tenant-pilot-upsheru");
+
     const newUser = await prisma.user.create({
       data: {
         email,
@@ -54,8 +56,9 @@ export async function POST(request: Request) {
         nama,
         role,
         noTelepon,
+        tenantId: assignedTenantId,
       },
-      select: { id: true, email: true, nama: true, role: true, noTelepon: true, aktif: true },
+      select: { id: true, email: true, nama: true, role: true, noTelepon: true, aktif: true, tenantId: true },
     });
 
     // Audit log
@@ -83,11 +86,11 @@ export async function PUT(request: Request) {
 
   try {
     const body = await request.json();
-    const { id, aktif, password, nama, email, role, noTelepon } = body;
+    const { id, aktif, password, nama, email, role, noTelepon, tenantId } = body;
 
     if (!id) return NextResponse.json({ error: "ID User diperlukan" }, { status: 400 });
 
-    const updateData: { aktif?: boolean; password?: string; tokenVersion?: { increment: number }; nama?: string; email?: string; role?: string; noTelepon?: string | null } = {};
+    const updateData: { aktif?: boolean; password?: string; tokenVersion?: { increment: number }; nama?: string; email?: string; role?: string; noTelepon?: string | null; tenantId?: string | null } = {};
     if (aktif !== undefined) {
       if (typeof aktif !== "boolean") {
         return NextResponse.json({ error: "Status aktif harus boolean" }, { status: 400 });
@@ -122,11 +125,12 @@ export async function PUT(request: Request) {
       updateData.tokenVersion = { increment: 1 };
     }
     if (noTelepon !== undefined) updateData.noTelepon = noTelepon.trim() || null;
+    if (tenantId !== undefined) updateData.tenantId = tenantId ? String(tenantId).trim() : null;
 
     const updated = await prisma.user.update({
       where: { id },
       data: updateData,
-      select: { id: true, email: true, nama: true, role: true, noTelepon: true, aktif: true }
+      select: { id: true, email: true, nama: true, role: true, noTelepon: true, aktif: true, tenantId: true }
     });
 
     await prisma.auditLog.create({
