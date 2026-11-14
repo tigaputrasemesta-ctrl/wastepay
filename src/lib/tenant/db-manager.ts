@@ -4,6 +4,7 @@ import { Pool } from "pg";
 import { prisma as defaultPrisma } from "@/lib/prisma";
 import { TenantConfig } from "./types";
 import { resolveTenantByHost } from "./config";
+import { resolveTenantWithDbFallback } from "./server-resolver";
 
 // Global cache agar tetap persist di lingkungan serverless Lambda (jika warm instance)
 const globalForTenantPrisma = globalThis as unknown as {
@@ -81,6 +82,18 @@ export function getTenantDb(tenantOrHost?: TenantConfig | string | null): Prisma
   const newClient = createDedicatedTenantPrisma(dedicatedConn);
   prismaCache.set(tenant.slug, newClient);
   return newClient;
+}
+
+/**
+ * Mendapatkan koneksi PrismaClient terisolasi langsung dari context incoming Request
+ */
+export async function getRequestTenantDb(request?: Request | null): Promise<PrismaClient> {
+  if (!request) {
+    return defaultPrisma;
+  }
+  const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host");
+  const ctx = await resolveTenantWithDbFallback(rawHost);
+  return getTenantDb(ctx.tenant);
 }
 
 /**
