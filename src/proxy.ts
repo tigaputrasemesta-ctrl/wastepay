@@ -6,7 +6,7 @@ import { extractOrigin, isSameOriginRequest } from "@/lib/csrf";
 import { ROLE_HIERARCHY, type Role } from "@/lib/rbac";
 import { prisma } from "@/lib/prisma";
 import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
-import { resolveTenantByHost } from "@/lib/tenant";
+import { resolveTenantByHost, resolveTenantWithDbFallback } from "@/lib/tenant";
 
 // Role hierarchy — single source of truth di src/lib/rbac.ts
 // (ROLE_HIERARCHY diimpor agar tidak ada dua definisi yang bisa divergen).
@@ -366,7 +366,7 @@ export async function proxy(request: NextRequest) {
 
   // 1. Validasi Keamanan Host & Resolusi Tenant Context (Tolak domain liar)
   const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
-  const tenantCtx = resolveTenantByHost(rawHost);
+  const tenantCtx = await resolveTenantWithDbFallback(rawHost);
 
   if (!tenantCtx.isValid) {
     return new NextResponse(

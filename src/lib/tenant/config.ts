@@ -92,7 +92,7 @@ export const PILOT_TENANT: TenantConfig = {
 };
 
 /**
- * Registry tenant statis untuk lookup cepat O(1)
+ * Baseline tenant statis untuk fail-safe lookup
  */
 export const KNOWN_TENANTS: TenantConfig[] = [
   CORE_TENANT,
@@ -109,6 +109,57 @@ export const ALLOWED_INTERNAL_HOSTS = new Set([
   "43.173.40.166",
   "capacitor://localhost",
 ]);
+
+/**
+ * Global In-Memory Dynamic Tenant Registry Cache
+ */
+const globalTenantRegistry = globalThis as unknown as {
+  _tenantDomainMap?: Map<string, TenantConfig>;
+  _tenantSlugMap?: Map<string, TenantConfig>;
+};
+
+if (!globalTenantRegistry._tenantDomainMap) {
+  globalTenantRegistry._tenantDomainMap = new Map<string, TenantConfig>();
+  globalTenantRegistry._tenantSlugMap = new Map<string, TenantConfig>();
+
+  // Pre-seed in-memory registry dengan KNOWN_TENANTS
+  for (const t of KNOWN_TENANTS) {
+    globalTenantRegistry._tenantSlugMap.set(t.slug, t);
+    for (const d of t.domains) {
+      globalTenantRegistry._tenantDomainMap.set(d.toLowerCase(), t);
+    }
+  }
+}
+
+const domainRegistry = globalTenantRegistry._tenantDomainMap!;
+const slugRegistry = globalTenantRegistry._tenantSlugMap!;
+
+/**
+ * Daftarkan tenant baru ke dalam in-memory cache secara dinamis
+ */
+export function registerDynamicTenant(tenant: TenantConfig): void {
+  slugRegistry.set(tenant.slug, tenant);
+  for (const domain of tenant.domains) {
+    if (domain) {
+      domainRegistry.set(domain.toLowerCase().trim(), tenant);
+    }
+  }
+}
+
+/**
+ * Dapatkan tenant berdasarkan host/domain dari in-memory cache
+ */
+export function getDynamicTenant(domainOrHost: string): TenantConfig | undefined {
+  const clean = normalizeHost(domainOrHost);
+  return domainRegistry.get(clean);
+}
+
+/**
+ * Dapatkan seluruh tenant yang terdaftar di in-memory cache
+ */
+export function getAllCachedTenants(): TenantConfig[] {
+  return Array.from(slugRegistry.values());
+}
 
 /**
  * Normalisasi host header (hapus port, whitespace, protocol jika ada)
@@ -149,21 +200,18 @@ export function resolveTenantByHost(rawHost?: string | null): TenantContext {
     };
   }
 
-  // 2. Cek apakah cocok dengan daftar domain Known Tenants (misal UPS HERU)
-  if (host) {
-    for (const t of KNOWN_TENANTS) {
-      if (t.domains.includes(host)) {
-        const protocol = host.includes("localhost") || host === "127.0.0.1" ? "http" : "https";
-        return {
-          tenant: t,
-          isCore: t.tipe === "core",
-          isPilot: t.slug === "upsheru",
-          isValid: true,
-          currentHost: host,
-          baseUrl: `${protocol}://${host}`,
-        };
-      }
-    }
+  // 2. Cek apakah cocok dengan daftar domain di in-memory cache (UPS HERU & Dynamic Tenants)
+  if (host && domainRegistry.has(host)) {
+    const t = domainRegistry.get(host)!;
+    const protocol = host.includes("localhost") || host === "127.0.0.1" ? "http" : "https";
+    return {
+      tenant: t,
+      isCore: t.tipe === "core",
+      isPilot: t.slug === "upsheru",
+      isValid: true,
+      currentHost: host,
+      baseUrl: `${protocol}://${host}`,
+    };
   }
 
   // 3. Akses internal / development / direct VPS IP / healthcheck

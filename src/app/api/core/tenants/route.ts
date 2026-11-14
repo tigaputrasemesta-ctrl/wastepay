@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { buildCorsHeaders } from "@/lib/server/wastepay-backend-core-services";
-import { KNOWN_TENANTS } from "@/lib/tenant/config";
+import { KNOWN_TENANTS, registerDynamicTenant, dbTenantToConfig } from "@/lib/tenant";
 
 export async function OPTIONS(request: Request) {
   return new NextResponse(null, {
@@ -31,7 +31,15 @@ export async function GET(request: Request) {
       // Jika tabel belum di-migrate, fallback ke KNOWN_TENANTS
     }
 
-    // Gabungkan dengan Known Tenants (O2W Hero Core & UPS HERU Pilot)
+    // Sinkronkan ke in-memory cache
+    for (const t of dbTenants) {
+      registerDynamicTenant(dbTenantToConfig(t));
+    }
+
+    // Gabungkan dengan Known Tenants (O2W Hero Core & UPS HERU Pilot) tanpa duplikasi slug
+    const knownSlugs = new Set(KNOWN_TENANTS.map((t) => t.slug));
+    const dynamicOnly = dbTenants.filter((t) => !knownSlugs.has(t.slug));
+
     const combined = [
       ...KNOWN_TENANTS.map((t) => ({
         id: t.id,
@@ -44,13 +52,13 @@ export async function GET(request: Request) {
         dbType: t.dbConfig.isDedicated ? "dedicated_db" : "central_db",
         isBuiltin: true,
       })),
-      ...dbTenants.map((t) => ({
+      ...dynamicOnly.map((t) => ({
         id: t.id,
         slug: t.slug,
         namaMitra: t.namaMitra,
         tipe: t.tipePengelola,
         primaryDomain: t.customDomain || t.subdomain || `${t.slug}.o2whero.com`,
-        domains: t.domains.map((d: any) => d.domain),
+        domains: Array.isArray(t.domains) ? t.domains.map((d: any) => d.domain) : [],
         status: t.status,
         dbType: t.dbConnectionString ? "dedicated_db" : "shared_db",
         isBuiltin: false,
@@ -144,6 +152,9 @@ export async function POST(request: Request) {
         domains: true,
       },
     });
+
+    // Daftarkan langsung ke in-memory cache agar resolusi domain aktif instan tanpa restart
+    registerDynamicTenant(dbTenantToConfig(newTenant));
 
     return NextResponse.json(
       {
