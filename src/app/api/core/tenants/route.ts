@@ -183,19 +183,18 @@ export async function POST(request: Request) {
       }
     }
 
-    // Inisialisasi Invoice Pertama di TenantLedger
+    // Inisialisasi Buku Kas & Saldo Awal di TenantLedger
     try {
-      const planAmount =
-        paketLangganan === "enterprise" ? 2500000 : paketLangganan === "pro" ? 1250000 : 350000;
       await prisma.tenantLedger.create({
         data: {
           tenantId: newTenant.id,
-          tipe: "invoice",
-          jumlah: planAmount,
-          deskripsi: `Inisialisasi Lisensi SaaS Paket ${(paketLangganan || "Starter").toUpperCase()} - ${newTenant.namaMitra}`,
-          status: "lunas",
-          referensi: `INIT-${cleanSlug.toUpperCase()}`,
-          tanggal: new Date(),
+          tipe: "ADJUSTMENT",
+          nominalGross: 0,
+          feeGateway: 0,
+          feePlatform: 0,
+          nominalNet: 0,
+          saldoSetelah: 0,
+          keterangan: `Inisialisasi Buku Kas Mitra Baru Paket ${(paketLangganan || "Starter").toUpperCase()} - ${newTenant.namaMitra}`,
         },
       });
     } catch (ledgerErr) {
