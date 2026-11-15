@@ -1727,7 +1727,7 @@ export default function TagihanPage() {
 
       {/* Modal Auto Generate */}
       {showAutoGenerate && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
           <div className="bg-white dark:bg-zinc-900 w-full max-w-2xl max-h-[90vh] flex flex-col rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden text-slate-900 dark:text-zinc-100">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div>
@@ -1912,7 +1912,7 @@ export default function TagihanPage() {
 
       {/* Modal Generate */}
       {showGenerate && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
           <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div>
@@ -2053,9 +2053,9 @@ export default function TagihanPage() {
 
       {/* Modal Edit Nominal Tagihan */}
       {editNominalModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md text-slate-900 dark:text-zinc-100">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150 overflow-y-auto">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div>
                 <h2 className="font-semibold text-slate-900 dark:text-zinc-100 text-base tracking-tight">Ubah Nominal Tagihan</h2>
                 <p className="text-xs text-slate-500 dark:text-zinc-400">Sesuaikan angka tagihan bulan berjalan</p>
@@ -2068,60 +2068,62 @@ export default function TagihanPage() {
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <form onSubmit={handleUpdateNominal} className="p-6 space-y-4">
-              <div className="bg-slate-50 dark:bg-zinc-950 rounded-lg p-4 border border-slate-200/80 dark:border-zinc-800 space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Pelanggan</span>
-                  <span className="text-xs font-bold text-slate-800 dark:text-zinc-100">{editNominalModal.nama}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Kode Pelanggan</span>
-                  <span className="text-xs font-mono font-semibold text-slate-700 dark:text-zinc-300">{editNominalModal.kodePelanggan}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Periode</span>
-                  <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                    {bulanList.find((b) => b.value === editNominalModal.bulan.toString())?.label} {editNominalModal.tahun}
-                  </span>
-                </div>
-                {editNominalModal.noInvoice && (
-                  <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 dark:border-zinc-800">
-                    <span className="text-[11px] text-slate-400 dark:text-zinc-500 font-medium">No. Invoice</span>
-                    <span className="text-[11px] font-mono text-slate-500 dark:text-zinc-400">{editNominalModal.noInvoice}</span>
+            <form onSubmit={handleUpdateNominal} className="flex flex-col flex-1 overflow-hidden min-h-0">
+              <div className="p-6 space-y-4 flex-1 overflow-y-auto min-h-0">
+                <div className="bg-slate-50 dark:bg-zinc-950 rounded-lg p-4 border border-slate-200/80 dark:border-zinc-800 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Pelanggan</span>
+                    <span className="text-xs font-bold text-slate-800 dark:text-zinc-100">{editNominalModal.nama}</span>
                   </div>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-zinc-300 mb-1.5">
-                  Nominal Tagihan Baru (Rp)
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400 dark:text-zinc-500">
-                    Rp
-                  </span>
-                  <input
-                    type="number"
-                    min="0"
-                    step="500"
-                    required
-                    value={inputNominal}
-                    onChange={(e) => setInputNominal(e.target.value)}
-                    placeholder="Contoh: 50000"
-                    className="w-full pl-11 pr-4 py-2 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-base font-extrabold text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 tabular-nums"
-                  />
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Kode Pelanggan</span>
+                    <span className="text-xs font-mono font-semibold text-slate-700 dark:text-zinc-300">{editNominalModal.kodePelanggan}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Periode</span>
+                    <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                      {bulanList.find((b) => b.value === editNominalModal.bulan.toString())?.label} {editNominalModal.tahun}
+                    </span>
+                  </div>
+                  {editNominalModal.noInvoice && (
+                    <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 dark:border-zinc-800">
+                      <span className="text-[11px] text-slate-400 dark:text-zinc-500 font-medium">No. Invoice</span>
+                      <span className="text-[11px] font-mono text-slate-500 dark:text-zinc-400">{editNominalModal.noInvoice}</span>
+                    </div>
+                  )}
                 </div>
-                {inputNominal && !isNaN(Number(inputNominal)) && (
-                  <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-1.5">
-                    Terbaca: {formatRupiah(Number(inputNominal))}
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-zinc-300 mb-1.5">
+                    Nominal Tagihan Baru (Rp)
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400 dark:text-zinc-500">
+                      Rp
+                    </span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="500"
+                      required
+                      value={inputNominal}
+                      onChange={(e) => setInputNominal(e.target.value)}
+                      placeholder="Contoh: 50000"
+                      className="w-full pl-11 pr-4 py-2 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-base font-extrabold text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 tabular-nums"
+                    />
+                  </div>
+                  {inputNominal && !isNaN(Number(inputNominal)) && (
+                    <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-1.5">
+                      Terbaca: {formatRupiah(Number(inputNominal))}
+                    </p>
+                  )}
+                  <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-1 leading-relaxed">
+                    Perubahan nominal ini langsung berlaku untuk tagihan periode ini (selama belum dibayar).
                   </p>
-                )}
-                <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-1 leading-relaxed">
-                  Perubahan nominal ini langsung berlaku untuk tagihan periode ini (selama belum dibayar).
-                </p>
+                </div>
               </div>
 
-              <div className="flex items-center gap-2.5 pt-2">
+              <div className="flex items-center gap-2.5 p-6 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
                 <button
                   type="button"
                   onClick={() => setEditNominalModal(null)}
@@ -2144,7 +2146,7 @@ export default function TagihanPage() {
 
       {/* Modal Bayar */}
       {showBayar && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
           <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div>
@@ -2309,7 +2311,7 @@ export default function TagihanPage() {
 
       {/* Modal Blast WA Tagihan per RT */}
       {showBlastModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
           <div className="bg-white dark:bg-zinc-900 w-full max-w-3xl max-h-[90vh] flex flex-col rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden text-slate-900 dark:text-zinc-100">
             {/* Modal Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
@@ -2746,7 +2748,7 @@ export default function TagihanPage() {
       {/* Modal Lightbox Foto Bukti Pembayaran */}
       {previewBuktiModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150 overflow-y-auto"
           onClick={() => setPreviewBuktiModal(null)}
         >
           <div

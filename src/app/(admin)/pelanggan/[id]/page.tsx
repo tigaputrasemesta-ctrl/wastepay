@@ -860,14 +860,14 @@ export default function DetailPelangganPage() {
       {/* Modal Kelola Status Tagihan (Disimpan Khusus di View Pelanggan) */}
       {editTagihanModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150 overflow-y-auto"
           onClick={() => !isUpdatingTagihan && setEditTagihanModal(null)}
         >
           <div
-            className="bg-white dark:bg-zinc-900 rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-zinc-100"
+            className="bg-white dark:bg-zinc-900 rounded-2xl max-w-md w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-zinc-100"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div>
                 <h3 className="font-bold text-slate-900 dark:text-zinc-100 text-base">
                   Kelola Status Tagihan
@@ -886,7 +886,7 @@ export default function DetailPelangganPage() {
               </button>
             </div>
 
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-4 flex-1 overflow-y-auto min-h-0">
               <div className="bg-slate-50 dark:bg-zinc-950/60 p-3.5 rounded-xl border border-slate-200/80 dark:border-zinc-800 text-xs space-y-1.5">
                 <div className="flex justify-between">
                   <span className="text-slate-500 dark:text-zinc-400">Nominal Tagihan:</span>
@@ -951,7 +951,7 @@ export default function DetailPelangganPage() {
               )}
             </div>
 
-            <div className="flex items-center justify-end gap-2.5 px-6 py-4 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+            <div className="flex items-center justify-end gap-2.5 px-6 py-4 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <button
                 type="button"
                 onClick={() => setEditTagihanModal(null)}
@@ -976,14 +976,14 @@ export default function DetailPelangganPage() {
       {/* Modal Lightbox Foto Bukti Pembayaran */}
       {previewBuktiModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150 overflow-y-auto"
           onClick={() => setPreviewBuktiModal(null)}
         >
           <div
             className="relative bg-white dark:bg-zinc-900 rounded-xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-zinc-100"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div>
                 <h3 className="font-semibold text-slate-900 dark:text-zinc-100 text-sm">
                   Foto Bukti Pembayaran

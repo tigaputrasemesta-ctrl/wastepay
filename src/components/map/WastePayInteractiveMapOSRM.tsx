@@ -992,14 +992,14 @@ export default function WastePayInteractiveMapOSRM({
       {selectedPin && (
         <div
           data-modal-open="true"
-          className="absolute inset-0 z-[600] bg-slate-950/60 backdrop-blur-xs flex items-end animate-in fade-in duration-150"
+          className="absolute inset-0 z-[600] bg-slate-950/60 backdrop-blur-xs flex items-end sm:items-center sm:justify-center p-0 sm:p-4 overflow-y-auto animate-in fade-in duration-150"
           onClick={() => setSelectedPin(null)}
         >
           <div
-            className="bg-slate-950 border border-slate-800 text-white w-full rounded-t-3xl p-4 sm:p-5 space-y-3.5 max-h-[85dvh] overflow-y-auto shadow-2xl"
+            className="bg-slate-950 border border-slate-800 text-white w-full sm:max-w-xl rounded-t-3xl sm:rounded-2xl p-4 sm:p-6 space-y-3.5 max-h-[85dvh] sm:max-h-[88vh] overflow-y-auto shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="w-12 h-1.5 bg-slate-700 rounded-full mx-auto" />
+            <div className="w-12 h-1.5 bg-slate-700 rounded-full mx-auto sm:hidden" />
 
             <div className="flex items-start justify-between gap-2">
               <div>

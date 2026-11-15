@@ -795,9 +795,9 @@ export default function ManajemenMarketplacePage() {
       {/* MODAL UPDATE STATUS PESANAN */}
       {/* ========================================================== */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-zinc-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in overflow-y-auto">
+          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl max-w-md w-full max-h-[90vh] flex flex-col p-6 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-zinc-800 shrink-0">
               <div>
                 <span className="text-[10px] font-mono font-black text-slate-400 block">
                   {selectedOrder.noPesanan}
@@ -814,7 +814,7 @@ export default function ManajemenMarketplacePage() {
               </button>
             </div>
 
-            <div className="space-y-3 text-xs">
+            <div className="flex-1 min-h-0 overflow-y-auto py-3 space-y-3 text-xs pr-1">
               {/* Ringkasan Akumulasi Terpisah */}
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-zinc-800/60 border border-slate-200 dark:border-zinc-700/60 space-y-1">
                 <div className="flex justify-between">
@@ -891,7 +891,7 @@ export default function ManajemenMarketplacePage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-zinc-800">
+            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-zinc-800 shrink-0">
               <button
                 type="button"
                 onClick={() => setSelectedOrder(null)}
@@ -916,9 +916,9 @@ export default function ManajemenMarketplacePage() {
       {/* MODAL TAMBAH / EDIT PRODUK */}
       {/* ========================================================== */}
       {showProductModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-zinc-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in overflow-y-auto">
+          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl max-w-lg w-full max-h-[90vh] flex flex-col p-6 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-zinc-800 shrink-0">
               <h3 className="text-base font-black text-slate-900 dark:text-white">
                 {editingProduct ? "Edit Produk UPS HERU" : "Tambah Produk Baru"}
               </h3>
@@ -930,141 +930,143 @@ export default function ManajemenMarketplacePage() {
               </button>
             </div>
 
-            <form onSubmit={handleSaveProduct} className="space-y-3.5 text-xs">
-              <div>
-                <label className="font-bold text-slate-700 dark:text-zinc-300 block mb-1">
-                  Nama Produk *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Misal: Pupuk Kompos Organik TPS 3R (5 Kg)"
-                  value={prodForm.nama}
-                  onChange={(e) => setProdForm({ ...prodForm, nama: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
+            <form onSubmit={handleSaveProduct} className="flex-1 min-h-0 flex flex-col">
+              <div className="flex-1 min-h-0 overflow-y-auto py-3 space-y-3.5 text-xs pr-1">
                 <div>
                   <label className="font-bold text-slate-700 dark:text-zinc-300 block mb-1">
-                    Kategori *
-                  </label>
-                  <select
-                    value={prodForm.kategori}
-                    onChange={(e) => setProdForm({ ...prodForm, kategori: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  >
-                    {KATEGORI_OPTIONS.map((k) => (
-                      <option key={k.id} value={k.id}>
-                        {k.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="font-bold text-slate-700 dark:text-zinc-300 block mb-1">
-                    Harga Satuan (Rp) *
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    placeholder="15000"
-                    value={prodForm.harga}
-                    onChange={(e) => setProdForm({ ...prodForm, harga: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2.5">
-                <div>
-                  <label className="font-bold text-slate-700 dark:text-zinc-300 block mb-1">
-                    Stok *
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    value={prodForm.stok}
-                    onChange={(e) => setProdForm({ ...prodForm, stok: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="font-bold text-slate-700 dark:text-zinc-300 block mb-1">
-                    Satuan *
+                    Nama Produk *
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="sak, botol, kg, pcs"
-                    value={prodForm.satuan}
-                    onChange={(e) => setProdForm({ ...prodForm, satuan: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    placeholder="Misal: Pupuk Kompos Organik TPS 3R (5 Kg)"
+                    value={prodForm.nama}
+                    onChange={(e) => setProdForm({ ...prodForm, nama: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="font-bold text-slate-700 dark:text-zinc-300 block mb-1">
+                      Kategori *
+                    </label>
+                    <select
+                      value={prodForm.kategori}
+                      onChange={(e) => setProdForm({ ...prodForm, kategori: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    >
+                      {KATEGORI_OPTIONS.map((k) => (
+                        <option key={k.id} value={k.id}>
+                          {k.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-slate-700 dark:text-zinc-300 block mb-1">
+                      Harga Satuan (Rp) *
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      placeholder="15000"
+                      value={prodForm.harga}
+                      onChange={(e) => setProdForm({ ...prodForm, harga: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2.5">
+                  <div>
+                    <label className="font-bold text-slate-700 dark:text-zinc-300 block mb-1">
+                      Stok *
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      value={prodForm.stok}
+                      onChange={(e) => setProdForm({ ...prodForm, stok: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-slate-700 dark:text-zinc-300 block mb-1">
+                      Satuan *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="sak, botol, kg, pcs"
+                      value={prodForm.satuan}
+                      onChange={(e) => setProdForm({ ...prodForm, satuan: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-slate-700 dark:text-zinc-300 block mb-1">
+                      Berat (Gram) *
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      value={prodForm.beratGram}
+                      onChange={(e) => setProdForm({ ...prodForm, beratGram: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="font-bold text-slate-700 dark:text-zinc-300 block mb-1">
+                    URL Foto Produk
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="https://... atau /images/produk.jpg"
+                    value={prodForm.foto}
+                    onChange={(e) => setProdForm({ ...prodForm, foto: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono text-[11px]"
                   />
                 </div>
 
                 <div>
                   <label className="font-bold text-slate-700 dark:text-zinc-300 block mb-1">
-                    Berat (Gram) *
+                    Deskripsi & Manfaat *
                   </label>
-                  <input
-                    type="number"
+                  <textarea
+                    rows={3}
                     required
-                    value={prodForm.beratGram}
-                    onChange={(e) => setProdForm({ ...prodForm, beratGram: e.target.value })}
+                    placeholder="Jelaskan spesifikasi, kandungan hara, cara pakai, dan manfaat produk..."
+                    value={prodForm.deskripsi}
+                    onChange={(e) => setProdForm({ ...prodForm, deskripsi: e.target.value })}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
+
+                <div className="flex items-center gap-2 pt-1">
+                  <input
+                    type="checkbox"
+                    id="prodAktif"
+                    checked={prodForm.aktif}
+                    onChange={(e) => setProdForm({ ...prodForm, aktif: e.target.checked })}
+                    className="w-4 h-4 rounded-md text-emerald-600 focus:ring-emerald-500"
+                  />
+                  <label htmlFor="prodAktif" className="font-bold text-slate-800 dark:text-zinc-200">
+                    Tampilkan produk ini di etalase toko (Aktif)
+                  </label>
+                </div>
               </div>
 
-              <div>
-                <label className="font-bold text-slate-700 dark:text-zinc-300 block mb-1">
-                  URL Foto Produk
-                </label>
-                <input
-                  type="text"
-                  placeholder="https://... atau /images/produk.jpg"
-                  value={prodForm.foto}
-                  onChange={(e) => setProdForm({ ...prodForm, foto: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono text-[11px]"
-                />
-              </div>
-
-              <div>
-                <label className="font-bold text-slate-700 dark:text-zinc-300 block mb-1">
-                  Deskripsi & Manfaat *
-                </label>
-                <textarea
-                  rows={3}
-                  required
-                  placeholder="Jelaskan spesifikasi, kandungan hara, cara pakai, dan manfaat produk..."
-                  value={prodForm.deskripsi}
-                  onChange={(e) => setProdForm({ ...prodForm, deskripsi: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                />
-              </div>
-
-              <div className="flex items-center gap-2 pt-1">
-                <input
-                  type="checkbox"
-                  id="prodAktif"
-                  checked={prodForm.aktif}
-                  onChange={(e) => setProdForm({ ...prodForm, aktif: e.target.checked })}
-                  className="w-4 h-4 rounded-md text-emerald-600 focus:ring-emerald-500"
-                />
-                <label htmlFor="prodAktif" className="font-bold text-slate-800 dark:text-zinc-200">
-                  Tampilkan produk ini di etalase toko (Aktif)
-                </label>
-              </div>
-
-              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-zinc-800">
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-zinc-800 shrink-0">
                 <button
                   type="button"
                   onClick={() => setShowProductModal(false)}
-                  className="px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-zinc-400 hover:bg-slate-100 rounded-xl transition-all"
+                  className="px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-xl transition-all"
                 >
                   Batal
                 </button>

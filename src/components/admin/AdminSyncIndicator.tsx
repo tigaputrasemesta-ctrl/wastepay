@@ -82,10 +82,10 @@ export default function AdminSyncIndicator() {
 
       {/* ── Modal Pengaturan Offline & Sinkronisasi ── */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-zinc-900 rounded-xl max-w-md w-full shadow-2xl border border-slate-200 dark:border-zinc-800 overflow-hidden text-slate-800 dark:text-zinc-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150 overflow-y-auto">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl max-w-md w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 dark:border-zinc-800 overflow-hidden text-slate-800 dark:text-zinc-100">
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-950/80">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-950/80 shrink-0">
               <div className="flex items-center gap-2.5">
                 <div className="p-2 rounded-xl bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-400">
                   <Database className="w-5 h-5" />
@@ -109,7 +109,7 @@ export default function AdminSyncIndicator() {
             </div>
 
             {/* Modal Body */}
-            <div className="p-5 space-y-4 text-xs">
+            <div className="p-5 space-y-4 text-xs flex-1 min-h-0 overflow-y-auto">
               {/* Status Ringkasan */}
               <div className="grid grid-cols-2 gap-2.5">
                 <div className="p-3 rounded-xl bg-slate-50 dark:bg-zinc-950/70 border border-slate-200/80 dark:border-zinc-800">
@@ -209,7 +209,7 @@ export default function AdminSyncIndicator() {
             </div>
 
             {/* Modal Footer Note */}
-            <div className="px-5 py-3 bg-slate-50 dark:bg-zinc-950/80 border-t border-slate-100 dark:border-zinc-800 text-xs text-slate-500 dark:text-zinc-400 leading-relaxed">
+            <div className="px-5 py-3 bg-slate-50 dark:bg-zinc-950/80 border-t border-slate-100 dark:border-zinc-800 text-xs text-slate-500 dark:text-zinc-400 leading-relaxed shrink-0">
               💡 <b>Tips</b>: Data yang tersimpan di HP memungkinkan Admin mencari pelanggan &amp; memeriksa data tanpa koneksi internet serta hemat kuota 99%.
             </div>
           </div>

@@ -708,9 +708,9 @@ function NotifikasiContent() {
       {/* MODAL FORM KIRIM NOTIFIKASI WA */}
       {/* ========================================================================= */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150 overflow-y-auto">
           <div className="w-full max-w-lg bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <h2 className="text-base font-semibold text-slate-900 dark:text-zinc-100">Kirim Notifikasi WhatsApp</h2>
               <button
                 onClick={() => { setShowForm(false); setResult(null); }}
@@ -720,7 +720,8 @@ function NotifikasiContent() {
               </button>
             </div>
 
-            <form onSubmit={handleSubmitNotif} className="p-6 space-y-4 overflow-y-auto flex-1">
+            <form onSubmit={handleSubmitNotif} className="flex-1 min-h-0 flex flex-col">
+              <div className="p-6 space-y-4 overflow-y-auto flex-1 min-h-0">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Tipe Notifikasi</label>
                 <select
@@ -820,8 +821,9 @@ function NotifikasiContent() {
                   )}
                 </div>
               )}
+              </div>
 
-              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100 dark:border-zinc-800">
+              <div className="flex items-center justify-end gap-2.5 px-6 py-4 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
                 <button
                   type="button"
                   onClick={() => { setShowForm(false); setResult(null); }}
@@ -846,9 +848,9 @@ function NotifikasiContent() {
       {/* MODAL FORM BUAT PENGUMUMAN BARU */}
       {/* ========================================================================= */}
       {showPengumumanForm && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-lg bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden text-slate-900 dark:text-zinc-100">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-150">
+          <div className="w-full max-w-lg max-h-[90vh] flex flex-col bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <h2 className="text-base font-semibold text-slate-900 dark:text-zinc-100">Buat Pengumuman Baru</h2>
               <button
                 onClick={() => setShowPengumumanForm(false)}
@@ -858,7 +860,8 @@ function NotifikasiContent() {
               </button>
             </div>
 
-            <form onSubmit={handleSubmitPengumuman} className="p-6 space-y-4">
+            <form onSubmit={handleSubmitPengumuman} className="flex flex-col flex-1 overflow-hidden min-h-0">
+              <div className="p-6 space-y-4 overflow-y-auto flex-1 min-h-0">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Judul Pengumuman <span className="text-rose-500">*</span></label>
                 <input
@@ -906,8 +909,9 @@ function NotifikasiContent() {
                 />
                 Tandai sebagai Pengumuman Penting (High Priority)
               </label>
+              </div>
 
-              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100 dark:border-zinc-800">
+              <div className="flex items-center justify-end gap-2.5 px-6 py-4 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
                 <button
                   type="button"
                   onClick={() => setShowPengumumanForm(false)}

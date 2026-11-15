@@ -1648,9 +1648,9 @@ export default function PengaturanPage() {
 
       {/* MODAL TAMBAH / EDIT BLOK PICKUP */}
       {showWilayahModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-lg text-slate-900 dark:text-zinc-100">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-lg max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div>
                 <h2 className="font-semibold text-slate-900 dark:text-zinc-100 text-base">
                   {editingWilayah ? "Edit Blok Pickup" : "Tambah Blok Pickup Layanan"}
@@ -1670,7 +1670,8 @@ export default function PengaturanPage() {
               </button>
             </div>
 
-            <form onSubmit={handleSubmitWilayah} className="p-6 space-y-4">
+            <form onSubmit={handleSubmitWilayah} className="flex flex-col flex-1 overflow-hidden min-h-0">
+              <div className="p-6 space-y-4 overflow-y-auto flex-1 min-h-0">
               {formWilayahError && (
                 <div className="p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-850 rounded-lg text-xs font-medium text-rose-700 dark:text-rose-400 flex items-start gap-2">
                   <svg className="w-4 h-4 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1806,9 +1807,10 @@ export default function PengaturanPage() {
                   </div>
                 )}
               </div>
+              </div>
 
               {/* TOMBOL SIMPAN / BATAL */}
-              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100 dark:border-zinc-800">
+              <div className="flex items-center justify-end gap-2.5 px-6 py-4 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
                 <button
                   type="button"
                   disabled={savingWilayah}

@@ -911,9 +911,9 @@ function TarifContent() {
       {/* MODAL: KATEGORI RETRIBUSI BULANAN */}
       {/* ======================================================== */}
       {showKatForm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-2xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-zinc-800">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-zinc-800 shrink-0">
               <div>
                 <h3 className="font-bold text-slate-900 dark:text-white text-base">
                   {katEditing ? "Edit Kategori Tarif" : "Tambah Kategori Baru"}
@@ -927,7 +927,8 @@ function TarifContent() {
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <form onSubmit={saveKat} className="p-6 space-y-4">
+            <form onSubmit={saveKat} className="flex flex-col flex-1 overflow-hidden min-h-0">
+              <div className="p-6 space-y-4 overflow-y-auto flex-1 min-h-0">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Kode ID Kategori</label>
                 <input
@@ -971,7 +972,8 @@ function TarifContent() {
                   placeholder="Keterangan peruntukan kategori ini..."
                 />
               </div>
-              <div className="pt-2 flex items-center justify-end gap-2.5 border-t border-slate-100 dark:border-zinc-800">
+              </div>
+              <div className="p-4 flex items-center justify-end gap-2.5 border-t border-slate-100 dark:border-zinc-800 shrink-0 bg-slate-50/50 dark:bg-zinc-950/50">
                 <button
                   type="button"
                   onClick={() => setShowKatForm(false)}
@@ -995,9 +997,9 @@ function TarifContent() {
       {/* MODAL: PAKET KHUSUS */}
       {/* ======================================================== */}
       {showPaketForm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-2xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-zinc-800">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-zinc-800 shrink-0">
               <div>
                 <h3 className="font-bold text-slate-900 dark:text-white text-base">
                   {paketEditing ? "Edit Paket Khusus" : "Tambah Paket Baru"}
@@ -1011,7 +1013,8 @@ function TarifContent() {
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <form onSubmit={savePaket} className="p-6 space-y-4">
+            <form onSubmit={savePaket} className="flex flex-col flex-1 overflow-hidden min-h-0">
+              <div className="p-6 space-y-4 overflow-y-auto flex-1 min-h-0">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Kode ID (opsional)</label>
                 <input
@@ -1052,7 +1055,8 @@ function TarifContent() {
                   rows={3}
                 />
               </div>
-              <div className="pt-2 flex items-center justify-end gap-2.5 border-t border-slate-100 dark:border-zinc-800">
+              </div>
+              <div className="p-4 flex items-center justify-end gap-2.5 border-t border-slate-100 dark:border-zinc-800 shrink-0 bg-slate-50/50 dark:bg-zinc-950/50">
                 <button
                   type="button"
                   onClick={() => setShowPaketForm(false)}
@@ -1076,9 +1080,9 @@ function TarifContent() {
       {/* MODAL: KATEGORI PICKUP INSIDENTAL */}
       {/* ======================================================== */}
       {showPickupForm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-2xl max-w-lg w-full overflow-hidden animate-in fade-in zoom-in-95 duration-150 my-8">
-            <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-zinc-800">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-zinc-800 shrink-0">
               <div>
                 <h3 className="font-bold text-slate-900 dark:text-white text-base">
                   {pickupEditing ? "Edit Kategori & Tarif Pickup" : "Tambah Kategori Pickup Baru"}
@@ -1095,7 +1099,8 @@ function TarifContent() {
               </button>
             </div>
 
-            <form onSubmit={savePickup} className="p-6 space-y-4">
+            <form onSubmit={savePickup} className="flex flex-col flex-1 overflow-hidden min-h-0">
+              <div className="p-6 space-y-4 overflow-y-auto flex-1 min-h-0">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">
@@ -1243,9 +1248,10 @@ function TarifContent() {
                   <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-zinc-600 peer-checked:bg-emerald-600"></div>
                 </label>
               </div>
+              </div>
 
               {/* Action Buttons */}
-              <div className="pt-2 flex items-center justify-end gap-2.5 border-t border-slate-100 dark:border-zinc-800">
+              <div className="p-4 flex items-center justify-end gap-2.5 border-t border-slate-100 dark:border-zinc-800 shrink-0 bg-slate-50/50 dark:bg-zinc-950/50">
                 <button
                   type="button"
                   onClick={() => setShowPickupForm(false)}

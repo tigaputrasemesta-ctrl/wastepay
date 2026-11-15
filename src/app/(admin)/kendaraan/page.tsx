@@ -630,7 +630,7 @@ function ArmadaFasilitasContent() {
       {/* ========================================================================= */}
       {/* Modal Kendaraan */}
       {showKendaraanForm && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
           <div className="w-full max-w-md max-h-[90vh] flex flex-col bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden text-slate-900 dark:text-zinc-100">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <h2 className="text-base font-semibold text-slate-900 dark:text-zinc-100 tracking-tight">{editKendaraan ? "Edit Kendaraan" : "Tambah Kendaraan"}</h2>
@@ -726,7 +726,7 @@ function ArmadaFasilitasContent() {
 
       {/* Modal Transit */}
       {showTransitForm && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
           <div className="w-full max-w-md max-h-[90vh] flex flex-col bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden text-slate-900 dark:text-zinc-100">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <h2 className="text-base font-semibold text-slate-900 dark:text-zinc-100 tracking-tight">{editTransit ? "Edit Titik Transit" : "Tambah Titik Transit"}</h2>
@@ -804,7 +804,7 @@ function ArmadaFasilitasContent() {
 
       {/* Modal TPA */}
       {showTpaForm && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
           <div className="w-full max-w-md max-h-[90vh] flex flex-col bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden text-slate-900 dark:text-zinc-100">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <h2 className="text-base font-semibold text-slate-900 dark:text-zinc-100 tracking-tight">{editTpa ? "Edit Data TPA" : "Tambah Lokasi TPA"}</h2>

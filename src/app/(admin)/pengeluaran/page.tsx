@@ -216,9 +216,9 @@ export default function PengeluaranPage() {
 
       {/* Form Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md text-slate-900 dark:text-zinc-100">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <h2 className="font-semibold text-slate-900 dark:text-zinc-100 text-base tracking-tight">{editing ? "Edit Pengeluaran" : "Catat Pengeluaran"}</h2>
               <button
                 type="button"
@@ -228,7 +228,8 @@ export default function PengeluaranPage() {
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden min-h-0">
+              <div className="p-6 space-y-4 overflow-y-auto flex-1 min-h-0">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Tanggal</label>
                 <input
@@ -271,7 +272,8 @@ export default function PengeluaranPage() {
                   required
                 />
               </div>
-              <div className="flex gap-2.5 pt-2">
+              </div>
+              <div className="flex gap-2.5 px-6 py-4 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
                 <button
                   type="button"
                   onClick={() => { setShowForm(false); setEditing(null); }}

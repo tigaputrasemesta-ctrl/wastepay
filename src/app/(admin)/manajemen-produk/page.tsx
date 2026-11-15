@@ -524,10 +524,10 @@ export default function ManajemenProdukPage() {
 
       {/* ── Modal Tambah / Edit Produk ── */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto">
           <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-2xl max-w-xl w-full overflow-hidden max-h-[90vh] flex flex-col">
             {/* Modal Header */}
-            <div className="px-6 py-4 border-b border-slate-100 dark:border-zinc-800 flex items-center justify-between">
+            <div className="px-6 py-4 border-b border-slate-100 dark:border-zinc-800 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
                 <ShoppingBag className="w-4 h-4 text-[#0d7a75]" />
                 <h2 className="text-base font-extrabold text-slate-900 dark:text-zinc-100">
@@ -544,7 +544,8 @@ export default function ManajemenProdukPage() {
             </div>
 
             {/* Modal Form */}
-            <form onSubmit={handleSubmitForm} className="p-6 space-y-4 overflow-y-auto flex-1">
+            <form onSubmit={handleSubmitForm} className="flex-1 min-h-0 flex flex-col">
+              <div className="p-6 space-y-4 overflow-y-auto flex-1 min-h-0">
               {/* Nama Produk */}
               <div className="space-y-1">
                 <label className="text-xs font-bold text-slate-700 dark:text-zinc-300">
@@ -717,9 +718,10 @@ export default function ManajemenProdukPage() {
                   />
                 </button>
               </div>
+              </div>
 
               {/* Footer Modal Actions */}
-              <div className="pt-3 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-end gap-2">
+              <div className="px-6 py-4 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-end gap-2 shrink-0">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}

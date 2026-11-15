@@ -462,9 +462,9 @@ function TenantsContent() {
 
       {/* Modal Tambah Mitra */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-xl rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+          <div className="w-full max-w-xl rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-2xl max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4 shrink-0">
               <div>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white">Tambah Mitra Tenant Baru</h3>
                 <p className="text-xs text-slate-500">Konfigurasi instansi dan database terisolasi mitra.</p>
@@ -477,82 +477,84 @@ function TenantsContent() {
               </button>
             </div>
 
-            <form onSubmit={handleCreateTenant} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Nama Mitra *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={form.namaMitra}
-                    onChange={(e) => setForm({ ...form, namaMitra: e.target.value })}
-                    placeholder="Contoh: TPS 3R Sukatani"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm focus:outline-none focus:border-sky-500"
-                  />
+            <form onSubmit={handleCreateTenant} className="flex-1 min-h-0 flex flex-col">
+              <div className="flex-1 min-h-0 overflow-y-auto py-4 space-y-4 pr-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      Nama Mitra *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={form.namaMitra}
+                      onChange={(e) => setForm({ ...form, namaMitra: e.target.value })}
+                      placeholder="Contoh: TPS 3R Sukatani"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm focus:outline-none focus:border-sky-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      Slug ID Unik *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={form.slug}
+                      onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                      placeholder="contoh: tps-sukatani"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-mono focus:outline-none focus:border-sky-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      Custom Domain (Opsional)
+                    </label>
+                    <input
+                      type="text"
+                      value={form.customDomain}
+                      onChange={(e) => setForm({ ...form, customDomain: e.target.value })}
+                      placeholder="contoh: tps-sukatani.id"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm focus:outline-none focus:border-sky-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      Kota / Wilayah
+                    </label>
+                    <input
+                      type="text"
+                      value={form.kota}
+                      onChange={(e) => setForm({ ...form, kota: e.target.value })}
+                      placeholder="Kota Depok"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm focus:outline-none focus:border-sky-500"
+                    />
+                  </div>
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Slug ID Unik *
+                    Database Connection String (Dedicated Database-per-Tenant)
                   </label>
                   <input
                     type="text"
-                    required
-                    value={form.slug}
-                    onChange={(e) => setForm({ ...form, slug: e.target.value })}
-                    placeholder="contoh: tps-sukatani"
+                    value={form.dbConnectionString}
+                    onChange={(e) => setForm({ ...form, dbConnectionString: e.target.value })}
+                    placeholder="postgresql://user:password@host:5432/db_tenant_xxx?sslmode=require"
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-mono focus:outline-none focus:border-sky-500"
                   />
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    Kosongkan jika mitra menggunakan shared database instance cluster.
+                  </p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Custom Domain (Opsional)
-                  </label>
-                  <input
-                    type="text"
-                    value={form.customDomain}
-                    onChange={(e) => setForm({ ...form, customDomain: e.target.value })}
-                    placeholder="contoh: tps-sukatani.id"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm focus:outline-none focus:border-sky-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Kota / Wilayah
-                  </label>
-                  <input
-                    type="text"
-                    value={form.kota}
-                    onChange={(e) => setForm({ ...form, kota: e.target.value })}
-                    placeholder="Kota Depok"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm focus:outline-none focus:border-sky-500"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Database Connection String (Dedicated Database-per-Tenant)
-                </label>
-                <input
-                  type="text"
-                  value={form.dbConnectionString}
-                  onChange={(e) => setForm({ ...form, dbConnectionString: e.target.value })}
-                  placeholder="postgresql://user:password@host:5432/db_tenant_xxx?sslmode=require"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-mono focus:outline-none focus:border-sky-500"
-                />
-                <p className="text-[11px] text-slate-400 mt-1">
-                  Kosongkan jika mitra menggunakan shared database instance cluster.
-                </p>
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800 shrink-0">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
@@ -575,10 +577,10 @@ function TenantsContent() {
 
       {/* Modal Pengaturan Layanan Mitra (WhatsApp 2 Nomor & Payment Gateway / Komisi) */}
       {selectedTenantForConfig && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="w-full max-w-3xl rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-2xl space-y-6 max-h-[92vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto">
+          <div className="w-full max-w-3xl rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-2xl max-h-[90vh] flex flex-col">
             {/* Header Modal */}
-            <div className="flex items-start justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+            <div className="flex items-start justify-between border-b border-slate-100 dark:border-slate-800 pb-4 shrink-0">
               <div>
                 <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 text-[11px] font-bold uppercase tracking-wider mb-1 border border-sky-200 dark:border-sky-800">
                   <Settings className="w-3.5 h-3.5" />
@@ -600,7 +602,7 @@ function TenantsContent() {
             </div>
 
             {/* Tab Navigation */}
-            <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-2">
+            <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 py-3 shrink-0">
               <button
                 type="button"
                 onClick={() => setActiveConfigTab("wa")}
@@ -628,12 +630,13 @@ function TenantsContent() {
             </div>
 
             {configLoading ? (
-              <div className="py-16 text-center space-y-3">
+              <div className="py-16 text-center space-y-3 flex-1 flex flex-col items-center justify-center">
                 <Loader2 className="w-8 h-8 text-sky-600 animate-spin mx-auto" />
                 <p className="text-xs text-slate-500">Memuat konfigurasi layanan mitra...</p>
               </div>
             ) : (
-              <form onSubmit={handleSaveSettings} className="space-y-6">
+              <form onSubmit={handleSaveSettings} className="flex-1 min-h-0 flex flex-col">
+                <div className="flex-1 min-h-0 overflow-y-auto py-4 space-y-6 pr-1">
                 {/* TAB 1: WHATSAPP DUA NOMOR & KUOTA */}
                 {activeConfigTab === "wa" && (
                   <div className="space-y-6">
@@ -1100,9 +1103,10 @@ function TenantsContent() {
                     </div>
                   </div>
                 )}
+                </div>
 
                 {/* Footer Modal Actions */}
-                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800 shrink-0">
                   <button
                     type="button"
                     onClick={() => setSelectedTenantForConfig(null)}

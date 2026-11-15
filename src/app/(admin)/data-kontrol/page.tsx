@@ -939,15 +939,15 @@ export default function DataKontrolPage() {
       {/* 5. Blast Drawer / Modal */}
       <AnimatePresence>
         {isBlastModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150 overflow-y-auto">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto text-slate-900 dark:text-zinc-100"
+              className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden text-slate-900 dark:text-zinc-100"
             >
               {/* Modal Header */}
-              <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-zinc-800 sticky top-0 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm z-10">
+              <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm shrink-0">
                 <div className="flex items-center gap-2">
                   <div className="p-2 bg-emerald-100 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-400 rounded-lg">
                     <Send className="w-5 h-5" />
@@ -970,7 +970,7 @@ export default function DataKontrolPage() {
               </div>
 
               {/* Modal Body */}
-              <div className="p-5 space-y-5">
+              <div className="p-5 space-y-5 flex-1 overflow-y-auto min-h-0">
                 {/* 1. Pengaturan Nomor Pengirim (Multi-Device Sender Routing) */}
                 <div className="bg-slate-50/50 dark:bg-zinc-950/50 p-4 rounded-xl border border-slate-200 dark:border-zinc-800 space-y-2">
                   <div className="flex items-center justify-between">
@@ -1136,7 +1136,7 @@ export default function DataKontrolPage() {
               </div>
 
               {/* Modal Footer */}
-              <div className="flex items-center justify-between p-5 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+              <div className="flex items-center justify-between p-5 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
                 <div className="text-xs text-slate-500 dark:text-zinc-400">
                   Delay anti-banned: <strong>1,2 detik per pesan</strong>
                 </div>

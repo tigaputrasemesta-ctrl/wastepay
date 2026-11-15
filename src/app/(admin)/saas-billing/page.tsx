@@ -274,12 +274,22 @@ export default function SaasBillingPage() {
 
       {/* Modal Tambah Invoice */}
       {showModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-              Terbitkan Invoice Langganan SaaS
-            </h3>
-            <form onSubmit={handleCreateInvoice} className="space-y-3 text-xs">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl max-w-md w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 flex items-center justify-between shrink-0">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                Terbitkan Invoice Langganan SaaS
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowModal(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-zinc-200 transition"
+              >
+                ✕
+              </button>
+            </div>
+            <form onSubmit={handleCreateInvoice} className="flex flex-col flex-1 overflow-hidden min-h-0 text-xs">
+              <div className="p-6 space-y-3 overflow-y-auto flex-1 min-h-0">
               <div>
                 <label className="block font-bold text-slate-700 dark:text-zinc-300 mb-1">
                   Pilih Mitra / Tenant
@@ -323,8 +333,9 @@ export default function SaasBillingPage() {
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800 text-slate-900 dark:text-white"
                 />
               </div>
+              </div>
 
-              <div className="pt-4 flex items-center justify-end gap-2">
+              <div className="px-6 py-4 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 flex items-center justify-end gap-2 shrink-0">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}

@@ -28,7 +28,7 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/70 dark:bg-black/80 backdrop-blur-sm transition-opacity animate-in fade-in duration-200"
@@ -65,7 +65,7 @@ export const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps
         role="dialog"
         aria-modal="true"
         onClick={(e) => e.stopPropagation()}
-        className={`relative z-50 w-full ${maxWidthMap[maxWidth]} bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-xl shadow-2xl overflow-hidden text-slate-900 dark:text-zinc-100 animate-in fade-in zoom-in-95 duration-200 ${className}`}
+        className={`relative z-50 w-full ${maxWidthMap[maxWidth]} bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100 animate-in fade-in zoom-in-95 duration-200 ${className}`}
         {...props}
       >
         {children}
@@ -82,7 +82,7 @@ export function DialogHeader({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/50 flex items-center justify-between ${className}`}
+      className={`px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/50 flex items-center justify-between shrink-0 ${className}`}
       {...props}
     >
       {children}
@@ -127,7 +127,7 @@ export function DialogFooter({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`px-6 py-4 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/50 flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 ${className}`}
+      className={`px-6 py-4 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/50 flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 shrink-0 ${className}`}
       {...props}
     >
       {children}

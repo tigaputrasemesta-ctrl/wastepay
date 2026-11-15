@@ -434,7 +434,7 @@ export default function PetugasPage() {
 
       {/* Form Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
           <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md max-h-[88vh] flex flex-col text-slate-900 dark:text-zinc-100">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <h2 className="font-semibold text-slate-900 dark:text-zinc-100 text-base tracking-tight">{editing ? "Edit Petugas" : "Tambah Petugas"}</h2>

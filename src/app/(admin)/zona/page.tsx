@@ -1026,7 +1026,7 @@ export default function ZonasiPage() {
 
       {/* ── MODAL: KELURAHAN (CREATE / EDIT) ── */}
       {modalKelurahan.isOpen && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
           <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div className="flex items-center gap-2">
@@ -1127,7 +1127,7 @@ export default function ZonasiPage() {
 
       {/* ── MODAL: ZONA (CREATE / EDIT) ── */}
       {modalZona.isOpen && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150 overflow-y-auto">
           <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-lg max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div className="flex items-center gap-2">
@@ -1354,7 +1354,7 @@ export default function ZonasiPage() {
 
       {/* ── MODAL: TAMBAH RT / WILAYAH ── */}
       {modalRT.isOpen && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
           <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-sm max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <h3 className="font-semibold text-slate-900 dark:text-zinc-100 text-base">Tambah RT / Wilayah Baru</h3>
@@ -1463,7 +1463,7 @@ export default function ZonasiPage() {
 
       {/* ── MODAL: ATUR RT CAKUPAN ZONA ── */}
       {modalAturRT.isOpen && modalAturRT.zona && modalAturRT.kelurahan && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
           <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div>

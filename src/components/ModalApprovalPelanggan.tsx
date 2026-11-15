@@ -317,7 +317,7 @@ export default function ModalApprovalPelanggan({
   const hasGps = Boolean(pelanggan.latitude && pelanggan.longitude);
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 animate-in fade-in duration-150">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 overflow-y-auto animate-in fade-in duration-150">
       <div className="bg-white dark:bg-zinc-900 rounded-t-2xl sm:rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-2xl max-h-[88dvh] sm:max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
         {/* Modal Header */}
         <div className="px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 flex items-center justify-between shrink-0">
@@ -344,7 +344,7 @@ export default function ModalApprovalPelanggan({
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 overflow-y-auto space-y-5 text-sm">
+        <div className="p-6 overflow-y-auto flex-1 min-h-0 space-y-5 text-sm">
           {/* Ringkasan Pendaftar & Referral */}
           <div className="p-4 rounded-lg bg-slate-50 dark:bg-zinc-950 border border-slate-200/80 dark:border-zinc-800 space-y-3">
             <div className="flex items-start justify-between gap-3 flex-wrap">

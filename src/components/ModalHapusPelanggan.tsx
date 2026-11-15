@@ -94,10 +94,10 @@ export default function ModalHapusPelanggan({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl w-full max-w-md overflow-hidden flex flex-col text-slate-900 dark:text-zinc-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto">
+      <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden text-slate-900 dark:text-zinc-100">
         {/* Header Modal */}
-        <div className="px-6 py-4 border-b border-slate-100 dark:border-zinc-800 flex items-center justify-between bg-slate-50/50 dark:bg-zinc-950/50">
+        <div className="px-6 py-4 border-b border-slate-100 dark:border-zinc-800 flex items-center justify-between bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-rose-50 dark:bg-rose-950/50 border border-rose-200/60 dark:border-rose-900 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold shadow-xs">
               <AlertTriangle className="w-4 h-4" />
@@ -122,7 +122,7 @@ export default function ModalHapusPelanggan({
         </div>
 
         {/* Content Body */}
-        <div className="p-6 space-y-4 text-left">
+        <div className="p-6 space-y-4 text-left flex-1 overflow-y-auto min-h-0">
           {/* Target Pelanggan */}
           <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-zinc-950 border border-slate-200/80 dark:border-zinc-800">
             <div className="flex items-center justify-between">
@@ -163,7 +163,7 @@ export default function ModalHapusPelanggan({
         </div>
 
         {/* Footer Actions */}
-        <div className="px-6 py-4 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 flex flex-col sm:flex-row items-center justify-end gap-2">
+        <div className="px-6 py-4 border-t border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 flex flex-col sm:flex-row items-center justify-end gap-2 shrink-0">
           <button
             type="button"
             onClick={onClose}

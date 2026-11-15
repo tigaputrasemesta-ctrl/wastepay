@@ -574,9 +574,9 @@ export default function PickupInsidentalPage() {
 
       {/* MODAL KELOLA / ASSIGN ORDER */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-zinc-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200 overflow-y-auto">
+          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl max-w-lg w-full max-h-[90vh] flex flex-col p-6 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-zinc-800 shrink-0">
               <div>
                 <span className="text-[10px] font-mono font-black text-slate-400 block">
                   {selectedOrder.noOrder}
@@ -594,7 +594,7 @@ export default function PickupInsidentalPage() {
             </div>
 
             {/* Form Fields */}
-            <div className="space-y-4 text-xs">
+            <div className="flex-1 min-h-0 overflow-y-auto py-3 space-y-4 text-xs pr-1">
               {/* Info Ringkas */}
               <div className="bg-slate-50 dark:bg-zinc-800/60 p-3 rounded-2xl space-y-1">
                 <p className="font-bold text-slate-900 dark:text-white">{selectedOrder.namaPemesan}</p>
@@ -713,7 +713,7 @@ export default function PickupInsidentalPage() {
             </div>
 
             {/* Modal Actions */}
-            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-zinc-800">
+            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-zinc-800 shrink-0">
               <button
                 type="button"
                 onClick={() => setSelectedOrder(null)}
@@ -738,7 +738,7 @@ export default function PickupInsidentalPage() {
       {previewFoto && (
         <div
           onClick={() => setPreviewFoto(null)}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xs p-4 animate-in fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xs p-4 animate-in fade-in overflow-y-auto"
         >
           <div className="relative max-w-2xl w-full bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden p-3 shadow-2xl">
             <button

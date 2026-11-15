@@ -302,14 +302,14 @@ export function TabelRiwayatPemasukan({
       {/* Modal Foto Bukti */}
       {modalFoto && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150 overflow-y-auto"
           onClick={() => setModalFoto(null)}
         >
           <div
-            className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl max-w-lg w-full p-5 shadow-2xl relative text-slate-900 dark:text-zinc-100"
+            className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl max-w-lg w-full max-h-[90vh] flex flex-col p-5 shadow-2xl relative text-slate-900 dark:text-zinc-100"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-zinc-800 mb-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-zinc-800 mb-4 shrink-0">
               <div>
                 <h4 className="font-semibold text-slate-900 dark:text-zinc-100 text-sm">Foto Bukti Pembayaran</h4>
                 <p className="text-xs text-slate-500 dark:text-zinc-400">
@@ -335,7 +335,7 @@ export function TabelRiwayatPemasukan({
               />
             </div>
 
-            <div className="mt-4 flex items-center justify-between">
+            <div className="mt-4 flex items-center justify-between shrink-0">
               <span className="text-xs font-semibold text-slate-500 dark:text-zinc-400 capitalize">
                 Metode: {modalFoto.metode}
               </span>

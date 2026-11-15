@@ -52,15 +52,15 @@ export default function VersionCheck() {
   const wajib = currentCode != null && currentCode < terbaru.minVersionCode;
 
   return (
-    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 animate-in fade-in duration-150">
-      <div className="bg-white w-full max-w-sm rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden">
-        <div className={`px-6 py-4.5 ${wajib ? "bg-rose-600" : "bg-emerald-700"}`}>
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 animate-in fade-in duration-150 overflow-y-auto">
+      <div className="bg-white w-full max-w-sm max-h-[90vh] flex flex-col rounded-3xl border border-slate-200/80 shadow-2xl overflow-hidden">
+        <div className={`px-6 py-4.5 shrink-0 ${wajib ? "bg-rose-600" : "bg-emerald-700"}`}>
           <h2 className="font-bold text-sm tracking-wide text-white flex items-center gap-2">
             <span>🚀</span> {wajib ? "Pembaruan Aplikasi Wajib" : "Versi Baru Tersedia"}
           </h2>
         </div>
 
-        <div className="p-6 space-y-4">
+        <div className="p-6 space-y-4 flex-1 min-h-0 overflow-y-auto">
           <p className="text-sm font-bold text-slate-900">
             UPS HERU Lapangan v{terbaru.versionName}
           </p>
