@@ -121,34 +121,6 @@ export default function LoginPage() {
         </div>
 
         <div className="bg-white dark:bg-zinc-900 px-6 sm:px-10 py-8 shadow-sm border border-slate-200/60 dark:border-zinc-800 rounded-2xl">
-          {/* Tab Pemilih Portal Login */}
-          <div className="flex rounded-xl bg-slate-100 dark:bg-zinc-800/80 p-1 mb-6 border border-slate-200/70 dark:border-zinc-700/60">
-            <button
-              type="button"
-              onClick={() => setIsCore(true)}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${
-                isCore
-                  ? "bg-white dark:bg-zinc-900 text-sky-600 dark:text-sky-400 shadow-sm"
-                  : "text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-zinc-200"
-              }`}
-            >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>O2W HERO (Core)</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsCore(false)}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${
-                !isCore
-                  ? "bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400 shadow-sm"
-                  : "text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-zinc-200"
-              }`}
-            >
-              <Truck className="w-3.5 h-3.5" />
-              <span>UPS HERU (Mitra)</span>
-            </button>
-          </div>
-
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-semibold text-slate-700 dark:text-zinc-300 mb-2">
