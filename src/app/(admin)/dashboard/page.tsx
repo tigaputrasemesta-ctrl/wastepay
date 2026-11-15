@@ -257,14 +257,14 @@ async function getStats() {
 
 async function getCoreStats(): Promise<CoreStatsData> {
   const fallback: CoreStatsData = {
-    totalTenants: 1,
-    activeTenants: 1,
+    totalTenants: 0,
+    activeTenants: 0,
     pendingRegistrations: 0,
-    estimasiWargaEkosistem: 2450,
-    mrrEstimasi: 899000,
-    grossVolumeBulan: 73500000,
-    tonaseSampahBulan: 184,
-    reduksiKarbonTon: 156,
+    estimasiWargaEkosistem: 0,
+    mrrEstimasi: 0,
+    grossVolumeBulan: 0,
+    tonaseSampahBulan: 0,
+    reduksiKarbonTon: 0,
     tenantsList: [],
     recentRegistrations: [],
   };
@@ -274,17 +274,15 @@ async function getCoreStats(): Promise<CoreStatsData> {
       totalTenants,
       activeTenants,
       pendingRegistrations,
-      mitraRegistrations,
       tenantsList,
       recentRegistrations,
+      totalWargaDb,
+      pembayaranRealAgg,
+      pengangkutanRealAgg,
     ] = await Promise.all([
       prisma.tenant.count(),
       prisma.tenant.count({ where: { status: "aktif" } }),
       prisma.mitraRegistration.count({ where: { status: "menunggu_review" } }),
-      prisma.mitraRegistration.aggregate({
-        where: { status: { in: ["disetujui", "provisioned"] } },
-        _sum: { estimasiWarga: true },
-      }),
       prisma.tenant.findMany({
         orderBy: { createdAt: "desc" },
         take: 10,
@@ -293,13 +291,42 @@ async function getCoreStats(): Promise<CoreStatsData> {
         orderBy: { createdAt: "desc" },
         take: 5,
       }),
+      prisma.pelanggan.count({ where: { deletedAt: null } }),
+      prisma.pembayaran.aggregate({
+        where: { status: "terverifikasi" },
+        _sum: { jumlah: true },
+      }),
+      prisma.pengangkutan.aggregate({
+        where: { deletedAt: null, status: "diambil" },
+        _sum: { berat: true, volume: true },
+      }),
     ]);
 
-    // Estimasi cakupan warga ekosistem: data rintisan pilot UPS HERU (~2450) + penambahan mitra baru
-    const estimasiWargaEkosistem = (mitraRegistrations._sum.estimasiWarga || 0) + 2450;
-    const mrrEstimasi = Math.max(activeTenants, 1) * 899000;
-    const grossVolumeBulan = estimasiWargaEkosistem * 30000;
-    const tonaseSampahBulan = Math.round((estimasiWargaEkosistem * 2.5 * 30) / 1000);
+    // Hitung real MRR dari paket tenant aktif
+    const TIER_RATES: Record<string, number> = {
+      starter: 349000,
+      basic: 349000,
+      pro: 1250000,
+      enterprise: 2990000,
+      percontohan: 0,
+    };
+
+    const allActiveTenants = await prisma.tenant.findMany({
+      where: { status: "aktif" },
+      select: { paketLangganan: true },
+    });
+
+    let mrrEstimasi = 0;
+    for (const t of allActiveTenants) {
+      const p = (t.paketLangganan || "").toLowerCase();
+      mrrEstimasi += TIER_RATES[p] ?? 349000;
+    }
+
+    const estimasiWargaEkosistem = totalWargaDb;
+    const grossVolumeBulan = pembayaranRealAgg._sum.jumlah || 0;
+    const tonaseSampahBulan = (pengangkutanRealAgg._sum.berat || 0) > 0
+      ? Math.round(Number(pengangkutanRealAgg._sum.berat) / 1000)
+      : Math.round((totalWargaDb * 2.5 * 30) / 1000);
     const reduksiKarbonTon = Math.round(tonaseSampahBulan * 0.85);
 
     return {

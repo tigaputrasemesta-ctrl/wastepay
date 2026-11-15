@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   AlertTriangle,
@@ -19,6 +19,7 @@ import {
   ArrowRight,
   ShieldAlert,
   Zap,
+  Loader2,
 } from "lucide-react";
 
 interface SaasAlert {
@@ -34,61 +35,30 @@ interface SaasAlert {
   actionHref?: string;
 }
 
-const INITIAL_ALERTS: SaasAlert[] = [
-  {
-    id: "alt-01",
-    severity: "critical",
-    tenantName: "Bank Sampah Berkah Mandiri",
-    tenantSlug: "bs-berkah",
-    title: "Kuota WhatsApp Mendekati Habis (94%)",
-    description: "Pemakaian 940 / 1.000 pesan bot & tagihan. Berpotensi memicu kegagalan blast kuitansi otomatis besok.",
-    category: "wa_quota",
-    createdAt: "15 Menit Lalu",
-    actionLabel: "Topup Kuota WA",
-    actionHref: "/tenants",
-  },
-  {
-    id: "alt-02",
-    severity: "warning",
-    tenantName: "TPS 3R Sukamaju Lestari",
-    tenantSlug: "tps-sukamaju",
-    title: "Invoice SaaS Jatuh Tempo Dalam 2 Hari",
-    description: "Tagihan paket Pro bulan November senilai Rp 1.250.000 belum diselesaikan via Payment Gateway.",
-    category: "billing",
-    createdAt: "1 Jam Lalu",
-    actionLabel: "Kirim Pengingat WA",
-    actionHref: "/saas-billing",
-  },
-  {
-    id: "alt-03",
-    severity: "warning",
-    tenantName: "KSM Lingkungan Asri",
-    tenantSlug: "ksm-asri",
-    title: "Lonjakan Duitku Webhook Retry (3 Percobaan)",
-    description: "Callback notifikasi transaksi QRIS mengalami timeout 2.4s sebelum akhirnya sukses.",
-    category: "webhook",
-    createdAt: "3 Jam Lalu",
-    actionLabel: "Cek Transaksi",
-    actionHref: "/revenue",
-  },
-  {
-    id: "alt-04",
-    severity: "info",
-    tenantName: "UPS HERU Kota Depok",
-    tenantSlug: "upsheru",
-    title: "Backup Database Harian Berhasil",
-    description: "Snapshot database dedicated 245 MB berhasil disimpan ke S3 cloud storage terenkripsi.",
-    category: "database",
-    createdAt: "04:00 WIB Hari Ini",
-    actionLabel: "Log Backup",
-    actionHref: "/platform-settings",
-  },
-];
-
 export default function NotifikasiSaasPage() {
-  const [alerts, setAlerts] = useState<SaasAlert[]>(INITIAL_ALERTS);
+  const [alerts, setAlerts] = useState<SaasAlert[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filterSeverity, setFilterSeverity] = useState<string>("all");
   const [search, setSearch] = useState("");
+
+  const loadAlerts = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/core/control-tower");
+      const json = await res.json();
+      if (json.success && json.data) {
+        setAlerts(json.data.alerts || []);
+      }
+    } catch (err) {
+      console.error("Gagal memuat alert riil:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadAlerts();
+  }, []);
 
   const filteredAlerts = alerts.filter((alt) => {
     const matchSev = filterSeverity === "all" || alt.severity === filterSeverity;
@@ -109,23 +79,24 @@ export default function NotifikasiSaasPage() {
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/20 border border-rose-400/30 text-rose-300 text-xs font-semibold">
               <ShieldAlert className="w-3.5 h-3.5 text-rose-400" />
-              <span>SaaS Control Tower — Incident & Alerts</span>
+              <span>SaaS Control Tower — Real-Time Alert Engine</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
               Pusat Peringatan & Tenant Bermasalah
             </h1>
             <p className="text-slate-300 text-sm max-w-2xl leading-relaxed">
-              Pemantauan terpusat terhadap kendala teknis, batas kuota broadcast, dan keterlambatan pembayaran langganan seluruh mitra.
+              Peringatan otomatis yang dievaluasi langsung dari kondisi kuota WhatsApp, kegagalan webhook, dan status tagihan di database.
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setAlerts(INITIAL_ALERTS)}
+              onClick={loadAlerts}
+              disabled={loading}
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold border border-slate-700 transition-all"
             >
-              <RefreshCw className="w-4 h-4" />
-              <span>Refresh Status</span>
+              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-rose-400" : ""}`} />
+              <span>Scan Ulang Status</span>
             </button>
           </div>
         </div>
@@ -143,10 +114,10 @@ export default function NotifikasiSaasPage() {
             </div>
           </div>
           <div className="text-3xl font-extrabold text-slate-900 dark:text-white">
-            {criticalCount} Tenant
+            {loading ? "..." : `${criticalCount} Kasus`}
           </div>
           <p className="text-xs text-slate-500 dark:text-zinc-400 mt-2">
-            Memerlukan intervensi admin segera
+            Memerlukan tindakan segera
           </p>
         </div>
 
@@ -160,27 +131,27 @@ export default function NotifikasiSaasPage() {
             </div>
           </div>
           <div className="text-3xl font-extrabold text-slate-900 dark:text-white">
-            {warningCount} Tenant
+            {loading ? "..." : `${warningCount} Kasus`}
           </div>
           <p className="text-xs text-slate-500 dark:text-zinc-400 mt-2">
-            Jatuh tempo atau peringatan kuota
+            Peringatan kuota atau kegagalan kirim
           </p>
         </div>
 
         <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-              Kesehatan Ekosistem
+              Status Server
             </span>
             <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 flex items-center justify-center">
               <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
           <div className="text-3xl font-extrabold text-slate-900 dark:text-white">
-            96.4%
+            {criticalCount === 0 ? "Normal" : "Ada Isu"}
           </div>
           <p className="text-xs text-slate-500 dark:text-zinc-400 mt-2">
-            Database uptime & gateway availability
+            Database connection &amp; gateway status
           </p>
         </div>
       </div>
@@ -203,7 +174,7 @@ export default function NotifikasiSaasPage() {
             { id: "all", label: "Semua Alert" },
             { id: "critical", label: "P0 Kritis" },
             { id: "warning", label: "P1 Peringatan" },
-            { id: "info", label: "P2 Info Sistem" },
+            { id: "info", label: "P2 Info" },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -221,15 +192,20 @@ export default function NotifikasiSaasPage() {
       </div>
 
       {/* Alert Feed List */}
-      <div className="space-y-3">
-        {filteredAlerts.length === 0 ? (
-          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-12 text-center text-slate-500 dark:text-zinc-400">
-            <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">Tidak Ada Peringatan Aktif</h3>
-            <p className="text-xs mt-1">Seluruh tenant beroperasi normal tanpa kendala kuota atau sistem.</p>
-          </div>
-        ) : (
-          filteredAlerts.map((item) => (
+      {loading ? (
+        <div className="py-16 text-center text-slate-500">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-rose-600" />
+          <p className="text-xs">Memeriksa database dan status gateway...</p>
+        </div>
+      ) : filteredAlerts.length === 0 ? (
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-12 text-center text-slate-500 dark:text-zinc-400">
+          <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
+          <h3 className="text-base font-bold text-slate-900 dark:text-white">Semua Sistem Beroperasi Normal</h3>
+          <p className="text-xs mt-1">Tidak ditemukan kendala kritis pada kuota WhatsApp, gateway pembayaran, atau database tenant.</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filteredAlerts.map((item) => (
             <div
               key={item.id}
               className={`p-5 rounded-2xl border transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 ${
@@ -285,9 +261,9 @@ export default function NotifikasiSaasPage() {
                 )}
               </div>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

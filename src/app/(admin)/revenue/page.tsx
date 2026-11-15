@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   TrendingUp,
@@ -19,88 +19,70 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Filter,
+  Loader2,
+  RefreshCw,
 } from "lucide-react";
 
-interface RevenueStream {
-  name: string;
-  nominal: number;
-  pct: number;
-  color: string;
-  description: string;
-}
-
-const REVENUE_STREAMS: RevenueStream[] = [
-  {
-    name: "SaaS Subscription",
-    nominal: 25000000,
-    pct: 55.5,
-    color: "bg-emerald-500",
-    description: "Pendapatan berulang dari paket Starter, Pro, dan Enterprise mitra.",
-  },
-  {
-    name: "Transaction Fee (QRIS/VA)",
-    nominal: 8000000,
-    pct: 17.8,
-    color: "bg-sky-500",
-    description: "Micro-fee platform (Rp 1.000 / transaksi lunas di ekosistem).",
-  },
-  {
-    name: "Marketplace Commission",
-    nominal: 5000000,
-    pct: 11.1,
-    color: "bg-amber-500",
-    description: "Komisi 1.5 - 3% dari transaksi agregasi material daur ulang ke off-taker.",
-  },
-  {
-    name: "Government / DLH License",
-    nominal: 7000000,
-    pct: 15.6,
-    color: "bg-purple-500",
-    description: "Biaya lisensi dashboard pemantauan wilayah dan pelaporan SIPSN KLHK.",
-  },
-];
-
-const RECENT_LEDGERS = [
-  {
-    id: "tx-1",
-    mitra: "UPS HERU Kota Depok",
-    tipe: "CREDIT_PAYMENT",
-    nominalGross: 75000,
-    feeGateway: 1500,
-    feePlatform: 1000,
-    nominalNetMitra: 72500,
-    keterangan: "Retribusi 1 KK (QRIS Dinamis)",
-    tanggal: "15 Nov 2026 14:12 WIB",
-  },
-  {
-    id: "tx-2",
-    mitra: "Bank Sampah Berkah",
-    tipe: "CREDIT_PAYMENT",
-    nominalGross: 50000,
-    feeGateway: 1500,
-    feePlatform: 1000,
-    nominalNetMitra: 47500,
-    keterangan: "Penjualan Tabungan Sampah (VA Mandiri)",
-    tanggal: "15 Nov 2026 13:40 WIB",
-  },
-  {
-    id: "tx-3",
-    mitra: "TPS 3R Sukamaju",
-    tipe: "DEBIT_PAYOUT",
-    nominalGross: 2500000,
-    feeGateway: 0,
-    feePlatform: 0,
-    nominalNetMitra: 2500000,
-    keterangan: "Pencairan Kas Mingguan Mitra (Transfer BCA)",
-    tanggal: "14 Nov 2026 10:00 WIB",
-  },
-];
-
 export default function RevenueIntelligencePage() {
-  const totalNetRevenue = REVENUE_STREAMS.reduce((acc, s) => acc + s.nominal, 0);
-  const grossGMVEcosystem = 350000000; // Total perputaran uang warga
-  const escrowHeldForMitra = 280000000; // Saldo kas hak milik mitra
-  const gatewayPaidDuitku = 9800000; // Biaya payment gateway
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<any>(null);
+
+  const loadFinancials = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/core/control-tower");
+      const json = await res.json();
+      if (json.success && json.data) {
+        setData(json.data);
+      }
+    } catch (err) {
+      console.error("Gagal memuat financial intelligence:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadFinancials();
+  }, []);
+
+  const fin = data?.financials || {};
+  const overview = data?.overview || {};
+
+  const grossGMVEcosystem = fin.grossVerifiedPembayaran || 0;
+  const saasSubscriptionRev = overview.realSaaSMrr || 0;
+  const transactionMicroFeeRev = fin.platformFeeIncome || 0;
+  const totalNetO2WRev = saasSubscriptionRev + transactionMicroFeeRev;
+  const gatewayPaidDuitku = fin.gatewayCostDuitku || 0;
+  const escrowHeldForMitra = fin.escrowNetHeldForMitra || 0;
+  const recentLedgers = fin.recentLedgers || [];
+
+  const streams = [
+    {
+      name: "SaaS Subscription (MRR)",
+      nominal: saasSubscriptionRev,
+      color: "bg-emerald-500",
+      description: "Pendapatan paket langganan aktif seluruh tenant di database.",
+    },
+    {
+      name: "Transaction Micro-Fee (QRIS/VA)",
+      nominal: transactionMicroFeeRev,
+      color: "bg-sky-500",
+      description: `Micro-fee platform dari ${fin.duitkuTxCount || 0} transaksi digital terverifikasi.`,
+    },
+    {
+      name: "Marketplace Recycling Commission",
+      nominal: 0,
+      color: "bg-amber-500",
+      description: "Komisi agregasi perdagangan daur ulang skala ekosistem.",
+    },
+    {
+      name: "Government / DLH License",
+      nominal: 0,
+      color: "bg-purple-500",
+      description: "Lisensi dashboard pemda / DLH kontrak tahunan.",
+    },
+  ];
 
   return (
     <div className="space-y-6 pb-12 font-sans">
@@ -110,23 +92,24 @@ export default function RevenueIntelligencePage() {
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-semibold">
               <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
-              <span>SaaS Control Tower — Financial Intelligence</span>
+              <span>SaaS Control Tower — Real Financial Intelligence</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
               Pendapatan & Financial Intelligence
             </h1>
             <p className="text-slate-300 text-sm max-w-2xl leading-relaxed">
-              Memantau 4 pilar pendapatan platform O2W HERO, memisahkan GMV warga dari omzet riil, dan menjaga virtual ledger escrow seluruh mitra.
+              Data agregasi keuangan riil yang dihitung dari transaksi pembayaran warga, gateway Duitku, dan mutasi saldo virtual ledger.
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             <button
-              onClick={() => alert("Mengunduh Rekap Finansial O2W HERO format CSV...")}
+              onClick={loadFinancials}
+              disabled={loading}
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold border border-slate-700 transition-all"
             >
-              <Download className="w-4 h-4" />
-              <span>Export CSV</span>
+              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+              <span>Refresh</span>
             </button>
           </div>
         </div>
@@ -136,9 +119,9 @@ export default function RevenueIntelligencePage() {
       <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-3">
         <ShieldCheck className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
         <div className="space-y-1">
-          <p className="font-bold text-sm">Prinsip Arsitektur Finansial O2W HERO</p>
+          <p className="font-bold text-sm">Pemisahan Ketat Dana Warga vs Pendapatan Platform</p>
           <p className="leading-relaxed opacity-90">
-            Dashboard ini secara ketat membedakan <strong>Gross Ecosystem GMV</strong> (dana retribusi milik mitra), <strong>Biaya Gateway (Duitku)</strong>, dan <strong>Pendapatan Bersih O2W HERO</strong>. Uang warga yang transit di rekening pool tidak dihitung sebagai omzet platform.
+            Sistem secara ketat memisahkan <strong>Gross Ecosystem GMV</strong> (uang iuran retribusi milik mitra), <strong>Biaya Gateway (Duitku)</strong>, dan <strong>Pendapatan Bersih O2W HERO</strong>.
           </p>
         </div>
       </div>
@@ -156,10 +139,10 @@ export default function RevenueIntelligencePage() {
             </span>
           </div>
           <div className="text-3xl font-black text-white">
-            Rp {totalNetRevenue.toLocaleString("id-ID")}
+            {loading ? "..." : `Rp ${totalNetO2WRev.toLocaleString("id-ID")}`}
           </div>
           <p className="text-xs text-slate-400 mt-2">
-            Total dari 4 revenue stream bulan ini
+            SaaS subscription + micro-fee riil
           </p>
         </div>
 
@@ -174,10 +157,10 @@ export default function RevenueIntelligencePage() {
             </span>
           </div>
           <div className="text-2xl font-black text-slate-900 dark:text-white">
-            Rp {grossGMVEcosystem.toLocaleString("id-ID")}
+            {loading ? "..." : `Rp ${grossGMVEcosystem.toLocaleString("id-ID")}`}
           </div>
           <p className="text-xs text-slate-500 dark:text-zinc-400 mt-2">
-            Total perputaran retribusi seluruh tenant
+            Total pembayaran terverifikasi di database
           </p>
         </div>
 
@@ -192,10 +175,10 @@ export default function RevenueIntelligencePage() {
             </span>
           </div>
           <div className="text-2xl font-black text-slate-900 dark:text-white">
-            Rp {escrowHeldForMitra.toLocaleString("id-ID")}
+            {loading ? "..." : `Rp ${escrowHeldForMitra.toLocaleString("id-ID")}`}
           </div>
           <p className="text-xs text-slate-500 dark:text-zinc-400 mt-2">
-            Dana siap ditarik oleh TPS 3R & Bank Sampah
+            Hak dana bersih mitra setelah potongan fee
           </p>
         </div>
 
@@ -210,10 +193,10 @@ export default function RevenueIntelligencePage() {
             </span>
           </div>
           <div className="text-2xl font-black text-slate-900 dark:text-white">
-            Rp {gatewayPaidDuitku.toLocaleString("id-ID")}
+            {loading ? "..." : `Rp ${gatewayPaidDuitku.toLocaleString("id-ID")}`}
           </div>
           <p className="text-xs text-slate-500 dark:text-zinc-400 mt-2">
-            Biaya switching QRIS & Virtual Account
+            {fin.duitkuTxCount || 0} transaksi QRIS &amp; VA sukses
           </p>
         </div>
       </div>
@@ -222,11 +205,11 @@ export default function RevenueIntelligencePage() {
       <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-6 shadow-xs space-y-4">
         <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
           <Layers className="w-5 h-5 text-emerald-600" />
-          <span>Komposisi 4 Pilar Pendapatan O2W HERO</span>
+          <span>Komposisi Pendapatan O2W HERO</span>
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {REVENUE_STREAMS.map((st, idx) => (
+          {streams.map((st, idx) => (
             <div
               key={idx}
               className="p-4 rounded-xl bg-slate-50 dark:bg-zinc-800/50 border border-slate-200/80 dark:border-zinc-800 space-y-2"
@@ -235,18 +218,9 @@ export default function RevenueIntelligencePage() {
                 <span className="text-xs font-bold text-slate-700 dark:text-zinc-300">
                   {st.name}
                 </span>
-                <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">
-                  {st.pct}%
-                </span>
               </div>
               <div className="text-xl font-extrabold text-slate-900 dark:text-white">
                 Rp {st.nominal.toLocaleString("id-ID")}
-              </div>
-              <div className="w-full bg-slate-200 dark:bg-zinc-700 h-1.5 rounded-full overflow-hidden">
-                <div
-                  className={`h-full ${st.color}`}
-                  style={{ width: `${st.pct}%` }}
-                />
               </div>
               <p className="text-[11px] text-slate-500 dark:text-zinc-400 leading-snug">
                 {st.description}
@@ -262,57 +236,65 @@ export default function RevenueIntelligencePage() {
           <div>
             <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <Scale className="w-4 h-4 text-sky-600" />
-              <span>Mutasi Virtual Ledger & Escrow Pool</span>
+              <span>Mutasi Virtual Ledger & Escrow Pool Riil</span>
             </h3>
             <p className="text-xs text-slate-500 dark:text-zinc-400">
-              Pemisahan otomatis dana hak mitra dan komisi O2W HERO per transaksi lunas
+              Pemisahan otomatis dana hak mitra dan komisi O2W HERO per transaksi di database
             </p>
           </div>
           <Link
             href="/tenants"
             className="text-xs font-bold text-sky-600 dark:text-sky-400 hover:underline"
           >
-            Setting Payout Rekening Mitra
+            Setting Rekening Mitra
           </Link>
         </div>
 
-        <table className="w-full text-left text-sm">
-          <thead className="bg-slate-50 dark:bg-zinc-800/50 text-slate-600 dark:text-zinc-300 text-xs font-semibold uppercase tracking-wider">
-            <tr>
-              <th className="px-6 py-4">Mitra & Keterangan</th>
-              <th className="px-6 py-4">Gross Transaksi</th>
-              <th className="px-6 py-4">Fee Gateway (Duitku)</th>
-              <th className="px-6 py-4">Fee O2W HERO</th>
-              <th className="px-6 py-4">Kas Bersih Mitra</th>
-              <th className="px-6 py-4">Waktu</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-zinc-800">
-            {RECENT_LEDGERS.map((row) => (
-              <tr key={row.id} className="hover:bg-slate-50/50 dark:hover:bg-zinc-800/30">
-                <td className="px-6 py-4">
-                  <div className="font-bold text-slate-900 dark:text-white">{row.mitra}</div>
-                  <span className="text-xs text-slate-500">{row.keterangan}</span>
-                </td>
-                <td className="px-6 py-4 font-extrabold text-slate-900 dark:text-white">
-                  Rp {row.nominalGross.toLocaleString("id-ID")}
-                </td>
-                <td className="px-6 py-4 text-xs text-slate-500 font-medium">
-                  {row.feeGateway > 0 ? `-Rp ${row.feeGateway.toLocaleString("id-ID")}` : "Rp 0"}
-                </td>
-                <td className="px-6 py-4 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                  {row.feePlatform > 0 ? `+Rp ${row.feePlatform.toLocaleString("id-ID")}` : "Rp 0"}
-                </td>
-                <td className="px-6 py-4 font-black text-sky-600 dark:text-sky-400">
-                  Rp {row.nominalNetMitra.toLocaleString("id-ID")}
-                </td>
-                <td className="px-6 py-4 text-xs text-slate-400">
-                  {row.tanggal}
-                </td>
+        {recentLedgers.length === 0 ? (
+          <div className="p-12 text-center text-slate-500">
+            <Scale className="w-10 h-10 text-slate-300 mx-auto mb-2" />
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Belum Ada Mutasi Ledger</h3>
+            <p className="text-xs mt-1">Mutasi otomatis tercatat ketika ada transaksi lunas di gateway Duitku atau penerbitan invoice.</p>
+          </div>
+        ) : (
+          <table className="w-full text-left text-sm">
+            <thead className="bg-slate-50 dark:bg-zinc-800/50 text-slate-600 dark:text-zinc-300 text-xs font-semibold uppercase tracking-wider">
+              <tr>
+                <th className="px-6 py-4">Mitra & Keterangan</th>
+                <th className="px-6 py-4">Gross Transaksi</th>
+                <th className="px-6 py-4">Fee Gateway</th>
+                <th className="px-6 py-4">Fee O2W</th>
+                <th className="px-6 py-4">Kas Bersih Mitra</th>
+                <th className="px-6 py-4">Waktu</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-slate-100 dark:divide-zinc-800">
+              {recentLedgers.map((row: any) => (
+                <tr key={row.id} className="hover:bg-slate-50/50 dark:hover:bg-zinc-800/30">
+                  <td className="px-6 py-4">
+                    <div className="font-bold text-slate-900 dark:text-white">{row.tenant?.namaMitra || "Tenant"}</div>
+                    <span className="text-xs text-slate-500">{row.keterangan || "-"}</span>
+                  </td>
+                  <td className="px-6 py-4 font-extrabold text-slate-900 dark:text-white">
+                    Rp {Number(row.nominalGross).toLocaleString("id-ID")}
+                  </td>
+                  <td className="px-6 py-4 text-xs text-slate-500 font-medium">
+                    {row.feeGateway > 0 ? `-Rp ${Number(row.feeGateway).toLocaleString("id-ID")}` : "Rp 0"}
+                  </td>
+                  <td className="px-6 py-4 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                    {row.feePlatform > 0 ? `+Rp ${Number(row.feePlatform).toLocaleString("id-ID")}` : "Rp 0"}
+                  </td>
+                  <td className="px-6 py-4 font-black text-sky-600 dark:text-sky-400">
+                    Rp {Number(row.nominalNet).toLocaleString("id-ID")}
+                  </td>
+                  <td className="px-6 py-4 text-xs text-slate-400">
+                    {new Date(row.createdAt).toLocaleString("id-ID")}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

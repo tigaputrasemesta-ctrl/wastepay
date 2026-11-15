@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Sliders,
@@ -20,18 +20,36 @@ import {
   Activity,
   ToggleLeft,
   ToggleRight,
+  Loader2,
 } from "lucide-react";
 
 export default function PlatformSettingsPage() {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [autoBackupEnabled, setAutoBackupEnabled] = useState(true);
   const [debugLogEnabled, setDebugLogEnabled] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
 
-  const handleRefreshHealth = () => {
-    setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 800);
+  const loadHealthData = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/core/control-tower");
+      const json = await res.json();
+      if (json.success && json.data) {
+        setData(json.data);
+      }
+    } catch (err) {
+      console.error("Gagal memuat status platform:", err);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    loadHealthData();
+  }, []);
+
+  const sys = data?.systemHealth || {};
 
   return (
     <div className="space-y-6 pb-12 font-sans">
@@ -41,30 +59,30 @@ export default function PlatformSettingsPage() {
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-300 text-xs font-semibold">
               <Sliders className="w-3.5 h-3.5 text-sky-400" />
-              <span>SaaS Control Tower — Platform Administration</span>
+              <span>SaaS Control Tower — Real Platform Administration</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
               Pengaturan Platform & Monitoring Sistem
             </h1>
             <p className="text-slate-300 text-sm max-w-2xl leading-relaxed">
-              Memantau stabilitas database multi-tenant, infrastruktur gateway WhatsApp & Duitku, serta konfigurasi global platform O2W HERO.
+              Memantau stabilitas database multi-tenant PostgreSQL, gateway WhatsApp &amp; Duitku, dan konfigurasi global platform O2W HERO.
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             <button
-              onClick={handleRefreshHealth}
-              disabled={refreshing}
+              onClick={loadHealthData}
+              disabled={loading}
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold border border-slate-700 transition-all"
             >
-              <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin text-sky-400" : ""}`} />
-              <span>Cek Kesehatan Sistem</span>
+              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-sky-400" : ""}`} />
+              <span>Pindai Sistem</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Grid Status Infrastruktur */}
+      {/* Grid Status Infrastruktur Riil */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Box 1: Multi-Tenant Database Health */}
         <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs space-y-4">
@@ -74,26 +92,26 @@ export default function PlatformSettingsPage() {
               <span>Database Multi-Tenant</span>
             </h3>
             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center gap-1">
-              <CheckCircle2 className="w-3 h-3" /> Healthy
+              <CheckCircle2 className="w-3 h-3" /> Connected
             </span>
           </div>
 
           <div className="space-y-2 text-xs text-slate-600 dark:text-zinc-300 border-t border-slate-100 dark:border-zinc-800 pt-3">
             <div className="flex justify-between">
-              <span className="text-slate-400">Core PostgreSQL:</span>
-              <span className="font-bold text-slate-900 dark:text-white">Connected (2.1ms)</span>
+              <span className="text-slate-400">Driver & Adapter:</span>
+              <span className="font-bold text-slate-900 dark:text-white">{sys.dbEngine || "PostgreSQL Prisma"}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-400">Connection Pool:</span>
-              <span className="font-medium">14 / 100 Active</span>
+              <span className="text-slate-400">Total Tenant di DB:</span>
+              <span className="font-medium text-slate-900 dark:text-white">{sys.tenantsCount || 0} Pengelola</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-400">Backup Otomatis:</span>
-              <span className="font-medium text-emerald-600">04:00 WIB (Harian)</span>
+              <span className="text-slate-400">Total Akun Pengguna:</span>
+              <span className="font-medium text-slate-900 dark:text-white">{sys.usersCount || 0} Users</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-400">Isolasi DB:</span>
-              <span className="font-medium text-sky-600">Zero-Leakage Active</span>
+              <span className="text-slate-400">Audit Log Entries:</span>
+              <span className="font-medium text-sky-600">{sys.auditLogCount || 0} Events</span>
             </div>
           </div>
         </div>
@@ -112,20 +130,20 @@ export default function PlatformSettingsPage() {
 
           <div className="space-y-2 text-xs text-slate-600 dark:text-zinc-300 border-t border-slate-100 dark:border-zinc-800 pt-3">
             <div className="flex justify-between">
-              <span className="text-slate-400">Provider Service:</span>
-              <span className="font-bold text-slate-900 dark:text-white">Fonnte & Wablas Pool</span>
+              <span className="text-slate-400">Arsitektur:</span>
+              <span className="font-bold text-slate-900 dark:text-white">Dual Device per Tenant</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-400">Nomor 1 (Bot Tagihan):</span>
-              <span className="font-medium text-emerald-600">Terhubung (SLA 99.8%)</span>
+              <span className="text-slate-400">Device 1 (Bot Tagihan):</span>
+              <span className="font-medium text-emerald-600">Siap Operasional</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-400">Nomor 2 (CS Warga):</span>
-              <span className="font-medium text-emerald-600">Terhubung (SLA 99.9%)</span>
+              <span className="text-slate-400">Device 2 (CS &amp; Pengaduan):</span>
+              <span className="font-medium text-emerald-600">Siap Operasional</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-400">Rata-rata Delay Blast:</span>
-              <span className="font-medium">1.5 Detik (Anti-Banned)</span>
+              <span className="text-slate-400">Batas Kuota Bulanan:</span>
+              <span className="font-medium text-sky-600">Monitoring Otomatis</span>
             </div>
           </div>
         </div>
@@ -148,16 +166,16 @@ export default function PlatformSettingsPage() {
               <span className="font-bold text-slate-900 dark:text-white">Centralized Escrow Pool</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-400">QRIS Dinamis API:</span>
-              <span className="font-medium text-emerald-600">Normal (0.8s Latency)</span>
+              <span className="text-slate-400">QRIS Dinamis &amp; VA:</span>
+              <span className="font-medium text-emerald-600">Aktif</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-400">Virtual Account:</span>
-              <span className="font-medium">BCA, Mandiri, BRI, BNI</span>
+              <span className="text-slate-400">Total Transaksi Lunas:</span>
+              <span className="font-medium text-slate-900 dark:text-white">{data?.financials?.duitkuTxCount || 0} Sukses</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-400">Callback Webhook:</span>
-              <span className="font-medium text-emerald-600">200 OK Response</span>
+              <span className="text-slate-400">Callback Endpoint:</span>
+              <span className="font-medium text-emerald-600">/api/duitku/callback</span>
             </div>
           </div>
         </div>
@@ -177,7 +195,7 @@ export default function PlatformSettingsPage() {
                 Maintenance Mode Platform
               </p>
               <p className="text-xs text-slate-500">
-                Mengunci akses login mitra untuk keperluan pemeliharaan atau migrasi skema database.
+                Mengunci akses login portal mitra untuk keperluan pemeliharaan atau migrasi skema database.
               </p>
             </div>
             <button
@@ -193,10 +211,10 @@ export default function PlatformSettingsPage() {
           <div className="py-4 flex items-center justify-between">
             <div>
               <p className="font-bold text-sm text-slate-900 dark:text-white">
-                Auto-Backup Snapshot Harian
+                Auto-Backup Database Harian
               </p>
               <p className="text-xs text-slate-500">
-                Mencadangkan seluruh database tenant dan core secara otomatis setiap jam 04:00 WIB.
+                Mencadangkan database PostgreSQL secara otomatis setiap jam 04:00 WIB.
               </p>
             </div>
             <button
@@ -212,10 +230,10 @@ export default function PlatformSettingsPage() {
           <div className="py-4 flex items-center justify-between">
             <div>
               <p className="font-bold text-sm text-slate-900 dark:text-white">
-                Debug Audit Log & Slow Query Tracing
+                Audit Trail Log & Slow Query Tracing
               </p>
               <p className="text-xs text-slate-500">
-                Mencatat query dengan latensi &gt; 500ms untuk optimasi performa skala besar.
+                Mencatat mutasi penting pada tabel `AuditLog` untuk audit compliance.
               </p>
             </div>
             <button
@@ -244,7 +262,7 @@ export default function PlatformSettingsPage() {
               <h4 className="font-bold text-slate-900 dark:text-white text-sm">
                 Kelola Akun Superadmin
               </h4>
-              <p className="text-xs text-slate-500">Manajemen hak akses & keamanan RBAC</p>
+              <p className="text-xs text-slate-500">Manajemen hak akses & keamanan RBAC ({sys.usersCount || 0} users)</p>
             </div>
           </div>
           <span className="text-xs font-bold text-sky-600">Buka →</span>
@@ -262,7 +280,7 @@ export default function PlatformSettingsPage() {
               <h4 className="font-bold text-slate-900 dark:text-white text-sm">
                 Audit Trail Log Sistem
               </h4>
-              <p className="text-xs text-slate-500">Rekam jejak mutasi & akses kontrol</p>
+              <p className="text-xs text-slate-500">Rekam jejak ({sys.auditLogCount || 0} riwayat tercatat)</p>
             </div>
           </div>
           <span className="text-xs font-bold text-purple-600">Buka →</span>

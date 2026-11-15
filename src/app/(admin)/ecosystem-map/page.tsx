@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Globe,
@@ -17,111 +17,67 @@ import {
   TrendingUp,
   Truck,
   ExternalLink,
+  Loader2,
+  RefreshCw,
 } from "lucide-react";
 
-interface EcosystemRegion {
-  id: string;
-  name: string;
-  island: string;
+interface RegionItem {
+  provinsi: string;
+  kota: string[];
   totalTenants: number;
   activeTenants: number;
   totalWarga: number;
-  tps3rCount: number;
-  bankSampahCount: number;
-  dlhCount: number;
-  cities: string[];
+  tenants: Array<{
+    id: string;
+    nama: string;
+    slug: string;
+    kota: string;
+    tipe: string;
+    status: string;
+  }>;
 }
 
-const REGION_DATA: EcosystemRegion[] = [
-  {
-    id: "jawa-barat",
-    name: "Jawa Barat & Banten",
-    island: "Jawa",
-    totalTenants: 14,
-    activeTenants: 12,
-    totalWarga: 34500,
-    tps3rCount: 9,
-    bankSampahCount: 4,
-    dlhCount: 1,
-    cities: ["Kota Depok (UPS HERU)", "Kota Bogor", "Kab. Bogor", "Kota Bekasi", "Kota Bandung", "Kota Tangerang"],
-  },
-  {
-    id: "dki-jakarta",
-    name: "DKI Jakarta",
-    island: "Jawa",
-    totalTenants: 8,
-    activeTenants: 7,
-    totalWarga: 22800,
-    tps3rCount: 5,
-    bankSampahCount: 3,
-    dlhCount: 0,
-    cities: ["Jakarta Selatan", "Jakarta Timur", "Jakarta Barat", "Jakarta Pusat"],
-  },
-  {
-    id: "jawa-tengah",
-    name: "Jawa Tengah & DIY",
-    island: "Jawa",
-    totalTenants: 10,
-    activeTenants: 9,
-    totalWarga: 21400,
-    tps3rCount: 6,
-    bankSampahCount: 3,
-    dlhCount: 1,
-    cities: ["Kota Semarang", "Kota Surakarta", "Kota Yogyakarta", "Kab. Sleman", "Kab. Banyumas"],
-  },
-  {
-    id: "jawa-timur",
-    name: "Jawa Timur",
-    island: "Jawa",
-    totalTenants: 9,
-    activeTenants: 8,
-    totalWarga: 19500,
-    tps3rCount: 5,
-    bankSampahCount: 3,
-    dlhCount: 1,
-    cities: ["Kota Surabaya", "Kota Malang", "Kab. Sidoarjo", "Kab. Gresik"],
-  },
-  {
-    id: "bali-nusa",
-    name: "Bali & Nusa Tenggara",
-    island: "Kepulauan Nusa Tenggara",
-    totalTenants: 5,
-    activeTenants: 4,
-    totalWarga: 11200,
-    tps3rCount: 3,
-    bankSampahCount: 2,
-    dlhCount: 0,
-    cities: ["Kota Denpasar", "Kab. Badung", "Kab. Gianyar", "Kota Mataram"],
-  },
-  {
-    id: "sumatera",
-    name: "Sumatera Raya",
-    island: "Sumatera",
-    totalTenants: 4,
-    activeTenants: 3,
-    totalWarga: 8700,
-    tps3rCount: 2,
-    bankSampahCount: 1,
-    dlhCount: 1,
-    cities: ["Kota Medan", "Kota Palembang", "Kota Pekanbaru"],
-  },
-];
-
 export default function EcosystemMapPage() {
+  const [regions, setRegions] = useState<RegionItem[]>([]);
+  const [totalTenants, setTotalTenants] = useState(0);
+  const [activeTenants, setActiveTenants] = useState(0);
+  const [totalWarga, setTotalWarga] = useState(0);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [selectedIsland, setSelectedIsland] = useState<string>("all");
+  const [selectedProv, setSelectedProv] = useState<string>("all");
 
-  const filteredRegions = REGION_DATA.filter((reg) => {
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/core/control-tower");
+      const json = await res.json();
+      if (json.success && json.data) {
+        setRegions(json.data.regions || []);
+        setTotalTenants(json.data.overview.totalTenants || 0);
+        setActiveTenants(json.data.overview.activeTenants || 0);
+        setTotalWarga(json.data.overview.totalWarga || 0);
+      }
+    } catch (err) {
+      console.error("Gagal memuat data sebaran ekosistem:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const filteredRegions = regions.filter((reg) => {
     const matchSearch =
-      reg.name.toLowerCase().includes(search.toLowerCase()) ||
-      reg.cities.some((c) => c.toLowerCase().includes(search.toLowerCase()));
-    const matchIsland = selectedIsland === "all" || reg.island === selectedIsland;
-    return matchSearch && matchIsland;
+      reg.provinsi.toLowerCase().includes(search.toLowerCase()) ||
+      reg.kota.some((c) => c.toLowerCase().includes(search.toLowerCase())) ||
+      reg.tenants.some((t) => t.nama.toLowerCase().includes(search.toLowerCase()));
+    const matchProv = selectedProv === "all" || reg.provinsi === selectedProv;
+    return matchSearch && matchProv;
   });
 
-  const totalNasionalTenants = REGION_DATA.reduce((acc, r) => acc + r.totalTenants, 0);
-  const totalNasionalWarga = REGION_DATA.reduce((acc, r) => acc + r.totalWarga, 0);
-  const totalKota = REGION_DATA.reduce((acc, r) => acc + r.cities.length, 0);
+  const allProvinsi = Array.from(new Set(regions.map((r) => r.provinsi)));
 
   return (
     <div className="space-y-6 pb-12 font-sans">
@@ -131,17 +87,25 @@ export default function EcosystemMapPage() {
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-300 text-xs font-semibold">
               <Globe className="w-3.5 h-3.5 text-sky-400" />
-              <span>SaaS Control Tower — Sebaran Wilayah</span>
+              <span>SaaS Control Tower — Sebaran Wilayah Riil</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              Peta Persebaran Mitra Ekosistem Indonesia
+              Peta Persebaran Mitra Ekosistem
             </h1>
             <p className="text-slate-300 text-sm max-w-2xl leading-relaxed">
-              Memantau jangkauan operasional TPS 3R, Bank Sampah, dan Kemitraan DLH di seluruh provinsi dan kota di Indonesia dari satu menara kendali.
+              Data spasial dan jangkauan operasional mitra terdaftar di database O2W HERO, diperbarui secara real-time.
             </p>
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              onClick={loadData}
+              disabled={loading}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold border border-slate-700 transition-all"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+              <span>Refresh Data</span>
+            </button>
             <Link
               href="/tenants"
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-sm font-semibold shadow-lg shadow-sky-600/30 transition-all"
@@ -153,53 +117,53 @@ export default function EcosystemMapPage() {
         </div>
       </div>
 
-      {/* Stats KPI Top */}
+      {/* Stats KPI Top - Data Riil */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
-            Total Mitra Tersebar
+            Total Mitra Terdaftar
           </span>
           <div className="text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
-            {totalNasionalTenants} Mitra
+            {loading ? "..." : `${totalTenants} Mitra`}
           </div>
           <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-2 font-medium flex items-center gap-1">
-            <CheckCircle2 className="w-3.5 h-3.5" /> 43 Mitra Aktif Beroperasi
+            <CheckCircle2 className="w-3.5 h-3.5" /> {activeTenants} Mitra Beroperasi
           </p>
         </div>
 
         <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
-            Cakupan Kota / Kab
+            Provinsi Terjangkau
           </span>
           <div className="text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
-            {totalKota} Kota / Kab
+            {loading ? "..." : `${regions.length} Provinsi`}
           </div>
           <p className="text-xs text-sky-600 dark:text-sky-400 mt-2 font-medium">
-            Tersebar di 6 cluster wilayah regional
+            Berdasarkan data database tenant
           </p>
         </div>
 
         <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
-            Agregat KK Terlayani
+            Total Warga Terlayani
           </span>
           <div className="text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
-            {totalNasionalWarga.toLocaleString("id-ID")}+
+            {loading ? "..." : `${totalWarga.toLocaleString("id-ID")} KK`}
           </div>
           <p className="text-xs text-teal-600 dark:text-teal-400 mt-2 font-medium">
-            Warga nasabah di ekosistem terpadu
+            Data pelanggan aktif di database
           </p>
         </div>
 
         <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
-            Pilot Project Rujukan
+            Status Klaster
           </span>
           <div className="text-xl font-bold text-slate-900 dark:text-white mt-1 flex items-center gap-2">
-            <span>UPS HERU Kalibaru</span>
+            <span>Operasional Normal</span>
           </div>
-          <p className="text-xs text-slate-500 dark:text-zinc-400 mt-2">
-            Percontohan TPS 3R Digital Kota Depok
+          <p className="text-xs text-emerald-600 mt-2">
+            Multi-Tenant Zero-Leakage Aktif
           </p>
         </div>
       </div>
@@ -212,95 +176,124 @@ export default function EcosystemMapPage() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Cari wilayah atau kota..."
+            placeholder="Cari provinsi, kota, atau nama mitra..."
             className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800 text-slate-900 dark:text-zinc-100 focus:outline-hidden focus:ring-2 focus:ring-sky-500"
           />
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
-          {["all", "Jawa", "Sumatera", "Kepulauan Nusa Tenggara"].map((island) => (
+          <button
+            onClick={() => setSelectedProv("all")}
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+              selectedProv === "all"
+                ? "bg-sky-600 text-white shadow-xs"
+                : "bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 hover:bg-slate-200"
+            }`}
+          >
+            Semua Wilayah ({regions.length})
+          </button>
+          {allProvinsi.map((prov) => (
             <button
-              key={island}
-              onClick={() => setSelectedIsland(island)}
+              key={prov}
+              onClick={() => setSelectedProv(prov)}
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-                selectedIsland === island
+                selectedProv === prov
                   ? "bg-sky-600 text-white shadow-xs"
                   : "bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 hover:bg-slate-200"
               }`}
             >
-              {island === "all" ? "Semua Pulau" : island}
+              {prov}
             </button>
           ))}
         </div>
       </div>
 
       {/* Regional Cluster Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredRegions.map((region) => (
-          <div
-            key={region.id}
-            className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
-                  {region.island}
-                </span>
-                <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> {region.activeTenants} Aktif
-                </span>
-              </div>
-
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-sky-600" />
-                <span>{region.name}</span>
-              </h3>
-
-              <div className="grid grid-cols-2 gap-3 py-3 border-y border-slate-100 dark:border-zinc-800 text-xs mb-3">
-                <div>
-                  <span className="text-slate-500 dark:text-zinc-400">Total Warga:</span>
-                  <p className="font-extrabold text-slate-900 dark:text-white text-sm">
-                    {region.totalWarga.toLocaleString("id-ID")} KK
-                  </p>
-                </div>
-                <div>
-                  <span className="text-slate-500 dark:text-zinc-400">Komposisi:</span>
-                  <p className="font-medium text-slate-700 dark:text-zinc-300">
-                    {region.tps3rCount} TPS 3R, {region.bankSampahCount} BS
-                  </p>
-                </div>
-              </div>
-
+      {loading ? (
+        <div className="py-16 text-center text-slate-500">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-sky-600" />
+          <p className="text-xs">Memuat data sebaran mitra dari database...</p>
+        </div>
+      ) : filteredRegions.length === 0 ? (
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-12 text-center text-slate-500">
+          <Globe className="w-10 h-10 text-slate-400 mx-auto mb-2" />
+          <h3 className="text-sm font-bold text-slate-900 dark:text-white">Tidak Ada Data Wilayah</h3>
+          <p className="text-xs mt-1">Belum ada tenant yang sesuai dengan filter pencarian.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredRegions.map((region, idx) => (
+            <div
+              key={idx}
+              className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
+            >
               <div>
-                <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1.5">
-                  Cakupan Titik Kota:
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {region.cities.map((city, idx) => (
-                    <span
-                      key={idx}
-                      className="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300"
-                    >
-                      {city}
-                    </span>
-                  ))}
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
+                    Provinsi
+                  </span>
+                  <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> {region.activeTenants} Aktif
+                  </span>
+                </div>
+
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-sky-600" />
+                  <span>{region.provinsi}</span>
+                </h3>
+
+                <div className="grid grid-cols-2 gap-3 py-3 border-y border-slate-100 dark:border-zinc-800 text-xs mb-3">
+                  <div>
+                    <span className="text-slate-500 dark:text-zinc-400">Total Warga:</span>
+                    <p className="font-extrabold text-slate-900 dark:text-white text-sm">
+                      {region.totalWarga > 0 ? `${region.totalWarga.toLocaleString("id-ID")} KK` : "Terhubung"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 dark:text-zinc-400">Jumlah Tenant:</span>
+                    <p className="font-medium text-slate-700 dark:text-zinc-300">
+                      {region.totalTenants} Pengelola
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1.5">
+                    Daftar Mitra Terdaftar:
+                  </span>
+                  <div className="space-y-1.5">
+                    {region.tenants.map((t) => (
+                      <div
+                        key={t.id}
+                        className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-zinc-800/60 text-xs"
+                      >
+                        <div>
+                          <p className="font-bold text-slate-900 dark:text-white">{t.nama}</p>
+                          <span className="text-[11px] text-slate-400">{t.kota} • {t.tipe}</span>
+                        </div>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
+                          {t.status}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="pt-4 mt-4 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-between text-xs">
-              <span className="text-slate-500 dark:text-zinc-400">Total {region.totalTenants} pengelola</span>
-              <Link
-                href="/tenants"
-                className="text-sky-600 dark:text-sky-400 font-bold hover:underline flex items-center gap-1"
-              >
-                <span>Detail Tenant</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
+              <div className="pt-4 mt-4 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-between text-xs">
+                <span className="text-slate-500">{region.kota.join(", ")}</span>
+                <Link
+                  href="/tenants"
+                  className="text-sky-600 dark:text-sky-400 font-bold hover:underline flex items-center gap-1"
+                >
+                  <span>Kelola</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

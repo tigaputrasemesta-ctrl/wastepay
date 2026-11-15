@@ -76,6 +76,13 @@ const API_ROLE_MAP: Record<string, number> = {
   // Tenants & Mitra Multi-Tenant Core (superadmin only)
   "GET:/api/core/tenants": 50,
   "POST:/api/core/tenants": 100,
+  "GET:/api/core/control-tower": 50,
+  "POST:/api/core/control-tower": 100,
+  "GET:/api/core/billing": 50,
+  "POST:/api/core/billing": 100,
+  "GET:/api/core/crm": 50,
+  "POST:/api/core/crm": 50,
+  "PATCH:/api/core/crm": 50,
 
   // Data Kontrol Kontak WA & Blast Calon Pelanggan (admin+)
   "GET:/api/data-kontrol": 50,

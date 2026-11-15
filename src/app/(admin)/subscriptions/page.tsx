@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Package,
@@ -16,6 +16,8 @@ import {
   Edit3,
   Calendar,
   Layers,
+  Loader2,
+  RefreshCw,
 } from "lucide-react";
 
 interface SaasTier {
@@ -106,44 +108,42 @@ const TIERS: SaasTier[] = [
   },
 ];
 
-const TENANT_SUBSCRIPTIONS = [
-  {
-    id: "sub-1",
-    namaMitra: "UPS HERU Kota Depok",
-    slug: "upsheru",
-    paket: "Pro",
-    status: "aktif",
-    periodeMulai: "01 Jan 2026",
-    periodeBerakhir: "31 Des 2026",
-    metodeBayar: "Payment Gateway Duitku",
-    autoRenew: true,
-  },
-  {
-    id: "sub-2",
-    namaMitra: "Bank Sampah Berkah Mandiri",
-    slug: "bs-berkah",
-    paket: "Starter",
-    status: "aktif",
-    periodeMulai: "15 Okt 2026",
-    periodeBerakhir: "15 Nov 2026",
-    metodeBayar: "Transfer Bank Manual",
-    autoRenew: false,
-  },
-  {
-    id: "sub-3",
-    namaMitra: "TPS 3R Sukamaju Lestari",
-    slug: "tps-sukamaju",
-    paket: "Pro",
-    status: "masa_percobaan",
-    periodeMulai: "01 Nov 2026",
-    periodeBerakhir: "30 Nov 2026",
-    metodeBayar: "Free Trial 30 Hari",
-    autoRenew: false,
-  },
-];
+interface RealTenantSub {
+  id: string;
+  slug: string;
+  namaMitra: string;
+  penanggungJawab: string | null;
+  kota: string;
+  tipePengelola: string;
+  status: string;
+  paketLangganan: string;
+  hasDedicatedDb: boolean;
+  createdAt: string;
+}
 
 export default function SubscriptionsPage() {
-  const [activeTab, setActiveTab] = useState<"tiers" | "active_tenants">("tiers");
+  const [activeTab, setActiveTab] = useState<"tiers" | "active_tenants">("active_tenants");
+  const [tenants, setTenants] = useState<RealTenantSub[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadSubscriptions = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/core/control-tower");
+      const json = await res.json();
+      if (json.success && json.data) {
+        setTenants(json.data.tenants || []);
+      }
+    } catch (err) {
+      console.error("Gagal memuat langganan:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadSubscriptions();
+  }, []);
 
   return (
     <div className="space-y-6 pb-12 font-sans">
@@ -159,11 +159,19 @@ export default function SubscriptionsPage() {
               Manajemen Paket & Langganan SaaS
             </h1>
             <p className="text-slate-300 text-sm max-w-2xl leading-relaxed">
-              Konfigurasi paket harga berulang, manajemen free trial 30 hari, dan pemantauan siklus perpanjangan seluruh mitra O2W HERO.
+              Daftar langganan aktif seluruh tenant di database O2W HERO, status paket, dan konfigurasi tiering.
             </p>
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              onClick={loadSubscriptions}
+              disabled={loading}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold border border-slate-700 transition-all"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+              <span>Refresh</span>
+            </button>
             <Link
               href="/saas-billing"
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-sm font-semibold shadow-lg shadow-sky-600/30 transition-all"
@@ -178,16 +186,6 @@ export default function SubscriptionsPage() {
       {/* Tabs */}
       <div className="flex items-center gap-3 border-b border-slate-200 dark:border-zinc-800 pb-2">
         <button
-          onClick={() => setActiveTab("tiers")}
-          className={`pb-2 px-3 text-sm font-bold border-b-2 transition-all ${
-            activeTab === "tiers"
-              ? "border-sky-600 text-sky-600 dark:text-sky-400"
-              : "border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-zinc-200"
-          }`}
-        >
-          Katalog Paket Langganan SaaS
-        </button>
-        <button
           onClick={() => setActiveTab("active_tenants")}
           className={`pb-2 px-3 text-sm font-bold border-b-2 transition-all ${
             activeTab === "active_tenants"
@@ -195,11 +193,100 @@ export default function SubscriptionsPage() {
               : "border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-zinc-200"
           }`}
         >
-          Status Langganan Mitra ({TENANT_SUBSCRIPTIONS.length})
+          Status Langganan Mitra Riil ({tenants.length})
+        </button>
+        <button
+          onClick={() => setActiveTab("tiers")}
+          className={`pb-2 px-3 text-sm font-bold border-b-2 transition-all ${
+            activeTab === "tiers"
+              ? "border-sky-600 text-sky-600 dark:text-sky-400"
+              : "border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-zinc-200"
+          }`}
+        >
+          Katalog Paket Langganan
         </button>
       </div>
 
-      {activeTab === "tiers" ? (
+      {activeTab === "active_tenants" ? (
+        loading ? (
+          <div className="py-16 text-center text-slate-500">
+            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-sky-600" />
+            <p className="text-xs">Memuat data langganan dari database...</p>
+          </div>
+        ) : tenants.length === 0 ? (
+          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-12 text-center text-slate-500">
+            <Package className="w-10 h-10 text-slate-400 mx-auto mb-2" />
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Belum Ada Tenant Terdaftar</h3>
+            <p className="text-xs mt-1">Daftarkan mitra baru melalui menu Manajemen Mitra.</p>
+          </div>
+        ) : (
+          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-xs">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-slate-50 dark:bg-zinc-800/50 text-slate-600 dark:text-zinc-300 text-xs font-semibold uppercase tracking-wider">
+                <tr>
+                  <th className="px-6 py-4">Nama Mitra</th>
+                  <th className="px-6 py-4">Paket Aktif</th>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4">Tipe Database</th>
+                  <th className="px-6 py-4">Terdaftar Sejak</th>
+                  <th className="px-6 py-4 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-zinc-800">
+                {tenants.map((item) => (
+                  <tr key={item.id} className="hover:bg-slate-50/50 dark:hover:bg-zinc-800/30">
+                    <td className="px-6 py-4">
+                      <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <Building2 className="w-4 h-4 text-sky-600" />
+                        <span>{item.namaMitra}</span>
+                      </div>
+                      <span className="text-xs text-slate-400 font-mono">@{item.slug} • {item.kota}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold px-2.5 py-1 rounded-lg text-xs bg-sky-50 dark:bg-sky-950 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 uppercase">
+                        Paket {item.paketLangganan}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      {item.status === "aktif" ? (
+                        <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600">
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Aktif
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-600">
+                          <Clock className="w-3.5 h-3.5" /> {item.status}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-xs font-medium text-slate-700 dark:text-zinc-300">
+                      {item.hasDedicatedDb ? (
+                        <span className="text-emerald-600 font-bold">Dedicated DB</span>
+                      ) : (
+                        <span className="text-slate-500">Shared Schema</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-xs text-slate-500">
+                      {new Date(item.createdAt).toLocaleDateString("id-ID", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <Link
+                        href={`/tenants?edit=${item.id}`}
+                        className="text-xs font-bold text-sky-600 dark:text-sky-400 hover:underline"
+                      >
+                        Ubah Paket
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )
+      ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {TIERS.map((tier) => (
             <div
@@ -258,62 +345,6 @@ export default function SubscriptionsPage() {
               </div>
             </div>
           ))}
-        </div>
-      ) : (
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-xs">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 dark:bg-zinc-800/50 text-slate-600 dark:text-zinc-300 text-xs font-semibold uppercase tracking-wider">
-              <tr>
-                <th className="px-6 py-4">Nama Mitra</th>
-                <th className="px-6 py-4">Paket Aktif</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4">Periode Berlaku</th>
-                <th className="px-6 py-4">Metode Pembayaran</th>
-                <th className="px-6 py-4 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-zinc-800">
-              {TENANT_SUBSCRIPTIONS.map((item) => (
-                <tr key={item.id} className="hover:bg-slate-50/50 dark:hover:bg-zinc-800/30">
-                  <td className="px-6 py-4">
-                    <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                      <Building2 className="w-4 h-4 text-sky-600" />
-                      <span>{item.namaMitra}</span>
-                    </div>
-                    <span className="text-xs text-slate-400 font-mono">slug: {item.slug}</span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="font-bold px-2.5 py-1 rounded-lg text-xs bg-sky-50 dark:bg-sky-950 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
-                      Paket {item.paket}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    {item.status === "aktif" ? (
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600">
-                        <CheckCircle2 className="w-3.5 h-3.5" /> Aktif
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-600">
-                        <Clock className="w-3.5 h-3.5" /> Trial 30 Hari
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 text-xs text-slate-600 dark:text-zinc-300">
-                    <div className="font-medium">{item.periodeMulai} s/d</div>
-                    <div className="text-slate-400">{item.periodeBerakhir}</div>
-                  </td>
-                  <td className="px-6 py-4 text-xs font-medium text-slate-700 dark:text-zinc-300">
-                    {item.metodeBayar}
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <button className="text-xs font-bold text-sky-600 dark:text-sky-400 hover:underline">
-                      Perpanjang
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
       )}
     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   CreditCard,
@@ -17,106 +17,104 @@ import {
   DollarSign,
   ArrowUpRight,
   RefreshCw,
+  Loader2,
 } from "lucide-react";
 
-interface SaasInvoice {
-  id: string;
-  invoiceNo: string;
-  tenantName: string;
-  tenantSlug: string;
-  tier: string;
-  nominal: number;
-  tanggalTerbit: string;
-  jatuhTempo: string;
-  status: "lunas" | "menunggu" | "overdue";
-  metode: string;
+interface SaasLedgerItem {
+  id: number;
+  tenantId: string;
+  tipe: string;
+  nominalGross: number;
+  feeGateway: number;
+  feePlatform: number;
+  nominalNet: number;
+  keterangan: string | null;
+  createdAt: string;
+  tenant: {
+    namaMitra: string;
+    slug: string;
+    paketLangganan: string;
+  };
 }
 
-const INVOICE_DATA: SaasInvoice[] = [
-  {
-    id: "inv-01",
-    invoiceNo: "INV-SAAS/202611/001",
-    tenantName: "UPS HERU Kota Depok",
-    tenantSlug: "upsheru",
-    tier: "Pro",
-    nominal: 1250000,
-    tanggalTerbit: "01 Nov 2026",
-    jatuhTempo: "10 Nov 2026",
-    status: "lunas",
-    metode: "VA Mandiri (Duitku)",
-  },
-  {
-    id: "inv-02",
-    invoiceNo: "INV-SAAS/202611/002",
-    tenantName: "Bank Sampah Berkah Mandiri",
-    tenantSlug: "bs-berkah",
-    tier: "Starter",
-    nominal: 349000,
-    tanggalTerbit: "05 Nov 2026",
-    jatuhTempo: "15 Nov 2026",
-    status: "menunggu",
-    metode: "QRIS Dinamis",
-  },
-  {
-    id: "inv-03",
-    invoiceNo: "INV-SAAS/202611/003",
-    tenantName: "TPS 3R Sukamaju Lestari",
-    tenantSlug: "tps-sukamaju",
-    tier: "Pro",
-    nominal: 1250000,
-    tanggalTerbit: "28 Okt 2026",
-    jatuhTempo: "07 Nov 2026",
-    status: "overdue",
-    metode: "Transfer Bank",
-  },
-];
-
 export default function SaasBillingPage() {
-  const [invoices, setInvoices] = useState<SaasInvoice[]>(INVOICE_DATA);
-  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [ledgers, setLedgers] = useState<SaasLedgerItem[]>([]);
+  const [tenants, setTenants] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const [form, setForm] = useState({
-    tenantName: "",
-    tier: "Pro",
-    nominal: 1250000,
-    jatuhTempo: "2026-11-25",
+    tenantId: "",
+    nominalGross: 1250000,
+    keterangan: "Tagihan SaaS Paket Pro Periode Berjalan",
   });
 
-  const filteredInvoices = invoices.filter((inv) => {
-    const matchStatus = filterStatus === "all" || inv.status === filterStatus;
-    const matchSearch =
-      inv.invoiceNo.toLowerCase().includes(search.toLowerCase()) ||
-      inv.tenantName.toLowerCase().includes(search.toLowerCase());
-    return matchStatus && matchSearch;
-  });
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [resLedgers, resTower] = await Promise.all([
+        fetch("/api/core/billing"),
+        fetch("/api/core/control-tower"),
+      ]);
+      const jsonLedgers = await resLedgers.json();
+      const jsonTower = await resTower.json();
 
-  const totalDitagihkan = invoices.reduce((acc, i) => acc + i.nominal, 0);
-  const totalLunas = invoices
-    .filter((i) => i.status === "lunas")
-    .reduce((acc, i) => acc + i.nominal, 0);
-  const totalPiutang = invoices
-    .filter((i) => i.status !== "lunas")
-    .reduce((acc, i) => acc + i.nominal, 0);
-
-  const handleCreateInvoice = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newInv: SaasInvoice = {
-      id: `inv-${Date.now()}`,
-      invoiceNo: `INV-SAAS/202611/${String(invoices.length + 1).padStart(3, "0")}`,
-      tenantName: form.tenantName || "Mitra Baru",
-      tenantSlug: form.tenantName.toLowerCase().replace(/\s+/g, "-"),
-      tier: form.tier,
-      nominal: Number(form.nominal),
-      tanggalTerbit: "15 Nov 2026",
-      jatuhTempo: form.jatuhTempo,
-      status: "menunggu",
-      metode: "Payment Gateway",
-    };
-    setInvoices([newInv, ...invoices]);
-    setShowModal(false);
+      if (jsonLedgers.success) {
+        setLedgers(jsonLedgers.ledgers || []);
+      }
+      if (jsonTower.success && jsonTower.data) {
+        setTenants(jsonTower.data.tenants || []);
+        if (jsonTower.data.tenants.length > 0 && !form.tenantId) {
+          setForm((f) => ({ ...f, tenantId: jsonTower.data.tenants[0].id }));
+        }
+      }
+    } catch (err) {
+      console.error("Gagal memuat billing data:", err);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const handleCreateInvoice = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/core/billing", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setShowModal(false);
+        loadData();
+      } else {
+        alert(data.error || "Gagal menerbitkan invoice");
+      }
+    } catch (err: any) {
+      alert("Terjadi kesalahan: " + err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const filtered = ledgers.filter((item) => {
+    const q = search.toLowerCase();
+    return (
+      (item.keterangan || "").toLowerCase().includes(q) ||
+      (item.tenant?.namaMitra || "").toLowerCase().includes(q) ||
+      (item.tenant?.slug || "").toLowerCase().includes(q)
+    );
+  });
+
+  const totalTagihanGross = ledgers.reduce((acc, i) => acc + (i.nominalGross || 0), 0);
+  const totalPlatformFee = ledgers.reduce((acc, i) => acc + (i.feePlatform || 0), 0);
 
   return (
     <div className="space-y-6 pb-12 font-sans">
@@ -126,13 +124,13 @@ export default function SaasBillingPage() {
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-300 text-xs font-semibold">
               <CreditCard className="w-3.5 h-3.5 text-sky-400" />
-              <span>SaaS Control Tower — Invoicing & Billing</span>
+              <span>SaaS Control Tower — Invoicing & Billing Riil</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
               Billing & Tagihan Langganan SaaS
             </h1>
             <p className="text-slate-300 text-sm max-w-2xl leading-relaxed">
-              Menerbitkan invoice langganan bulanan kepada TPS 3R dan Bank Sampah, memantau pembayaran otomatis, dan rekonsiliasi piutang platform.
+              Menerbitkan invoice langganan platform kepada mitra dan memantau rekonsiliasi mutasi virtual ledger di database.
             </p>
           </div>
 
@@ -142,7 +140,7 @@ export default function SaasBillingPage() {
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-sm font-semibold shadow-lg shadow-sky-600/30 transition-all"
             >
               <Plus className="w-4 h-4" />
-              <span>Buat Invoice Baru</span>
+              <span>Terbitkan Invoice Baru</span>
             </button>
           </div>
         </div>
@@ -152,37 +150,37 @@ export default function SaasBillingPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
-            Total Tagihan SaaS Bulan Ini
+            Total Nilai Faktur / Billing
           </span>
           <div className="text-2xl font-black text-slate-900 dark:text-white mt-1">
-            Rp {totalDitagihkan.toLocaleString("id-ID")}
+            {loading ? "..." : `Rp ${totalTagihanGross.toLocaleString("id-ID")}`}
           </div>
           <p className="text-xs text-slate-500 dark:text-zinc-400 mt-2">
-            {invoices.length} Faktur invoice diterbitkan
+            {ledgers.length} Catatan ledger di database
           </p>
         </div>
 
         <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs">
           <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-            Penerimaan Terverifikasi
+            Komisi & Fee SaaS Platform
           </span>
           <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">
-            Rp {totalLunas.toLocaleString("id-ID")}
+            {loading ? "..." : `Rp ${totalPlatformFee.toLocaleString("id-ID")}`}
           </div>
           <p className="text-xs text-slate-500 dark:text-zinc-400 mt-2">
-            Selesai via QRIS & Virtual Account
+            Pendapatan hak platform O2W HERO
           </p>
         </div>
 
         <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs">
-          <span className="text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
-            Piutang Tertunda / Overdue
+          <span className="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">
+            Mitra Aktif Ditagih
           </span>
-          <div className="text-2xl font-black text-rose-600 dark:text-rose-400 mt-1">
-            Rp {totalPiutang.toLocaleString("id-ID")}
+          <div className="text-2xl font-black text-sky-600 dark:text-sky-400 mt-1">
+            {loading ? "..." : `${tenants.filter((t) => t.status === "aktif").length} Tenant`}
           </div>
           <p className="text-xs text-slate-500 dark:text-zinc-400 mt-2">
-            Perlu tindak lanjut notifikasi WA
+            Siap perpanjangan siklus berjalan
           </p>
         </div>
       </div>
@@ -196,111 +194,85 @@ export default function SaasBillingPage() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Cari nomor invoice atau mitra..."
+              placeholder="Cari nama mitra atau invoice..."
               className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800 text-slate-900 dark:text-zinc-100 focus:outline-hidden focus:ring-2 focus:ring-sky-500"
             />
           </div>
 
-          <div className="flex items-center gap-2">
-            {[
-              { id: "all", label: "Semua" },
-              { id: "lunas", label: "Lunas" },
-              { id: "menunggu", label: "Menunggu" },
-              { id: "overdue", label: "Lewat Tempo" },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setFilterStatus(tab.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                  filterStatus === tab.id
-                    ? "bg-sky-600 text-white shadow-xs"
-                    : "bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 hover:bg-slate-200"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+          <button
+            onClick={loadData}
+            disabled={loading}
+            className="text-xs font-semibold text-slate-600 dark:text-zinc-300 hover:text-sky-600 flex items-center gap-1"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
+            <span>Sinkronkan Mutasi</span>
+          </button>
         </div>
 
-        <table className="w-full text-left text-sm">
-          <thead className="bg-slate-50 dark:bg-zinc-800/50 text-slate-600 dark:text-zinc-300 text-xs font-semibold uppercase tracking-wider">
-            <tr>
-              <th className="px-6 py-4">Nomor Invoice</th>
-              <th className="px-6 py-4">Mitra / Tenant</th>
-              <th className="px-6 py-4">Paket & Nominal</th>
-              <th className="px-6 py-4">Jatuh Tempo</th>
-              <th className="px-6 py-4">Status</th>
-              <th className="px-6 py-4 text-right">Aksi</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-zinc-800">
-            {filteredInvoices.map((inv) => (
-              <tr key={inv.id} className="hover:bg-slate-50/50 dark:hover:bg-zinc-800/30">
-                <td className="px-6 py-4">
-                  <div className="font-mono font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <Receipt className="w-4 h-4 text-sky-600" />
-                    <span>{inv.invoiceNo}</span>
-                  </div>
-                  <span className="text-xs text-slate-400">Terbit: {inv.tanggalTerbit}</span>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="font-bold text-slate-800 dark:text-zinc-200">
-                    {inv.tenantName}
-                  </div>
-                  <span className="text-xs text-slate-400 font-mono">@{inv.tenantSlug}</span>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="font-extrabold text-slate-900 dark:text-white">
-                    Rp {inv.nominal.toLocaleString("id-ID")}
-                  </div>
-                  <span className="text-xs text-sky-600 dark:text-sky-400 font-semibold">
-                    Paket {inv.tier}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-xs font-medium text-slate-600 dark:text-zinc-300">
-                  {inv.jatuhTempo}
-                </td>
-                <td className="px-6 py-4">
-                  {inv.status === "lunas" && (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200">
-                      <CheckCircle2 className="w-3.5 h-3.5" /> Lunas
-                    </span>
-                  )}
-                  {inv.status === "menunggu" && (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-200">
-                      <Clock className="w-3.5 h-3.5" /> Menunggu
-                    </span>
-                  )}
-                  {inv.status === "overdue" && (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border border-rose-200">
-                      <AlertTriangle className="w-3.5 h-3.5" /> Overdue
-                    </span>
-                  )}
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    <button
-                      title="Kirim Pengingat WhatsApp"
-                      className="p-2 rounded-lg text-slate-500 hover:text-emerald-600 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
-                    >
-                      <Send className="w-4 h-4" />
-                    </button>
-                    <button
-                      title="Download Kuitansi PDF"
-                      className="p-2 rounded-lg text-slate-500 hover:text-sky-600 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
-                    >
-                      <Download className="w-4 h-4" />
-                    </button>
-                  </div>
-                </td>
+        {loading ? (
+          <div className="py-16 text-center text-slate-500">
+            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-sky-600" />
+            <p className="text-xs">Memuat riwayat billing dari database...</p>
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="p-12 text-center text-slate-500">
+            <Receipt className="w-10 h-10 text-slate-300 mx-auto mb-2" />
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Belum Ada Faktur / Invoice Diterbitkan</h3>
+            <p className="text-xs mt-1">Gunakan tombol "Terbitkan Invoice Baru" di atas untuk menagih biaya SaaS mitra.</p>
+          </div>
+        ) : (
+          <table className="w-full text-left text-sm">
+            <thead className="bg-slate-50 dark:bg-zinc-800/50 text-slate-600 dark:text-zinc-300 text-xs font-semibold uppercase tracking-wider">
+              <tr>
+                <th className="px-6 py-4">ID / Referensi</th>
+                <th className="px-6 py-4">Mitra / Tenant</th>
+                <th className="px-6 py-4">Tipe & Keterangan</th>
+                <th className="px-6 py-4">Nominal Gross</th>
+                <th className="px-6 py-4">Fee O2W</th>
+                <th className="px-6 py-4">Tanggal</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-slate-100 dark:divide-zinc-800">
+              {filtered.map((inv) => (
+                <tr key={inv.id} className="hover:bg-slate-50/50 dark:hover:bg-zinc-800/30">
+                  <td className="px-6 py-4 font-mono font-bold text-slate-900 dark:text-white">
+                    #INV-{inv.id}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="font-bold text-slate-800 dark:text-zinc-200">
+                      {inv.tenant?.namaMitra || "Tenant"}
+                    </div>
+                    <span className="text-xs text-slate-400 font-mono">@{inv.tenant?.slug}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="font-bold text-xs uppercase px-2 py-0.5 rounded-md bg-sky-50 dark:bg-sky-950 text-sky-700 dark:text-sky-300 mr-2">
+                      {inv.tipe}
+                    </span>
+                    <span className="text-xs text-slate-600 dark:text-zinc-300">{inv.keterangan}</span>
+                  </td>
+                  <td className="px-6 py-4 font-black text-slate-900 dark:text-white">
+                    Rp {Number(inv.nominalGross).toLocaleString("id-ID")}
+                  </td>
+                  <td className="px-6 py-4 font-bold text-emerald-600 dark:text-emerald-400">
+                    Rp {Number(inv.feePlatform).toLocaleString("id-ID")}
+                  </td>
+                  <td className="px-6 py-4 text-xs text-slate-400">
+                    {new Date(inv.createdAt).toLocaleString("id-ID", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
 
-      {/* Modal Tambah Invoice Baru */}
+      {/* Modal Tambah Invoice */}
       {showModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
@@ -310,46 +282,44 @@ export default function SaasBillingPage() {
             <form onSubmit={handleCreateInvoice} className="space-y-3 text-xs">
               <div>
                 <label className="block font-bold text-slate-700 dark:text-zinc-300 mb-1">
-                  Nama Mitra / Instansi
+                  Pilih Mitra / Tenant
+                </label>
+                <select
+                  required
+                  value={form.tenantId}
+                  onChange={(e) => setForm({ ...form, tenantId: e.target.value })}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800 text-slate-900 dark:text-white"
+                >
+                  {tenants.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.namaMitra} ({t.slug}) — Paket {t.paketLangganan}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-zinc-300 mb-1">
+                  Nominal Tagihan (Rp)
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   required
-                  placeholder="Misal: TPS 3R Sukamaju"
-                  value={form.tenantName}
-                  onChange={(e) => setForm({ ...form, tenantName: e.target.value })}
+                  value={form.nominalGross}
+                  onChange={(e) => setForm({ ...form, nominalGross: Number(e.target.value) })}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800 text-slate-900 dark:text-white"
                 />
               </div>
 
               <div>
                 <label className="block font-bold text-slate-700 dark:text-zinc-300 mb-1">
-                  Paket Langganan
-                </label>
-                <select
-                  value={form.tier}
-                  onChange={(e) => {
-                    const t = e.target.value;
-                    const nom = t === "Starter" ? 349000 : t === "Pro" ? 1250000 : 2990000;
-                    setForm({ ...form, tier: t, nominal: nom });
-                  }}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800 text-slate-900 dark:text-white"
-                >
-                  <option value="Starter">Starter (Rp 349.000)</option>
-                  <option value="Pro">Pro (Rp 1.250.000)</option>
-                  <option value="Enterprise">Enterprise (Rp 2.990.000)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block font-bold text-slate-700 dark:text-zinc-300 mb-1">
-                  Tanggal Jatuh Tempo
+                  Keterangan / Deskripsi Tagihan
                 </label>
                 <input
-                  type="date"
+                  type="text"
                   required
-                  value={form.jatuhTempo}
-                  onChange={(e) => setForm({ ...form, jatuhTempo: e.target.value })}
+                  value={form.keterangan}
+                  onChange={(e) => setForm({ ...form, keterangan: e.target.value })}
                   className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800 text-slate-900 dark:text-white"
                 />
               </div>
@@ -358,15 +328,17 @@ export default function SaasBillingPage() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
+                  disabled={submitting}
                   className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
+                  disabled={submitting}
                   className="px-4 py-2 rounded-xl text-xs font-bold bg-sky-600 hover:bg-sky-500 text-white shadow-md shadow-sky-600/20"
                 >
-                  Terbitkan Invoice
+                  {submitting ? "Menerbitkan..." : "Terbitkan Tagihan"}
                 </button>
               </div>
             </form>

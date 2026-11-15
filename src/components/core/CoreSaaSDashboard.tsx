@@ -257,10 +257,10 @@ export default function CoreSaaSDashboard({ stats }: { stats: CoreStatsData }) {
             </span>
           </div>
           <div className="text-2xl font-black text-white">
-            Rp {(stats.mrrEstimasi || stats.activeTenants * 899000).toLocaleString("id-ID")}
+            Rp {(stats.mrrEstimasi || 0).toLocaleString("id-ID")}
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Proyeksi recurring bulanan ({stats.activeTenants} mitra aktif)
+            Recurring bulanan ({stats.activeTenants} mitra aktif)
           </p>
         </div>
 
@@ -276,10 +276,10 @@ export default function CoreSaaSDashboard({ stats }: { stats: CoreStatsData }) {
             </span>
           </div>
           <div className="text-2xl font-black text-white">
-            Rp {(stats.grossVolumeBulan || stats.estimasiWargaEkosistem * 30000).toLocaleString("id-ID")}
+            Rp {(stats.grossVolumeBulan || 0).toLocaleString("id-ID")}
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Total perputaran kas retribusi warga / bulan
+            Total perputaran kas retribusi warga terverifikasi
           </p>
         </div>
 
@@ -295,7 +295,7 @@ export default function CoreSaaSDashboard({ stats }: { stats: CoreStatsData }) {
             </span>
           </div>
           <div className="text-2xl font-black text-white">
-            {(stats.tonaseSampahBulan || Math.round((stats.estimasiWargaEkosistem * 2.5 * 30) / 1000)).toLocaleString("id-ID")} Ton
+            {(stats.tonaseSampahBulan || 0).toLocaleString("id-ID")} Ton
           </div>
           <p className="text-xs text-slate-400 mt-1">
             Sampah terangkut &amp; dialihkan dari TPA
@@ -314,7 +314,7 @@ export default function CoreSaaSDashboard({ stats }: { stats: CoreStatsData }) {
             </span>
           </div>
           <div className="text-2xl font-black text-white">
-            {(stats.reduksiKarbonTon || Math.round(((stats.estimasiWargaEkosistem * 2.5 * 30) / 1000) * 0.85)).toLocaleString("id-ID")} Ton CO2e
+            {(stats.reduksiKarbonTon || 0).toLocaleString("id-ID")} Ton CO2e
           </div>
           <p className="text-xs text-slate-400 mt-1">
             Indikator pelaporan DLH &amp; KLHK SIPSN
