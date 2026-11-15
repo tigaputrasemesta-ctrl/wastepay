@@ -19,6 +19,7 @@ export type SessionUser = {
   email: string;
   nama: string;
   role: string;
+  tenantId?: string | null;
 };
 
 /**

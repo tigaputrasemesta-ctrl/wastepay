@@ -38,8 +38,18 @@ import {
   Moon,
   ArrowRight,
   Command,
+  Globe,
+  AlertTriangle,
+  Package,
+  CreditCard,
+  TrendingUp,
+  Percent,
+  UserCheck2,
+  Leaf,
+  Server,
 } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
+import { isCoreHostname } from "@/lib/tenant/url-helper";
 
 type CommandItem = {
   id: string;
@@ -65,8 +75,7 @@ export default function AdminCommandSearch() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const h = window.location.hostname.toLowerCase();
-      setIsCore(h.includes("o2whero.com") || h.startsWith("o2w-") || h.includes("core."));
+      setIsCore(isCoreHostname(window.location.hostname));
     }
   }, []);
 
@@ -308,6 +317,87 @@ export default function AdminCommandSearch() {
         href: "/tenants",
       },
       {
+        id: "nav-ecosystem-map",
+        title: "Peta Ekosistem Mitra",
+        desc: "Peta persebaran TPS 3R, Bank Sampah, dan KSM di Indonesia",
+        category: "Navigasi",
+        keywords: ["peta", "ekosistem", "mitra", "indonesia", "gis", "persebaran"],
+        icon: Globe,
+        href: "/ecosystem-map",
+      },
+      {
+        id: "nav-notifikasi-saas",
+        title: "Alert & Insiden SaaS",
+        desc: "Monitoring status koneksi, warning kuota, dan alert tenant",
+        category: "Navigasi",
+        keywords: ["alert", "insiden", "notifikasi", "saas", "peringatan", "kuota"],
+        icon: AlertTriangle,
+        href: "/notifikasi-saas",
+      },
+      {
+        id: "nav-subscriptions",
+        title: "Paket & Langganan SaaS",
+        desc: "Manajemen paket Starter, Pro, Enterprise dan kuota tenant",
+        category: "Navigasi",
+        keywords: ["paket", "langganan", "subscriptions", "lisensi", "tier", "mrr"],
+        icon: Package,
+        href: "/subscriptions",
+      },
+      {
+        id: "nav-saas-billing",
+        title: "SaaS Billing & Invoices",
+        desc: "Faktur piutang, histori pembayaran lisensi, dan tagihan tenant",
+        category: "Navigasi",
+        keywords: ["billing", "invoice", "faktur", "piutang", "pembayaran saas", "ledger"],
+        icon: CreditCard,
+        href: "/saas-billing",
+      },
+      {
+        id: "nav-revenue",
+        title: "Revenue Intelligence",
+        desc: "Monitoring MRR, ARR, micro-fee QRIS/VA, dan dana escrow mitra",
+        category: "Navigasi",
+        keywords: ["revenue", "pendapatan", "keuangan", "mrr", "arr", "escrow", "duitku", "fee"],
+        icon: TrendingUp,
+        href: "/revenue",
+      },
+      {
+        id: "nav-tenant-roi",
+        title: "Tenant Performance & ROI",
+        desc: "Analisis collection rate, rasio digital, dan efisiensi biaya mitra",
+        category: "Navigasi",
+        keywords: ["roi", "performa", "collection rate", "efisiensi", "kinerja mitra"],
+        icon: Percent,
+        href: "/tenant-roi",
+      },
+      {
+        id: "nav-crm-prospek",
+        title: "CRM & Pipeline Kemitraan",
+        desc: "Pipeline pendaftaran mitra baru dari Bank Sampah, TPS 3R, dan DLH",
+        category: "Navigasi",
+        keywords: ["crm", "prospek", "lead", "kemitraan", "onboarding", "registrasi mitra"],
+        icon: UserCheck2,
+        href: "/crm-prospek",
+      },
+      {
+        id: "nav-environmental-impact",
+        title: "Dampak Lingkungan (SIPSN)",
+        desc: "Tonase sampah terkelola, reduksi emisi CO2, dan laporan DLH",
+        category: "Navigasi",
+        keywords: ["dampak", "lingkungan", "sipsn", "klhk", "emisi", "karbon", "tonase", "dlh"],
+        icon: Leaf,
+        href: "/environmental-impact",
+      },
+      {
+        id: "nav-platform-settings",
+        title: "Platform Settings & Monitoring",
+        desc: "Kesehatan database pooler, memory, error log, dan status server",
+        category: "Navigasi",
+        keywords: ["platform", "settings", "infrastruktur", "pooler", "server", "health", "database"],
+        icon: Server,
+        href: "/platform-settings",
+      },
+      {
         id: "nav-setting",
         title: "Pengaturan Sistem",
         desc: "Konfigurasi instansi UPS HERU, rekening, dan backup",
@@ -367,10 +457,26 @@ export default function AdminCommandSearch() {
 
   // Filter items berdasarkan konteks Core SaaS vs Tenant dan query pencarian
   const filteredItems = useMemo(() => {
+    const CORE_ALLOWED_PREFIXES = [
+      "/dashboard",
+      "/ecosystem-map",
+      "/notifikasi-saas",
+      "/tenants",
+      "/subscriptions",
+      "/saas-billing",
+      "/revenue",
+      "/tenant-roi",
+      "/crm-prospek",
+      "/environmental-impact",
+      "/users",
+      "/audit-log",
+      "/platform-settings",
+    ];
+
     const baseItems = isCore
       ? commandItems.filter((item) => {
           if (!item.href) return true; // actions (seperti ganti tema) tetap diizinkan
-          return ["/dashboard", "/tenants", "/users", "/audit-log"].some((prefix) =>
+          return CORE_ALLOWED_PREFIXES.some((prefix) =>
             item.href === prefix || item.href?.startsWith(prefix + "/")
           );
         })

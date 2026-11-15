@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getSession } from "@/lib/auth";
+import { getSession, hashPassword } from "@/lib/auth";
 import { buildCorsHeaders } from "@/lib/server/wastepay-backend-core-services";
 import { KNOWN_TENANTS, registerDynamicTenant, dbTenantToConfig } from "@/lib/tenant";
 
@@ -156,11 +156,83 @@ export async function POST(request: Request) {
     // Daftarkan langsung ke in-memory cache agar resolusi domain aktif instan tanpa restart
     registerDynamicTenant(dbTenantToConfig(newTenant));
 
+    // Otomatisasi Akun Admin Pertama Mitra (Onboarding Wizard)
+    let initialAdminUser: any = null;
+    const initialPassword = body.adminPassword || "Mitra123!";
+    if (email && String(email).trim()) {
+      const cleanEmail = String(email).trim().toLowerCase();
+      const existingUser = await prisma.user.findUnique({ where: { email: cleanEmail } });
+      if (!existingUser) {
+        const hashedPassword = await hashPassword(initialPassword);
+        initialAdminUser = await prisma.user.create({
+          data: {
+            email: cleanEmail,
+            password: hashedPassword,
+            nama: penanggungJawab ? String(penanggungJawab).trim() : `Admin ${namaMitra}`,
+            role: "admin",
+            noTelepon: noTelepon ? String(noTelepon).trim() : null,
+            tenantId: newTenant.id,
+          },
+          select: {
+            id: true,
+            email: true,
+            nama: true,
+            role: true,
+          },
+        });
+      }
+    }
+
+    // Inisialisasi Invoice Pertama di TenantLedger
+    try {
+      const planAmount =
+        paketLangganan === "enterprise" ? 2500000 : paketLangganan === "pro" ? 1250000 : 350000;
+      await prisma.tenantLedger.create({
+        data: {
+          tenantId: newTenant.id,
+          tipe: "invoice",
+          jumlah: planAmount,
+          deskripsi: `Inisialisasi Lisensi SaaS Paket ${(paketLangganan || "Starter").toUpperCase()} - ${newTenant.namaMitra}`,
+          status: "lunas",
+          referensi: `INIT-${cleanSlug.toUpperCase()}`,
+          tanggal: new Date(),
+        },
+      });
+    } catch (ledgerErr) {
+      console.warn("[Core API] Gagal mencatat ledger awal tenant:", ledgerErr);
+    }
+
+    // Audit Log Aktivitas Superadmin
+    try {
+      await prisma.auditLog.create({
+        data: {
+          aksi: "create",
+          entitas: "Tenant",
+          entitasId: String(newTenant.id),
+          dataBaru: JSON.stringify({
+            id: newTenant.id,
+            slug: newTenant.slug,
+            namaMitra: newTenant.namaMitra,
+            adminEmail: initialAdminUser?.email || null,
+          }),
+          userId: session.id,
+        },
+      });
+    } catch {
+      // Abaikan jika audit log gagal
+    }
+
     return NextResponse.json(
       {
         success: true,
-        message: `Mitra ${newTenant.namaMitra} berhasil didaftarkan dengan ID ${newTenant.id}!`,
+        message: `Mitra ${newTenant.namaMitra} berhasil didaftarkan dan diaktifkan!`,
         tenant: newTenant,
+        initialAdmin: initialAdminUser
+          ? {
+              email: initialAdminUser.email,
+              tempPassword: initialPassword,
+            }
+          : null,
       },
       { status: 201, headers: corsHeaders }
     );

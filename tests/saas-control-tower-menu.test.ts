@@ -35,4 +35,26 @@ describe("SaaS Control Tower Menu & Module RBAC", () => {
       expect(petugasMenus).not.toContain(key);
     }
   });
+
+  it("verifies all control tower module routes match single-codebase conventions", () => {
+    const EXPECTED_ROUTES: Record<string, string> = {
+      "ecosystem-map": "/ecosystem-map",
+      "notifikasi-saas": "/notifikasi-saas",
+      subscriptions: "/subscriptions",
+      "saas-billing": "/saas-billing",
+      revenue: "/revenue",
+      "tenant-roi": "/tenant-roi",
+      "crm-prospek": "/crm-prospek",
+      "environmental-impact": "/environmental-impact",
+      "platform-settings": "/platform-settings",
+      tenants: "/tenants",
+      users: "/users",
+      "audit-log": "/audit-log",
+    };
+
+    for (const [key, path] of Object.entries(EXPECTED_ROUTES)) {
+      expect(path).toMatch(/^\/[a-z0-9-]+$/);
+      expect(CONTROL_TOWER_KEYS).toContain(key);
+    }
+  });
 });

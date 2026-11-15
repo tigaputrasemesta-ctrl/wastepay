@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { formatDate } from "@/lib/utils";
 import { ROLE_LABELS } from "@/lib/rbac";
+import { isCoreHostname } from "@/lib/tenant/url-helper";
 import { useToast } from "@/components/Toast";
 import {
   X,
@@ -89,16 +90,10 @@ export default function UsersPage() {
   // Deteksi Domain Platform (O2W HERO Core vs Tenant)
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const h = window.location.hostname.toLowerCase();
-      const detectedCore =
-        h.includes("o2whero.com") ||
-        h.startsWith("o2w-") ||
-        h.includes("core.") ||
-        h.includes("localhost") ||
-        h.includes("127.0.0.1");
+      const detectedCore = isCoreHostname(window.location.hostname);
       setIsCore(detectedCore);
-      // Jika diakses dari domain O2W Hero, default tab selalu Akun Internal O2W
-      setActiveScope(detectedCore ? "core" : "all");
+      // Jika diakses dari domain O2W Hero, default tab selalu Akun Internal O2W; jika tenant, default tab mitra
+      setActiveScope(detectedCore ? "core" : "mitra");
     }
   }, []);
 
@@ -380,24 +375,35 @@ export default function UsersPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="p-1.5 bg-purple-100 text-purple-700 rounded-lg">
+            <span className={`p-1.5 ${isCore ? "bg-purple-100 text-purple-700" : "bg-emerald-100 text-emerald-700"} rounded-lg`}>
               <ShieldCheck className="w-5 h-5" />
             </span>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 leading-none">
-              Kelola Akun Admin
+              {isCore ? "Kelola Akun Admin Platform" : "Kelola Staf & Petugas TPS 3R"}
             </h1>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 font-medium">
-            Pusat manajemen hak akses: Akun Tim Internal Platform O2W HERO & Administrator Mitra Tenant
+            {isCore
+              ? "Pusat manajemen hak akses: Akun Tim Internal Platform O2W HERO & Administrator Mitra Tenant"
+              : "Pusat manajemen staf operasional: Admin loket, kasir pembayaran, dan petugas pengangkutan TPS 3R"}
           </p>
         </div>
 
         <button
           onClick={() => {
             setAddError("");
+            if (!isCore) {
+              const firstTenant = tenants[0]?.id || "tenant-pilot-upsheru";
+              setAddForm((prev) => ({
+                ...prev,
+                entityType: "mitra",
+                tenantId: firstTenant,
+                role: "admin",
+              }));
+            }
             setShowAddModal(true);
           }}
-          className="bg-purple-700 hover:bg-purple-800 text-white px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center justify-center gap-2 self-start sm:self-auto"
+          className={`${isCore ? "bg-purple-700 hover:bg-purple-800" : "bg-emerald-700 hover:bg-emerald-800"} text-white px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center justify-center gap-2 self-start sm:self-auto`}
         >
           <Plus className="w-4 h-4" />
           Tambah Pengguna
@@ -409,14 +415,18 @@ export default function UsersPage() {
         <div className="bg-white rounded-xl border border-purple-100 p-4 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[11px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Tim Platform O2W
+              {isCore ? "Tim Platform O2W" : "Admin Mitra"}
             </span>
             <span className="p-1 bg-purple-50 text-purple-600 rounded-md">
               <ShieldCheck className="w-4 h-4" />
             </span>
           </div>
-          <p className="text-2xl font-black text-purple-900 mt-2">{metrics.coreCount}</p>
-          <p className="text-[11px] text-purple-600 mt-0.5">Superadmin & Core Team</p>
+          <p className="text-2xl font-black text-purple-900 mt-2">
+            {isCore ? metrics.coreCount : metrics.mitraAdminCount}
+          </p>
+          <p className="text-[11px] text-purple-600 mt-0.5">
+            {isCore ? "Superadmin & Core Team" : "Pengelola & Kasir Loket"}
+          </p>
         </div>
 
         <div className="bg-white rounded-xl border border-sky-100 p-4 shadow-xs">
@@ -463,27 +473,29 @@ export default function UsersPage() {
 
       {/* Scope Navigation Tabs */}
       <div className="bg-slate-100/80 p-1.5 rounded-2xl flex flex-wrap gap-1 border border-slate-200">
-        <button
-          onClick={() => {
-            setActiveScope("core");
-            setSelectedRoleFilter("all");
-          }}
-          className={`flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 ${
-            activeScope === "core"
-              ? "bg-purple-700 text-white shadow-sm"
-              : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
-          }`}
-        >
-          <ShieldCheck className="w-4 h-4" />
-          <span>Akun Internal O2W Hero</span>
-          <span
-            className={`px-2 py-0.5 rounded-full text-[10px] ${
-              activeScope === "core" ? "bg-purple-800 text-purple-100" : "bg-slate-200 text-slate-700"
+        {isCore && (
+          <button
+            onClick={() => {
+              setActiveScope("core");
+              setSelectedRoleFilter("all");
+            }}
+            className={`flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+              activeScope === "core"
+                ? "bg-purple-700 text-white shadow-sm"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
             }`}
           >
-            {metrics.coreCount}
-          </span>
-        </button>
+            <ShieldCheck className="w-4 h-4" />
+            <span>Akun Internal O2W Hero</span>
+            <span
+              className={`px-2 py-0.5 rounded-full text-[10px] ${
+                activeScope === "core" ? "bg-purple-800 text-purple-100" : "bg-slate-200 text-slate-700"
+              }`}
+            >
+              {metrics.coreCount}
+            </span>
+          </button>
+        )}
 
         <button
           onClick={() => {
@@ -497,7 +509,7 @@ export default function UsersPage() {
           }`}
         >
           <Building2 className="w-4 h-4" />
-          <span>Administrator Mitra</span>
+          <span>{isCore ? "Administrator Mitra" : "Staf Loket & Kasir"}</span>
           <span
             className={`px-2 py-0.5 rounded-full text-[10px] ${
               activeScope === "mitra" ? "bg-sky-800 text-sky-100" : "bg-slate-200 text-slate-700"
@@ -529,27 +541,29 @@ export default function UsersPage() {
           </span>
         </button>
 
-        <button
-          onClick={() => {
-            setActiveScope("all");
-            setSelectedRoleFilter("all");
-          }}
-          className={`flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 ${
-            activeScope === "all"
-              ? "bg-slate-800 text-white shadow-sm"
-              : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
-          }`}
-        >
-          <Users className="w-4 h-4" />
-          <span>Semua Pengguna</span>
-          <span
-            className={`px-2 py-0.5 rounded-full text-[10px] ${
-              activeScope === "all" ? "bg-slate-900 text-slate-100" : "bg-slate-200 text-slate-700"
+        {isCore && (
+          <button
+            onClick={() => {
+              setActiveScope("all");
+              setSelectedRoleFilter("all");
+            }}
+            className={`flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+              activeScope === "all"
+                ? "bg-slate-800 text-white shadow-sm"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
             }`}
           >
-            {metrics.totalCount}
-          </span>
-        </button>
+            <Users className="w-4 h-4" />
+            <span>Semua Pengguna</span>
+            <span
+              className={`px-2 py-0.5 rounded-full text-[10px] ${
+                activeScope === "all" ? "bg-slate-900 text-slate-100" : "bg-slate-200 text-slate-700"
+              }`}
+            >
+              {metrics.totalCount}
+            </span>
+          </button>
+        )}
       </div>
 
       {/* Notification Banner Info Isolasi */}
@@ -897,62 +911,64 @@ export default function UsersPage() {
               )}
 
               {/* Pilihan Entitas / Scope Akun */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  Tipe Entitas Akun *
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAddForm((prev) => ({
-                        ...prev,
-                        entityType: "core",
-                        tenantId: "tenant-core-o2w",
-                        role: "superadmin",
-                      }));
-                    }}
-                    className={`p-3 rounded-xl border text-left transition flex items-center gap-2.5 ${
-                      addForm.entityType === "core"
-                        ? "border-purple-600 bg-purple-50 text-purple-900 ring-2 ring-purple-600/20"
-                        : "border-slate-200 hover:bg-slate-50 text-slate-700"
-                    }`}
-                  >
-                    <ShieldCheck className="w-5 h-5 text-purple-600 shrink-0" />
-                    <div>
-                      <p className="font-bold text-xs">Platform O2W HERO</p>
-                      <p className="text-[10px] text-slate-500">Tim Internal Core</p>
-                    </div>
-                  </button>
+              {isCore ? (
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                    Tipe Entitas Akun *
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAddForm((prev) => ({
+                          ...prev,
+                          entityType: "core",
+                          tenantId: "tenant-core-o2w",
+                          role: "superadmin",
+                        }));
+                      }}
+                      className={`p-3 rounded-xl border text-left transition flex items-center gap-2.5 ${
+                        addForm.entityType === "core"
+                          ? "border-purple-600 bg-purple-50 text-purple-900 ring-2 ring-purple-600/20"
+                          : "border-slate-200 hover:bg-slate-50 text-slate-700"
+                      }`}
+                    >
+                      <ShieldCheck className="w-5 h-5 text-purple-600 shrink-0" />
+                      <div>
+                        <p className="font-bold text-xs">Platform O2W HERO</p>
+                        <p className="text-[10px] text-slate-500">Tim Internal Core</p>
+                      </div>
+                    </button>
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const firstTenant = tenants.find((t) => t.id !== "tenant-core-o2w")?.id || "tenant-pilot-upsheru";
-                      setAddForm((prev) => ({
-                        ...prev,
-                        entityType: "mitra",
-                        tenantId: firstTenant,
-                        role: "admin",
-                      }));
-                    }}
-                    className={`p-3 rounded-xl border text-left transition flex items-center gap-2.5 ${
-                      addForm.entityType === "mitra"
-                        ? "border-sky-600 bg-sky-50 text-sky-900 ring-2 ring-sky-600/20"
-                        : "border-slate-200 hover:bg-slate-50 text-slate-700"
-                    }`}
-                  >
-                    <Building2 className="w-5 h-5 text-sky-600 shrink-0" />
-                    <div>
-                      <p className="font-bold text-xs">Mitra / Tenant</p>
-                      <p className="text-[10px] text-slate-500">TPS 3R, Bank Sampah</p>
-                    </div>
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const firstTenant = tenants.find((t) => t.id !== "tenant-core-o2w")?.id || "tenant-pilot-upsheru";
+                        setAddForm((prev) => ({
+                          ...prev,
+                          entityType: "mitra",
+                          tenantId: firstTenant,
+                          role: "admin",
+                        }));
+                      }}
+                      className={`p-3 rounded-xl border text-left transition flex items-center gap-2.5 ${
+                        addForm.entityType === "mitra"
+                          ? "border-sky-600 bg-sky-50 text-sky-900 ring-2 ring-sky-600/20"
+                          : "border-slate-200 hover:bg-slate-50 text-slate-700"
+                      }`}
+                    >
+                      <Building2 className="w-5 h-5 text-sky-600 shrink-0" />
+                      <div>
+                        <p className="font-bold text-xs">Mitra / Tenant</p>
+                        <p className="text-[10px] text-slate-500">TPS 3R, Bank Sampah</p>
+                      </div>
+                    </button>
+                  </div>
                 </div>
-              </div>
+              ) : null}
 
               {/* Pilihan Tenant Jika Tipe Mitra */}
-              {addForm.entityType === "mitra" && (
+              {isCore && addForm.entityType === "mitra" && (
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                     Pilih Mitra / Tenant *

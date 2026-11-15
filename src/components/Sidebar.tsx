@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { ROLE_LABELS, getAllowedMenus } from "@/lib/rbac";
+import { isCoreHostname } from "@/lib/tenant/url-helper";
 import ThemeToggle from "@/components/ThemeToggle";
 import {
   LayoutDashboard,
@@ -185,8 +186,7 @@ export default function Sidebar({
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const h = window.location.hostname.toLowerCase();
-      setIsCore(h.includes("o2whero.com") || h.startsWith("o2w-") || h.includes("core."));
+      setIsCore(isCoreHostname(window.location.hostname));
     }
   }, []);
 

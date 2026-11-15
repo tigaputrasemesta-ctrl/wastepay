@@ -86,3 +86,17 @@ export function getTenantDaftarUrl(host?: string | null, ref?: string): string {
   }
   return `${baseUrl}/daftar`;
 }
+
+/**
+ * Memeriksa apakah suatu hostname adalah domain platform O2W HERO (Core SaaS Control Tower)
+ */
+export function isCoreHostname(rawHost?: string | null): boolean {
+  if (!rawHost) return false;
+  const h = rawHost.toLowerCase().trim().replace(/^https?:\/\//, "").split(":")[0];
+  return (
+    h.includes("o2whero.com") ||
+    h.startsWith("o2w-") ||
+    h.includes("core.") ||
+    h === "o2w.vercel.app"
+  );
+}

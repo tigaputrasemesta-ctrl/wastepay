@@ -7,10 +7,11 @@ import { Prisma } from "@prisma/client";
 export async function GET(request: Request) {
   try {
     const user = await getSession();
-    if (!user || !hasRole(user, "superadmin")) {
+    if (!user || !hasRole(user, "admin")) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
+    const isSuperadmin = user.role === "superadmin";
     const { searchParams } = new URL(request.url);
     const scope = searchParams.get("scope"); // "core" | "mitra" | "operasional" | "all"
     const tenantIdParam = searchParams.get("tenantId");
@@ -20,26 +21,34 @@ export async function GET(request: Request) {
 
     const where: Prisma.UserWhereInput = {};
 
-    if (tenantIdParam && tenantIdParam !== "all") {
-      where.tenantId = tenantIdParam;
-    } else if (scope === "core") {
-      // Hanya akun internal platform O2W Hero
-      where.OR = [
-        { tenantId: "tenant-core-o2w" },
-        { role: "superadmin" },
-      ];
-    } else if (scope === "mitra") {
-      // Akun admin & pengelola mitra tenant (bukan core, peran administratif)
-      where.AND = [
-        { tenantId: { not: "tenant-core-o2w" } },
-        { role: { in: ["admin", "kasir"] } },
-      ];
-    } else if (scope === "operasional") {
-      // Staf operasional lapangan / driver / seller mitra
-      where.AND = [
-        { tenantId: { not: "tenant-core-o2w" } },
-        { role: { in: ["petugas", "seller"] } },
-      ];
+    if (!isSuperadmin) {
+      // Admin tenant hanya boleh melihat user dari tenant-nya sendiri dan tidak boleh melihat superadmin
+      const effectiveTenantId = user.tenantId || "tenant-pilot-upsheru";
+      where.tenantId = effectiveTenantId;
+      where.role = { not: "superadmin" };
+    } else {
+      // Superadmin platform: filter berdasarkan scope atau tenant yang dipilih
+      if (tenantIdParam && tenantIdParam !== "all") {
+        where.tenantId = tenantIdParam;
+      } else if (scope === "core") {
+        // Hanya akun internal platform O2W Hero
+        where.OR = [
+          { tenantId: "tenant-core-o2w" },
+          { role: "superadmin" },
+        ];
+      } else if (scope === "mitra") {
+        // Akun admin & pengelola mitra tenant (bukan core, peran administratif)
+        where.AND = [
+          { tenantId: { not: "tenant-core-o2w" } },
+          { role: { in: ["admin", "kasir"] } },
+        ];
+      } else if (scope === "operasional") {
+        // Staf operasional lapangan / driver / seller mitra
+        where.AND = [
+          { tenantId: { not: "tenant-core-o2w" } },
+          { role: { in: ["petugas", "seller"] } },
+        ];
+      }
     }
 
     if (roleParam && roleParam !== "all") {
@@ -88,15 +97,25 @@ export async function GET(request: Request) {
     });
 
     if (includeMeta) {
-      const tenants = await prisma.tenant.findMany({
-        select: {
-          id: true,
-          namaMitra: true,
-          slug: true,
-          status: true,
-        },
-        orderBy: { namaMitra: "asc" },
-      });
+      const tenants = isSuperadmin
+        ? await prisma.tenant.findMany({
+            select: {
+              id: true,
+              namaMitra: true,
+              slug: true,
+              status: true,
+            },
+            orderBy: { namaMitra: "asc" },
+          })
+        : await prisma.tenant.findMany({
+            where: { id: user.tenantId || "tenant-pilot-upsheru" },
+            select: {
+              id: true,
+              namaMitra: true,
+              slug: true,
+              status: true,
+            },
+          });
 
       return NextResponse.json({
         users,
@@ -113,7 +132,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const session = await getSession();
-  if (!session || !hasRole(session, "superadmin")) {
+  if (!session || !hasRole(session, "admin")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -130,15 +149,29 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Role tidak valid" }, { status: 400 });
     }
 
+    const isSuperadmin = session.role === "superadmin";
+
+    // Proteksi Multi-Tenant: Tenant admin tidak boleh membuat superadmin
+    if (!isSuperadmin && role === "superadmin") {
+      return NextResponse.json({ error: "Akses ditolak: Admin tenant tidak diizinkan membuat akun superadmin" }, { status: 403 });
+    }
+
     const existing = await prisma.user.findUnique({ where: { email: email.trim().toLowerCase() } });
     if (existing) {
       return NextResponse.json({ error: "Email sudah digunakan" }, { status: 400 });
     }
 
     const hashedPassword = await hashPassword(password);
-    const assignedTenantId = tenantId && String(tenantId).trim() !== ""
-      ? String(tenantId).trim()
-      : (role === "superadmin" ? "tenant-core-o2w" : "tenant-pilot-upsheru");
+    
+    // Tentukan tenantId: jika bukan superadmin, selalu kunci ke tenantId session
+    let assignedTenantId: string;
+    if (!isSuperadmin) {
+      assignedTenantId = session.tenantId || "tenant-pilot-upsheru";
+    } else {
+      assignedTenantId = tenantId && String(tenantId).trim() !== ""
+        ? String(tenantId).trim()
+        : (role === "superadmin" ? "tenant-core-o2w" : "tenant-pilot-upsheru");
+    }
 
     const newUser = await prisma.user.create({
       data: {
@@ -188,7 +221,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   const session = await getSession();
-  if (!session || !hasRole(session, "superadmin")) {
+  if (!session || !hasRole(session, "admin")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -197,6 +230,25 @@ export async function PUT(request: Request) {
     const { id, aktif, password, nama, email, role, noTelepon, tenantId } = body;
 
     if (!id) return NextResponse.json({ error: "ID User diperlukan" }, { status: 400 });
+
+    const isSuperadmin = session.role === "superadmin";
+
+    // Cek target user yang akan diubah
+    const targetUser = await prisma.user.findUnique({ where: { id: Number(id) } });
+    if (!targetUser) {
+      return NextResponse.json({ error: "User tidak ditemukan" }, { status: 404 });
+    }
+
+    // Tenant admin hanya boleh mengubah user dari tenant-nya sendiri dan tidak boleh mengubah superadmin
+    if (!isSuperadmin) {
+      const userTenant = session.tenantId || "tenant-pilot-upsheru";
+      if (targetUser.tenantId !== userTenant || targetUser.role === "superadmin") {
+        return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat mengelola staf tenant Anda sendiri" }, { status: 403 });
+      }
+      if (role === "superadmin") {
+        return NextResponse.json({ error: "Akses ditolak: Tidak dapat menaikkan hak akses ke superadmin" }, { status: 403 });
+      }
+    }
 
     const updateData: {
       aktif?: boolean;
@@ -228,7 +280,7 @@ export async function PUT(request: Request) {
       const normalized = email.trim().toLowerCase();
       if (!normalized) return NextResponse.json({ error: "Email tidak boleh kosong" }, { status: 400 });
       const existing = await prisma.user.findUnique({ where: { email: normalized } });
-      if (existing && existing.id !== id) {
+      if (existing && existing.id !== Number(id)) {
         return NextResponse.json({ error: "Email sudah digunakan" }, { status: 400 });
       }
       updateData.email = normalized;
@@ -242,12 +294,12 @@ export async function PUT(request: Request) {
       updateData.tokenVersion = { increment: 1 };
     }
     if (noTelepon !== undefined) updateData.noTelepon = noTelepon.trim() || null;
-    if (tenantId !== undefined) {
+    if (isSuperadmin && tenantId !== undefined) {
       updateData.tenantId = tenantId ? String(tenantId).trim() : null;
     }
 
     const updated = await prisma.user.update({
-      where: { id },
+      where: { id: Number(id) },
       data: updateData,
       select: {
         id: true,
@@ -272,7 +324,7 @@ export async function PUT(request: Request) {
       data: {
         aksi: "update",
         entitas: "User",
-        entitasId: id,
+        entitasId: Number(id),
         dataBaru: JSON.stringify(updateData),
         userId: session.id,
       },
@@ -287,7 +339,7 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
   const session = await getSession();
-  if (!session || !hasRole(session, "superadmin")) {
+  if (!session || !hasRole(session, "admin")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -296,15 +348,28 @@ export async function DELETE(request: Request) {
     const { id } = body;
 
     if (!id) return NextResponse.json({ error: "ID User diperlukan" }, { status: 400 });
-    if (id === session.id) return NextResponse.json({ error: "Tidak dapat menghapus diri sendiri" }, { status: 400 });
+    if (Number(id) === session.id) return NextResponse.json({ error: "Tidak dapat menghapus diri sendiri" }, { status: 400 });
 
-    await prisma.user.delete({ where: { id } });
+    const isSuperadmin = session.role === "superadmin";
+    const targetUser = await prisma.user.findUnique({ where: { id: Number(id) } });
+    if (!targetUser) {
+      return NextResponse.json({ error: "User tidak ditemukan" }, { status: 404 });
+    }
+
+    if (!isSuperadmin) {
+      const userTenant = session.tenantId || "tenant-pilot-upsheru";
+      if (targetUser.tenantId !== userTenant || targetUser.role === "superadmin") {
+        return NextResponse.json({ error: "Akses ditolak: Anda hanya dapat menghapus staf tenant Anda sendiri" }, { status: 403 });
+      }
+    }
+
+    await prisma.user.delete({ where: { id: Number(id) } });
 
     await prisma.auditLog.create({
       data: {
         aksi: "delete",
         entitas: "User",
-        entitasId: id,
+        entitasId: Number(id),
         userId: session.id,
       },
     });

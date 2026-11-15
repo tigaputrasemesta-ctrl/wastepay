@@ -43,7 +43,17 @@ import {
   PackageCheck,
   ShoppingBag,
   Building2,
+  Globe,
+  AlertTriangle,
+  Package,
+  CreditCard,
+  TrendingUp,
+  Percent,
+  UserCheck2,
+  Leaf,
+  Server,
 } from "lucide-react";
+import { isCoreHostname } from "@/lib/tenant/url-helper";
 
 export type AdminMobileResponsiveShellProps = {
   children?: React.ReactNode;
@@ -153,29 +163,63 @@ const CORE_PRIMARY_MOBILE_TABS = [
     matcher: (path: string) => path.startsWith("/tenants"),
   },
   {
+    id: "revenue",
+    label: "Finansial",
+    href: "/revenue",
+    icon: BarChart3,
+    matcher: (path: string) => path.startsWith("/revenue"),
+  },
+  {
     id: "users",
     label: "Akun Admin",
     href: "/users",
     icon: UserCog,
     matcher: (path: string) => path.startsWith("/users"),
   },
-  {
-    id: "audit",
-    label: "Audit Log",
-    href: "/audit-log",
-    icon: ShieldAlert,
-    matcher: (path: string) => path.startsWith("/audit-log"),
-  },
 ];
 
 const CORE_SECONDARY_MENU_ITEMS = [
   {
-    title: "SaaS Control Plane",
+    title: "Overview",
     items: [
       { label: "Dashboard Ekosistem", href: "/dashboard", icon: LayoutDashboard, desc: "Pusat kendali ekosistem & mitra aktif", badge: "Control Hub" },
+      { label: "Peta Ekosistem Mitra", href: "/ecosystem-map", icon: Globe, desc: "Peta sebaran TPS 3R, Bank Sampah di Indonesia", badge: "GIS" },
+      { label: "Alert & Insiden SaaS", href: "/notifikasi-saas", icon: AlertTriangle, desc: "Peringatan kuota dan status koneksi", badge: "Alerts" },
+    ],
+  },
+  {
+    title: "SaaS Management",
+    items: [
       { label: "Manajemen Mitra & DB", href: "/tenants", icon: Building2, desc: "Pendaftaran mitra & database tenant", badge: "SaaS Core" },
+      { label: "Paket & Langganan", href: "/subscriptions", icon: Package, desc: "Manajemen paket Starter, Pro, Enterprise", badge: "Tiering" },
+      { label: "Billing & Invoices", href: "/saas-billing", icon: CreditCard, desc: "Faktur piutang dan tagihan lisensi mitra", badge: "Invoices" },
+    ],
+  },
+  {
+    title: "Business Intelligence",
+    items: [
+      { label: "Revenue Intelligence", href: "/revenue", icon: TrendingUp, desc: "Monitoring MRR, micro-fee QRIS/VA & escrow", badge: "Revenue" },
+      { label: "Tenant Performance & ROI", href: "/tenant-roi", icon: Percent, desc: "Collection rate, rasio digital & efisiensi mitra", badge: "ROI" },
+    ],
+  },
+  {
+    title: "Partnership & Growth",
+    items: [
+      { label: "CRM & Pipeline Prospek", href: "/crm-prospek", icon: UserCheck2, desc: "Pipeline lead kemitraan TPS 3R & DLH", badge: "Leads" },
+    ],
+  },
+  {
+    title: "Impact & Government",
+    items: [
+      { label: "Dampak Lingkungan (SIPSN)", href: "/environmental-impact", icon: Leaf, desc: "Tonase sampah terkelola & laporan KLHK", badge: "SIPSN" },
+    ],
+  },
+  {
+    title: "System Administration",
+    items: [
       { label: "Kelola Akun Admin", href: "/users", icon: UserCog, desc: "Manajemen user platform & hak akses role", badge: "Superadmin" },
       { label: "Log Audit Sistem", href: "/audit-log", icon: ShieldAlert, desc: "Histori audit trail & keamanan server", badge: "Audit" },
+      { label: "Platform & Monitoring", href: "/platform-settings", icon: Server, desc: "Kesehatan database pooler & status infra", badge: "Infra" },
     ],
   },
 ];
@@ -191,8 +235,7 @@ export default function AdminMobileResponsiveShell({
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const h = window.location.hostname.toLowerCase();
-      setIsCore(h.includes("o2whero.com") || h.startsWith("o2w-") || h.includes("core."));
+      setIsCore(isCoreHostname(window.location.hostname));
     }
   }, []);
 
