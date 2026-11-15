@@ -207,9 +207,9 @@ export async function POST(request: Request) {
         data: {
           aksi: "create",
           entitas: "Tenant",
-          entitasId: String(newTenant.id),
+          entitasId: initialAdminUser?.id || 0,
           dataBaru: JSON.stringify({
-            id: newTenant.id,
+            tenantId: newTenant.id,
             slug: newTenant.slug,
             namaMitra: newTenant.namaMitra,
             adminEmail: initialAdminUser?.email || null,
