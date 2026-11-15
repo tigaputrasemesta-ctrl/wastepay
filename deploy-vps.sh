@@ -8,13 +8,12 @@ VPS_PASS="@Jawabarat2027"
 echo "🚀 Memulai sinkronisasi dan deploy ke VPS SumoPod ($VPS_IP)..."
 
 # 1. Pastikan commit lokal sudah ter-push
-git push origin master || true
-git push origin main || true
+git push origin master
 
 # 2. Sinkronisasi file konfigurasi utama
-sshpass -p "$VPS_PASS" scp -o StrictHostKeyChecking=no Dockerfile .dockerignore docker-compose.yml next.config.ts "$VPS_USER@$VPS_IP:/home/$VPS_USER/wastepay/"
+sshpass -p "$VPS_PASS" scp -o StrictHostKeyChecking=no -o ServerAliveInterval=15 -o ServerAliveCountMax=10 Dockerfile .dockerignore docker-compose.yml next.config.ts "$VPS_USER@$VPS_IP:/home/$VPS_USER/wastepay/"
 
 # 3. Pull & Rebuild di VPS
-sshpass -p "$VPS_PASS" ssh -o StrictHostKeyChecking=no "$VPS_USER@$VPS_IP" "cd /home/$VPS_USER/wastepay && git pull origin master && docker compose up -d --build"
+sshpass -p "$VPS_PASS" ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=15 -o ServerAliveCountMax=10 "$VPS_USER@$VPS_IP" "cd /home/$VPS_USER/wastepay && git pull origin master && docker compose up -d --build"
 
 echo "✅ Deploy selesai! Cek aplikasi di http://$VPS_IP:3000 atau http://$VPS_IP"
