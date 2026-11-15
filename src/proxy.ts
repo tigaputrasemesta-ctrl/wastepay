@@ -6,7 +6,14 @@ import { extractOrigin, isSameOriginRequest } from "@/lib/csrf";
 import { ROLE_HIERARCHY, type Role } from "@/lib/rbac";
 import { prisma } from "@/lib/prisma";
 import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
-import { resolveTenantByHost, resolveTenantWithDbFallback } from "@/lib/tenant";
+import {
+  resolveTenantByHost,
+  resolveTenantWithDbFallback,
+  ALLOWED_INTERNAL_HOSTS,
+  CORE_TENANT,
+  PILOT_TENANT,
+  normalizeHost,
+} from "@/lib/tenant";
 
 // Role hierarchy — single source of truth di src/lib/rbac.ts
 // (ROLE_HIERARCHY diimpor agar tidak ada dua definisi yang bisa divergen).
@@ -67,11 +74,11 @@ const API_ROLE_MAP: Record<string, number> = {
   // Auth & public (diizinkan di proxy, dicek di handler masing-masing)
   // /api/auth/* dan /api/publik/* — lihat whitelist di bawah
 
-  // Users (superadmin only — GET dibuka untuk admin agar bisa link akun petugas)
+  // Users (admin+ kelola staf tenant sendiri; superadmin kelola semua akun & platform core)
   "GET:/api/users": 50,
-  "POST:/api/users": 100,
-  "PUT:/api/users": 100,
-  "DELETE:/api/users": 100,
+  "POST:/api/users": 50,
+  "PUT:/api/users": 50,
+  "DELETE:/api/users": 50,
 
   // Tenants & Mitra Multi-Tenant Core (superadmin only)
   "GET:/api/core/tenants": 50,
@@ -443,17 +450,78 @@ export async function proxy(request: NextRequest) {
 
   const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
   if (MUTATING_METHODS.has(request.method) && pathname.startsWith("/api") && !isBearerAuth) {
-    const allowedOrigins = [
+    const allowedOriginsSet = new Set<string>([
       new URL(request.url).origin,
       "https://localhost",
       "http://localhost",
+      "http://localhost:3000",
+      "https://localhost:3000",
+      "https://127.0.0.1",
+      "http://127.0.0.1",
+      "http://127.0.0.1:3000",
+      "https://127.0.0.1:3000",
       "capacitor://localhost",
-    ];
+    ]);
+
+    // Host internal / VPS IP
+    for (const internalHost of ALLOWED_INTERNAL_HOSTS) {
+      allowedOriginsSet.add(`http://${internalHost}`);
+      allowedOriginsSet.add(`https://${internalHost}`);
+      allowedOriginsSet.add(`http://${internalHost}:3000`);
+      allowedOriginsSet.add(`https://${internalHost}:3000`);
+    }
+
+    // Domain Core Platform & Pilot
+    for (const d of CORE_TENANT.domains) {
+      allowedOriginsSet.add(`https://${d}`);
+      allowedOriginsSet.add(`http://${d}`);
+    }
+    for (const d of PILOT_TENANT.domains) {
+      allowedOriginsSet.add(`https://${d}`);
+      allowedOriginsSet.add(`http://${d}`);
+    }
+
+    // Host dari request header (rawHost, Host, X-Forwarded-Host)
+    const forwardedHost = request.headers.get("x-forwarded-host");
+    const hostHeader = request.headers.get("host");
+    for (const h of [forwardedHost, hostHeader, rawHost]) {
+      if (h) {
+        const clean = normalizeHost(h);
+        allowedOriginsSet.add(`http://${h}`);
+        allowedOriginsSet.add(`https://${h}`);
+        allowedOriginsSet.add(`http://${clean}`);
+        allowedOriginsSet.add(`https://${clean}`);
+        allowedOriginsSet.add(`http://${clean}:3000`);
+        allowedOriginsSet.add(`https://${clean}:3000`);
+      }
+    }
+
+    // Domain tenant aktif yang ter-resolusi
+    if (tenantCtx.isValid && tenantCtx.tenant) {
+      if (tenantCtx.baseUrl) {
+        try {
+          allowedOriginsSet.add(new URL(tenantCtx.baseUrl).origin);
+        } catch {}
+      }
+      if (tenantCtx.tenant.primaryDomain) {
+        allowedOriginsSet.add(`https://${tenantCtx.tenant.primaryDomain}`);
+        allowedOriginsSet.add(`http://${tenantCtx.tenant.primaryDomain}`);
+      }
+      if (Array.isArray(tenantCtx.tenant.domains)) {
+        for (const d of tenantCtx.tenant.domains) {
+          allowedOriginsSet.add(`https://${d}`);
+          allowedOriginsSet.add(`http://${d}`);
+        }
+      }
+    }
+
     const envAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
     if (envAppUrl) {
       const envOrigin = extractOrigin(envAppUrl);
-      if (envOrigin) allowedOrigins.push(envOrigin);
+      if (envOrigin) allowedOriginsSet.add(envOrigin);
     }
+
+    const allowedOrigins = Array.from(allowedOriginsSet);
     const ok = isSameOriginRequest(
       request.headers.get("origin"),
       request.headers.get("referer"),

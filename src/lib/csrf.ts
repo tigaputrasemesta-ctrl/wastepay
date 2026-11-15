@@ -30,17 +30,32 @@ export function extractOrigin(url: string): string | null {
  * Verifikasi asal request mutasi.
  * @param origin Header `Origin` (boleh null).
  * @param referer Header `Referer` (boleh null).
- * @param allowedOrigins Daftar origin milik aplikasi (biasanya 1-2 entri).
+ * @param allowedOrigins Daftar origin milik aplikasi (array atau Set).
  */
 export function isSameOriginRequest(
   origin: string | null,
   referer: string | null,
-  allowedOrigins: string[]
+  allowedOrigins: string[] | Set<string>
 ): boolean {
-  if (origin) return allowedOrigins.includes(origin);
+  const check = (val: string) => {
+    const clean = val.trim();
+    if (allowedOrigins instanceof Set) {
+      if (allowedOrigins.has(clean)) return true;
+      const normalized = extractOrigin(clean);
+      return normalized !== null && allowedOrigins.has(normalized);
+    }
+    if (allowedOrigins.includes(clean)) return true;
+    const normalized = extractOrigin(clean);
+    return normalized !== null && allowedOrigins.includes(normalized);
+  };
+
+  if (origin) {
+    if (origin === "null") return false;
+    return check(origin);
+  }
   if (referer) {
     const refOrigin = extractOrigin(referer);
-    return refOrigin !== null && allowedOrigins.includes(refOrigin);
+    return refOrigin !== null && refOrigin !== "null" && check(refOrigin);
   }
   return true;
 }
