@@ -45,6 +45,14 @@ import {
   PanelLeftClose,
   PanelLeft,
   X,
+  Globe,
+  AlertTriangle,
+  Package,
+  CreditCard,
+  TrendingUp,
+  Activity,
+  Leaf,
+  Sliders,
 } from "lucide-react";
 
 type User = {
@@ -94,6 +102,15 @@ const menuConfig: Record<string, MenuItemDef> = {
   "data-kontrol": { label: "Kontrol Kontak WA", href: "/data-kontrol", icon: Smartphone },
   "pickup-insidental": { label: "Pickup Sekali Angkut", href: "/pickup-insidental", icon: PackageCheck },
   "manajemen-marketplace": { label: "Marketplace UPS HERU", href: "/manajemen-marketplace", icon: ShoppingBag },
+  "ecosystem-map": { label: "Peta Ekosistem Mitra", href: "/ecosystem-map", icon: Globe },
+  "notifikasi-saas": { label: "Alert & Insiden SaaS", href: "/notifikasi-saas", icon: AlertTriangle },
+  subscriptions: { label: "Paket & Langganan", href: "/subscriptions", icon: Package },
+  "saas-billing": { label: "Billing & Invoices", href: "/saas-billing", icon: CreditCard },
+  revenue: { label: "Revenue Intelligence", href: "/revenue", icon: TrendingUp },
+  "tenant-roi": { label: "Performa & ROI Tenant", href: "/tenant-roi", icon: Activity },
+  "crm-prospek": { label: "CRM & Prospek Mitra", href: "/crm-prospek", icon: UserPlus },
+  "environmental-impact": { label: "Dampak Lingkungan & DLH", href: "/environmental-impact", icon: Leaf },
+  "platform-settings": { label: "Pengaturan Platform", href: "/platform-settings", icon: Sliders },
 };
 
 // Pengelompokan 5 grup menu ergonomis dan rapi
@@ -196,28 +213,63 @@ export default function Sidebar({
   }
 
   const rawAllowedMenus = user ? getAllowedMenus(user.role) : [];
-  // Jika diakses dari domain Core SaaS (o2whero.com), hanya tampilkan menu Control Plane Platform
+  
+  const CORE_ALLOWED_KEYS = [
+    "dashboard",
+    "ecosystem-map",
+    "notifikasi-saas",
+    "tenants",
+    "subscriptions",
+    "saas-billing",
+    "revenue",
+    "tenant-roi",
+    "crm-prospek",
+    "environmental-impact",
+    "users",
+    "audit-log",
+    "platform-settings",
+  ];
+
   const allowedMenus = isCore
-    ? rawAllowedMenus.filter((key) => ["dashboard", "tenants", "users", "audit-log"].includes(key))
+    ? rawAllowedMenus.filter((key) => CORE_ALLOWED_KEYS.includes(key))
     : rawAllowedMenus;
 
-  const MENU_GROUP_EFFECTIVE: Record<string, string> = {
-    ...MENU_GROUP,
-    ...(isCore
-      ? {
-          dashboard: "utama",
-          tenants: "utama",
-          users: "sistem",
-          "audit-log": "sistem",
-        }
-      : {}),
+  const CORE_GROUPS = [
+    { key: "core_overview", label: "OVERVIEW" },
+    { key: "core_saas", label: "SAAS MANAGEMENT" },
+    { key: "core_bi", label: "BUSINESS INTELLIGENCE" },
+    { key: "core_growth", label: "PARTNERSHIP & GROWTH" },
+    { key: "core_impact", label: "IMPACT & GOVERNMENT" },
+    { key: "core_system", label: "SYSTEM ADMINISTRATION" },
+  ];
+
+  const CORE_GROUP_MAP: Record<string, string> = {
+    dashboard: "core_overview",
+    "ecosystem-map": "core_overview",
+    "notifikasi-saas": "core_overview",
+
+    tenants: "core_saas",
+    subscriptions: "core_saas",
+    "saas-billing": "core_saas",
+
+    revenue: "core_bi",
+    "tenant-roi": "core_bi",
+
+    "crm-prospek": "core_growth",
+
+    "environmental-impact": "core_impact",
+
+    users: "core_system",
+    "audit-log": "core_system",
+    "platform-settings": "core_system",
   };
 
+  const MENU_GROUP_EFFECTIVE: Record<string, string> = isCore
+    ? CORE_GROUP_MAP
+    : MENU_GROUP;
+
   const EFFECTIVE_MENU_GROUPS = isCore
-    ? [
-        { key: "utama", label: "SaaS Control Plane" },
-        { key: "sistem", label: "Sistem & Keamanan" },
-      ]
+    ? CORE_GROUPS
     : MENU_GROUPS;
 
   const groupedMenus = EFFECTIVE_MENU_GROUPS.map((g) => ({
@@ -272,11 +324,11 @@ export default function Sidebar({
                       : "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/60"
                   )}
                 >
-                  {isCore ? "CORE HUB" : "TPS 3R"}
+                  {isCore ? "CONTROL TOWER" : "TPS 3R"}
                 </span>
               </div>
               <span className="text-[11px] text-slate-500 dark:text-zinc-400 font-normal truncate mt-0.5">
-                {isCore ? "SaaS Multi-Tenant" : "Kota Depok"}
+                {isCore ? "SaaS Control Center" : "Kota Depok"}
               </span>
             </div>
           </div>

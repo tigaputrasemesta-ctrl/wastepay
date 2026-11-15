@@ -67,7 +67,22 @@ export function getAllowedMenus(role: string): string[] {
     "manajemen-marketplace",
   ];
 
-  if (role === "superadmin") return [...allMenus, "users", "audit-log", "tenants"];
+  if (role === "superadmin")
+    return [
+      ...allMenus,
+      "users",
+      "audit-log",
+      "tenants",
+      "ecosystem-map",
+      "notifikasi-saas",
+      "subscriptions",
+      "saas-billing",
+      "revenue",
+      "tenant-roi",
+      "crm-prospek",
+      "environmental-impact",
+      "platform-settings",
+    ];
   if (role === "admin") return allMenus;
   if (role === "kasir") return ["dashboard", "peta", "tagihan", "laporan", "notifikasi"];
   if (role === "petugas")

@@ -45,6 +45,15 @@ const PAGE_ROLES: Record<string, number> = {
   "/users": 100, // superadmin only
   "/audit-log": 100, // superadmin only
   "/tenants": 100, // superadmin only: manajemen mitra & database
+  "/ecosystem-map": 100, // superadmin only: peta persebaran mitra
+  "/notifikasi-saas": 100, // superadmin only: alert & notifikasi tenant
+  "/subscriptions": 100, // superadmin only: paket & langganan
+  "/saas-billing": 100, // superadmin only: invoice & tagihan saas
+  "/revenue": 100, // superadmin only: intelligence finansial & fee
+  "/tenant-roi": 100, // superadmin only: performa & ROI mitra
+  "/crm-prospek": 100, // superadmin only: pipeline lead calon mitra
+  "/environmental-impact": 100, // superadmin only: dampak lingkungan & DLH
+  "/platform-settings": 100, // superadmin only: monitoring & setting platform
   "/manajemen-artikel": 50, // admin+: artikel & berita edukasi
   "/data-kontrol": 50, // admin+: kontrol data kontak hp admin & petugas
   "/manajemen-marketplace": 50, // admin+: kelola toko resmi & pesanan
@@ -602,6 +611,24 @@ export async function proxy(request: NextRequest) {
       pathname.startsWith("/dashboard/") ||
       pathname === "/tenants" ||
       pathname.startsWith("/tenants/") ||
+      pathname === "/ecosystem-map" ||
+      pathname.startsWith("/ecosystem-map/") ||
+      pathname === "/notifikasi-saas" ||
+      pathname.startsWith("/notifikasi-saas/") ||
+      pathname === "/subscriptions" ||
+      pathname.startsWith("/subscriptions/") ||
+      pathname === "/saas-billing" ||
+      pathname.startsWith("/saas-billing/") ||
+      pathname === "/revenue" ||
+      pathname.startsWith("/revenue/") ||
+      pathname === "/tenant-roi" ||
+      pathname.startsWith("/tenant-roi/") ||
+      pathname === "/crm-prospek" ||
+      pathname.startsWith("/crm-prospek/") ||
+      pathname === "/environmental-impact" ||
+      pathname.startsWith("/environmental-impact/") ||
+      pathname === "/platform-settings" ||
+      pathname.startsWith("/platform-settings/") ||
       pathname === "/users" ||
       pathname.startsWith("/users/") ||
       pathname === "/audit-log" ||
