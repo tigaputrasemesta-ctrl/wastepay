@@ -717,6 +717,39 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  // Khusus Domain Tenant Mitra (upsheru.com dll):
+  // Blokir modul SaaS Control Plane platform pusat (tenants, subscriptions, saas-billing, revenue, tenant-roi, crm-prospek, environmental-impact, platform-settings, ecosystem-map, notifikasi-saas).
+  // Halaman-halaman tersebut hanya milik platform Core O2W HERO.
+  if (!tenantCtx.isCore) {
+    const isCoreOnlyPage =
+      pathname === "/tenants" ||
+      pathname.startsWith("/tenants/") ||
+      pathname === "/subscriptions" ||
+      pathname.startsWith("/subscriptions/") ||
+      pathname === "/saas-billing" ||
+      pathname.startsWith("/saas-billing/") ||
+      pathname === "/revenue" ||
+      pathname.startsWith("/revenue/") ||
+      pathname === "/tenant-roi" ||
+      pathname.startsWith("/tenant-roi/") ||
+      pathname === "/crm-prospek" ||
+      pathname.startsWith("/crm-prospek/") ||
+      pathname === "/environmental-impact" ||
+      pathname.startsWith("/environmental-impact/") ||
+      pathname === "/platform-settings" ||
+      pathname.startsWith("/platform-settings/") ||
+      pathname === "/ecosystem-map" ||
+      pathname.startsWith("/ecosystem-map/") ||
+      pathname === "/notifikasi-saas" ||
+      pathname.startsWith("/notifikasi-saas/");
+
+    if (isCoreOnlyPage) {
+      const url = new URL("/dashboard", request.url);
+      url.searchParams.set("notice", "core_scope_only");
+      return NextResponse.redirect(url);
+    }
+  }
+
   // Check page-specific role requirements
   for (const [pagePrefix, minLevel] of Object.entries(PAGE_ROLES)) {
     if (pathname === pagePrefix || pathname.startsWith(pagePrefix + "/")) {

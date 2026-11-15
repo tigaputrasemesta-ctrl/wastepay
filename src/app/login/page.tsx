@@ -80,9 +80,12 @@ export default function LoginPage() {
         const next = params.get("next");
         const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? next : null;
         
-        // Superadmin & internal core otomatis diarahkan ke SaaS Control Tower (/tenants)
-        const isCoreUser = isCore || data.user?.role === "superadmin" || data.user?.tenantId === "tenant-core-o2w";
-        const defaultTarget = isCoreUser ? "/tenants" : "/dashboard";
+        // Arahkan ke /tenants hanya jika login di domain Core SaaS (o2whero.com).
+        // Pada domain mitra operasional (upsheru.com dll), SELALU arahkan ke /dashboard (atau /m untuk petugas).
+        let defaultTarget = "/dashboard";
+        if (isCore) {
+          defaultTarget = "/tenants";
+        }
         const target = safeNext || (data.user?.role === "petugas" ? "/m" : defaultTarget);
         window.location.href = target;
       }
