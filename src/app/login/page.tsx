@@ -17,10 +17,17 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const h = window.location.hostname.toLowerCase();
-      setIsCore(h.includes("o2whero.com") || h.startsWith("o2w-") || h.includes("core."));
-
       const p = new URLSearchParams(window.location.search);
+      const portalParam = p.get("portal")?.toLowerCase();
+      if (portalParam === "core" || portalParam === "o2w" || portalParam === "hero") {
+        setIsCore(true);
+      } else if (portalParam === "tenant" || portalParam === "upsheru" || portalParam === "mitra") {
+        setIsCore(false);
+      } else {
+        const h = window.location.hostname.toLowerCase();
+        setIsCore(h.includes("o2whero.com") || h.startsWith("o2w-") || h.includes("core."));
+      }
+
       const err = p.get("error");
       if (err === "core_restricted") {
         setError("Akun operasional mitra tidak diizinkan masuk ke Core SaaS Hub. Silakan buka domain portal resmi mitra Anda.");
@@ -73,7 +80,9 @@ export default function LoginPage() {
         const next = params.get("next");
         const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? next : null;
         
-        const defaultTarget = isCore ? "/tenants" : "/dashboard";
+        // Superadmin & internal core otomatis diarahkan ke SaaS Control Tower (/tenants)
+        const isCoreUser = isCore || data.user?.role === "superadmin" || data.user?.tenantId === "tenant-core-o2w";
+        const defaultTarget = isCoreUser ? "/tenants" : "/dashboard";
         const target = safeNext || (data.user?.role === "petugas" ? "/m" : defaultTarget);
         window.location.href = target;
       }
@@ -93,7 +102,7 @@ export default function LoginPage() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex flex-col items-center mb-8">
           <div
-            className={`w-12 h-12 text-white rounded-xl flex items-center justify-center mb-4 shadow-sm ${
+            className={`w-12 h-12 text-white rounded-xl flex items-center justify-center mb-4 shadow-sm transition-all ${
               isCore
                 ? "bg-gradient-to-tr from-sky-600 to-teal-500 shadow-sky-600/20 font-black text-lg"
                 : "bg-emerald-700 shadow-emerald-700/20"
@@ -101,21 +110,49 @@ export default function LoginPage() {
           >
             {isCore ? "O2W" : <Truck strokeWidth={2.5} className="w-6 h-6" />}
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-zinc-100">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-zinc-100 transition-colors">
             {isCore ? "O2W HERO Platform" : "UPS HERU Portal"}
           </h1>
-          <p className="text-sm text-slate-500 dark:text-zinc-400 mt-1">
+          <p className="text-sm text-slate-500 dark:text-zinc-400 mt-1 transition-colors">
             {isCore
               ? "SaaS Management & Multi-Tenant Core Hub"
               : "Sistem Informasi Pengelolaan & Retribusi"}
           </p>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 px-6 sm:px-10 py-10 shadow-sm border border-slate-200/60 dark:border-zinc-800 rounded-2xl">
-          <form className="space-y-6" onSubmit={handleSubmit}>
+        <div className="bg-white dark:bg-zinc-900 px-6 sm:px-10 py-8 shadow-sm border border-slate-200/60 dark:border-zinc-800 rounded-2xl">
+          {/* Tab Pemilih Portal Login */}
+          <div className="flex rounded-xl bg-slate-100 dark:bg-zinc-800/80 p-1 mb-6 border border-slate-200/70 dark:border-zinc-700/60">
+            <button
+              type="button"
+              onClick={() => setIsCore(true)}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${
+                isCore
+                  ? "bg-white dark:bg-zinc-900 text-sky-600 dark:text-sky-400 shadow-sm"
+                  : "text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-zinc-200"
+              }`}
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>O2W HERO (Core)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsCore(false)}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${
+                !isCore
+                  ? "bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400 shadow-sm"
+                  : "text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-zinc-200"
+              }`}
+            >
+              <Truck className="w-3.5 h-3.5" />
+              <span>UPS HERU (Mitra)</span>
+            </button>
+          </div>
+
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-semibold text-slate-700 dark:text-zinc-300 mb-2">
-                Alamat Email atau No. HP
+                {isCore ? "Email Login Super Admin" : "Alamat Email atau No. HP"}
               </label>
               <input
                 id="email"
@@ -130,7 +167,7 @@ export default function LoginPage() {
                     ? "focus:ring-2 focus:ring-sky-600/20 focus:border-sky-600"
                     : "focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600"
                 }`}
-                placeholder="nama@hero.com atau 0812xxxx"
+                placeholder={isCore ? "admin@hero.com atau wahyudin@hero.com" : "nama@hero.com atau 0812xxxx"}
               />
             </div>
 
