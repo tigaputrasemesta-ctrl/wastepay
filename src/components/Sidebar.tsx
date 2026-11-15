@@ -230,9 +230,23 @@ export default function Sidebar({
     "platform-settings",
   ];
 
+  // Modul khusus Core SaaS Control Plane — TIDAK BOLEH muncul di portal tenant (upsheru.com)
+  const CORE_EXCLUSIVE_KEYS = new Set([
+    "tenants",
+    "subscriptions",
+    "saas-billing",
+    "revenue",
+    "tenant-roi",
+    "crm-prospek",
+    "environmental-impact",
+    "platform-settings",
+    "ecosystem-map",
+    "notifikasi-saas",
+  ]);
+
   const allowedMenus = isCore
     ? rawAllowedMenus.filter((key) => CORE_ALLOWED_KEYS.includes(key))
-    : rawAllowedMenus;
+    : rawAllowedMenus.filter((key) => !CORE_EXCLUSIVE_KEYS.has(key));
 
   const CORE_GROUPS = [
     { key: "core_overview", label: "OVERVIEW" },

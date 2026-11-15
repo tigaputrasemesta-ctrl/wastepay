@@ -473,6 +473,19 @@ export default function AdminCommandSearch() {
       "/platform-settings",
     ];
 
+    const CORE_EXCLUSIVE_PREFIXES = [
+      "/tenants",
+      "/subscriptions",
+      "/saas-billing",
+      "/revenue",
+      "/tenant-roi",
+      "/crm-prospek",
+      "/environmental-impact",
+      "/platform-settings",
+      "/ecosystem-map",
+      "/notifikasi-saas",
+    ];
+
     const baseItems = isCore
       ? commandItems.filter((item) => {
           if (!item.href) return true; // actions (seperti ganti tema) tetap diizinkan
@@ -480,7 +493,12 @@ export default function AdminCommandSearch() {
             item.href === prefix || item.href?.startsWith(prefix + "/")
           );
         })
-      : commandItems;
+      : commandItems.filter((item) => {
+          if (!item.href) return true;
+          return !CORE_EXCLUSIVE_PREFIXES.some((prefix) =>
+            item.href === prefix || item.href?.startsWith(prefix + "/")
+          );
+        });
 
     if (!query.trim()) return baseItems;
     const q = query.toLowerCase().trim();
