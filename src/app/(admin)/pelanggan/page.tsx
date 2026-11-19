@@ -678,20 +678,6 @@ function PelangganContent() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="p-6">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 border border-slate-200/80 w-48" />
-          <div className="h-10 bg-gray-200 border border-slate-200/80" />
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-16 bg-gray-200 border border-slate-200/80" />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
   const { calonList, aktifList, nonaktifList, liburList } = useMemo(() => {
     return {
       calonList: pelanggan.filter((p) => p.status === "calon"),
@@ -721,6 +707,20 @@ function PelangganContent() {
   }, [filteredPelanggan, page]);
 
   const totalPages = Math.ceil(filteredPelanggan.length / ITEMS_PER_PAGE);
+
+  if (loading) {
+    return (
+      <div className="p-6">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-gray-200 border border-slate-200/80 w-48" />
+          <div className="h-10 bg-gray-200 border border-slate-200/80" />
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-16 bg-gray-200 border border-slate-200/80" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   const handleExportExcel = async () => {
     const exportQuery = new URLSearchParams({
