@@ -33,6 +33,17 @@ export async function getTagihanByNoInvoice(noInvoice: string) {
           kategori: true,
           rtRw: true,
           patokanLokasi: true,
+          skemaBayar: true,
+          namaGrupKolektif: true,
+          indukKolektif: {
+            select: {
+              id: true,
+              nama: true,
+              noTelepon: true,
+              kodePelanggan: true,
+              namaGrupKolektif: true,
+            },
+          },
           kelurahan: { select: { nama: true } },
         },
       },

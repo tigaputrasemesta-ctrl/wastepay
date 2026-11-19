@@ -82,6 +82,16 @@ type Pelanggan = {
   customTarif?: number | null;
   status: string;
   catatan?: string | null;
+  skemaBayar?: string;
+  indukKolektifId?: number | null;
+  namaGrupKolektif?: string | null;
+  indukKolektif?: {
+    id: number;
+    nama: string;
+    noTelepon: string;
+    kodePelanggan?: string;
+    namaGrupKolektif?: string | null;
+  } | null;
   kelurahanId?: number | null;
   wilayahId?: number | null;
   paketId?: number | null;
@@ -92,6 +102,7 @@ type Pelanggan = {
   _count?: {
     tagihan?: number;
     pembayaran?: number;
+    anggotaKolektif?: number;
   };
 };
 
@@ -246,7 +257,11 @@ function PelangganContent() {
     status: "aktif",
     catatan: "",
     createdAt: "", // Untuk Ubah Tanggal Langganan
+    skemaBayar: "mandiri",
+    indukKolektifId: "",
+    namaGrupKolektif: "",
   });
+  const [filterSkemaBayar, setFilterSkemaBayar] = useState("");
 
   const fetchData = useCallback(async (isManualRefresh = false) => {
     // 1. Coba muat instan dari cache memori HP (IndexedDB) jika belum ada data dan bukan reload manual
@@ -291,6 +306,7 @@ function PelangganContent() {
       if (filterZona) params.set("zonaId", filterZona);
       if (filterStatus) params.set("status", filterStatus);
       if (filterKategori) params.set("kategori", filterKategori);
+      if (filterSkemaBayar) params.set("skemaBayar", filterSkemaBayar);
       // Mencegah cache browser / edge
       params.set("_t", Date.now().toString());
       const qs = params.toString();
@@ -408,6 +424,9 @@ function PelangganContent() {
       status: "aktif",
       catatan: "",
       createdAt: "",
+      skemaBayar: "mandiri",
+      indukKolektifId: "",
+      namaGrupKolektif: "",
     });
     setShowForm(true);
   }
@@ -434,6 +453,9 @@ function PelangganContent() {
       status: p.status,
       catatan: p.catatan || "",
       createdAt: p.createdAt ? new Date(p.createdAt).toISOString().slice(0, 16) : "",
+      skemaBayar: p.skemaBayar || "mandiri",
+      indukKolektifId: p.indukKolektifId ? String(p.indukKolektifId) : "",
+      namaGrupKolektif: p.namaGrupKolektif || "",
     });
     setShowForm(true);
   }
@@ -466,9 +488,14 @@ function PelangganContent() {
     setFilterZona("");
     setFilterStatus("");
     setFilterKategori("");
+    setFilterSkemaBayar("");
     setFilterGps("");
     setPage(1);
   }
+
+  const daftarIndukKolektif = useMemo(() => {
+    return pelanggan.filter((p) => p.skemaBayar === "kolektif_induk" && (!editing || p.id !== editing.id));
+  }, [pelanggan, editing]);
 
   // Cek duplikasi nomor telepon secara real-time
   const phoneDuplicate = useMemo(() => {
@@ -660,8 +687,9 @@ function PelangganContent() {
   const totalCount = statusCounts.total || pelanggan.length;
 
   const filteredPelanggan = pelanggan.filter((p) => {
-    if (filterGps === "ada") return p.latitude != null && p.longitude != null;
-    if (filterGps === "belum") return p.latitude == null || p.longitude == null;
+    if (filterGps === "ada" && (p.latitude == null || p.longitude == null)) return false;
+    if (filterGps === "belum" && (p.latitude != null && p.longitude != null)) return false;
+    if (filterSkemaBayar && (p.skemaBayar || "mandiri") !== filterSkemaBayar) return false;
     return true;
   });
 
@@ -1150,6 +1178,19 @@ function PelangganContent() {
                   <option value="belum">⚠️ Belum Ada GPS</option>
                 </select>
               </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-zinc-300 mb-1.5">Skema Bayar</label>
+                <select
+                  value={filterSkemaBayar}
+                  onChange={(e) => { setFilterSkemaBayar(e.target.value); setPage(1); }}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-950 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-medium text-slate-800 dark:text-zinc-200"
+                >
+                  <option value="">Semua Skema</option>
+                  <option value="mandiri">🏠 Mandiri</option>
+                  <option value="kolektif_induk">👑 Induk Kolektif</option>
+                  <option value="kolektif_anggota">👥 Anggota Kolektif</option>
+                </select>
+              </div>
             </div>
             <div className="flex justify-between items-center mt-4 pt-3 border-t border-slate-200 dark:border-zinc-800">
               <span className="text-xs font-medium text-slate-500 dark:text-zinc-400">
@@ -1157,7 +1198,7 @@ function PelangganContent() {
               </span>
               <button
                 onClick={resetFilters}
-                disabled={[filterKelurahan, filterZona, filterStatus, filterKategori, filterGps].filter(Boolean).length === 0}
+                disabled={[filterKelurahan, filterZona, filterStatus, filterKategori, filterGps, filterSkemaBayar].filter(Boolean).length === 0}
                 className="px-3.5 py-1.5 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl font-semibold text-xs text-slate-600 dark:text-zinc-300 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-200 dark:hover:border-rose-900 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Reset Filter
@@ -1253,9 +1294,24 @@ function PelangganContent() {
                           </div>
                         )}
                         <div>
-                          <div className="font-semibold text-slate-900 dark:text-zinc-100 text-xs tracking-tight">
-                            {p.nama}
+                          <div className="font-semibold text-slate-900 dark:text-zinc-100 text-xs tracking-tight flex items-center gap-1.5 flex-wrap">
+                            <span>{p.nama}</span>
+                            {p.skemaBayar === "kolektif_induk" && (
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300 dark:bg-amber-950 dark:text-amber-300" title={`Induk Kolektif: ${p.namaGrupKolektif || p.nama}`}>
+                                👑 Induk {p._count?.anggotaKolektif ? `(${p._count.anggotaKolektif} warga)` : ""}
+                              </span>
+                            )}
+                            {p.skemaBayar === "kolektif_anggota" && (
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] font-bold bg-purple-100 text-purple-800 border border-purple-300 dark:bg-purple-950 dark:text-purple-300" title={`Kolektif via: ${p.indukKolektif?.nama || "Koordinator"}`}>
+                                👥 Kolektif
+                              </span>
+                            )}
                           </div>
+                          {p.skemaBayar === "kolektif_anggota" && p.indukKolektif && (
+                            <div className="text-[10px] text-purple-700 dark:text-purple-400 font-medium">
+                              Koordinator: {p.indukKolektif.nama}
+                            </div>
+                          )}
                           {p.referal && (
                             <div className="mt-0.5">
                               <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-700 dark:text-emerald-300 bg-emerald-50/80 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-200/60 dark:border-emerald-800/50" title={`Referral: ${p.referal}`}>
@@ -1753,6 +1809,102 @@ function PelangganContent() {
                       className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm font-medium text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500"
                       placeholder="Kosongkan = pakai tarif Level"
                     />
+                  </div>
+
+                  {/* Skema Pembayaran Retribusi (Kolektif vs Mandiri) */}
+                  <div className="col-span-1 sm:col-span-2 p-3.5 bg-slate-50 dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 space-y-3">
+                    <label className="block text-xs font-bold text-slate-800 dark:text-zinc-200">
+                      Skema Pembayaran Retribusi (Kolektif / Mandiri)
+                    </label>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      <label className={`flex items-center gap-2 p-2.5 rounded-lg border text-xs cursor-pointer transition ${
+                        form.skemaBayar === "mandiri"
+                          ? "bg-emerald-50 border-emerald-500 text-emerald-950 font-bold"
+                          : "bg-white dark:bg-zinc-950 border-slate-200 dark:border-zinc-800 text-slate-700 dark:text-zinc-300"
+                      }`}>
+                        <input
+                          type="radio"
+                          name="skemaBayar"
+                          value="mandiri"
+                          checked={form.skemaBayar === "mandiri"}
+                          onChange={() => setForm({ ...form, skemaBayar: "mandiri", indukKolektifId: "" })}
+                          className="text-emerald-600 focus:ring-emerald-500"
+                        />
+                        <span>🏠 Mandiri</span>
+                      </label>
+                      <label className={`flex items-center gap-2 p-2.5 rounded-lg border text-xs cursor-pointer transition ${
+                        form.skemaBayar === "kolektif_induk"
+                          ? "bg-amber-50 border-amber-500 text-amber-950 font-bold"
+                          : "bg-white dark:bg-zinc-950 border-slate-200 dark:border-zinc-800 text-slate-700 dark:text-zinc-300"
+                      }`}>
+                        <input
+                          type="radio"
+                          name="skemaBayar"
+                          value="kolektif_induk"
+                          checked={form.skemaBayar === "kolektif_induk"}
+                          onChange={() => setForm({ ...form, skemaBayar: "kolektif_induk", indukKolektifId: "" })}
+                          className="text-amber-600 focus:ring-amber-500"
+                        />
+                        <span>👑 Induk Koordinator RT</span>
+                      </label>
+                      <label className={`flex items-center gap-2 p-2.5 rounded-lg border text-xs cursor-pointer transition ${
+                        form.skemaBayar === "kolektif_anggota"
+                          ? "bg-purple-50 border-purple-500 text-purple-950 font-bold"
+                          : "bg-white dark:bg-zinc-950 border-slate-200 dark:border-zinc-800 text-slate-700 dark:text-zinc-300"
+                      }`}>
+                        <input
+                          type="radio"
+                          name="skemaBayar"
+                          value="kolektif_anggota"
+                          checked={form.skemaBayar === "kolektif_anggota"}
+                          onChange={() => setForm({ ...form, skemaBayar: "kolektif_anggota" })}
+                          className="text-purple-600 focus:ring-purple-500"
+                        />
+                        <span>👥 Anggota Kolektif</span>
+                      </label>
+                    </div>
+
+                    {form.skemaBayar === "kolektif_induk" && (
+                      <div className="pt-2 space-y-1">
+                        <label className="block text-[11px] font-semibold text-amber-900 dark:text-amber-300">
+                          Nama Grup / Lingkungan Kolektif *
+                        </label>
+                        <input
+                          type="text"
+                          value={form.namaGrupKolektif}
+                          onChange={(e) => setForm({ ...form, namaGrupKolektif: e.target.value })}
+                          className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-amber-300 dark:border-amber-700 rounded-lg text-xs"
+                          placeholder="Contoh: Paguyuban Warga RT 02 / RW 05 Kalibaru atau Kost Bu Fatimah"
+                        />
+                        <p className="text-[10px] text-slate-500 mt-0.5">
+                          Nama ini akan tertera pada Master Invoice dan Kwitansi Kolektif.
+                        </p>
+                      </div>
+                    )}
+
+                    {form.skemaBayar === "kolektif_anggota" && (
+                      <div className="pt-2 space-y-1">
+                        <label className="block text-[11px] font-semibold text-purple-900 dark:text-purple-300">
+                          Pilih Koordinator / Induk Kolektif Penanggung Tagihan *
+                        </label>
+                        <select
+                          value={form.indukKolektifId}
+                          onChange={(e) => setForm({ ...form, indukKolektifId: e.target.value })}
+                          className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-purple-300 dark:border-purple-700 rounded-lg text-xs font-medium"
+                          required={form.skemaBayar === "kolektif_anggota"}
+                        >
+                          <option value="">-- Pilih Induk Koordinator --</option>
+                          {daftarIndukKolektif.map((induk) => (
+                            <option key={induk.id} value={induk.id}>
+                              {induk.nama} {induk.namaGrupKolektif ? `(${induk.namaGrupKolektif})` : ""} - {induk.noTelepon}
+                            </option>
+                          ))}
+                        </select>
+                        <p className="text-[10px] text-purple-700 dark:text-purple-400">
+                          🛡️ Pelanggan ini otomatis dikunci dari pembayaran mandiri untuk mencegah double bayar.
+                        </p>
+                      </div>
+                    )}
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Tanggal Langganan / Siklus Tagihan</label>

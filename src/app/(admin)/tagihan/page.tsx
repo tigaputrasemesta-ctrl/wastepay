@@ -9,6 +9,7 @@ import { duitkuChannelLabel } from "@/lib/duitku-channels";
 import { useUser } from "@/hooks/useUser";
 import { hitungRincian, buildDirectWaLinkTagihan } from "@/lib/invoice-format";
 import { X, Search, Check, AlertCircle, Sparkles, Send, Upload, ExternalLink, RefreshCw, Printer, ShieldCheck, FileText } from "lucide-react";
+import ModalBayarKolektif from "@/components/ModalBayarKolektif";
 
 const METODE_LABEL: Record<string, string> = {
   tunai: "Tunai",
@@ -194,6 +195,9 @@ export default function TagihanPage() {
   const [wilayahId, setWilayahId] = useState("");
   const [rtFilter, setRtFilter] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Bayar Kolektif Modal State
+  const [showKolektifModal, setShowKolektifModal] = useState(false);
 
   // Blast WA Modal State
   const [showBlastModal, setShowBlastModal] = useState(false);
@@ -881,6 +885,14 @@ export default function TagihanPage() {
         <div className="flex items-center gap-2 flex-wrap">
         {!isPetugas && (
         <>
+        <button
+          onClick={() => setShowKolektifModal(true)}
+          className="px-3.5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-semibold shadow-xs active:scale-[0.98] transition-all flex items-center gap-1.5"
+          title="Pelunasan kolektif satu pintu untuk seluruh warga di bawah koordinator RT / pengelola"
+        >
+          <span className="text-sm">👥</span>
+          <span>Bayar Kolektif</span>
+        </button>
         <button
           onClick={handleOpenBlastModal}
           className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium shadow-xs active:scale-[0.98] transition-all flex items-center gap-1.5"
@@ -2795,6 +2807,17 @@ export default function TagihanPage() {
           </div>
         </div>
       )}
+
+      {/* Modal Bayar Kolektif Satu Pintu */}
+      <ModalBayarKolektif
+        isOpen={showKolektifModal}
+        onClose={() => setShowKolektifModal(false)}
+        onSuccess={() => {
+          fetchData();
+        }}
+        defaultBulan={bulan ? parseInt(bulan, 10) : undefined}
+        defaultTahun={tahun ? parseInt(tahun, 10) : undefined}
+      />
     </div>
   );
 }

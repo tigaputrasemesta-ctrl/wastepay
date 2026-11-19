@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 
 let isPatchDone = false;
+let isKolektifPatchDone = false;
 
 /**
  * Self-healing schema migration: memastikan kolom kendaraanId, join tables,
@@ -38,5 +39,34 @@ export async function ensureArmadaRuteSchema() {
     isPatchDone = true;
   } catch (err) {
     console.warn("[ensureArmadaRuteSchema] notice:", err);
+  }
+}
+
+/**
+ * Self-healing schema migration: memastikan kolom skemaBayar, indukKolektifId,
+ * dan namaGrupKolektif sudah ada di tabel Pelanggan (Postgres & SQLite).
+ */
+export async function ensureKolektifSchema() {
+  if (isKolektifPatchDone) return;
+  try {
+    // 1. Kolom skemaBayar (default: 'mandiri')
+    await prisma.$executeRawUnsafe(`ALTER TABLE "Pelanggan" ADD COLUMN IF NOT EXISTS "skemaBayar" TEXT DEFAULT 'mandiri';`).catch(() => {});
+    await prisma.$executeRawUnsafe(`ALTER TABLE public."Pelanggan" ADD COLUMN IF NOT EXISTS "skemaBayar" TEXT DEFAULT 'mandiri';`).catch(() => {});
+    await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "Pelanggan_skemaBayar_idx" ON "Pelanggan"("skemaBayar");`).catch(() => {});
+    await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "Pelanggan_skemaBayar_idx" ON public."Pelanggan"("skemaBayar");`).catch(() => {});
+
+    // 2. Kolom indukKolektifId
+    await prisma.$executeRawUnsafe(`ALTER TABLE "Pelanggan" ADD COLUMN IF NOT EXISTS "indukKolektifId" INTEGER;`).catch(() => {});
+    await prisma.$executeRawUnsafe(`ALTER TABLE public."Pelanggan" ADD COLUMN IF NOT EXISTS "indukKolektifId" INTEGER;`).catch(() => {});
+    await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "Pelanggan_indukKolektifId_idx" ON "Pelanggan"("indukKolektifId");`).catch(() => {});
+    await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "Pelanggan_indukKolektifId_idx" ON public."Pelanggan"("indukKolektifId");`).catch(() => {});
+
+    // 3. Kolom namaGrupKolektif
+    await prisma.$executeRawUnsafe(`ALTER TABLE "Pelanggan" ADD COLUMN IF NOT EXISTS "namaGrupKolektif" TEXT;`).catch(() => {});
+    await prisma.$executeRawUnsafe(`ALTER TABLE public."Pelanggan" ADD COLUMN IF NOT EXISTS "namaGrupKolektif" TEXT;`).catch(() => {});
+
+    isKolektifPatchDone = true;
+  } catch (err) {
+    console.warn("[ensureKolektifSchema] notice:", err);
   }
 }

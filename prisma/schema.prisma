@@ -159,6 +159,12 @@ model Pelanggan {
   customTarif      Float? // tarif kustom (override paket)
   status           String    @default("aktif") // aktif | calon | nonaktif | libur
   catatan          String?
+  // Skema Pembayaran Kolektif: mandiri | kolektif_induk | kolektif_anggota
+  skemaBayar       String    @default("mandiri")
+  indukKolektifId  Int?
+  indukKolektif    Pelanggan? @relation("KolektifRelasi", fields: [indukKolektifId], references: [id], onDelete: SetNull)
+  anggotaKolektif  Pelanggan[] @relation("KolektifRelasi")
+  namaGrupKolektif String?   // Misal: "RT 02 RW 05 Kalibaru" atau "Kontrakan Pak Haji"
   wilayahId        Int? // legacy: nullable — calon/daftar mandiri belum tentu punya RT
   kelurahanId      Int? // canonical: satu kelurahan membawahi banyak pelanggan (scope petugas & kode)
   paketId          Int?
@@ -182,6 +188,8 @@ model Pelanggan {
   @@index([status])
   @@index([kelurahanId])
   @@index([wilayahId])
+  @@index([skemaBayar])
+  @@index([indukKolektifId])
 }
 
 model Petugas {

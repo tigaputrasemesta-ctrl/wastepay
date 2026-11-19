@@ -348,6 +348,18 @@ export async function handlePublicSearchPayment(request: Request): Promise<NextR
       kategori: true,
       status: true,
       deletedAt: true,
+      skemaBayar: true,
+      indukKolektifId: true,
+      namaGrupKolektif: true,
+      indukKolektif: {
+        select: {
+          id: true,
+          nama: true,
+          noTelepon: true,
+          kodePelanggan: true,
+          namaGrupKolektif: true,
+        },
+      },
     },
   });
 
@@ -444,6 +456,21 @@ export async function handlePublicSearchPayment(request: Request): Promise<NextR
         alamat: maskAddressForPublicView(pelanggan.alamat), // ALAMAT DISAMARKAN UNTUK PUBLIK
         kategori: pelanggan.kategori,
         status: pelanggan.status,
+        skemaBayar: pelanggan.skemaBayar || "mandiri",
+        isKolektifAnggota: pelanggan.skemaBayar === "kolektif_anggota",
+        isKolektifInduk: pelanggan.skemaBayar === "kolektif_induk",
+        namaGrupKolektif: pelanggan.namaGrupKolektif || (pelanggan as any).indukKolektif?.namaGrupKolektif || null,
+        indukKolektif: (pelanggan as any).indukKolektif
+          ? {
+              nama: (pelanggan as any).indukKolektif.nama,
+              noTelepon: (pelanggan as any).indukKolektif.noTelepon,
+              kodePelanggan: (pelanggan as any).indukKolektif.kodePelanggan,
+            }
+          : null,
+        lockPayment: pelanggan.skemaBayar === "kolektif_anggota",
+        lockMessage: pelanggan.skemaBayar === "kolektif_anggota"
+          ? `Iuran retribusi sampah Anda dikelola secara kolektif oleh ${(pelanggan as any).indukKolektif?.nama || "Koordinator Lingkungan"}${(pelanggan as any).indukKolektif?.namaGrupKolektif ? ` (${(pelanggan as any).indukKolektif.namaGrupKolektif})` : ""}. Pembayaran mandiri dinonaktifkan untuk mencegah pembayaran ganda.`
+          : null,
       },
       tagihan: tagihanWithRincian,
       analysisReport,

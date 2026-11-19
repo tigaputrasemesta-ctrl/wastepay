@@ -35,7 +35,19 @@ type TagihanPublik = {
 };
 
 type HasilCek = {
-  pelanggan: { nama: string; kodePelanggan: string; alamat: string; status?: string };
+  pelanggan: {
+    nama: string;
+    kodePelanggan: string;
+    alamat: string;
+    status?: string;
+    skemaBayar?: string;
+    isKolektifAnggota?: boolean;
+    isKolektifInduk?: boolean;
+    namaGrupKolektif?: string | null;
+    indukKolektif?: { nama: string; noTelepon?: string; kodePelanggan?: string } | null;
+    lockPayment?: boolean;
+    lockMessage?: string | null;
+  };
   tagihan: TagihanPublik[];
 };
 
@@ -75,11 +87,26 @@ type DetailTagihan = {
   duitkuAktif: boolean;
   jatuhTempo: string;
   tanggalLunas?: string | null;
+  isKolektifAnggota?: boolean;
+  lockPayment?: boolean;
+  kolektifInfo?: {
+    namaKoordinator: string;
+    namaGrup?: string | null;
+    noTeleponKoordinator?: string | null;
+  } | null;
   pelanggan: {
     nama: string;
     noTelepon?: string;
     kodePelanggan: string;
     alamat?: string;
+    skemaBayar?: string;
+    isKolektifAnggota?: boolean;
+    lockPayment?: boolean;
+    kolektifInfo?: {
+      namaKoordinator: string;
+      namaGrup?: string | null;
+      noTeleponKoordinator?: string | null;
+    } | null;
   };
   pembayaranLunas?: {
     metode: string;
@@ -815,6 +842,37 @@ function BayarPortalContent() {
               {/* Panduan Cara Pembayaran QRIS tetap bisa dilihat sebagai referensi */}
               <PanduanCaraBayarQris defaultOpen={false} />
             </div>
+          ) : (detail.isKolektifAnggota || detail.lockPayment || detail.pelanggan?.isKolektifAnggota || detail.pelanggan?.lockPayment) ? (
+            <div className="bg-white rounded-3xl border border-purple-200 shadow-sm p-8 text-center space-y-4">
+              <div className="w-14 h-14 mx-auto rounded-2xl bg-purple-100 border border-purple-200 text-purple-700 flex items-center justify-center text-3xl">
+                🛡️
+              </div>
+              <div className="space-y-1.5">
+                <h3 className="text-lg font-extrabold text-slate-900">
+                  Pembayaran Dikelola Kolektif Satu Pintu
+                </h3>
+                <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
+                  Tagihan retribusi sampah untuk alamat ini dibayarkan secara kolektif terpadu melalui{" "}
+                  <strong>
+                    {detail.kolektifInfo?.namaKoordinator || detail.pelanggan.kolektifInfo?.namaKoordinator || "Koordinator Lingkungan"}
+                  </strong>
+                  {detail.kolektifInfo?.namaGrup || detail.pelanggan.kolektifInfo?.namaGrup
+                    ? ` (${detail.kolektifInfo?.namaGrup || detail.pelanggan.kolektifInfo?.namaGrup})`
+                    : ""}.
+                </p>
+                <div className="p-3 bg-purple-50/80 rounded-2xl border border-purple-100 max-w-sm mx-auto text-xs text-purple-900 font-medium mt-3">
+                  ⚠️ Pembayaran mandiri online dinonaktifkan untuk mencegah terjadinya pembayaran ganda (double bayar).
+                </div>
+                {(detail.kolektifInfo?.noTeleponKoordinator || detail.pelanggan.kolektifInfo?.noTeleponKoordinator) && (
+                  <p className="text-xs text-slate-500 pt-2">
+                    Kontak Koordinator:{" "}
+                    <span className="font-mono font-bold text-slate-800">
+                      {detail.kolektifInfo?.noTeleponKoordinator || detail.pelanggan.kolektifInfo?.noTeleponKoordinator}
+                    </span>
+                  </p>
+                )}
+              </div>
+            </div>
           ) : (
           <div className="space-y-6">
             <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
@@ -1150,6 +1208,12 @@ function BayarPortalContent() {
                 <p className="text-xs uppercase font-bold text-slate-500 tracking-wider">Identitas Pelanggan</p>
                 <h3 className="text-xl font-extrabold text-slate-900">{hasil.pelanggan.nama}</h3>
                 <p className="text-xs text-slate-600 mt-0.5">{hasil.pelanggan.alamat}</p>
+                {hasil.pelanggan.isKolektifAnggota && (
+                  <div className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-lg bg-purple-100 border border-purple-200 text-purple-800 text-xs font-bold">
+                    <span>👥</span>
+                    <span>Anggota Kolektif: {hasil.pelanggan.namaGrupKolektif || hasil.pelanggan.indukKolektif?.nama || "Koordinator"}</span>
+                  </div>
+                )}
               </div>
               <div className="text-left sm:text-right">
                 <span className="inline-block px-3 py-1 rounded-xl bg-slate-100 border border-slate-200 text-xs font-mono font-bold text-slate-800">
@@ -1157,6 +1221,28 @@ function BayarPortalContent() {
                 </span>
               </div>
             </div>
+
+            {/* Banner Khusus Pembayaran Kolektif (Anti-Double Bayar) */}
+            {(hasil.pelanggan.isKolektifAnggota || hasil.pelanggan.lockPayment) && (
+              <div className="p-4 bg-purple-50/95 border border-purple-200 rounded-3xl flex items-start gap-3.5 text-xs text-purple-950 shadow-xs animate-in fade-in">
+                <div className="w-9 h-9 rounded-2xl bg-purple-600 text-white flex items-center justify-center text-lg shrink-0 shadow-2xs">
+                  🛡️
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-extrabold text-purple-950 text-sm">
+                    Pembayaran Dikelola Terpadu Satu Pintu (Kolektif)
+                  </h4>
+                  <p className="text-xs text-purple-900/90 leading-relaxed">
+                    {hasil.pelanggan.lockMessage || `Tagihan retribusi sampah untuk alamat ini dibayarkan secara kolektif terpadu melalui ${hasil.pelanggan.indukKolektif?.nama || "Koordinator Lingkungan"}. Pembayaran mandiri dinonaktifkan untuk mencegah pembayaran ganda.`}
+                  </p>
+                  {hasil.pelanggan.indukKolektif?.noTelepon && (
+                    <p className="text-xs text-purple-800 font-medium pt-0.5">
+                      Kontak Koordinator: <span className="font-mono font-bold">{hasil.pelanggan.indukKolektif.noTelepon}</span> ({hasil.pelanggan.indukKolektif.nama})
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Banner Khusus jika ada pembayaran yang sedang diverifikasi admin */}
             {pendingBills.length > 0 && (
@@ -1256,7 +1342,25 @@ function BayarPortalContent() {
                       </div>
 
                       {t.status !== "lunas" && (
-                        t.pendingPayment ? (
+                        (hasil.pelanggan.lockPayment || hasil.pelanggan.isKolektifAnggota) ? (
+                          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                            <div className="px-3.5 py-2.5 rounded-xl bg-purple-50 border border-purple-200 text-purple-900 text-xs font-semibold flex items-center gap-2">
+                              <span>🛡️</span>
+                              <span>Dikelola Kolektif via {hasil.pelanggan.indukKolektif?.nama || "Koordinator Lingkungan"}</span>
+                            </div>
+                            {t.noInvoice && (
+                              <Link
+                                href={`/invoice-tagihan?invoice=${encodeURIComponent(t.noInvoice)}`}
+                                target="_blank"
+                                className="px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5"
+                                title="Lihat rincian tagihan"
+                              >
+                                <span>📄</span>
+                                <span>Rincian</span>
+                              </Link>
+                            )}
+                          </div>
+                        ) : t.pendingPayment ? (
                           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                             <div className="px-3.5 py-2 rounded-2xl bg-amber-50 border border-amber-200/90 text-amber-950 text-xs flex items-center gap-2.5 shadow-2xs">
                               <span className="text-base shrink-0 animate-pulse">⏳</span>

@@ -387,6 +387,9 @@ try {
     where: {
       status: "belum_bayar",
       deletedAt: null,
+      pelanggan: {
+        skemaBayar: { not: "kolektif_anggota" }, // Cegah spam reminder ke anggota kolektif
+      },
       OR: [
         { jatuhTempo: { gte: h1, lt: new Date(h1.getTime() + 86400000) } },
         { jatuhTempo: { gte: h3, lt: new Date(h3.getTime() + 86400000) } },
@@ -421,7 +424,12 @@ try {
   }
   if (baruTunggakan.length > 0) {
     const list = await prisma.tagihan.findMany({
-      where: { id: { in: baruTunggakan } },
+      where: {
+        id: { in: baruTunggakan },
+        pelanggan: {
+          skemaBayar: { not: "kolektif_anggota" }, // Cegah pesan tunggakan ke anggota kolektif
+        },
+      },
       include: { pelanggan: { select: { id: true, nama: true, noTelepon: true, kodePelanggan: true } } },
     });
     for (const t of list) {

@@ -34,10 +34,29 @@ export async function POST(request: Request) {
 
     const pelanggan = await prisma.pelanggan.findUnique({
       where: { kodePelanggan: kode.trim() },
-      select: { id: true, nama: true, kodePelanggan: true, deletedAt: true },
+      select: {
+        id: true,
+        nama: true,
+        kodePelanggan: true,
+        deletedAt: true,
+        skemaBayar: true,
+        indukKolektif: { select: { nama: true, namaGrupKolektif: true } },
+      },
     });
     if (!pelanggan || pelanggan.deletedAt) {
       return NextResponse.json({ error: "Kode pelanggan tidak ditemukan" }, { status: 404 });
+    }
+
+    // Cegah double bayar untuk anggota kolektif (hanya boleh satu pintu via induk)
+    if (pelanggan.skemaBayar === "kolektif_anggota") {
+      const namaKoordinator = pelanggan.indukKolektif?.nama || "Koordinator Lingkungan";
+      return NextResponse.json(
+        {
+          error: `Pelanggan ini terdaftar dalam skema pembayaran kolektif melalui ${namaKoordinator}. Pembayaran mandiri dinonaktifkan untuk mencegah pembayaran ganda.`,
+          isKolektif: true,
+        },
+        { status: 403 }
+      );
     }
 
     const tagihan = await prisma.tagihan.findUnique({

@@ -23,6 +23,7 @@ type Candidate = {
   createdAt: string;
   hariSiklus: number;
   jatuhTempo: string;
+  skemaBayar: string;
 };
 
 /**
@@ -91,6 +92,7 @@ export async function POST(request: Request) {
         createdAt: pelanggan.createdAt.toISOString(),
         hariSiklus: regDate.getDate(),
         jatuhTempo: jt.toISOString(),
+        skemaBayar: pelanggan.skemaBayar || "mandiri",
       });
     }
 
@@ -127,6 +129,7 @@ export async function POST(request: Request) {
       jatuhTempo: Date;
       kodePelanggan: string;
       paket?: string;
+      skemaBayar: string;
     }[] = [];
 
     for (const c of candidates) {
@@ -163,6 +166,7 @@ export async function POST(request: Request) {
           jatuhTempo,
           kodePelanggan: c.kodePelanggan,
           paket: c.paket || undefined,
+          skemaBayar: c.skemaBayar,
         });
 
         created++;
@@ -174,6 +178,7 @@ export async function POST(request: Request) {
     }
 
     // Auto-kirim WA invoice ke pelanggan yang tagihannya baru dibuat (skylite pattern).
+    // PENTING: Anggota kolektif dikecualikan agar tidak timbul kebingungan atau double bayar.
     const waAutoSend = process.env.WA_AUTO_SEND !== "false" && isWaEnabled() && body.skipWa !== true;
     let waHasil: {
       terkirim: number;
@@ -182,11 +187,13 @@ export async function POST(request: Request) {
       failures: string[];
     } | null = null;
     if (waAutoSend && tagihanBaru.length > 0) {
-      const targets: TargetWa[] = tagihanBaru.map((t) => ({
-        pelangganId: t.pelangganId,
-        nama: t.nama,
-        noTelepon: t.noTelepon,
-      }));
+      const targets: TargetWa[] = tagihanBaru
+        .filter((t) => t.skemaBayar !== "kolektif_anggota")
+        .map((t) => ({
+          pelangganId: t.pelangganId,
+          nama: t.nama,
+          noTelepon: t.noTelepon,
+        }));
       waHasil = await kirimBlastWa(
         targets,
         "tagihan_baru",

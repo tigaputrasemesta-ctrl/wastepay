@@ -52,9 +52,9 @@ describe("Google Contacts: formatPelangganToGoogleContact", () => {
     const contact = formatPelangganToGoogleContact(samplePelanggan, "contactGroups/group123");
 
     // Nama
-    expect(contact.names?.[0].givenName).toBe("Bpk");
-    expect(contact.names?.[0].familyName).toBe("Budi Santoso");
-    expect(contact.names?.[0].displayName).toBe("Bpk Budi Santoso - Zona A [TES-001]");
+    expect(contact.names?.[0].givenName).toBe("Bpk Budi Santoso Blok Zona A");
+    expect(contact.names?.[0].familyName).toBe("");
+    expect(contact.names?.[0].displayName).toBe("Bpk Budi Santoso Blok Zona A");
 
     // Telepon
     expect(contact.phoneNumbers?.[0].value).toBe("+628121000001");
@@ -126,7 +126,7 @@ describe("Google Contacts: File Generators (CSV & vCard)", () => {
     expect(lines[0]).toContain("Phone 1 - Value");
     expect(lines[0]).toContain("Group Membership");
 
-    expect(lines[1]).toContain("Andi Wijaya [KAL-001]");
+    expect(lines[1]).toContain("Andi Wijaya");
     expect(lines[1]).toContain("+6281211112222");
     expect(lines[1]).toContain("WastePay");
   });
@@ -136,7 +136,7 @@ describe("Google Contacts: File Generators (CSV & vCard)", () => {
 
     expect(vcf).toContain("BEGIN:VCARD");
     expect(vcf).toContain("VERSION:3.0");
-    expect(vcf).toContain("FN:Andi Wijaya [KAL-001]");
+    expect(vcf).toContain("FN:Andi Wijaya");
     expect(vcf).toContain("TEL;TYPE=CELL,VOICE:+6281211112222");
     expect(vcf).toContain("CATEGORIES:Pelanggan WastePay");
     expect(vcf).toContain("END:VCARD");

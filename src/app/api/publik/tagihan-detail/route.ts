@@ -102,6 +102,16 @@ export async function GET(request: Request) {
       nama: tagihan.pelanggan.nama,
       kodePelanggan: tagihan.pelanggan.kodePelanggan,
       kategori: tagihan.pelanggan.kategori,
+      skemaBayar: (tagihan.pelanggan as any).skemaBayar || "mandiri",
+      isKolektifAnggota: (tagihan.pelanggan as any).skemaBayar === "kolektif_anggota",
+      lockPayment: (tagihan.pelanggan as any).skemaBayar === "kolektif_anggota",
+      kolektifInfo: (tagihan.pelanggan as any).skemaBayar === "kolektif_anggota"
+        ? {
+            namaKoordinator: (tagihan.pelanggan as any).indukKolektif?.nama || "Koordinator Lingkungan",
+            namaGrup: (tagihan.pelanggan as any).namaGrupKolektif || (tagihan.pelanggan as any).indukKolektif?.namaGrupKolektif || null,
+            noTeleponKoordinator: (tagihan.pelanggan as any).indukKolektif?.noTelepon || null,
+          }
+        : null,
       // alamat & noTelepon sengaja TIDAK diekspos — endpoint publik, invoice bisa ditebak
     },
     pembayaranLunas: pembayaranLunas

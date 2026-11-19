@@ -8,18 +8,21 @@ import { generateNoInvoice } from "@/lib/invoice";
 import { hitungJatuhTempoKonsumen } from "@/lib/tagihan";
 import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 import { tetapkanJadwalDanPetugasPelanggan } from "@/lib/penugasan-jadwal";
-import { ensureArmadaRuteSchema } from "@/lib/db-patch";
+import { ensureArmadaRuteSchema, ensureKolektifSchema } from "@/lib/db-patch";
 import { resolveTenantByHost } from "@/lib/tenant";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
+  await ensureKolektifSchema();
   const { searchParams } = new URL(request.url);
   const search = searchParams.get("search") || "";
   const wilayahId = searchParams.get("wilayahId");
   const kelurahanIdParam = searchParams.get("kelurahanId");
   const status = searchParams.get("status");
   const kategori = searchParams.get("kategori");
+  const skemaBayarParam = searchParams.get("skemaBayar");
+  const indukKolektifIdParam = searchParams.get("indukKolektifId");
 
   const where: Prisma.PelangganWhereInput = { deletedAt: null };
 
@@ -84,6 +87,12 @@ export async function GET(request: Request) {
   if (kategori) {
     where.kategori = kategori;
   }
+  if (skemaBayarParam) {
+    where.skemaBayar = skemaBayarParam;
+  }
+  if (indukKolektifIdParam) {
+    where.indukKolektifId = parseInt(indukKolektifIdParam);
+  }
   const zonaIdParam = searchParams.get("zonaId");
   if (zonaIdParam) {
     where.wilayah = { zonaId: parseInt(zonaIdParam) };
@@ -125,6 +134,22 @@ export async function GET(request: Request) {
         },
         kelurahan: true,
         paket: true,
+        indukKolektif: {
+          select: {
+            id: true,
+            nama: true,
+            noTelepon: true,
+            kodePelanggan: true,
+            namaGrupKolektif: true,
+          },
+        },
+        _count: {
+          select: {
+            anggotaKolektif: true,
+            tagihan: true,
+            pembayaran: true,
+          },
+        },
         jadwal: {
           where: { aktif: true },
           include: {
@@ -243,6 +268,9 @@ export async function POST(request: Request) {
       catatan,
       zonaId,
       wilayahId,
+      skemaBayar,
+      indukKolektifId,
+      namaGrupKolektif,
     } = body;
 
     if (!nama || !noTelepon || !alamat || !kelurahanId) {
@@ -300,10 +328,14 @@ export async function POST(request: Request) {
           paketId: paketId ? parseInt(paketId) : null,
           status: status || "aktif",
           catatan: catatan || null,
+          skemaBayar: skemaBayar || "mandiri",
+          indukKolektifId: indukKolektifId ? parseInt(indukKolektifId) : null,
+          namaGrupKolektif: namaGrupKolektif || null,
         },
         include: {
           kelurahan: true,
           paket: true,
+          indukKolektif: true,
           wilayah: {
             include: { zona: true },
           },

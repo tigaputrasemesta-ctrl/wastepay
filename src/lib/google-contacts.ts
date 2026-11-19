@@ -98,6 +98,71 @@ export function formatPhoneE164(phone: string): string {
 }
 
 /**
+ * Helper untuk membersihkan dan menstandarkan nama Blok Zona ke Title Case
+ * Contoh: "BLOK YKP KELAPA" -> "Blok YKP Kelapa"
+ */
+export function cleanBlokZona(wilayahNama?: string | null, zonaNama?: string | null): string {
+  let raw = "";
+
+  if (wilayahNama && /blok/i.test(wilayahNama)) {
+    raw = wilayahNama;
+  } else if (zonaNama && /blok/i.test(zonaNama)) {
+    raw = zonaNama;
+  } else if (wilayahNama && !/rt|rw/i.test(wilayahNama)) {
+    raw = wilayahNama;
+  } else if (zonaNama) {
+    raw = zonaNama;
+  } else {
+    raw = wilayahNama || "";
+  }
+
+  raw = raw.replace(/\s+/g, " ").trim();
+  if (!raw) return "";
+
+  // Title Case khusus
+  let formatted = raw
+    .toLowerCase()
+    .split(/\s+/)
+    .map((word) => {
+      const w = word.toLowerCase();
+      if (w === "ykp") return "YKP";
+      if (w === "bmk") return "BMK";
+      if (w === "thr") return "THR";
+      if (w === "smp" || w === "smp6") return w === "smp6" ? "SMP 6" : "SMP";
+      if (w === "rt") return "RT";
+      if (w === "rw") return "RW";
+      if (w === "atk") return "ATK";
+      if (w === "dmiles") return "Dmiles";
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+
+  if (!/^blok/i.test(formatted)) {
+    formatted = `Blok ${formatted}`;
+  }
+
+  return formatted.replace(/\s*\+\s*/g, " + ").trim();
+}
+
+/**
+ * Format nama kontak Google sesuai instruksi: [Nama] [Blok Zona]
+ * Contoh: "Eko Blok YKP Kelapa"
+ */
+export function formatContactFullName(nama: string, blokZona: string): string {
+  const cleanNama = (nama || "").trim();
+  const cleanBlok = (blokZona || "").trim();
+
+  if (cleanBlok && cleanNama.toLowerCase().includes(cleanBlok.toLowerCase())) {
+    return cleanNama;
+  }
+
+  if (cleanBlok) {
+    return `${cleanNama} ${cleanBlok}`;
+  }
+  return cleanNama;
+}
+
+/**
  * Bangun URL Oauth2 untuk mendapatkan persetujuan pengguna
  */
 export function getGoogleAuthUrl(config: GoogleOAuthConfig, state?: string): string {
@@ -259,17 +324,14 @@ export function formatPelangganToGoogleContact(
 ): GoogleContactPerson {
   const phone = formatPhoneE164(pelanggan.noTelepon);
   const kelurahan = pelanggan.kelurahan?.nama || "";
-  const zona = pelanggan.wilayah?.zona?.nama || pelanggan.wilayah?.nama || "";
+  const zona = cleanBlokZona(pelanggan.wilayah?.nama, pelanggan.wilayah?.zona?.nama);
   const paketNama = pelanggan.paket?.nama || "";
   const kategori = pelanggan.kategori ? pelanggan.kategori.replace(/_/g, " ").toUpperCase() : "";
 
-  // Pisahkan nama depan dan belakang untuk format Google Contact
-  const nameParts = (pelanggan.nama || "").trim().split(/\s+/);
-  const givenName = nameParts[0] || "Pelanggan";
-  const familyName = nameParts.slice(1).join(" ") || "";
-  const displayName = zona
-    ? `${pelanggan.nama} - ${zona} [${pelanggan.kodePelanggan}]`
-    : `${pelanggan.nama} [${pelanggan.kodePelanggan}]`;
+  // Format Nama Kontak: [Nama] [Blok Zona] (contoh: "Eko Blok YKP Kelapa")
+  const displayName = formatContactFullName(pelanggan.nama, zona);
+  const givenName = displayName;
+  const familyName = "";
 
   // Alamat terformat
   const addressParts = [
@@ -540,10 +602,10 @@ export async function syncPelangganToGooglePeopleApi(params: {
 /**
  * Escape field untuk CSV standard RFC 4180
  */
-function escapeCsv(val: any): string {
+function escapeCsv(val: any, isPhone: boolean = false): string {
   if (val === null || val === undefined) return "";
   let s = String(val).trim();
-  if (/^[=+\-@]/.test(s)) {
+  if (!isPhone && /^[=@]/.test(s)) {
     s = "'" + s;
   }
   if (s.includes(",") || s.includes('"') || s.includes("\n") || s.includes("\r")) {
@@ -611,11 +673,9 @@ export function generateGoogleContactsCsv(
 
   for (const p of pelangganList) {
     const kelurahan = p.kelurahan?.nama || "";
-    const zona = p.wilayah?.zona?.nama || p.wilayah?.nama || "";
-    // Nama + Zona agar langsung terdeteksi di kontak WhatsApp & HP
-    const fullName = zona
-      ? `${p.nama} - ${zona}`
-      : (p.kodePelanggan ? `${p.nama} [${p.kodePelanggan}]` : p.nama);
+    const zona = cleanBlokZona(p.wilayah?.nama, p.wilayah?.zona?.nama);
+    // Format Nama Kontak: [Nama] [Blok Zona] (contoh: "Eko Blok YKP Kelapa")
+    const fullName = formatContactFullName(p.nama, zona);
     const phone = formatPhoneE164(p.noTelepon);
     const kategori = p.kategori ? p.kategori.replace(/_/g, " ").toUpperCase() : "";
 
@@ -648,7 +708,7 @@ export function generateGoogleContactsCsv(
       escapeCsv(`* myContacts ::: ${groupLabel}`), // Group Membership
       "", "", // Email 1
       "Mobile", // Phone 1 - Type
-      escapeCsv(phone), // Phone 1 - Value
+      escapeCsv(phone, true), // Phone 1 - Value
       "Home", // Address 1 - Type
       escapeCsv(fullAddress), // Address 1 - Formatted
       escapeCsv(p.alamat || ""), // Address 1 - Street
@@ -680,11 +740,9 @@ export function generateVCard(
 
   for (const p of pelangganList) {
     const kelurahan = p.kelurahan?.nama || "";
-    const zona = p.wilayah?.zona?.nama || p.wilayah?.nama || "";
-    // Nama + Zona agar mudah dideteksi langsung di WhatsApp
-    const fullName = zona
-      ? `${p.nama} - ${zona}`
-      : (p.kodePelanggan ? `${p.nama} [${p.kodePelanggan}]` : p.nama);
+    const zona = cleanBlokZona(p.wilayah?.nama, p.wilayah?.zona?.nama);
+    // Format Nama Kontak: [Nama] [Blok Zona] (contoh: "Eko Blok YKP Kelapa")
+    const fullName = formatContactFullName(p.nama, zona);
     const phone = formatPhoneE164(p.noTelepon);
     const kategori = p.kategori ? p.kategori.replace(/_/g, " ").toUpperCase() : "";
 

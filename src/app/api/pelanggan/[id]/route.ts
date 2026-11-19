@@ -7,13 +7,14 @@ import { generateNoInvoice } from "@/lib/invoice";
 import { hitungJatuhTempoKonsumen } from "@/lib/tagihan";
 import { tetapkanJadwalDanPetugasPelanggan } from "@/lib/penugasan-jadwal";
 import { kirimNotifikasi, templatePendaftaranDisetujui } from "@/lib/wa";
-import { ensureArmadaRuteSchema } from "@/lib/db-patch";
+import { ensureArmadaRuteSchema, ensureKolektifSchema } from "@/lib/db-patch";
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   await ensureArmadaRuteSchema();
+  await ensureKolektifSchema();
   const id = parseInt((await params).id);
   const pelanggan = await prisma.pelanggan.findUnique({
     where: { id },
@@ -25,6 +26,20 @@ export async function GET(
       },
       kelurahan: true,
       paket: true,
+      indukKolektif: {
+        select: { id: true, nama: true, noTelepon: true, kodePelanggan: true, namaGrupKolektif: true },
+      },
+      anggotaKolektif: {
+        select: {
+          id: true,
+          nama: true,
+          noTelepon: true,
+          kodePelanggan: true,
+          alamat: true,
+          status: true,
+          customTarif: true,
+        },
+      },
       jadwal: {
         where: { aktif: true },
         include: { rute: { include: { kendaraan: true, petugas: { omit: { trackingToken: true } } } } },
@@ -154,6 +169,9 @@ export async function PUT(
       data.wilayahId = body.wilayahId ? parseInt(body.wilayahId) : null;
     }
     if (paketId !== undefined) data.paketId = paketId ? parseInt(paketId) : null;
+    if (body.skemaBayar !== undefined) data.skemaBayar = body.skemaBayar;
+    if (body.indukKolektifId !== undefined) data.indukKolektifId = body.indukKolektifId ? parseInt(body.indukKolektifId) : null;
+    if (body.namaGrupKolektif !== undefined) data.namaGrupKolektif = body.namaGrupKolektif || null;
 
     // Penentuan Zona Area Pickup oleh Admin Pusat (dengan auto-resolusi server-side dari Rute)
     let resolvedZonaId = body.zonaId ? parseInt(body.zonaId) : null;
