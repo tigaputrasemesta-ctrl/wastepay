@@ -11,20 +11,31 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const msg = (error?.message || "").toLowerCase();
+  const name = error?.name || "";
   const isChunkError =
-    error.message?.includes("Failed to load chunk") ||
-    error.message?.includes("Loading chunk") ||
-    error.name === "ChunkLoadError";
+    msg.includes("failed to load chunk") ||
+    msg.includes("loading chunk") ||
+    msg.includes("chunkloaderror") ||
+    msg.includes("failed to fetch dynamically imported module") ||
+    msg.includes("dynamically imported module") ||
+    msg.includes("importing a module script failed") ||
+    msg.includes("error loading dynamically imported module") ||
+    msg.includes("loading css chunk") ||
+    msg.includes("failed to load resource") ||
+    msg.includes("load failed") ||
+    name === "ChunkLoadError";
 
   useEffect(() => {
     // Log error to client console for easier debugging
     console.error("Unhandled Application Error:", error);
 
-    // Jika terjadi ChunkLoadError (versi web baru ter-deploy), reload otomatis 1x
+    // Jika terjadi ChunkLoadError / dynamic import failure (versi web baru ter-deploy), reload otomatis 1x
     if (isChunkError && typeof window !== "undefined") {
-      const reloaded = sessionStorage.getItem("chunk_reloaded");
-      if (!reloaded) {
-        sessionStorage.setItem("chunk_reloaded", "1");
+      const now = Date.now();
+      const lastReload = Number(sessionStorage.getItem("chunk_reloaded_at") || "0");
+      if (now - lastReload > 10000) {
+        sessionStorage.setItem("chunk_reloaded_at", String(now));
         window.location.reload();
       }
     }
@@ -32,7 +43,7 @@ export default function Error({
 
   const handleRetry = () => {
     if (typeof window !== "undefined") {
-      sessionStorage.removeItem("chunk_reloaded");
+      sessionStorage.removeItem("chunk_reloaded_at");
       window.location.reload();
       return;
     }

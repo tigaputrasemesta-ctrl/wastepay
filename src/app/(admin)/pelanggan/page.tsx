@@ -146,7 +146,7 @@ function StickerBarcodeItem({ p, idx }: { p: Pelanggan; idx: number }) {
       <div className="flex items-center justify-between border-b-2 border-black pb-1">
         <span className="font-extrabold uppercase text-[9px] tracking-wider">UPS HERU DEPOK</span>
         <span className="font-mono font-bold text-[8px] border border-black px-1">
-          {p.kategori.replace("level_", "LVL ")}
+          {(p.kategori || "level_1").replace("level_", "LVL ")}
         </span>
       </div>
       <div className="text-center mt-1.5">
@@ -385,7 +385,7 @@ function PelangganContent() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [search, filterKelurahan, filterZona, filterStatus, filterKategori, showToast]);
+  }, [search, filterKelurahan, filterZona, filterStatus, filterKategori, filterSkemaBayar, showToast]);
 
   // Debounced search
   useEffect(() => {
@@ -508,18 +508,18 @@ function PelangganContent() {
   }, [showForm]);
 
   const daftarIndukKolektif = useMemo(() => {
-    const list = indukListServer.length > 0
+    const list = Array.isArray(indukListServer) && indukListServer.length > 0
       ? indukListServer
-      : pelanggan.filter((p) => p.skemaBayar === "kolektif_induk");
-    return list.filter((p) => !editing || p.id !== editing.id);
+      : (Array.isArray(pelanggan) ? pelanggan.filter((p) => p && p.skemaBayar === "kolektif_induk") : []);
+    return list.filter((p) => p && (!editing || p.id !== editing.id));
   }, [indukListServer, pelanggan, editing]);
 
   // Cek duplikasi nomor telepon secara real-time
   const phoneDuplicate = useMemo(() => {
-    if (!form.noTelepon || form.noTelepon.length < 8) return null;
+    if (!form.noTelepon || form.noTelepon.length < 8 || !Array.isArray(pelanggan)) return null;
     const clean = form.noTelepon.replace(/[^0-9]/g, "");
     return pelanggan.find(
-      (p) => p.id !== editing?.id && p.noTelepon && p.noTelepon.replace(/[^0-9]/g, "") === clean
+      (p) => p && p.id !== editing?.id && p.noTelepon && p.noTelepon.replace(/[^0-9]/g, "") === clean
     );
   }, [form.noTelepon, pelanggan, editing]);
 
@@ -694,7 +694,9 @@ function PelangganContent() {
   const totalCount = statusCounts.total || pelanggan.length;
 
   const filteredPelanggan = useMemo(() => {
+    if (!Array.isArray(pelanggan)) return [];
     return pelanggan.filter((p) => {
+      if (!p) return false;
       if (filterGps === "ada" && (p.latitude == null || p.longitude == null)) return false;
       if (filterGps === "belum" && (p.latitude != null && p.longitude != null)) return false;
       if (filterSkemaBayar && (p.skemaBayar || "mandiri") !== filterSkemaBayar) return false;
@@ -721,7 +723,6 @@ function PelangganContent() {
       </div>
     );
   }
-
   const handleExportExcel = async () => {
     const exportQuery = new URLSearchParams({
       ...(filterStatus ? { status: filterStatus } : {}),
@@ -1346,14 +1347,14 @@ function PelangganContent() {
                               </span>
                             </div>
                           )}
-                          {p.latitude && p.longitude && (
+                          {p.latitude != null && p.longitude != null && !isNaN(Number(p.latitude)) && !isNaN(Number(p.longitude)) && (
                             <a
                               href={`https://www.google.com/maps?q=${p.latitude},${p.longitude}`}
                               target="_blank"
                               className="text-[10px] text-slate-400 dark:text-zinc-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition flex items-center gap-1 mt-0.5"
                             >
                               <MapPin size={10} className="shrink-0 text-slate-400 dark:text-zinc-500" />
-                              <span>{p.latitude.toFixed(4)}, {p.longitude.toFixed(4)}</span>
+                              <span>{Number(p.latitude).toFixed(4)}, {Number(p.longitude).toFixed(4)}</span>
                             </a>
                           )}
                         </div>
@@ -1383,13 +1384,13 @@ function PelangganContent() {
                             Belum ada zona
                           </span>
                         )}
-                        {p.latitude && p.longitude ? (
+                        {p.latitude != null && p.longitude != null && !isNaN(Number(p.latitude)) && !isNaN(Number(p.longitude)) ? (
                           <a
                             href={`https://www.google.com/maps?q=${p.latitude},${p.longitude}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800 text-[10px] font-medium text-emerald-700 dark:text-emerald-300 rounded hover:bg-emerald-100 transition"
-                            title={`Buka Google Maps (${p.latitude.toFixed(5)}, ${p.longitude.toFixed(5)})`}
+                            title={`Buka Google Maps (${Number(p.latitude).toFixed(5)}, ${Number(p.longitude).toFixed(5)})`}
                           >
                             <MapPin size={10} className="shrink-0" />
                             <span>GPS Ada</span>
@@ -1414,7 +1415,7 @@ function PelangganContent() {
                           <>
                             <span className="text-xs font-semibold text-purple-700 dark:text-purple-400 font-mono tabular-nums">{formatRupiah(p.paket.harga || 0)}</span>
                             <span className="inline-flex items-center px-1.5 py-0.2 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200/70 dark:border-purple-800/60 rounded text-[9px] font-medium">
-                              {p.paket.nama.split(" ").slice(0, 2).join(" ")}
+                              {(p.paket.nama || "").split(" ").slice(0, 2).join(" ")}
                             </span>
                           </>
                         ) : (
@@ -1423,7 +1424,7 @@ function PelangganContent() {
                               {formatRupiah(kategoriTarifList.find(x => x.kategori === p.kategori)?.tarif || 0)}
                             </span>
                             <span className="inline-flex items-center px-1.5 py-0.2 bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 border border-slate-200/70 dark:border-zinc-700 rounded text-[9px] font-medium">
-                              {p.kategori.replace('_', ' ')}
+                              {(p.kategori || "level_1").replace('_', ' ')}
                             </span>
                           </>
                         )}
@@ -1635,7 +1636,7 @@ function PelangganContent() {
                   <div className="grid grid-cols-2 gap-2">
                     {p.noTelepon ? (
                       <a
-                        href={`https://wa.me/${p.noTelepon.replace(/^0/, "62")}`}
+                        href={`https://wa.me/${(p.noTelepon || "").replace(/^0/, "62")}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="py-2 px-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 font-medium text-xs flex items-center justify-center gap-1.5 border border-emerald-200/70 dark:border-emerald-800/50 active:scale-98 transition-all"

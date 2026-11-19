@@ -10,17 +10,29 @@ export default function AdminError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const msg = (error?.message || "").toLowerCase();
+  const name = error?.name || "";
   const isChunkError =
-    error.message?.includes("Failed to load chunk") ||
-    error.message?.includes("Loading chunk") ||
-    error.name === "ChunkLoadError";
+    msg.includes("failed to load chunk") ||
+    msg.includes("loading chunk") ||
+    msg.includes("chunkloaderror") ||
+    msg.includes("failed to fetch dynamically imported module") ||
+    msg.includes("dynamically imported module") ||
+    msg.includes("importing a module script failed") ||
+    msg.includes("error loading dynamically imported module") ||
+    msg.includes("loading css chunk") ||
+    msg.includes("failed to load resource") ||
+    msg.includes("load failed") ||
+    name === "ChunkLoadError";
 
   useEffect(() => {
     console.error("Admin Page Error:", error);
     if (isChunkError && typeof window !== "undefined") {
-      const reloaded = sessionStorage.getItem("admin_chunk_reloaded");
-      if (!reloaded) {
-        sessionStorage.setItem("admin_chunk_reloaded", "1");
+      const now = Date.now();
+      const lastReload = Number(sessionStorage.getItem("admin_chunk_reloaded_at") || "0");
+      // Otomatis reload 1x jika terdeteksi mismatch chunk versi build baru (cooldown 10 detik)
+      if (now - lastReload > 10000) {
+        sessionStorage.setItem("admin_chunk_reloaded_at", String(now));
         window.location.reload();
       }
     }
@@ -28,7 +40,7 @@ export default function AdminError({
 
   const handleRetry = () => {
     if (typeof window !== "undefined") {
-      sessionStorage.removeItem("admin_chunk_reloaded");
+      sessionStorage.removeItem("admin_chunk_reloaded_at");
       window.location.reload();
       return;
     }
