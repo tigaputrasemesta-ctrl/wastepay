@@ -235,7 +235,16 @@ export async function POST(request: Request) {
     const now = new Date();
     const settlementResults = await prisma.$transaction(async (tx) => {
       let totalAmountSettled = 0;
-      const settledItems = [];
+      const settledItems: {
+        tagihanId: number;
+        pembayaranId: number;
+        noInvoice: string | null;
+        namaPelanggan: string;
+        kodePelanggan: string;
+        bulan: number;
+        tahun: number;
+        jumlah: number;
+      }[] = [];
 
       for (const t of tagihanToSettle) {
         const rincian = hitungRincian(t.jumlah, t.denda || 0);

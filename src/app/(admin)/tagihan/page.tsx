@@ -2813,7 +2813,7 @@ export default function TagihanPage() {
         isOpen={showKolektifModal}
         onClose={() => setShowKolektifModal(false)}
         onSuccess={() => {
-          fetchData();
+          fetchTagihan();
         }}
         defaultBulan={bulan ? parseInt(bulan, 10) : undefined}
         defaultTahun={tahun ? parseInt(tahun, 10) : undefined}
