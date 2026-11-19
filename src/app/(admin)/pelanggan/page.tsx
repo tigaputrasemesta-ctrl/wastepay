@@ -493,9 +493,26 @@ function PelangganContent() {
     setPage(1);
   }
 
+  const [indukListServer, setIndukListServer] = useState<Pelanggan[]>([]);
+
+  // Muat daftar induk langsung dari server secara asinkron saat modal dibuka agar instan & tidak terpengaruh filter tabel
+  useEffect(() => {
+    if (showForm) {
+      fetch("/api/pelanggan?skemaBayar=kolektif_induk&status=aktif")
+        .then((r) => (r.ok ? r.json() : []))
+        .then((data) => {
+          if (Array.isArray(data)) setIndukListServer(data);
+        })
+        .catch(() => {});
+    }
+  }, [showForm]);
+
   const daftarIndukKolektif = useMemo(() => {
-    return pelanggan.filter((p) => p.skemaBayar === "kolektif_induk" && (!editing || p.id !== editing.id));
-  }, [pelanggan, editing]);
+    const list = indukListServer.length > 0
+      ? indukListServer
+      : pelanggan.filter((p) => p.skemaBayar === "kolektif_induk");
+    return list.filter((p) => !editing || p.id !== editing.id);
+  }, [indukListServer, pelanggan, editing]);
 
   // Cek duplikasi nomor telepon secara real-time
   const phoneDuplicate = useMemo(() => {
@@ -675,10 +692,14 @@ function PelangganContent() {
     );
   }
 
-  const calonList = pelanggan.filter((p) => p.status === "calon");
-  const aktifList = pelanggan.filter((p) => p.status === "aktif");
-  const nonaktifList = pelanggan.filter((p) => p.status === "nonaktif");
-  const liburList = pelanggan.filter((p) => p.status === "libur");
+  const { calonList, aktifList, nonaktifList, liburList } = useMemo(() => {
+    return {
+      calonList: pelanggan.filter((p) => p.status === "calon"),
+      aktifList: pelanggan.filter((p) => p.status === "aktif"),
+      nonaktifList: pelanggan.filter((p) => p.status === "nonaktif"),
+      liburList: pelanggan.filter((p) => p.status === "libur"),
+    };
+  }, [pelanggan]);
 
   const calonCount = statusCounts.calon || calonList.length;
   const aktifCount = statusCounts.aktif || aktifList.length;
@@ -686,14 +707,19 @@ function PelangganContent() {
   const liburCount = statusCounts.libur || liburList.length;
   const totalCount = statusCounts.total || pelanggan.length;
 
-  const filteredPelanggan = pelanggan.filter((p) => {
-    if (filterGps === "ada" && (p.latitude == null || p.longitude == null)) return false;
-    if (filterGps === "belum" && (p.latitude != null && p.longitude != null)) return false;
-    if (filterSkemaBayar && (p.skemaBayar || "mandiri") !== filterSkemaBayar) return false;
-    return true;
-  });
+  const filteredPelanggan = useMemo(() => {
+    return pelanggan.filter((p) => {
+      if (filterGps === "ada" && (p.latitude == null || p.longitude == null)) return false;
+      if (filterGps === "belum" && (p.latitude != null && p.longitude != null)) return false;
+      if (filterSkemaBayar && (p.skemaBayar || "mandiri") !== filterSkemaBayar) return false;
+      return true;
+    });
+  }, [pelanggan, filterGps, filterSkemaBayar]);
 
-  const paginatedPelanggan = filteredPelanggan.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+  const paginatedPelanggan = useMemo(() => {
+    return filteredPelanggan.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+  }, [filteredPelanggan, page]);
+
   const totalPages = Math.ceil(filteredPelanggan.length / ITEMS_PER_PAGE);
 
   const handleExportExcel = async () => {

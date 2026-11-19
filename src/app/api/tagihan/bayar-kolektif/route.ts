@@ -32,7 +32,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "indukKolektifId tidak valid" }, { status: 400 });
   }
 
-  const induk = await prisma.pelanggan.findUnique({
+  const induk = await prisma.pelanggan.findFirst({
     where: { id: indukId, deletedAt: null },
     select: {
       id: true,
@@ -92,10 +92,6 @@ export async function GET(request: Request) {
           status: true,
           skemaBayar: true,
         },
-      },
-      pembayaran: {
-        where: { status: "terverifikasi" },
-        select: { id: true, jumlah: true, tanggal: true, metode: true },
       },
     },
     orderBy: [{ tahun: "desc" }, { bulan: "desc" }, { pelanggan: { nama: "asc" } }],

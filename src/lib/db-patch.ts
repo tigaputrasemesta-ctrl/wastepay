@@ -49,21 +49,19 @@ export async function ensureArmadaRuteSchema() {
 export async function ensureKolektifSchema() {
   if (isKolektifPatchDone) return;
   try {
-    // 1. Kolom skemaBayar (default: 'mandiri')
-    await prisma.$executeRawUnsafe(`ALTER TABLE "Pelanggan" ADD COLUMN IF NOT EXISTS "skemaBayar" TEXT DEFAULT 'mandiri';`).catch(() => {});
-    await prisma.$executeRawUnsafe(`ALTER TABLE public."Pelanggan" ADD COLUMN IF NOT EXISTS "skemaBayar" TEXT DEFAULT 'mandiri';`).catch(() => {});
-    await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "Pelanggan_skemaBayar_idx" ON "Pelanggan"("skemaBayar");`).catch(() => {});
-    await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "Pelanggan_skemaBayar_idx" ON public."Pelanggan"("skemaBayar");`).catch(() => {});
-
-    // 2. Kolom indukKolektifId
-    await prisma.$executeRawUnsafe(`ALTER TABLE "Pelanggan" ADD COLUMN IF NOT EXISTS "indukKolektifId" INTEGER;`).catch(() => {});
-    await prisma.$executeRawUnsafe(`ALTER TABLE public."Pelanggan" ADD COLUMN IF NOT EXISTS "indukKolektifId" INTEGER;`).catch(() => {});
-    await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "Pelanggan_indukKolektifId_idx" ON "Pelanggan"("indukKolektifId");`).catch(() => {});
-    await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "Pelanggan_indukKolektifId_idx" ON public."Pelanggan"("indukKolektifId");`).catch(() => {});
-
-    // 3. Kolom namaGrupKolektif
-    await prisma.$executeRawUnsafe(`ALTER TABLE "Pelanggan" ADD COLUMN IF NOT EXISTS "namaGrupKolektif" TEXT;`).catch(() => {});
-    await prisma.$executeRawUnsafe(`ALTER TABLE public."Pelanggan" ADD COLUMN IF NOT EXISTS "namaGrupKolektif" TEXT;`).catch(() => {});
+    // 1. Jalankan batch statement DDL terpadu
+    await prisma.$executeRawUnsafe(`
+      ALTER TABLE "Pelanggan" ADD COLUMN IF NOT EXISTS "skemaBayar" TEXT DEFAULT 'mandiri';
+      ALTER TABLE "Pelanggan" ADD COLUMN IF NOT EXISTS "indukKolektifId" INTEGER;
+      ALTER TABLE "Pelanggan" ADD COLUMN IF NOT EXISTS "namaGrupKolektif" TEXT;
+      CREATE INDEX IF NOT EXISTS "Pelanggan_skemaBayar_idx" ON "Pelanggan"("skemaBayar");
+      CREATE INDEX IF NOT EXISTS "Pelanggan_indukKolektifId_idx" ON "Pelanggan"("indukKolektifId");
+    `).catch(async () => {
+      // Fallback individual statement jika multi-statement tidak didukung pooler
+      await prisma.$executeRawUnsafe(`ALTER TABLE "Pelanggan" ADD COLUMN IF NOT EXISTS "skemaBayar" TEXT DEFAULT 'mandiri';`).catch(() => {});
+      await prisma.$executeRawUnsafe(`ALTER TABLE "Pelanggan" ADD COLUMN IF NOT EXISTS "indukKolektifId" INTEGER;`).catch(() => {});
+      await prisma.$executeRawUnsafe(`ALTER TABLE "Pelanggan" ADD COLUMN IF NOT EXISTS "namaGrupKolektif" TEXT;`).catch(() => {});
+    });
 
     isKolektifPatchDone = true;
   } catch (err) {

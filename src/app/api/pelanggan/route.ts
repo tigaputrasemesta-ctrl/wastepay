@@ -98,6 +98,33 @@ export async function GET(request: Request) {
     where.wilayah = { zonaId: parseInt(zonaIdParam) };
   }
 
+  // Fast-path untuk pemanggilan dropdown Induk Kolektif agar instan & tidak trigger full table scan / multi-count
+  if (skemaBayarParam === "kolektif_induk" && !search && !searchParams.get("full")) {
+    const indukList = await prisma.pelanggan.findMany({
+      where: {
+        skemaBayar: "kolektif_induk",
+        deletedAt: null,
+        ...(status ? { status } : {}),
+      },
+      select: {
+        id: true,
+        nama: true,
+        noTelepon: true,
+        kodePelanggan: true,
+        namaGrupKolektif: true,
+        alamat: true,
+        status: true,
+        _count: {
+          select: {
+            anggotaKolektif: { where: { deletedAt: null } },
+          },
+        },
+      },
+      orderBy: { nama: "asc" },
+    });
+    return NextResponse.json(indukList);
+  }
+
   // Parameter paginasi opsional (backward compatible)
   const pageParam = searchParams.get("page");
   const limitParam = searchParams.get("limit");
