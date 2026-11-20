@@ -269,12 +269,12 @@ function BayarTagihanContent() {
                 placeholder="Contoh: INV/085716251003/202611"
                 value={inputInvoice}
                 onChange={(e) => setInputInvoice(e.target.value)}
-                className="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                className="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
                 required
               />
               <button
                 type="submit"
-                className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold shadow-md transition"
+                className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold shadow-md transition"
               >
                 Cari Tagihan &rarr;
               </button>
@@ -285,7 +285,7 @@ function BayarTagihanContent() {
         {/* LOADING STATE */}
         {loading && (
           <section className="pp-card p-10 text-center">
-            <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4" />
+            <div className="w-10 h-10 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin mx-auto mb-4" />
             <p className="text-sm font-bold text-slate-700">Memuat rincian tagihan...</p>
             <p className="text-xs text-slate-400 mt-1">Mengambil data aman dari server resmi UPS HERU</p>
           </section>
@@ -478,7 +478,7 @@ function BayarTagihanContent() {
           <div className="pp-loading-overlay">
             <div className="pp-spinner" />
             <div className="text-base font-bold mb-1">Memproses Pembayaran...</div>
-            <div className="text-xs text-blue-200">Mengarahkan ke halaman transaksi aman Duitku</div>
+            <div className="text-xs text-emerald-200">Mengarahkan ke halaman transaksi aman Duitku</div>
           </div>
         )}
       </main>

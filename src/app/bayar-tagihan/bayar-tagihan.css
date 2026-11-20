@@ -1,35 +1,36 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   PORTAL PEMBAYARAN TAGIHAN RESMI — POLA TICKET SKYLITE (DUITKU PAYMENT GATEWAY)
-   Desain Mobile-First Ticket Card: Notches, Hologram Shine, Floating Icons.
+   PORTAL PEMBAYARAN TAGIHAN RESMI — HIJAU EMERALD & TEAL KHAS UPS HERU DEPOK
+   Desain Mobile-First Ticket Card: Scallop Notches, Hologram Shine, Floating Icons.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  --pp-ink: #0f1c3f;
-  --pp-mut: #64748b;
-  --pp-line: #e6edf7;
-  --pp-brand: #2563eb;
-  --pp-brand2: #38bdf8;
-  --pp-soft: #f3f7ff;
+  --pp-ink: #062b1f;
+  --pp-mut: #475569;
+  --pp-line: #d1fae5;
+  --pp-brand: #059669;
+  --pp-brand2: #10b981;
+  --pp-brand-dark: #064e3b;
+  --pp-soft: #ecfdf5;
 }
 
 .pp-body {
   margin: 0;
   min-height: 100vh;
   position: relative;
-  background: #0a2f80;
+  background: #022c22;
   font-family: var(--font-inter), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color: var(--pp-ink);
   overflow-x: hidden;
 }
 
-/* Background gradasi dinamis + ikon melayang */
+/* Background gradasi dinamis Hijau Zamrud & Teal khas UPS HERU Lingkungan Hidup */
 .bg-animation-container {
   position: fixed;
   inset: 0;
   z-index: 0;
   overflow: hidden;
-  background: radial-gradient(90% 55% at 85% 0%, rgba(125,211,252,.55) 0%, transparent 60%),
-              linear-gradient(180deg, #2a7bff 0%, #1a5fe0 40%, #0d44b0 75%, #0a2f80 100%);
+  background: radial-gradient(90% 55% at 85% 0%, rgba(52, 211, 153, 0.45) 0%, transparent 60%),
+              linear-gradient(180deg, #059669 0%, #047857 38%, #065f46 72%, #022c22 100%);
 }
 
 .bg-icon {
@@ -73,7 +74,7 @@
 .pp-card {
   background: #fff;
   border-radius: 24px;
-  box-shadow: 0 24px 60px -28px rgba(2, 12, 40, 0.6);
+  box-shadow: 0 24px 60px -28px rgba(2, 44, 34, 0.65);
   overflow: hidden;
   margin-bottom: 1rem;
   animation: ppIn 0.45s ease both;
@@ -99,7 +100,7 @@
   background: transparent;
   box-shadow: none;
   overflow: visible;
-  filter: drop-shadow(0 22px 26px rgba(2, 12, 40, 0.35));
+  filter: drop-shadow(0 22px 26px rgba(2, 44, 34, 0.4));
 }
 
 .pp-tk-top,
@@ -111,7 +112,7 @@
 
 .pp-tk-top {
   border-radius: 24px 24px 0 0;
-  background: linear-gradient(180deg, #f5f9ff 0%, #eaf2ff 100%);
+  background: linear-gradient(180deg, #f0fdf4 0%, #e6f9f0 100%);
   -webkit-mask: radial-gradient(circle var(--nt) at 0 100%, #0000 98%, #000) left/51% 100% no-repeat,
                 radial-gradient(circle var(--nt) at 100% 100%, #0000 98%, #000) right/51% 100% no-repeat;
   mask: radial-gradient(circle var(--nt) at 0 100%, #0000 98%, #000) left/51% 100% no-repeat,
@@ -126,14 +127,14 @@
         radial-gradient(circle var(--nt) at 100% 0, #0000 98%, #000) right/51% 100% no-repeat;
 }
 
-/* Garis robekan perforasi */
+/* Garis robekan perforasi bertema emerald */
 .pp-tk-top::after {
   content: "";
   position: absolute;
   left: 20px;
   right: 20px;
   bottom: 0;
-  border-bottom: 2px dashed #c6d6f0;
+  border-bottom: 2px dashed #a7f3d0;
 }
 
 /* ── Logo & Hologram Shine Effect ── */
@@ -153,12 +154,12 @@
 }
 
 .pp-shine img {
-  height: 48px;
+  height: 52px;
   width: auto;
-  max-width: 180px;
+  max-width: 190px;
   display: block;
   object-fit: contain;
-  border-radius: 8px;
+  border-radius: 10px;
 }
 
 .pp-shine::after {
@@ -202,7 +203,7 @@
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--pp-brand);
+  color: #047857;
 }
 
 .pp-status {
@@ -236,22 +237,22 @@
 }
 
 .pp-amount {
-  font-size: clamp(2rem, 8vw, 2.5rem);
+  font-size: clamp(2.1rem, 8vw, 2.6rem);
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.1;
-  color: var(--pp-ink);
+  color: #064e3b;
   font-variant-numeric: tabular-nums;
 }
 
 .pp-amount-sub {
   font-size: 0.78rem;
-  color: var(--pp-mut);
+  color: #475569;
   margin-top: 0.25rem;
   font-weight: 500;
 }
 
-/* Kotak Jatuh Tempo */
+/* Kotak Jatuh Tempo Emerald */
 .pp-due {
   display: flex;
   align-items: center;
@@ -282,13 +283,13 @@
   display: block;
   font-size: 0.82rem;
   font-weight: 800;
-  color: var(--pp-ink);
+  color: #0f172a;
 }
 
 .pp-due span {
   font-size: 0.73rem;
   font-weight: 700;
-  color: var(--pp-brand);
+  color: #059669;
 }
 
 .pp-due.overdue span {
@@ -342,7 +343,7 @@
 
 .pp-copy:hover {
   background: var(--pp-soft);
-  color: #1d4ed8;
+  color: #047857;
 }
 
 /* Tombol Aksi */
@@ -369,25 +370,26 @@
 
 .pp-btn.ghost {
   background: #f8fafc;
-  color: var(--pp-ink);
-  border: 1px solid var(--pp-line);
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
 }
 
 .pp-btn.ghost:hover {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
+  background: var(--pp-soft);
+  border-color: #a7f3d0;
+  color: #064e3b;
 }
 
 .pp-btn.primary {
   background: linear-gradient(135deg, var(--pp-brand), var(--pp-brand2));
   color: #fff;
   border: none;
-  box-shadow: 0 10px 20px -8px rgba(37, 99, 235, 0.6);
+  box-shadow: 0 10px 20px -8px rgba(5, 150, 105, 0.65);
 }
 
 .pp-btn.primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 14px 26px -10px rgba(37, 99, 235, 0.7);
+  box-shadow: 0 14px 26px -10px rgba(5, 150, 105, 0.75);
 }
 
 /* ── Bagian Metode Pembayaran ── */
@@ -398,7 +400,7 @@
 .pp-head h2 {
   font-size: 1.1rem;
   font-weight: 800;
-  color: var(--pp-ink);
+  color: #064e3b;
   margin: 0 0 0.25rem;
 }
 
@@ -409,7 +411,7 @@
   line-height: 1.4;
 }
 
-/* Stepper Indikator 1-2-3 */
+/* Stepper Indikator 1-2-3 Beraksen Emerald */
 .pp-tl {
   display: flex;
   justify-content: space-between;
@@ -462,7 +464,7 @@
   color: #fff;
   border-color: transparent;
   background: linear-gradient(135deg, var(--pp-brand), var(--pp-brand2));
-  box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.15);
+  box-shadow: 0 0 0 5px rgba(5, 150, 105, 0.18);
   animation: ppPulse 1.8s ease-in-out infinite;
 }
 
@@ -473,7 +475,7 @@
 
 @keyframes ppPulse {
   50% {
-    box-shadow: 0 0 0 9px rgba(37, 99, 235, 0.06);
+    box-shadow: 0 0 0 9px rgba(5, 150, 105, 0.08);
   }
 }
 
@@ -484,12 +486,6 @@
   gap: 0.75rem;
 }
 
-@media (min-width: 480px) {
-  .pp-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
 .pp-pm {
   position: relative;
   display: flex;
@@ -497,7 +493,7 @@
   align-items: center;
   gap: 0.45rem;
   padding: 1rem 0.65rem 0.85rem;
-  border: 1.5px solid var(--pp-line);
+  border: 1.5px solid #e2e8f0;
   border-radius: 16px;
   background: #fff;
   cursor: pointer;
@@ -506,8 +502,8 @@
 }
 
 .pp-pm:hover {
-  border-color: #bcd3f7;
-  box-shadow: 0 12px 26px -16px rgba(37, 99, 235, 0.55);
+  border-color: #a7f3d0;
+  box-shadow: 0 12px 26px -16px rgba(5, 150, 105, 0.5);
   transform: translateY(-2px);
 }
 
@@ -517,7 +513,7 @@
 
 .pp-pm.active {
   border-color: var(--pp-brand);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.18);
 }
 
 .pp-pm .logo {
@@ -570,6 +566,7 @@
   font-size: 0.75rem;
   font-weight: 600;
   line-height: 1.35;
+  border: 1px solid #bbf7d0;
 }
 
 /* ── Tampilan Jika Sudah Lunas ── */
@@ -607,7 +604,7 @@
 
 .pp-foot {
   text-align: center;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.88);
   font-size: 0.75rem;
   margin-top: 0.9rem;
   line-height: 1.5;
@@ -625,7 +622,7 @@
   bottom: 28px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(15, 28, 63, 0.94);
+  background: rgba(6, 78, 59, 0.96);
   color: #fff;
   padding: 9px 20px;
   border-radius: 999px;
@@ -641,8 +638,8 @@
 .pp-loading-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(10, 47, 128, 0.75);
-  backdrop-filter: blur(4px);
+  background: rgba(2, 44, 34, 0.8);
+  backdrop-filter: blur(5px);
   z-index: 9999;
   display: flex;
   flex-direction: column;
@@ -655,7 +652,7 @@
   width: 48px;
   height: 48px;
   border: 4px solid rgba(255, 255, 255, 0.25);
-  border-top-color: #fff;
+  border-top-color: #34d399;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin-bottom: 1rem;
