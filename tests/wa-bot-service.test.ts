@@ -49,7 +49,7 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
     });
 
     expect(res.intent).toBe("MENU");
-    expect(res.reply).toContain("Layanan WhatsApp Otomatis");
+    expect(res.reply).toContain("UPS HERU");
     expect(res.reply).toContain("Cek Tagihan & Bayar Online");
     expect(res.reply).toContain("Jadwal Penjemputan Sampah");
   });
@@ -300,7 +300,7 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
         message: cmd,
       });
       expect(res.intent).toBe("MENU");
-      expect(res.reply).toContain("Silakan pilih menu bantuan");
+      expect(res.reply).toContain("Silakan pilih menu");
     }
   });
 
@@ -775,8 +775,6 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
     expect(res.reply).toContain("Halo *Kak O M A R*! 👋");
     expect(res.reply).toContain("belum terdaftar");
     expect(res.reply).toContain("https://www.upsheru.com/daftar");
-    expect(res.reply).toContain("Jadwal Pengambilan Tertib & Pasti");
-    expect(res.reply).toContain("Kemudahan Bayar Tagihan Online");
-    expect(res.reply).toContain("Layanan Pengaduan Cepat & Responsif");
+    expect(res.reply).toContain("Daftar Langganan Baru");
   });
 });
