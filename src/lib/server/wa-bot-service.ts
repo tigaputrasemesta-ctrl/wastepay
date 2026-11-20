@@ -350,31 +350,34 @@ export async function processIncomingWaMessage(
         const payUrl = `https://upsheru.com/bayar?invoice=${encodeURIComponent(matched.noInvoice)}`;
 
         const reply = [
-          `🖨️ *LEMBAR CETAK QRIS — PERIODE ${namaBulan.toUpperCase()} ${matched.tahun}*`,
+          `💳 *PEMBAYARAN TAGIHAN — PERIODE ${namaBulan.toUpperCase()} ${matched.tahun}*`,
           ``,
           `Halo ${sapaanNama},`,
-          `Berikut tautan cetak faktur berbarcode QRIS resmi untuk tagihan bulan *${namaBulan} ${matched.tahun}*:`,
+          `Berikut rincian tagihan bulan *${namaBulan} ${matched.tahun}*:`,
           ``,
           `🆔 ID Pelanggan: *${pelanggan.kodePelanggan || pelanggan.noTelepon}*`,
           `📅 Periode: *${namaBulan} ${matched.tahun}*`,
           `💰 Total Tagihan: *${formatRupiahSkylite(totalNominal)}*`,
           `📊 Status: ${statusLabel}`,
           ``,
-          `🖨️ *Tautan Lembar Cetak QRIS / Faktur Resmi:*`,
-          `👉 *${printUrl}*`,
-          ``,
           ...(!isLunas
             ? [
-                `💳 *Bayar Langsung Online (QRIS / VA / e-Wallet):*`,
+                `💳 *Tautan Bayar Langsung Online (QRIS / VA / e-Wallet):*`,
                 `👉 *${payUrl}*`,
                 ``,
-                `💡 _Scan kode QRIS pada tautan di atas menggunakan aplikasi m-Banking (BCA, Mandiri, BRI, BNI) atau E-Wallet (DANA, GoPay, OVO, ShopeePay). Tagihan langsung terverifikasi lunas otomatis._`,
+                `💡 _Klik tautan di atas untuk scan QRIS menggunakan aplikasi m-Banking (BCA, Mandiri, BRI, BNI) atau E-Wallet (DANA, GoPay, OVO, ShopeePay). Tagihan langsung terverifikasi lunas otomatis._`,
+                ``,
+                `📄 *Cetak / Download Faktur Tagihan:*`,
+                `👉 *${printUrl}*`,
               ]
             : [
+                `🧾 *Bukti Kuitansi Pembayaran Lunas:*`,
+                `👉 *${printUrl}*`,
+                ``,
                 `🧾 _Faktur di atas berfungsi sebagai bukti kuitansi pembayaran resmi yang sah dari UPS HERU._`,
               ]),
           ``,
-          `🌐 Portal Web: https://upsheru.com`,
+          `🌐 Portal Web: https://upsheru.com/bayar?kode=${pelanggan.noTelepon}`,
         ].join("\n");
 
         return { reply, intent: "CARA_BAYAR", pelangganId: pelanggan.id };
@@ -389,27 +392,27 @@ export async function processIncomingWaMessage(
       ? `https://upsheru.com/invoice-tagihan?invoice=${encodeURIComponent(unpaidInvoiceNo)}`
       : paymentLinkStr;
 
-    // Rincian tautan cetak QRIS per bulan tagihan
+    // Rincian tautan bayar online per bulan tagihan
     const daftarCetakPerBulan = unpaid.length > 0
       ? [
-          `*Pilih bulan tagihan yang ingin Anda cetak:*`,
+          `*Pilih bulan tagihan yang ingin Anda bayar:*`,
           ...unpaid.slice(0, 4).map((t: any) => {
             const namaBulan = BULAN_INDO[t.bulan - 1] || `Bulan ${t.bulan}`;
             const statusLabel = t.status === "tunggakan" ? "⚠️ Menunggak" : "⏳ Berjalan";
             const totalNominal = t.jumlah + (t.denda || 0);
-            const linkFaktur = t.noInvoice
-              ? `https://upsheru.com/invoice-tagihan?invoice=${encodeURIComponent(t.noInvoice)}`
+            const linkBayar = t.noInvoice
+              ? `https://upsheru.com/bayar?invoice=${encodeURIComponent(t.noInvoice)}`
               : paymentLinkStr;
-            return `• *Periode ${namaBulan} ${t.tahun}* (${formatRupiahSkylite(totalNominal)} — ${statusLabel}):\n  👉 *${linkFaktur}*`;
+            return `• *Periode ${namaBulan} ${t.tahun}* (${formatRupiahSkylite(totalNominal)} — ${statusLabel}):\n  👉 *${linkBayar}*`;
           }),
         ]
       : [
-          `Klik tautan lembar cetak resmi berikut:`,
-          `👉 *${printInvoiceLinkStr}*`,
+          `Klik tautan pembayaran resmi berikut:`,
+          `👉 *${paymentLinkStr}*`,
         ];
 
     const reply = [
-      `📱 *PANDUAN PRAKTIS CARA BAYAR & CETAK QRIS*`,
+      `📱 *PANDUAN PRAKTIS CARA BAYAR ONLINE*`,
       ``,
       `Halo ${sapaanNama}! 👋`,
       `Iuran retribusi sampah UPS HERU dapat dibayar instan melalui *seluruh aplikasi m-Banking* (BCA, Mandiri Livin', BRImo, BNI, Seabank, Jago, dll.) atau *Dompet Digital* (GoPay, OVO, DANA, ShopeePay).`,
@@ -435,13 +438,13 @@ export async function processIncomingWaMessage(
       `3️⃣ Arahkan kamera HP ke kode QRIS di layar dan selesaikan pembayaran.`,
       ``,
       `━━━━━━━━━━━━━━━━━━━━`,
-      `▶️ *CARA 3: Cetak Lembar Faktur / Barcode QRIS Fisik*`,
+      `▶️ *CARA 3: Bayar Tagihan Per Periode Bulan*`,
       `━━━━━━━━━━━━━━━━━━━━`,
-      `🖨️ Butuh mencetak lembaran tagihan fisik berbarcode QRIS (untuk ditempel di rumah, toko, atau diserahkan ke keluarga)?`,
+      `💳 Butuh membayar tagihan untuk periode bulan tertentu? Silakan buka tautan pembayaran langsung berikut:`,
       ``,
       ...daftarCetakPerBulan,
-      `_(Tersedia tombol Cetak / Simpan PDF langsung dari browser)_.`,
-      `💡 _Ketik *cetak qris [nama bulan]* (contoh: *cetak qris november*) untuk mencetak bulan tertentu secara instan._`,
+      ``,
+      `💡 _Sistem otomatis memverifikasi status LUNAS dalam hitungan detik setelah pembayaran berhasil._`,
       ...(latestPaidInvoiceNo ? [
         ``,
         `🧾 *Cetak Kuitansi / Bukti Pembayaran Lunas Terakhir:*`,
@@ -912,16 +915,11 @@ export async function processIncomingWaMessage(
     const totalSemua = unpaid.reduce((sum: number, t: any) => sum + t.jumlah, 0);
     const rincianTagihan = unpaid.slice(0, 6).map((t: any) => {
       const statusLabel = t.status === "tunggakan" ? "⚠️ (Menunggak)" : "⏳ (Berjalan)";
-      const cetakBulanStr = t.noInvoice
-        ? `\n   ↳ 🖨️ Cetak QRIS: https://upsheru.com/invoice-tagihan?invoice=${encodeURIComponent(t.noInvoice)}`
+      const bayarBulanStr = t.noInvoice
+        ? `\n   ↳ 💳 Bayar Online: https://upsheru.com/bayar?invoice=${encodeURIComponent(t.noInvoice)}`
         : "";
-      return `• Periode *${t.bulan}/${t.tahun}*: ${formatRupiahSkylite(t.jumlah)} ${statusLabel}${cetakBulanStr}`;
+      return `• Periode *${t.bulan}/${t.tahun}*: ${formatRupiahSkylite(t.jumlah)} ${statusLabel}${bayarBulanStr}`;
     });
-
-    const activeInvoice = unpaid[0]?.noInvoice;
-    const cetakFakturStr = activeInvoice
-      ? `\n🖨️ *Cetak / Download Faktur Tagihan QRIS:*\n👉 *https://upsheru.com/invoice-tagihan?invoice=${encodeURIComponent(activeInvoice)}*\n`
-      : "";
 
     const reply = [
       `💳 *RINCIAN TAGIHAN RETRIBUSI SAMPAH*`,
@@ -935,9 +933,9 @@ export async function processIncomingWaMessage(
       ``,
       `💳 *Bayar Online Instan (QRIS / VA / e-Wallet):*`,
       `👉 *https://upsheru.com/bayar?kode=${pelanggan.noTelepon}*`,
-      cetakFakturStr,
+      ``,
       `💡 _Pembayaran melalui link di atas langsung terverifikasi otomatis oleh sistem dalam hitungan detik tanpa perlu konfirmasi manual._`,
-      `💡 _Ketik *2* atau *cetak qris [nama bulan]* (contoh: *cetak qris november*) untuk mencetak QRIS bulan tagihan tertentu._`,
+      `💡 _Ketik *2* untuk melihat panduan cara bayar._`,
     ].filter(Boolean).join("\n");
 
     return { reply, intent: "TAGIHAN", pelangganId: pelanggan.id };

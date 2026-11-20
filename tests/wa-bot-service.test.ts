@@ -664,9 +664,9 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
     });
 
     expect(resNov.intent).toBe("CARA_BAYAR");
-    expect(resNov.reply).toContain("LEMBAR CETAK QRIS — PERIODE NOVEMBER 2026");
+    expect(resNov.reply).toContain("PEMBAYARAN TAGIHAN — PERIODE NOVEMBER 2026");
     expect(resNov.reply).toContain("INV%2F081288776655%2F202611");
-    expect(resNov.reply).toContain("https://upsheru.com/invoice-tagihan?invoice=");
+    expect(resNov.reply).toContain("https://upsheru.com/bayar?invoice=");
     expect(resNov.reply).toContain("Total Tagihan: *Rp50.000,-*");
 
     // Request untuk bulan Oktober (tunggakan)
@@ -675,13 +675,13 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
       message: "cetak qris bulan 10",
     });
     expect(resOkt.intent).toBe("CARA_BAYAR");
-    expect(resOkt.reply).toContain("LEMBAR CETAK QRIS — PERIODE OKTOBER 2026");
+    expect(resOkt.reply).toContain("PEMBAYARAN TAGIHAN — PERIODE OKTOBER 2026");
     expect(resOkt.reply).toContain("INV%2F081288776655%2F202610");
     expect(resOkt.reply).toContain("TERTUNGGAK");
     expect(resOkt.reply).toContain("Rp51.000,-"); // 50000 + 1000 denda
   });
 
-  it("27. Panduan Cara Bayar umum (Menu 2) menyajikan daftar link cetak QRIS per bulan tagihan yang belum lunas", async () => {
+  it("27. Panduan Cara Bayar umum (Menu 2) menyajikan daftar link bayar online per bulan tagihan yang belum lunas", async () => {
     (prisma.pelanggan.findFirst as any).mockResolvedValue({
       id: 502,
       nama: "Ibu Nurhayati",
@@ -718,15 +718,15 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
     });
 
     expect(res.intent).toBe("CARA_BAYAR");
-    expect(res.reply).toContain("PANDUAN PRAKTIS CARA BAYAR & CETAK QRIS");
-    expect(res.reply).toContain("Pilih bulan tagihan yang ingin Anda cetak:");
+    expect(res.reply).toContain("PANDUAN PRAKTIS CARA BAYAR ONLINE");
+    expect(res.reply).toContain("Pilih bulan tagihan yang ingin Anda bayar:");
     expect(res.reply).toContain("Periode November 2026");
     expect(res.reply).toContain("Periode Oktober 2026");
-    expect(res.reply).toContain("invoice-tagihan?invoice=INV%2F081377889900%2F202611");
-    expect(res.reply).toContain("invoice-tagihan?invoice=INV%2F081377889900%2F202610");
+    expect(res.reply).toContain("bayar?invoice=INV%2F081377889900%2F202611");
+    expect(res.reply).toContain("bayar?invoice=INV%2F081377889900%2F202610");
   });
 
-  it("28. Menu Cek Tagihan (Menu 1) menyajikan link 🖨️ Cetak QRIS di setiap baris periode tagihan", async () => {
+  it("28. Menu Cek Tagihan (Menu 1) menyajikan link 💳 Bayar Online di setiap baris periode tagihan langsung ke web bayar", async () => {
     (prisma.pelanggan.findFirst as any).mockResolvedValue({
       id: 503,
       nama: "Bpk Slamet",
@@ -756,8 +756,10 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
     expect(res.intent).toBe("TAGIHAN");
     expect(res.reply).toContain("RINCIAN TAGIHAN RETRIBUSI SAMPAH");
     expect(res.reply).toContain("Periode *11/2026*: Rp50.000,-");
-    expect(res.reply).toContain("↳ 🖨️ Cetak QRIS: https://upsheru.com/invoice-tagihan?invoice=INV%2F081512345678%2F202611");
-    expect(res.reply).toContain("Cetak / Download Faktur Tagihan QRIS:");
+    expect(res.reply).toContain("↳ 💳 Bayar Online: https://upsheru.com/bayar?invoice=INV%2F081512345678%2F202611");
+    expect(res.reply).toContain("https://upsheru.com/bayar?kode=081512345678");
+    expect(res.reply).not.toContain("Cetak QRIS");
+    expect(res.reply).not.toContain("invoice-tagihan");
   });
 
   it("29. Mengarahkan ke pendaftaran mandiri saat nomor belum terdaftar meminta tagihan / point 1", async () => {

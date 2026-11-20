@@ -382,7 +382,7 @@ export default async function InvoiceTagihanPage({
                       <li>• <strong>Petugas Lapangan</strong> UPS HERU saat penjemputan sampah</li>
                     </ul>
                     <div className="portal-direct-hint">
-                      Portal Pembayaran: <code>{baseUrl}/bayar-tagihan?invoice={encodeURIComponent(tagihan.noInvoice || "")}</code>
+                      Portal Pembayaran: <Link href={`/bayar?invoice=${encodeURIComponent(tagihan.noInvoice || "")}`} className="underline font-bold text-emerald-700">{baseUrl}/bayar?invoice={encodeURIComponent(tagihan.noInvoice || "")}</Link>
                     </div>
                   </div>
                 )}
@@ -395,11 +395,11 @@ export default async function InvoiceTagihanPage({
                   <img src={qrUrl} width={110} height={110} alt="QR-Code Verifikasi Faktur & Pembayaran" />
                 </div>
                 <div className="qr-text">
-                  <span className="qr-headline">{lunas ? "VALIDASI KEASLIAN" : "SCAN QRIS PEMBAYARAN"}</span>
+                  <span className="qr-headline">{lunas ? "VALIDASI KEASLIAN" : "VALIDASI FAKTUR RESMI"}</span>
                   <span className="qr-sub">
                     {lunas
                       ? "Scan QR Code untuk memverifikasi keabsahan kuitansi lunas di portal resmi"
-                      : `Scan QR dengan kamera HP / m-Banking untuk bayar iuran bulan ${namaPeriode}`}
+                      : "Scan QR Code dengan kamera ponsel untuk memeriksa keabsahan faktur tagihan ini di portal resmi"}
                   </span>
                 </div>
               </div>

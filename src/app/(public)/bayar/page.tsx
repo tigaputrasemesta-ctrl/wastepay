@@ -197,9 +197,10 @@ function BayarPortalContent() {
   const merchantOrderId = searchParams.get("merchantOrderId") || "";
   const resultCode = searchParams.get("resultCode");
   const statusParam = searchParams.get("status");
+  const kodeParam = searchParams.get("kode") || searchParams.get("noWhatsapp") || searchParams.get("search") || "";
 
   // === STATE PENCARIAN TAGIHAN ===
-  const [kode, setKode] = useState("");
+  const [kode, setKode] = useState(kodeParam);
   const [mencari, setMencari] = useState(false);
   const [hasil, setHasil] = useState<HasilCek | null>(null);
   const [errorSearch, setErrorSearch] = useState("");
@@ -292,10 +293,9 @@ function BayarPortalContent() {
     }
   }, [metodeList, pilihMetode]);
 
-  // Cek tagihan by kode / WA / invoice input
-  async function cekTagihan(e: React.FormEvent) {
-    e.preventDefault();
-    const query = kode.trim();
+  // Lakukan pencarian data tagihan pelanggan
+  const lakukanPencarian = useCallback(async (queryTarget: string) => {
+    const query = queryTarget.trim();
     if (!query) return;
 
     // Jika user mengetik invoice, alihkan langsung ke tampilan invoice
@@ -331,7 +331,21 @@ function BayarPortalContent() {
     } finally {
       setMencari(false);
     }
+  }, []);
+
+  // Cek tagihan by kode / WA / invoice input form
+  async function cekTagihan(e: React.FormEvent) {
+    e.preventDefault();
+    await lakukanPencarian(kode);
   }
+
+  // Auto-search jika parameter ?kode= diberikan di URL
+  useEffect(() => {
+    if (kodeParam && !isInvoiceMode) {
+      setKode(kodeParam);
+      lakukanPencarian(kodeParam);
+    }
+  }, [kodeParam, isInvoiceMode, lakukanPencarian]);
 
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -1400,10 +1414,10 @@ function BayarPortalContent() {
                                 href={`/invoice-tagihan?invoice=${encodeURIComponent(t.noInvoice)}`}
                                 target="_blank"
                                 className="px-3.5 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 hover:text-slate-900 rounded-xl text-xs font-bold shadow-2xs transition active:scale-95 flex items-center justify-center gap-1.5"
-                                title={`Cetak Lembar QRIS Bulan ${BULAN[t.bulan - 1]} ${t.tahun}`}
+                                title={`Cetak Faktur Tagihan Bulan ${BULAN[t.bulan - 1]} ${t.tahun}`}
                               >
-                                <span>🖨️</span>
-                                <span>Cetak QRIS</span>
+                                <span>📄</span>
+                                <span>Cetak Faktur</span>
                               </Link>
                             )}
                             <button
