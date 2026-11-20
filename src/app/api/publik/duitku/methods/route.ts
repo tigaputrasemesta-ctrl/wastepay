@@ -40,15 +40,18 @@ export async function GET(request: Request) {
     return NextResponse.json({ enabled: fallback.length > 0, methods: fallback });
   }
 
-  // Filter dari Duitku: hanya channel yang diizinkan.
+  // Filter dari Duitku: hanya channel yang diizinkan (SQ NusaPay & SP ShopeePay).
   const fromApi = raw
     .filter((m) => channelAllowed(m.paymentMethod))
     .map((m) => {
       let paymentName = m.paymentName;
       let paymentImage = m.paymentImage;
-      if (m.paymentMethod.toUpperCase() === "SP") {
-        paymentName = "QRIS / Cetak QRIS";
-        paymentImage = "/qris.png";
+      if (m.paymentMethod.toUpperCase() === "SQ") {
+        paymentName = "QRIS NusaPay";
+        paymentImage = "https://images.duitku.com/hotlink-ok/SQ.PNG";
+      } else if (m.paymentMethod.toUpperCase() === "SP") {
+        paymentName = "ShopeePay";
+        paymentImage = "https://images.duitku.com/hotlink-ok/SP.PNG";
       }
       if (FEE_CODES.has(m.paymentMethod.toUpperCase())) {
         const existingFee = parseInt(m.totalFee || "0", 10) || 0;
@@ -58,10 +61,9 @@ export async function GET(request: Request) {
     });
 
   // Gabungkan fallback methods yang tidak dikembalikan oleh Duitku API
-  // (mis. OVO/ShopeePay sudah aktif di dashboard tapi API belum mengembalikannya).
   const existingCodes = new Set(fromApi.map((m) => m.paymentMethod.toUpperCase()));
   const extras = DUITKU_METHODS
-    .filter((m) => !existingCodes.has(m.value.toUpperCase()))
+    .filter((m) => channelAllowed(m.value) && !existingCodes.has(m.value.toUpperCase()))
     .map((m) => ({
       paymentMethod: m.value,
       paymentName: m.label,
@@ -69,7 +71,7 @@ export async function GET(request: Request) {
       totalFee: m.totalFee || (FEE_CODES.has(m.value) ? String(BIAYA_ADMIN) : undefined),
     }));
 
-  const methods = [...fromApi, ...extras];
+  const methods = [...fromApi, ...extras].filter((m) => channelAllowed(m.paymentMethod));
 
   return NextResponse.json({ enabled: methods.length > 0, methods });
 }

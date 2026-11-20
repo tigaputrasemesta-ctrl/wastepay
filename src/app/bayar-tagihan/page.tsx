@@ -43,50 +43,21 @@ type PaymentChannel = {
   logo: string;
 };
 
-// Saluran pembayaran Duitku resmi (Pola Skylite)
+// Saluran pembayaran Duitku resmi (Khusus QRIS NusaPay & ShopeePay)
 const DEFAULT_CHANNELS: PaymentChannel[] = [
   {
+    id: "SQ",
+    name: "QRIS NUSAPAY",
+    fee: "Tanpa biaya admin",
+    isFree: true,
+    logo: "https://images.duitku.com/hotlink-ok/SQ.PNG",
+  },
+  {
     id: "SP",
-    name: "NUSAPAY / QRIS",
+    name: "SHOPEEPAY",
     fee: "Tanpa biaya admin",
     isFree: true,
     logo: "https://images.duitku.com/hotlink-ok/SP.PNG",
-  },
-  {
-    id: "B1",
-    name: "CIMB NIAGA VA",
-    fee: "+ Rp3.000,-",
-    logo: "https://images.duitku.com/hotlink-ok/B1.PNG",
-  },
-  {
-    id: "A1",
-    name: "ATM BERSAMA VA",
-    fee: "+ Rp3.000,-",
-    logo: "https://images.duitku.com/hotlink-ok/A1.PNG",
-  },
-  {
-    id: "M2",
-    name: "MANDIRI VA H2H",
-    fee: "+ Rp4.000,-",
-    logo: "https://images.duitku.com/hotlink-ok/MV.PNG",
-  },
-  {
-    id: "BR",
-    name: "BRI VA",
-    fee: "+ Rp3.000,-",
-    logo: "https://images.duitku.com/hotlink-ok/BR.PNG",
-  },
-  {
-    id: "BT",
-    name: "BSI VA",
-    fee: "+ Rp3.000,-",
-    logo: "https://images.duitku.com/hotlink-ok/BT.PNG",
-  },
-  {
-    id: "FT",
-    name: "RETAIL",
-    fee: "+ Rp2.500,-",
-    logo: "https://images.duitku.com/hotlink-ok/RETAIL.PNG",
   },
 ];
 
@@ -156,22 +127,30 @@ function BayarTagihanContent() {
     }
   }, [invoiceParam, loadTagihan]);
 
-  // Muat channel gateway jika tersedia
+  // Muat channel gateway jika tersedia (Khusus QRIS NusaPay & ShopeePay)
   useEffect(() => {
     if (!tagihan) return;
     fetch(`/api/publik/duitku/methods?amount=${tagihan.total}`)
       .then((r) => r.json())
       .then((data) => {
         if (data.methods && Array.isArray(data.methods) && data.methods.length > 0) {
-          const mapped: PaymentChannel[] = data.methods.map((m: any) => ({
-            id: m.paymentMethod,
-            name: m.paymentName || m.paymentMethod,
-            fee: m.totalFee && Number(m.totalFee) > 0 ? `+ ${formatRupiahSkylite(Number(m.totalFee))}` : "Tanpa biaya admin",
-            isFree: !m.totalFee || Number(m.totalFee) === 0,
-            logo: m.paymentImage && m.paymentImage.startsWith("http") ? m.paymentImage : (m.paymentImage || "https://images.duitku.com/hotlink-ok/SP.PNG"),
-          }));
-          // Jika ada lebih dari satu, prioritaskan hasil API; bila hanya 1, gabungkan dengan varian VA
-          if (mapped.length > 1) {
+          const ALLOWED = new Set(["SQ", "SP"]);
+          const mapped: PaymentChannel[] = data.methods
+            .filter((m: any) => ALLOWED.has(m.paymentMethod?.toUpperCase()))
+            .map((m: any) => {
+              const code = m.paymentMethod.toUpperCase();
+              const isSq = code === "SQ";
+              return {
+                id: code,
+                name: isSq ? "QRIS NUSAPAY" : "SHOPEEPAY",
+                fee: m.totalFee && Number(m.totalFee) > 0 ? `+ ${formatRupiahSkylite(Number(m.totalFee))}` : "Tanpa biaya admin",
+                isFree: !m.totalFee || Number(m.totalFee) === 0,
+                logo: isSq
+                  ? "https://images.duitku.com/hotlink-ok/SQ.PNG"
+                  : "https://images.duitku.com/hotlink-ok/SP.PNG",
+              };
+            });
+          if (mapped.length > 0) {
             setChannels(mapped);
           }
         }

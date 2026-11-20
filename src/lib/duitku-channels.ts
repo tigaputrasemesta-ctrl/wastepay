@@ -19,13 +19,13 @@ export function channelAllowed(paymentMethod?: string | null): boolean {
   const m = (paymentMethod || "").toUpperCase();
   if (!m) return false;
   
-  // Nonaktifkan QR legacy dan SQ (NusaPay) agar tidak membingungkan warga
-  if (m === "QR" || m === "SQ") return false;
+  // Nonaktifkan QR legacy
+  if (m === "QR") return false;
 
   const env = process.env.DUITKU_CHANNELS?.trim();
   const allowed = env
     ? env.split(",").map((s) => s.trim().toUpperCase()).filter(Boolean)
-    : ["SP"]; // SP (ShopeePay QRIS) sebagai satu-satunya QRIS gateway utama
+    : ["SQ", "SP"]; // SQ (QRIS NusaPay) & SP (ShopeePay)
   return allowed.includes(m);
 }
 
@@ -35,7 +35,8 @@ export function duitkuChannelLabel(paymentMethod?: string | null): string {
     VC: "Virtual Account",
     VA: "Virtual Account",
     QR: "QRIS",
-    SP: "QRIS / Cetak QRIS",
+    SP: "ShopeePay",
+    SQ: "QRIS NusaPay",
     OVO: "OVO",
     DANA: "DANA",
     M1: "Mandiri Bill",
@@ -49,7 +50,6 @@ export function duitkuChannelLabel(paymentMethod?: string | null): string {
     LINK_AJA: "LinkAja",
     SA: "Salam Super App",
     CREDIT_CARD: "Kartu Kredit",
-    SQ: "QRIS / Cetak QRIS (NusaPay)",
   };
   return map[paymentMethod || ""] || (paymentMethod ? paymentMethod : "Payment Gateway");
 }
@@ -67,11 +67,19 @@ export type DuitkuPaymentMethod = {
  */
 export const DUITKU_METHODS: any[] = [
   {
-    value: "SP",
-    label: "QRIS / Cetak QRIS",
-    sublabel: "BCA, Mandiri, BRI, BNI, DANA, GoPay, OVO, ShopeePay",
+    value: "SQ",
+    label: "QRIS NusaPay",
+    sublabel: "BCA, Mandiri, BRI, BNI, DANA, GoPay, OVO",
     icon: "💳",
-    imageUrl: "/qris.png",
+    imageUrl: "https://images.duitku.com/hotlink-ok/SQ.PNG",
+    totalFee: "1500"
+  },
+  {
+    value: "SP",
+    label: "ShopeePay",
+    sublabel: "Aplikasi Shopee & ShopeePay",
+    icon: "🛍️",
+    imageUrl: "https://images.duitku.com/hotlink-ok/SP.PNG",
     totalFee: "1500"
   },
 ];
