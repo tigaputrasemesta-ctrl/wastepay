@@ -1,0 +1,668 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   PORTAL PEMBAYARAN TAGIHAN RESMI — POLA TICKET SKYLITE (DUITKU PAYMENT GATEWAY)
+   Desain Mobile-First Ticket Card: Notches, Hologram Shine, Floating Icons.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --pp-ink: #0f1c3f;
+  --pp-mut: #64748b;
+  --pp-line: #e6edf7;
+  --pp-brand: #2563eb;
+  --pp-brand2: #38bdf8;
+  --pp-soft: #f3f7ff;
+}
+
+.pp-body {
+  margin: 0;
+  min-height: 100vh;
+  position: relative;
+  background: #0a2f80;
+  font-family: var(--font-inter), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--pp-ink);
+  overflow-x: hidden;
+}
+
+/* Background gradasi dinamis + ikon melayang */
+.bg-animation-container {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: radial-gradient(90% 55% at 85% 0%, rgba(125,211,252,.55) 0%, transparent 60%),
+              linear-gradient(180deg, #2a7bff 0%, #1a5fe0 40%, #0d44b0 75%, #0a2f80 100%);
+}
+
+.bg-icon {
+  position: absolute;
+  color: rgba(255, 255, 255, 0.22);
+  bottom: -100px;
+  animation: floatUp linear infinite;
+  pointer-events: none;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  10%, 90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-115vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Container kartu pembayaran */
+.pp {
+  position: relative;
+  z-index: 10;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+@media (min-width: 576px) {
+  .pp {
+    padding-top: 2.25rem;
+  }
+}
+
+/* Kartu Utama & Efek Masuk */
+.pp-card {
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 24px 60px -28px rgba(2, 12, 40, 0.6);
+  overflow: hidden;
+  margin-bottom: 1rem;
+  animation: ppIn 0.45s ease both;
+}
+
+.pp-card + .pp-card {
+  animation-delay: 0.08s;
+}
+
+@keyframes ppIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── Tiket Perforasi Ala Skylite (Ticket Cutout Notches) ── */
+.pp-ticket {
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+  filter: drop-shadow(0 22px 26px rgba(2, 12, 40, 0.35));
+}
+
+.pp-tk-top,
+.pp-tk-bot {
+  --nt: 13px;
+  position: relative;
+  background: #fff;
+}
+
+.pp-tk-top {
+  border-radius: 24px 24px 0 0;
+  background: linear-gradient(180deg, #f5f9ff 0%, #eaf2ff 100%);
+  -webkit-mask: radial-gradient(circle var(--nt) at 0 100%, #0000 98%, #000) left/51% 100% no-repeat,
+                radial-gradient(circle var(--nt) at 100% 100%, #0000 98%, #000) right/51% 100% no-repeat;
+  mask: radial-gradient(circle var(--nt) at 0 100%, #0000 98%, #000) left/51% 100% no-repeat,
+        radial-gradient(circle var(--nt) at 100% 100%, #0000 98%, #000) right/51% 100% no-repeat;
+}
+
+.pp-tk-bot {
+  border-radius: 0 0 24px 24px;
+  -webkit-mask: radial-gradient(circle var(--nt) at 0 0, #0000 98%, #000) left/51% 100% no-repeat,
+                radial-gradient(circle var(--nt) at 100% 0, #0000 98%, #000) right/51% 100% no-repeat;
+  mask: radial-gradient(circle var(--nt) at 0 0, #0000 98%, #000) left/51% 100% no-repeat,
+        radial-gradient(circle var(--nt) at 100% 0, #0000 98%, #000) right/51% 100% no-repeat;
+}
+
+/* Garis robekan perforasi */
+.pp-tk-top::after {
+  content: "";
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 0;
+  border-bottom: 2px dashed #c6d6f0;
+}
+
+/* ── Logo & Hologram Shine Effect ── */
+.pp-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1.3rem 1.4rem 0.3rem;
+  background: transparent;
+}
+
+.pp-shine {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pp-shine img {
+  height: 48px;
+  width: auto;
+  max-width: 180px;
+  display: block;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.pp-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.95) 50%, transparent 60%);
+  background-size: 250% 100%;
+  background-repeat: no-repeat;
+  background-position: 150% 0;
+  animation: ppShine 3.6s ease-in-out infinite;
+}
+
+@keyframes ppShine {
+  0%, 55% {
+    background-position: 150% 0;
+  }
+  100% {
+    background-position: -60% 0;
+  }
+}
+
+/* ── Hero Tagihan ── */
+.pp-hero {
+  position: relative;
+  padding: 1rem 1.4rem 1.25rem;
+  background: transparent;
+}
+
+.pp-eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.4rem;
+}
+
+.pp-eyebrow small {
+  font-size: 0.73rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pp-brand);
+}
+
+.pp-status {
+  flex: none;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.28rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.pp-status.unpaid {
+  background: #fff1f3;
+  color: #be123c;
+}
+
+.pp-status.paid {
+  background: #e8f8ef;
+  color: #047857;
+}
+
+.pp-status .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.pp-amount {
+  font-size: clamp(2rem, 8vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--pp-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.pp-amount-sub {
+  font-size: 0.78rem;
+  color: var(--pp-mut);
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+/* Kotak Jatuh Tempo */
+.pp-due {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 0.95rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid var(--pp-line);
+}
+
+.pp-due .ic {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(135deg, var(--pp-brand), var(--pp-brand2));
+}
+
+.pp-due.overdue .ic {
+  background: linear-gradient(135deg, #f43f5e, #fb923c);
+}
+
+.pp-due b {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--pp-ink);
+}
+
+.pp-due span {
+  font-size: 0.73rem;
+  font-weight: 700;
+  color: var(--pp-brand);
+}
+
+.pp-due.overdue span {
+  color: #e11d48;
+}
+
+/* ── Baris Detail Metadata ── */
+.pp-rows {
+  padding: 1.1rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.pp-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.83rem;
+  gap: 1rem;
+}
+
+.pp-row .k {
+  color: var(--pp-mut);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.pp-row .v {
+  font-weight: 700;
+  color: var(--pp-ink);
+  text-align: right;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.pp-copy {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--pp-brand);
+  padding: 2px 4px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.15s ease;
+}
+
+.pp-copy:hover {
+  background: var(--pp-soft);
+  color: #1d4ed8;
+}
+
+/* Tombol Aksi */
+.pp-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  padding: 0 1.4rem 1.4rem;
+}
+
+.pp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.75rem 1rem;
+  border-radius: 14px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.pp-btn.ghost {
+  background: #f8fafc;
+  color: var(--pp-ink);
+  border: 1px solid var(--pp-line);
+}
+
+.pp-btn.ghost:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.pp-btn.primary {
+  background: linear-gradient(135deg, var(--pp-brand), var(--pp-brand2));
+  color: #fff;
+  border: none;
+  box-shadow: 0 10px 20px -8px rgba(37, 99, 235, 0.6);
+}
+
+.pp-btn.primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 26px -10px rgba(37, 99, 235, 0.7);
+}
+
+/* ── Bagian Metode Pembayaran ── */
+.pp-sec {
+  padding: 1.4rem;
+}
+
+.pp-head h2 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--pp-ink);
+  margin: 0 0 0.25rem;
+}
+
+.pp-head p {
+  font-size: 0.78rem;
+  color: var(--pp-mut);
+  margin: 0 0 1.1rem;
+  line-height: 1.4;
+}
+
+/* Stepper Indikator 1-2-3 */
+.pp-tl {
+  display: flex;
+  justify-content: space-between;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.3rem;
+  position: relative;
+}
+
+.pp-tl::before {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: 20px;
+  right: 20px;
+  height: 2px;
+  background: #e2e8f0;
+  z-index: 0;
+}
+
+.pp-tl li {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--pp-mut);
+}
+
+.pp-tl li b {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.8rem;
+  background: #fff;
+  color: #94a3b8;
+  border: 2px solid #d6e2f5;
+}
+
+.pp-tl li.on {
+  color: var(--pp-brand);
+}
+
+.pp-tl li.on b {
+  color: #fff;
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--pp-brand), var(--pp-brand2));
+  box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.15);
+  animation: ppPulse 1.8s ease-in-out infinite;
+}
+
+.pp-tl li.end b {
+  color: #059669;
+  border-color: #bfe9d3;
+}
+
+@keyframes ppPulse {
+  50% {
+    box-shadow: 0 0 0 9px rgba(37, 99, 235, 0.06);
+  }
+}
+
+/* Grid Channel Pembayaran */
+.pp-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+@media (min-width: 480px) {
+  .pp-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.pp-pm {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 1rem 0.65rem 0.85rem;
+  border: 1.5px solid var(--pp-line);
+  border-radius: 16px;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+
+.pp-pm:hover {
+  border-color: #bcd3f7;
+  box-shadow: 0 12px 26px -16px rgba(37, 99, 235, 0.55);
+  transform: translateY(-2px);
+}
+
+.pp-pm:active {
+  transform: scale(0.97);
+}
+
+.pp-pm.active {
+  border-color: var(--pp-brand);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.pp-pm .logo {
+  height: 42px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pp-pm .logo img {
+  max-height: 38px;
+  max-width: 88%;
+  object-fit: contain;
+}
+
+.pp-pm .nm {
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: var(--pp-ink);
+  line-height: 1.25;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.pp-pm .fee {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--pp-mut);
+  background: #f6f8fc;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+}
+
+.pp-pm .fee.free {
+  color: #047857;
+  background: #e8f8ef;
+}
+
+/* Keamanan Gateway Note */
+.pp-safe {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 1.1rem;
+  padding: 0.75rem 0.95rem;
+  border-radius: 14px;
+  background: #f0fdf4;
+  color: #166534;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+/* ── Tampilan Jika Sudah Lunas ── */
+.pp-paid {
+  text-align: center;
+  padding: 2.2rem 1.4rem 1.8rem;
+}
+
+.pp-paid .ring {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.1rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 2.2rem;
+  background: linear-gradient(135deg, #059669, #34d399);
+  box-shadow: 0 14px 30px -12px rgba(5, 150, 105, 0.7);
+}
+
+.pp-paid h2 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #047857;
+  margin: 0 0 0.35rem;
+}
+
+.pp-paid p {
+  color: var(--pp-mut);
+  font-size: 0.86rem;
+  margin: 0 0 1.3rem;
+  line-height: 1.45;
+}
+
+.pp-foot {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.75rem;
+  margin-top: 0.9rem;
+  line-height: 1.5;
+}
+
+.pp-foot a {
+  color: #fff;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* Toast Notifikasi Salin */
+.pp-toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 28, 63, 0.94);
+  color: #fff;
+  padding: 9px 20px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  z-index: 1000;
+  animation: ppIn 0.25s ease;
+  white-space: nowrap;
+}
+
+/* Loading Modal Overlay */
+.pp-loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 47, 128, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.pp-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(255, 255, 255, 0.25);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
