@@ -33,6 +33,11 @@ type DetailTagihan = {
     jumlah: number;
     tanggal: string;
   } | null;
+  pembayaranPending?: {
+    id?: number;
+    metode?: string;
+    createdAt?: string;
+  } | null;
 };
 
 type PaymentChannel = {
@@ -43,7 +48,7 @@ type PaymentChannel = {
   logo: string;
 };
 
-// Saluran pembayaran Duitku resmi (Khusus QRIS NusaPay & ShopeePay)
+// Saluran pembayaran resmi (QRIS NusaPay, ShopeePay, dan Transfer Bank BCA)
 const DEFAULT_CHANNELS: PaymentChannel[] = [
   {
     id: "SQ",
@@ -58,6 +63,13 @@ const DEFAULT_CHANNELS: PaymentChannel[] = [
     fee: "Tanpa biaya admin",
     isFree: true,
     logo: "https://images.duitku.com/hotlink-ok/SP.PNG",
+  },
+  {
+    id: "BCA_MANUAL",
+    name: "TRANSFER BCA",
+    fee: "Kode Unik",
+    isFree: true,
+    logo: "https://images.duitku.com/hotlink-ok/BC.PNG",
   },
 ];
 
@@ -92,10 +104,36 @@ function BayarTagihanContent() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [processingPayment, setProcessingPayment] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
+  const [buktiBayarFile, setBuktiBayarFile] = useState<string | null>(null);
+  const [namaPengirim, setNamaPengirim] = useState("");
+  const [uploadingBukti, setUploadingBukti] = useState(false);
+  const [showUploadForm, setShowUploadForm] = useState(false);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 2500);
+  };
+
+  const handleSalinTeks = (teks: string, label: string) => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(teks).then(() => {
+        showToast(`${label} disalin`);
+      });
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2.8 * 1024 * 1024) {
+      alert("Ukuran foto bukti transfer maksimal 2.5MB.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setBuktiBayarFile(reader.result as string);
+    };
+    reader.readAsDataURL(file);
   };
 
   const loadTagihan = useCallback(async (inv: string) => {
@@ -127,7 +165,7 @@ function BayarTagihanContent() {
     }
   }, [invoiceParam, loadTagihan]);
 
-  // Muat channel gateway jika tersedia (Khusus QRIS NusaPay & ShopeePay)
+  // Muat channel gateway jika tersedia (QRIS NusaPay, ShopeePay + Transfer BCA Manual)
   useEffect(() => {
     if (!tagihan) return;
     fetch(`/api/publik/duitku/methods?amount=${tagihan.total}`)
@@ -150,9 +188,15 @@ function BayarTagihanContent() {
                   : "https://images.duitku.com/hotlink-ok/SP.PNG",
               };
             });
-          if (mapped.length > 0) {
-            setChannels(mapped);
-          }
+          // Tambahkan Transfer BCA Manual
+          mapped.push({
+            id: "BCA_MANUAL",
+            name: "TRANSFER BCA",
+            fee: "Kode Unik",
+            isFree: true,
+            logo: "https://images.duitku.com/hotlink-ok/BC.PNG",
+          });
+          setChannels(mapped);
         }
       })
       .catch(() => {
@@ -162,18 +206,19 @@ function BayarTagihanContent() {
 
   const handleSalinInvoice = () => {
     if (!tagihan?.noInvoice) return;
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(tagihan.noInvoice).then(() => {
-        showToast("Nomor tagihan disalin");
-      });
-    }
+    handleSalinTeks(tagihan.noInvoice, "Nomor tagihan");
   };
 
   const handleBayar = async (methodId: string) => {
     if (!tagihan) return;
     setSelectedMethod(methodId);
-    setProcessingPayment(true);
 
+    // Jika metode Transfer BCA, tampilkan rincian transfer dan kode unik (tanpa redirect Duitku)
+    if (methodId === "BCA_MANUAL") {
+      return;
+    }
+
+    setProcessingPayment(true);
     try {
       const res = await fetch("/api/publik/duitku/transaction", {
         method: "POST",
@@ -202,6 +247,58 @@ function BayarTagihanContent() {
   const isLunas = tagihan?.status === "lunas" || tagihan?.status === "terverifikasi";
   const sisaJatuhTempo = tagihan ? hitungSisaHari(tagihan.jatuhTempo) : { text: "", isOverdue: false };
   const namaBulan = tagihan ? BULAN_INDO[tagihan.bulan - 1] : "";
+
+  // Rumus kode unik deterministik berdasarkan ID tagihan (misal: 100 - 999)
+  const kodeUnik = tagihan ? ((tagihan.id % 900) + 100) : 278;
+  const totalTransferBca = tagihan ? tagihan.total + kodeUnik : 0;
+
+  const waUrlKonfirmasi = tagihan
+    ? `https://wa.me/6281400782617?text=${encodeURIComponent(
+        `Halo Admin UPS HERU, saya sudah melakukan pembayaran retribusi sampah via Transfer Bank BCA:\n\n` +
+        `• No. Invoice    : ${tagihan.noInvoice}\n` +
+        `• Nama Warga     : ${tagihan.pelanggan.nama}\n` +
+        `• Rekening Tujuan: BCA 7651211445 a.n SURYANI\n` +
+        `• Jumlah Pas     : ${formatRupiahSkylite(totalTransferBca)} (termasuk kode unik ${kodeUnik})\n` +
+        (namaPengirim.trim() ? `• Rekening Pengirim: a.n ${namaPengirim.trim()}\n` : "") +
+        `\nMohon bantu diverifikasi ya Admin. Bukti transfer saya lampirkan berikut ini. Terima kasih! 🙏`
+      )}`
+    : "#";
+
+  const handleKirimBuktiTransfer = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!tagihan) return;
+    if (!buktiBayarFile) {
+      alert("Silakan pilih foto bukti transfer terlebih dahulu.");
+      return;
+    }
+    setUploadingBukti(true);
+    try {
+      const res = await fetch("/api/publik/bayar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          kode: tagihan.pelanggan.kodePelanggan,
+          tagihanId: tagihan.id,
+          metode: "transfer",
+          buktiBayar: buktiBayarFile,
+          catatan: `Transfer BCA 7651211445 a.n SURYANI (Total Pas: ${formatRupiahSkylite(totalTransferBca)})` + (namaPengirim.trim() ? ` - Pengirim: ${namaPengirim.trim()}` : ""),
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast("Bukti transfer berhasil dikirim ke Admin!");
+        setBuktiBayarFile(null);
+        setShowUploadForm(false);
+        loadTagihan(tagihan.noInvoice);
+      } else {
+        alert(data.error || "Gagal mengirim bukti transfer.");
+      }
+    } catch {
+      alert("Terjadi kendala jaringan saat mengunggah bukti.");
+    } finally {
+      setUploadingBukti(false);
+    }
+  };
 
   return (
     <div className="pp-body">
@@ -398,9 +495,22 @@ function BayarTagihanContent() {
               ) : (
                 /* JIKA BELUM LUNAS: PILIH METODE BAYAR */
                 <div className="pp-sec">
+                  {/* BANNER JIKA SUDAH ADA BUKTI TRANSFER YANG PENDING DIVERIFIKASI */}
+                  {tagihan?.pembayaranPending && (
+                    <div className="p-4 mb-4 bg-amber-50 border border-amber-200 rounded-2xl text-amber-900 animate-fadeIn">
+                      <div className="flex items-center gap-2 font-bold text-xs text-amber-800 mb-1">
+                        <span>⏳</span>
+                        <span>Bukti Pembayaran Sedang Diverifikasi Kasir</span>
+                      </div>
+                      <p className="text-[11px] text-amber-700 leading-relaxed">
+                        Bukti transfer Anda telah diterima sistem dan sedang dalam antrean verifikasi kasir UPS HERU. Anda tidak perlu mentransfer ulang. Kuitansi resmi akan langsung diterbitkan begitu diverifikasi.
+                      </p>
+                    </div>
+                  )}
+
                   <div className="pp-head">
                     <h2>Pilih Metode Pembayaran</h2>
-                    <p>Ketuk salah satu metode di bawah ini. Biaya admin ditambahkan sesuai metode.</p>
+                    <p>Ketuk salah satu metode di bawah ini. Transfer manual atau gateway otomatis.</p>
                     <ol className="pp-tl">
                       <li className="on">
                         <b>1</b>Pilih metode
@@ -433,9 +543,123 @@ function BayarTagihanContent() {
                     ))}
                   </div>
 
+                  {/* KARTU RINCIAN TRANSFER MANUAL BANK BCA */}
+                  {selectedMethod === "BCA_MANUAL" && tagihan && (
+                    <div className="pp-bca-box">
+                      <div className="pp-bca-title">
+                        <span>🏦</span>
+                        <span>Instruksi Transfer Manual Bank BCA</span>
+                      </div>
+
+                      <div className="pp-bca-row">
+                        <span className="text-slate-500 text-xs">Bank Tujuan</span>
+                        <span className="val text-xs">BCA (Bank Central Asia)</span>
+                      </div>
+
+                      <div className="pp-bca-row">
+                        <span className="text-slate-500 text-xs">Nomor Rekening</span>
+                        <div className="val">
+                          <span className="font-mono font-bold tracking-wider text-emerald-800 text-sm">7651211445</span>
+                          <button
+                            type="button"
+                            className="pp-copy-btn"
+                            onClick={() => handleSalinTeks("7651211445", "Nomor Rekening BCA")}
+                          >
+                            📋 Salin
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="pp-bca-row">
+                        <span className="text-slate-500 text-xs">Atas Nama</span>
+                        <span className="val text-emerald-950 font-bold text-xs uppercase">SURYANI</span>
+                      </div>
+
+                      <div className="pp-bca-row">
+                        <span className="text-slate-500 text-xs">Tagihan Pokok</span>
+                        <span className="val text-xs text-slate-700">{formatRupiahSkylite(tagihan.total)}</span>
+                      </div>
+
+                      <div className="pp-bca-row">
+                        <span className="text-slate-500 text-xs">Kode Unik Transfer</span>
+                        <span className="val text-xs font-mono font-bold text-emerald-600">+ Rp{kodeUnik}</span>
+                      </div>
+
+                      <div className="pp-bca-total-box">
+                        <div>
+                          <div className="text-[10px] uppercase font-bold text-slate-400">Total Harus Ditransfer</div>
+                          <div className="text-base font-extrabold text-emerald-700 font-mono">
+                            {formatRupiahSkylite(totalTransferBca)}
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          className="pp-copy-btn text-xs py-1 px-2.5"
+                          onClick={() => handleSalinTeks(String(totalTransferBca), "Nominal Pas Transfer")}
+                        >
+                          📋 Salin Nominal Pas
+                        </button>
+                      </div>
+
+                      <div className="pp-bca-alert">
+                        <strong>⚠️ PENTING:</strong> Mohon transfer tepat hingga 3 digit terakhir (<strong>{formatRupiahSkylite(totalTransferBca)}</strong>) agar pembayaran dapat dicocokkan & diverifikasi kasir secara cepat.
+                      </div>
+
+                      {/* AKSI KONFIRMASI */}
+                      <div className="pp-bca-actions">
+                        <a
+                          href={waUrlKonfirmasi}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="pp-btn-wa"
+                        >
+                          <span>💬</span>
+                          <span>Konfirmasi via WhatsApp (+ Foto Bukti)</span>
+                        </a>
+
+                        <button
+                          type="button"
+                          className="text-xs text-slate-600 underline font-semibold text-center hover:text-emerald-700 py-1"
+                          onClick={() => setShowUploadForm(!showUploadForm)}
+                        >
+                          {showUploadForm ? "▲ Sembunyikan Form Upload Bukti" : "▼ Atau Unggah Bukti Transfer Langsung di Sini"}
+                        </button>
+
+                        {showUploadForm && (
+                          <form onSubmit={handleKirimBuktiTransfer} className="pp-upload-box">
+                            <div className="text-xs font-bold text-slate-700 mb-2">Unggah Foto / Screenshot Bukti Transfer:</div>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleFileChange}
+                              className="w-full text-xs text-slate-600 mb-3 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-100 file:text-emerald-800 hover:file:bg-emerald-200 cursor-pointer"
+                              required
+                            />
+
+                            <input
+                              type="text"
+                              placeholder="Nama Pemilik Rekening Pengirim (opsional)"
+                              value={namaPengirim}
+                              onChange={(e) => setNamaPengirim(e.target.value)}
+                              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-emerald-600 mb-3"
+                            />
+
+                            <button
+                              type="submit"
+                              disabled={uploadingBukti || !buktiBayarFile}
+                              className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 disabled:bg-slate-300 text-white rounded-xl text-xs font-bold transition shadow-sm"
+                            >
+                              {uploadingBukti ? "Mengirim Bukti Transfer..." : "Kirim Bukti Pembayaran"}
+                            </button>
+                          </form>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="pp-safe">
                     <span>🛡️</span>
-                    <div>Pembayaran aman & otomatis diproses langsung oleh payment gateway resmi berlisensi Bank Indonesia & OJK.</div>
+                    <div>Pembayaran aman & diverifikasi langsung oleh pengelola resmi UPS HERU Kota Depok.</div>
                   </div>
                 </div>
               )}
