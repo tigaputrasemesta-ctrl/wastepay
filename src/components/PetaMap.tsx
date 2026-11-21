@@ -223,6 +223,69 @@ export default function PetaMap({
     };
   }, []);
 
+  // Local Pelanggan State untuk update langsung (misal ubah blok) tanpa reload halaman
+  const [pelangganList, setPelangganList] = useState<PelangganPeta[]>(pelanggan);
+  useEffect(() => {
+    setPelangganList(pelanggan);
+  }, [pelanggan]);
+
+  // State & Handler untuk Ubah Blok Pelanggan di Peta
+  const [savingBlokId, setSavingBlokId] = useState<number | null>(null);
+  const [toastBlokMsg, setToastBlokMsg] = useState<{ text: string; type: "success" | "error" } | null>(null);
+
+  const handleUbahBlok = async (pelangganId: number, targetWilayahId: number | null) => {
+    setSavingBlokId(pelangganId);
+    setToastBlokMsg(null);
+    try {
+      const res = await fetch(`/api/pelanggan/${pelangganId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ wilayahId: targetWilayahId }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Gagal mengubah blok layanan");
+      }
+
+      const targetW = targetWilayahId ? wilayah.find((w) => w.id === targetWilayahId) : null;
+      setPelangganList((prev) =>
+        prev.map((p) =>
+          p.id === pelangganId
+            ? {
+                ...p,
+                wilayah: targetW ? { id: targetW.id, nama: targetW.nama } : null,
+              }
+            : p
+        )
+      );
+
+      setToastBlokMsg({
+        text: targetW ? `Blok berhasil dipindahkan ke ${targetW.nama}` : "Blok dihapus (tanpa blok)",
+        type: "success",
+      });
+      setTimeout(() => setToastBlokMsg(null), 4000);
+    } catch (err: any) {
+      setToastBlokMsg({
+        text: err.message || "Gagal mengubah blok layanan",
+        type: "error",
+      });
+      setTimeout(() => setToastBlokMsg(null), 5000);
+    } finally {
+      setSavingBlokId(null);
+    }
+  };
+
+  // Expose global helper agar popup Leaflet bisa langsung membuka drawer ubah blok
+  useEffect(() => {
+    (window as any).__petaBukaUbahBlok = (id: number) => {
+      setSelectedId(id);
+    };
+    return () => {
+      delete (window as any).__petaBukaUbahBlok;
+    };
+  }, []);
+
   // Filter States
   const [cari, setCari] = useState("");
   const [filterWilayah, setFilterWilayah] = useState("semua");
@@ -334,6 +397,10 @@ export default function PetaMap({
   // ── Polling: Pengaduan (15 dtk) ──
   const [komplain, setKomplain] = useState<KomplainPeta[]>([]);
   const [komplainTab, setKomplainTab] = useState("semua");
+  const activeKomplainCount = useMemo(
+    () => komplain.filter((k) => k.status !== "selesai").length,
+    [komplain]
+  );
   const [lastRefresh, setLastRefresh] = useState<number | null>(null);
   const [muatKomplain, setMuatKomplain] = useState(false);
 
@@ -415,17 +482,17 @@ export default function PetaMap({
   // ── Derived Data & Mappings ──
   const zonaPelanggan = useMemo(() => {
     const m = new Map<number, { kelurahan: string; kecamatan: string }>();
-    for (const p of pelanggan) {
+    for (const p of pelangganList) {
       if (p.latitude == null || p.longitude == null) continue;
       const z = deteksiZona([p.latitude, p.longitude]);
       if (z) m.set(p.id, { kelurahan: z.kelurahan, kecamatan: z.kecamatan });
     }
     return m;
-  }, [pelanggan]);
+  }, [pelangganList]);
 
   const daftar = useMemo(() => {
     const q = cari.trim().toLowerCase();
-    return pelanggan.filter((p) => {
+    return pelangganList.filter((p) => {
       if (filterWilayah !== "semua" && p.wilayah?.id !== Number(filterWilayah)) return false;
       if (filterStatus !== "semua" && p.status !== filterStatus) return false;
       if (filterTagihan === "lunas" && p.statusTagihan !== "lunas") return false;
@@ -440,7 +507,7 @@ export default function PetaMap({
         return false;
       return true;
     });
-  }, [pelanggan, filterWilayah, filterStatus, filterTagihan, hanyaTanpaGeo, cari]);
+  }, [pelangganList, filterWilayah, filterStatus, filterTagihan, hanyaTanpaGeo, cari]);
 
   const daftarPetaUrut = useMemo(() => {
     return [...daftar].sort((a, b) => {
@@ -500,15 +567,15 @@ export default function PetaMap({
   const petugasOnline = petugas.filter((p) => isOnline(p.updatedAt)).length;
   const kendaraanOnline = kendaraan.filter((k) => isOnline(k.updatedAt)).length;
   const lunasCount = useMemo(
-    () => pelanggan.filter((p) => p.statusTagihan === "lunas").length,
-    [pelanggan]
+    () => pelangganList.filter((p) => p.statusTagihan === "lunas").length,
+    [pelangganList]
   );
   const menunggakCount = useMemo(
     () =>
-      pelanggan.filter(
+      pelangganList.filter(
         (p) => p.statusTagihan === "tunggakan" || p.statusTagihan === "belum_bayar"
       ).length,
-    [pelanggan]
+    [pelangganList]
   );
 
   // Rute details
@@ -575,7 +642,7 @@ export default function PetaMap({
 
   // Inspector selected items
   const inspectorKendaraan = kendaraan.find((k) => k.kendaraanId === selectedKendaraanId);
-  const inspectorPelanggan = pelanggan.find((p) => p.id === selectedId);
+  const inspectorPelanggan = pelangganList.find((p) => p.id === selectedId);
   const inspectorKomplain = komplainDenganPosisi.find((k) => k.id === selectedKomplainId);
   const inspectorTransit = transit.find((t) => t.id === selectedTransitId);
   const inspectorPetugas = petugas.find((p) => p.petugasId === selectedPetugasId);
@@ -694,7 +761,7 @@ export default function PetaMap({
               }`}
             >
               <Users className={`w-3.5 h-3.5 ${isDark ? "text-slate-400" : "text-slate-500"}`} />
-              <span>{pelanggan.length} Warga</span>
+              <span>{pelangganList.length} Warga</span>
             </button>
           </div>
         </div>
@@ -839,6 +906,32 @@ export default function PetaMap({
               <span>Warna Blok</span>
             </button>
           </div>
+
+          {/* Tombol Pemisahan Khusus Pengaduan / Komplain */}
+          <button
+            type="button"
+            onClick={() => setTampilkanKomplain((v) => !v)}
+            className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] font-bold border transition flex items-center gap-1.5 shadow-xs ${
+              tampilkanKomplain
+                ? "bg-rose-600 text-white border-rose-600 shadow-rose-900/30"
+                : isDark
+                ? "bg-slate-900/80 text-slate-400 border-slate-800 hover:text-white"
+                : "bg-white text-slate-600 border-slate-200 hover:text-slate-900 shadow-xs"
+            }`}
+            title={tampilkanKomplain ? "Sembunyikan pin pengaduan komplain warga" : "Tampilkan pin pengaduan komplain warga"}
+          >
+            <span className={tampilkanKomplain ? "animate-pulse" : ""}>🚨</span>
+            <span className="hidden sm:inline">Komplain</span>
+            {activeKomplainCount > 0 && (
+              <span className={`px-1.5 py-0.2 rounded-full text-[9.5px] font-black ${
+                tampilkanKomplain
+                  ? "bg-white text-rose-700"
+                  : "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300"
+              }`}>
+                {activeKomplainCount}
+              </span>
+            )}
+          </button>
 
           {/* GIS Layer Popover Toggle */}
           <div className="relative" ref={layerMenuRef}>
@@ -1198,7 +1291,7 @@ export default function PetaMap({
               }`}
             >
               <Users className="w-4 h-4" />
-              <span>Warga ({pelanggan.length})</span>
+              <span>Warga ({pelangganList.length})</span>
             </button>
 
             <button
@@ -2137,11 +2230,75 @@ export default function PetaMap({
                       </div>
                       <div>
                         <span className={`text-[10px] uppercase ${isDark ? "text-slate-400" : "text-slate-500"}`}>
-                          Wilayah / Zonasi
+                          Wilayah / Zonasi Saat Ini
                         </span>
-                        <p className={`text-xs ${isDark ? "text-slate-200" : "text-slate-700"}`}>
+                        <p className={`text-xs font-extrabold flex items-center gap-1.5 mt-0.5`} style={{ color: getWarnaBlok(inspectorPelanggan.wilayah?.nama) }}>
+                          <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: getWarnaBlok(inspectorPelanggan.wilayah?.nama) }}></span>
                           {inspectorPelanggan.wilayah?.nama ?? "Belum ditentukan"}
                         </p>
+                      </div>
+                    </div>
+
+                    {/* Interactive Editor Rubah Blok / Wilayah Layanan */}
+                    <div className={`p-3 rounded-2xl border space-y-2 mt-1 ${
+                      isDark ? "bg-[#12151b] border-slate-800" : "bg-emerald-50/70 border-emerald-200/90 shadow-xs"
+                    }`}>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-sm">🏷️</span>
+                          <span className={`text-[10.5px] font-black uppercase tracking-wider ${
+                            isDark ? "text-amber-400" : "text-emerald-800"
+                          }`}>
+                            Pindahkan / Rubah Blok Layanan
+                          </span>
+                        </div>
+                        {savingBlokId === inspectorPelanggan.id && (
+                          <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-1 animate-pulse">
+                            <RefreshCw className="w-3 h-3 animate-spin" /> Menyimpan...
+                          </span>
+                        )}
+                      </div>
+
+                      <p className={`text-[10px] leading-relaxed ${isDark ? "text-slate-400" : "text-slate-600"}`}>
+                        Ubah blok penjemputan warga ini jika zona saat ini tidak sesuai rute armada:
+                      </p>
+
+                      <div className="space-y-1.5">
+                        <select
+                          value={inspectorPelanggan.wilayah?.id ?? ""}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            handleUbahBlok(inspectorPelanggan.id, val ? Number(val) : null);
+                          }}
+                          disabled={savingBlokId === inspectorPelanggan.id}
+                          className={`w-full rounded-xl px-2.5 py-2 text-xs font-bold outline-none cursor-pointer border transition ${
+                            isDark
+                              ? "bg-slate-900 border-slate-700 text-slate-100 focus:border-amber-400"
+                              : "bg-white border-slate-300 text-slate-800 focus:border-emerald-600 shadow-xs"
+                          }`}
+                        >
+                          <option value="">— Belum Ditentukan / Tanpa Blok —</option>
+                          {wilayah.map((w) => (
+                            <option key={w.id} value={w.id}>
+                              {w.nama} {w.kelurahanRef?.nama ? `— Kel. ${w.kelurahanRef.nama}` : ""}
+                            </option>
+                          ))}
+                        </select>
+
+                        {toastBlokMsg && (
+                          <div className={`p-2 rounded-xl text-xs font-bold flex items-center gap-2 animate-in fade-in ${
+                            toastBlokMsg.type === "success"
+                              ? isDark ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" : "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                              : isDark ? "bg-rose-500/20 text-rose-300 border border-rose-500/30" : "bg-rose-100 text-rose-800 border border-rose-200"
+                          }`}>
+                            {toastBlokMsg.type === "success" ? (
+                              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+                            ) : (
+                              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+                            )}
+                            <span>{toastBlokMsg.text}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
 

@@ -306,6 +306,26 @@ function renderLoadswiftPuck({
   </div>`;
 }
 
+function buatDotIcon(warna: string, size: number = 8, isBermasalah: boolean = false) {
+  const borderCol = isBermasalah ? "#0f172a" : "#ffffff";
+  const glow = isBermasalah ? "box-shadow: 0 0 6px rgba(15,23,42,0.9);" : "box-shadow: 0 1px 4px rgba(0,0,0,0.35);";
+  return L.divIcon({
+    className: "",
+    html: `<div class="single-dot-marker ${isBermasalah ? "stop-angkut-dot" : ""}" style="
+      width: ${size}px;
+      height: ${size}px;
+      border-radius: 50%;
+      background-color: ${warna};
+      border: ${size >= 12 ? "2px" : "1.5px"} solid ${borderCol};
+      ${glow}
+      cursor: pointer;
+    "></div>`,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+    popupAnchor: [0, -size / 2],
+  });
+}
+
 function buatIcon(warna: string, isBermasalah: boolean = false) {
   return L.divIcon({
     className: "",
@@ -469,7 +489,12 @@ function popupHtml(p: PelangganPeta): string {
         <div style="font-weight:800;color:#0f172a;">${tarifTagihan}</div>
         
         <div style="font-weight:700;color:#334155;">BLOK LAYANAN:</div>
-        <div style="font-weight:800;color:${warnaBlok};">${esc(rawBlokNama)}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;">
+          <span style="font-weight:800;color:${warnaBlok};">${esc(rawBlokNama)}</span>
+          <button type="button" onclick="window.__petaBukaUbahBlok &amp;&amp; window.__petaBukaUbahBlok(${p.id})" style="background:#f1f5f9;color:#0284c7;border:1px solid #cbd5e1;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800;cursor:pointer;">
+            ✏️ Ubah Blok
+          </button>
+        </div>
       </div>
       
       ${riwayatHtml}
@@ -729,9 +754,20 @@ function ClusterPins({
   modeWarnaMarker?: "tagihan" | "blok";
 }) {
   const map = useMap();
+  const [currentZoom, setCurrentZoom] = useState(() => map.getZoom());
   const groupRef = useRef<L.MarkerClusterGroup | L.LayerGroup | null>(null);
   const markersRef = useRef<Map<number, L.Marker>>(new Map());
   const clickedFromMapRef = useRef(false);
+
+  useEffect(() => {
+    const handleZoomEnd = () => {
+      setCurrentZoom(map.getZoom());
+    };
+    map.on("zoomend", handleZoomEnd);
+    return () => {
+      map.off("zoomend", handleZoomEnd);
+    };
+  }, [map]);
 
   useEffect(() => {
     // Mode Single Pelanggan vs Kelompokkan (Cluster)
@@ -772,8 +808,30 @@ function ClusterPins({
       const warnaMarker = modeWarnaMarker === "blok" ? warnaBlok : infoTagihan.warna;
       const isBermasalah = modeWarnaMarker === "tagihan" ? infoTagihan.isStopAngkut : false;
 
+      // Adaptasi ukuran ikon saat zoom jauh di mode single pelanggan agar tidak berantakan/tumpang tindih
+      let pinIcon: L.DivIcon;
+      if (isSingle) {
+        if (currentZoom <= 13) {
+          // Zoom jauh (tingkat kota/kecamatan): micro dot 7px
+          pinIcon = buatDotIcon(warnaMarker, 7, isBermasalah);
+        } else if (currentZoom <= 15) {
+          // Zoom menengah (tingkat kelurahan): dot 11px
+          pinIcon = buatDotIcon(warnaMarker, 11, isBermasalah);
+        } else {
+          // Zoom dekat (tingkat gang/rumah, zoom >= 16): pin Waze penuh
+          pinIcon = buatIcon(warnaMarker, isBermasalah);
+        }
+      } else {
+        // Mode cluster: di zoom sangat jauh, gunakan dot icon jika unclustered
+        if (currentZoom <= 13) {
+          pinIcon = buatDotIcon(warnaMarker, 8, isBermasalah);
+        } else {
+          pinIcon = buatIcon(warnaMarker, isBermasalah);
+        }
+      }
+
       const m = L.marker([p.latitude, p.longitude], {
-        icon: buatIcon(warnaMarker, isBermasalah),
+        icon: pinIcon,
         bubblingMouseEvents: false,
       });
       
@@ -820,7 +878,7 @@ function ClusterPins({
       groupRef.current = null;
       markersRef.current.clear();
     };
-  }, [pelanggan, map, warnaStatus, onPilih, isMovingRef, modeCluster, modeWarnaMarker]);
+  }, [pelanggan, map, warnaStatus, onPilih, isMovingRef, modeCluster, modeWarnaMarker, currentZoom]);
 
   // Handle selectedId dari luar (misalnya dari daftar bawah atau dropdown pencarian)
   useEffect(() => {
