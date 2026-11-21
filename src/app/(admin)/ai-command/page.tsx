@@ -89,13 +89,19 @@ export default function AiCommandHubPage() {
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [editedText, setEditedText] = useState("");
 
-  // Load API key from localStorage if exists
+  // Load API key from localStorage if exists & auto-sync to DB
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedKey = localStorage.getItem("upsheru_gemini_key") || "";
       if (savedKey) {
         setClientGeminiKey(savedKey);
         setKeyInput(savedKey);
+        // Otomatis sinkronkan ke database server agar permanen untuk semua sesi login
+        fetch("/api/ai-command", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "save_gemini_key", payload: { key: savedKey, skipTest: true } }),
+        }).catch(() => {});
       }
     }
     fetchData();
@@ -387,7 +393,7 @@ export default function AiCommandHubPage() {
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100 transition"
             >
               <Zap className="w-3.5 h-3.5 text-emerald-500" />
-              Gemini Live Connected
+              Gemini Terhubung Permanen
             </button>
           ) : (
             <button
@@ -430,7 +436,7 @@ export default function AiCommandHubPage() {
             </div>
 
             <p className="text-xs text-gray-500 leading-relaxed">
-              Dapatkan API Key gratis di{" "}
+              API Key Google Gemini disimpan secara permanen di Database Server PostgreSQL. Setiap kali Anda atau admin lain login dari browser maupun perangkat manapun, sistem akan langsung otomatis terhubung. Dapatkan key gratis di{" "}
               <a
                 href="https://aistudio.google.com/"
                 target="_blank"
@@ -439,7 +445,7 @@ export default function AiCommandHubPage() {
               >
                 aistudio.google.com
               </a>
-              . Kunci ini akan disimpan aman di sistem Anda untuk menjalankan model live Gemini 1.5 Flash.
+              .
             </p>
 
             <div className="space-y-1.5">

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getPengaturanString, setPengaturan } from "@/lib/pengaturan";
 import fs from "fs";
 import path from "path";
 
@@ -55,8 +56,21 @@ async function callGemini(
   apiKeyOverride?: string | null,
   temperature = 0.7
 ): Promise<{ text: string; source: "gemini_live" | "fallback"; errorDetail?: string }> {
-  const apiKey = (apiKeyOverride || process.env.GEMINI_API_KEY || "").trim();
-  if (!apiKey) {
+  let apiKey = (apiKeyOverride || process.env.GEMINI_API_KEY || "").trim();
+  if (!apiKey || apiKey.length < 5) {
+    // Muat otomatis dari tabel database Pengaturan (permanen per server)
+    try {
+      const dbKey = await getPengaturanString("GEMINI_API_KEY", "");
+      if (dbKey && dbKey.trim().length > 5) {
+        apiKey = dbKey.trim();
+        process.env.GEMINI_API_KEY = apiKey;
+      }
+    } catch (e) {
+      console.warn("[Pengaturan DB Read Warning]", e);
+    }
+  }
+
+  if (!apiKey || apiKey.length < 5) {
     return { text: "", source: "fallback" };
   }
 
@@ -112,9 +126,13 @@ async function callGemini(
 
 export async function GET(req: NextRequest) {
   try {
-    const hasEnvGeminiKey = Boolean(
-      process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.trim().length > 5
-    );
+    let dbKey = "";
+    try {
+      dbKey = await getPengaturanString("GEMINI_API_KEY", "");
+    } catch {}
+
+    const effectiveKey = (process.env.GEMINI_API_KEY || dbKey || "").trim();
+    const hasEnvGeminiKey = Boolean(effectiveKey && effectiveKey.length > 5);
 
     // Ambil metrik riil dari database WastePay
     const [
@@ -258,7 +276,15 @@ export async function POST(req: NextRequest) {
       process.env.GEMINI_API_KEY = cleanKey;
       process.env.GEMINI_MODEL = "gemini-1.5-flash";
 
-      // Persist to .env file on disk if accessible
+      // 1. Simpan permanen ke PostgreSQL DB (Pengaturan) agar otomatis aktif bagi semua login
+      try {
+        await setPengaturan("GEMINI_API_KEY", cleanKey);
+        await setPengaturan("GEMINI_MODEL", "gemini-1.5-flash");
+      } catch (e) {
+        console.warn("[Save Pengaturan DB warning]", e);
+      }
+
+      // 2. Persist to .env file on disk if accessible
       try {
         const envPath = path.join(process.cwd(), ".env");
         if (fs.existsSync(envPath)) {
