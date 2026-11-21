@@ -390,10 +390,12 @@ export default function AiCommandHubPage() {
   };
 
   const handleResetChat = () => {
+    const timeNow = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
     setChatMessages([
       {
         sender: "ai",
         text: `Halo Boss! Sesi baru telah di-reset untuk **${roleMeta[activeRole].title}**. Seluruh konteks percakapan sebelumnya telah dibersihkan. Silakan mulai instruksi baru.`,
+        time: timeNow,
         role: activeRole,
       },
     ]);
