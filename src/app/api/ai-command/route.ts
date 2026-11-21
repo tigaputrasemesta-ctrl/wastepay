@@ -519,7 +519,7 @@ Susunlah naskah video pendek (TikTok / Instagram Reels / Shorts) durasi 50 detik
         prisma.tagihan.findMany({
           where: { status: { in: ["belum_bayar", "tertunggak"] } },
           take: 4,
-          include: { pelanggan: { select: { nama: true, noHp: true, alamat: true } } },
+          include: { pelanggan: { select: { nama: true, noTelepon: true, alamat: true } } },
           orderBy: { createdAt: "desc" },
         }).catch(() => []),
         prisma.komplain.findMany({
@@ -530,7 +530,7 @@ Susunlah naskah video pendek (TikTok / Instagram Reels / Shorts) durasi 50 detik
       ]);
 
       const unpaidSampleText = unpaidSample.length > 0
-        ? unpaidSample.map((u, i) => `${i+1}. ${u.pelanggan?.nama || 'Warga'} (${u.pelanggan?.noHp || '-'}) [${u.pelanggan?.alamat || 'Blok Lingkungan'}] - Tagihan: Rp ${(u.jumlah || 40000).toLocaleString('id-ID')}`).join("\n")
+        ? unpaidSample.map((u: any, i: number) => `${i+1}. ${u.pelanggan?.nama || 'Warga'} (${u.pelanggan?.noTelepon || '-'}) [${u.pelanggan?.alamat || 'Blok Lingkungan'}] - Tagihan: Rp ${(u.jumlah || 40000).toLocaleString('id-ID')}`).join("\n")
         : "1. Bpk. Syamil (089619247836) [Sawangan Blok C4] - Rp 40.000\n2. Ibu Nurul (085712345678) [Sawangan Blok A2] - Rp 40.000";
 
       let systemPrompt = "";
