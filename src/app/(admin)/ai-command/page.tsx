@@ -65,16 +65,78 @@ export default function AiCommandHubPage() {
   const [loadingAction, setLoadingAction] = useState(false);
   const [engineSource, setEngineSource] = useState<"gemini_live" | "fallback">("fallback");
 
+  const [activeRole, setActiveRole] = useState<"copilot" | "sdr" | "content" | "support">("copilot");
   const [chatInput, setChatInput] = useState("");
   const [isChatting, setIsChatting] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  const roleMeta = {
+    copilot: {
+      id: "copilot",
+      title: "Executive Co-Pilot",
+      badge: "Analitik & Finansial",
+      icon: TrendingUp,
+      color: "emerald",
+      skills: ["Audit Kas & Kolektibilitas", "Deteksi Tunggakan", "Rekomendasi Bisnis"],
+      prompts: [
+        "Analisis performa keuangan & operasional hari ini",
+        "Berapa sisa kas yang belum tertagih bulan ini?",
+        "Evaluasi efisiensi rute armada dan pengaduan",
+      ],
+      greeting: "Halo Owner! Saya Executive Co-Pilot Anda. Saya memiliki akses riil ke database metrik pelanggan, kas masuk, dan rute armada untuk membantu keputusan strategis Anda.",
+    },
+    sdr: {
+      id: "sdr",
+      title: "B2B SDR Agent",
+      badge: "Akuisisi Mitra Desa",
+      icon: Building2,
+      color: "blue",
+      skills: ["Pain Point BUMDes & KSM", "Proposal Kemitraan", "Objection Handling"],
+      prompts: [
+        "Buatkan surat penawaran kemitraan resmi untuk BUMDes",
+        "Bagaimana membantah keberatan 'aplikasi digital terlalu mahal'?",
+        "Tulis 3-step pesan WhatsApp outreach ke pengurus KSM",
+      ],
+      greeting: "Halo! Saya B2B SDR Agent UPSHERU. Tugas saya memprospek dan mengakuisisi BUMDes, KSM, dan TPS3R agar bermitra dengan platform digital WastePay.",
+    },
+    content: {
+      id: "content",
+      title: "Content Strategist",
+      badge: "Viral & Edukasi Warga",
+      icon: Video,
+      color: "purple",
+      skills: ["Video 50 Detik (TikTok/Reels)", "3 Pilihan Hook Viral", "Broadcast WA Grup RT"],
+      prompts: [
+        "Buat naskah video 50 detik alasan iuran sampah penting",
+        "Tulis pesan broadcast santun untuk grup WA warga RT",
+        "Buat 3 hook kontroversial tentang bahaya buang sampah liar",
+      ],
+      greeting: "Halo! Saya Viral Content Strategist UPSHERU. Saya merancang konten edukasi publik agar warga sadar pentingnya membayar retribusi tepat waktu via scan QRIS.",
+    },
+    support: {
+      id: "support",
+      title: "Support & Billing Ops",
+      badge: "Akses DB Riil & QRIS",
+      icon: Users,
+      color: "amber",
+      skills: ["Akses Data Nunggak Riil", "Draf Reminder QRIS", "Kirim ke Antrean Approval"],
+      prompts: [
+        "Tampilkan daftar warga belum bayar & buat draf pengingat",
+        "Buatkan permohonan maaf armada sampah terlambat ke warga",
+        "Buat konfirmasi pembayaran lunas dan ucapan terima kasih",
+      ],
+      greeting: "Halo! Saya Resident Support & Billing Ops. Saya terhubung langsung ke database tagihan pelanggan dan komplain armada untuk membantu penagihan santun dan mitigasi komplain.",
+    },
+  };
+
   const [chatMessages, setChatMessages] = useState<
-    Array<{ sender: "owner" | "ai"; text: string; time: string }>
+    Array<{ sender: "owner" | "ai"; text: string; time: string; role?: string }>
   >([
     {
       sender: "ai",
-      text: "Halo Bapak/Ibu Owner. AI Agent Engine UPSHERU telah terhubung ke modul Google Gemini dengan batasan 'Human-in-the-Loop'. Semua draf komunikasi warga dan calon mitra akan masuk ke antrean persetujuan Anda sebelum dikirim.",
+      text: "Halo Bapak/Ibu Owner. AI Agent Engine UPSHERU telah aktif dengan 4 Role Spesialis (Co-Pilot, B2B SDR, Content Strategist, & Support Ops). Pilih role di atas untuk berganti fokus tugas dan skill!",
       time: "Baru saja",
+      role: "copilot",
     },
   ]);
 
@@ -278,11 +340,60 @@ export default function AiCommandHubPage() {
     }
   };
 
-  const handleSendChat = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!chatInput.trim() || isChatting) return;
+  const handleSwitchRole = (newRole: "copilot" | "sdr" | "content" | "support") => {
+    if (newRole === activeRole) return;
+    setActiveRole(newRole);
+    const timeNow = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+    setChatMessages((prev) => [
+      ...prev,
+      {
+        sender: "ai",
+        text: roleMeta[newRole].greeting,
+        time: timeNow,
+        role: newRole,
+      },
+    ]);
+  };
 
-    const userMsg = chatInput.trim();
+  const handleAddToApprovalQueue = async (text: string, title?: string) => {
+    setLoadingAction(true);
+    try {
+      const res = await fetch("/api/ai-command", {
+        method: "POST",
+        headers: getHeaders(),
+        body: JSON.stringify({
+          action: "create_approval_item",
+          payload: {
+            category:
+              activeRole === "sdr"
+                ? "Penawaran Kemitraan SDR"
+                : activeRole === "content"
+                ? "Konten Edukasi Warga"
+                : "Pesan Warga & Tagihan",
+            summary: title || `Draf dari ${roleMeta[activeRole].title}`,
+            draftText: text,
+          },
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setNotification(data.message || "✅ Draf berhasil dimasukkan ke Antrean Persetujuan!");
+        if (data.updatedQueue) setApprovalQueue([...data.updatedQueue]);
+      } else {
+        setNotification("❌ Gagal: " + data.error);
+      }
+    } catch (e: any) {
+      setNotification("Error: " + e.message);
+    } finally {
+      setLoadingAction(false);
+    }
+  };
+
+  const handleSendChat = async (e?: React.FormEvent, customMsg?: string) => {
+    if (e) e.preventDefault();
+    const userMsg = (customMsg || chatInput).trim();
+    if (!userMsg || isChatting) return;
+
     const timeNow = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
 
     setChatMessages((prev) => [...prev, { sender: "owner", text: userMsg, time: timeNow }]);
@@ -295,14 +406,14 @@ export default function AiCommandHubPage() {
         headers: getHeaders(),
         body: JSON.stringify({
           action: "chat",
-          payload: { message: userMsg, geminiApiKey: clientGeminiKey },
+          payload: { message: userMsg, geminiApiKey: clientGeminiKey, role: activeRole },
         }),
       });
       const data = await res.json();
       if (data.success && data.result) {
         setChatMessages((prev) => [
           ...prev,
-          { sender: "ai", text: data.result, time: timeNow },
+          { sender: "ai", text: data.result, time: timeNow, role: activeRole },
         ]);
       } else {
         setChatMessages((prev) => [
@@ -313,6 +424,7 @@ export default function AiCommandHubPage() {
               ? `⚠️ Sistem: ${data.error}`
               : "Instruksi diterima, namun terjadi kendala respon dari server.",
             time: timeNow,
+            role: activeRole,
           },
         ]);
       }
@@ -323,6 +435,7 @@ export default function AiCommandHubPage() {
           sender: "ai",
           text: `⚠️ Kendala jaringan: ${err.message || "Gagal menghubungi server"}`,
           time: timeNow,
+          role: activeRole,
         },
       ]);
     } finally {
@@ -679,23 +792,64 @@ export default function AiCommandHubPage() {
 
       {/* Main Dual Workspace */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Side: Interactive Chat Console with AI Agent (5 Cols) */}
-        <div className="lg:col-span-5 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 flex flex-col h-[540px] shadow-sm">
-          <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
+        {/* Left Side: Interactive Chat Console with Specialized AI Agents (5 Cols) */}
+        <div className="lg:col-span-5 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 flex flex-col h-[600px] shadow-sm">
+          {/* Header Console & Active Model */}
+          <div className="p-3.5 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <MessageSquare className="w-4 h-4 text-emerald-500" />
               <span className="font-semibold text-sm text-gray-900 dark:text-white">
-                Live Chat dengan AI Agent
+                Live AI Specialist Hub
               </span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-[10px] text-gray-400 font-mono">
-                {isGeminiConnected ? "Gemini 1.5 Flash" : "Fallback Engine"}
+                {isGeminiConnected ? "Gemini Live" : "Fallback Engine"}
               </span>
               <span className={`inline-block w-2 h-2 rounded-full ${isGeminiConnected ? "bg-emerald-500 animate-pulse" : "bg-amber-400"}`}></span>
             </div>
           </div>
 
+          {/* Interactive Role Switcher Tabs */}
+          <div className="p-2.5 bg-gray-50/80 dark:bg-gray-850 border-b border-gray-200 dark:border-gray-800 space-y-2">
+            <div className="grid grid-cols-4 gap-1">
+              {(Object.keys(roleMeta) as Array<keyof typeof roleMeta>).map((rKey) => {
+                const r = roleMeta[rKey];
+                const IconComponent = r.icon;
+                const isActive = activeRole === rKey;
+                return (
+                  <button
+                    key={rKey}
+                    type="button"
+                    onClick={() => handleSwitchRole(rKey)}
+                    className={`py-1.5 px-1 rounded-xl text-center flex flex-col items-center gap-0.5 transition ${
+                      isActive
+                        ? "bg-white dark:bg-gray-800 shadow-sm border border-emerald-500/40 text-emerald-700 dark:text-emerald-300 font-bold"
+                        : "text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100/60 dark:hover:bg-gray-800/40"
+                    }`}
+                  >
+                    <IconComponent className={`w-3.5 h-3.5 ${isActive ? "text-emerald-600 dark:text-emerald-400" : "text-gray-400"}`} />
+                    <span className="text-[10px] leading-tight truncate w-full">{r.title.split(" ")[0]}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Active Skills & Database Access Bar */}
+            <div className="flex items-center gap-1.5 overflow-x-auto text-[10px] pt-0.5">
+              <span className="text-gray-400 font-medium whitespace-nowrap">Skill Aktif:</span>
+              {roleMeta[activeRole].skills.map((skill, sIdx) => (
+                <span
+                  key={sIdx}
+                  className="px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 whitespace-nowrap font-medium"
+                >
+                  ✓ {skill}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Chat Messages Log */}
           <div className="flex-1 p-4 overflow-y-auto space-y-3 text-xs">
             {chatMessages.map((msg, idx) => (
               <div
@@ -705,13 +859,28 @@ export default function AiCommandHubPage() {
                 }`}
               >
                 <div
-                  className={`max-w-[85%] rounded-2xl p-3 leading-relaxed ${
+                  className={`max-w-[88%] rounded-2xl p-3 leading-relaxed ${
                     msg.sender === "owner"
                       ? "bg-emerald-600 text-white rounded-br-none"
-                      : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-none"
+                      : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-none border border-gray-200/50 dark:border-gray-700/50"
                   }`}
                 >
                   <p className="whitespace-pre-wrap">{msg.text}</p>
+
+                  {/* Tombol aksi langsung ke antrean approval jika respon memuat draf pesan */}
+                  {msg.sender === "ai" && msg.text.length > 50 && (
+                    <div className="mt-2.5 pt-2 border-t border-gray-200/60 dark:border-gray-700/60 flex justify-end">
+                      <button
+                        type="button"
+                        onClick={() => handleAddToApprovalQueue(msg.text)}
+                        disabled={loadingAction}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 transition shadow-xs"
+                      >
+                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                        + Masukkan ke Antrean Approval
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <span className="text-[10px] text-gray-400 mt-1 px-1">{msg.time}</span>
               </div>
@@ -723,20 +892,38 @@ export default function AiCommandHubPage() {
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce"></span>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce [animation-delay:0.2s]"></span>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce [animation-delay:0.4s]"></span>
-                  <span className="text-[11px] text-gray-500 italic">AI Agent sedang memproses & menyusun respon...</span>
+                  <span className="text-[11px] text-gray-500 italic">
+                    {roleMeta[activeRole].title} sedang memproses data...
+                  </span>
                 </div>
               </div>
             )}
             <div ref={chatEndRef} />
           </div>
 
-          <form onSubmit={handleSendChat} className="p-3 border-t border-gray-200 dark:border-gray-800 flex gap-2">
+          {/* Quick Prompts Bar Berdasarkan Role Aktif */}
+          <div className="px-3 py-1.5 border-t border-gray-100 dark:border-gray-800/80 flex gap-1.5 overflow-x-auto text-[11px] bg-gray-50/50 dark:bg-gray-850/50">
+            {roleMeta[activeRole].prompts.map((p, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => handleSendChat(undefined, p)}
+                disabled={isChatting}
+                className="whitespace-nowrap px-2.5 py-1 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 border border-gray-200 dark:border-gray-700 text-[10px] font-medium transition shadow-xs"
+              >
+                💡 {p}
+              </button>
+            ))}
+          </div>
+
+          {/* Chat Input Form */}
+          <form onSubmit={handleSendChat} className="p-3 border-t border-gray-200 dark:border-gray-800 flex gap-2 bg-white dark:bg-gray-900">
             <input
               type="text"
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
               disabled={isChatting}
-              placeholder={isChatting ? "AI sedang mengetik..." : "Ketik instruksi ke AI Agent..."}
+              placeholder={isChatting ? `${roleMeta[activeRole].title} sedang mengetik...` : `Tanyakan ke ${roleMeta[activeRole].title}...`}
               className="flex-1 text-xs px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
             />
             <button
@@ -750,7 +937,7 @@ export default function AiCommandHubPage() {
         </div>
 
         {/* Right Side: Live Report Deliverable Canvas (7 Cols) */}
-        <div className="lg:col-span-7 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 flex flex-col h-[540px] shadow-sm">
+        <div className="lg:col-span-7 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 flex flex-col h-[600px] shadow-sm">
           <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <FileText className="w-4 h-4 text-emerald-500" />

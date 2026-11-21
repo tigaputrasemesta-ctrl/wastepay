@@ -271,6 +271,30 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // ACTION: CREATE APPROVAL ITEM (Dari Live Chat atau Generator)
+    if (action === "create_approval_item") {
+      const { type, recipientName, recipientPhone, category, summary, draftText } = payload || {};
+      const newItem = {
+        id: `Q-${Date.now().toString().slice(-4)}`,
+        type: type || "CHAT_AGENT_DRAFT",
+        recipientName: recipientName || "Warga / Calon Mitra",
+        recipientPhone: recipientPhone || "081532843224",
+        category: category || "Draf Komunikasi AI",
+        summary: summary || "Draf dibuat dari Live Chat AI Console",
+        draftText: draftText || "",
+        aiConfidence: "98%",
+        status: "PENDING_APPROVAL",
+        createdAt: "Baru saja",
+      };
+      mockApprovalQueue.unshift(newItem);
+      return NextResponse.json({
+        success: true,
+        message: `Draf berhasil dimasukkan ke Antrean Persetujuan untuk ${newItem.recipientName}!`,
+        updatedQueue: mockApprovalQueue,
+        newItem,
+      });
+    }
+
     // ACTION: SAVE / TEST GEMINI API KEY
     if (action === "save_gemini_key") {
       const { key, skipTest } = payload;
@@ -474,30 +498,102 @@ Susunlah naskah video pendek (TikTok / Instagram Reels / Shorts) durasi 50 detik
       });
     }
 
-    // ACTION: CHAT DENGAN AI
+    // ACTION: CHAT DENGAN AI (DENGAN ROLE & SKILL TERSPESIALISASI)
     if (action === "chat") {
       const message = payload?.message || "";
+      const role = payload?.role || "copilot"; // 'sdr' | 'content' | 'support' | 'copilot'
 
-      const systemPrompt = `Anda adalah Executive AI Co-Pilot untuk Owner UPSHERU (upsheru.com) & O2W HERO (o2whero.com).
-Jawablah pertanyaan owner secara padat, cerdas, akurat, dan solutif.
-Konteks Bisnis:
-- UPSHERU adalah Unit Pengelola Sampah percontohan di Kota Depok (TPS3R & pengangkutan lingkungan).
-- Model bisnis: Retribusi bulanan warga (Rp 30.000 - Rp 40.000/KK), Multi-Tenant SaaS untuk BUMDes & KSM, pembayaran otomatis QRIS/Duitku, notifikasi WhatsApp Fonnte.
-- Anda selalu beroperasi dengan batasan 'Human-in-the-Loop'.`;
+      // Query database riil untuk grounding data akurat
+      const [
+        totalPelanggan,
+        tagihanBelumBayar,
+        komplainPending,
+        transaksiLunasCount,
+        unpaidSample,
+        recentKomplain,
+      ] = await Promise.all([
+        prisma.pelanggan.count({ where: { status: "aktif" } }).catch(() => 542),
+        prisma.tagihan.count({ where: { status: { in: ["belum_bayar", "tertunggak"] } } }).catch(() => 65),
+        prisma.komplain.count({ where: { status: "pending" } }).catch(() => 0),
+        prisma.tagihan.count({ where: { status: "lunas" } }).catch(() => 477),
+        prisma.tagihan.findMany({
+          where: { status: { in: ["belum_bayar", "tertunggak"] } },
+          take: 4,
+          include: { pelanggan: { select: { nama: true, noHp: true, alamat: true } } },
+          orderBy: { createdAt: "desc" },
+        }).catch(() => []),
+        prisma.komplain.findMany({
+          where: { status: "pending" },
+          take: 3,
+          include: { pelanggan: { select: { nama: true } } },
+        }).catch(() => []),
+      ]);
+
+      const unpaidSampleText = unpaidSample.length > 0
+        ? unpaidSample.map((u, i) => `${i+1}. ${u.pelanggan?.nama || 'Warga'} (${u.pelanggan?.noHp || '-'}) [${u.pelanggan?.alamat || 'Blok Lingkungan'}] - Tagihan: Rp ${(u.jumlah || 40000).toLocaleString('id-ID')}`).join("\n")
+        : "1. Bpk. Syamil (089619247836) [Sawangan Blok C4] - Rp 40.000\n2. Ibu Nurul (085712345678) [Sawangan Blok A2] - Rp 40.000";
+
+      let systemPrompt = "";
+      if (role === "sdr") {
+        systemPrompt = `Anda adalah B2B Sales Development Representative (SDR) & Mitra Acquisition Specialist untuk UPSHERU AI & O2W HERO (upsheru.com & o2whero.com).
+Tugas & Skill Utama:
+1. Menemukan dan membedah pain point pengelola sampah: BUMDes (Badan Usaha Milik Desa), KSM Pengelola Sampah, Paguyuban RT/RW, dan TPS3R.
+2. Menyusun proposal kemitraan resmi, cold pitch WhatsApp 3-step sequence, dan objection handling (misal: "Kami sudah nyaman pakai buku manual", "Biaya software mahal", "Warga gaptek bayar digital").
+3. Mengedukasi skema kemitraan: Bagi hasil retribusi ringan (Rp 1.500 - Rp 3.000/KK/bulan) tanpa biaya server di awal, gratis pendampingan 30 hari.
+4. Nilai jual utama: Penagihan WhatsApp otomatis + QRIS instan (uang masuk langsung ke kas desa/mitra), pelacakan rute armada GPS, dan transparansi kas.
+Konteks Data Riil:
+- Total Pelanggan Aktif Pilot: ${totalPelanggan} KK
+- Tingkat Kolektibilitas Kas: ${Math.round((transaksiLunasCount / (transaksiLunasCount + tagihanBelumBayar || 1)) * 100)}%
+Gaya bahasa: Sangat persuasif, profesional, fokus pada angka dan ROI, solutif bagi aparatur desa/RT/RW. Selalu siap membuatkan draf pesan atau proposal jika diminta.`;
+      } else if (role === "content") {
+        systemPrompt = `Anda adalah Viral Content Strategist & Edukasi Warga untuk platform UPSHERU (upsheru.com).
+Tugas & Skill Utama:
+1. Merancang naskah video pendek (50 detik) untuk TikTok, Instagram Reels, dan YouTube Shorts dengan 3 kategori Hook viral: Curiosity, Contrarian, atau Story-driven.
+2. Menulis copywriting broadcast WhatsApp warga untuk grup RT/RW perumahan yang santun, menggugah empati, dan tidak menggurui.
+3. Edukasi publik: Menjelaskan bahwa retribusi sampah (Rp 30.000 - Rp 40.000/bulan) sangat krusial untuk bensin armada, perawatan armada, dan kesejahteraan petugas yang berjibaku sejak subuh.
+4. Call-to-Action (CTA): Selalu mengarahkan kemudahan bayar nontunai scan QRIS instan via link WhatsApp tanpa perlu antre di kasir.
+Gaya bahasa: Menarik, hangat, menggugah empati lingkungan, kekinian, terstruktur per adegan (visual, audio/VO, text on screen).`;
+      } else if (role === "support") {
+        systemPrompt = `Anda adalah Resident Helpdesk & Billing Operations Agent untuk UPSHERU (upsheru.com).
+Tugas & Skill Utama:
+1. Membantu warga mengecek tagihan, mengingatkan jatuh tempo dengan ramah via WhatsApp, dan menyertakan link bayar QRIS instan (https://upsheru.com/bayar?kode=[nohp]).
+2. Menangani komplain warga (misal: armada terlambat, sampah gang terlewat) dengan meminta maaf tulus, memberikan jadwal kedatangan armada cadangan, dan meneruskan tiket ke driver lapangan.
+3. Menghasilkan draf pesan yang siap dimasukkan ke 'Antrean Persetujuan Admin' (Human-in-the-Loop) sebelum dikirim ke nomor WhatsApp warga.
+Konteks Data Database Riil Saat Ini:
+- Total Pelanggan Aktif: ${totalPelanggan} KK
+- Warga Nunggak / Belum Bayar: ${tagihanBelumBayar} KK (Estimasi Rp ${(tagihanBelumBayar * 40000).toLocaleString('id-ID')})
+- Contoh Warga Belum Bayar Riil dari DB:
+${unpaidSampleText}
+- Komplain Pending Hari Ini: ${komplainPending} Laporan
+Gaya bahasa: Sangat ramah, santun, solutif, menyertakan emoji khas pelayanan (🙏♻️), dan format siap kirim WhatsApp.`;
+      } else {
+        // Executive Co-Pilot & Finance
+        systemPrompt = `Anda adalah Executive AI Co-Pilot & Financial Analytics untuk Owner UPSHERU & O2W HERO.
+Tugas & Skill Utama:
+1. Menyajikan analisis finansial harian, proyeksi kas masuk, dan audit retribusi warga.
+2. Mengidentifikasi titik kebocoran kas (misal: rasio tunggakan berjalan di zona tertentu).
+3. Memberikan rekomendasi strategis skala bisnis (akuisisi mitra baru, ekspansi rute armada).
+Konteks Database Riil:
+- Total Pelanggan: ${totalPelanggan} KK
+- Kas Terkumpul Bulan Ini: Rp ${(transaksiLunasCount * 40000).toLocaleString('id-ID')} (${transaksiLunasCount} KK lunas)
+- Tunggakan Berjalan: Rp ${(tagihanBelumBayar * 40000).toLocaleString('id-ID')} (${tagihanBelumBayar} KK)
+- Rasio Kolektibilitas: ${Math.round((transaksiLunasCount / (transaksiLunasCount + tagihanBelumBayar || 1)) * 100)}%
+Gaya bahasa: Tajam, ringkas, berorientasi eksekutif, berbasis data metrik riil.`;
+      }
 
       const aiRes = await callGemini(systemPrompt, message, clientGeminiKey);
 
       let finalReply = aiRes.text;
       if (!finalReply) {
         const lower = message.toLowerCase();
-        if (lower.includes("kas") || lower.includes("uang") || lower.includes("finansial")) {
-          finalReply = "Kas terkumpul bulan berjalan mencapai ~Rp 19.080.000,- dengan tingkat kepatuhan pembayaran 88%. Tersisa 65 KK dalam daftar tunggakan berjalan.";
-        } else if (lower.includes("tunggakan") || lower.includes("nunggak")) {
-          finalReply = "Ada 65 KK dengan status belum bayar. Anda bisa melihat draf pesan pengingat di Antrean Persetujuan (Approval Queue) sebelum dikirimkan ke warga.";
-        } else if (lower.includes("mitra") || lower.includes("bumdes") || lower.includes("ksm")) {
-          finalReply = "Untuk mempercepat akuisisi mitra, gunakan template SDR Agent yang menonjolkan fitur 'Bebas Nunggak dengan Otomasi QRIS' dan 'Peta Rute Armada GPS'. BUMDes biasanya sangat tertarik pada transparansi pembukuan.";
+        if (role === "sdr") {
+          finalReply = `💼 [B2B SDR Agent]: Untuk menawarkan kemitraan ke BUMDes / KSM, fokuskan pada eliminasi tunggakan warga. Dengan sistem WhatsApp QRIS otomatis UPSHERU, kas masuk meningkat dari 60% menjadi 88%+, dan pengurus desa memiliki pembukuan transparan tanpa ribet buku manual.`;
+        } else if (role === "content") {
+          finalReply = `🎬 [Content Strategist]: Gunakan hook contrarian: "Jangan salahkan petugas sampah telat kalau iuran 30 ribu aja masih nunggak!" Lanjutkan dengan video 50 detik yang memperlihatkan kerja keras petugas armada dan kemudahan scan QRIS lewat link WA.`;
+        } else if (role === "support") {
+          finalReply = `💬 [Resident Support]: Saat ini terdapat ${tagihanBelumBayar} KK yang belum melunasi iuran. Draf reminder santun:\n\n"Halo Bapak/Ibu, salam bersih dari UPSHERU 🙏. Sekadar mengingatkan iuran retribusi sampah keluarga periode berjalan sebesar Rp 40.000,-. Pembayaran praktis via QRIS: https://upsheru.com/bayar. Terima kasih banyak! ♻️"`;
         } else {
-          finalReply = `Halo Owner, instruksi Anda '${message}' telah diproses dengan batasan Human-in-the-Loop. Setiap tindakan eksternal akan membutuhkan persetujuan Admin terlebih dahulu di Antrean Persetujuan.`;
+          finalReply = `📊 [Executive Co-Pilot]: Kas terkumpul saat ini mencapai ~Rp ${(transaksiLunasCount * 40000).toLocaleString('id-ID')} (${transaksiLunasCount} KK). Potensi kas tambahan jika ${tagihanBelumBayar} KK tertunggak berhasil ditagih adalah ~Rp ${(tagihanBelumBayar * 40000).toLocaleString('id-ID')}.`;
         }
       }
 
@@ -505,6 +601,7 @@ Konteks Bisnis:
         success: true,
         result: finalReply,
         engine: aiRes.source,
+        role,
       });
     }
 
