@@ -389,12 +389,28 @@ export default function AiCommandHubPage() {
     }
   };
 
+  const handleResetChat = () => {
+    setChatMessages([
+      {
+        sender: "ai",
+        text: `Halo Boss! Sesi baru telah di-reset untuk **${roleMeta[activeRole].title}**. Seluruh konteks percakapan sebelumnya telah dibersihkan. Silakan mulai instruksi baru.`,
+        role: activeRole,
+      },
+    ]);
+  };
+
   const handleSendChat = async (e?: React.FormEvent, customMsg?: string) => {
     if (e) e.preventDefault();
     const userMsg = (customMsg || chatInput).trim();
     if (!userMsg || isChatting) return;
 
     const timeNow = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+
+    // Multi-turn conversation history (ambil hingga 12 pesan sebelumnya untuk mempertahankan konteks)
+    const historyPayload = chatMessages.slice(-12).map((m) => ({
+      role: m.sender === "owner" ? ("user" as const) : ("model" as const),
+      text: m.text,
+    }));
 
     setChatMessages((prev) => [...prev, { sender: "owner", text: userMsg, time: timeNow }]);
     setChatInput("");
@@ -406,7 +422,12 @@ export default function AiCommandHubPage() {
         headers: getHeaders(),
         body: JSON.stringify({
           action: "chat",
-          payload: { message: userMsg, geminiApiKey: clientGeminiKey, role: activeRole },
+          payload: {
+            message: userMsg,
+            geminiApiKey: clientGeminiKey,
+            role: activeRole,
+            history: historyPayload,
+          },
         }),
       });
       const data = await res.json();
@@ -802,11 +823,19 @@ export default function AiCommandHubPage() {
                 Live AI Specialist Hub
               </span>
             </div>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-2">
               <span className="text-[10px] text-gray-400 font-mono">
                 {isGeminiConnected ? "Gemini Live" : "Fallback Engine"}
               </span>
               <span className={`inline-block w-2 h-2 rounded-full ${isGeminiConnected ? "bg-emerald-500 animate-pulse" : "bg-amber-400"}`}></span>
+              <button
+                type="button"
+                onClick={handleResetChat}
+                title="Reset Sesi Percakapan & Bersihkan Memori"
+                className="ml-1 p-1 rounded-lg text-gray-400 hover:text-red-500 hover:bg-gray-100 dark:hover:bg-gray-850 transition"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+              </button>
             </div>
           </div>
 

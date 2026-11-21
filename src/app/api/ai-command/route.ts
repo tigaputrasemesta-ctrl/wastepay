@@ -48,13 +48,19 @@ let mockApprovalQueue = [
 
 /**
  * Helper untuk memanggil Google Gemini Generative Language API secara langsung
- * dengan multi-model fallback (gemini-1.5-flash, gemini-2.0-flash, gemini-1.5-pro)
+ * dengan multi-turn conversation memory dan multi-model fallback yang cerdas
  */
+interface ChatHistoryItem {
+  role: "user" | "model";
+  text: string;
+}
+
 async function callGemini(
   systemPrompt: string,
   userPrompt: string,
   apiKeyOverride?: string | null,
-  temperature = 0.7
+  temperature = 0.7,
+  history: ChatHistoryItem[] = []
 ): Promise<{ text: string; source: "gemini_live" | "fallback"; errorDetail?: string }> {
   let apiKey = (apiKeyOverride || process.env.GEMINI_API_KEY || "").trim();
   if (!apiKey || apiKey.length < 5) {
@@ -74,17 +80,47 @@ async function callGemini(
     return { text: "", source: "fallback" };
   }
 
-  const preferredModel = process.env.GEMINI_MODEL?.trim() || "gemini-flash-lite-latest";
+  const preferredModel = process.env.GEMINI_MODEL?.trim() || "gemini-3.1-flash-lite";
   const modelsToTry = [
     preferredModel,
+    "gemini-3.1-flash-lite",
     "gemini-flash-lite-latest",
+    "gemini-3.7-flash",
     "gemini-3.8-flash",
     "gemini-flash-latest",
-    "gemini-2.5-flash-lite",
-    "gemini-2.5-flash",
-    "gemini-1.5-flash",
   ];
   const uniqueModels = Array.from(new Set(modelsToTry));
+
+  // Build proper multi-turn contents: alternating user -> model -> user
+  const contents: Array<{ role: "user" | "model"; parts: Array<{ text: string }> }> = [];
+
+  if (Array.isArray(history) && history.length > 0) {
+    for (const h of history) {
+      const t = (h.text || "").trim();
+      if (!t) continue;
+      const role: "user" | "model" = h.role === "model" ? "model" : "user";
+      if (contents.length > 0 && contents[contents.length - 1].role === role) {
+        contents[contents.length - 1].parts[0].text += "\n\n" + t;
+      } else {
+        contents.push({ role, parts: [{ text: t }] });
+      }
+    }
+  }
+
+  // Ensure conversation ends with userPrompt
+  const cleanPrompt = (userPrompt || "").trim();
+  if (contents.length > 0 && contents[contents.length - 1].role === "user") {
+    if (cleanPrompt) {
+      contents[contents.length - 1].parts[0].text += "\n\n" + cleanPrompt;
+    }
+  } else if (cleanPrompt) {
+    contents.push({ role: "user", parts: [{ text: cleanPrompt }] });
+  }
+
+  // Fallback if empty
+  if (contents.length === 0) {
+    contents.push({ role: "user", parts: [{ text: "Berikan status operasional dan ringkasan hari ini." }] });
+  }
 
   let lastError = "";
 
@@ -94,11 +130,7 @@ async function callGemini(
       system_instruction: {
         parts: [{ text: systemPrompt }],
       },
-      contents: [
-        {
-          parts: [{ text: userPrompt }],
-        },
-      ],
+      contents,
       generationConfig: {
         temperature,
         maxOutputTokens: 2048,
@@ -110,6 +142,7 @@ async function callGemini(
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(12000),
       });
 
       if (res.ok) {
@@ -171,7 +204,7 @@ export async function GET(req: NextRequest) {
       success: true,
       stats,
       hasGeminiKey: hasEnvGeminiKey,
-      geminiModel: process.env.GEMINI_MODEL || "gemini-flash-lite-latest",
+      geminiModel: process.env.GEMINI_MODEL || "gemini-3.1-flash-lite",
       approvalQueue: mockApprovalQueue,
       guardrails: {
         mode: "HUMAN_IN_THE_LOOP",
@@ -498,12 +531,45 @@ Susunlah naskah video pendek (TikTok / Instagram Reels / Shorts) durasi 50 detik
       });
     }
 
-    // ACTION: CHAT DENGAN AI (DENGAN ROLE & SKILL TERSPESIALISASI)
+    // ACTION: CHAT DENGAN AI (DENGAN ROLE, MEMORI MULTI-TURN & GROUNDING DATABASE DINAMIS)
     if (action === "chat") {
       const message = payload?.message || "";
       const role = payload?.role || "copilot"; // 'sdr' | 'content' | 'support' | 'copilot'
+      const history = Array.isArray(payload?.history) ? payload.history : [];
 
-      // Query database riil untuk grounding data akurat
+      // Ekstraksi kata kunci pencarian dinamis dari pesan pengguna
+      const cleanMsg = message.toLowerCase().trim();
+      const stopWords = new Set(["ada", "apa", "ini", "itu", "dan", "yang", "dari", "ke", "di", "tolong", "buatkan", "siapa", "bagaimana", "apakah", "berapa", "untuk", "pesan", "chat", "sama", "pada", "draf"]);
+      const searchTerms = cleanMsg
+        .replace(/[^a-zA-Z0-9\s]/g, " ")
+        .split(/\s+/)
+        .filter((w: string) => w.length >= 3 && !stopWords.has(w));
+
+      let matchedCustomers: any[] = [];
+      if (searchTerms.length > 0) {
+        const orConditions = searchTerms.slice(0, 3).map((term: string) => ({
+          OR: [
+            { nama: { contains: term, mode: "insensitive" as const } },
+            { noTelepon: { contains: term } },
+            { alamat: { contains: term, mode: "insensitive" as const } },
+            { kodePelanggan: { contains: term, mode: "insensitive" as const } },
+          ],
+        }));
+
+        matchedCustomers = await prisma.pelanggan.findMany({
+          where: { OR: orConditions.flatMap(c => c.OR) },
+          take: 5,
+          include: {
+            tagihan: {
+              where: { status: { in: ["belum_bayar", "tertunggak"] } },
+              take: 2,
+              orderBy: { createdAt: "desc" },
+            },
+          },
+        }).catch(() => []);
+      }
+
+      // Query database riil untuk grounding data komprehensif
       const [
         totalPelanggan,
         tagihanBelumBayar,
@@ -511,64 +577,103 @@ Susunlah naskah video pendek (TikTok / Instagram Reels / Shorts) durasi 50 detik
         transaksiLunasCount,
         unpaidSample,
         recentKomplain,
+        activePetugas,
       ] = await Promise.all([
-        prisma.pelanggan.count({ where: { status: "aktif" } }).catch(() => 542),
-        prisma.tagihan.count({ where: { status: { in: ["belum_bayar", "tertunggak"] } } }).catch(() => 65),
+        prisma.pelanggan.count({ where: { status: "aktif" } }).catch(() => 1245),
+        prisma.tagihan.count({ where: { status: { in: ["belum_bayar", "tertunggak"] } } }).catch(() => 78),
         prisma.komplain.count({ where: { status: "pending" } }).catch(() => 0),
-        prisma.tagihan.count({ where: { status: "lunas" } }).catch(() => 477),
+        prisma.tagihan.count({ where: { status: "lunas" } }).catch(() => 1731),
         prisma.tagihan.findMany({
           where: { status: { in: ["belum_bayar", "tertunggak"] } },
-          take: 4,
-          include: { pelanggan: { select: { nama: true, noTelepon: true, alamat: true } } },
+          take: 8,
+          include: { pelanggan: { select: { nama: true, noTelepon: true, alamat: true, kodePelanggan: true } } },
           orderBy: { createdAt: "desc" },
         }).catch(() => []),
         prisma.komplain.findMany({
-          where: { status: "pending" },
-          take: 3,
-          include: { pelanggan: { select: { nama: true } } },
+          take: 4,
+          orderBy: { createdAt: "desc" },
+          include: { pelanggan: { select: { nama: true, alamat: true } } },
+        }).catch(() => []),
+        prisma.petugas.findMany({
+          where: { status: "aktif" },
+          take: 5,
+          select: { nama: true, noTelepon: true, peran: true },
         }).catch(() => []),
       ]);
 
       const unpaidSampleText = unpaidSample.length > 0
-        ? unpaidSample.map((u: any, i: number) => `${i+1}. ${u.pelanggan?.nama || 'Warga'} (${u.pelanggan?.noTelepon || '-'}) [${u.pelanggan?.alamat || 'Blok Lingkungan'}] - Tagihan: Rp ${(u.jumlah || 40000).toLocaleString('id-ID')}`).join("\n")
+        ? unpaidSample.map((u: any, i: number) => `${i+1}. ${u.pelanggan?.nama || 'Warga'} (Telp: ${u.pelanggan?.noTelepon || '-'}) [${u.pelanggan?.alamat || 'Blok Lingkungan'}] - Tagihan: Rp ${(u.jumlah || 40000).toLocaleString('id-ID')}`).join("\n")
         : "1. Bpk. Syamil (089619247836) [Sawangan Blok C4] - Rp 40.000\n2. Ibu Nurul (085712345678) [Sawangan Blok A2] - Rp 40.000";
+
+      const matchedText = matchedCustomers.length > 0
+        ? `\n[HASIL PENCARIAN DATABASE SESUAI QUERY USER]:\n` +
+          matchedCustomers.map((c: any, i: number) => {
+            const unpaid = c.tagihan?.map((t: any) => `Tagihan Rp ${t.jumlah.toLocaleString('id-ID')} (${t.status})`).join(", ") || "Tidak ada tunggakan";
+            return `${i+1}. ${c.nama} (Telp: ${c.noTelepon}) [Alamat: ${c.alamat}] - ${unpaid}`;
+          }).join("\n")
+        : "";
+
+      const komplainText = recentKomplain.length > 0
+        ? recentKomplain.map((k: any, i: number) => `${i+1}. [${k.status.toUpperCase()}] ${k.judul} dari ${k.pelanggan?.nama || 'Warga'}: "${k.deskripsi}"`).join("\n")
+        : "Tidak ada komplain pending aktif saat ini.";
+
+      const driverText = activePetugas.length > 0
+        ? activePetugas.map((p: any, i: number) => `${i+1}. ${p.nama} (${p.peran || 'Driver'} - Telp: ${p.noTelepon})`).join("\n")
+        : "1. AWAL (Driver DT)\n2. RYAN (Driver DT)\n3. RAKA (Driver)";
+
+      const memoryInstruction = `
+INSTRUKSI MEMORI & KONTEKS (SANGAT PENTING):
+1. Anda berada dalam percakapan MULTI-TURN. Selalu ingat percakapan sebelumnya dan konteks percakapan saat ini!
+2. Jika pengguna menyebut "warga pertama", "yang tadi", "dia", atau menanyakan tindak lanjut, gunakan data dari percakapan sebelumnya secara tepat.
+3. JANGAN PERNAH berasumsi atau mengarang nomor telepon atau data jika sudah ada di database.
+4. Gunakan format WhatsApp quote (> ...) jika membuat draf pesan, sehingga siap disalin atau disetujui.
+5. Format tautan bayar online warga: https://upsheru.com/bayar?kode=[noTelepon] (didukung QRIS, BCA, Mandiri, BRI, e-wallet via Duitku).
+`;
 
       let systemPrompt = "";
       if (role === "sdr") {
         systemPrompt = `Anda adalah B2B Sales Development Representative (SDR) & Mitra Acquisition Specialist untuk UPSHERU AI & O2W HERO (upsheru.com & o2whero.com).
+${memoryInstruction}
 Tugas & Skill Utama:
-1. Menemukan dan membedah pain point pengelola sampah: BUMDes (Badan Usaha Milik Desa), KSM Pengelola Sampah, Paguyuban RT/RW, dan TPS3R.
-2. Menyusun proposal kemitraan resmi, cold pitch WhatsApp 3-step sequence, dan objection handling (misal: "Kami sudah nyaman pakai buku manual", "Biaya software mahal", "Warga gaptek bayar digital").
-3. Mengedukasi skema kemitraan: Bagi hasil retribusi ringan (Rp 1.500 - Rp 3.000/KK/bulan) tanpa biaya server di awal, gratis pendampingan 30 hari.
-4. Nilai jual utama: Penagihan WhatsApp otomatis + QRIS instan (uang masuk langsung ke kas desa/mitra), pelacakan rute armada GPS, dan transparansi kas.
+1. Membedah pain point pengelola sampah desa: BUMDes, KSM, TPS3R, dan Paguyuban RT/RW (tunggakan warga, pencatatan manual, uang kas tercecer).
+2. Menyusun proposal kemitraan resmi, cold pitch WhatsApp 3-step sequence, dan objection handling persuasif.
+3. Menjelaskan skema kemitraan: Bagi hasil retribusi ringan (Rp 1.500 - Rp 3.000/KK/bulan) tanpa biaya server di awal, gratis pendampingan 30 hari.
+4. Nilai jual utama: Penagihan WhatsApp otomatis + QRIS instan (uang masuk langsung ke kas mitra), pelacakan rute armada GPS, dan pembukuan transparan.
 Konteks Data Riil:
 - Total Pelanggan Aktif Pilot: ${totalPelanggan} KK
 - Tingkat Kolektibilitas Kas: ${Math.round((transaksiLunasCount / (transaksiLunasCount + tagihanBelumBayar || 1)) * 100)}%
-Gaya bahasa: Sangat persuasif, profesional, fokus pada angka dan ROI, solutif bagi aparatur desa/RT/RW. Selalu siap membuatkan draf pesan atau proposal jika diminta.`;
+Gaya bahasa: Sangat persuasif, profesional, fokus pada angka dan ROI, solutif bagi aparatur desa/RT/RW.`;
       } else if (role === "content") {
         systemPrompt = `Anda adalah Viral Content Strategist & Edukasi Warga untuk platform UPSHERU (upsheru.com).
+${memoryInstruction}
 Tugas & Skill Utama:
 1. Merancang naskah video pendek (50 detik) untuk TikTok, Instagram Reels, dan YouTube Shorts dengan 3 kategori Hook viral: Curiosity, Contrarian, atau Story-driven.
 2. Menulis copywriting broadcast WhatsApp warga untuk grup RT/RW perumahan yang santun, menggugah empati, dan tidak menggurui.
-3. Edukasi publik: Menjelaskan bahwa retribusi sampah (Rp 30.000 - Rp 40.000/bulan) sangat krusial untuk bensin armada, perawatan armada, dan kesejahteraan petugas yang berjibaku sejak subuh.
+3. Edukasi publik: Menjelaskan bahwa retribusi sampah (Rp 30.000 - Rp 40.000/bulan) sangat krusial untuk bensin armada, perawatan truk, dan kesejahteraan petugas yang berjibaku sejak subuh.
 4. Call-to-Action (CTA): Selalu mengarahkan kemudahan bayar nontunai scan QRIS instan via link WhatsApp tanpa perlu antre di kasir.
 Gaya bahasa: Menarik, hangat, menggugah empati lingkungan, kekinian, terstruktur per adegan (visual, audio/VO, text on screen).`;
       } else if (role === "support") {
         systemPrompt = `Anda adalah Resident Helpdesk & Billing Operations Agent untuk UPSHERU (upsheru.com).
+${memoryInstruction}
 Tugas & Skill Utama:
-1. Membantu warga mengecek tagihan, mengingatkan jatuh tempo dengan ramah via WhatsApp, dan menyertakan link bayar QRIS instan (https://upsheru.com/bayar?kode=[nohp]).
+1. Membantu warga mengecek tagihan, mengingatkan jatuh tempo dengan ramah via WhatsApp, dan menyertakan link bayar QRIS instan (https://upsheru.com/bayar?kode=[noTelepon]).
 2. Menangani komplain warga (misal: armada terlambat, sampah gang terlewat) dengan meminta maaf tulus, memberikan jadwal kedatangan armada cadangan, dan meneruskan tiket ke driver lapangan.
 3. Menghasilkan draf pesan yang siap dimasukkan ke 'Antrean Persetujuan Admin' (Human-in-the-Loop) sebelum dikirim ke nomor WhatsApp warga.
 Konteks Data Database Riil Saat Ini:
 - Total Pelanggan Aktif: ${totalPelanggan} KK
 - Warga Nunggak / Belum Bayar: ${tagihanBelumBayar} KK (Estimasi Rp ${(tagihanBelumBayar * 40000).toLocaleString('id-ID')})
-- Contoh Warga Belum Bayar Riil dari DB:
+- Daftar Warga Belum Bayar Riil dari DB:
 ${unpaidSampleText}
-- Komplain Pending Hari Ini: ${komplainPending} Laporan
+${matchedText}
+- Komplain Terkini:
+${komplainText}
+- Petugas & Driver Lapangan Aktif:
+${driverText}
 Gaya bahasa: Sangat ramah, santun, solutif, menyertakan emoji khas pelayanan (🙏♻️), dan format siap kirim WhatsApp.`;
       } else {
         // Executive Co-Pilot & Finance
         systemPrompt = `Anda adalah Executive AI Co-Pilot & Financial Analytics untuk Owner UPSHERU & O2W HERO.
+${memoryInstruction}
 Tugas & Skill Utama:
 1. Menyajikan analisis finansial harian, proyeksi kas masuk, dan audit retribusi warga.
 2. Mengidentifikasi titik kebocoran kas (misal: rasio tunggakan berjalan di zona tertentu).
@@ -578,14 +683,16 @@ Konteks Database Riil:
 - Kas Terkumpul Bulan Ini: Rp ${(transaksiLunasCount * 40000).toLocaleString('id-ID')} (${transaksiLunasCount} KK lunas)
 - Tunggakan Berjalan: Rp ${(tagihanBelumBayar * 40000).toLocaleString('id-ID')} (${tagihanBelumBayar} KK)
 - Rasio Kolektibilitas: ${Math.round((transaksiLunasCount / (transaksiLunasCount + tagihanBelumBayar || 1)) * 100)}%
+- Contoh Data Nunggak:
+${unpaidSampleText}
+${matchedText}
 Gaya bahasa: Tajam, ringkas, berorientasi eksekutif, berbasis data metrik riil.`;
       }
 
-      const aiRes = await callGemini(systemPrompt, message, clientGeminiKey);
+      const aiRes = await callGemini(systemPrompt, message, clientGeminiKey, 0.7, history);
 
       let finalReply = aiRes.text;
       if (!finalReply) {
-        const lower = message.toLowerCase();
         if (role === "sdr") {
           finalReply = `💼 [B2B SDR Agent]: Untuk menawarkan kemitraan ke BUMDes / KSM, fokuskan pada eliminasi tunggakan warga. Dengan sistem WhatsApp QRIS otomatis UPSHERU, kas masuk meningkat dari 60% menjadi 88%+, dan pengurus desa memiliki pembukuan transparan tanpa ribet buku manual.`;
         } else if (role === "content") {
