@@ -74,8 +74,16 @@ async function callGemini(
     return { text: "", source: "fallback" };
   }
 
-  const preferredModel = process.env.GEMINI_MODEL?.trim() || "gemini-1.5-flash";
-  const modelsToTry = [preferredModel, "gemini-1.5-flash", "gemini-2.0-flash", "gemini-1.5-pro"];
+  const preferredModel = process.env.GEMINI_MODEL?.trim() || "gemini-flash-lite-latest";
+  const modelsToTry = [
+    preferredModel,
+    "gemini-flash-lite-latest",
+    "gemini-3.8-flash",
+    "gemini-flash-latest",
+    "gemini-2.5-flash-lite",
+    "gemini-2.5-flash",
+    "gemini-1.5-flash",
+  ];
   const uniqueModels = Array.from(new Set(modelsToTry));
 
   let lastError = "";
@@ -163,7 +171,7 @@ export async function GET(req: NextRequest) {
       success: true,
       stats,
       hasGeminiKey: hasEnvGeminiKey,
-      geminiModel: process.env.GEMINI_MODEL || "gemini-1.5-flash",
+      geminiModel: process.env.GEMINI_MODEL || "gemini-flash-lite-latest",
       approvalQueue: mockApprovalQueue,
       guardrails: {
         mode: "HUMAN_IN_THE_LOOP",
@@ -274,12 +282,12 @@ export async function POST(req: NextRequest) {
 
       // Update in-memory
       process.env.GEMINI_API_KEY = cleanKey;
-      process.env.GEMINI_MODEL = "gemini-1.5-flash";
+      process.env.GEMINI_MODEL = "gemini-flash-lite-latest";
 
       // 1. Simpan permanen ke PostgreSQL DB (Pengaturan) agar otomatis aktif bagi semua login
       try {
         await setPengaturan("GEMINI_API_KEY", cleanKey);
-        await setPengaturan("GEMINI_MODEL", "gemini-1.5-flash");
+        await setPengaturan("GEMINI_MODEL", "gemini-flash-lite-latest");
       } catch (e) {
         console.warn("[Save Pengaturan DB warning]", e);
       }
@@ -292,10 +300,10 @@ export async function POST(req: NextRequest) {
           if (envContent.includes("GEMINI_API_KEY=")) {
             envContent = envContent.replace(/GEMINI_API_KEY=.*/g, `GEMINI_API_KEY="${cleanKey}"`);
           } else {
-            envContent += `\nGEMINI_API_KEY="${cleanKey}"\nGEMINI_MODEL="gemini-1.5-flash"\n`;
+            envContent += `\nGEMINI_API_KEY="${cleanKey}"\nGEMINI_MODEL="gemini-flash-lite-latest"\n`;
           }
           if (envContent.includes("GEMINI_MODEL=")) {
-            envContent = envContent.replace(/GEMINI_MODEL=.*/g, `GEMINI_MODEL="gemini-1.5-flash"`);
+            envContent = envContent.replace(/GEMINI_MODEL=.*/g, `GEMINI_MODEL="gemini-flash-lite-latest"`);
           }
           fs.writeFileSync(envPath, envContent, "utf-8");
         }
