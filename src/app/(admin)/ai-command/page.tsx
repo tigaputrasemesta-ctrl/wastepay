@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Bot,
   Sparkles,
@@ -66,6 +66,8 @@ export default function AiCommandHubPage() {
   const [engineSource, setEngineSource] = useState<"gemini_live" | "fallback">("fallback");
 
   const [chatInput, setChatInput] = useState("");
+  const [isChatting, setIsChatting] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
   const [chatMessages, setChatMessages] = useState<
     Array<{ sender: "owner" | "ai"; text: string; time: string }>
   >([
@@ -75,6 +77,10 @@ export default function AiCommandHubPage() {
       time: "Baru saja",
     },
   ]);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages, isChatting]);
 
   const [activeOutputTitle, setActiveOutputTitle] = useState("Laporan Eksekutif Harian");
   const [activeOutputContent, setActiveOutputContent] = useState<string>("");
@@ -268,13 +274,14 @@ export default function AiCommandHubPage() {
 
   const handleSendChat = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (!chatInput.trim()) return;
+    if (!chatInput.trim() || isChatting) return;
 
     const userMsg = chatInput.trim();
     const timeNow = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
 
     setChatMessages((prev) => [...prev, { sender: "owner", text: userMsg, time: timeNow }]);
     setChatInput("");
+    setIsChatting(true);
 
     try {
       const res = await fetch("/api/ai-command", {
@@ -286,17 +293,34 @@ export default function AiCommandHubPage() {
         }),
       });
       const data = await res.json();
-      if (data.success) {
+      if (data.success && data.result) {
         setChatMessages((prev) => [
           ...prev,
           { sender: "ai", text: data.result, time: timeNow },
         ]);
+      } else {
+        setChatMessages((prev) => [
+          ...prev,
+          {
+            sender: "ai",
+            text: data.error
+              ? `⚠️ Sistem: ${data.error}`
+              : "Instruksi diterima, namun terjadi kendala respon dari server.",
+            time: timeNow,
+          },
+        ]);
       }
-    } catch (err) {
+    } catch (err: any) {
       setChatMessages((prev) => [
         ...prev,
-        { sender: "ai", text: "Maaf, terjadi kendala saat memproses instruksi.", time: timeNow },
+        {
+          sender: "ai",
+          text: `⚠️ Kendala jaringan: ${err.message || "Gagal menghubungi server"}`,
+          time: timeNow,
+        },
       ]);
+    } finally {
+      setIsChatting(false);
     }
   };
 
@@ -686,6 +710,18 @@ export default function AiCommandHubPage() {
                 <span className="text-[10px] text-gray-400 mt-1 px-1">{msg.time}</span>
               </div>
             ))}
+
+            {isChatting && (
+              <div className="flex flex-col items-start">
+                <div className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-2xl rounded-bl-none p-3 text-xs flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce"></span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce [animation-delay:0.2s]"></span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce [animation-delay:0.4s]"></span>
+                  <span className="text-[11px] text-gray-500 italic">AI Agent sedang memproses & menyusun respon...</span>
+                </div>
+              </div>
+            )}
+            <div ref={chatEndRef} />
           </div>
 
           <form onSubmit={handleSendChat} className="p-3 border-t border-gray-200 dark:border-gray-800 flex gap-2">
@@ -693,12 +729,14 @@ export default function AiCommandHubPage() {
               type="text"
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
-              placeholder="Ketik instruksi ke AI Agent..."
-              className="flex-1 text-xs px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              disabled={isChatting}
+              placeholder={isChatting ? "AI sedang mengetik..." : "Ketik instruksi ke AI Agent..."}
+              className="flex-1 text-xs px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
             />
             <button
               type="submit"
-              className="p-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition"
+              disabled={isChatting || !chatInput.trim()}
+              className="p-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition disabled:opacity-50"
             >
               <Send className="w-4 h-4" />
             </button>

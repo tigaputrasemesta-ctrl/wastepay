@@ -21,6 +21,7 @@ import {
 // Page access by minimum role level
 const PAGE_ROLES: Record<string, number> = {
   "/dashboard": 20, // kasir+
+  "/ai-command": 20, // kasir+ & admin: AI Command Hub & Approval Queue
   "/registrasi": 50, // admin+
   "/survei": 10, // petugas survei (calon → aktif + foto/geo tag)
   "/kendaraan": 50, // admin: kendaraan & titik transit
@@ -71,6 +72,10 @@ const PAGE_ROLES: Record<string, number> = {
 // Key yang diakhiri "/" berlaku untuk semua sub-path (mis. /api/pelanggan/5).
 // Route yang tidak terdaftar di sini akan ditolak (fail-closed).
 const API_ROLE_MAP: Record<string, number> = {
+  // AI Command Hub & Approval Gate (Kasir+ & Admin)
+  "GET:/api/ai-command": 20,
+  "POST:/api/ai-command": 20,
+
   // Auth & public (diizinkan di proxy, dicek di handler masing-masing)
   // /api/auth/* dan /api/publik/* — lihat whitelist di bawah
 
@@ -599,6 +604,7 @@ export async function proxy(request: NextRequest) {
         pathname.startsWith("/api/users") ||
         pathname.startsWith("/api/audit-log") ||
         pathname.startsWith("/api/notifikasi/summary") ||
+        pathname.startsWith("/api/ai-command") ||
         pathname === "/api/pelanggan" ||
         pathname === "/api/tagihan";
 
@@ -686,6 +692,8 @@ export async function proxy(request: NextRequest) {
       pathname === "/login" ||
       pathname === "/dashboard" ||
       pathname.startsWith("/dashboard/") ||
+      pathname === "/ai-command" ||
+      pathname.startsWith("/ai-command/") ||
       pathname === "/tenants" ||
       pathname.startsWith("/tenants/") ||
       pathname === "/ecosystem-map" ||
