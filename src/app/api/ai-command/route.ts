@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import fs from "fs";
+import path from "path";
 
 export const dynamic = "force-dynamic";
 
@@ -45,62 +47,71 @@ let mockApprovalQueue = [
 
 /**
  * Helper untuk memanggil Google Gemini Generative Language API secara langsung
+ * dengan multi-model fallback (gemini-1.5-flash, gemini-2.0-flash, gemini-1.5-pro)
  */
 async function callGemini(
   systemPrompt: string,
   userPrompt: string,
   apiKeyOverride?: string | null,
   temperature = 0.7
-): Promise<{ text: string; source: "gemini_live" | "fallback" }> {
+): Promise<{ text: string; source: "gemini_live" | "fallback"; errorDetail?: string }> {
   const apiKey = (apiKeyOverride || process.env.GEMINI_API_KEY || "").trim();
   if (!apiKey) {
     return { text: "", source: "fallback" };
   }
 
-  const model = process.env.GEMINI_MODEL?.trim() || "gemini-2.5-flash";
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const preferredModel = process.env.GEMINI_MODEL?.trim() || "gemini-1.5-flash";
+  const modelsToTry = [preferredModel, "gemini-1.5-flash", "gemini-2.0-flash", "gemini-1.5-pro"];
+  const uniqueModels = Array.from(new Set(modelsToTry));
 
-  const payload = {
-    system_instruction: {
-      parts: [{ text: systemPrompt }],
-    },
-    contents: [
-      {
-        parts: [{ text: userPrompt }],
+  let lastError = "";
+
+  for (const model of uniqueModels) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    const payload = {
+      system_instruction: {
+        parts: [{ text: systemPrompt }],
       },
-    ],
-    generationConfig: {
-      temperature,
-      maxOutputTokens: 2048,
-    },
-  };
+      contents: [
+        {
+          parts: [{ text: userPrompt }],
+        },
+      ],
+      generationConfig: {
+        temperature,
+        maxOutputTokens: 2048,
+      },
+    };
 
-  try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    if (res.ok) {
-      const data = await res.json();
-      const generated = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (generated && generated.trim().length > 0) {
-        return { text: generated.trim(), source: "gemini_live" };
+      if (res.ok) {
+        const data = await res.json();
+        const generated = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (generated && generated.trim().length > 0) {
+          return { text: generated.trim(), source: "gemini_live" };
+        }
+      } else {
+        const errJson = await res.json().catch(() => ({}));
+        lastError = errJson.error?.message || `HTTP ${res.status}`;
+        console.warn(`[Gemini API ${model}]`, res.status, lastError);
       }
-    } else {
-      console.warn("[Gemini API Status]", res.status, await res.text());
+    } catch (err: any) {
+      lastError = err.message;
+      console.warn(`[Gemini Fetch Error ${model}]`, err);
     }
-  } catch (err) {
-    console.warn("[Gemini Fetch Error]", err);
   }
 
-  return { text: "", source: "fallback" };
+  return { text: "", source: "fallback", errorDetail: lastError };
 }
 
 export async function GET(req: NextRequest) {
   try {
-    // Cek ketersediaan API key
     const hasEnvGeminiKey = Boolean(
       process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.trim().length > 5
     );
@@ -134,7 +145,7 @@ export async function GET(req: NextRequest) {
       success: true,
       stats,
       hasGeminiKey: hasEnvGeminiKey,
-      geminiModel: process.env.GEMINI_MODEL || "gemini-2.5-flash",
+      geminiModel: process.env.GEMINI_MODEL || "gemini-1.5-flash",
       approvalQueue: mockApprovalQueue,
       guardrails: {
         mode: "HUMAN_IN_THE_LOOP",
@@ -236,11 +247,49 @@ export async function POST(req: NextRequest) {
 
     // ACTION: SAVE / TEST GEMINI API KEY
     if (action === "save_gemini_key") {
-      const { key } = payload;
+      const { key, skipTest } = payload;
+      const cleanKey = (key || "").trim();
+
+      if (!cleanKey) {
+        return NextResponse.json({ success: false, error: "API Key tidak boleh kosong" }, { status: 400 });
+      }
+
+      // Update in-memory
+      process.env.GEMINI_API_KEY = cleanKey;
+      process.env.GEMINI_MODEL = "gemini-1.5-flash";
+
+      // Persist to .env file on disk if accessible
+      try {
+        const envPath = path.join(process.cwd(), ".env");
+        if (fs.existsSync(envPath)) {
+          let envContent = fs.readFileSync(envPath, "utf-8");
+          if (envContent.includes("GEMINI_API_KEY=")) {
+            envContent = envContent.replace(/GEMINI_API_KEY=.*/g, `GEMINI_API_KEY="${cleanKey}"`);
+          } else {
+            envContent += `\nGEMINI_API_KEY="${cleanKey}"\nGEMINI_MODEL="gemini-1.5-flash"\n`;
+          }
+          if (envContent.includes("GEMINI_MODEL=")) {
+            envContent = envContent.replace(/GEMINI_MODEL=.*/g, `GEMINI_MODEL="gemini-1.5-flash"`);
+          }
+          fs.writeFileSync(envPath, envContent, "utf-8");
+        }
+      } catch (e) {
+        console.warn("[Save .env disk warning]", e);
+      }
+
+      // Jika skipTest aktif, langsung return sukses
+      if (skipTest) {
+        return NextResponse.json({
+          success: true,
+          message: "API Key Google Gemini berhasil disimpan di sistem!",
+        });
+      }
+
+      // Jika user meminta uji koneksi
       const testResult = await callGemini(
-        "Anda adalah asisten verifikasi.",
-        "Ketik 'KONEKSI_GEMINI_BERHASIL' untuk menguji kredensial.",
-        key
+        "Anda asisten verifikasi.",
+        "Jawab 'OK' jika terhubung.",
+        cleanKey
       );
 
       if (testResult.source === "gemini_live") {
@@ -251,8 +300,8 @@ export async function POST(req: NextRequest) {
         });
       } else {
         return NextResponse.json({
-          success: false,
-          error: "API Key tidak dapat memanggil Google Gemini. Pastikan API key aktif di Google AI Studio.",
+          success: true,
+          warning: `API Key tersimpan, namun Google mengembalikan catatan: ${testResult.errorDetail || "Belum ada respon"}. Kunci tetap tersimpan untuk digunakan.`,
         });
       }
     }

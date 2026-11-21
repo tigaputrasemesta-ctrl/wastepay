@@ -25,7 +25,8 @@ import {
   Lock,
   Key,
   ArrowRight,
-  Zap
+  Zap,
+  Save
 } from "lucide-react";
 
 interface Stats {
@@ -122,26 +123,62 @@ export default function AiCommandHubPage() {
     }
   };
 
+  // Simpan Langsung (Instan tanpa tes koneksi)
+  const handleSaveDirect = async () => {
+    const key = keyInput.trim();
+    if (!key) return;
+
+    setClientGeminiKey(key);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("upsheru_gemini_key", key);
+    }
+
+    try {
+      await fetch("/api/ai-command", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "save_gemini_key", payload: { key, skipTest: true } }),
+      });
+    } catch (e) {
+      console.warn("Server save error:", e);
+    }
+
+    setNotification("✅ API Key Google Gemini berhasil disimpan di sistem!");
+    setShowKeyModal(false);
+    fetchData();
+  };
+
+  // Simpan dan Uji Koneksi Live
   const handleSaveAndTestKey = async () => {
+    const key = keyInput.trim();
+    if (!key) return;
+
     setTestingKey(true);
+    setClientGeminiKey(key);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("upsheru_gemini_key", key);
+    }
+
     try {
       const res = await fetch("/api/ai-command", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "save_gemini_key", payload: { key: keyInput.trim() } }),
+        body: JSON.stringify({ action: "save_gemini_key", payload: { key, skipTest: false } }),
       });
       const data = await res.json();
       if (data.success) {
-        setClientGeminiKey(keyInput.trim());
-        localStorage.setItem("upsheru_gemini_key", keyInput.trim());
-        setNotification("✅ API Key Google Gemini berhasil terhubung secara live!");
+        if (data.warning) {
+          setNotification("⚠️ " + data.warning);
+        } else {
+          setNotification("✅ API Key Google Gemini valid dan berhasil terhubung secara live!");
+        }
         setShowKeyModal(false);
         fetchData();
       } else {
         setNotification("❌ " + (data.error || "Gagal menghubungkan API Key"));
       }
     } catch (e: any) {
-      setNotification("Error: " + e.message);
+      setNotification("Catatan: " + e.message);
     } finally {
       setTestingKey(false);
     }
@@ -378,7 +415,7 @@ export default function AiCommandHubPage() {
               >
                 aistudio.google.com
               </a>
-              . Kunci ini akan disimpan aman di browser Anda untuk menjalankan model live Gemini 2.5 Flash.
+              . Kunci ini akan disimpan aman di sistem Anda untuk menjalankan model live Gemini 1.5 Flash.
             </p>
 
             <div className="space-y-1.5">
@@ -386,28 +423,36 @@ export default function AiCommandHubPage() {
                 Google Gemini API Key:
               </label>
               <input
-                type="password"
+                type="text"
                 value={keyInput}
                 onChange={(e) => setKeyInput(e.target.value)}
-                placeholder="AIzaSy..."
+                placeholder="Tempel API Key di sini (AIzaSy...)"
                 className="w-full text-xs px-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white font-mono focus:ring-2 focus:ring-emerald-500"
               />
             </div>
 
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="flex flex-wrap items-center justify-end gap-2 pt-2">
               <button
                 onClick={() => setShowKeyModal(false)}
-                className="px-3.5 py-1.5 text-xs rounded-xl border border-gray-300 text-gray-600 hover:bg-gray-50"
+                className="px-3 py-1.5 text-xs rounded-xl border border-gray-300 text-gray-600 hover:bg-gray-50"
               >
                 Batal
+              </button>
+              <button
+                onClick={handleSaveDirect}
+                disabled={!keyInput.trim()}
+                className="px-3.5 py-1.5 text-xs rounded-xl bg-gray-800 hover:bg-gray-900 text-white font-semibold flex items-center gap-1.5 transition"
+              >
+                <Save className="w-3.5 h-3.5" />
+                Simpan Langsung
               </button>
               <button
                 onClick={handleSaveAndTestKey}
                 disabled={testingKey || !keyInput.trim()}
                 className="px-4 py-1.5 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex items-center gap-1.5 transition"
               >
-                {testingKey ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
-                {testingKey ? "Menguji Koneksi..." : "Simpan & Hubungkan"}
+                {testingKey ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
+                {testingKey ? "Menguji..." : "Simpan & Uji Live"}
               </button>
             </div>
           </div>
@@ -615,7 +660,7 @@ export default function AiCommandHubPage() {
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-[10px] text-gray-400 font-mono">
-                {isGeminiConnected ? "Gemini 2.5 Flash" : "Fallback Engine"}
+                {isGeminiConnected ? "Gemini 1.5 Flash" : "Fallback Engine"}
               </span>
               <span className={`inline-block w-2 h-2 rounded-full ${isGeminiConnected ? "bg-emerald-500 animate-pulse" : "bg-amber-400"}`}></span>
             </div>
