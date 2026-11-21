@@ -595,9 +595,9 @@ Susunlah naskah video pendek (TikTok / Instagram Reels / Shorts) durasi 50 detik
           include: { pelanggan: { select: { nama: true, alamat: true } } },
         }).catch(() => []),
         prisma.petugas.findMany({
-          where: { status: "aktif" },
+          where: { aktif: true },
           take: 5,
-          select: { nama: true, noTelepon: true, peran: true },
+          select: { nama: true, noTelepon: true, jabatan: true },
         }).catch(() => []),
       ]);
 
@@ -618,7 +618,7 @@ Susunlah naskah video pendek (TikTok / Instagram Reels / Shorts) durasi 50 detik
         : "Tidak ada komplain pending aktif saat ini.";
 
       const driverText = activePetugas.length > 0
-        ? activePetugas.map((p: any, i: number) => `${i+1}. ${p.nama} (${p.peran || 'Driver'} - Telp: ${p.noTelepon})`).join("\n")
+        ? activePetugas.map((p: any, i: number) => `${i+1}. ${p.nama} (${p.jabatan || 'Driver'} - Telp: ${p.noTelepon})`).join("\n")
         : "1. AWAL (Driver DT)\n2. RYAN (Driver DT)\n3. RAKA (Driver)";
 
       const memoryInstruction = `
