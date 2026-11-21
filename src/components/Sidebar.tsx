@@ -54,6 +54,7 @@ import {
   Activity,
   Leaf,
   Sliders,
+  Bot,
 } from "lucide-react";
 
 type User = {
@@ -71,6 +72,7 @@ type MenuItemDef = {
 
 const menuConfig: Record<string, MenuItemDef> = {
   dashboard: { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  "ai-command": { label: "AI Agent Hub", href: "/ai-command", icon: Bot },
   daftar: { label: "Daftar Baru", href: "/registrasi", icon: UserPlus },
   survei: { label: "Survei Lapangan", href: "/survei", icon: ClipboardCheck },
   pelanggan: { label: "Pusat Pelanggan", href: "/pelanggan", icon: Users },
@@ -117,7 +119,7 @@ const menuConfig: Record<string, MenuItemDef> = {
 // Pengelompokan 5 grup menu ergonomis dan rapi
 const MENU_GROUP: Record<string, string> = {
   dashboard: "utama",
-
+  "ai-command": "utama",
   // Operasional Lapangan & Armada
   peta: "operasional",
   pengangkutan: "operasional",
@@ -216,6 +218,7 @@ export default function Sidebar({
   
   const CORE_ALLOWED_KEYS = [
     "dashboard",
+    "ai-command",
     "ecosystem-map",
     "notifikasi-saas",
     "tenants",

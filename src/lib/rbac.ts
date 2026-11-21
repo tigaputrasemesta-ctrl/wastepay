@@ -66,6 +66,7 @@ export function getAllowedMenus(role: string): string[] {
     "data-kontrol",
     "pickup-insidental",
     "manajemen-marketplace",
+    "ai-command",
   ];
 
   if (role === "superadmin")

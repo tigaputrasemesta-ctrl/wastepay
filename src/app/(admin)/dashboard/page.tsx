@@ -30,7 +30,8 @@ import {
   ArrowRight,
   TrendingUp,
   Download,
-  Plus
+  Plus,
+  Bot
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -700,6 +701,33 @@ export default async function DashboardPage() {
             <span>Unduh Laporan</span>
           </Link>
         </div>
+      </div>
+
+      {/* AI Agent Engine Banner Card */}
+      <div className="bg-gradient-to-r from-emerald-950/40 via-slate-900/60 to-zinc-900 border border-emerald-500/30 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+        <div className="flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 flex-shrink-0">
+            <Bot size={22} />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-bold text-white">UPSHERU AI Agent Engine & Approval Gate</h3>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                Human-in-the-Loop Active
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Otomasi pelaporan harian eksekutif, draf penawaran kemitraan BUMDes/KSM, dan moderasi chat pengaduan warga sebelum dikirim ke WhatsApp.
+            </p>
+          </div>
+        </div>
+        <Link
+          href="/ai-command"
+          className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-2 transition shadow-sm whitespace-nowrap self-stretch sm:self-auto justify-center"
+        >
+          <span>Buka AI Hub & Review Draf</span>
+          <ArrowRight size={14} />
+        </Link>
       </div>
 
       {/* Stat Cards Grid (2 rows x 4 cols) */}
