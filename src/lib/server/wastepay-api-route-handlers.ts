@@ -394,6 +394,7 @@ export async function handlePublicSearchPayment(request: Request): Promise<NextR
           status: true,
           createdAt: true,
           catatan: true,
+          duitkuTransaction: { select: { orderId: true } },
         },
       },
     },
@@ -407,6 +408,9 @@ export async function handlePublicSearchPayment(request: Request): Promise<NextR
     );
     const activeGateway = t.pembayaran.find(
       (p) => p.status === 'pending' && p.metode === 'duitku'
+    );
+    const lastGatewayPayment = t.pembayaran.find(
+      (p) => p.metode === 'duitku' && p.duitkuTransaction?.orderId
     );
     return {
       id: t.id,
@@ -431,8 +435,10 @@ export async function handlePublicSearchPayment(request: Request): Promise<NextR
             id: activeGateway.id,
             metode: activeGateway.metode,
             createdAt: activeGateway.createdAt.toISOString(),
+            orderId: activeGateway.duitkuTransaction?.orderId || null,
           }
         : null,
+      lastGatewayOrderId: lastGatewayPayment?.duitkuTransaction?.orderId || null,
     };
   });
 

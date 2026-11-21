@@ -155,9 +155,9 @@ export default function ModalHapusPelanggan({
               Jika warga <strong>berhenti berlangganan</strong>, <strong>pindah rumah</strong>, atau <strong>menolak bayar</strong>, gunakan opsi <strong>Nonaktifkan Saja</strong>.
             </p>
             <p className="leading-relaxed text-slate-700 dark:text-zinc-300">
-              • <strong>Nonaktifkan</strong>: Pengangkutan &amp; tagihan bulanan otomatis berhenti, tapi riwayat kuitansi &amp; pembukuan kas tetap utuh, serta dapat diaktifkan kembali kapan saja.
+              • <strong>Nonaktifkan Saja</strong>: Pengangkutan &amp; penerbitan tagihan bulanan baru otomatis berhenti, namun riwayat data tetap utuh.
               <br />
-              • <strong>Hapus Permanen</strong>: Hanya gunakan untuk data fiktif / duplikat / salah input yang belum pernah bertransaksi.
+              • <strong>Hapus</strong>: Profil warga disembunyikan dan <strong>seluruh tagihan yang belum lunas otomatis dibatalkan</strong>. Tagihan yang sudah lunas tetap disimpan demi rekonsiliasi kas.
             </p>
           </div>
         </div>

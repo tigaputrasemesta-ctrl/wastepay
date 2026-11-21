@@ -20,19 +20,36 @@ export async function GET(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
-  const orderId = searchParams.get("orderId")?.trim();
+  const orderIdParam = searchParams.get("orderId")?.trim();
+  const invoice = searchParams.get("invoice")?.trim();
 
-  if (!orderId) {
-    return NextResponse.json({ error: "orderId wajib diisi" }, { status: 400 });
+  if (!orderIdParam && !invoice) {
+    return NextResponse.json({ error: "orderId atau invoice wajib diisi" }, { status: 400 });
   }
 
-  const dt = await prisma.duitkuTransaction.findUnique({
-    where: { orderId },
-    include: { pembayaran: { include: { tagihan: true } } },
-  });
+  const dt = orderIdParam
+    ? await prisma.duitkuTransaction.findUnique({
+        where: { orderId: orderIdParam },
+        include: { pembayaran: { include: { tagihan: true } } },
+      })
+    : invoice
+    ? await prisma.duitkuTransaction.findFirst({
+        where: {
+          OR: [
+            { orderId: invoice },
+            { pembayaran: { tagihan: { noInvoice: invoice } } },
+          ],
+        },
+        include: { pembayaran: { include: { tagihan: true } } },
+        orderBy: { id: "desc" },
+      })
+    : null;
+
   if (!dt) {
     return NextResponse.json({ error: "Transaksi tidak ditemukan" }, { status: 404 });
   }
+
+  const orderId = dt.orderId;
 
   const st = await getDuitkuTransactionStatus(orderId);
   if (!st) {

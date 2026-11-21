@@ -99,7 +99,7 @@ export async function POST(request: Request) {
   // 3b. Defense-in-depth: jumlah callback harus sama dengan jumlah transaksi tersimpan.
   //     (Signature sudah memastikan callback asli dari Duitku; ini menangkap mismatch konfigurasi.)
   const callbackAmount = Number(amount);
-  if (!Number.isFinite(callbackAmount) || callbackAmount !== dt.amount) {
+  if (!Number.isFinite(callbackAmount) || Math.round(callbackAmount) !== Math.round(dt.amount ?? 0)) {
     return NextResponse.json(
       { status: "error", message: "Jumlah tidak cocok dengan transaksi" },
       { status: 400 }

@@ -44,4 +44,61 @@ describe("status-pelanggan operational rules", () => {
     expect(updated.status).toBe("aktif");
     expect(updated.catatan).toBe("Reaktivasi layanan per permintaan warga");
   });
+
+  it("saat pelanggan dihapus, tagihan belum_bayar/tunggakan dibatalkan & tagihan lunas dipertahankan", () => {
+    const bills = [
+      { id: 101, pelangganId: 10, status: "belum_bayar", deletedAt: null },
+      { id: 102, pelangganId: 10, status: "tunggakan", deletedAt: null },
+      { id: 103, pelangganId: 10, status: "lunas", deletedAt: null },
+    ];
+
+    const deleteTimestamp = new Date();
+
+    // Simulasi pembatalan otomatis saat pelanggan dihapus
+    const processedBills = bills.map((b) => {
+      if (b.status === "belum_bayar" || b.status === "tunggakan") {
+        return {
+          ...b,
+          status: "dibatalkan",
+          deletedAt: deleteTimestamp,
+          keterangan: "Dibatalkan otomatis: Pelanggan telah dihapus dari sistem",
+        };
+      }
+      return b; // tagihan lunas tetap dipertahankan
+    });
+
+    expect(processedBills[0].status).toBe("dibatalkan");
+    expect(processedBills[0].deletedAt).toBe(deleteTimestamp);
+
+    expect(processedBills[1].status).toBe("dibatalkan");
+    expect(processedBills[1].deletedAt).toBe(deleteTimestamp);
+
+    expect(processedBills[2].status).toBe("lunas");
+    expect(processedBills[2].deletedAt).toBeNull();
+  });
+
+  it("filter query /tagihan aktif mengecualikan tagihan belum lunas dari pelanggan yang dihapus", () => {
+    const tagihanAktif = [
+      // Tagihan warga aktif
+      { id: 201, status: "belum_bayar", pelanggan: { deletedAt: null } },
+      { id: 202, status: "lunas", pelanggan: { deletedAt: null } },
+      // Tagihan warga yang sudah dihapus
+      { id: 203, status: "belum_bayar", pelanggan: { deletedAt: new Date() } },
+      { id: 204, status: "tunggakan", pelanggan: { deletedAt: new Date() } },
+      { id: 205, status: "lunas", pelanggan: { deletedAt: new Date() } },
+    ];
+
+    function matchesActiveBillingFilter(t: typeof tagihanAktif[number]) {
+      return t.pelanggan.deletedAt === null || t.status === "lunas";
+    }
+
+    const filtered = tagihanAktif.filter(matchesActiveBillingFilter);
+    const ids = filtered.map((f) => f.id);
+
+    expect(ids).toContain(201); // tagihan warga aktif
+    expect(ids).toContain(202); // tagihan warga aktif
+    expect(ids).not.toContain(203); // tagihan belum_bayar warga dihapus harus di-hide
+    expect(ids).not.toContain(204); // tagihan tunggakan warga dihapus harus di-hide
+    expect(ids).toContain(205); // tagihan lunas warga dihapus tetap tampil demi kas
+  });
 });

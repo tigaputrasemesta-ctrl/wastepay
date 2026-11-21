@@ -30,6 +30,7 @@ import {
   Check,
 } from "lucide-react";
 import { cariRtTerdekat, deteksiZona, formatJarak, jarakMeter, urutkanRute } from "@/lib/geo";
+import { getWarnaBlok } from "@/lib/blok-palette";
 import { KOMPLAIN_LABEL, KOMPLAIN_WARNA } from "@/lib/komplain";
 import type { KendaraanPeta, PetugasPeta, TransitPeta } from "./MapView";
 import type { MapTileType } from "@/lib/map-tile";
@@ -249,6 +250,8 @@ export default function PetaMap({
   const [tampilkanRt, setTampilkanRt] = useState(false); // default off agar titik tidak tumpang tindih
   const [tampilkanCakupan, setTampilkanCakupan] = useState(false);
   const [showHeatmap, setShowHeatmap] = useState(false);
+  const [modeCluster, setModeCluster] = useState<"cluster" | "single">("cluster");
+  const [modeWarnaMarker, setModeWarnaMarker] = useState<"tagihan" | "blok">("tagihan");
   const [invalidateKey, setInvalidateKey] = useState(1);
 
   const resetLayerDefault = useCallback(() => {
@@ -449,6 +452,22 @@ export default function PetaMap({
   const peta = useMemo(() => {
     return daftar.filter((p) => p.latitude != null && p.longitude != null);
   }, [daftar]);
+
+  const activeBlokList = useMemo(() => {
+    const map = new Map<string, { nama: string; warna: string; count: number }>();
+    for (const p of peta) {
+      const rawBlok = (p.wilayah?.nama || p.kategori || "Umum")
+        .replace(/jatimulya/ig, "")
+        .replace(/kec\.?\s*cilodong/ig, "")
+        .replace(/zona\s*[:-]?/ig, "")
+        .replace(/,\s*$/, "")
+        .trim() || "Umum";
+      const cur = map.get(rawBlok) ?? { nama: rawBlok, warna: getWarnaBlok(rawBlok), count: 0 };
+      cur.count++;
+      map.set(rawBlok, cur);
+    }
+    return Array.from(map.values()).sort((a, b) => b.count - a.count);
+  }, [peta]);
 
   const komplainDenganPosisi = useMemo(() => {
     return komplain.map((k) => {
@@ -749,6 +768,78 @@ export default function PetaMap({
             </button>
           </div>
 
+          {/* Mode Pengelompokan: Kelompokkan (Cluster) vs Single Pelanggan */}
+          <div className={`flex items-center p-0.5 rounded-xl border text-[11px] font-semibold ${
+            isDark ? "bg-slate-900 border-slate-800" : "bg-slate-100 border-slate-200"
+          }`}>
+            <button
+              type="button"
+              onClick={() => setModeCluster("cluster")}
+              className={`px-2.5 py-1 rounded-lg transition flex items-center gap-1.5 ${
+                modeCluster === "cluster"
+                  ? isDark
+                    ? "bg-amber-400 text-slate-950 font-black shadow-sm"
+                    : "bg-emerald-600 text-white font-black shadow-sm"
+                  : isDark ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
+              }`}
+              title="Kelompokkan pelanggan yang berdekatan ke dalam cluster angka"
+            >
+              <span>🗂️</span>
+              <span className="hidden sm:inline">Kelompokkan</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setModeCluster("single")}
+              className={`px-2.5 py-1 rounded-lg transition flex items-center gap-1.5 ${
+                modeCluster === "single"
+                  ? isDark
+                    ? "bg-amber-400 text-slate-950 font-black shadow-sm"
+                    : "bg-emerald-600 text-white font-black shadow-sm"
+                  : isDark ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
+              }`}
+              title="Tampilkan setiap rumah warga sebagai titik marker individual (single pin)"
+            >
+              <span>📍</span>
+              <span className="hidden sm:inline">Single Pelanggan</span>
+            </button>
+          </div>
+
+          {/* Mode Pewarnaan: Status Tagihan vs Warna Blok */}
+          <div className={`hidden md:flex items-center p-0.5 rounded-xl border text-[11px] font-semibold ${
+            isDark ? "bg-slate-900 border-slate-800" : "bg-slate-100 border-slate-200"
+          }`}>
+            <button
+              type="button"
+              onClick={() => setModeWarnaMarker("tagihan")}
+              className={`px-2.5 py-1 rounded-lg transition flex items-center gap-1 ${
+                modeWarnaMarker === "tagihan"
+                  ? isDark
+                    ? "bg-amber-400 text-slate-950 font-black shadow-sm"
+                    : "bg-emerald-600 text-white font-black shadow-sm"
+                  : isDark ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
+              }`}
+              title="Warna pin berdasarkan status pembayaran (Lunas/Tunggakan)"
+            >
+              <span>💳</span>
+              <span>Tagihan</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setModeWarnaMarker("blok")}
+              className={`px-2.5 py-1 rounded-lg transition flex items-center gap-1 ${
+                modeWarnaMarker === "blok"
+                  ? isDark
+                    ? "bg-amber-400 text-slate-950 font-black shadow-sm"
+                    : "bg-emerald-600 text-white font-black shadow-sm"
+                  : isDark ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
+              }`}
+              title="Warna pin dibedakan berdasarkan Blok / Wilayah Pickup"
+            >
+              <span>🏷️</span>
+              <span>Warna Blok</span>
+            </button>
+          </div>
+
           {/* GIS Layer Popover Toggle */}
           <div className="relative" ref={layerMenuRef}>
             <button
@@ -800,6 +891,75 @@ export default function PetaMap({
                 </div>
 
                 <div className="space-y-3 max-h-[65vh] overflow-y-auto pr-1">
+                  {/* Mode Sebaran & Pewarnaan Marker Pelanggan */}
+                  <div className={`p-2.5 rounded-xl border space-y-2.5 ${
+                    isDark ? "bg-slate-900/80 border-slate-700/80" : "bg-slate-50 border-slate-200"
+                  }`}>
+                    <div>
+                      <div className={`text-[9.5px] font-black uppercase tracking-wider mb-1.5 ${
+                        isDark ? "text-amber-400" : "text-emerald-700"
+                      }`}>
+                        Mode Sebaran Pelanggan
+                      </div>
+                      <div className="grid grid-cols-2 gap-1.5 text-[11px] font-bold">
+                        <button
+                          type="button"
+                          onClick={() => setModeCluster("cluster")}
+                          className={`py-1.5 px-2 rounded-lg text-center transition flex items-center justify-center gap-1 ${
+                            modeCluster === "cluster"
+                              ? isDark ? "bg-amber-400 text-slate-950 shadow-xs" : "bg-emerald-600 text-white shadow-xs"
+                              : isDark ? "bg-slate-800 text-slate-300 hover:bg-slate-700" : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
+                          }`}
+                        >
+                          <span>🗂️</span> Kelompokkan
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setModeCluster("single")}
+                          className={`py-1.5 px-2 rounded-lg text-center transition flex items-center justify-center gap-1 ${
+                            modeCluster === "single"
+                              ? isDark ? "bg-amber-400 text-slate-950 shadow-xs" : "bg-emerald-600 text-white shadow-xs"
+                              : isDark ? "bg-slate-800 text-slate-300 hover:bg-slate-700" : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
+                          }`}
+                        >
+                          <span>📍</span> Single Pelanggan
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-200/60 dark:border-slate-800">
+                      <div className={`text-[9.5px] font-black uppercase tracking-wider mb-1.5 ${
+                        isDark ? "text-amber-400" : "text-emerald-700"
+                      }`}>
+                        Skema Pewarnaan Marker
+                      </div>
+                      <div className="grid grid-cols-2 gap-1.5 text-[11px] font-bold">
+                        <button
+                          type="button"
+                          onClick={() => setModeWarnaMarker("tagihan")}
+                          className={`py-1.5 px-2 rounded-lg text-center transition flex items-center justify-center gap-1 ${
+                            modeWarnaMarker === "tagihan"
+                              ? isDark ? "bg-amber-400 text-slate-950 shadow-xs" : "bg-emerald-600 text-white shadow-xs"
+                              : isDark ? "bg-slate-800 text-slate-300 hover:bg-slate-700" : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
+                          }`}
+                        >
+                          <span>💳</span> Status Tagihan
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setModeWarnaMarker("blok")}
+                          className={`py-1.5 px-2 rounded-lg text-center transition flex items-center justify-center gap-1 ${
+                            modeWarnaMarker === "blok"
+                              ? isDark ? "bg-amber-400 text-slate-950 shadow-xs" : "bg-emerald-600 text-white shadow-xs"
+                              : isDark ? "bg-slate-800 text-slate-300 hover:bg-slate-700" : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
+                          }`}
+                        >
+                          <span>🏷️</span> Warna Blok
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Kategori 1: Objek Operasional */}
                   <div>
                     <div className={`text-[9.5px] font-black uppercase tracking-wider mb-1 px-1 ${
@@ -1645,16 +1805,68 @@ export default function PetaMap({
         <div className={`flex-1 relative h-full overflow-hidden ${isDark ? "bg-slate-950" : "bg-slate-100"}`}>
 
           
-          {/* Legenda Indikator Peta */}
+          {/* Legenda Indikator Peta (Mendukung Switch Mode: Tagihan vs Blok) */}
           {tampilkanPelanggan && (
-            <div className={`absolute bottom-6 left-4 z-[600] p-2.5 rounded-xl border shadow-lg backdrop-blur-md text-[9.5px] font-bold space-y-1.5 transition-all duration-300 ${isDark ? "bg-slate-900/95 border-slate-700/50 text-slate-200" : "bg-white/95 border-slate-200/80 text-slate-700"} ${hasInspector ? "hidden sm:block" : "block"}`}>
-              <p className="mb-1 text-[8.5px] opacity-80 uppercase tracking-widest text-center border-b pb-1.5 border-slate-500/20">Warna Pelanggan</p>
-              <div className="flex items-center gap-2"><div className="w-2.5 h-2.5 rounded-full bg-[#10b981] shadow-inner border border-black/10"></div> Lunas</div>
-              <div className="flex items-center gap-2"><div className="w-2.5 h-2.5 rounded-full bg-[#eab308] shadow-inner border border-black/10"></div> Tunggakan 1 Bln</div>
-              <div className="flex items-center gap-2"><div className="w-2.5 h-2.5 rounded-full bg-[#f97316] shadow-inner border border-black/10"></div> Tunggakan 2 Bln</div>
-              <div className="flex items-center gap-2"><div className="w-2.5 h-2.5 rounded-full bg-[#ef4444] shadow-inner border border-black/10"></div> Tunggakan ≥ 3 Bln</div>
-              <div className="flex items-center gap-2 mt-1.5 pt-1.5 border-t border-slate-500/30"><div className="w-2.5 h-2.5 rounded-full bg-[#0f172a] shadow-inner border border-white/20 animate-pulse"></div> STOP ANGKUT</div>
-              <div className="flex items-center gap-2"><div className="w-2.5 h-2.5 rounded-full bg-[#3b82f6] shadow-inner border border-black/10"></div> Libur / Nonaktif</div>
+            <div className={`absolute bottom-6 left-4 z-[600] p-2.5 rounded-xl border shadow-lg backdrop-blur-md text-[9.5px] font-bold space-y-1.5 transition-all duration-300 min-w-[185px] max-w-[240px] ${
+              isDark ? "bg-slate-900/95 border-slate-700/50 text-slate-200" : "bg-white/95 border-slate-200/80 text-slate-700"
+            } ${hasInspector ? "hidden sm:block" : "block"}`}>
+              <div className="flex items-center justify-between border-b pb-1.5 border-slate-500/20 gap-1.5">
+                <span className="text-[8.5px] opacity-80 uppercase tracking-widest font-black truncate">
+                  {modeWarnaMarker === "blok" ? "Warna Blok" : "Warna Tagihan"}
+                </span>
+                <div className={`flex items-center p-0.5 rounded-md text-[8.5px] border ${
+                  isDark ? "bg-slate-800 border-slate-700" : "bg-slate-100 border-slate-200"
+                }`}>
+                  <button
+                    type="button"
+                    onClick={() => setModeWarnaMarker("tagihan")}
+                    className={`px-1.5 py-0.5 rounded transition ${
+                      modeWarnaMarker === "tagihan"
+                        ? isDark ? "bg-amber-400 text-slate-950 font-black" : "bg-emerald-600 text-white font-black shadow-xs"
+                        : "text-slate-500 hover:text-slate-900"
+                    }`}
+                    title="Tampilkan warna status pembayaran tagihan"
+                  >
+                    Tagihan
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setModeWarnaMarker("blok")}
+                    className={`px-1.5 py-0.5 rounded transition ${
+                      modeWarnaMarker === "blok"
+                        ? isDark ? "bg-amber-400 text-slate-950 font-black" : "bg-emerald-600 text-white font-black shadow-xs"
+                        : "text-slate-500 hover:text-slate-900"
+                    }`}
+                    title="Tampilkan warna per blok pickup"
+                  >
+                    Blok
+                  </button>
+                </div>
+              </div>
+
+              {modeWarnaMarker === "tagihan" ? (
+                <>
+                  <div className="flex items-center gap-2"><div className="w-2.5 h-2.5 rounded-full bg-[#10b981] shadow-inner border border-black/10 shrink-0"></div> Lunas</div>
+                  <div className="flex items-center gap-2"><div className="w-2.5 h-2.5 rounded-full bg-[#eab308] shadow-inner border border-black/10 shrink-0"></div> Tunggakan 1 Bln</div>
+                  <div className="flex items-center gap-2"><div className="w-2.5 h-2.5 rounded-full bg-[#f97316] shadow-inner border border-black/10 shrink-0"></div> Tunggakan 2 Bln</div>
+                  <div className="flex items-center gap-2"><div className="w-2.5 h-2.5 rounded-full bg-[#ef4444] shadow-inner border border-black/10 shrink-0"></div> Tunggakan ≥ 3 Bln</div>
+                  <div className="flex items-center gap-2 mt-1.5 pt-1.5 border-t border-slate-500/30"><div className="w-2.5 h-2.5 rounded-full bg-[#0f172a] shadow-inner border border-white/20 animate-pulse shrink-0"></div> STOP ANGKUT</div>
+                  <div className="flex items-center gap-2"><div className="w-2.5 h-2.5 rounded-full bg-[#3b82f6] shadow-inner border border-black/10 shrink-0"></div> Libur / Nonaktif</div>
+                </>
+              ) : (
+                <div className="max-h-40 overflow-y-auto space-y-1 pr-1 custom-scrollbar">
+                  {activeBlokList.map((b) => (
+                    <div key={b.nama} className="flex items-center gap-2 truncate" title={`${b.nama} (${b.count} warga)`}>
+                      <div className="w-2.5 h-2.5 rounded-full shrink-0 shadow-inner border border-black/10" style={{ backgroundColor: b.warna }}></div>
+                      <span className="truncate">{b.nama}</span>
+                      <span className="opacity-60 text-[8.5px] ml-auto shrink-0 font-mono">({b.count})</span>
+                    </div>
+                  ))}
+                  {activeBlokList.length === 0 && (
+                    <div className="text-[9px] opacity-60 italic text-center py-1">Tidak ada data blok</div>
+                  )}
+                </div>
+              )}
             </div>
           )}
           <MapErrorBoundary>
@@ -1691,6 +1903,8 @@ export default function PetaMap({
               ruteTerpilih={ruteTerpilih}
               invalidateKey={invalidateKey}
               warnaStatus={WARNA_STATUS}
+              modeCluster={modeCluster}
+              modeWarnaMarker={modeWarnaMarker}
             />
           </MapErrorBoundary>
         </div>

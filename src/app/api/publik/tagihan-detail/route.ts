@@ -81,6 +81,10 @@ export async function GET(request: Request) {
   const sesiGatewayAktif = tagihan.pembayaran.find(
     (p) => p.status === "pending" && p.metode === "duitku"
   );
+  // Transaksi Duitku terakhir (jika ada) untuk fallback pemeriksaan status gateway
+  const lastDuitkuPayment = tagihan.pembayaran.find(
+    (p) => p.metode === "duitku" && p.duitkuTransaction?.orderId
+  );
 
   return NextResponse.json({
     id: tagihan.id,
@@ -136,8 +140,10 @@ export async function GET(request: Request) {
           metode: sesiGatewayAktif.metode,
           jumlah: sesiGatewayAktif.jumlah,
           tanggal: sesiGatewayAktif.createdAt,
+          orderId: sesiGatewayAktif.duitkuTransaction?.orderId || null,
         }
       : null,
+    lastGatewayOrderId: lastDuitkuPayment?.duitkuTransaction?.orderId || null,
   }, {
     // Data pribadi tagihan tidak boleh di-cache oleh proxy/CDN mana pun
     headers: { "Cache-Control": "no-store" },

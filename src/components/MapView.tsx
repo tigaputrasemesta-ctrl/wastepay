@@ -13,6 +13,8 @@ import { MapContainer, TileLayer, Marker, Circle, CircleMarker, Polygon, Polylin
 import { featureCollection, point } from "@turf/helpers";
 import voronoi from "@turf/voronoi";
 import union from "@turf/union";
+import convex from "@turf/convex";
+import { getWarnaBlok } from "@/lib/blok-palette";
 import { RT_RTRW_DEPOK, DEPOK_BOUNDS } from "@/lib/zona-depok";
 import { KECAMATAN_DEPOK } from "@/lib/kecamatan-depok";
 import { deteksiZona, formatJarak, panjangRute, titikTengah, urutkanRute } from "@/lib/geo";
@@ -123,6 +125,9 @@ type Props = {
   invalidateKey: number;
   warnaStatus: Record<string, string>;
   onMapClick?: () => void;
+  modeCluster?: "cluster" | "single";
+  modeWarnaMarker?: "tagihan" | "blok";
+  tampilkanBatasBlok?: boolean;
 };
 
 const KATEGORI_LABEL: Record<string, string> = {
@@ -153,7 +158,7 @@ type KelurahanGeomItem = {
 
 function computeKelurahanGeom(): KelurahanGeomItem[] {
   const pts = RT_RTRW_DEPOK.map((rt) =>
-    point([rt.lng, rt.lat], { kelurahan: rt.kelurahan.toUpperCase(), warna: rt.warna })
+    point([rt.lng, rt.lat], { kelurahan: rt.kelurahan.toUpperCase(), warna: getWarnaBlok(rt.kelurahan) })
   );
   const fc = featureCollection(pts);
   const bbox: [number, number, number, number] = [
@@ -194,7 +199,7 @@ function computeKelurahanGeom(): KelurahanGeomItem[] {
       latSum: 0,
       lngSum: 0,
       points: [],
-      warna: rtProps.warna,
+      warna: getWarnaBlok(rtProps.kelurahan),
       feature: null,
     };
     st.latSum += RT_RTRW_DEPOK[idx].lat;
@@ -422,7 +427,15 @@ function popupHtml(p: PelangganPeta): string {
     const telClean = p.noTelepon ? String(p.noTelepon).replace(/\D/g, "") : "";
     const waUrl = telClean ? `https://wa.me/${telClean.replace(/^0/, "62")}` : null;
     
-    return `<div style="font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:13px;min-width:250px;line-height:1.5;color:#334155;">
+      const rawBlokNama = (p.wilayah?.nama || p.kategori || "Umum")
+        .replace(/jatimulya/ig, "")
+        .replace(/kec\.?\s*cilodong/ig, "")
+        .replace(/zona\s*[:-]?/ig, "")
+        .replace(/,\s*$/, "")
+        .trim() || "Umum";
+      const warnaBlok = getWarnaBlok(rawBlokNama);
+
+      return `<div style="font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:13px;min-width:250px;line-height:1.5;color:#334155;">
       <div id="foto-wrapper-${p.id}" style="margin:-14px -14px 10px -14px;border-radius:12px 12px 0 0;overflow:hidden;background:#0f172a;">
         <img src="/api/pelanggan/${p.id}/foto" alt="Foto Rumah" style="width:100%;height:auto;max-height:250px;object-fit:contain;display:block;" onerror="document.getElementById('foto-wrapper-${p.id}').style.display='none'" />
       </div>
@@ -438,7 +451,13 @@ function popupHtml(p: PelangganPeta): string {
       
       <div style="margin-bottom:8px;">
         <div style="font-weight:800;font-size:16px;color:#0f172a;letter-spacing:-0.2px;">${esc(p.nama)}</div>
-        <div style="color:#059669;font-size:13px;font-weight:700;font-family:ui-monospace,monospace;">${esc(p.kodePelanggan)}</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:2px;">
+          <span style="color:#059669;font-size:13px;font-weight:700;font-family:ui-monospace,monospace;">${esc(p.kodePelanggan)}</span>
+          <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:6px;background:${warnaBlok}18;color:${warnaBlok};border:1px solid ${warnaBlok}40;font-size:10.5px;font-weight:800;">
+            <span style="width:6px;height:6px;border-radius:50%;background:${warnaBlok};"></span>
+            ${esc(rawBlokNama)}
+          </span>
+        </div>
       </div>
       
       <div style="margin-bottom:10px;">
@@ -449,8 +468,8 @@ function popupHtml(p: PelangganPeta): string {
         <div style="font-weight:700;color:#334155;">TARIF TAGIHAN:</div>
         <div style="font-weight:800;color:#0f172a;">${tarifTagihan}</div>
         
-        <div style="font-weight:700;color:#334155;">BLOK/ZONA:</div>
-        <div style="font-weight:800;color:#0f172a;">${esc(p.wilayah?.nama || p.kategori).replace(/jatimulya/ig, "").replace(/kec\.?\s*cilodong/ig, "").replace(/zona\s*[:-]?/ig, "").replace(/,\s*$/, "").trim()}</div>
+        <div style="font-weight:700;color:#334155;">BLOK LAYANAN:</div>
+        <div style="font-weight:800;color:${warnaBlok};">${esc(rawBlokNama)}</div>
       </div>
       
       ${riwayatHtml}
@@ -698,25 +717,34 @@ function ClusterPins({
   selectedId,
   onPilih,
   isMovingRef,
+  modeCluster = "cluster",
+  modeWarnaMarker = "tagihan",
 }: {
   pelanggan: PelangganPeta[];
   warnaStatus: Record<string, string>;
   selectedId: number | null;
   onPilih: (id: number) => void;
   isMovingRef: React.MutableRefObject<boolean>;
+  modeCluster?: "cluster" | "single";
+  modeWarnaMarker?: "tagihan" | "blok";
 }) {
   const map = useMap();
-  const groupRef = useRef<L.MarkerClusterGroup | null>(null);
+  const groupRef = useRef<L.MarkerClusterGroup | L.LayerGroup | null>(null);
   const markersRef = useRef<Map<number, L.Marker>>(new Map());
   const clickedFromMapRef = useRef(false);
 
   useEffect(() => {
-    const group = L.markerClusterGroup({ 
-      maxClusterRadius: 30, 
-      showCoverageOnHover: false,
-      disableClusteringAtZoom: 18, // Memecah otomatis semua cluster saat di-zoom in
-      iconCreateFunction: clusterIcon
-    });
+    // Mode Single Pelanggan vs Kelompokkan (Cluster)
+    const isSingle = modeCluster === "single";
+    const group = isSingle
+      ? L.layerGroup()
+      : L.markerClusterGroup({ 
+          maxClusterRadius: 30, 
+          showCoverageOnHover: false,
+          disableClusteringAtZoom: 18, // Memecah otomatis semua cluster saat di-zoom in
+          iconCreateFunction: clusterIcon
+        });
+
     groupRef.current = group;
     markersRef.current.clear();
     const markersToAdd: L.Marker[] = [];
@@ -730,14 +758,34 @@ function ClusterPins({
       ) {
         continue;
       }
+
+      // Pewarnaan marker: Blok Layanan vs Status Tagihan
+      const blokNama = (p.wilayah?.nama || p.kategori || "Umum")
+        .replace(/jatimulya/ig, "")
+        .replace(/kec\.?\s*cilodong/ig, "")
+        .replace(/zona\s*[:-]?/ig, "")
+        .replace(/,\s*$/, "")
+        .trim() || "Umum";
+
+      const infoTagihan = getWarnaTagihan(p);
+      const warnaBlok = getWarnaBlok(blokNama);
+      const warnaMarker = modeWarnaMarker === "blok" ? warnaBlok : infoTagihan.warna;
+      const isBermasalah = modeWarnaMarker === "tagihan" ? infoTagihan.isStopAngkut : false;
+
       const m = L.marker([p.latitude, p.longitude], {
-        icon: buatIcon(getWarnaTagihan(p).warna, getWarnaTagihan(p).isStopAngkut),
+        icon: buatIcon(warnaMarker, isBermasalah),
         bubblingMouseEvents: false,
       });
       
-      // Tambahkan Tooltip nama pelanggan yang muncul saat di-hover (sebelum diklik)
+      // Tooltip dengan nama dan badge blok yang jelas
       m.bindTooltip(
-        `<div style="font-weight:700;font-size:12px;font-family:'Plus Jakarta Sans',system-ui">${esc(p.nama)}</div>`,
+        `<div style="font-family:'Plus Jakarta Sans',system-ui;text-align:left;padding:2px 0;">
+          <div style="font-weight:800;font-size:12px;color:#0f172a;">${esc(p.nama)}</div>
+          <div style="display:flex;align-items:center;gap:4px;margin-top:2px;">
+            <span style="font-size:10px;font-family:monospace;font-weight:700;color:#059669;">${esc(p.kodePelanggan)}</span>
+            <span style="font-size:9.5px;font-weight:800;color:${warnaBlok};background:${warnaBlok}18;padding:1px 5px;border-radius:4px;border:1px solid ${warnaBlok}40;">🏷️ ${esc(blokNama)}</span>
+          </div>
+        </div>`,
         { direction: "top", offset: [0, -16], sticky: true, opacity: 0.95 }
       );
 
@@ -757,9 +805,14 @@ function ClusterPins({
       markersRef.current.set(p.id, m);
     }
     
-    // Optimasi Kritis Frontend: Gunakan addLayers (bulk) alih-alih addLayer dalam loop
-    // agar cluster hanya dihitung 1x di akhir (mencegah browser freeze saat memuat 10.000 titik)
-    group.addLayers(markersToAdd);
+    // Optimasi Kritis Frontend: Gunakan addLayers (bulk) jika tersedia pada markerClusterGroup
+    if ("addLayers" in group && typeof (group as any).addLayers === "function") {
+      (group as any).addLayers(markersToAdd);
+    } else {
+      for (const m of markersToAdd) {
+        group.addLayer(m);
+      }
+    }
     map.addLayer(group);
     
     return () => {
@@ -767,7 +820,7 @@ function ClusterPins({
       groupRef.current = null;
       markersRef.current.clear();
     };
-  }, [pelanggan, map, warnaStatus, onPilih, isMovingRef]);
+  }, [pelanggan, map, warnaStatus, onPilih, isMovingRef, modeCluster, modeWarnaMarker]);
 
   // Handle selectedId dari luar (misalnya dari daftar bawah atau dropdown pencarian)
   useEffect(() => {
@@ -998,9 +1051,56 @@ export default function MapView({
   invalidateKey,
   warnaStatus,
   onMapClick,
+  modeCluster = "cluster",
+  modeWarnaMarker = "tagihan",
+  tampilkanBatasBlok = false,
 }: Props) {
   const [zoom, setZoom] = useState(13);
   const isMovingRef = useRef(false);
+
+  // Batas Area Tiap Blok Pickup Layanan (Convex Hull polygon untuk tiap Blok)
+  const blokHulls = useMemo(() => {
+    const mapBlok = new Map<string, { id: number; nama: string; warna: string; points: [number, number][] }>();
+    for (const p of pelanggan) {
+      if (p.latitude == null || p.longitude == null || isNaN(p.latitude) || isNaN(p.longitude)) continue;
+      const namaBlok = (p.wilayah?.nama || "").trim();
+      if (!namaBlok) continue;
+      const st = mapBlok.get(namaBlok) ?? {
+        id: p.wilayah?.id ?? 0,
+        nama: namaBlok,
+        warna: getWarnaBlok(namaBlok),
+        points: [],
+      };
+      st.points.push([p.latitude, p.longitude]);
+      mapBlok.set(namaBlok, st);
+    }
+
+    const result: { nama: string; warna: string; coordinates: [number, number][]; center: [number, number]; total: number }[] = [];
+
+    for (const [nama, st] of mapBlok.entries()) {
+      if (st.points.length >= 3) {
+        try {
+          const pts = st.points.map((pt) => point([pt[1], pt[0]]));
+          const hull = convex(featureCollection(pts));
+          if (hull && hull.geometry && hull.geometry.type === "Polygon") {
+            const coords = (hull.geometry.coordinates[0] as number[][]).map((c: number[]) => [c[1], c[0]] as [number, number]);
+            const centerLat = st.points.reduce((acc, p) => acc + p[0], 0) / st.points.length;
+            const centerLng = st.points.reduce((acc, p) => acc + p[1], 0) / st.points.length;
+            result.push({
+              nama,
+              warna: st.warna,
+              coordinates: coords,
+              center: [centerLat, centerLng],
+              total: st.points.length,
+            });
+          }
+        } catch {
+          // Fallback ignore error convex
+        }
+      }
+    }
+    return result;
+  }, [pelanggan]);
 
   const titik = useMemo(
     () =>
@@ -1188,10 +1288,10 @@ export default function MapView({
                   positions={poly}
                   pathOptions={{
                     color: kel.warna,
-                    weight: 1.2,
-                    opacity: 0.35,
+                    weight: 1.5,
+                    opacity: 0.5,
                     fillColor: kel.warna,
-                    fillOpacity: 0.02,
+                    fillOpacity: 0.04,
                     dashArray: "6 5",
                   }}
                   interactive={false}
@@ -1200,6 +1300,33 @@ export default function MapView({
             )}
         </>
       )}
+
+      {/* Batas & Area Blok Pickup Layanan (Warna tiap Blok dibedakan secara kontras) */}
+      {(tampilkanBatasKelurahan || tampilkanBatasBlok) &&
+        blokHulls.map((b) => (
+          <Polygon
+            key={`blok-hull-${b.nama}`}
+            positions={b.coordinates}
+            pathOptions={{
+              color: b.warna,
+              weight: 2,
+              opacity: 0.8,
+              fillColor: b.warna,
+              fillOpacity: 0.08,
+              dashArray: "6 4",
+            }}
+          >
+            <Tooltip sticky direction="center">
+              <span className="text-xs font-bold text-slate-800">
+                🏷️ {b.nama}
+                <br />
+                <span className="text-[10px] text-slate-500 font-medium">
+                  {b.total} Pelanggan Terdaftar
+                </span>
+              </span>
+            </Tooltip>
+          </Polygon>
+        ))}
 
       {/* Titik RT RTRW — hanya saat zoom cukup dalam */}
       {tampilkanRt && zoom >= 13 && (
@@ -1212,7 +1339,7 @@ export default function MapView({
               pathOptions={{
                 color: "#131517",
                 weight: 1.2,
-                fillColor: rt.warna,
+                fillColor: getWarnaBlok(rt.kelurahan),
                 fillOpacity: 1,
               }}
             >
@@ -1344,6 +1471,8 @@ export default function MapView({
           selectedId={selectedId}
           onPilih={setSelectedId}
           isMovingRef={isMovingRef}
+          modeCluster={modeCluster}
+          modeWarnaMarker={modeWarnaMarker}
         />
       )}
 

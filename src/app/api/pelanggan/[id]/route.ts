@@ -350,15 +350,83 @@ export async function DELETE(
 ) {
   try {
     const id = parseInt((await params).id);
-    // Soft delete — pertahankan riwayat tagihan/pembayaran
-    const pelanggan = await prisma.pelanggan.findUnique({ where: { id }, select: { nama: true } });
-    await prisma.pelanggan.update({
+    if (!Number.isInteger(id)) {
+      return NextResponse.json({ error: "ID pelanggan tidak valid" }, { status: 400 });
+    }
+
+    const pelanggan = await prisma.pelanggan.findUnique({
       where: { id },
-      data: { deletedAt: new Date() },
+      select: { id: true, nama: true, kodePelanggan: true },
     });
-    await logAudit("delete", "Pelanggan", id, { nama: pelanggan?.nama }, undefined);
-    return NextResponse.json({ message: "Pelanggan berhasil dihapus" });
-  } catch {
-    return NextResponse.json({ error: "Gagal menghapus pelanggan" }, { status: 500 });
+    if (!pelanggan) {
+      return NextResponse.json({ error: "Pelanggan tidak ditemukan" }, { status: 404 });
+    }
+
+    const now = new Date();
+
+    const result = await prisma.$transaction(async (tx) => {
+      // 1. Soft delete data pelanggan & update status menjadi nonaktif
+      await tx.pelanggan.update({
+        where: { id },
+        data: {
+          deletedAt: now,
+          status: "nonaktif",
+        },
+      });
+
+      // 2. Batalkan seluruh sesi pembayaran pending pada tagihan yang belum lunas
+      await tx.pembayaran.updateMany({
+        where: {
+          pelangganId: id,
+          status: "pending",
+          tagihan: {
+            status: { in: ["belum_bayar", "tunggakan"] },
+          },
+        },
+        data: {
+          status: "ditolak",
+          catatan: "Dibatalkan otomatis: Pelanggan telah dihapus dari sistem",
+        },
+      });
+
+      // 3. Batalkan & soft-delete seluruh tagihan yang belum lunas (belum_bayar & tunggakan)
+      //    Tagihan yang SUDAH LUNAS tetap dipertahankan utuh demi integritas pembukuan kas
+      const unpaidBills = await tx.tagihan.updateMany({
+        where: {
+          pelangganId: id,
+          status: { in: ["belum_bayar", "tunggakan"] },
+          deletedAt: null,
+        },
+        data: {
+          status: "dibatalkan",
+          deletedAt: now,
+          keterangan: "Dibatalkan otomatis: Pelanggan telah dihapus dari sistem",
+        },
+      });
+
+      // 4. Nonaktifkan seluruh jadwal penjemputan armada terkait pelanggan ini
+      await tx.jadwal.updateMany({
+        where: { pelangganId: id },
+        data: { aktif: false },
+      });
+
+      return { canceledBillsCount: unpaidBills.count };
+    });
+
+    await logAudit(
+      "delete",
+      "Pelanggan",
+      id,
+      { nama: pelanggan.nama, kodePelanggan: pelanggan.kodePelanggan },
+      { canceledBillsCount: result.canceledBillsCount }
+    );
+
+    return NextResponse.json({
+      message: `Pelanggan berhasil dihapus. ${result.canceledBillsCount} tagihan belum lunas otomatis dibatalkan.`,
+      canceledBillsCount: result.canceledBillsCount,
+    });
+  } catch (err: any) {
+    console.error("DELETE /api/pelanggan/[id] error:", err);
+    return NextResponse.json({ error: "Gagal menghapus pelanggan", detail: err?.message }, { status: 500 });
   }
 }

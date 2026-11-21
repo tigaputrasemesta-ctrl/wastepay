@@ -32,6 +32,13 @@ type TagihanPublik = {
     createdAt: string;
     catatan?: string | null;
   } | null;
+  activeGateway?: {
+    id: number;
+    metode: string;
+    createdAt: string;
+    orderId?: string | null;
+  } | null;
+  lastGatewayOrderId?: string | null;
 };
 
 type HasilCek = {
@@ -125,7 +132,9 @@ type DetailTagihan = {
     metode: string;
     jumlah: number;
     tanggal: string;
+    orderId?: string | null;
   } | null;
+  lastGatewayOrderId?: string | null;
 };
 
 const BULAN = [
@@ -380,6 +389,95 @@ function BayarPortalContent() {
       // fallback
     }
   }, []);
+
+  // === STATE & FUNGSI SINKRONISASI PAYMENT GATEWAY (DUITKU) ===
+  const [checkingGateway, setCheckingGateway] = useState(false);
+  const [gatewayCheckResult, setGatewayCheckResult] = useState<{
+    success: boolean;
+    message: string;
+  } | null>(null);
+
+  const checkGatewayStatus = useCallback(
+    async (orderIdTarget?: string, invoiceTarget?: string) => {
+      const oId =
+        orderIdTarget ||
+        merchantOrderId ||
+        detail?.sesiGatewayAktif?.orderId ||
+        detail?.lastGatewayOrderId;
+      const inv = invoiceTarget || invoiceParam || detail?.noInvoice;
+
+      if (!oId && !inv) return;
+
+      setCheckingGateway(true);
+      setGatewayCheckResult(null);
+
+      try {
+        let url = "/api/publik/duitku/status?";
+        if (oId) {
+          url += `orderId=${encodeURIComponent(oId)}`;
+        } else if (inv) {
+          url += `invoice=${encodeURIComponent(inv)}`;
+        }
+
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (!res.ok) {
+          setGatewayCheckResult({
+            success: false,
+            message: data.error || "Belum ada catatan transaksi di payment gateway.",
+          });
+          return;
+        }
+
+        if (data.tagihanStatus === "lunas" || data.duitkuStatus?.statusCode === "00") {
+          setGatewayCheckResult({
+            success: true,
+            message: "Pembayaran terverifikasi BERHASIL! Status tagihan Anda otomatis diperbarui menjadi LUNAS.",
+          });
+          setStatusSukses(true);
+          if (isInvoiceMode) {
+            await muatInvoiceDetail();
+          }
+          const kodeTarget = hasil?.pelanggan.kodePelanggan || detail?.pelanggan.kodePelanggan;
+          if (kodeTarget) {
+            await segarkanTagihan(kodeTarget);
+          }
+        } else if (data.duitkuStatus?.statusCode === "01") {
+          setGatewayCheckResult({
+            success: false,
+            message: `Status Gateway: ${data.duitkuStatus.statusMessage || "Menunggu Pembayaran"}. Jika Anda baru saja transfer atau scan QRIS, silakan tunggu 1-2 menit lalu klik tombol cek kembali.`,
+          });
+        } else if (data.duitkuStatus?.statusCode === "02") {
+          setGatewayCheckResult({
+            success: false,
+            message: "Transaksi di gateway telah dibatalkan atau kedaluwarsa. Silakan cetak QRIS baru.",
+          });
+          setStatusBatal(true);
+        } else {
+          setGatewayCheckResult({
+            success: false,
+            message: `Status Gateway: ${data.duitkuStatus?.statusMessage || data.tagihanStatus || "Diproses"}`,
+          });
+        }
+      } catch {
+        setGatewayCheckResult({
+          success: false,
+          message: "Gagal terhubung ke gateway pembayaran. Periksa koneksi internet Anda.",
+        });
+      } finally {
+        setCheckingGateway(false);
+      }
+    },
+    [detail, invoiceParam, isInvoiceMode, merchantOrderId, muatInvoiceDetail, hasil, segarkanTagihan]
+  );
+
+  // Auto-check status ke Duitku secara live saat kembali dari Duitku dengan merchantOrderId
+  useEffect(() => {
+    if (merchantOrderId) {
+      checkGatewayStatus(merchantOrderId);
+    }
+  }, [merchantOrderId, checkGatewayStatus]);
 
   async function kirimBuktiManual(e: React.FormEvent) {
     e.preventDefault();
@@ -731,11 +829,56 @@ function BayarPortalContent() {
         {/* Banner Sukses Verifikasi */}
         {statusSukses && !lunas && (
           <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-start justify-between gap-4 text-xs">
-            <div>
-              <h4 className="font-bold">Pembayaran Sedang Diverifikasi</h4>
-              <p className="mt-0.5">Pembayaran Anda telah diterima oleh gateway dan sedang diverifikasi otomatis oleh sistem.</p>
+            <div className="space-y-1">
+              <h4 className="font-bold flex items-center gap-1.5">
+                <span className={checkingGateway ? "animate-spin" : ""}>🔄</span>
+                <span>Pembayaran Sedang Diverifikasi Gateway</span>
+              </h4>
+              <p className="mt-0.5">
+                {checkingGateway
+                  ? "Sedang memverifikasi status pembayaran langsung ke gateway Duitku..."
+                  : "Pembayaran Anda sedang disinkronkan otomatis ke sistem WastePay."}
+              </p>
+              {!checkingGateway && (
+                <button
+                  type="button"
+                  onClick={() => checkGatewayStatus()}
+                  className="mt-1.5 px-3 py-1 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg text-xs transition inline-flex items-center gap-1"
+                >
+                  <span>Cek Status Sekarang</span>
+                  <span>&rarr;</span>
+                </button>
+              )}
             </div>
             <button onClick={() => setStatusSukses(false)} aria-label="Tutup notifikasi pembayaran" className="font-bold text-emerald-700 p-1 rounded hover:bg-emerald-100 transition-colors"><span aria-hidden="true">✕</span></button>
+          </div>
+        )}
+
+        {/* Box Notifikasi Hasil Cek Gateway */}
+        {gatewayCheckResult && (
+          <div
+            className={`p-4 rounded-2xl text-xs flex items-start justify-between gap-3 animate-in fade-in ${
+              gatewayCheckResult.success
+                ? "bg-emerald-50 border border-emerald-200 text-emerald-900"
+                : "bg-sky-50 border border-sky-200 text-sky-900"
+            }`}
+          >
+            <div className="flex items-start gap-2.5">
+              <span className="text-base shrink-0">{gatewayCheckResult.success ? "✓" : "ℹ️"}</span>
+              <div className="space-y-0.5">
+                <h4 className="font-bold">
+                  {gatewayCheckResult.success ? "Pembayaran Terverifikasi LUNAS" : "Status Gateway Terkini"}
+                </h4>
+                <p className="leading-relaxed">{gatewayCheckResult.message}</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setGatewayCheckResult(null)}
+              className="font-bold text-slate-400 hover:text-slate-600 p-1 text-sm leading-none"
+            >
+              ✕
+            </button>
           </div>
         )}
 
@@ -992,6 +1135,19 @@ function BayarPortalContent() {
                     <span>Cetak QRIS Baru (Ganti Barcode Lama)</span>
                   </button>
                 )}
+
+                {/* Tombol sinkronisasi langsung ke Duitku jika ada sesi transaksi */}
+                {(detail.sesiGatewayAktif?.orderId || detail.lastGatewayOrderId || merchantOrderId) && (
+                  <button
+                    type="button"
+                    disabled={checkingGateway}
+                    onClick={() => checkGatewayStatus()}
+                    className="w-full py-2.5 rounded-2xl bg-sky-50 hover:bg-sky-100 disabled:opacity-60 text-sky-800 font-bold text-xs transition active:scale-95 flex items-center justify-center gap-1.5 border border-sky-200/80 shadow-2xs"
+                  >
+                    <span className={checkingGateway ? "animate-spin" : ""}>🔄</span>
+                    <span>{checkingGateway ? "Memeriksa Status ke Gateway..." : "Sudah Bayar? Cek Status Gateway Sekarang"}</span>
+                  </button>
+                )}
               </div>
 
               <div className="pt-2 border-t border-slate-100 flex flex-col items-center">
@@ -1236,6 +1392,34 @@ function BayarPortalContent() {
               </div>
             </div>
 
+            {/* Box Notifikasi Hasil Cek Gateway */}
+            {gatewayCheckResult && (
+              <div
+                className={`p-4 rounded-3xl text-xs flex items-start justify-between gap-3 shadow-xs animate-in fade-in ${
+                  gatewayCheckResult.success
+                    ? "bg-emerald-50 border border-emerald-200 text-emerald-900"
+                    : "bg-sky-50 border border-sky-200 text-sky-900"
+                }`}
+              >
+                <div className="flex items-start gap-2.5">
+                  <span className="text-base shrink-0">{gatewayCheckResult.success ? "✓" : "ℹ️"}</span>
+                  <div className="space-y-0.5">
+                    <h4 className="font-bold">
+                      {gatewayCheckResult.success ? "Pembayaran Terverifikasi LUNAS" : "Status Gateway Terkini"}
+                    </h4>
+                    <p className="leading-relaxed">{gatewayCheckResult.message}</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setGatewayCheckResult(null)}
+                  className="font-bold text-slate-400 hover:text-slate-600 p-1 text-sm leading-none"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
             {/* Banner Khusus Pembayaran Kolektif (Anti-Double Bayar) */}
             {(hasil.pelanggan.isKolektifAnggota || hasil.pelanggan.lockPayment) && (
               <div className="p-4 bg-purple-50/95 border border-purple-200 rounded-3xl flex items-start gap-3.5 text-xs text-purple-950 shadow-xs animate-in fade-in">
@@ -1419,6 +1603,18 @@ function BayarPortalContent() {
                                 <span>📄</span>
                                 <span>Cetak Faktur</span>
                               </Link>
+                            )}
+                            {(t.activeGateway?.orderId || t.lastGatewayOrderId || t.noInvoice) && (
+                              <button
+                                type="button"
+                                disabled={checkingGateway}
+                                onClick={() => checkGatewayStatus(t.activeGateway?.orderId || t.lastGatewayOrderId || undefined, t.noInvoice)}
+                                className="px-3.5 py-2.5 bg-sky-50 hover:bg-sky-100 disabled:opacity-60 text-sky-800 border border-sky-200/80 rounded-xl text-xs font-bold shadow-2xs transition active:scale-95 flex items-center justify-center gap-1.5"
+                                title="Periksa status pembayaran langsung ke gateway Duitku"
+                              >
+                                <span className={checkingGateway ? "animate-spin" : ""}>🔄</span>
+                                <span>{checkingGateway ? "Cek..." : "Cek Gateway"}</span>
+                              </button>
                             )}
                             <button
                               type="button"

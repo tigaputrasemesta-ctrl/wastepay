@@ -50,6 +50,15 @@ export async function GET(request: Request) {
   }
 
   const where: Prisma.TagihanWhereInput = { deletedAt: null };
+
+  // Tagihan yang belum lunas milik pelanggan yang sudah dihapus tidak dimunculkan di antrean tagihan aktif.
+  // Tagihan yang sudah LUNAS tetap ditampilkan demi rekonsiliasi kas pembukuan.
+  if (!pelangganId) {
+    where.OR = [
+      { pelanggan: { deletedAt: null } },
+      { status: "lunas" },
+    ];
+  }
   if (bulan) {
     const b = parseInt(bulan);
     if (!Number.isInteger(b) || b < 1 || b > 12) {
