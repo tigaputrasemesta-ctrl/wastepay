@@ -4,27 +4,51 @@ import type { PelangganPeta, RutePeta } from "@/components/PetaMap";
 import type { KendaraanPeta, PetugasPeta, TransitPeta } from "@/components/MapView";
 import { getSession } from "@/lib/auth";
 import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
+import { tvTokenValid, getDefaultMapToken } from "@/lib/tv-token";
+import PetaTokenGate from "@/components/PetaTokenGate";
 import "./peta.css";
 
 export const metadata = {
-  title: "Peta Wilayah | UPS HERU",
-  description: "Peta sebaran pelanggan dan cakupan layanan sampah Kota Depok",
+  title: "Peta Wilayah & Navigasi Lapangan | UPS HERU",
+  description: "Peta interaktif seluruh pelanggan dan rute armada kebersihan Kota Depok",
 };
 
 export const dynamic = "force-dynamic";
 
-export default async function PetaPage() {
+/**
+ * Halaman Peta Publik & Lapangan:
+ * - Dilindungi oleh Token Akses (seperti Map TV Token) atau Sesi Login Petugas/Admin.
+ * - Akses via link ber-token (?token=... atau ?t=...) membuka akses peta KESELURUHAN pelanggan (1.242 titik).
+ * - Petugas / admin yang sedang login dapat mengakses langsung sesuai hak aksesnya.
+ * - Fullscreen, responsif mobile & desktop, tanpa gangguan sidebar/navbar admin.
+ */
+export default async function PetaPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ token?: string; t?: string; mode?: string; [key: string]: any }>;
+}) {
+  const resolvedSearchParams = searchParams ? await searchParams : {};
+  const queryToken = (resolvedSearchParams.token || resolvedSearchParams.t)?.trim();
   const session = await getSession();
+  const isTokenAuth = tvTokenValid(queryToken);
 
-  // ── Scope kelurahan: petugas hanya melihat data kelurahannya sendiri (PII terlindungi) ──
+  // Jika pengunjung belum login dan tidak membawa token akses valid
+  if (!session && !isTokenAuth) {
+    return <PetaTokenGate tokenInvalid={Boolean(queryToken)} />;
+  }
+
+  // ── Scope kelurahan jika petugas login dengan profil khusus ──
+  // Catatan: Jika membawa token akses valid (link peta keseluruhan), scope kelurahan dilepas
+  // agar petugas/lapangan dapat melihat keseluruhan 1.242 pelanggan.
   let scopeKelurahanId: number | null = null;
   let petugasTanpaProfil = false;
-  if (session && session.role === "petugas" && !PETUGAS_SCOPE_ALL) {
+  if (!isTokenAuth && session && session.role === "petugas" && !PETUGAS_SCOPE_ALL) {
     scopeKelurahanId = await getPetugasKelurahan(session.id);
     if (!scopeKelurahanId) petugasTanpaProfil = true;
   }
-  // Admin/non-petugas → lihat semua; petugas berprofil → hanya kelurahannya;
-  // petugas tanpa profil → tidak dapat data apa pun (bukan semua wilayah)
+  // Pengunjung ber-token / non-scoped / admin → lihat semua titik (1,242 pelanggan);
+  // Petugas berprofil spesifik (tanpa token) → hanya kelurahannya;
+  // Petugas tanpa profil → tidak dapat data
   const scope = scopeKelurahanId
     ? { kelurahanId: scopeKelurahanId }
     : petugasTanpaProfil
@@ -105,7 +129,7 @@ export default async function PetaPage() {
     for (const t of tagihanList) {
       if (!riwayatMap.has(t.pelangganId)) riwayatMap.set(t.pelangganId, []);
       const riwayat = riwayatMap.get(t.pelangganId)!;
-      if (riwayat.length < 6) { // Ambil 6 tagihan terbaru
+      if (riwayat.length < 6) {
         riwayat.push({ bulan: t.bulan, tahun: t.tahun, status: t.status, jatuhTempo: t.jatuhTempo ? t.jatuhTempo.toISOString() : null, jumlah: t.jumlah });
       }
     }
@@ -157,7 +181,7 @@ export default async function PetaPage() {
         petugas: { select: { id: true, nama: true, jabatan: true, aktif: true } },
       },
     });
-    
+
     petugasPeta = lokasiRaw.map((t) => ({
       petugasId: t.petugas.id,
       nama: t.petugas.nama,
@@ -206,6 +230,7 @@ export default async function PetaPage() {
       akurasi: t.akurasi,
       updatedAt: t.createdAt.toISOString(),
     }));
+
     transitPeta = transitList.map((t) => ({
       id: t.id,
       nama: t.nama,
@@ -238,8 +263,10 @@ export default async function PetaPage() {
     }
   }
 
+  const activeToken = queryToken || (session ? getDefaultMapToken() : null);
+
   return (
-    <div className="h-full w-full relative">
+    <div className="w-screen h-[100dvh] overflow-hidden relative bg-slate-900">
       <PetaMap
         pelanggan={data}
         wilayah={wilayahList}
@@ -249,6 +276,7 @@ export default async function PetaPage() {
         transitAwal={transitPeta}
         profilSaya={profilSaya}
         kendaraanSaya={kendaraanSaya}
+        token={activeToken}
       />
     </div>
   );

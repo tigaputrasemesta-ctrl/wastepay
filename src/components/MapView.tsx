@@ -4,7 +4,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 // Gaya marker/popup/tooltip brutalist — dipakai juga oleh /peta/tv (layar besar)
-import "../app/(admin)/peta/peta.css";
+import "../app/peta/peta.css";
 import "@/lib/leaflet-setup";
 import "leaflet.markercluster";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -499,7 +499,10 @@ function popupHtml(p: PelangganPeta): string {
       
       ${riwayatHtml}
       
-      ${waUrl ? `<div style="margin-top:12px;text-align:center;"><a href="${waUrl}" target="_blank" rel="noreferrer" style="background:#10b981;color:#ffffff;padding:6px 12px;border-radius:8px;font-weight:700;text-decoration:none;font-size:13px;display:inline-block;box-shadow:0 2px 5px rgba(16,185,129,0.3);width:100%;">💬 Chat WhatsApp</a></div>` : ""}
+      <div style="margin-top:12px;display:flex;gap:6px;">
+        ${waUrl ? `<a href="${waUrl}" target="_blank" rel="noreferrer" style="flex:1;background:#10b981;color:#ffffff;padding:6px 10px;border-radius:8px;font-weight:700;text-decoration:none;font-size:12px;text-align:center;box-shadow:0 2px 5px rgba(16,185,129,0.3);display:inline-block;">💬 Chat WA</a>` : ""}
+        <a href="/api/pelanggan/${p.id}/peta-pdf" target="_blank" rel="noreferrer" style="flex:1;background:#0f172a;color:#38bdf8;border:1px solid #0284c7;padding:6px 10px;border-radius:8px;font-weight:800;text-decoration:none;font-size:12px;text-align:center;box-shadow:0 2px 5px rgba(2,132,199,0.2);display:inline-block;">🗺️ Peta PDF</a>
+      </div>
     </div>`;
   } catch (err) {
     console.error("Gagal membuat popup pelanggan:", err);
@@ -835,13 +838,13 @@ function ClusterPins({
         bubblingMouseEvents: false,
       });
       
-      // Tooltip dengan nama dan badge blok yang jelas
+      // Tooltip bersih tanpa badge nama blok (nama jalan/alamat ringkas ditampilkan agar memudahkan navigasi lapangan)
       m.bindTooltip(
         `<div style="font-family:'Plus Jakarta Sans',system-ui;text-align:left;padding:2px 0;">
           <div style="font-weight:800;font-size:12px;color:#0f172a;">${esc(p.nama)}</div>
-          <div style="display:flex;align-items:center;gap:4px;margin-top:2px;">
+          <div style="display:flex;align-items:center;gap:5px;margin-top:2px;">
             <span style="font-size:10px;font-family:monospace;font-weight:700;color:#059669;">${esc(p.kodePelanggan)}</span>
-            <span style="font-size:9.5px;font-weight:800;color:${warnaBlok};background:${warnaBlok}18;padding:1px 5px;border-radius:4px;border:1px solid ${warnaBlok}40;">🏷️ ${esc(blokNama)}</span>
+            ${p.alamat ? `<span style="font-size:10px;font-weight:600;color:#64748b;">• ${esc(p.alamat.substring(0, 32))}</span>` : ""}
           </div>
         </div>`,
         { direction: "top", offset: [0, -16], sticky: true, opacity: 0.95 }
@@ -1359,8 +1362,8 @@ export default function MapView({
         </>
       )}
 
-      {/* Batas & Area Blok Pickup Layanan (Warna tiap Blok dibedakan secara kontras) */}
-      {(tampilkanBatasKelurahan || tampilkanBatasBlok) &&
+      {/* Batas & Area Blok Pickup Layanan (Hanya aktif jika opsi batas blok diaktifkan) */}
+      {tampilkanBatasBlok &&
         blokHulls.map((b) => (
           <Polygon
             key={`blok-hull-${b.nama}`}

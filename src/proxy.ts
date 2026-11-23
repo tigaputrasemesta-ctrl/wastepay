@@ -6,6 +6,7 @@ import { extractOrigin, isSameOriginRequest } from "@/lib/csrf";
 import { ROLE_HIERARCHY, type Role } from "@/lib/rbac";
 import { prisma } from "@/lib/prisma";
 import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
+import { tvTokenValid } from "@/lib/tv-token";
 import {
   resolveTenantByHost,
   resolveTenantWithDbFallback,
@@ -27,7 +28,6 @@ const PAGE_ROLES: Record<string, number> = {
   "/kendaraan": 50, // admin: kendaraan & titik transit
   "/sticker": 20, // kasir+: cetak sticker nomor pelanggan
   "/pelanggan": 20, // kasir+
-  "/peta": 10, // semua role
   "/tagihan": 10, // semua role
   "/petugas": 50, // admin+
   "/rute": 50, // admin+
@@ -426,10 +426,25 @@ export async function proxy(request: NextRequest) {
   reqHeaders.set("x-is-core", tenantCtx.isCore ? "1" : "0");
 
   // Halaman publik
-  // /peta/tv dilindungi token TV (env TV_VIEW_TOKEN) di dalam page-nya sendiri,
-  // bukan lewat sesi login — biarkan lolos proxy agar browser kiosk bisa akses.
+  // /peta dan /peta-lapangan dapat diakses langsung oleh petugas lapangan / publik tanpa perlu login.
+  // /peta/tv dilindungi token TV (env TV_VIEW_TOKEN) di dalam page-nya sendiri.
   const lowerPath = pathname.toLowerCase();
-  if (lowerPath === "/login" || lowerPath === "/login/" || lowerPath === "/bayar" || lowerPath === "/bayar/" || lowerPath.startsWith("/peta/tv") || lowerPath.startsWith("/live")) {
+  if (
+    lowerPath === "/login" ||
+    lowerPath === "/login/" ||
+    lowerPath === "/bayar" ||
+    lowerPath === "/bayar/" ||
+    lowerPath === "/peta" ||
+    lowerPath === "/peta/" ||
+    lowerPath.startsWith("/peta/") ||
+    lowerPath === "/peta-lapangan" ||
+    lowerPath === "/peta-lapangan/" ||
+    lowerPath.startsWith("/peta-lapangan/") ||
+    lowerPath === "/petalapangan" ||
+    lowerPath === "/petalapangan/" ||
+    lowerPath.startsWith("/petalapangan/") ||
+    lowerPath.startsWith("/live")
+  ) {
     return NextResponse.next({ request: { headers: reqHeaders } });
   }
 
@@ -445,6 +460,25 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/api/pembayaran/search") ||
     pathname.startsWith("/api/integrasi/google-contacts/callback") ||
     pathname.startsWith("/api/core")
+  ) {
+    return NextResponse.next({ request: { headers: reqHeaders } });
+  }
+
+  // Izinkan akses API peta & unduh PDF peta jika membawa token TV / Peta yang valid di query atau header
+  const urlMapToken =
+    request.nextUrl.searchParams.get("token") ||
+    request.nextUrl.searchParams.get("t") ||
+    request.headers.get("x-tv-token");
+
+  if (
+    urlMapToken &&
+    tvTokenValid(urlMapToken) &&
+    (pathname.startsWith("/api/peta/buku-pdf") ||
+      (pathname.startsWith("/api/pelanggan/") && pathname.endsWith("/peta-pdf")) ||
+      pathname === "/api/petugas/lokasi" ||
+      pathname === "/api/kendaraan/lokasi" ||
+      pathname === "/api/transit" ||
+      pathname === "/api/komplain")
   ) {
     return NextResponse.next({ request: { headers: reqHeaders } });
   }

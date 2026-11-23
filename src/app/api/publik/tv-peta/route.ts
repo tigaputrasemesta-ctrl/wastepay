@@ -16,7 +16,8 @@ export const dynamic = "force-dynamic";
  * scope admin (seluruh wilayah) — cocok untuk wallboard kantor.
  */
 export async function GET(request: Request) {
-  const token = request.headers.get("x-tv-token");
+  const { searchParams } = new URL(request.url);
+  const token = searchParams.get("t") || searchParams.get("token") || request.headers.get("x-tv-token");
 
   if (!tvTokenValid(token)) {
     return NextResponse.json({ error: "Akses ditolak" }, { status: 401 });

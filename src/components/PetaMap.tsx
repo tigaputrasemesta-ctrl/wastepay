@@ -143,6 +143,7 @@ type Props = {
   transitAwal?: TransitPeta[];
   profilSaya?: { id: number; nama: string; jabatan: string | null } | null;
   kendaraanSaya?: { id: number; nama: string; platNomor: string | null; jenis: string }[];
+  token?: string | null;
 };
 
 const WARNA_STATUS: Record<string, string> = {
@@ -190,11 +191,13 @@ export default function PetaMap({
   transitAwal = [],
   profilSaya,
   kendaraanSaya = [],
+  token = null,
 }: Props) {
   // Navigation & Layout State
   const { resolvedTheme } = useTheme();
+  const [salinToast, setSalinToast] = useState(false);
   const [activeTab, setActiveTab] = useState<ConsoleTab>("armada");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(() => (typeof window !== "undefined" ? window.innerWidth >= 1024 : false));
   const [tileMode, setTileMode] = useState<MapTileType>(() => (typeof window !== "undefined" && document.documentElement.classList.contains("dark") ? "dark" : "osm"));
   const [layerMenuOpen, setLayerMenuOpen] = useState(false);
   const layerMenuRef = useRef<HTMLDivElement>(null);
@@ -308,7 +311,7 @@ export default function PetaMap({
   const [tampilkanPetugas, setTampilkanPetugas] = useState(true);
   const [tampilkanKomplain, setTampilkanKomplain] = useState(true);
   const [tampilkanTransit, setTampilkanTransit] = useState(true);
-  const [tampilkanBatas, setTampilkanBatas] = useState(true);
+  const [tampilkanBatas, setTampilkanBatas] = useState(false); // default off agar batas geometri tidak menutupi nama jalan
   const [tampilkanBatasKelurahan, setTampilkanBatasKelurahan] = useState(false); // default off agar peta tidak terpotong garis geometris
   const [tampilkanRt, setTampilkanRt] = useState(false); // default off agar titik tidak tumpang tindih
   const [tampilkanCakupan, setTampilkanCakupan] = useState(false);
@@ -323,7 +326,7 @@ export default function PetaMap({
     setTampilkanPetugas(true);
     setTampilkanKomplain(true);
     setTampilkanTransit(true);
-    setTampilkanBatas(true);
+    setTampilkanBatas(false);
     setTampilkanBatasKelurahan(false);
     setTampilkanRt(false);
     setTampilkanCakupan(false);
@@ -406,15 +409,25 @@ export default function PetaMap({
 
   const ambilKomplain = useCallback(async () => {
     try {
-      const res = await fetch("/api/komplain?limit=300", { cache: "no-store" });
-      if (!res.ok) return;
-      const data = (await res.json()) as KomplainPeta[];
-      setKomplain(data);
+      if (token) {
+        const res = await fetch(`/api/publik/tv-peta?t=${encodeURIComponent(token)}`, { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.komplain) setKomplain(data.komplain);
+        if (data.petugas) setPetugas(data.petugas);
+        if (data.kendaraan) setKendaraan(data.kendaraan);
+        if (data.transit) setTransit(data.transit);
+      } else {
+        const res = await fetch("/api/komplain?limit=300", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = (await res.json()) as KomplainPeta[];
+        setKomplain(data);
+      }
       setLastRefresh(Date.now());
     } catch {
       // quiet fallback
     }
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     const t0 = setTimeout(() => ambilKomplain(), 0);
@@ -428,6 +441,7 @@ export default function PetaMap({
   // ── Polling: Petugas Lapangan (10 dtk) ──
   const [petugas, setPetugas] = useState<PetugasPeta[]>(petugasAwal);
   const ambilPetugas = useCallback(async () => {
+    if (token) return;
     try {
       const res = await fetch("/api/petugas/lokasi", { cache: "no-store" });
       if (!res.ok) return;
@@ -435,7 +449,7 @@ export default function PetaMap({
     } catch {
       // quiet
     }
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     const t0 = setTimeout(() => ambilPetugas(), 500);
@@ -452,6 +466,7 @@ export default function PetaMap({
   const [pusatPetugas, setPusatPetugas] = useState<[number, number] | null>(null);
 
   const ambilKendaraan = useCallback(async () => {
+    if (token) return;
     try {
       const res = await fetch("/api/kendaraan/lokasi", { cache: "no-store" });
       if (!res.ok) return;
@@ -459,12 +474,13 @@ export default function PetaMap({
     } catch {
       // quiet
     }
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     const t0 = setTimeout(() => ambilKendaraan(), 700);
     const t = setInterval(() => ambilKendaraan(), 15000);
     const t1 = setTimeout(async () => {
+      if (token) return;
       try {
         const res = await fetch("/api/transit", { cache: "no-store" });
         if (res.ok) setTransit((await res.json()) as TransitPeta[]);
@@ -477,7 +493,7 @@ export default function PetaMap({
       clearInterval(t);
       clearTimeout(t1);
     };
-  }, [ambilKendaraan]);
+  }, [ambilKendaraan, token]);
 
   // ── Derived Data & Mappings ──
   const zonaPelanggan = useMemo(() => {
@@ -763,6 +779,58 @@ export default function PetaMap({
               <Users className={`w-3.5 h-3.5 ${isDark ? "text-slate-400" : "text-slate-500"}`} />
               <span>{pelangganList.length} Warga</span>
             </button>
+
+            {/* Peta 1 Halaman Master Pill */}
+            <a
+              href={`/api/peta/buku-pdf?mode=1halaman${token ? `&t=${encodeURIComponent(token)}` : ""}`}
+              target="_blank"
+              rel="noreferrer"
+              className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-bold transition shadow-xs ${
+                isDark
+                  ? "bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 border-sky-500/30"
+                  : "bg-sky-50 hover:bg-sky-100 text-sky-800 border-sky-300"
+              }`}
+              title="Unduh Peta Sebaran 1 Halaman Memuat Semua Titik Pelanggan (1.242 Titik)"
+            >
+              <MapPin className="w-3.5 h-3.5 text-sky-500" />
+              <span>🗺️ Peta 1 Halaman ({pelangganList.length} Titik)</span>
+            </a>
+
+            {/* Buku Peta PDF Master Pill */}
+            <a
+              href={`/api/peta/buku-pdf?mode=all${token ? `&t=${encodeURIComponent(token)}` : ""}`}
+              target="_blank"
+              rel="noreferrer"
+              className={`hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-bold transition shadow-xs ${
+                isDark
+                  ? "bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+                  : "bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-300"
+              }`}
+              title="Unduh Buku Peta PDF Seluruh Pelanggan (1.242 Halaman Lengkap)"
+            >
+              <span>📑 Buku Peta ({pelangganList.length})</span>
+            </a>
+
+            {/* Salin Link Peta Ber-Token Pill */}
+            {token && (
+              <button
+                type="button"
+                onClick={() => {
+                  const url = `${window.location.origin}/peta?token=${encodeURIComponent(token)}`;
+                  navigator.clipboard.writeText(url);
+                  setSalinToast(true);
+                  setTimeout(() => setSalinToast(false), 3000);
+                }}
+                className={`hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-bold transition shadow-xs ${
+                  isDark
+                    ? "bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border-amber-500/30"
+                    : "bg-amber-50 hover:bg-amber-100 text-amber-800 border-amber-300"
+                }`}
+                title="Salin tautan langsung peta ber-token untuk akses lapangan tanpa login"
+              >
+                <span>🔑 {salinToast ? "Link Tersalin!" : "Salin Link Peta"}</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -1726,6 +1794,40 @@ export default function PetaMap({
                     {urutkan === "kode" ? "KODE (A-Z)" : "NAMA (A-Z)"}
                   </button>
                 </div>
+
+                {/* Export Master Book PDF */}
+                <div className="space-y-1.5 pt-1 border-t border-slate-200/50 dark:border-slate-800/50">
+                  <a
+                    href={`/api/peta/buku-pdf?mode=1halaman${token ? `&t=${encodeURIComponent(token)}` : ""}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full py-2 px-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl font-bold text-[11px] flex items-center justify-center gap-1.5 transition shadow-xs text-center"
+                    title="Unduh Peta Sebaran 1 Halaman yang memuat seluruh titik koordinat pelanggan (1.242 Titik)"
+                  >
+                    <MapPin className="w-3.5 h-3.5" />
+                    <span>🗺️ Unduh Peta 1 Halaman (Semua Titik Warga)</span>
+                  </a>
+                  <div className="flex gap-1.5">
+                    <a
+                      href={`/api/peta/buku-pdf?mode=all${token ? `&t=${encodeURIComponent(token)}` : ""}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex-1 py-1.5 px-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold text-[10px] flex items-center justify-center gap-1 transition shadow-xs text-center"
+                      title="Unduh Buku Peta PDF Seluruh Pelanggan (1.242 Lembar Lengkap)"
+                    >
+                      <span>📑 Buku Master (1.242 Hal)</span>
+                    </a>
+                    <a
+                      href={`/api/peta/buku-pdf?mode=unpaid${token ? `&t=${encodeURIComponent(token)}` : ""}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="py-1.5 px-2 bg-rose-600 hover:bg-rose-500 text-white rounded-lg font-bold text-[10px] flex items-center justify-center gap-1 transition shadow-xs text-center"
+                      title="Unduh Buku Peta Khusus Pelanggan Menunggak (406 Lembar)"
+                    >
+                      <span>⚠️ Buku Tertunggak</span>
+                    </a>
+                  </div>
+                </div>
               </div>
 
               {/* Customer List */}
@@ -2376,6 +2478,17 @@ export default function PetaMap({
                       <span>Chat WhatsApp Warga ({inspectorPelanggan.noTelepon})</span>
                     </a>
                   )}
+
+                  {/* Unduh Peta PDF Single Pelanggan */}
+                  <a
+                    href={`/api/pelanggan/${inspectorPelanggan.id}/peta-pdf${token ? `?t=${encodeURIComponent(token)}` : ""}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-sky-400 border border-sky-600/40 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition shadow-md shadow-sky-950/20"
+                  >
+                    <MapPin className="w-4 h-4 text-sky-400" />
+                    <span>🗺️ Unduh PDF Peta Single Pelanggan (Map)</span>
+                  </a>
                 </div>
               )}
 
