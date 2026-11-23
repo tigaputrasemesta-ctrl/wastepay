@@ -15,11 +15,10 @@ const nextConfig: NextConfig = {
   // Allow phone testing
   allowedDevOrigins: ["192.168.100.19"],
 
+  serverExternalPackages: ["pdfkit", "pg"],
+
   typescript: {
     ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
   },
 
   images: {

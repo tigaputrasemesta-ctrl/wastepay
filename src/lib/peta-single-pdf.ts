@@ -1,6 +1,5 @@
 import https from "https";
 import pg from "pg";
-import PDFDocument from "pdfkit";
 
 const { Pool } = pg;
 
@@ -187,6 +186,9 @@ export async function generateSinglePelangganMapPdfBuffer(pelangganId: number): 
     } catch {}
   }
 
+  const PDFDocumentModule = await import("pdfkit");
+  const PDFDocument = (PDFDocumentModule.default || PDFDocumentModule) as unknown as typeof import("pdfkit");
+
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({
       size: "A4",
@@ -300,7 +302,8 @@ export async function generateSinglePelangganMapPdfBuffer(pelangganId: number): 
 
     // Callout Label
     const labelText = `${p.nama} (${p.kodePelanggan})`;
-    const labelW = Math.min(260, doc.widthOfString(labelText, { font: "Helvetica-Bold", size: 9 }) + 20);
+    doc.font("Helvetica-Bold").fontSize(9);
+    const labelW = Math.min(260, doc.widthOfString(labelText) + 20);
     const labelH = 20;
     const bubbleX = centerX - labelW / 2;
     const bubbleY = centerY - 55;
