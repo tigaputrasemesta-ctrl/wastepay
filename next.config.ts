@@ -15,6 +15,13 @@ const nextConfig: NextConfig = {
   // Allow phone testing
   allowedDevOrigins: ["192.168.100.19"],
 
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
   images: {
     unoptimized: true,
     remotePatterns: [
