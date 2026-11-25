@@ -41,29 +41,6 @@ const nextConfig: NextConfig = {
 
   async redirects() {
     return [
-      // Redirect traffic dari domain legacy Vercel ke domain resmi masing-masing
-      {
-        source: "/:path*",
-        has: [
-          {
-            type: "host",
-            value: "tpsheru.vercel.app",
-          },
-        ],
-        destination: "https://upsheru.com/:path*",
-        permanent: true,
-      },
-      {
-        source: "/:path*",
-        has: [
-          {
-            type: "host",
-            value: "(?<host>wastepay.*\\.vercel\\.app)",
-          },
-        ],
-        destination: "https://upsheru.com/:path*",
-        permanent: true,
-      },
       {
         source: "/jangkauan",
         destination: "/coverage",

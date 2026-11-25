@@ -13,8 +13,6 @@ export const CORE_TENANT: TenantConfig = {
     "o2whero.com",
     "www.o2whero.com",
     "core.o2whero.com",
-    "o2w.vercel.app",
-    "o2w-o2-w.vercel.app",
   ],
   primaryDomain: "o2whero.com",
   branding: {
@@ -53,9 +51,6 @@ export const PILOT_TENANT: TenantConfig = {
     "upsheru.com",
     "www.upsheru.com",
     "upsheru.o2whero.com",
-    "tpsheru.vercel.app",
-    "wastepay.vercel.app",
-    "wastepay-o2-w.vercel.app",
   ],
   primaryDomain: "upsheru.com",
   branding: {
@@ -184,9 +179,7 @@ export function resolveTenantByHost(rawHost?: string | null): TenantContext {
     CORE_TENANT.domains.includes(host) ||
     host === "o2whero.com" ||
     host === "www.o2whero.com" ||
-    host === "core.o2whero.com" ||
-    host === "o2w.vercel.app" ||
-    host === "o2w-o2-w.vercel.app";
+    host === "core.o2whero.com";
 
   if (isCoreDomain) {
     const protocol = host.includes("localhost") || host === "127.0.0.1" ? "http" : "https";

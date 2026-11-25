@@ -96,7 +96,6 @@ export function isCoreHostname(rawHost?: string | null): boolean {
   return (
     h.includes("o2whero.com") ||
     h.startsWith("o2w-") ||
-    h.includes("core.") ||
-    h === "o2w.vercel.app"
+    h.includes("core.")
   );
 }

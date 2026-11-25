@@ -75,7 +75,6 @@ export const metadata: Metadata = {
   },
 };
 
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
 export default function RootLayout({
@@ -116,7 +115,6 @@ export default function RootLayout({
         <ThemeProvider>
           {children}
         </ThemeProvider>
-        <SpeedInsights />
       </body>
     </html>
   );

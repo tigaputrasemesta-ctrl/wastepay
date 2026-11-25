@@ -46,9 +46,10 @@ export function buildCorsHeaders(request?: Request): Record<string, string> {
     if (reqOrigin) {
       const isAllowed =
         ALLOWED_CORS_ORIGINS.includes(reqOrigin) ||
-        reqOrigin.endsWith('.vercel.app') ||
-        reqOrigin.endsWith('upsheru.com') ||
-        reqOrigin.endsWith('o2whero.com');
+        reqOrigin === 'https://upsheru.com' ||
+        reqOrigin.endsWith('.upsheru.com') ||
+        reqOrigin === 'https://o2whero.com' ||
+        reqOrigin.endsWith('.o2whero.com');
       if (isAllowed) {
         origin = reqOrigin;
       }
