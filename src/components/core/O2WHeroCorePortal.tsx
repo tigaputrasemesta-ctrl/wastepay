@@ -100,11 +100,15 @@ export default function O2WHeroCorePortal() {
     },
     {
       q: "Bagaimana sistem pembayaran iuran warga berjalan?",
-      a: "Tagihan otomatis terbit tiap tanggal 1. Warga menerima pengingat via WhatsApp lalu bisa bayar langsung pakai QRIS (M-Banking BCA, Mandiri, BRI, BNI atau GoPay/OVO/DANA). Uang yang terkumpul masuk ke kas mitra dan bisa dicairkan ke rekening bank tiap minggu.",
+      a: "Tagihan otomatis terbit tiap tanggal 1. Warga menerima pengingat via WhatsApp lalu bisa bayar langsung pakai QRIS (M-Banking BCA, Mandiri, BRI, BNI atau GoPay/OVO/DANA). Uang yang terkumpul masuk ke kas mitra dan dicairkan ke rekening bank resmi tiap minggu.",
+    },
+    {
+      q: "Berapa potongan atau komisi per transaksi warga?",
+      a: "Sangat transparan dan bersahabat. O2W HERO hanya mengenakan biaya platform flat Rp 1.000 per transaksi iuran yang berhasil lunas via QRIS/Virtual Account, tanpa potongan persentase tersembunyi yang memberatkan kas operasional.",
     },
     {
       q: "Apakah mitra pengelola mendapatkan website dengan nama domain sendiri?",
-      a: "Ya. Setiap mitra bisa menggunakan nama website sendiri (misal: upsheru.com atau tps3r-namadaerah.com). Sistem kami menyiapkan sertifikat keamanan SSL resmi tanpa biaya tambahan.",
+      a: "Ya. Khusus paket Pro dan Enterprise, mitra memiliki website dengan nama domain sendiri (contoh nyata pilot project kami: upsheru.com). Tim teknis kami membantu setup penuh nama domain mandiri dan sertifikat SSL resmi (biaya setup flat Rp 2.000.000 sekali bayar di awal).",
     },
     {
       q: "Apakah aplikasi supir / petugas lapangan bisa dipakai di HP biasa?",
@@ -422,23 +426,34 @@ export default function O2WHeroCorePortal() {
               <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-5 flex flex-col justify-between">
                 <div>
                   <h3 className="text-lg font-extrabold text-white">Starter</h3>
-                  <p className="text-slate-400 text-xs mt-1">Cocok untuk Bank Sampah &amp; KSM RT/RW</p>
+                  <p className="text-slate-400 text-xs mt-1">Untuk Bank Sampah &amp; KSM RT/RW</p>
                   <div className="mt-4">
                     <span className="text-2xl font-black text-white">Rp 349.000</span>
                     <span className="text-xs text-slate-500"> / bulan</span>
                   </div>
+                  <div className="text-[11px] text-slate-400 mt-1">
+                    Setup Subdomain: <span className="text-emerald-400 font-semibold">Gratis</span> (nama.o2whero.com)
+                  </div>
                   <ul className="space-y-2.5 mt-6 text-xs text-slate-300">
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <span>Hingga 500 Warga / Nasabah</span>
+                      <span>Hingga 500 Nasabah / KK Warga</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <span>Pencatatan Tabungan Sampah di HP</span>
+                      <span>Buku Tabungan Sampah Digital di HP</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <span>1.000 Pesan WhatsApp Notifikasi</span>
+                      <span>Pembayaran Iuran QRIS Otomatis</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span>Biaya Platform Flat Rp 1.000 / Transaksi Lunas</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span>1.000 Kuota Notifikasi WhatsApp / Bulan</span>
                     </li>
                   </ul>
                 </div>
@@ -450,7 +465,7 @@ export default function O2WHeroCorePortal() {
                 </a>
               </div>
 
-              {/* Paket Pro (Paling Populer) */}
+              {/* Paket Pro (Standar TPS3R - Paling Populer) */}
               <div className="bg-slate-900 border-2 border-emerald-500 rounded-3xl p-6 space-y-5 flex flex-col justify-between shadow-xl relative">
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-emerald-500 text-slate-950 font-black text-[10px] tracking-wider uppercase">
                   Paling Banyak Dipakai (TPS3R)
@@ -462,26 +477,37 @@ export default function O2WHeroCorePortal() {
                     <span className="text-2xl font-black text-emerald-400">Rp 1.250.000</span>
                     <span className="text-xs text-slate-500"> / bulan</span>
                   </div>
+                  <div className="text-[11px] text-slate-300 mt-1">
+                    Setup Domain Sendiri: <span className="text-emerald-400 font-semibold">Rp 2.000.000</span> (1x di awal)
+                  </div>
                   <ul className="space-y-2.5 mt-6 text-xs text-slate-200">
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <span>Hingga 3.000 Warga / KK</span>
+                      <span>Hingga 3.000 KK / Pelanggan</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <span><strong>Pakai Nama Website Sendiri</strong> (contoh: upsheru.com)</span>
+                      <span><strong>Domain Sendiri</strong> (contoh: upsheru.com)</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <span>Pembayaran Otomatis QRIS &amp; VA Duitku</span>
+                      <span>Pembayaran Otomatis QRIS &amp; Virtual Account</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <span>Aplikasi HP Supir &amp; Absen GPS</span>
+                      <span>Biaya Platform Flat Rp 1.000 / Transaksi Lunas</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <span>5.000 Pesan WhatsApp Notifikasi/bln</span>
+                      <span>Aplikasi HP Supir &amp; Absensi GPS Armada</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span>Dual-Number WhatsApp (Bot Tagihan + CS Warga)</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span>5.000 Kuota Notifikasi WhatsApp / Bulan</span>
                     </li>
                   </ul>
                 </div>
@@ -496,28 +522,35 @@ export default function O2WHeroCorePortal() {
               {/* Paket Enterprise */}
               <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-5 flex flex-col justify-between">
                 <div>
-                  <h3 className="text-lg font-extrabold text-white">Enterprise / Swasta</h3>
-                  <p className="text-slate-400 text-xs mt-1">Kawasan Industri, Mall, &amp; Vendor Swasta</p>
+                  <h3 className="text-lg font-extrabold text-white">Enterprise</h3>
+                  <p className="text-slate-400 text-xs mt-1">Kawasan Industri, Mall, &amp; Pengangkut Swasta</p>
                   <div className="mt-4">
                     <span className="text-2xl font-black text-white">Rp 2.990.000</span>
                     <span className="text-xs text-slate-500"> / bulan</span>
                   </div>
+                  <div className="text-[11px] text-slate-400 mt-1">
+                    Setup Domain &amp; Dedicated Cluster Khusus
+                  </div>
                   <ul className="space-y-2.5 mt-6 text-xs text-slate-300">
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <span>Warga &amp; Armada Tanpa Batas</span>
+                      <span>Warga &amp; Armada Tanpa Batas (Unlimited)</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <span>Database Terpisah (Dedicated Database)</span>
+                      <span>Database Terpisah (Dedicated Database Cluster)</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <span>Integrasi Timbangan Jembatan Truk</span>
+                      <span>Integrasi Timbangan Truk TPA / Jembatan Timbang</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <span>Bantuan Teknis Prioritas 24 Jam</span>
+                      <span>20.000 Kuota Notifikasi WhatsApp / Bulan</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span>Tim Teknis Prioritas 24 Jam &amp; SLA 99.9%</span>
                     </li>
                   </ul>
                 </div>
@@ -525,9 +558,28 @@ export default function O2WHeroCorePortal() {
                   href="#daftar"
                   className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs text-center block transition-all"
                 >
-                  Hubungi Tim Kami
+                  Pilih Enterprise
                 </a>
               </div>
+            </div>
+
+            {/* Banner Khusus Pilot Project / Program Percontohan */}
+            <div className="mt-8 bg-slate-900/80 border border-slate-800 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="space-y-1 text-center sm:text-left">
+                <div className="inline-flex items-center gap-2 text-emerald-400 font-bold text-xs">
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Program Mitra Percontohan Nasional (Pilot Project)</span>
+                </div>
+                <p className="text-slate-400 text-xs leading-relaxed max-w-2xl">
+                  Seperti pada <strong>UPS HERU</strong> (upsheru.com), unit kelurahan terpilih yang bermitra dalam riset percontohan nasional mendapatkan lisensi gratis seumur hidup (Rp 0/bln) dengan seluruh fitur Pro aktif.
+                </p>
+              </div>
+              <a
+                href="#daftar"
+                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold shrink-0 transition-all"
+              >
+                Ajukan Program Pilot
+              </a>
             </div>
           </div>
         </section>
@@ -662,9 +714,10 @@ export default function O2WHeroCorePortal() {
                       onChange={(e) => setForm({ ...form, paketPilihan: e.target.value })}
                       className="w-full px-3 py-2.5 rounded-xl border border-slate-700 bg-slate-800/80 text-white text-xs outline-none focus:ring-2 focus:ring-emerald-500"
                     >
-                      <option value="starter">Paket Starter</option>
-                      <option value="pro">Paket Pro (TPS3R)</option>
-                      <option value="enterprise">Paket Enterprise</option>
+                      <option value="starter">Starter (Rp 349.000 / bln - Bank Sampah &amp; KSM)</option>
+                      <option value="pro">Pro (Rp 1.250.000 / bln - Standar TPS3R Kelurahan)</option>
+                      <option value="enterprise">Enterprise (Rp 2.990.000 / bln - Kawasan Industri/Swasta)</option>
+                      <option value="percontohan">Percontohan / Pilot Project (Riset Kerjasama)</option>
                     </select>
                   </div>
                 </div>

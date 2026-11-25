@@ -203,7 +203,14 @@ export async function POST(request: Request) {
           status: "aktif",
           domainSetupFee,
           setupFeePaid,
-          pricePerMonth: paketLangganan === "pro" ? 500000 : paketLangganan === "enterprise" ? 1500000 : 0,
+          pricePerMonth:
+            paketLangganan === "pro"
+              ? 1250000
+              : paketLangganan === "enterprise"
+              ? 2990000
+              : paketLangganan === "starter" || paketLangganan === "basic"
+              ? 349000
+              : 0,
         },
       });
     } catch (subErr) {
