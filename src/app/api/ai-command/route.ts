@@ -183,7 +183,7 @@ export async function GET(req: NextRequest) {
     const rawHost = req.headers.get("x-forwarded-host") || req.headers.get("host") || "";
     const { resolveTenantByHost } = await import("@/lib/tenant");
     const tenantCtx = resolveTenantByHost(rawHost);
-    const tenantId = session.tenantId || tenantCtx.tenant.id;
+    const tenantId = !tenantCtx.isCore ? tenantCtx.tenant.id : (session.tenantId || tenantCtx.tenant.id);
 
     // Ambil metrik riil terisolasi per tenant dari database WastePay
     const tenantScope = tenantCtx.isCore && session.role === "superadmin" ? {} : { tenantId };

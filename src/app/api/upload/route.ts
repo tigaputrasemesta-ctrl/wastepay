@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
     const tenantCtx = resolveTenantByHost(rawHost);
     const session = await getSession(request);
-    const tenantId = session?.tenantId || tenantCtx.tenant?.id || "common";
+    const tenantId = !tenantCtx.isCore ? tenantCtx.tenant?.id : (session?.tenantId || tenantCtx.tenant?.id || "common");
 
     const contentType = request.headers.get("content-type") || "";
     let buffer: Buffer;

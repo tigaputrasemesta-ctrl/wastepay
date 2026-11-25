@@ -38,13 +38,27 @@ export async function GET(request: Request) {
   // Isolasi Core Hub vs Tenant: o2whero.com adalah platform SaaS Control Plane, bukan TPS3R operasional
   const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
   const tenantCtx = resolveTenantByHost(rawHost);
-  const effectiveTenantId = session.tenantId || tenantCtx.tenant.id;
-  if (!tenantCtx.isCore && effectiveTenantId) {
-    where.tenantId = effectiveTenantId;
-  }
-  if (tenantCtx.isCore) {
+
+  // Jika diakses pada domain portal tenant operasional (misal: upsheru.com atau [slug].o2whero.com):
+  // Scope data warga SELALU mengikuti tenant portal domain tersebut (tenantCtx.tenant.id),
+  // baik yang mengakses adalah petugas/admin tenant bersangkutan maupun Superadmin platform yang sedang menginspeksi portal.
+  if (!tenantCtx.isCore) {
+    const activeTenantId = tenantCtx.tenant.id;
+    if (session.role !== "superadmin" && session.tenantId && session.tenantId !== activeTenantId) {
+      return NextResponse.json(
+        { error: `Akses ditolak: Akun Anda tidak terdaftar pada ${tenantCtx.tenant.namaMitra}` },
+        { status: 403 }
+      );
+    }
+    where.tenantId = activeTenantId;
+  } else {
+    // Jika diakses pada domain SaaS Control Plane (o2whero.com):
     const tenantIdParam = searchParams.get("tenantId") || searchParams.get("tenantSlug");
-    if (!tenantIdParam) {
+    if (tenantIdParam) {
+      where.tenantId = tenantIdParam;
+    } else if (session.role === "superadmin") {
+      // Superadmin di control plane tanpa filter spesifik dapat memonitor global
+    } else {
       return NextResponse.json({
         data: [],
         total: 0,
@@ -147,8 +161,11 @@ export async function GET(request: Request) {
     take = limit;
   }
 
-  // Scope where untuk perhitungan status badge (menghormati scope kelurahan jika ada)
+  // Scope where untuk perhitungan status badge (menghormati scope tenant dan kelurahan jika ada)
   const countWhere: Prisma.PelangganWhereInput = { deletedAt: null };
+  if (where.tenantId) {
+    countWhere.tenantId = where.tenantId;
+  }
   if (where.kelurahanId) {
     countWhere.kelurahanId = where.kelurahanId;
   }
@@ -333,7 +350,9 @@ export async function POST(request: Request) {
       finalWilayahId = w.id;
     }
 
-    const effectiveTenantId = session.tenantId || tenantCtx.tenant.id;
+    const effectiveTenantId = !tenantCtx.isCore
+      ? tenantCtx.tenant.id
+      : (session.role === "superadmin" && body.tenantId ? body.tenantId : (session.tenantId || tenantCtx.tenant.id));
 
     // Simpan foto rumah ke file storage jika berupa Base64 terisolasi per tenant
     const savedFotoRumah = await persistBase64Image(fotoRumah, "pelanggan", effectiveTenantId);

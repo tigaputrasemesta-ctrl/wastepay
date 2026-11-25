@@ -504,7 +504,9 @@ export async function handlePetaPinsGet(request: Request): Promise<NextResponse>
     const { resolveTenantByHost } = await import("@/lib/tenant");
     const tenantCtx = resolveTenantByHost(rawHost);
     const session = await getSession(request);
-    const effectiveTenantId = session?.tenantId || tenantCtx.tenant.id;
+    const effectiveTenantId = !tenantCtx.isCore
+      ? tenantCtx.tenant.id
+      : (session?.tenantId || tenantCtx.tenant.id);
     const targetTenantId = tenantCtx.isCore && session?.role === "superadmin" ? null : effectiveTenantId;
 
     const pins = await getLightweightMapPins(
@@ -546,7 +548,9 @@ export async function handlePelangganExportGet(request: Request): Promise<Respon
   const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
   const { resolveTenantByHost } = await import("@/lib/tenant");
   const tenantCtx = resolveTenantByHost(rawHost);
-  const effectiveTenantId = session?.tenantId || tenantCtx.tenant.id;
+  const effectiveTenantId = !tenantCtx.isCore
+    ? tenantCtx.tenant.id
+    : (session?.tenantId || tenantCtx.tenant.id);
   if (!tenantCtx.isCore && effectiveTenantId) {
     whereClause.tenantId = effectiveTenantId;
   }
