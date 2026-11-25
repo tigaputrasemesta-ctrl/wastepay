@@ -89,10 +89,16 @@ graph TD
    - **Kelurahan**: Master kelurahan dengan kode unik (contoh: `HRJ` untuk Harjamukti).
    - **Wilayah / RW / RT**: Pemetaan unit perumahan warga (misal RW 01 s/d RW 15).
    - **Zona Operasional**: Pengelompokan wilayah berdasarkan kapasitas armada (misal Zona Utara, Zona Perumahan A).
-2. **Master Pelanggan / Warga**:
-   - Data warga mencakup: Nama Kepala Keluarga/Usaha, Nomor WhatsApp, Alamat Lengkap, RT/RW, Kategori Tarif (`rumah_tangga`, `bisnis`, `kost`), dan Koordinat GPS Rumah.
-   - Penomoran Kode Pelanggan Unik otomatis dengan format: `KODE_KELURAHAN + TAHUN + NOMOR_URUT` (contoh: `HRJ-26-00125`).
-   - Fitur QR Code Rumah: Barcode/QR dapat dicetak dan ditempel di pagar rumah warga untuk verifikasi angkut cepat oleh petugas.
+2. **Master Pelanggan / Warga (Pola Standar Pilot Project UPS HERU)**:
+   - Data warga mencakup: Nama Kepala Keluarga/Usaha, Nomor WhatsApp (`noTelepon`), Alamat Lengkap, RT/RW, Kategori Tarif (`rumah_tangga`, `bisnis`, `kost`), dan Koordinat GPS Rumah.
+   - **Nomor WhatsApp sebagai Kode Pelanggan (`kodePelanggan = noTelepon`)**:
+     * Mengadopsi standar operasional **UPS HERU (`tenant-pilot-upsheru`)**: Kode pelanggan **langsung menggunakan nomor WhatsApp** yang telah dinormalisasi (contoh: `081290429898`).
+     * **Keunggulan Nir-Hafalan (*Zero-Memorization*)**: Warga dan pengurus RT tidak perlu menghafal kode alfanumerik yang rumit. Nomor HP warga berfungsi ganda sebagai identitas resmi pelanggan di sistem.
+     * **Identifikasi Otomatis di Bot WhatsApp**: Saat warga mengirim pesan ke bot WhatsApp tenant, sistem langsung mengenali identitas, status iuran, dan alamat warga dari nomor pengirim secara instan tanpa perlu memasukkan ID akun.
+     * **Kemudahan Cek Tagihan Publik (`/bayar`)**: Di portal publik tenant (misal `https://upsheru.com/bayar`), warga cukup mengetikkan nomor WhatsApp mereka untuk melihat total tagihan dan membayar via QRIS.
+   - **Stiker QR Code Rumah**:
+     * Stiker barcode/QR yang ditempel di pagar rumah warga meng-encode URL pembayaran instan: `https://[domain-tenant]/bayar?kode=[nomor_wa]`.
+     * Petugas lapangan saat mengangkut sampah atau warga sendiri dapat memindai QR code tersebut menggunakan ponsel untuk mengecek status lunas dan jadwal ritase.
 
 ---
 
