@@ -11,6 +11,7 @@ import { useProximityPickup, type ProximityTugas } from "@/hooks/useProximityPic
 import { useWakeLock } from "@/hooks/useWakeLock";
 import { playSound, speakText, vibrate } from "@/lib/mobile-feedback";
 import { todayLocalISO } from "@/lib/utils";
+import { toast } from "@/components/Toast";
 
 type Profil = { id: number; nama: string; jabatan: string | null; kelurahan: string | null };
 type Kendaraan = { id: number; nama: string; platNomor: string | null; jenis: string; petugas?: { id: number; nama: string } | null };
@@ -312,7 +313,7 @@ export default function MobileAngkut() {
       speakText(`Target ditemukan: ${found.pelanggan.nama}`);
       forceOpenTask(found.id);
     } else {
-      alert(`Kode pelanggan "${code}" tidak ditemukan dalam jadwal rute hari ini.`);
+      toast(`Kode pelanggan "${code}" tidak ditemukan dalam jadwal rute hari ini.`, "warning");
     }
   }
 

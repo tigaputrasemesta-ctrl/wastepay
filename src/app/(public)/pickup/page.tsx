@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "@/components/Toast";
 import {
   Truck,
   Hammer,
@@ -107,7 +108,7 @@ export default function PickupSekaliAngkutPage() {
   // Handle GPS Auto-detect
   const handleGetLocation = () => {
     if (!navigator.geolocation) {
-      alert("Browser Anda tidak mendukung deteksi lokasi otomatis");
+      toast("Browser Anda tidak mendukung deteksi lokasi otomatis", "warning");
       return;
     }
     setLocatingGps(true);
@@ -120,7 +121,7 @@ export default function PickupSekaliAngkutPage() {
       (err) => {
         console.warn("Gagal deteksi GPS:", err.message);
         setLocatingGps(false);
-        alert("Gagal membaca titik GPS. Silakan pastikan izin lokasi telah aktif.");
+        toast("Gagal membaca titik GPS. Silakan pastikan izin lokasi telah aktif.", "warning");
       },
       { enableHighAccuracy: true, timeout: 10000 }
     );
@@ -132,7 +133,7 @@ export default function PickupSekaliAngkutPage() {
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      alert("Ukuran foto maksimal 5MB");
+      toast("Ukuran foto maksimal 5MB", "warning");
       return;
     }
 
@@ -148,11 +149,11 @@ export default function PickupSekaliAngkutPage() {
       if (data.ok && data.url) {
         setFotoSampah(data.url);
       } else {
-        alert(data.error || "Gagal mengunggah foto");
+        toast(data.error || "Gagal mengunggah foto", "error");
       }
     } catch (err) {
       console.error("Upload error:", err);
-      alert("Terjadi kesalahan saat mengunggah foto.");
+      toast("Terjadi kesalahan saat mengunggah foto.", "error");
     } finally {
       setUploadingFoto(false);
     }

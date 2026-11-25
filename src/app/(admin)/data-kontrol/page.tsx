@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { toast } from "@/components/Toast";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -299,7 +300,7 @@ export default function DataKontrolPage() {
   // Execute Blast
   const handleExecuteBlast = async () => {
     if (blastTargets.length === 0) {
-      alert("Tidak ada target calon pelanggan yang valid untuk di-blast.");
+      toast("Tidak ada target calon pelanggan yang valid untuk di-blast.", "warning");
       return;
     }
 
@@ -325,7 +326,7 @@ export default function DataKontrolPage() {
       setBlastResult(data.result);
       fetchData(true); // refresh live status
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Terjadi kesalahan saat blast");
+      toast(err instanceof Error ? err.message : "Terjadi kesalahan saat blast", "error");
     } finally {
       setIsSendingBlast(false);
     }

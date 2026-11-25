@@ -73,6 +73,22 @@ type ArmadaReportData = {
   };
 };
 
+function formatJamWIB(isoDateStr?: string | null): string {
+  if (!isoDateStr) return "--:--";
+  try {
+    const d = new Date(isoDateStr);
+    if (isNaN(d.getTime())) return "--:--";
+    return new Intl.DateTimeFormat("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "Asia/Jakarta",
+      hour12: false,
+    }).format(d);
+  } catch {
+    return "--:--";
+  }
+}
+
 export default function MobileHome() {
   const [profil, setProfil] = useState<Profil | null>(null);
   const [absen, setAbsen] = useState<StatusAbsen>(null);
@@ -419,7 +435,7 @@ export default function MobileHome() {
           <div className="min-w-0">
             <span className="text-[10px] font-medium text-slate-500 block truncate">Jam Masuk</span>
             <span className="text-base font-extrabold text-slate-900 tabular-nums">
-              {sudahMasuk && absen?.waktuMasuk ? absen.waktuMasuk.slice(11, 16) : "--:--"}
+              {sudahMasuk && absen?.waktuMasuk ? formatJamWIB(absen.waktuMasuk) : "--:--"}
             </span>
           </div>
         </Link>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "@/components/Toast";
 import Link from "next/link";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
@@ -77,7 +78,7 @@ export default function KlaimPage() {
       setNominal("");
       setKeterangan("");
       fetchData();
-      alert("Klaim berhasil dikirim!");
+      toast("Klaim berhasil dikirim!", "success");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Gagal mengirim klaim");
     } finally {
@@ -101,7 +102,7 @@ export default function KlaimPage() {
       
       fetchData();
     } catch (e) {
-      alert(e instanceof Error ? e.message : "Gagal memproses klaim");
+      toast(e instanceof Error ? e.message : "Gagal memproses klaim", "error");
     } finally {
       setProcessingId(null);
     }

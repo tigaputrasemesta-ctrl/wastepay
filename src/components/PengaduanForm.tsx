@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { kompresGambar } from "@/lib/foto";
+import { toast } from "@/components/Toast";
 
 const JENIS: { value: string; label: string }[] = [
   { value: "tidak_diangkut", label: "Sampah tidak diangkut sesuai jadwal" },
@@ -40,7 +41,7 @@ export default function PengaduanForm() {
       const base64 = await kompresGambar(file);
       setFoto(base64);
     } catch (err: any) {
-      alert("Gagal memproses gambar: " + (err?.message || "Format gambar tidak didukung"));
+      toast("Gagal memproses gambar: " + (err?.message || "Format gambar tidak didukung"), "error");
     } finally {
       setCompressing(false);
       if (kameraInputRef.current) kameraInputRef.current.value = "";

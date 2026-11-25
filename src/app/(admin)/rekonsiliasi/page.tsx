@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { toast } from "@/components/Toast";
 import Link from "next/link";
 import { formatRupiah, formatDate } from "@/lib/utils";
 
@@ -45,7 +46,7 @@ export default function RekonsiliasiPage() {
       setForm({ totalTunaiFisik: "", catatan: "" });
       fetchData();
     } else {
-      alert("Gagal membuat rekonsiliasi");
+      toast("Gagal membuat rekonsiliasi", "error");
     }
   }
 

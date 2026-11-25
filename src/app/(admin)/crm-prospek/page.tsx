@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { toast } from "@/components/Toast";
+import { TableSkeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import {
   UserPlus,
@@ -100,10 +102,10 @@ export default function CrmProspekPage() {
         });
         loadLeads();
       } else {
-        alert(data.error || "Gagal menyimpan lead calon mitra");
+        toast(data.error || "Gagal menyimpan lead calon mitra", "error");
       }
     } catch (err: any) {
-      alert("Terjadi kesalahan: " + err.message);
+      toast("Terjadi kesalahan: " + err.message, "error");
     } finally {
       setSubmitting(false);
     }
@@ -255,9 +257,8 @@ export default function CrmProspekPage() {
         </div>
 
         {loading ? (
-          <div className="py-16 text-center text-slate-500">
-            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-indigo-600" />
-            <p className="text-xs">Memuat prospek kemitraan dari database...</p>
+          <div className="p-4">
+            <TableSkeleton rows={5} cols={6} className="border-none shadow-none" />
           </div>
         ) : filteredLeads.length === 0 ? (
           <div className="p-12 text-center text-slate-500">

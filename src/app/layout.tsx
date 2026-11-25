@@ -76,6 +76,7 @@ export const metadata: Metadata = {
 };
 
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { ToastProvider } from "@/components/Toast";
 
 export default function RootLayout({
   children,
@@ -113,7 +114,9 @@ export default function RootLayout({
           Langsung ke konten utama
         </a>
         <ThemeProvider>
-          {children}
+          <ToastProvider>
+            {children}
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>

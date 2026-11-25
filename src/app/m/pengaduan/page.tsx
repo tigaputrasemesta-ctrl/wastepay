@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import Link from "next/link";
+import { toast } from "@/components/Toast";
 import {
   AlertTriangle,
   ChevronLeft,
@@ -119,11 +120,11 @@ export default function MobilePengaduanArmada() {
         setTanggapanText("");
         loadKomplain();
       } else {
-        alert("Gagal memperbarui status komplain");
+        toast("Gagal memperbarui status komplain", "error");
       }
     } catch (err) {
       console.error(err);
-      alert("Terjadi kesalahan jaringan");
+      toast("Terjadi kesalahan jaringan", "error");
     } finally {
       setSubmitting(false);
     }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { toast } from "@/components/Toast";
 import Link from "next/link";
 import { X } from "lucide-react";
 import { formatDate, todayLocalISO } from "@/lib/utils";
@@ -151,7 +152,7 @@ export default function PengangkutanPage() {
 
     // Petugas wajib pilih kendaraan saat menandai sampah sudah diambil
     if (user?.role === "petugas" && editForm.status === "sudah_diambil" && !editForm.kendaraanId) {
-      alert("Pilih kendaraan yang digunakan untuk pickup dulu");
+      toast("Pilih kendaraan yang digunakan untuk pickup dulu", "warning");
       return;
     }
     body.kendaraanId = editForm.kendaraanId || null;
@@ -165,7 +166,7 @@ export default function PengangkutanPage() {
       setUpdating(null);
       fetchData();
     } else {
-      alert("Gagal mengupdate");
+      toast("Gagal mengupdate pengangkutan", "error");
     }
   }
 

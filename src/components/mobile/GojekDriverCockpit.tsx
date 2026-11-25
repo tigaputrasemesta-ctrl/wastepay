@@ -14,6 +14,7 @@ import {
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import SlideToConfirm from "./SlideToConfirm";
+import { toast } from "@/components/Toast";
 
 const MotionDiv = motion.div as any;
 
@@ -510,7 +511,7 @@ export default function GojekDriverCockpit({
       vibrate("success");
     } else {
       speakText(`Kode ${code} tidak ada di rute ini.`);
-      alert(`Kode pelanggan "${code}" tidak ditemukan dalam antrean rute hari ini.`);
+      toast(`Kode pelanggan "${code}" tidak ditemukan dalam antrean rute hari ini.`, "warning");
     }
   }
 

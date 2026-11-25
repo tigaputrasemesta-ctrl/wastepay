@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useCallback, createContext, useContext } from "react";
+import { useState, useCallback, createContext, useContext, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
-type ToastType = "success" | "error" | "warning" | "info";
+export type ToastType = "success" | "error" | "warning" | "info";
 
 type Toast = {
   id: number;
@@ -19,6 +19,16 @@ const ToastContext = createContext<ToastContextType>({ showToast: () => {} });
 
 export function useToast() {
   return useContext(ToastContext);
+}
+
+let globalShowToast: ((message: string, type?: ToastType) => void) | null = null;
+
+export function toast(message: string, type: ToastType = "success") {
+  if (globalShowToast) {
+    globalShowToast(message, type);
+  } else if (typeof window !== "undefined") {
+    console.log(`[Toast ${type}]`, message);
+  }
 }
 
 const ICONS: Record<ToastType, React.ReactNode> = {
@@ -74,6 +84,15 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const removeToast = useCallback((id: number) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
+
+  useEffect(() => {
+    globalShowToast = showToast;
+    return () => {
+      if (globalShowToast === showToast) {
+        globalShowToast = null;
+      }
+    };
+  }, [showToast]);
 
   return (
     <ToastContext.Provider value={{ showToast }}>

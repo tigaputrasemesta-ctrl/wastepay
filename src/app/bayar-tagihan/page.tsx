@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "@/components/Toast";
 import {
   formatRupiahSkylite,
   formatTanggalIndo,
@@ -126,7 +127,7 @@ function BayarTagihanContent() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 2.8 * 1024 * 1024) {
-      alert("Ukuran foto bukti transfer maksimal 2.5MB.");
+      toast("Ukuran foto bukti transfer maksimal 2.5MB.", "warning");
       return;
     }
     const reader = new FileReader();
@@ -235,11 +236,11 @@ function BayarTagihanContent() {
         // Alihkan langsung ke halaman pembayaran resmi Duitku
         window.location.href = data.paymentUrl;
       } else {
-        alert(data.error || "Gagal membuat transaksi pembayaran. Silakan coba kembali.");
+        toast(data.error || "Gagal membuat transaksi pembayaran. Silakan coba kembali.", "error");
         setProcessingPayment(false);
       }
     } catch {
-      alert("Terjadi kesalahan koneksi ke payment gateway. Silakan refresh dan coba lagi.");
+      toast("Terjadi kesalahan koneksi ke payment gateway. Silakan refresh dan coba lagi.", "error");
       setProcessingPayment(false);
     }
   };
@@ -268,7 +269,7 @@ function BayarTagihanContent() {
     e.preventDefault();
     if (!tagihan) return;
     if (!buktiBayarFile) {
-      alert("Silakan pilih foto bukti transfer terlebih dahulu.");
+      toast("Silakan pilih foto bukti transfer terlebih dahulu.", "warning");
       return;
     }
     setUploadingBukti(true);
@@ -291,10 +292,10 @@ function BayarTagihanContent() {
         setShowUploadForm(false);
         loadTagihan(tagihan.noInvoice);
       } else {
-        alert(data.error || "Gagal mengirim bukti transfer.");
+        toast(data.error || "Gagal mengirim bukti transfer.", "error");
       }
     } catch {
-      alert("Terjadi kendala jaringan saat mengunggah bukti.");
+      toast("Terjadi kendala jaringan saat mengunggah bukti.", "error");
     } finally {
       setUploadingBukti(false);
     }

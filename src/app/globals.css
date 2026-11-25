@@ -400,7 +400,7 @@
 
   /* Auto dark cards and surface panels */
   .dark :is(main, aside, header, footer, nav, [role="dialog"], .modal-content) .bg-white:not(.print-preserve):not(.print-card) {
-    background-color: #18181b !important; /* zinc-900 */
+    background-color: #18181b; /* zinc-900 */
   }
 
   .dark :is(main, aside, header, footer, nav, [role="dialog"], .modal-content) :is(
@@ -417,7 +417,7 @@
     .bg-\[\#f8fafb\]\/90,
     .bg-\[\#F8FAFC\]\/90
   ) {
-    background-color: #09090b !important; /* zinc-950 */
+    background-color: #09090b; /* zinc-950 */
   }
 
   .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) :is(
@@ -425,7 +425,7 @@
     .bg-slate-100\/70,
     .bg-slate-100\/80
   ) {
-    background-color: #27272a !important; /* zinc-800 */
+    background-color: #27272a; /* zinc-800 */
   }
 
   /* Auto dark borders */
@@ -438,14 +438,14 @@
     .border-slate-200\/90,
     .border-slate-300
   ) {
-    border-color: #27272a !important; /* zinc-800 */
+    border-color: #27272a; /* zinc-800 */
   }
 
   .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) :is(
     .divide-slate-100,
     .divide-slate-200
   ) {
-    border-color: #27272a !important;
+    border-color: #27272a;
   }
 
   /* Auto dark text contrast */
@@ -453,21 +453,21 @@
     .text-slate-900,
     .text-slate-800
   ) {
-    color: #fafafa !important; /* zinc-50 */
+    color: #fafafa; /* zinc-50 */
   }
 
   .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) :is(
     .text-slate-700,
     .text-slate-600
   ) {
-    color: #d4d4d8 !important; /* zinc-300 */
+    color: #d4d4d8; /* zinc-300 */
   }
 
   .dark :is(main, aside, header, nav, [role="dialog"], .modal-content) :is(
     .text-slate-500,
     .text-slate-400
   ) {
-    color: #a1a1aa !important; /* zinc-400 */
+    color: #a1a1aa; /* zinc-400 */
   }
 
   /* Auto dark form controls */
