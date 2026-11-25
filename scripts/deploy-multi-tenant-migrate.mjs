@@ -17,7 +17,6 @@
 import fs from "node:fs";
 import path from "node:path";
 import pg from "pg";
-import bcrypt from "bcryptjs";
 
 const { Pool } = pg;
 
@@ -243,7 +242,8 @@ async function main() {
     );
 
     let upsheruUserId;
-    const defaultAdminHash = await bcrypt.hash("Hero2026!", 12);
+    // Precomputed bcrypt cost 12 hash untuk "Hero2026!" tanpa runtime dependency bcrypt
+    const defaultAdminHash = "$2b$12$3ztQ.y84FdNIeOqw7dDfPOXgJ2r.6mVtzUOFMWb63ns8aPSdOLeiK";
 
     if (existingAdminRes.rows.length > 0) {
       upsheruUserId = existingAdminRes.rows[0].id;
