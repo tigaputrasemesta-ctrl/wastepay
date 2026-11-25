@@ -1,208 +1,158 @@
-# Cetak Biru Operasional & Arsitektur Multi-Tenant O2W HERO
-## (O2W Hero Comprehensive Operational & Multi-Tenant Architecture Blueprint)
+# Panduan Lengkap & Penjelasan Fitur O2W HERO
+## Sistem Aplikasi Pengelolaan Sampah & Daur Ulang Terpadu
 
-Dokumen ini merupakan panduan arsitektur dan standar operasional resmi (**SOP**) untuk ekosistem **O2W HERO** (`o2whero.com` dan portal tenant mitra seperti `upsheru.com`). Cetak biru ini mengadaptasi dan menyempurnakan model multi-outlet terintegrasi (seperti pada platform Smartlink) yang disesuaikan secara khusus untuk industri persampahan, ekonomi sirkular, TPS3R, dan Bank Sampah di Indonesia.
-
----
-
-## I. Perbandingan Paradigma: Smartlink vs O2W HERO
-
-| Parameter | Smartlink (Bisnis Laundry) | O2W HERO (Bisnis Persampahan & TPS3R) |
-| :--- | :--- | :--- |
-| **Pusat / Induk** | SmartOwner Platform (`dashboard.smartlink.id`) | O2W HERO Core Platform (`o2whero.com` / `tenant-core-o2w`) |
-| **Tenant / Unit** | Outlet Laundry / Cabang Kemitraan | Mitra Pengelola (TPS3R, Bank Sampah, Swasta, DLH) |
-| **Model Alur Nilai** | *Satu Arah*: Konsumen bayar jasa cuci | *Dua Arah (Dual-Flow)*: Warga bayar retribusi jasa angkut DAN/ATAU warga menerima saldo tabungan dari setor sampah daur ulang |
-| **Struktur Spasial** | Lokasi outlet fisik (toko/kios) | Hirarki Wilayah Geospasial: Kota $\rightarrow$ Kelurahan $\rightarrow$ RW $\rightarrow$ RT $\rightarrow$ Zona $\rightarrow$ Rute Armada |
-| **Armada & Logistik** | Kurir motor antar-jemput baju | Truk Engkel, Armroll Kontainer, Gerobak Motor (Cator) dengan rute terjadwal |
-| **Integrasi IoT** | Smart Relay mesin cuci & pengering (*Snapbridge*) | Timbangan Gantung Digital (Bluetooth), Timbangan Jembatan Truk TPA, GPS Tracker Armada |
-| **Penagihan (Billing)** | Transaksi per nota / kiloan langsung | Retribusi bulanan berkala per KK, Blast WA tagihan massal per RT, Bayar Kolektif via Pengurus RT |
-| **Layanan Pengaduan** | Kerusakan pakaian / komplain cucian | Sampah tidak terangkut, jadwal terlewat, sampah liar menumpuk dengan foto geolokasi |
-| **Monetisasi Platform** | Biaya lisensi per outlet + token M-Koin | Biaya Onboarding Domain (Rp 2.000.000) + Micro-Fee Komisi per Transaksi Lunas (Rp 1.000 + 0%) |
+Dokumen ini menjelaskan seluruh alur kerja dan fitur **O2W HERO** menggunakan bahasa Indonesia yang **sederhana, jelas, dan mudah dipahami** oleh siapa saja—baik pemilik usaha sampah, pengurus RT/RW, petugas lapangan, maupun masyarakat umum.
 
 ---
 
-## II. Hirarki & Arsitektur 4 Pilar O2W HERO
+## 🌟 Apa Itu O2W HERO?
+
+**O2W HERO** adalah aplikasi pintar untuk membantu tempat pengolahan sampah (**TPS3R**, **Bank Sampah**, **Pengangkut Swasta**, maupun **Dinas Lingkungan Hidup**) agar operasional penarikan sampah, penagihan iuran warga, dan tabungan sampah daur ulang menjadi **serba otomatis, rapi, dan transparan**.
+
+Dalam sistem ini, ada **4 pihak yang saling terhubung**:
+1. **Pengelola Pusat (O2W HERO)**: Penyedia sistem aplikasi dan pembayaran online.
+2. **Mitra / Unit Pengelola (seperti UPS HERU, Bank Sampah Berkah, TPS3R Kelurahan)**: Badan yang mengelola operasional sampah di wilayahnya masing-masing dengan website mereka sendiri (contoh: `upsheru.com`).
+3. **Petugas Lapangan (Supir Truk, Penarik Gerobak Motor / Cator, dan Petugas Tagih)**: Tim yang bertugas keliling mengangkut sampah warga setiap hari.
+4. **Warga / Nasabah (Rumah Tangga, Warung, Toko, Kost)**: Warga yang sampahnya diangkut rutin dan membayar iuran tiap bulan.
+
+---
+
+## 💡 Rombakan 6 Paket Fitur Utama O2W HERO
+
+Berikut adalah pembagian fitur O2W HERO yang sudah disederhanakan agar langsung tepat sasaran untuk kebutuhan lapangan:
 
 ```mermaid
-graph TD
-    subgraph Pilar 1: O2W HERO Core Platform (o2whero.com)
-        CoreAdmin["Superadmin Core (o2whero.com)"]
-        Onboard["Onboarding Mitra & Provisioning Domain"]
-        FeeEngine["Platform Fee Engine & Virtual Ledger"]
-        GatewayPool["Duitku Centralized Payment Pool"]
-        WAPool["Monitoring Kuota WhatsApp & Alert Overdraft"]
-    end
-
-    subgraph Pilar 2: Portal Tenant / Mitra (contoh: upsheru.com)
-        TenantAdmin["Admin & Direksi Mitra (Tenant Portal)"]
-        GeoData["Master Wilayah (Kelurahan/RW/RT) & Pelanggan"]
-        TarifPaket["Katalog Tarif (Rumah Tangga/Bisnis/Kost)"]
-        JadwalRute["Penjadwalan Ritase & Penugasan Armada"]
-        Keuangan["Pembukuan Kas, Laba Rugi, & Pengeluaran"]
-    end
-
-    subgraph Pilar 3: Operasional Lapangan (Petugas & Driver)
-        DriverApp["Driver / Cator Mobile Web (/m/angkut, /driver/peta)"]
-        AbsensiGPS["Absensi Geotagging & Shift Kerja (/m/absen)"]
-        TimbanganIoT["Pencatatan Volume (m3) & Berat Timbangan (kg)"]
-        KlaimBBM["Klaim Pengeluaran Operasional & BBM (/m/klaim)"]
-    end
-
-    subgraph Pilar 4: Layanan Publik & Warga (Masyarakat)
-        WargaPortal["Portal Cek Tagihan Publik (/bayar)"]
-        DuitkuQRIS["Pembayaran QRIS / VA / E-Wallet Instan"]
-        DualWABot["WhatsApp Notifikasi (Bot Tagihan & CS Pengaduan)"]
-        AduanPublik["Form Pengaduan Sampah Tercecer (/pengaduan)"]
-    end
-
-    CoreAdmin --> TenantAdmin
-    TenantAdmin --> DriverApp
-    TenantAdmin --> WargaPortal
-    DriverApp --> TimbanganIoT
-    WargaPortal --> DuitkuQRIS
-    DuitkuQRIS --> GatewayPool
-    GatewayPool --> FeeEngine
+flowchart TD
+    A["Paket 1: Urusan Warga<br/>(Nomor WA = Nomor Pelanggan)"] --> B["Paket 2: Penagihan & Pembayaran<br/>(Otomatis Tiap Bulan + QRIS)"]
+    B --> C["Paket 3: Supir & Gerobak Sampah<br/>(Panduan Rute di HP & Absen GPS)"]
+    C --> D["Paket 4: Tabungan Sampah<br/>(Pilah Sampah Jadi Uang / Bebas Iuran)"]
+    D --> E["Paket 5: Pengaduan Warga<br/>(Lapor Sampah Tercecer Cepat Beres)"]
+    E --> F["Paket 6: Pembagian Hasil & Laporan Kas<br/>(Duit Masuk Rekening Tiap Minggu)"]
 ```
 
 ---
 
-## III. 8 Alur Operasional Detail (End-to-End Flows)
+### Paket 1: Urusan Warga Jadi Super Gampang (Cukup Pakai Nomor WhatsApp)
 
-### Flow 1: Onboarding Tenant & White-Label Domain Setup
-1. **Registrasi Mitra**:
-   - Calon mitra (TPS3R/Bank Sampah/Vendor) mendaftar mandiri via form kemitraan atau di-input oleh tim sales O2W Core di `/tenants`.
-   - Data wajib: Nama Mitra, Penanggung Jawab, Kontak WA, Email, Alamat, Tipe Pengelola (`tps3r`, `bank_sampah`, `swasta`, `dlh`), dan Wilayah Layanan.
-2. **Paket & Monitisasi Domain**:
-   - Memilih paket langganan (`percontohan`, `basic`, `pro`, `enterprise`).
-   - Penetapan biaya setup domain kustom (standar Rp 2.000.000 flat). Status pembayaran dicatat di `TenantSubscription.setupFeePaid`.
-3. **Provisioning Domain & Reverse Proxy**:
-   - Domain kustom (misal `upsheru.com`) diarahkan ke IP VPS SumoPod (`43.173.40.166`).
-   - Caddy Server secara otomatis menerbitkan sertifikat SSL Let's Encrypt TLS tanpa intervensi manual.
-   - Record `TenantDomain` dibuat dengan status `isPrimary: true, sslStatus: 'active'`.
-4. **Akun Administrator Tenant**:
-   - Sistem membuat akun Admin pertama mitra dan menghubungkannya ke `TenantMembership` (`role: 'admin', aktif: true`).
+*Masalah Lapangan Lama:* Warga sering lupa nomor pelanggan atau kartu tagihan hilang, sehingga petugas kasir kesulitan mencari data.
 
----
-
-### Flow 2: Setup Wilayah, Zonasi Geospasial, & Basis Data Warga
-1. **Hirarki Spasial**:
-   - **Kelurahan**: Master kelurahan dengan kode unik (contoh: `HRJ` untuk Harjamukti).
-   - **Wilayah / RW / RT**: Pemetaan unit perumahan warga (misal RW 01 s/d RW 15).
-   - **Zona Operasional**: Pengelompokan wilayah berdasarkan kapasitas armada (misal Zona Utara, Zona Perumahan A).
-2. **Master Pelanggan / Warga (Pola Standar Pilot Project UPS HERU)**:
-   - Data warga mencakup: Nama Kepala Keluarga/Usaha, Nomor WhatsApp (`noTelepon`), Alamat Lengkap, RT/RW, Kategori Tarif (`rumah_tangga`, `bisnis`, `kost`), dan Koordinat GPS Rumah.
-   - **Nomor WhatsApp sebagai Kode Pelanggan (`kodePelanggan = noTelepon`)**:
-     * Mengadopsi standar operasional **UPS HERU (`tenant-pilot-upsheru`)**: Kode pelanggan **langsung menggunakan nomor WhatsApp** yang telah dinormalisasi (contoh: `081290429898`).
-     * **Keunggulan Nir-Hafalan (*Zero-Memorization*)**: Warga dan pengurus RT tidak perlu menghafal kode alfanumerik yang rumit. Nomor HP warga berfungsi ganda sebagai identitas resmi pelanggan di sistem.
-     * **Identifikasi Otomatis di Bot WhatsApp**: Saat warga mengirim pesan ke bot WhatsApp tenant, sistem langsung mengenali identitas, status iuran, dan alamat warga dari nomor pengirim secara instan tanpa perlu memasukkan ID akun.
-     * **Kemudahan Cek Tagihan Publik (`/bayar`)**: Di portal publik tenant (misal `https://upsheru.com/bayar`), warga cukup mengetikkan nomor WhatsApp mereka untuk melihat total tagihan dan membayar via QRIS.
-   - **Stiker QR Code Rumah**:
-     * Stiker barcode/QR yang ditempel di pagar rumah warga meng-encode URL pembayaran instan: `https://[domain-tenant]/bayar?kode=[nomor_wa]`.
-     * Petugas lapangan saat mengangkut sampah atau warga sendiri dapat memindai QR code tersebut menggunakan ponsel untuk mengecek status lunas dan jadwal ritase.
+*Solusi O2W HERO:*
+1. **Nomor WhatsApp Langsung Jadi Nomor Pelanggan**:
+   - Warga tidak perlu menghafal kode aneh seperti `HRJ-2026-001`.
+   - Cukup sebutkan nomor WhatsApp (contoh: `081290429898`), data rumah dan status iuran langsung terbuka.
+2. **Cek Tagihan Mandiri Tanpa Ribet**:
+   - Warga cukup membuka website (misal: `upsheru.com/bayar`) lalu mengetikkan nomor WhatsApp sendiri. Total tagihan bulan ini langsung muncul di layar HP.
+3. **Stiker Barcode / QR di Pagar Rumah**:
+   - Tiap rumah bisa ditempeli stiker barcode kecil.
+   - Petugas yang lewat tinggal scan pakai kamera HP untuk cek apakah rumah tersebut sudah bayar iuran atau belum.
+4. **Warga Bisa Daftar Sendiri Lewat HP**:
+   - Warga baru cukup mengisi nama, nomor WA, dan alamat lewat web pendaftaran tanpa harus datang ke kantor.
 
 ---
 
-### Flow 3: Dual Transaksi Ekonomi Sampah (Retribusi vs Bank Sampah)
-Karakteristik unik O2W HERO yang membedakannya dari sistem POS biasa:
+### Paket 2: Penagihan & Pembayaran Otomatis (Bebas Ribet & Hemat Kertas)
 
-```
-[ Warga / Nasabah ]
-    │
-    ├── (A) Membayar Jasa Angkut Bulanan ───────► [ Kas Masuk Mitra (Retribusi) ]
-    │                                                   │ (Dipotong Fee O2W Rp 1.000)
-    └── (B) Menyetor Sampah Terpilah ───────────► [ Saldo Tabungan Bank Sampah ]
-              (Kardus, Plastik, Logam)                  │
-                                                        ├── 1. Ditarik Tunai
-                                                        └── 2. Auto-Debit Bayar Tagihan (Cross-Offset)
-```
+*Masalah Lapangan Lama:* Tagihan harus dicetak di kertas satu per satu, petugas tagih harus bolak-balik menagih ke rumah, dan rawan uang setoran tercecer.
 
-1. **Jalur A: Retribusi Jasa Angkut (Revenue Inflow)**:
-   - Warga membayar iuran bulanan tetap (misal Rp 35.000 - Rp 50.000/bulan) untuk pengambilan sampah 2-3 kali seminggu.
-2. **Jalur B: Tabungan Bank Sampah (Circular Incentive Outflow)**:
-   - Warga memilah sampah anorganik di rumah.
-   - Petugas/kasir menimbang sampah per kategori dengan harga per kg yang terdaftar di sistem.
-   - Nilai rupiah masuk ke buku tabungan digital nasabah.
-3. **Mekanisme Cross-Offset (Potong Otomatis)**:
-   - Warga dapat memilih opsi: Saldo tabungan sampah secara otomatis memotong tagihan retribusi bulanan mereka. Jika saldo cukup, iuran menjadi Rp 0 (gratis iuran karena rajin memilah).
+*Solusi O2W HERO:*
+1. **Tagihan Otomatis Terbit Tiap Awal Bulan**:
+   - Tiap tanggal 1, sistem otomatis membuatkan tagihan untuk semua warga aktif dengan batas jatuh tempo tanggal 15.
+2. **Pengingat Tagihan Otomatis via WhatsApp (Bot WA)**:
+   - Sistem mengirim pesan WhatsApp otomatis yang sopan ke HP warga: *"Halo Bpk/Ibu, tagihan iuran kebersihan bulan ini sebesar Rp 35.000 sudah terbit. Silakan bayar lewat link berikut..."*
+3. **Bisa Bayar Pakai QRIS & Transfer Bank (Online)**:
+   - Warga tinggal scan kode **QRIS** dari aplikasi perbankan apa saja (BCA, Mandiri, BRI, BNI) atau dompet digital (GoPay, OVO, DANA, ShopeePay).
+   - Begitu transfer berhasil, status langsung berubah jadi **LUNAS** dalam 1 detik!
+4. **Kuitansi Resmi Langsung Dikirim ke WhatsApp**:
+   - Warga otomatis menerima bukti kuitansi lunas format PDF lewat WhatsApp. Tidak perlu lagi kuitansi kertas manual.
+5. **Fitur Bayar Sekaligus Satu RT (Bayar Kolektif)**:
+   - Untuk perumahan yang iurannya dikumpulkan oleh pengurus RT, Pak RT bisa membayar tagihan 50 rumah warganya sekaligus dalam 1 kali transfer QRIS/VA.
 
 ---
 
-### Flow 4: Logistik Lapangan, Armada, & IoT Timbangan
-1. **Penjadwalan Ritase (Dispatch Engine)**:
-   - Admin tenant membuat jadwal rutin: Hari pengangkutan (Senin-Kamis atau Selasa-Jumat), jam operasional, armada kendaraan (plat nomor cator/truk), dan petugas penanggung jawab.
-2. **Operasional Mobile Petugas**:
-   - Petugas lapangan login di `/m/absen` (validasi radius GPS lokasi kantor/pool).
-   - Membuka menu `/m/angkut` atau `/driver/peta` untuk melihat urutan titik rute hari ini.
-   - Di setiap rumah: Petugas menandai status (`diambil`, `tidak_diangkut`, `kosong`), mencatat estimasi volume ($m^3$) atau berat (kg).
-3. **Penyaluran ke TPS3R & Pembuangan Residu ke TPA**:
-   - Sampah dibawa ke fasilitas TPS3R untuk dipilah (Organik masuk komposting / Biokonversi Maggot BSF; Daur ulang masuk gudang pencacah).
-   - Residu yang tidak dapat diolah diangkut menggunakan truk kontainer ke TPA. Petugas mencatat nomor tiket timbangan TPA, tonase residu, dan biaya tipping fee di menu `/tpa`.
+### Paket 3: Pengangkutan Sampah & Kerja Petugas Jadi Rapi
+
+*Masalah Lapangan Lama:* Supir sering lupa rumah mana yang harus diambil hari ini, rute gerobak acak-acakan, dan supir susah mencatat bon bensin.
+
+*Solusi O2W HERO:*
+1. **Daftar Rumah Muncul di HP Petugas (Jadwal Kerja)**:
+   - Supir atau penarik cator membuka menu kerja di HP (`/m/angkut`).
+   - Layar menampilkan daftar jalan dan rumah yang harus diangkut hari itu (misalnya jadwal giliran hari Senin dan Kamis).
+2. **Tinggal Centang Cepat**:
+   - Sambil berjalan, petugas cukup klik: **"Sudah Diambil"**, **"Rumah Kosong"**, atau **"Sampah Belum Dikeluarkan"**.
+3. **Catat Timbangan Sampah**:
+   - Petugas bisa mencatat berapa karung atau berapa kilogram sampah yang diangkut.
+   - Jika sampah dibuang ke TPA, supir bisa langsung mencatat nomor tiket timbangan TPA dan biaya retribusi truk.
+4. **Absen Petugas Pakai HP (GPS)**:
+   - Petugas absen masuk kerja cukup dari HP di pool/kantor. Aplikasi otomatis mendeteksi lokasi GPS agar petugas benar-benar hadir di tempat.
+5. **Klaim Uang Bensin & Tambal Ban Langsung Difoto**:
+   - Jika beli bensin atau tambal ban di jalan, petugas tinggal foto struknya di aplikasi. Admin kantor langsung memverifikasi dan mengganti uangnya.
 
 ---
 
-### Flow 5: Penagihan Otomatis, Duitku Gateway, & Dual-Number WhatsApp Engine
-1. **Siklus Generate Tagihan Bulanan**:
-   - Pada tanggal 1 setiap bulan, sistem otomatis membuat tagihan periode berjalan untuk seluruh warga aktif.
-   - Batas jatuh tempo default tanggal 15 setiap bulan.
-2. **Dual-Number WhatsApp Gateway Architecture**:
-   - **Nomor 1 (Bot Otomatisasi)**:
-     - Mengirimkan pesan tagihan massal (*Blast WA*) dengan rincian bulan, jumlah tagihan, dan tautan pembayaran kilat.
-     - Mengirimkan Kuitansi Resmi Lunas berformat PDF segera setelah pembayaran terverifikasi.
-   - **Nomor 2 (Customer Service & Pengaduan)**:
-     - Nomor interaktif untuk menerima pertanyaan warga dan keluhan operasional lapangan.
-     - Terhubung ke grup WhatsApp internal pengawas TPS3R jika ada komplain darurat.
-3. **Payment Gateway Duitku (Centralized Pool vs Dedicated)**:
-   - **Centralized Pool**: Mitra tidak perlu mengurus izin BI/PJP sendiri. Semua dana pembayaran masuk ke akun pool O2W HERO, lalu dialokasikan ke virtual ledger mitra secara real-time.
-   - **Metode**: QRIS Dinamis, Virtual Account (BCA, Mandiri, BRI, BNI), dan E-Wallet (GoPay, OVO, ShopeePay, DANA).
-   - **Biaya Admin Transaksi**: Ditanggung warga secara transparan (QRIS default Rp 1.500, VA Rp 3.500).
+### Paket 4: Tabungan Sampah (Sampah Daur Ulang Jadi Uang & Bebas Iuran)
+
+*Masalah Lapangan Lama:* Warga malas memilah sampah karena tidak ada manfaat langsung, dan pencatatan tabungan sampah di buku tulis sering robek atau hilang.
+
+*Solusi O2W HERO:*
+1. **Timbang Sampah, Duit Langsung Masuk ke HP**:
+   - Warga yang menyetor kardus, botol plastik, emberan, atau minyak jelantah ditimbang oleh petugas.
+   - Nilai uangnya langsung masuk ke **Buku Tabungan Sampah Digital** warga.
+2. **Fitur Pemotong Iuran Otomatis (Sampah Gratiskan Iuran!)**:
+   - Saldo tabungan sampah bisa diatur otomatis untuk memotong tagihan iuran bulanan warga.
+   - *Contoh:* Tagihan iuran Rp 35.000, tapi warga punya saldo sampah Rp 40.000 $\rightarrow$ tagihan bulan itu jadi **Rp 0 (GRATIS)** dan sisa saldonya masih tersimpan Rp 5.000!
+3. **Pencairan Saldo Fleksibel**:
+   - Warga bisa mencairkan saldo tabungannya menjadi uang tunai sewaktu-waktu saat acara hari raya atau kebutuhan keluarga.
 
 ---
 
-### Flow 6: Manajemen Pengaduan & Layanan Pelanggan (SLA Response)
-1. **Laporan Masuk**:
-   - Warga melapor melalui form publik `https://[domain-mitra]/pengaduan` atau WhatsApp CS.
-   - Kategori pengaduan: *Sampah Belum Terangkut*, *Sampah Liar Menumpuk*, *Ceceran Air Lindi*, atau *Perilaku Petugas*.
-   - Warga melampirkan foto bukti dan titik koordinat otomatis dari ponsel.
-2. **Disposisi & Penanganan**:
-   - Notifikasi pengaduan diteruskan ke dashboard admin dan bot WA armada setempat.
-   - Status berkembang dari: `baru` $\rightarrow$ `diproses` (armada sapu jagat dikerahkan) $\rightarrow$ `selesai` (petugas mengunggah foto lokasi yang telah bersih).
-   - Warga menerima notifikasi WhatsApp otomatis bahwa aduan telah ditangani lengkap dengan foto bukti penyelesaian.
+### Paket 5: Layanan Pengaduan & Keluhan Cepat Tanggap
+
+*Masalah Lapangan Lama:* Warga marah-marah di grup warga karena sampahnya terlewat tidak diangkut, tapi pengelola tidak tahu lokasi pastinya.
+
+*Solusi O2W HERO:*
+1. **Warga Lapor Cukup Kirim Foto**:
+   - Warga membuka menu pengaduan (`/pengaduan`) atau mengirim pesan ke nomor CS WhatsApp.
+   - Cukup foto tumpukan sampah dan kirim; lokasi GPS langsung terbaca oleh sistem.
+2. **Peringatan ke Tim Lapangan**:
+   - Kantor pengelola langsung meneruskan laporan ke armada motor sapu jagat terdekat.
+3. **Laporan Selesai Lengkap dengan Bukti**:
+   - Setelah dibersihkan, petugas memfoto kembali lokasi yang sudah bersih.
+   - Bot WhatsApp otomatis mengirim kabar ke warga: *"Terima kasih, tumpukan sampah di depan rumah Anda sudah berhasil diangkut oleh petugas kami."*
 
 ---
 
-### Flow 7: Keuangan, Escrow Virtual Ledger, Komisi O2W, & Payout Settlement
-1. **Pemotongan Komisi Platform Otomatis (Real-Time)**:
-   - Setiap kali warga membayar tagihan retribusi sebesar $Rp\ X$ melalui payment gateway:
-     $$\text{Nominal Gross} = \text{Tagihan Warga} + \text{Biaya Admin Gateway}$$
-     $$\text{Fee Gateway} = \text{Potongan Duitku}$$
-     $$\text{Fee Platform O2W} = \text{platformFeeNominal (Rp 1.000)} + (\text{Tagihan} \times \text{platformFeeRate})$$
-     $$\text{Hak Bersih Mitra} = \text{Nominal Tagihan} - \text{Fee Platform O2W}$$
-   - Transaksi langsung tercatat di tabel `TenantLedger` dengan tipe `CREDIT_PAYMENT`.
-2. **Pencairan Dana Mitra (Payout Settlement)**:
-   - Dana bersih yang terkumpul di saldo virtual ledger dicairkan ke rekening bank resmi mitra (BCA/Mandiri/BRI/BNI) sesuai jadwal (`weekly` atau `manual`).
-   - Admin O2W Core memproses transfer, mencatat nomor batch `PO/YYYYMMDD/XXXX`, dan mengunggah bukti transfer di tabel `TenantPayout`.
+### Paket 6: Pengelolaan Duit Transparan & Bagi Hasil yang Jujur
+
+*Masalah Lapangan Lama:* Pengelola kesulitan memisahkan mana uang hak mitra, mana biaya aplikasi, dan sering tekor karena pembukuan tidak rapi.
+
+*Solusi O2W HERO:*
+1. **Buku Kas Otomatis Tiap Hari**:
+   - Semua uang masuk dari iuran warga dan uang keluar untuk operasional tercatat rapi secara otomatis.
+   - Pemilik atau direksi mitra bisa melihat keuntungan bersih harian/bulanan tanpa perlu jasa akuntan mahal.
+2. **Bagi Hasil Adil & Otomatis**:
+   - Setiap kali warga membayar tagihan iuran lewat QRIS/Online:
+     * Biaya aplikasi O2W HERO dipotong kecil secara otomatis (contoh: Rp 1.000 per tagihan lunas).
+     * Uang bersih sisanya langsung masuk ke saldo kas mitra.
+3. **Pencairan ke Rekening Bank Setiap Minggu**:
+   - Uang yang terkumpul di saldo kas aplikasi akan ditransfer langsung ke rekening bank resmi mitra (BCA, Mandiri, BRI, BNI) setiap minggu tanpa ribet.
 
 ---
 
-### Flow 8: Level Akses & RBAC (Role-Based Access Control) Persampahan
+## 👥 Siapa Saja Pengguna Aplikasi Ini?
 
-| Role | Domain Lingkup | Tanggung Jawab & Izin Menu |
+| Pengguna | Menggunakan Apa? | Apa yang Dikerjakan? |
 | :--- | :--- | :--- |
-| **Superadmin Core** | `o2whero.com` | Kontrol penuh ekosistem: Kelola semua tenant, master subscription, provisioning domain, konfigurasi fee/komisi, approval payout, audit trail sistem. |
-| **Admin Tenant** | `[mitra].com` | Pemilik/Manajer TPS3R: Kelola data warga, armada, rute, tarif, absensi staf, pengeluaran kas operasional, laporan keuangan laba rugi. |
-| **Kasir / Kolektor** | `[mitra].com` | Kasir Posko / Petugas Tagih: Catat pembayaran tunai pintu-ke-pintu, cetak kuitansi thermal bluetooth, verifikasi setoran tabungan bank sampah. Dilarang mengubah tarif atau menghapus data. |
-| **Petugas / Driver** | `[mitra].com` (Mobile) | Supir Truk & Cator: Absensi GPS, eksekusi checklist angkut sampah di rute harian, catat timbangan volume, ajukan klaim BBM/perawatan armada. |
-| **Warga / Nasabah** | Publik | Akses tanpa password: Cek tagihan mandiri, bayar via QRIS, download kuitansi PDF, lapor aduan sampah tercecer. |
+| **Bos / Manajer Mitra** | Komputer / Tablet di Kantor | Melihat laporan keuangan laba-rugi, mengatur jadwal rute armada, dan mengontrol tarif iuran. |
+| **Kasir Posko** | Laptop / HP Kasir | Menerima bayaran tunai dari warga, cetak kuitansi, dan menimbang sampah daur ulang nasabah. |
+| **Supir & Kernet** | HP Android di Lapangan | Absen GPS, melihat daftar rumah yang harus diambil hari ini, dan mencatat bon bensin. |
+| **Warga / Pelanggan** | HP Sendiri (Web / WhatsApp) | Cek tagihan mandiri dengan nomor WA, bayar lewat QRIS, dan komplain jika sampah belum diangkut. |
+| **Pengelola Pusat (O2W)** | Portal Pusat (`o2whero.com`) | Mengaktifkan mitra baru, menyiapkan alamat website mitra, dan mencairkan uang mitra ke bank. |
 
 ---
 
-## IV. Ringkasan Invarian Sistem (Architectural Guarantees)
+## 🎯 Kesimpulan
 
-1. **Multi-Tenant Data Isolation (Anti-Data Leak)**:
-   - Pada domain tenant operasional (`!tenantCtx.isCore`), seluruh kueri database **wajib** menyaring `where: { tenantId: tenantCtx.tenant.id }`.
-   - Data nasabah, tagihan, dan keuangan TPS3R A tidak akan pernah bocor ke TPS3R B.
-2. **Idempotent Billing & Ledger Integrity**:
-   - Tagihan warga dijamin unik per `(pelangganId, bulan, tahun)`.
-   - Setiap mutasi saldo kas mitra dicatat dalam buku besar ganda (`TenantLedger`) dengan jejak audit permanen.
-3. **Resilient Hardware & Low Connectivity Fallback**:
-   - Antarmuka mobile petugas mendukung mode pencatatan cepat dengan toleransi sinyal seluler lemah di lapangan, melakukan sinkronisasi otomatis saat terhubung kembali ke jaringan.
+Dengan perombakan fitur ini:
+1. **Warga Senang**: Karena tidak perlu menghafal nomor aneh (cukup nomor WA), bayar gampang pakai QRIS, dan bisa gratis iuran kalau rajin nabung sampah.
+2. **Petugas Tenang**: Karena kerjaan harian jelas di HP, tidak ada rumah yang terlewat, dan bensin langsung diganti.
+3. **Pengelola Untung**: Karena tidak ada warga yang menunggak tanpa ketahuan, pencatatan kas rapi, dan laporan keuangan langsung beres tanpa pusing.
