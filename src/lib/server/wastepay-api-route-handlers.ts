@@ -500,7 +500,17 @@ export async function handlePetaPinsGet(request: Request): Promise<NextResponse>
   const zonaId = zonaIdParam ? parseInt(zonaIdParam, 10) : null;
 
   try {
-    const pins = await getLightweightMapPins(isNaN(zonaId || NaN) ? null : zonaId);
+    const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+    const { resolveTenantByHost } = await import("@/lib/tenant");
+    const tenantCtx = resolveTenantByHost(rawHost);
+    const session = await getSession(request);
+    const effectiveTenantId = session?.tenantId || tenantCtx.tenant.id;
+    const targetTenantId = tenantCtx.isCore && session?.role === "superadmin" ? null : effectiveTenantId;
+
+    const pins = await getLightweightMapPins(
+      isNaN(zonaId || NaN) ? null : zonaId,
+      targetTenantId
+    );
 
     return NextResponse.json(pins, {
       headers: {
@@ -533,6 +543,14 @@ export async function handlePelangganExportGet(request: Request): Promise<Respon
   const kelurahanId = searchParams.get('kelurahanId');
 
   const whereClause: any = { deletedAt: null };
+  const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+  const { resolveTenantByHost } = await import("@/lib/tenant");
+  const tenantCtx = resolveTenantByHost(rawHost);
+  const effectiveTenantId = session?.tenantId || tenantCtx.tenant.id;
+  if (!tenantCtx.isCore && effectiveTenantId) {
+    whereClause.tenantId = effectiveTenantId;
+  }
+
   if (status) whereClause.status = status;
   if (kelurahanId && !isNaN(parseInt(kelurahanId, 10))) {
     whereClause.kelurahanId = parseInt(kelurahanId, 10);

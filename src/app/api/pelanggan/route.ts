@@ -38,6 +38,10 @@ export async function GET(request: Request) {
   // Isolasi Core Hub vs Tenant: o2whero.com adalah platform SaaS Control Plane, bukan TPS3R operasional
   const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
   const tenantCtx = resolveTenantByHost(rawHost);
+  const effectiveTenantId = session.tenantId || tenantCtx.tenant.id;
+  if (!tenantCtx.isCore && effectiveTenantId) {
+    where.tenantId = effectiveTenantId;
+  }
   if (tenantCtx.isCore) {
     const tenantIdParam = searchParams.get("tenantId") || searchParams.get("tenantSlug");
     if (!tenantIdParam) {
@@ -329,8 +333,10 @@ export async function POST(request: Request) {
       finalWilayahId = w.id;
     }
 
-    // Simpan foto rumah ke file storage jika berupa Base64
-    const savedFotoRumah = await persistBase64Image(fotoRumah, "pelanggan");
+    const effectiveTenantId = session.tenantId || tenantCtx.tenant.id;
+
+    // Simpan foto rumah ke file storage jika berupa Base64 terisolasi per tenant
+    const savedFotoRumah = await persistBase64Image(fotoRumah, "pelanggan", effectiveTenantId);
 
     // Kode pelanggan kini menggunakan nomor WhatsApp (noTelepon)
     const kodePelanggan = noTelepon;
@@ -339,6 +345,7 @@ export async function POST(request: Request) {
     try {
       pelanggan = await prisma.pelanggan.create({
         data: {
+          tenantId: effectiveTenantId,
           nama,
           noTelepon,
           kodePelanggan,

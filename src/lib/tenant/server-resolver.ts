@@ -4,6 +4,7 @@ import {
   resolveTenantByHost,
   registerDynamicTenant,
   normalizeHost,
+  UNRESOLVED_TENANT,
 } from "./config";
 
 /**
@@ -89,12 +90,13 @@ export async function syncTenantsFromDatabase(): Promise<void> {
 
 /**
  * Resolve tenant dengan database fallback jika belum ada di memory cache.
- * Digunakan oleh middleware / proxy untuk memastikan domain baru langsung dikenali.
+ * Mendukung domain kustom terverifikasi, subdomain [slug].o2whero.com, dan deteksi status tenant.
+ * Tidak pernah fallback ke pilot tenant untuk domain yang gagal di-resolve.
  */
 export async function resolveTenantWithDbFallback(rawHost?: string | null): Promise<TenantContext> {
   // 1. Coba resolve dari in-memory cache (0ms latency untuk domain terdaftar)
   const initial = resolveTenantByHost(rawHost);
-  if (initial.isValid) {
+  if (initial.isValid || initial.isSuspended) {
     return initial;
   }
 
@@ -105,6 +107,7 @@ export async function resolveTenantWithDbFallback(rawHost?: string | null): Prom
 
   // 2. Jika tidak ada di cache, coba cari di tabel TenantDomain & Tenant
   try {
+    // 2a. Cari di tabel TenantDomain
     const domainRecord = await prisma.tenantDomain.findUnique({
       where: { domain: host },
       include: {
@@ -114,20 +117,31 @@ export async function resolveTenantWithDbFallback(rawHost?: string | null): Prom
       },
     });
 
-    if (domainRecord?.tenant && domainRecord.tenant.status === "aktif") {
-      const config = dbTenantToConfig(domainRecord.tenant);
+    if (domainRecord?.tenant) {
+      const tenant = domainRecord.tenant;
+      const config = dbTenantToConfig(tenant);
       registerDynamicTenant(config);
       return resolveTenantByHost(host);
     }
 
-    // Cek juga kolom customDomain atau subdomain langsung
-    const tenantRecord = await prisma.tenant.findFirst({
+    // 2b. Cek subdomain [slug].o2whero.com atau customDomain langsung
+    let tenantRecord = await prisma.tenant.findFirst({
       where: {
-        status: "aktif",
         OR: [{ customDomain: host }, { subdomain: host }],
       },
       include: { domains: true },
     });
+
+    // 2c. Cek slug jika format subdomain [slug].o2whero.com
+    if (!tenantRecord && host.endsWith(".o2whero.com")) {
+      const sub = host.replace(/\.o2whero\.com$/, "").trim();
+      if (sub && sub !== "www" && sub !== "core") {
+        tenantRecord = await prisma.tenant.findUnique({
+          where: { slug: sub },
+          include: { domains: true },
+        });
+      }
+    }
 
     if (tenantRecord) {
       const config = dbTenantToConfig(tenantRecord);
@@ -138,6 +152,14 @@ export async function resolveTenantWithDbFallback(rawHost?: string | null): Prom
     console.warn(`[MultiTenant] Gagal lookup tenant dari DB untuk host "${host}":`, err);
   }
 
-  // 3. Tetap tidak ditemukan -> tolak domain
-  return initial;
+  // 3. Domain tetap tidak terdaftar -> Tolak secara tegas
+  return {
+    tenant: UNRESOLVED_TENANT,
+    isCore: false,
+    isPilot: false,
+    isValid: false,
+    rejectionReason: `Domain "${host}" tidak terdaftar dalam jaringan O2W HERO.`,
+    currentHost: host,
+    baseUrl: `https://${host}`,
+  };
 }

@@ -2,9 +2,16 @@ import { NextResponse } from "next/server";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import crypto from "crypto";
+import { getSession } from "@/lib/auth";
+import { resolveTenantByHost } from "@/lib/tenant";
 
 export async function POST(request: Request) {
   try {
+    const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+    const tenantCtx = resolveTenantByHost(rawHost);
+    const session = await getSession(request);
+    const tenantId = session?.tenantId || tenantCtx.tenant?.id || "common";
+
     const contentType = request.headers.get("content-type") || "";
     let buffer: Buffer;
     let ext = ".jpg";
@@ -30,7 +37,8 @@ export async function POST(request: Request) {
     }
 
     const filename = `${crypto.randomBytes(16).toString("hex")}${ext}`;
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
+    const safeTenantDir = tenantId ? path.join("tenants", tenantId.replace(/[^a-zA-Z0-9_-]/g, "_")) : "";
+    const uploadDir = path.join(process.cwd(), "public", "uploads", safeTenantDir);
     
     try {
       await mkdir(uploadDir, { recursive: true });
@@ -41,9 +49,13 @@ export async function POST(request: Request) {
     const filePath = path.join(uploadDir, filename);
     await writeFile(filePath, buffer);
 
+    const publicUrl = safeTenantDir
+      ? `/uploads/${safeTenantDir.replace(/\\/g, "/")}/${filename}`
+      : `/uploads/${filename}`;
+
     return NextResponse.json({ 
       ok: true,
-      url: `/uploads/${filename}` 
+      url: publicUrl,
     });
   } catch (err) {
     console.error("Upload error:", err);

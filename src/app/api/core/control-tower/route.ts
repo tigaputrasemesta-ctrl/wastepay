@@ -123,12 +123,39 @@ export async function GET(request: Request) {
     const duitkuTxCount = duitkuAgg._count || 0;
     const digitalPaymentRate = lunasCount > 0 ? Math.round((duitkuTxCount / lunasCount) * 100) : 0;
 
-    // Estimasi Micro-fee platform O2W (Rp 1.000 per transaksi digital lunas)
-    const platformFeeIncome = duitkuTxCount * 1000;
-    // Estimasi Gateway Fee Duitku (~Rp 1.500 per transaksi)
-    const gatewayCostDuitku = duitkuTxCount * 1500;
+    // Micro-fee & Komisi platform O2W (Agregasi riil dari TenantLedger atau fallback)
+    let platformFeeIncome = duitkuTxCount * 1000;
+    let gatewayCostDuitku = duitkuTxCount * 1500;
+    try {
+      const ledgerSums = await prisma.tenantLedger.aggregate({
+        where: { tipe: "CREDIT_PAYMENT" },
+        _sum: { feePlatform: true, feeGateway: true },
+      });
+      if (ledgerSums._sum.feePlatform && ledgerSums._sum.feePlatform > 0) {
+        platformFeeIncome = ledgerSums._sum.feePlatform;
+      }
+      if (ledgerSums._sum.feeGateway && ledgerSums._sum.feeGateway > 0) {
+        gatewayCostDuitku = ledgerSums._sum.feeGateway;
+      }
+    } catch {
+      // Fallback ke estimasi
+    }
+
     // Dana Hak Bersih Milik Mitra
     const escrowNetHeldForMitra = Math.max(0, grossVerifiedPembayaran - platformFeeIncome - gatewayCostDuitku);
+
+    // Setup Domain Fee (Flat Rp 2.000.000 per tenant)
+    let domainSetupFeeIncome = 0;
+    try {
+      const subSums = await prisma.tenantSubscription.aggregate({
+        _sum: { domainSetupFee: true },
+      });
+      domainSetupFeeIncome = (subSums._sum.domainSetupFee && subSums._sum.domainSetupFee > 0)
+        ? subSums._sum.domainSetupFee
+        : tenants.length * 2000000;
+    } catch {
+      domainSetupFeeIncome = tenants.length * 2000000;
+    }
 
     // 3. Environmental & Waste Metrics
     const totalRitase = pengangkutanAgg._count || 0;
@@ -288,6 +315,7 @@ export async function GET(request: Request) {
             duitkuVolume,
             duitkuTxCount,
             platformFeeIncome,
+            domainSetupFeeIncome,
             gatewayCostDuitku,
             escrowNetHeldForMitra,
             recentLedgers: ledgers,

@@ -52,12 +52,19 @@ export default function RevenueIntelligencePage() {
   const grossGMVEcosystem = fin.grossVerifiedPembayaran || 0;
   const saasSubscriptionRev = overview.realSaaSMrr || 0;
   const transactionMicroFeeRev = fin.platformFeeIncome || 0;
-  const totalNetO2WRev = saasSubscriptionRev + transactionMicroFeeRev;
+  const domainSetupFeeRev = fin.domainSetupFeeIncome || 0;
+  const totalNetO2WRev = saasSubscriptionRev + transactionMicroFeeRev + domainSetupFeeRev;
   const gatewayPaidDuitku = fin.gatewayCostDuitku || 0;
   const escrowHeldForMitra = fin.escrowNetHeldForMitra || 0;
   const recentLedgers = fin.recentLedgers || [];
 
   const streams = [
+    {
+      name: "Domain & Onboarding Setup Fee",
+      nominal: domainSetupFeeRev,
+      color: "bg-indigo-500",
+      description: "Biaya aktivasi domain flat Rp 2.000.000 per tenant.",
+    },
     {
       name: "SaaS Subscription (MRR)",
       nominal: saasSubscriptionRev,
@@ -65,10 +72,10 @@ export default function RevenueIntelligencePage() {
       description: "Pendapatan paket langganan aktif seluruh tenant di database.",
     },
     {
-      name: "Transaction Micro-Fee (QRIS/VA)",
+      name: "Transaction Micro-Fee (Nominal + %)",
       nominal: transactionMicroFeeRev,
       color: "bg-sky-500",
-      description: `Micro-fee platform dari ${fin.duitkuTxCount || 0} transaksi digital terverifikasi.`,
+      description: `Komisi platform dari ${fin.duitkuTxCount || 0} transaksi digital terverifikasi.`,
     },
     {
       name: "Marketplace Recycling Commission",

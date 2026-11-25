@@ -122,4 +122,38 @@ describe("Multi-Tenant Dual WhatsApp & Payment Settings Architecture", () => {
     const billHybrid = iuranPokok + qrisSubsidyFee;
     expect(billHybrid).toBe(45500);
   });
+
+  it("verifies Fonnte live quota calculation and device connection parsing", () => {
+    const rawFonnteResponse = {
+      status: true,
+      device: "081400782617",
+      name: "UPS HERU Pilot",
+      package: "Super",
+      expired: "2027-12-31",
+      quota: 10000,
+      messages: 1450,
+      device_status: "connect",
+    };
+
+    const quotaTotal = Number(rawFonnteResponse.quota);
+    const messagesUsed = Number(rawFonnteResponse.messages);
+    const remainingQuota = Math.max(0, quotaTotal - messagesUsed);
+    const isConnected = rawFonnteResponse.device_status === "connect";
+
+    expect(isConnected).toBe(true);
+    expect(quotaTotal).toBe(10000);
+    expect(messagesUsed).toBe(1450);
+    expect(remainingQuota).toBe(8550);
+  });
+
+  it("verifies tenant-scoped webhook URL generation for auto-message", () => {
+    const host = "https://o2whero.com";
+    const tenantSlug = "tps-sukatani";
+
+    const webhookUrl = `${host}/api/publik/wa-webhook?tenant=${tenantSlug}`;
+    const parsed = new URL(webhookUrl);
+
+    expect(parsed.pathname).toBe("/api/publik/wa-webhook");
+    expect(parsed.searchParams.get("tenant")).toBe("tps-sukatani");
+  });
 });

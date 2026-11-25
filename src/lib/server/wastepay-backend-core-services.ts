@@ -382,13 +382,20 @@ export interface LightweightMapPin {
  * Mengambil daftar pin peta dengan proyeksi kolom ringan di tingkat SQL.
  * SENGAJA MENGEKSEKUSI fotoRumah: false agar menghemat Fluid Memory Vercel dan Egress Supabase >85%.
  */
-export async function getLightweightMapPins(zonaId?: number | null): Promise<LightweightMapPin[]> {
+export async function getLightweightMapPins(
+  zonaId?: number | null,
+  tenantId?: string | null
+): Promise<LightweightMapPin[]> {
   const whereClause: any = {
     deletedAt: null,
     status: { in: ['aktif', 'terjadwal'] },
     latitude: { not: null },
     longitude: { not: null },
   };
+
+  if (tenantId) {
+    whereClause.tenantId = tenantId;
+  }
 
   if (zonaId) {
     whereClause.wilayah = { zonaId };

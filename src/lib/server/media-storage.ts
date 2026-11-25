@@ -4,12 +4,14 @@ import crypto from "crypto";
 
 /**
  * Mendeteksi apakah string adalah Base64 image payload.
- * Jika ya, simpan ke filesystem (/public/uploads/...) dan kembalikan URL statisnya.
+ * Jika ya, simpan ke filesystem terisolasi per tenant (/public/uploads/tenants/[tenantId]/[subfolder]/...)
+ * dan kembalikan URL statisnya.
  * Jika bukan (misal sudah berupa URL "/uploads/..." atau null), kembalikan apa adanya.
  */
 export async function persistBase64Image(
   dataStr: string | null | undefined,
-  subfolder: "pelanggan" | "pembayaran" | "komplain" = "pelanggan"
+  subfolder: "pelanggan" | "pembayaran" | "komplain" = "pelanggan",
+  tenantId?: string | null
 ): Promise<string | null | undefined> {
   if (!dataStr || typeof dataStr !== "string") return dataStr;
 
@@ -38,13 +40,18 @@ export async function persistBase64Image(
 
     const hash = crypto.randomBytes(8).toString("hex");
     const filename = `${subfolder}_${Date.now()}_${hash}${ext}`;
-    const uploadDir = path.join(process.cwd(), "public", "uploads", subfolder);
+    
+    // Segmentasi folder per tenant untuk isolasi berkas media
+    const safeTenantDir = tenantId ? path.join("tenants", tenantId.replace(/[^a-zA-Z0-9_-]/g, "_")) : "";
+    const uploadDir = path.join(process.cwd(), "public", "uploads", safeTenantDir, subfolder);
 
     await mkdir(uploadDir, { recursive: true });
     const fullPath = path.join(uploadDir, filename);
     await writeFile(fullPath, buffer);
 
-    return `/uploads/${subfolder}/${filename}`;
+    return safeTenantDir
+      ? `/uploads/${safeTenantDir.replace(/\\/g, "/")}/${subfolder}/${filename}`
+      : `/uploads/${subfolder}/${filename}`;
   } catch (err) {
     console.error("[persistBase64Image Error]", err);
     return dataStr;

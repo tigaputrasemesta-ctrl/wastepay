@@ -1,6 +1,34 @@
 import { TenantConfig, TenantContext } from "./types";
 
 /**
+ * Fallback objek untuk tenant yang gagal di-resolve (TIDAK pernah memakai PILOT_TENANT sebagai fallback diam-diam).
+ */
+export const UNRESOLVED_TENANT: TenantConfig = {
+  id: "tenant-unresolved",
+  slug: "unresolved",
+  namaMitra: "Domain Tidak Terdaftar",
+  tipe: "mitra_mandiri",
+  domains: [],
+  primaryDomain: "",
+  branding: {
+    namaMitra: "Domain Tidak Terdaftar",
+    tagline: "Domain tidak terdaftar dalam platform O2W HERO.",
+  },
+  dbConfig: {
+    isDedicated: false,
+  },
+  status: "suspend",
+  fitur: {
+    retribusiSampah: false,
+    tabunganSampah: false,
+    jemputSampah: false,
+    jualOfftaker: false,
+    qrisDuitku: false,
+    whatsappNotif: false,
+  },
+};
+
+/**
  * Tenant Inti / Core Hub (o2whero.com)
  * Bertindak sebagai SaaS Control Plane sebelum domain baru dipasang.
  */
@@ -73,7 +101,7 @@ export const PILOT_TENANT: TenantConfig = {
   },
   dbConfig: {
     connectionString: process.env.DATABASE_URL,
-    isDedicated: true, // Upsheru memiliki database mandiri
+    isDedicated: true, // Upsheru memiliki opsi database mandiri
   },
   status: "aktif",
   fitur: {
@@ -95,7 +123,7 @@ export const KNOWN_TENANTS: TenantConfig[] = [
 ];
 
 /**
- * Daftar domain internal, lokal, dan IP VPS yang sah untuk healthcheck & mobile apps
+ * Daftar domain internal, lokal, dan IP VPS yang sah untuk healthcheck & development
  */
 export const ALLOWED_INTERNAL_HOSTS = new Set([
   "localhost",
@@ -139,6 +167,9 @@ export function registerDynamicTenant(tenant: TenantConfig): void {
       domainRegistry.set(domain.toLowerCase().trim(), tenant);
     }
   }
+  if (tenant.primaryDomain) {
+    domainRegistry.set(tenant.primaryDomain.toLowerCase().trim(), tenant);
+  }
 }
 
 /**
@@ -157,19 +188,24 @@ export function getAllCachedTenants(): TenantConfig[] {
 }
 
 /**
- * Normalisasi host header (hapus port, whitespace, protocol jika ada)
+ * Normalisasi host header secara ketat (validasi trusted proxy & pembersihan port/whitespace)
  */
 export function normalizeHost(rawHost?: string | null): string {
   if (!rawHost) return "";
-  return rawHost
-    .trim()
+  
+  // Jika x-forwarded-host mengandung koma (proxy chain), ambil first hop yang valid
+  const firstHop = rawHost.split(",")[0].trim();
+  
+  return firstHop
     .toLowerCase()
     .replace(/^https?:\/\//, "")
-    .split(":")[0];
+    .split(":")[0]
+    .replace(/[^a-z0-9.-]/g, ""); // Anti-injection: hanya karakter valid hostname
 }
 
 /**
  * Resolve Tenant dari hostname atau request header secara ketat (Strict Matching)
+ * Aturan Ketat: Tidak pernah fallback ke Pilot Tenant saat resolusi domain gagal!
  */
 export function resolveTenantByHost(rawHost?: string | null): TenantContext {
   const host = normalizeHost(rawHost);
@@ -197,6 +233,20 @@ export function resolveTenantByHost(rawHost?: string | null): TenantContext {
   if (host && domainRegistry.has(host)) {
     const t = domainRegistry.get(host)!;
     const protocol = host.includes("localhost") || host === "127.0.0.1" ? "http" : "https";
+
+    if (t.status === "suspend") {
+      return {
+        tenant: t,
+        isCore: t.tipe === "core",
+        isPilot: t.slug === "upsheru",
+        isValid: false,
+        isSuspended: true,
+        rejectionReason: "Organisasi tenant sedang ditangguhkan (suspend). Hubungi administrator O2W HERO.",
+        currentHost: host,
+        baseUrl: `${protocol}://${host}`,
+      };
+    }
+
     return {
       tenant: t,
       isCore: t.tipe === "core",
@@ -207,8 +257,36 @@ export function resolveTenantByHost(rawHost?: string | null): TenantContext {
     };
   }
 
-  // 3. Akses internal / development / direct VPS IP / healthcheck
-  if (ALLOWED_INTERNAL_HOSTS.has(host) || !host) {
+  // 2b. Dukungan subdomain dinamis (*.o2whero.com)
+  if (host && host.endsWith(".o2whero.com")) {
+    const sub = host.replace(/\.o2whero\.com$/, "").trim();
+    if (sub && sub !== "www" && sub !== "core" && slugRegistry.has(sub)) {
+      const t = slugRegistry.get(sub)!;
+      if (t.status === "suspend") {
+        return {
+          tenant: t,
+          isCore: false,
+          isPilot: t.slug === "upsheru",
+          isValid: false,
+          isSuspended: true,
+          rejectionReason: "Organisasi tenant sedang ditangguhkan (suspend).",
+          currentHost: host,
+          baseUrl: `https://${host}`,
+        };
+      }
+      return {
+        tenant: t,
+        isCore: false,
+        isPilot: t.slug === "upsheru",
+        isValid: true,
+        currentHost: host,
+        baseUrl: `https://${host}`,
+      };
+    }
+  }
+
+  // 3. Akses internal / development / direct VPS IP / Capacitor local bridge
+  if (ALLOWED_INTERNAL_HOSTS.has(host) || (!host && process.env.NODE_ENV !== "production")) {
     const protocol = host.includes("localhost") || host === "127.0.0.1" ? "http" : "https";
     const currentHost = host || PILOT_TENANT.primaryDomain;
     return {
@@ -222,11 +300,13 @@ export function resolveTenantByHost(rawHost?: string | null): TenantContext {
   }
 
   // 4. Domain asing / liar tidak dikenal (TOLAK - Menutup celah keamanan)
+  // Menjamin Aturan #5: Never assign a default tenant when tenant resolution fails.
   return {
-    tenant: PILOT_TENANT,
+    tenant: UNRESOLVED_TENANT,
     isCore: false,
     isPilot: false,
     isValid: false,
+    rejectionReason: "Domain tidak terdaftar dalam jaringan resmi platform O2W HERO / WastePay.",
     currentHost: host,
     baseUrl: `https://${host}`,
   };

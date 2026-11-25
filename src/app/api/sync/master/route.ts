@@ -1,21 +1,23 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getSession } from "@/lib/auth";
+import { requireTenantContext } from "@/lib/tenant";
 
 export const dynamic = "force-dynamic";
 
 /**
  * GET /api/sync/master
- * Menghasilkan snapshot data master lengkap untuk diunduh dan disimpan
- * di IndexedDB perangkat Admin (Offline-First Local Storage).
- * Membebaskan server dari query berulang ribuan data saat admin login di HP.
+ * Menghasilkan snapshot data master lengkap TERISOLASI PER TENANT untuk diunduh dan disimpan
+ * di IndexedDB perangkat Admin/Petugas (Offline-First Local Storage).
+ * Memastikan data warga, rute, dan zona tenant lain tidak bocor.
  */
 export async function GET(request: Request) {
   try {
-    const session = await getSession(request);
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const tenantResult = await requireTenantContext(request, "petugas");
+    if (!tenantResult.success) {
+      return tenantResult.response;
     }
+    const { context, db } = tenantResult;
+    const tenantId = context.tenantId;
 
     const serverTime = new Date().toISOString();
 
@@ -27,8 +29,8 @@ export async function GET(request: Request) {
       paketList,
       ruteList,
     ] = await Promise.all([
-      prisma.pelanggan.findMany({
-        where: { deletedAt: null },
+      db.pelanggan.findMany({
+        where: { deletedAt: null, tenantId },
         select: {
           id: true,
           kodePelanggan: true,
@@ -70,7 +72,8 @@ export async function GET(request: Request) {
         },
         orderBy: { id: "asc" },
       }),
-      prisma.wilayah.findMany({
+      db.wilayah.findMany({
+        where: { tenantId },
         select: {
           id: true,
           nama: true,
@@ -81,7 +84,8 @@ export async function GET(request: Request) {
         },
         orderBy: { id: "asc" },
       }),
-      prisma.zona.findMany({
+      db.zona.findMany({
+        where: { tenantId },
         select: {
           id: true,
           nama: true,
@@ -91,7 +95,7 @@ export async function GET(request: Request) {
         },
         orderBy: { id: "asc" },
       }),
-      prisma.kelurahan.findMany({
+      db.kelurahan.findMany({
         select: {
           id: true,
           nama: true,
@@ -100,7 +104,8 @@ export async function GET(request: Request) {
         },
         orderBy: { id: "asc" },
       }),
-      prisma.paket.findMany({
+      db.paket.findMany({
+        where: { tenantId },
         select: {
           id: true,
           nama: true,
@@ -110,8 +115,8 @@ export async function GET(request: Request) {
         },
         orderBy: { id: "asc" },
       }),
-      prisma.rute.findMany({
-        where: { aktif: true },
+      db.rute.findMany({
+        where: { aktif: true, tenantId },
         select: {
           id: true,
           nama: true,
@@ -133,6 +138,8 @@ export async function GET(request: Request) {
       ok: true,
       serverTime,
       version: 1,
+      tenantId,
+      tenantSlug: context.tenantSlug,
       stats: {
         pelanggan: pelangganList.length,
         wilayah: wilayahList.length,

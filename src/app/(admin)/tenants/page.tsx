@@ -26,6 +26,9 @@ import {
   Loader2,
   DollarSign,
   Wallet,
+  Copy,
+  Wifi,
+  Check,
 } from "lucide-react";
 
 interface TenantItem {
@@ -59,6 +62,10 @@ function TenantsContent() {
     kota: "Kota Depok",
     tipePengelola: "tps3r",
     paketLangganan: "pro",
+    domainSetupFee: 2000000,
+    setupFeePaid: false,
+    platformFeeNominal: 1000,
+    platformFeeRate: 0,
     customDomain: "",
     dbConnectionString: "",
   });
@@ -102,14 +109,24 @@ function TenantsContent() {
     adminFeeVa: 3500,
     adminFeeEwallet: 2000,
     platformFeeNominal: 1000,
+    platformFeeRate: 0,
     bankName: "BCA",
     bankAccountNumber: "",
     bankAccountHolder: "",
     payoutSchedule: "weekly",
   });
 
+  const [fonnteCheck, setFonnteCheck] = useState<{
+    loading: boolean;
+    data: any;
+    error: string | null;
+  }>({ loading: false, data: null, error: null });
+  const [copiedWebhook, setCopiedWebhook] = useState(false);
+
   const handleOpenSettings = async (tenant: TenantItem) => {
     setSelectedTenantForConfig(tenant);
+    setFonnteCheck({ loading: false, data: null, error: null });
+    setCopiedWebhook(false);
     setConfigLoading(true);
     setActiveConfigTab("wa");
     try {
@@ -124,6 +141,39 @@ function TenantsContent() {
       console.error("Gagal load config tenant:", e);
     } finally {
       setConfigLoading(false);
+    }
+  };
+
+  const handleCheckFonnte = async (deviceIndex: 1 | 2 = 1) => {
+    if (!selectedTenantForConfig) return;
+    setFonnteCheck({ loading: true, data: null, error: null });
+    try {
+      const res = await fetch(`/api/core/tenants/${selectedTenantForConfig.id}/check-wa-device`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          deviceIndex,
+          apiKey: deviceIndex === 1 ? waConfig.waApiKey1 : waConfig.waApiKey2,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setFonnteCheck({ loading: false, data, error: null });
+        if (data.quotaTotal && data.messagesUsed !== undefined) {
+          setQuotaUsage((prev) => ({
+            ...prev,
+            pesanTerkirim: data.messagesUsed,
+          }));
+        }
+      } else {
+        setFonnteCheck({
+          loading: false,
+          data: null,
+          error: data.reason || data.error || "Gagal menghubungi API Fonnte.",
+        });
+      }
+    } catch (err: any) {
+      setFonnteCheck({ loading: false, data: null, error: err.message || "Network error" });
     }
   };
 
@@ -230,6 +280,10 @@ function TenantsContent() {
         kota: "Kota Depok",
         tipePengelola: "tps3r",
         paketLangganan: "pro",
+        domainSetupFee: 2000000,
+        setupFeePaid: false,
+        platformFeeNominal: 1000,
+        platformFeeRate: 0,
         customDomain: "",
         dbConnectionString: "",
       });
@@ -552,6 +606,85 @@ function TenantsContent() {
                     Kosongkan jika mitra menggunakan shared database instance cluster.
                   </p>
                 </div>
+
+                {/* Monetisasi: Biaya Domain Flat 2jt & Komisi Platform */}
+                <div className="p-4 rounded-2xl bg-sky-50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800/60 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-sky-800 dark:text-sky-300 uppercase tracking-wider flex items-center gap-1.5">
+                      <DollarSign className="w-3.5 h-3.5" /> Biaya Onboarding & Komisi Transaksi
+                    </span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-400 font-bold">
+                      Monetisasi SaaS
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                        Biaya Domain & Setup Awal (Flat)
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-2 text-xs font-bold text-slate-400">Rp</span>
+                        <input
+                          type="number"
+                          value={form.domainSetupFee}
+                          onChange={(e) => setForm({ ...form, domainSetupFee: Number(e.target.value) })}
+                          className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs font-bold text-sky-600 dark:text-sky-400"
+                        />
+                      </div>
+                      <p className="text-[10px] text-slate-500 mt-1">Standar O2W HERO: Flat Rp 2.000.000</p>
+                    </div>
+
+                    <div className="flex flex-col justify-end">
+                      <label className="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={form.setupFeePaid}
+                          onChange={(e) => setForm({ ...form, setupFeePaid: e.target.checked })}
+                          className="w-4 h-4 rounded text-sky-600"
+                        />
+                        <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                          Setup Fee Telah Lunas Dibayar
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                        Komisi Transaksi Flat (Rp)
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-2 text-xs font-bold text-slate-400">Rp</span>
+                        <input
+                          type="number"
+                          value={form.platformFeeNominal}
+                          onChange={(e) => setForm({ ...form, platformFeeNominal: Number(e.target.value) })}
+                          className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs font-bold"
+                        />
+                      </div>
+                      <p className="text-[10px] text-slate-500 mt-1">Default Rp 1.000 / transaksi</p>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                        Komisi Persentase per Transaksi (%)
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          step="0.1"
+                          value={form.platformFeeRate}
+                          onChange={(e) => setForm({ ...form, platformFeeRate: Number(e.target.value) })}
+                          className="w-full pl-3 pr-7 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs font-bold"
+                        />
+                        <span className="absolute right-3 top-2 text-xs font-bold text-slate-400">%</span>
+                      </div>
+                      <p className="text-[10px] text-slate-500 mt-1">Misal 2.5% dari nominal tagihan</p>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800 shrink-0">
@@ -793,6 +926,153 @@ function TenantsContent() {
                       </div>
                     </div>
 
+                    {/* Live Status Fonnte & Kuota Pemakaian Riil */}
+                    <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div>
+                          <span className="text-xs font-bold text-white flex items-center gap-1.5 uppercase">
+                            <Wifi className="w-3.5 h-3.5 text-emerald-400" /> Cek Kuota &amp; Status Fonnte Langsung
+                          </span>
+                          <p className="text-[11px] text-slate-400">
+                            Ambil status koneksi, total kuota paket, dan sisa pemakaian dari API Fonnte.
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            disabled={fonnteCheck.loading}
+                            onClick={() => handleCheckFonnte(1)}
+                            className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-600/20 disabled:opacity-50"
+                          >
+                            {fonnteCheck.loading ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <RefreshCw className="w-3.5 h-3.5" />
+                            )}
+                            Cek Device 1 (Utama)
+                          </button>
+                          {waConfig.waApiKey2 && (
+                            <button
+                              type="button"
+                              disabled={fonnteCheck.loading}
+                              onClick={() => handleCheckFonnte(2)}
+                              className="px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-sky-600/20 disabled:opacity-50"
+                            >
+                              <RefreshCw className="w-3.5 h-3.5" />
+                              Cek Device 2 (CS)
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Display Data Hasil Cek Fonnte */}
+                      {fonnteCheck.data && (
+                        <div className="p-3.5 rounded-xl bg-slate-950 border border-emerald-500/40 space-y-2">
+                          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2">
+                            <div className="flex items-center gap-2">
+                              <span
+                                className={`inline-block w-2.5 h-2.5 rounded-full ${
+                                  fonnteCheck.data.connected ? "bg-emerald-400 animate-pulse" : "bg-rose-400"
+                                }`}
+                              />
+                              <span className="text-xs font-bold text-white">
+                                {fonnteCheck.data.connected ? "Perangkat Terhubung (Connect)" : "Perangkat Terputus"}
+                              </span>
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono">
+                                No: {fonnteCheck.data.device}
+                              </span>
+                            </div>
+                            <span className="text-[11px] text-slate-400">
+                              Paket: <strong className="text-emerald-400">{fonnteCheck.data.package}</strong> • Exp:{" "}
+                              <span className="text-slate-300">{fonnteCheck.data.expired}</span>
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                            <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-center">
+                              <span className="block text-[10px] uppercase font-bold text-slate-400">Total Kuota Fonnte</span>
+                              <span className="text-sm font-extrabold text-white">
+                                {fonnteCheck.data.quotaTotal?.toLocaleString("id-ID") || 0}
+                              </span>
+                            </div>
+                            <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-center">
+                              <span className="block text-[10px] uppercase font-bold text-amber-400">Pesan Terkirim</span>
+                              <span className="text-sm font-extrabold text-amber-400">
+                                {fonnteCheck.data.messagesUsed?.toLocaleString("id-ID") || 0}
+                              </span>
+                            </div>
+                            <div className="p-2.5 rounded-lg bg-slate-900 border border-emerald-500/30 text-center">
+                              <span className="block text-[10px] uppercase font-bold text-emerald-400">Sisa Kuota Aktif</span>
+                              <span className="text-sm font-extrabold text-emerald-400">
+                                {fonnteCheck.data.remainingQuota?.toLocaleString("id-ID") || 0}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {fonnteCheck.error && (
+                        <div className="p-3 rounded-xl bg-rose-950/40 border border-rose-800 text-xs text-rose-300 flex items-center gap-2">
+                          <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+                          <span>{fonnteCheck.error}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Konfigurasi Webhook Fonnte untuk Fitur Auto Message */}
+                    <div className="p-4 rounded-2xl bg-sky-950/30 border border-sky-800/60 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center gap-1.5">
+                          <Sparkles className="w-3.5 h-3.5" /> Webhook Fonnte &amp; Fitur Auto Message
+                        </span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 font-bold">
+                          Interaktif Otomatis
+                        </span>
+                      </div>
+
+                      <p className="text-xs text-slate-300 leading-relaxed">
+                        Agar fitur <strong>Auto Message</strong> (balas tagihan instan, cek rekening kas, laporan pengangkutan, dan AI interaktif) aktif di nomor WhatsApp tenant ini, sambungkan Webhook URL berikut ke dashboard Fonnte mitra:
+                      </p>
+
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          readOnly
+                          value={
+                            selectedTenantForConfig
+                              ? `${typeof window !== "undefined" ? window.location.origin : "https://o2whero.com"}/api/publik/wa-webhook?tenant=${selectedTenantForConfig.slug}`
+                              : ""
+                          }
+                          className="flex-1 px-3 py-2 rounded-xl border border-sky-800 bg-slate-950 text-xs font-mono text-sky-300 select-all focus:outline-none"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (!selectedTenantForConfig) return;
+                            const url = `${typeof window !== "undefined" ? window.location.origin : "https://o2whero.com"}/api/publik/wa-webhook?tenant=${selectedTenantForConfig.slug}`;
+                            navigator.clipboard.writeText(url);
+                            setCopiedWebhook(true);
+                            setTimeout(() => setCopiedWebhook(false), 2500);
+                          }}
+                          className="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-sky-600/25 shrink-0"
+                        >
+                          {copiedWebhook ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                          {copiedWebhook ? "Tersalin!" : "Salin Webhook URL"}
+                        </button>
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-[11px] text-slate-400 space-y-1">
+                        <p className="font-bold text-slate-300">Langkah Pemasangan di Fonnte:</p>
+                        <ol className="list-decimal list-inside space-y-0.5 text-slate-300">
+                          <li>Login ke dashboard Fonnte: <a href="https://md.fonnte.com" target="_blank" rel="noreferrer" className="text-sky-400 underline">md.fonnte.com</a></li>
+                          <li>Buka menu <strong>Device</strong> &gt; Klik device nomor WA mitra.</li>
+                          <li>Tempelkan Webhook URL di atas pada kolom <strong>Webhook</strong>.</li>
+                          <li>Pastikan opsi <strong>Auto Read</strong> &amp; <strong>Webhook Status</strong> diaktifkan.</li>
+                          <li>Simpan. Pesan masuk warga akan otomatis diproses dan dibalas oleh bot WastePay.</li>
+                        </ol>
+                      </div>
+                    </div>
+
                     {/* Grup & Kontak Laporan Internal */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
@@ -974,22 +1254,59 @@ function TenantsContent() {
                             Pendapatan Bersih
                           </span>
                         </div>
-                        <div>
-                          <label className="block text-[11px] font-semibold text-slate-300 mb-1">
-                            Komisi per Transaksi Lunas (Flat)
-                          </label>
-                          <div className="relative">
-                            <span className="absolute left-3 top-2.5 text-xs font-bold text-slate-400">Rp</span>
-                            <input
-                              type="number"
-                              value={paymentConfig.platformFeeNominal}
-                              onChange={(e) => setPaymentConfig({ ...paymentConfig, platformFeeNominal: Number(e.target.value) })}
-                              className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs font-bold text-sky-400"
-                            />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-300 mb-1">
+                              Komisi per Transaksi Lunas (Flat)
+                            </label>
+                            <div className="relative">
+                              <span className="absolute left-3 top-2.5 text-xs font-bold text-slate-400">Rp</span>
+                              <input
+                                type="number"
+                                value={paymentConfig.platformFeeNominal}
+                                onChange={(e) => setPaymentConfig({ ...paymentConfig, platformFeeNominal: Number(e.target.value) })}
+                                className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs font-bold text-sky-400"
+                              />
+                            </div>
+                            <p className="text-[10px] text-slate-400 mt-1">
+                              Standar O2W HERO: Rp 1.000 per tagihan warga lunas
+                            </p>
                           </div>
-                          <p className="text-[10px] text-slate-400 mt-1">
-                            Standar O2W HERO: Rp 1.000 per tagihan warga lunas
+
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-300 mb-1">
+                              Komisi Persentase per Transaksi (%)
+                            </label>
+                            <div className="relative">
+                              <input
+                                type="number"
+                                step="0.1"
+                                value={paymentConfig.platformFeeRate}
+                                onChange={(e) => setPaymentConfig({ ...paymentConfig, platformFeeRate: Number(e.target.value) })}
+                                className="w-full pl-3 pr-7 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs font-bold text-sky-400"
+                              />
+                              <span className="absolute right-3 top-2.5 text-xs font-bold text-slate-400">%</span>
+                            </div>
+                            <p className="text-[10px] text-slate-400 mt-1">
+                              Pola persentase dari tiap pembayaran yang berhasil
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Interactive Simulation Widget */}
+                        <div className="p-3 rounded-xl bg-slate-900/80 border border-sky-800/40 text-[11px] text-slate-300 space-y-1">
+                          <div className="font-bold text-sky-300 flex items-center gap-1">
+                            <span>💡 Simulasi Pemotongan Komisi:</span>
+                          </div>
+                          <p>
+                            Jika warga bayar tagihan <strong>Rp 50.000</strong>:
                           </p>
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-slate-200 font-mono text-[10px]">
+                            <span>• Flat: <strong>Rp {paymentConfig.platformFeeNominal?.toLocaleString("id-ID") || 0}</strong></span>
+                            <span>• Persentase ({paymentConfig.platformFeeRate || 0}%): <strong>Rp {Math.round(50000 * ((paymentConfig.platformFeeRate || 0) / 100)).toLocaleString("id-ID")}</strong></span>
+                            <span className="text-sky-400 font-bold">• Total Komisi O2W: Rp {(paymentConfig.platformFeeNominal + Math.round(50000 * ((paymentConfig.platformFeeRate || 0) / 100))).toLocaleString("id-ID")}</span>
+                            <span className="text-emerald-400 font-bold">• Net Hak Mitra: Rp {(50000 - (paymentConfig.platformFeeNominal + Math.round(50000 * ((paymentConfig.platformFeeRate || 0) / 100)))).toLocaleString("id-ID")}</span>
+                          </div>
                         </div>
                       </div>
                     </div>

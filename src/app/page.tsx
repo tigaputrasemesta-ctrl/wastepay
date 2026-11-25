@@ -39,14 +39,47 @@ import O2WHeroCorePortal from "@/components/core/O2WHeroCorePortal";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "UPS HERU - Jasa Angkut Sampah & Retribusi Digital Kota Depok",
-  description:
-    "Solusi pengelolaan sampah terpadu Kota Depok oleh UPS HERU (TPS 3R Kalibaru). Penjemputan terjadwal ke rumah warga, pelacakan armada live GPS, transparansi tarif retribusi, dan pembayaran digital via QRIS.",
-  alternates: {
-    canonical: "/",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const headersList = await headers();
+  const host = headersList.get("host") || "";
+  const tenantCtx = resolveTenantByHost(host);
+
+  if (tenantCtx.isCore) {
+    return {
+      title: "O2WHERO — Ekosistem Digital Terintegrasi Pengelolaan Sampah, Logistik, Pembayaran & Ekonomi Sirkular",
+      description:
+        "Ubah pengelolaan sampah menjadi ekosistem bisnis yang terukur dan berkelanjutan. O2WHERO menghubungkan pelanggan, TPS 3R, Bank Sampah, operator pengangkutan, fasilitas pengolahan, dan mitra daur ulang melalui satu platform digital.",
+      keywords: [
+        "O2WHERO",
+        "Pengelolaan Sampah Digital",
+        "SaaS Bank Sampah",
+        "TPS 3R",
+        "Ekonomi Sirkular",
+        "Retribusi Sampah QRIS",
+        "Logistik Armada GPS",
+      ],
+      alternates: {
+        canonical: "https://o2whero.com",
+      },
+      openGraph: {
+        title: "O2WHERO — Platform Pengelolaan Sampah & Ekonomi Sirkular",
+        description: "Ubah pengelolaan sampah menjadi ekosistem bisnis yang terukur dan berkelanjutan.",
+        url: "https://o2whero.com",
+        siteName: "O2WHERO",
+        type: "website",
+      },
+    };
+  }
+
+  return {
+    title: "UPS HERU - Jasa Angkut Sampah & Retribusi Digital Kota Depok",
+    description:
+      "Solusi pengelolaan sampah terpadu Kota Depok oleh UPS HERU (TPS 3R Kalibaru). Penjemputan terjadwal ke rumah warga, pelacakan armada live GPS, transparansi tarif retribusi, dan pembayaran digital via QRIS.",
+    alternates: {
+      canonical: "/",
+    },
+  };
+}
 
 export default async function LandingPage() {
   const headersList = await headers();

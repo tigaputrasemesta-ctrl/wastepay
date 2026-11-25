@@ -833,10 +833,11 @@ export async function kirimNotifikasi(
         where: { tenantId: params.tenantId },
       });
       if (cfg) {
+        const { decryptCredential } = await import("./credential-vault");
         if (params.deviceType === "cs" && cfg.waApiKey2) {
-          customApiKey = cfg.waApiKey2;
+          customApiKey = decryptCredential(cfg.waApiKey2) || cfg.waApiKey2;
         } else if (cfg.waApiKey1) {
-          customApiKey = cfg.waApiKey1;
+          customApiKey = decryptCredential(cfg.waApiKey1) || cfg.waApiKey1;
         }
       }
     } catch {
@@ -883,6 +884,7 @@ export async function kirimNotifikasi(
 
   await prisma.notifikasi.create({
     data: {
+      tenantId: params.tenantId || null,
       tipe: params.tipe,
       judul: params.judul,
       pesan: params.pesan,

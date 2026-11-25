@@ -176,7 +176,18 @@ export async function GET(req: NextRequest) {
     const effectiveKey = (process.env.GEMINI_API_KEY || dbKey || "").trim();
     const hasEnvGeminiKey = Boolean(effectiveKey && effectiveKey.length > 5);
 
-    // Ambil metrik riil dari database WastePay
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const rawHost = req.headers.get("x-forwarded-host") || req.headers.get("host") || "";
+    const { resolveTenantByHost } = await import("@/lib/tenant");
+    const tenantCtx = resolveTenantByHost(rawHost);
+    const tenantId = session.tenantId || tenantCtx.tenant.id;
+
+    // Ambil metrik riil terisolasi per tenant dari database WastePay
+    const tenantScope = tenantCtx.isCore && session.role === "superadmin" ? {} : { tenantId };
+
     const [
       totalPelanggan,
       komplainPending,
@@ -184,11 +195,11 @@ export async function GET(req: NextRequest) {
       totalMitra,
       transaksiLunasCount,
     ] = await Promise.all([
-      prisma.pelanggan.count({ where: { status: "aktif" } }).catch(() => 542),
-      prisma.komplain.count({ where: { status: "pending" } }).catch(() => 0),
-      prisma.tagihan.count({ where: { status: { in: ["belum_bayar", "tertunggak"] } } }).catch(() => 65),
-      prisma.tenant.count().catch(() => 2),
-      prisma.tagihan.count({ where: { status: "lunas" } }).catch(() => 477),
+      prisma.pelanggan.count({ where: { status: "aktif", ...tenantScope } }).catch(() => 0),
+      prisma.komplain.count({ where: { status: "pending", ...tenantScope } }).catch(() => 0),
+      prisma.tagihan.count({ where: { status: { in: ["belum_bayar", "tertunggak"] }, ...tenantScope } }).catch(() => 0),
+      tenantCtx.isCore ? prisma.tenant.count().catch(() => 1) : Promise.resolve(1),
+      prisma.tagihan.count({ where: { status: "lunas", ...tenantScope } }).catch(() => 0),
     ]);
 
     const stats = {

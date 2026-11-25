@@ -56,9 +56,18 @@ export async function GET(
     return NextResponse.json({ error: "Pelanggan tidak ditemukan" }, { status: 404 });
   }
 
+  const session = await getSession();
+  const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+  const { resolveTenantByHost } = await import("@/lib/tenant");
+  const tenantCtx = resolveTenantByHost(rawHost);
+  const currentTenantId = session?.tenantId || tenantCtx.tenant.id;
+  const recordTenantId = pelanggan.tenantId ?? "tenant-pilot-upsheru";
+  if (session && session.role !== "superadmin" && !tenantCtx.isCore && recordTenantId !== currentTenantId) {
+    return NextResponse.json({ error: "Forbidden: Pelanggan bukan milik organisasi tenant Anda" }, { status: 403 });
+  }
+
   // Scope kelurahan: petugas hanya boleh melihat pelanggan di kelurahannya sendiri
   // (nonaktif sementara — PETUGAS_SCOPE_ALL = semua kelurahan).
-  const session = await getSession();
   if (session && session.role === "petugas" && !PETUGAS_SCOPE_ALL) {
     const kelurahanId = await getPetugasKelurahan(session.id);
     // 404 (bukan 403) agar tidak membocorkan keberadaan pelanggan (anti-enumerasi).
@@ -79,10 +88,26 @@ export async function PUT(
     const body = await request.json();
     const { nama, noTelepon, kategori, alamat, rtRw, fotoRumah, patokanLokasi, latitude, longitude, koordinatSumber, koordinatAkurasi, penanggungjawab, referal, kelurahanId, paketId, status, catatan } = body;
 
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+    const { resolveTenantByHost } = await import("@/lib/tenant");
+    const tenantCtx = resolveTenantByHost(rawHost);
+    const currentTenantId = session.tenantId || tenantCtx.tenant.id;
+    const targetPelanggan = await prisma.pelanggan.findUnique({ where: { id } });
+    if (!targetPelanggan) {
+      return NextResponse.json({ error: "Pelanggan tidak ditemukan" }, { status: 404 });
+    }
+    const recordTenantId = targetPelanggan.tenantId ?? "tenant-pilot-upsheru";
+    if (session.role !== "superadmin" && !tenantCtx.isCore && recordTenantId !== currentTenantId) {
+      return NextResponse.json({ error: "Forbidden: Pelanggan bukan milik organisasi tenant Anda" }, { status: 403 });
+    }
+
     // Petugas (role petugas) hanya boleh melalui jabatan survei,
     // hanya mengubah field survei — bukan data keuangan/sebarang,
     // dan hanya untuk pelanggan di wilayahnya sendiri.
-    const session = await getSession();
     if (session && session.role === "petugas") {
       const profil = await prisma.petugas.findUnique({
         where: { userId: session.id },
@@ -122,7 +147,7 @@ export async function PUT(
       // kelurahanId TIDAK termasuk — pindah kelurahan hanya wewenang admin.
       const fieldSurvei: Record<string, unknown> = {};
       if (fotoRumah !== undefined && !fotoRumah.startsWith("/api/pelanggan/")) {
-        fieldSurvei.fotoRumah = await persistBase64Image(fotoRumah, "pelanggan");
+        fieldSurvei.fotoRumah = await persistBase64Image(fotoRumah, "pelanggan", currentTenantId);
       }
       if (patokanLokasi !== undefined) fieldSurvei.patokanLokasi = patokanLokasi;
       if (latitude !== undefined) fieldSurvei.latitude = latitude ? parseFloat(latitude) : null;
@@ -154,7 +179,7 @@ export async function PUT(
     if (alamat !== undefined) data.alamat = alamat;
     if (rtRw !== undefined) data.rtRw = rtRw;
     if (fotoRumah !== undefined && !fotoRumah.startsWith("/api/pelanggan/")) {
-      data.fotoRumah = await persistBase64Image(fotoRumah, "pelanggan");
+      data.fotoRumah = await persistBase64Image(fotoRumah, "pelanggan", currentTenantId);
     }
     if (patokanLokasi !== undefined) data.patokanLokasi = patokanLokasi;
     if (latitude !== undefined) data.latitude = latitude ? parseFloat(latitude) : null;
@@ -361,10 +386,23 @@ export async function DELETE(
 
     const pelanggan = await prisma.pelanggan.findUnique({
       where: { id },
-      select: { id: true, nama: true, kodePelanggan: true },
+      select: { id: true, nama: true, kodePelanggan: true, tenantId: true },
     });
     if (!pelanggan) {
       return NextResponse.json({ error: "Pelanggan tidak ditemukan" }, { status: 404 });
+    }
+
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+    const { resolveTenantByHost } = await import("@/lib/tenant");
+    const tenantCtx = resolveTenantByHost(rawHost);
+    const currentTenantId = session.tenantId || tenantCtx.tenant.id;
+    const recordTenantId = pelanggan.tenantId ?? "tenant-pilot-upsheru";
+    if (session.role !== "superadmin" && !tenantCtx.isCore && recordTenantId !== currentTenantId) {
+      return NextResponse.json({ error: "Forbidden: Pelanggan bukan milik organisasi tenant Anda" }, { status: 403 });
     }
 
     const now = new Date();

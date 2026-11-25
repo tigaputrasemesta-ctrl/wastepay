@@ -102,6 +102,46 @@ export async function syncDuitkuPayment(
           },
         });
 
+        // Catat buku kas TenantLedger & pembagian komisi O2W HERO (Nominal Flat + Persentase %)
+        const effectiveTenantId = pembayaran.tenantId || tagihan?.tenantId || "tenant-pilot-upsheru";
+        try {
+          const paymentCfg = await tx.tenantPaymentConfig.findUnique({
+            where: { tenantId: effectiveTenantId },
+          });
+          const platformFeeNominal = paymentCfg?.platformFeeNominal ?? 1000;
+          const platformFeeRate = paymentCfg?.platformFeeRate ?? 0;
+          const grossAmount = result.amount ?? pembayaran.jumlah;
+          // Rumus komisi platform O2W: Nominal Flat + Persentase (%)
+          const feePlatform = Math.round(platformFeeNominal + (grossAmount * (platformFeeRate / 100)));
+          const feeGateway = result.paymentMethod?.toLowerCase().includes("va")
+            ? (paymentCfg?.adminFeeVa ?? 3500)
+            : (paymentCfg?.adminFeeQris ?? 1500);
+          const nominalNet = Math.max(0, grossAmount - feePlatform - feeGateway);
+
+          const lastLedger = await tx.tenantLedger.findFirst({
+            where: { tenantId: effectiveTenantId },
+            orderBy: { createdAt: "desc" },
+          });
+          const prevSaldo = lastLedger?.saldoSetelah ?? 0;
+          const saldoSetelah = prevSaldo + nominalNet;
+
+          await tx.tenantLedger.create({
+            data: {
+              tenantId: effectiveTenantId,
+              pembayaranId: pembayaran.id,
+              tipe: "CREDIT_PAYMENT",
+              nominalGross: grossAmount,
+              feeGateway,
+              feePlatform,
+              nominalNet,
+              saldoSetelah,
+              keterangan: `Penerimaan Pembayaran Warga #${pembayaran.id} (${result.paymentMethod || "Duitku"}) - Komisi Platform: Rp ${feePlatform.toLocaleString("id-ID")}${platformFeeRate > 0 ? ` (${platformFeeRate}%)` : ""}`,
+            },
+          });
+        } catch (ledgerErr) {
+          console.warn("[Duitku Sync] Gagal mencatat ledger split payment:", ledgerErr);
+        }
+
         await logAudit(
           "update",
           "Pembayaran",

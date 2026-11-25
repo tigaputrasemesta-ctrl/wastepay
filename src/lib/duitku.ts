@@ -260,8 +260,9 @@ export function verifyCallbackSignature(params: {
   amount?: string;
   merchantOrderId?: string;
   signature?: string;
+  apiKeyOverride?: string;
 }): boolean {
-  const key = apiKey();
+  const key = params.apiKeyOverride || apiKey();
   if (!key) return false;
   const { merchantCode: mc, amount, merchantOrderId, signature } = params;
   if (!mc || !amount || !merchantOrderId || !signature) return false;

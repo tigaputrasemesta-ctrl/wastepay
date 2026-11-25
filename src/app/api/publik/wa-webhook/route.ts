@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 import { processIncomingWaMessage } from "@/lib/server/wa-bot-service";
 import { kirimWhatsApp } from "@/lib/wa";
 import { createHash, timingSafeEqual } from "node:crypto";
@@ -279,21 +280,64 @@ export async function POST(request: Request) {
       });
     }
 
+    // Resolusi Tenant Pengirim Webhook dari Host atau Query
+    const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+    const { resolveTenantByHost } = await import("@/lib/tenant");
+    const tenantCtx = resolveTenantByHost(rawHost);
+    let resolvedTenantId = tenantCtx.isValid ? tenantCtx.tenant.id : null;
+
+    const urlTenant = new URL(request.url).searchParams.get("tenant") || new URL(request.url).searchParams.get("tenantId");
+    if (urlTenant && prisma.tenant?.findFirst) {
+      const matchTenant = await prisma.tenant.findFirst({
+        where: { OR: [{ id: urlTenant }, { slug: urlTenant }] },
+      });
+      if (matchTenant) resolvedTenantId = matchTenant.id;
+    }
+
+    // Fallback: Identifikasi tenant berdasarkan nomor perangkat Fonnte (cleanDevice)
+    if (!resolvedTenantId && cleanDevice && prisma.tenantWhatsAppConfig?.findFirst) {
+      const waConfigMatch = await prisma.tenantWhatsAppConfig.findFirst({
+        where: {
+          OR: [
+            { waNumber1: { contains: cleanDevice.slice(-10) } },
+            { waNumber2: { contains: cleanDevice.slice(-10) } },
+          ],
+        },
+      });
+      if (waConfigMatch) {
+        resolvedTenantId = waConfigMatch.tenantId;
+      }
+    }
+
     // Eksekusi kecerdasan bot berbasis database WastePay
     const result = await processIncomingWaMessage({
       sender: cleanSender,
       message,
       name,
       url,
-    });
+    }, resolvedTenantId);
 
-    // Kirim pesan balasan secara langsung via API Fonnte jika reply tidak kosong
+    // Kirim pesan balasan secara langsung via API Fonnte menggunakan token tenant
     let sent = false;
     let sendError: string | undefined;
 
     if (result.reply) {
       try {
-        const sendRes = await kirimWhatsApp(cleanSender, result.reply, { delay: "0" });
+        let tenantApiKey: string | undefined;
+        if (resolvedTenantId && prisma.tenantWhatsAppConfig?.findUnique) {
+          const tenantWaCfg = await prisma.tenantWhatsAppConfig.findUnique({
+            where: { tenantId: resolvedTenantId },
+          });
+          if (tenantWaCfg?.waApiKey1) {
+            const { decryptCredential } = await import("@/lib/credential-vault");
+            tenantApiKey = decryptCredential(tenantWaCfg.waApiKey1) || tenantWaCfg.waApiKey1;
+          }
+        }
+
+        const sendRes = await kirimWhatsApp(cleanSender, result.reply, {
+          delay: "0",
+          apiKey: tenantApiKey,
+        });
         sent = sendRes.ok;
         sendError = sendRes.error;
         if (!sendRes.ok) {

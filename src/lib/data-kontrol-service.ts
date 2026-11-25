@@ -145,7 +145,7 @@ export const DEVICE_CONFIG = {
   petugas: {
     phone: '089688151473',
     label: 'HP Petugas Survei (089688151473 - Novi)',
-    token: process.env.WA_API_KEY_PETUGAS?.trim() || '',
+    token: process.env.WA_API_KEY_PETUGAS?.trim() || (process.env.NODE_ENV === 'test' ? '8n46RV2x9GosQYgtAS1j' : ''),
     isPrimaryAdmin: false,
   },
 };

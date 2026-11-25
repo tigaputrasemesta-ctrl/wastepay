@@ -127,6 +127,10 @@ export async function POST(request: Request) {
     }
 
     const cleanSlug = String(slug).toLowerCase().trim().replace(/[^a-z0-9-]/g, "-");
+    const domainSetupFee = body.domainSetupFee !== undefined ? Number(body.domainSetupFee) : 2000000;
+    const setupFeePaid = body.setupFeePaid === true;
+    const platformFeeNominal = body.platformFeeNominal !== undefined ? Number(body.platformFeeNominal) : 1000;
+    const platformFeeRate = body.platformFeeRate !== undefined ? Number(body.platformFeeRate) : 0;
 
     // Buat tenant baru di database
     const newTenant = await prisma.tenant.create({
@@ -190,6 +194,37 @@ export async function POST(request: Request) {
       }
     }
 
+    // Inisialisasi Paket Langganan & Biaya Setup Domain (Flat Rp 2.000.000)
+    try {
+      await prisma.tenantSubscription.create({
+        data: {
+          tenantId: newTenant.id,
+          planName: paketLangganan || "basic",
+          status: "aktif",
+          domainSetupFee,
+          setupFeePaid,
+          pricePerMonth: paketLangganan === "pro" ? 500000 : paketLangganan === "enterprise" ? 1500000 : 0,
+        },
+      });
+    } catch (subErr) {
+      console.warn("[Core API] Gagal inisialisasi subscription tenant:", subErr);
+    }
+
+    // Inisialisasi Konfigurasi Payment Gateway & Komisi Platform (Nominal + Rate %)
+    try {
+      await prisma.tenantPaymentConfig.create({
+        data: {
+          tenantId: newTenant.id,
+          platformFeeNominal,
+          platformFeeRate,
+          gatewayMode: "centralized_pool",
+          feeBearerPolicy: "hybrid",
+        },
+      });
+    } catch (payCfgErr) {
+      console.warn("[Core API] Gagal inisialisasi payment config tenant:", payCfgErr);
+    }
+
     // Inisialisasi Buku Kas & Saldo Awal di TenantLedger
     try {
       await prisma.tenantLedger.create({
@@ -204,6 +239,21 @@ export async function POST(request: Request) {
           keterangan: `Inisialisasi Buku Kas Mitra Baru Paket ${(paketLangganan || "Starter").toUpperCase()} - ${newTenant.namaMitra}`,
         },
       });
+
+      if (domainSetupFee > 0) {
+        await prisma.tenantLedger.create({
+          data: {
+            tenantId: newTenant.id,
+            tipe: "SAAS_INVOICE",
+            nominalGross: domainSetupFee,
+            feeGateway: 0,
+            feePlatform: domainSetupFee,
+            nominalNet: 0,
+            saldoSetelah: 0,
+            keterangan: `Biaya Setup Domain Flat Awal (Rp ${domainSetupFee.toLocaleString("id-ID")}) - Status: ${setupFeePaid ? "LUNAS" : "TERTAGIH"}`,
+          },
+        });
+      }
     } catch (ledgerErr) {
       console.warn("[Core API] Gagal mencatat ledger awal tenant:", ledgerErr);
     }

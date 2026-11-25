@@ -72,7 +72,8 @@ export function extractTargetMonth(text: string): { bulan: number; tahun?: numbe
  * Menghasilkan jawaban cerdas otomatis berbasis data riil database WastePay.
  */
 export async function processIncomingWaMessage(
-  payload: IncomingWaPayload
+  payload: IncomingWaPayload,
+  tenantId?: string | null
 ): Promise<BotProcessResult> {
   const rawSender = String(payload.sender || "").trim();
   const baseSender = rawSender.split("@")[0].split(":")[0];
@@ -86,7 +87,7 @@ export async function processIncomingWaMessage(
   const menuDigitMatch = strippedMsg.match(/^[(\[]?([0-6])[)\]\.\s]*$/);
   const selectedDigit = menuDigitMatch ? menuDigitMatch[1] : null;
 
-  // 1. Identifikasi Pelanggan via Nomor WhatsApp (toleran 08xx / 628xx / +628xx)
+  // 1. Identifikasi Pelanggan via Nomor WhatsApp terisolasi per tenant
   const tail10 = extractTail10Digits(cleanSender);
   let pelanggan: any = null;
 
@@ -94,6 +95,7 @@ export async function processIncomingWaMessage(
     pelanggan = await prisma.pelanggan.findFirst({
       where: {
         deletedAt: null,
+        ...(tenantId ? { tenantId } : {}),
         OR: [
           { noTelepon: cleanSender },
           { kodePelanggan: cleanSender },
@@ -194,6 +196,7 @@ export async function processIncomingWaMessage(
 
       const komplain = await prisma.komplain.create({
         data: {
+          tenantId: tenantId || pelanggan?.tenantId || null,
           jenis: "sampah_menumpuk",
           deskripsi: "Laporan foto sampah via WhatsApp",
           foto: mediaUrl,
@@ -605,6 +608,7 @@ export async function processIncomingWaMessage(
 
     const komplain = await prisma.komplain.create({
       data: {
+        tenantId: tenantId || pelanggan?.tenantId || null,
         jenis,
         deskripsi: rawMessage,
         foto: mediaUrl || null,

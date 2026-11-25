@@ -37,6 +37,7 @@ model User {
   orders               Order[]
   tenantId             String?
   tenant               Tenant?        @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  memberships          TenantMembership[]
 
   @@index([tenantId])
 }
@@ -83,6 +84,9 @@ model Wilayah {
 
   @@index([kelurahanId])
   @@index([zonaId])
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model Zona {
@@ -104,6 +108,9 @@ model Zona {
 
   @@index([kelurahanId])
   @@index([deletedAt])
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model ZonaPetugas {
@@ -116,6 +123,9 @@ model ZonaPetugas {
 
   @@unique([zonaId, petugasId])
   @@index([petugasId])
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model KategoriTarif {
@@ -126,6 +136,9 @@ model KategoriTarif {
   deskripsi String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model Paket {
@@ -138,6 +151,9 @@ model Paket {
   updatedAt DateTime @updatedAt
 
   pelanggan Pelanggan[]
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model Pelanggan {
@@ -190,6 +206,9 @@ model Pelanggan {
   @@index([wilayahId])
   @@index([skemaBayar])
   @@index([indukKolektifId])
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model Petugas {
@@ -224,6 +243,9 @@ model Petugas {
   @@index([wilayahId])
   @@index([kelurahanId])
   @@index([aktif])
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model LokasiPetugas {
@@ -237,6 +259,9 @@ model LokasiPetugas {
   createdAt DateTime @default(now())
 
   @@index([petugasId, createdAt])
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model Kendaraan {
@@ -256,6 +281,9 @@ model Kendaraan {
   lokasi       LokasiKendaraan[]
   rute         Rute[]
   pesananPickup PesananPickup[]
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model LokasiKendaraan {
@@ -269,6 +297,9 @@ model LokasiKendaraan {
   createdAt   DateTime  @default(now())
 
   @@index([kendaraanId, createdAt])
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model TitikTransit {
@@ -281,6 +312,9 @@ model TitikTransit {
   catatan   String? // jam operasional, kontak, dll
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model Rute {
@@ -308,6 +342,9 @@ model Rute {
 
   @@index([kendaraanId])
   @@index([petugasId])
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model Jadwal {
@@ -327,6 +364,9 @@ model Jadwal {
   @@unique([pelangganId, ruteId, hari])
   @@index([pelangganId])
   @@index([ruteId])
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model Tagihan {
@@ -353,6 +393,9 @@ model Tagihan {
   @@index([status])
   @@index([deletedAt])
   @@index([pelangganId, deletedAt])
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model Pembayaran {
@@ -377,6 +420,9 @@ model Pembayaran {
   @@index([tagihanId])
   @@index([pelangganId])
   @@index([status, createdAt])
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model Pengangkutan {
@@ -411,6 +457,9 @@ model Pengangkutan {
   @@index([petugasId])
   @@index([zonaId])
   @@index([deletedAt])
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model Komplain {
@@ -429,6 +478,9 @@ model Komplain {
 
   @@index([status])
   @@index([pelangganId])
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model LiburSementara {
@@ -440,6 +492,9 @@ model LiburSementara {
   pelanggan      Pelanggan @relation(fields: [pelangganId], references: [id])
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model Pengumuman {
@@ -453,6 +508,9 @@ model Pengumuman {
   createdBy      User     @relation(fields: [createdById], references: [id])
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model Pengeluaran {
@@ -466,6 +524,9 @@ model Pengeluaran {
   dicatatBy   User     @relation(fields: [dicatatById], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model Tpa {
@@ -479,6 +540,9 @@ model Tpa {
   updatedAt DateTime @updatedAt
 
   pengangkutan Pengangkutan[]
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model AuditLog {
@@ -491,6 +555,9 @@ model AuditLog {
   userId    Int?
   user      User?    @relation("AuditUser", fields: [userId], references: [id])
   createdAt DateTime @default(now())
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model Notifikasi {
@@ -507,6 +574,9 @@ model Notifikasi {
   createdById Int?
   createdBy   User?      @relation("NotifCreatedBy", fields: [createdById], references: [id])
   createdAt   DateTime   @default(now())
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model Rekonsiliasi {
@@ -521,12 +591,18 @@ model Rekonsiliasi {
   userId           Int?
   user             User?    @relation(fields: [userId], references: [id])
   createdAt        DateTime @default(now())
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model Pengaturan {
   id    Int    @id @default(autoincrement())
   key   String @unique
   value String
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model DuitkuTransaction {
@@ -543,6 +619,9 @@ model DuitkuTransaction {
   rawResponse   String? // response terakhir (JSON, dipotong 4KB)
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model Absensi {
@@ -555,6 +634,9 @@ model Absensi {
   lokasiSelesai String?
   catatan       String?
   status        String    @default("hadir") // hadir | izin | sakit | alpa
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model KlaimPetugas {
@@ -571,6 +653,9 @@ model KlaimPetugas {
   diperiksaById  Int?
   diperiksaBy    User?     @relation("KlaimDiperiksa", fields: [diperiksaById], references: [id])
   waktuDiperiksa DateTime?
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model ChatPesan {
@@ -586,6 +671,9 @@ model ChatPesan {
 
   @@index([petugasId, createdAt])
   @@index([userId])
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model Artikel {
@@ -603,6 +691,9 @@ model Artikel {
 
   @@index([slug])
   @@index([diterbitkan, createdAt])
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 // ==========================================
@@ -627,6 +718,9 @@ model Produk {
   orderItems  MarketplaceOrderItem[]
 
   @@index([kategori, aktif])
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model MarketplaceOrder {
@@ -654,6 +748,9 @@ model MarketplaceOrder {
 
   @@index([status, createdAt])
   @@index([noTelepon])
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model MarketplaceOrderItem {
@@ -668,6 +765,9 @@ model MarketplaceOrderItem {
 
   @@index([orderId])
   @@index([produkId])
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 // ==========================================
@@ -689,6 +789,9 @@ model KategoriPickup {
   updatedAt     DateTime        @updatedAt
 
   pesananPickup PesananPickup[]
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 model PesananPickup {
@@ -737,6 +840,9 @@ model PesananPickup {
   @@index([noTelepon])
   @@index([petugasId])
   @@index([kategoriPickupId])
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  @@index([tenantId])
 }
 
 // ==========================================
@@ -1011,6 +1117,43 @@ model Tenant {
   domains            TenantDomain[]
   mitraRegistrasi    MitraRegistration?
   users              User[]
+  memberships        TenantMembership[]
+  pelanggan          Pelanggan[]
+  petugas            Petugas[]
+  kendaraan          Kendaraan[]
+  rute               Rute[]
+  jadwal             Jadwal[]
+  tagihan            Tagihan[]
+  pembayaran         Pembayaran[]
+  pengangkutan       Pengangkutan[]
+  komplain           Komplain[]
+  liburSementara     LiburSementara[]
+  pengumuman         Pengumuman[]
+  pengeluaran        Pengeluaran[]
+  tpa                Tpa[]
+  auditLogs          AuditLog[]
+  notifikasi         Notifikasi[]
+  rekonsiliasi       Rekonsiliasi[]
+  absensi            Absensi[]
+  wilayah            Wilayah[]
+  zona               Zona[]
+  paket              Paket[]
+  artikel            Artikel[]
+  produk             Produk[]
+  kategoriPickup     KategoriPickup[]
+  pesananPickup      PesananPickup[]
+  marketplaceOrderItems MarketplaceOrderItem[]
+  marketplaceOrders  MarketplaceOrder[]
+  kategoriTarif      KategoriTarif[]
+  zonaPetugas        ZonaPetugas[]
+  chatPesan          ChatPesan[]
+  klaimPetugas       KlaimPetugas[]
+  duitkuTransactions DuitkuTransaction[]
+  pengaturan         Pengaturan[]
+  titikTransit       TitikTransit[]
+  lokasiKendaraan    LokasiKendaraan[]
+  lokasiPetugas      LokasiPetugas[]
+  subscriptions      TenantSubscription[]
 
   // Relasi Konfigurasi WhatsApp (2 Nomor Mitra) & Kuota
   waConfig           TenantWhatsAppConfig?
@@ -1203,6 +1346,47 @@ model TenantPayout {
   catatan            String?
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([status])
+}
+
+
+// ============================================================================
+// TENANT MEMBERSHIP & SUBSCRIPTION PLATFORM
+// ============================================================================
+
+model TenantMembership {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  role      String   @default("admin") // superadmin | admin | kasir | petugas
+  aktif     Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, tenantId])
+  @@index([tenantId])
+  @@index([userId])
+}
+
+model TenantSubscription {
+  id            String    @id @default(uuid())
+  tenantId      String
+  tenant        Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  planName      String    @default("basic") // percontohan | basic | pro | enterprise
+  status        String    @default("aktif") // aktif | suspend | expired
+  startDate     DateTime  @default(now())
+  endDate       DateTime?
+  billingCycle   String    @default("monthly") // monthly | yearly | lifetime
+  pricePerMonth  Float     @default(0)
+  domainSetupFee Float     @default(2000000) // Biaya domain & onboarding flat Rp 2.000.000
+  setupFeePaid   Boolean   @default(false)
+  autoRenew      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   @@index([tenantId])
   @@index([status])

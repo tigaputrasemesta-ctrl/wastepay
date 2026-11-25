@@ -14,6 +14,7 @@ import {
   CORE_TENANT,
   PILOT_TENANT,
   normalizeHost,
+  type TenantContext,
 } from "@/lib/tenant";
 
 // Role hierarchy — single source of truth di src/lib/rbac.ts
@@ -386,7 +387,10 @@ async function verifyToken(token: string) {
  * Sesi JWT lama (sebelum ganti/reset password) atau user yang dinonaktifkan ditolak.
  * User hilang atau lookup DB gagal: tolak sesi, jangan fallback ke hak akses JWT lama.
  */
-async function loadSessionUser(payload: { id: number; email?: string; nama?: string; role?: string; tenantId?: string; v?: number }) {
+async function loadSessionUser(
+  payload: { id: number; email?: string; nama?: string; role?: string; tenantId?: string; v?: number },
+  tenantCtx?: TenantContext
+) {
   try {
     const user = await prisma.user.findUnique({
       where: { id: payload.id },
@@ -408,7 +412,14 @@ async function loadSessionUser(payload: { id: number; email?: string; nama?: str
         email: user.email,
         nama: user.nama,
         role: user.role,
-        tenantId: user.tenantId ?? payload.tenantId ?? (user.role === "superadmin" ? "tenant-core-o2w" : "tenant-pilot-upsheru"),
+        tenantId:
+          user.tenantId ??
+          payload.tenantId ??
+          (user.role === "superadmin"
+            ? "tenant-core-o2w"
+            : tenantCtx?.isPilot
+            ? "tenant-pilot-upsheru"
+            : null),
       };
     }
   } catch {
@@ -429,14 +440,15 @@ export async function proxy(request: NextRequest) {
   const tenantCtx = await resolveTenantWithDbFallback(rawHost);
 
   if (!tenantCtx.isValid) {
+    const isSuspended = Boolean(tenantCtx.isSuspended);
     return new NextResponse(
       JSON.stringify({
-        error: "Misdirected Request",
-        message: "Domain tidak terdaftar dalam jaringan resmi O2W HERO / UPS HERU.",
+        error: isSuspended ? "Tenant Suspended" : "Misdirected Request",
+        message: tenantCtx.rejectionReason || "Domain tidak terdaftar dalam jaringan resmi O2W HERO / UPS HERU.",
         host: rawHost,
       }),
       {
-        status: 421,
+        status: isSuspended ? 403 : 421,
         headers: { "Content-Type": "application/json" },
       }
     );
@@ -631,7 +643,7 @@ export async function proxy(request: NextRequest) {
     }
 
     // Cek revoke/aktif di DB — token lama (ganti password) & user nonaktif ditolak
-    const user = await loadSessionUser(payload);
+    const user = await loadSessionUser(payload, tenantCtx);
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -644,7 +656,7 @@ export async function proxy(request: NextRequest) {
           { status: 403 }
         );
       }
-      if (user.tenantId && user.tenantId !== tenantCtx.tenant.id) {
+      if (!user.tenantId || user.tenantId !== tenantCtx.tenant.id) {
         return NextResponse.json(
           { error: "Forbidden: Akun Anda tidak memiliki izin pada tenant ini." },
           { status: 403 }
@@ -720,7 +732,7 @@ export async function proxy(request: NextRequest) {
 
   // User dengan cookie ada — cek revoke/aktif juga untuk halaman
   // (sesi lama setelah ganti password diarahkan ke login).
-  const pageUser = await loadSessionUser(payload);
+  const pageUser = await loadSessionUser(payload, tenantCtx);
   if (!pageUser) {
     const url = new URL("/login", request.url);
     url.searchParams.set("error", "sesi");
@@ -734,7 +746,7 @@ export async function proxy(request: NextRequest) {
       url.searchParams.set("error", "core_restricted");
       return NextResponse.redirect(url);
     }
-    if (pageUser.tenantId && pageUser.tenantId !== tenantCtx.tenant.id) {
+    if (!pageUser.tenantId || pageUser.tenantId !== tenantCtx.tenant.id) {
       const url = new URL("/login", request.url);
       url.searchParams.set("error", "tenant_mismatch");
       return NextResponse.redirect(url);

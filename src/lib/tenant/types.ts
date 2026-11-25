@@ -54,6 +54,33 @@ export interface TenantContext {
   isCore: boolean;
   isPilot: boolean;
   isValid: boolean;
+  isSuspended?: boolean;
+  rejectionReason?: string;
   currentHost: string;
   baseUrl: string;
+}
+
+export interface TenantMembershipInfo {
+  id: number;
+  userId: number;
+  tenantId: string;
+  role: string;
+  aktif: boolean;
+}
+
+export interface TenantRequestContext {
+  tenantId: string;
+  tenantSlug: string;
+  tenant: TenantConfig;
+  isCore: boolean;
+  isPilot: boolean;
+  isDedicatedDb: boolean;
+  user: {
+    id: number;
+    email: string;
+    nama: string;
+    role: string;
+    tenantId?: string | null;
+  };
+  role: string;
 }

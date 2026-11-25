@@ -33,7 +33,32 @@ export async function POST(request: Request) {
   }
 
   // 2. Verifikasi signature HMAC_SHA256(merchantCode + amount + merchantOrderId, apiKey)
-  if (!verifyCallbackSignature({ merchantCode, amount, merchantOrderId, signature })) {
+  let signatureValid = verifyCallbackSignature({ merchantCode, amount, merchantOrderId, signature });
+
+  // 2b. Dukungan Dedicated Gateway Mode: jika signature default gagal, coba apiKey khusus tenant
+  if (!signatureValid) {
+    try {
+      const dedicatedConfig = await prisma.tenantPaymentConfig.findFirst({
+        where: { merchantCode, aktif: true },
+        select: { apiKey: true },
+      });
+      if (dedicatedConfig?.apiKey) {
+        const { decryptCredential } = await import("@/lib/credential-vault");
+        const decryptedKey = decryptCredential(dedicatedConfig.apiKey) || dedicatedConfig.apiKey;
+        signatureValid = verifyCallbackSignature({
+          merchantCode,
+          amount,
+          merchantOrderId,
+          signature,
+          apiKeyOverride: decryptedKey,
+        });
+      }
+    } catch {
+      // Fallback
+    }
+  }
+
+  if (!signatureValid) {
     return NextResponse.json({ status: "error", message: "Signature tidak valid" }, { status: 400 });
   }
 
