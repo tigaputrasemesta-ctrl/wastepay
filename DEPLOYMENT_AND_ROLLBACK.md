@@ -71,8 +71,13 @@ Policy ini:
 - Menyediakan bypass aman hanya untuk background worker/admin melalui fungsi `app.is_superadmin_context()`.
 
 ### Tahap 5: Restart / Rolling Update Aplikasi Next.js
-Deploy versi baru dari Next.js application runtime:
+Deploy versi baru dari Next.js application runtime (menggunakan Docker Compose di VPS SumoPod, atau PM2 pada instalasi bare-metal):
 ```bash
+# Opsi 1: Docker Compose (Lingkungan VPS Produksi SumoPod)
+docker compose build
+docker compose up -d --no-build
+
+# Opsi 2: Bare-metal / PM2
 npm run build
 pm2 restart wastepay # atau systemctl restart wastepay
 ```
@@ -126,7 +131,7 @@ pm2 restart wastepay
 ## 4. Checklist Verifikasi Pasca-Deployment
 
 - [x] Schema Prisma valid dan Prisma Client ter-generate (`npm run postinstall`).
-- [x] Seluruh 28 file test suite Vitest (298 pengujian) lolos 100%.
+- [x] Seluruh 30 file test suite Vitest (310 pengujian) lolos 100%.
 - [x] TypeScript lolos tanpa error (`tsc --noEmit`).
 - [x] ESLint lolos tanpa error (`npm run lint`).
 - [x] Domain `upsheru.com` dapat diakses dan melayani seluruh workflow operasional pilot.
@@ -171,33 +176,36 @@ pm2 restart wastepay
 
 ## 6. Prosedur Push Git & Deployment ke VPS Produksi
 
-Saat ini seluruh perubahan kode tersimpan di branch lokal repositori dan siap di-push ke server VPS.
+### A. Status Produksi Terkini
+- **Remote Git**: Commit [`c3b098a`](file:///data/data/com.termux/files/home/wastepay) telah ter-push ke branch `origin/master`.
+- **Status CI/CD VPS**: Workflow GitHub Actions Auto-Deploy ([`.github/workflows/deploy-vps.yml`](file:///data/data/com.termux/files/home/wastepay/.github/workflows/deploy-vps.yml)) telah berhasil mengeksekusi build dan deploy di VPS SumoPod (`43.173.40.166`).
+- **Migrasi & Backfill**: Skrip idempoten [`scripts/deploy-multi-tenant-migrate.mjs`](file:///data/data/com.termux/files/home/wastepay/scripts/deploy-multi-tenant-migrate.mjs) telah sukses memigrasikan 52.478 baris data legacy ke `tenant-pilot-upsheru`.
+- **Runtime Container**: Container Docker `wastepay-app` aktif melayani trafik produksi melalui reverse proxy Caddy di [o2whero.com](https://o2whero.com/) dan [upsheru.com](https://upsheru.com/).
 
-Langkah eksekusi di terminal server / VPS:
+### B. Prosedur Deploy Ulang Mandiri (Manual / Re-deploy)
+
+Jika ingin melakukan pembaruan kode atau deploy ulang sewaktu-waktu di terminal VPS:
+
 ```bash
-# 1. Dari environment lokal, commit dan push ke remote git:
-git add .
-git commit -m "feat(multi-tenant): production multi-tenant architecture, flat 2jt domain setup fee, and dynamic payment rate"
-git push origin <branch-name>
+# 1. Dari lokal / mesin pengembang:
+git push origin master
 
-# 2. Di VPS produksi (atau via CI/CD):
-cd /path/to/wastepay
-git pull origin <branch-name>
+# 2. Melalui skrip otomatis lokal (jika sshpass terpasang):
+./deploy-vps.sh
 
-# 3. Instalasi dependensi & generate Prisma client:
-npm install --production=false
-npx prisma generate
+# 3. Atau eksekusi langsung di terminal VPS (SSH ubuntu@43.173.40.166):
+cd /home/ubuntu/wastepay
+git pull origin master
 
-# 4. Jalankan migrasi database non-destruktif:
-npx prisma migrate deploy
+# Build image Docker baru (container lama tetap online)
+docker compose build
 
-# 5. Backfill data pilot (jika belum dijalankan):
-node scripts/backfill-upsheru-tenant.mjs
+# Jalankan migrasi pre-boot idempoten
+docker compose run --rm --no-deps wastepay node scripts/deploy-multi-tenant-migrate.mjs
 
-# 6. Terapkan PostgreSQL Row-Level Security:
-psql "$SUPERADMIN_DATABASE_URL" -f scripts/apply-postgresql-rls.sql
+# Switchover ke container terbaru (zero downtime)
+docker compose up -d --no-build
 
-# 7. Build dan restart aplikasi:
-npm run build
-pm2 restart wastepay
+# Bersihkan dangling images
+docker image prune -f
 ```
