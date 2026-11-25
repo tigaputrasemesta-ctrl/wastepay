@@ -5,6 +5,7 @@ import { getSession } from "@/lib/auth";
 import { hasRole } from "@/lib/rbac";
 import { logAudit } from "@/lib/audit";
 import { hitungRincian } from "@/lib/invoice-format";
+import { persistBase64Image } from "@/lib/server/media-storage";
 
 export const dynamic = "force-dynamic";
 
@@ -229,6 +230,7 @@ export async function POST(request: Request) {
     }
 
     const now = new Date();
+    const savedBuktiBayar = await persistBase64Image(buktiBayar, "pembayaran");
     const settlementResults = await prisma.$transaction(async (tx) => {
       let totalAmountSettled = 0;
       const settledItems: {
@@ -264,7 +266,7 @@ export async function POST(request: Request) {
             pelangganId: t.pelangganId,
             jumlah: billTotal,
             metode,
-            buktiBayar: buktiBayar || null,
+            buktiBayar: savedBuktiBayar || null,
             catatan: `Pembayaran Kolektif Satu Pintu via ${induk.nama}${
               induk.namaGrupKolektif ? ` (${induk.namaGrupKolektif})` : ""
             }${catatan ? ` | Catatan: ${catatan}` : ""}`,

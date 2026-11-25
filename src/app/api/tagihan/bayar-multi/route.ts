@@ -4,6 +4,7 @@ import { getSession } from "@/lib/auth";
 import { hasRole } from "@/lib/rbac";
 import { logAudit } from "@/lib/audit";
 import { generateNoInvoice } from "@/lib/invoice-format";
+import { persistBase64Image } from "@/lib/server/media-storage";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,7 @@ export async function POST(request: Request) {
 
     const id = parseInt(tagihanId, 10);
     const durasi = parseInt(durasiBulan, 10);
+    const savedBuktiBayar = await persistBase64Image(buktiBayar, "pembayaran");
 
     if (isNaN(id) || isNaN(durasi) || durasi < 1 || durasi > 24) {
       return NextResponse.json({ error: "Parameter tidak valid" }, { status: 400 });
@@ -62,7 +64,7 @@ export async function POST(request: Request) {
             catatan: durasi > 1
               ? `Pembayaran Paket Dimuka (Bulan 1/${durasi})`
               : catatan,
-            buktiBayar: buktiBayar || null,
+            buktiBayar: savedBuktiBayar || null,
             tanggal: now,
           },
         });
@@ -127,7 +129,7 @@ export async function POST(request: Request) {
             metode,
             status: "terverifikasi",
             catatan: `Pembayaran Paket Dimuka (Bulan ${i + 1}/${durasi})`,
-            buktiBayar: buktiBayar || null,
+            buktiBayar: savedBuktiBayar || null,
             tanggal: now,
           },
         });

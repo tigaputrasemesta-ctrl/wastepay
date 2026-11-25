@@ -18,15 +18,17 @@ export async function GET(
       return new NextResponse("Not Found", { status: 404 });
     }
 
-    // fotoRumah usually looks like "data:image/jpeg;base64,/9j/4AAQSkZJRg..."
     const foto = pelanggan.fotoRumah;
+
+    // Jika foto sudah berupa static file URL (/uploads/...) atau HTTP URL publik
+    if (foto.startsWith("/") || foto.startsWith("http")) {
+      return NextResponse.redirect(new URL(foto, request.url));
+    }
+
+    // fotoRumah looks like "data:image/jpeg;base64,/9j/4AAQSkZJRg..."
     const match = foto.match(/^data:image\/([a-zA-Z0-9]+);base64,(.+)$/);
 
     if (!match) {
-      // If it's a regular URL, just redirect to it
-      if (foto.startsWith("http")) {
-        return NextResponse.redirect(foto);
-      }
       return new NextResponse("Invalid format", { status: 400 });
     }
 

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { hitungRincian, labelMetodePembayaran } from "@/lib/invoice";
 import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
 import { isWaEnabled, kirimReportOwner, templateBuktiBayarBaruOwner } from "@/lib/wa";
+import { persistBase64Image } from "@/lib/server/media-storage";
 
 const METODE_VALID = ["transfer", "ewallet", "qris", "virtual_account", "tunai"];
 
@@ -101,6 +102,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Bukti harus berupa gambar" }, { status: 400 });
     }
 
+    // Simpan ke file storage jika berupa Base64
+    const savedBuktiBayar = await persistBase64Image(buktiBayar, "pembayaran");
+
     // Total yang ditagih = jumlah + PPN 11% + denda — konsisten dengan invoice & Duitku
     const total = hitungRincian(tagihan.jumlah, tagihan.denda).total;
 
@@ -110,7 +114,7 @@ export async function POST(request: Request) {
         pelangganId: pelanggan.id,
         jumlah: total,
         metode,
-        buktiBayar: buktiBayar || null,
+        buktiBayar: savedBuktiBayar || null,
         catatan: catatan || null,
         status: "pending",
       },

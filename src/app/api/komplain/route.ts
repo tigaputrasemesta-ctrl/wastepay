@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
+import { persistBase64Image } from "@/lib/server/media-storage";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -116,11 +117,12 @@ export async function POST(request: Request) {
       }
     }
 
+    const savedFoto = await persistBase64Image(foto, "komplain");
     const komplain = await prisma.komplain.create({
       data: {
         jenis: jenis || "tidak_diangkut",
         deskripsi,
-        foto,
+        foto: savedFoto || null,
         status: "baru",
         pelangganId: targetPelangganId,
       },

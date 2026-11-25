@@ -13,6 +13,7 @@ import {
   templateLaporanPembayaranOwner,
   templatePembayaranDiterima,
 } from "@/lib/wa";
+import { persistBase64Image } from "@/lib/server/media-storage";
 
 export async function POST(request: Request) {
   try {
@@ -110,13 +111,14 @@ export async function POST(request: Request) {
     const autoApproveTunai = metodeTunai && isAdmin;
 
     const pembayaran = await prisma.$transaction(async (tx) => {
+      const savedBuktiBayar = await persistBase64Image(buktiBayar, "pembayaran");
       const created = await tx.pembayaran.create({
         data: {
           tagihanId: parseInt(tagihanId),
           pelangganId: parseInt(pelangganId),
           jumlah: nominal,
           metode,
-          buktiBayar: buktiBayar || null,
+          buktiBayar: savedBuktiBayar || null,
           catatan: catatan || null,
           status: autoApproveTunai ? "terverifikasi" : "pending",
           // Siapa yang mencatat/menerima — penting utk rekonsiliasi kas harian

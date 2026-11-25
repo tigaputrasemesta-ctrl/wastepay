@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
 import { isWaEnabled, kirimReportPengaduan, templatePengaduanAdmin } from "@/lib/wa";
 import { formatRupiahSkylite, BULAN_INDO } from "@/lib/invoice-format";
+import { persistBase64Image } from "@/lib/server/media-storage";
 
 const JENIS_VALID = ["tidak_diangkut", "sampah_menumpuk", "lainnya"];
 
@@ -71,8 +72,9 @@ export async function POST(request: Request) {
       );
     }
 
+    const savedFoto = await persistBase64Image(foto, "komplain");
     const komplain = await prisma.komplain.create({
-      data: { jenis, deskripsi, foto, status: "baru", pelangganId: pelanggan.id },
+      data: { jenis, deskripsi, foto: savedFoto || null, status: "baru", pelangganId: pelanggan.id },
       select: { id: true, jenis: true, deskripsi: true, status: true, createdAt: true },
     });
 

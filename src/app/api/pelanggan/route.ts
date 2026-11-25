@@ -10,6 +10,7 @@ import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 import { tetapkanJadwalDanPetugasPelanggan } from "@/lib/penugasan-jadwal";
 import { ensureArmadaRuteSchema, ensureKolektifSchema } from "@/lib/db-patch";
 import { resolveTenantByHost } from "@/lib/tenant";
+import { persistBase64Image } from "@/lib/server/media-storage";
 
 export const dynamic = "force-dynamic";
 
@@ -328,6 +329,9 @@ export async function POST(request: Request) {
       finalWilayahId = w.id;
     }
 
+    // Simpan foto rumah ke file storage jika berupa Base64
+    const savedFotoRumah = await persistBase64Image(fotoRumah, "pelanggan");
+
     // Kode pelanggan kini menggunakan nomor WhatsApp (noTelepon)
     const kodePelanggan = noTelepon;
 
@@ -341,7 +345,7 @@ export async function POST(request: Request) {
           kategori: kategori || "level_1",
           alamat,
           rtRw,
-          fotoRumah,
+          fotoRumah: savedFotoRumah || null,
           patokanLokasi,
           latitude: latitude ? parseFloat(latitude) : null,
           longitude: longitude ? parseFloat(longitude) : null,

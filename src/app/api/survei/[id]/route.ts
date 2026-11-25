@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
+import { persistBase64Image } from "@/lib/server/media-storage";
 
 /**
  * Detail pendaftar khusus petugas — hanya field survei, TANPA data keuangan
@@ -73,7 +74,9 @@ export async function PUT(
     const { fotoRumah, patokanLokasi, latitude, longitude, koordinatSumber, status, kategori, customTarif } = body;
 
     const data: Record<string, unknown> = {};
-    if (fotoRumah !== undefined) data.fotoRumah = fotoRumah;
+    if (fotoRumah !== undefined) {
+      data.fotoRumah = await persistBase64Image(fotoRumah, "pelanggan");
+    }
     if (patokanLokasi !== undefined) data.patokanLokasi = patokanLokasi;
     if (latitude !== undefined) data.latitude = latitude ? parseFloat(latitude) : null;
     if (longitude !== undefined) data.longitude = longitude ? parseFloat(longitude) : null;

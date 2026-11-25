@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { ROLE_LABELS, getAllowedMenus } from "@/lib/rbac";
 import { isCoreHostname } from "@/lib/tenant/url-helper";
+import { resolveTenantByHost } from "@/lib/tenant/config";
 import ThemeToggle from "@/components/ThemeToggle";
 import {
   LayoutDashboard,
@@ -185,10 +186,18 @@ export default function Sidebar({
 
   const isCollapsedEffective = isMobileDrawer ? false : collapsed;
   const [isCore, setIsCore] = useState(false);
+  const [brandName, setBrandName] = useState("UPS HERU");
+  const [brandTagline, setBrandTagline] = useState("Kota Depok");
+  const [brandLogo, setBrandLogo] = useState("/ups-heru-logo.jpg");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setIsCore(isCoreHostname(window.location.hostname));
+      const core = isCoreHostname(window.location.hostname);
+      setIsCore(core);
+      const resolved = resolveTenantByHost(window.location.hostname);
+      setBrandName(core ? "O2W HERO" : resolved.tenant.branding.namaMitra || "UPS HERU");
+      setBrandTagline(core ? "SaaS Control Center" : resolved.tenant.branding.kota || resolved.tenant.branding.tagline || "Kota Depok");
+      setBrandLogo(core ? "" : resolved.tenant.branding.logoUrl || "/ups-heru-logo.jpg");
     }
   }, []);
 
@@ -314,7 +323,7 @@ export default function Sidebar({
             </div>
           ) : (
             <div className="w-10 h-10 mx-auto flex items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800/50 p-1">
-              <img src="/ups-heru-logo.jpg" alt="Logo" className="w-full h-full object-contain rounded-lg" />
+              <img src={brandLogo} alt="Logo" className="w-full h-full object-contain rounded-lg" />
             </div>
           )
         ) : (
@@ -325,17 +334,17 @@ export default function Sidebar({
               </div>
             ) : (
               <div className="w-9 h-9 rounded-lg bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex items-center justify-center p-1 shrink-0 overflow-hidden">
-                <img src="/ups-heru-logo.jpg" alt="Logo" className="w-full h-full object-contain" />
+                <img src={brandLogo} alt="Logo" className="w-full h-full object-contain" />
               </div>
             )}
             <div className="min-w-0 flex flex-col">
               <div className="flex items-center gap-1.5">
-                <span className="font-bold text-sm tracking-tight text-slate-900 dark:text-zinc-100 leading-none">
-                  {isCore ? "O2W HERO" : "UPS HERU"}
+                <span className="font-bold text-sm tracking-tight text-slate-900 dark:text-zinc-100 leading-none truncate max-w-[120px]">
+                  {brandName}
                 </span>
                 <span
                   className={cn(
-                    "px-1.5 py-0.5 rounded text-[10px] font-bold",
+                    "px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0",
                     isCore
                       ? "bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-400 border border-sky-200/60 dark:border-sky-800/60"
                       : "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/60"
@@ -345,7 +354,7 @@ export default function Sidebar({
                 </span>
               </div>
               <span className="text-[11px] text-slate-500 dark:text-zinc-400 font-normal truncate mt-0.5">
-                {isCore ? "SaaS Control Center" : "Kota Depok"}
+                {brandTagline}
               </span>
             </div>
           </div>

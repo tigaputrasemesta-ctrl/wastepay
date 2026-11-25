@@ -14,6 +14,7 @@ import {
 import { logAudit } from "@/lib/audit";
 import { formatRtRw, normalisasiTelepon, teleponValid } from "@/lib/daftar";
 import { tetapkanJadwalDanPetugasPelanggan } from "@/lib/penugasan-jadwal";
+import { persistBase64Image } from "@/lib/server/media-storage";
 
 export const dynamic = "force-dynamic";
 
@@ -227,6 +228,9 @@ export async function POST(request: Request) {
       }
     }
 
+    // Simpan foto rumah ke file storage jika berupa Base64
+    const savedFotoRumah = await persistBase64Image(fotoRumah, "pelanggan");
+
     // Kode pelanggan kini menggunakan nomor WhatsApp (noTelepon)
     const kodePelanggan = noTelepon;
     const rtRw = formatRtRw(rt, rw);
@@ -241,7 +245,7 @@ export async function POST(request: Request) {
           alamat,
           rtRw: rtRw || null,
           kodePelanggan,
-          fotoRumah: fotoRumah || null,
+          fotoRumah: savedFotoRumah || null,
           patokanLokasi: patokanLokasi || null,
           penanggungjawab: penanggungjawab || null,
           referal: referal || null,

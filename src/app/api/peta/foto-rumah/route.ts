@@ -54,9 +54,9 @@ export async function GET(request: Request) {
       }, { headers: { "Cache-Control": "private, no-store" } });
     }
 
-    // Jika foto adalah URL publik Supabase Storage / CDN eksternal
-    if (foto.startsWith("http://") || foto.startsWith("https://")) {
-      return NextResponse.redirect(foto, { status: 307, headers: { "Cache-Control": "private, no-store" } });
+    // Jika foto adalah URL publik atau static path (/uploads/...)
+    if (foto.startsWith("/") || foto.startsWith("http://") || foto.startsWith("https://")) {
+      return NextResponse.redirect(new URL(foto, request.url), { status: 307, headers: { "Cache-Control": "private, no-store" } });
     }
 
     // Jika foto berupa Base64 Data URL (data:image/jpeg;base64,...)

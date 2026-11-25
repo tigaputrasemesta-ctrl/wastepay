@@ -54,10 +54,14 @@ import {
   Server,
 } from "lucide-react";
 import { isCoreHostname } from "@/lib/tenant/url-helper";
+import { resolveTenantByHost } from "@/lib/tenant/config";
 
 export type AdminMobileResponsiveShellProps = {
   children?: React.ReactNode;
   renderMapSlot?: React.ReactNode;
+  tenantName?: string;
+  tenantColor?: string;
+  tenantLogo?: string;
 };
 
 // 5 Tab Utama Mobile (One-Thumb Zone Ergonomics)
@@ -226,17 +230,28 @@ const CORE_SECONDARY_MENU_ITEMS = [
 export default function AdminMobileResponsiveShell({
   children,
   renderMapSlot,
+  tenantName,
+  tenantColor,
+  tenantLogo,
 }: AdminMobileResponsiveShellProps) {
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [prevPath, setPrevPath] = useState(pathname);
   const [isCore, setIsCore] = useState(false);
+  const [brandName, setBrandName] = useState(tenantName || "UPS HERU");
+  const [brandColor, setBrandColor] = useState(tenantColor || "#059669");
+  const [brandLogo, setBrandLogo] = useState(tenantLogo || "");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setIsCore(isCoreHostname(window.location.hostname));
+      const core = isCoreHostname(window.location.hostname);
+      setIsCore(core);
+      const resolved = resolveTenantByHost(window.location.hostname);
+      setBrandName(tenantName || (core ? "O2W HERO" : resolved.tenant.branding.namaMitra || "UPS HERU"));
+      setBrandColor(tenantColor || (core ? "#0284c7" : resolved.tenant.branding.warnaTema || "#059669"));
+      setBrandLogo(tenantLogo || (core ? "" : resolved.tenant.branding.logoUrl || ""));
     }
-  }, []);
+  }, [tenantName, tenantColor, tenantLogo]);
 
   // Tutup drawer secara otomatis ketika rute berganti
   if (pathname !== prevPath) {
@@ -291,16 +306,22 @@ export default function AdminMobileResponsiveShell({
             {/* Logo Mini di Mobile */}
             <div className="md:hidden flex items-center gap-2">
               <span
-                className={`w-7 h-7 rounded-lg text-white font-black flex items-center justify-center text-[10px] shadow-xs ${
+                style={!isCore && brandColor ? { backgroundColor: brandColor } : undefined}
+                className={`w-7 h-7 rounded-lg text-white font-black flex items-center justify-center text-[10px] shadow-xs overflow-hidden ${
                   isCore
                     ? "bg-gradient-to-tr from-sky-600 to-teal-500 shadow-sky-600/20"
                     : "bg-emerald-700"
                 }`}
               >
-                {isCore ? "O2W" : "W"}
+                {brandLogo ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={brandLogo} alt={brandName} className="w-full h-full object-contain p-0.5" />
+                ) : (
+                  isCore ? "O2W" : (brandName.charAt(0) || "W")
+                )}
               </span>
-              <span className="font-bold text-xs tracking-tight text-slate-900 dark:text-zinc-100">
-                {isCore ? "O2W HERO" : "UPS HERU"}
+              <span className="font-bold text-xs tracking-tight text-slate-900 dark:text-zinc-100 truncate max-w-[120px]">
+                {brandName}
               </span>
             </div>
 
