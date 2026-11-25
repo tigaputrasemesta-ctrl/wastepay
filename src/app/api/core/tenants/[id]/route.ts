@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { buildCorsHeaders } from "@/lib/server/wastepay-backend-core-services";
-import { registerDynamicTenant, dbTenantToConfig } from "@/lib/tenant";
+import { registerDynamicTenant, unregisterDynamicTenant, dbTenantToConfig } from "@/lib/tenant";
 
 export async function OPTIONS(request: Request) {
   return new NextResponse(null, {
@@ -193,6 +193,115 @@ export async function PATCH(
     console.error("[Tenant PATCH Error]", err);
     return NextResponse.json(
       { error: "Gagal memperbarui tenant: " + err.message },
+      { status: 500, headers: corsHeaders }
+    );
+  }
+}
+
+/**
+ * DELETE /api/core/tenants/[id]
+ * Menghapus tenant dan seluruh data terkait secara aman (Super Admin Only).
+ * Proteksi Invariant: Mitra Percontohan Nasional (UPS HERU) dan Core Hub tidak boleh dihapus.
+ */
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const corsHeaders = buildCorsHeaders(request);
+  const { id } = await params;
+
+  try {
+    const session = await getSession();
+    if (!session || session.role !== "superadmin") {
+      return NextResponse.json(
+        { error: "Forbidden: Hanya Super Admin yang berwenang menghapus tenant." },
+        { status: 403, headers: corsHeaders }
+      );
+    }
+
+    const tenant = await prisma.tenant.findFirst({
+      where: {
+        OR: [{ id }, { slug: id }],
+      },
+      include: {
+        _count: {
+          select: {
+            pelanggan: true,
+            petugas: true,
+            kendaraan: true,
+            tagihan: true,
+            pembayaran: true,
+          },
+        },
+      },
+    });
+
+    if (!tenant) {
+      return NextResponse.json(
+        { error: "Tenant tidak ditemukan." },
+        { status: 404, headers: corsHeaders }
+      );
+    }
+
+    // Proteksi Absolut: Tenant Pilot Project & Core Hub
+    const PROTECTED_SLUGS = ["upsheru", "ups-heru", "core", "o2whero", "o2w-core", "demo", "pilot-project"];
+    const isProtectedSlug = PROTECTED_SLUGS.includes(tenant.slug.toLowerCase());
+    const isProtectedDomain =
+      (tenant.customDomain && (
+        tenant.customDomain.toLowerCase().includes("upsheru.com") ||
+        tenant.customDomain.toLowerCase().includes("o2whero.com")
+      )) || false;
+    const isProtectedName =
+      tenant.namaMitra.toLowerCase().includes("ups heru") ||
+      (tenant.paketLangganan === "percontohan" && tenant.slug.toLowerCase().includes("heru"));
+
+    if (isProtectedSlug || isProtectedDomain || isProtectedName) {
+      return NextResponse.json(
+        {
+          error: `Tenant '${tenant.namaMitra}' (${tenant.slug}) adalah Mitra Percontohan Nasional / Core Hub resmi yang dilindungi sistem dan tidak dapat dihapus.`,
+        },
+        { status: 400, headers: corsHeaders }
+      );
+    }
+
+    // Catat ke AuditLog sebelum penghapusan
+    await prisma.auditLog.create({
+      data: {
+        aksi: "delete",
+        entitas: "Tenant",
+        entitasId: 0,
+        dataLama: JSON.stringify({
+          tenantId: tenant.id,
+          slug: tenant.slug,
+          namaMitra: tenant.namaMitra,
+          totalPelanggan: tenant._count.pelanggan,
+          totalPetugas: tenant._count.petugas,
+          totalTagihan: tenant._count.tagihan,
+          customDomain: tenant.customDomain,
+        }),
+        userId: session.id,
+      },
+    }).catch(() => {});
+
+    // Hapus tenant (relasi cascade pada database akan otomatis membersihkan tabel anak)
+    await prisma.tenant.delete({
+      where: { id: tenant.id },
+    });
+
+    // Evict dari in-memory tenant registry
+    unregisterDynamicTenant(tenant.slug);
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: `Tenant '${tenant.namaMitra}' (${tenant.slug}) beserta seluruh data operasionalnya berhasil dihapus.`,
+      },
+      { headers: corsHeaders }
+    );
+  } catch (err: any) {
+    console.error("[Tenant DELETE Error]", err);
+    return NextResponse.json(
+      { error: "Gagal menghapus tenant: " + err.message },
       { status: 500, headers: corsHeaders }
     );
   }

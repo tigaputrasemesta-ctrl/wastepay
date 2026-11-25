@@ -29,6 +29,8 @@ import {
   Copy,
   Wifi,
   Check,
+  Trash2,
+  AlertTriangle,
 } from "lucide-react";
 
 interface TenantItem {
@@ -122,6 +124,54 @@ function TenantsContent() {
     error: string | null;
   }>({ loading: false, data: null, error: null });
   const [copiedWebhook, setCopiedWebhook] = useState(false);
+
+  // State Hapus Tenant
+  const [deleteModal, setDeleteModal] = useState<{
+    open: boolean;
+    tenant: TenantItem | null;
+    confirmInput: string;
+    loading: boolean;
+  }>({
+    open: false,
+    tenant: null,
+    confirmInput: "",
+    loading: false,
+  });
+
+  const handleOpenDelete = (t: TenantItem) => {
+    setDeleteModal({
+      open: true,
+      tenant: t,
+      confirmInput: "",
+      loading: false,
+    });
+  };
+
+  const handleDeleteTenant = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!deleteModal.tenant) return;
+    if (deleteModal.confirmInput !== deleteModal.tenant.slug) {
+      setMsg({ type: "error", text: `Nama slug konfirmasi harus tepat: ${deleteModal.tenant.slug}` });
+      return;
+    }
+
+    setDeleteModal((prev) => ({ ...prev, loading: true }));
+    try {
+      const res = await fetch(`/api/core/tenants/${deleteModal.tenant.id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Gagal menghapus tenant.");
+      }
+      setMsg({ type: "success", text: data.message });
+      setDeleteModal({ open: false, tenant: null, confirmInput: "", loading: false });
+      fetchTenants();
+    } catch (err: any) {
+      setMsg({ type: "error", text: err.message });
+      setDeleteModal((prev) => ({ ...prev, loading: false }));
+    }
+  };
 
   const handleOpenSettings = async (tenant: TenantItem) => {
     setSelectedTenantForConfig(tenant);
@@ -505,6 +555,27 @@ function TenantsContent() {
                       >
                         Buka Web
                       </a>
+
+                      {/* Tombol Hapus Tenant */}
+                      {t.slug !== "upsheru" && t.slug !== "ups-heru" && t.slug !== "o2w-core" ? (
+                        <button
+                          type="button"
+                          onClick={() => handleOpenDelete(t)}
+                          className="px-2.5 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50 hover:bg-rose-100 dark:hover:bg-rose-900/50 text-xs font-bold transition-all flex items-center gap-1 shadow-sm"
+                          title="Hapus Tenant & Seluruh Datanya"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Hapus</span>
+                        </button>
+                      ) : (
+                        <span
+                          className="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 text-xs font-semibold flex items-center gap-1 cursor-not-allowed border border-slate-200/50 dark:border-slate-800/50"
+                          title="Mitra Percontohan Nasional / Core Hub dilindungi dan tidak dapat dihapus"
+                        >
+                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+                          <span>Dilindungi</span>
+                        </span>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -513,6 +584,93 @@ function TenantsContent() {
           </table>
         </div>
       </div>
+
+      {/* Modal Konfirmasi Hapus Tenant */}
+      {deleteModal.open && deleteModal.tenant && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-slate-900 border border-rose-200 dark:border-rose-900/60 p-6 sm:p-7 shadow-2xl space-y-5">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-500 shrink-0">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-base font-black text-slate-900 dark:text-white">
+                  Hapus Tenant Permanen
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Tindakan ini tidak dapat dibatalkan.
+                </p>
+              </div>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/40 text-xs text-rose-800 dark:text-rose-300 space-y-2">
+              <p className="font-semibold">
+                Anda akan menghapus data tenant:
+              </p>
+              <div className="bg-white/80 dark:bg-slate-900/80 p-2.5 rounded-xl border border-rose-200 dark:border-rose-900/30 space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Nama Mitra:</span>
+                  <span className="font-bold text-slate-900 dark:text-white">{deleteModal.tenant.namaMitra}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Slug ID:</span>
+                  <span className="font-mono font-bold text-rose-600 dark:text-rose-400">{deleteModal.tenant.slug}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Domain:</span>
+                  <span className="font-mono text-slate-700 dark:text-slate-300">{deleteModal.tenant.primaryDomain}</span>
+                </div>
+              </div>
+              <p className="text-[11px] text-rose-600 dark:text-rose-400 leading-relaxed pt-1">
+                Seluruh data warga, rute supir, tagihan, dan konfigurasi tenant ini akan dihapus permanen.
+              </p>
+            </div>
+
+            <form onSubmit={handleDeleteTenant} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                  Ketik slug <span className="font-mono text-rose-500 font-black">{deleteModal.tenant.slug}</span> untuk konfirmasi:
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={deleteModal.confirmInput}
+                  onChange={(e) => setDeleteModal({ ...deleteModal, confirmInput: e.target.value })}
+                  placeholder={deleteModal.tenant.slug}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setDeleteModal({ open: false, tenant: null, confirmInput: "", loading: false })}
+                  className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  disabled={deleteModal.confirmInput !== deleteModal.tenant.slug || deleteModal.loading}
+                  className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-lg shadow-rose-600/30 transition-all flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {deleteModal.loading ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Menghapus...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Hapus Permanen</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Modal Tambah Mitra */}
       {showModal && (

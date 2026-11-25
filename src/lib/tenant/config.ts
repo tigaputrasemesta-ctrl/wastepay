@@ -173,6 +173,27 @@ export function registerDynamicTenant(tenant: TenantConfig): void {
 }
 
 /**
+ * Hapus tenant dari in-memory cache secara dinamis
+ */
+export function unregisterDynamicTenant(slugOrDomain: string): void {
+  const clean = slugOrDomain.toLowerCase().trim();
+  const existingBySlug = slugRegistry.get(clean);
+  const target = existingBySlug || domainRegistry.get(clean);
+
+  if (target) {
+    slugRegistry.delete(target.slug);
+    for (const domain of target.domains) {
+      if (domain) {
+        domainRegistry.delete(domain.toLowerCase().trim());
+      }
+    }
+    if (target.primaryDomain) {
+      domainRegistry.delete(target.primaryDomain.toLowerCase().trim());
+    }
+  }
+}
+
+/**
  * Dapatkan tenant berdasarkan host/domain dari in-memory cache
  */
 export function getDynamicTenant(domainOrHost: string): TenantConfig | undefined {
