@@ -340,6 +340,28 @@ const API_ROLE_MAP: Record<string, number> = {
   "GET:/api/sync/master": 10,
   "GET:/api/sync/delta": 10,
   "GET:/api/sync/": 10,
+
+  // Mobile Armada, Komplain, & Pickup Task (Petugas / Driver)
+  "GET:/api/m/report-armada": 10,
+  "GET:/api/m/komplain-armada": 10,
+  "POST:/api/m/komplain-armada": 10,
+  "GET:/api/m/pickup/tugas": 10,
+  "POST:/api/m/pickup/selesai": 10,
+  "GET:/api/m/pickup/": 10,
+  "POST:/api/m/pickup/": 10,
+
+  // Upload Foto Lapangan (Petugas / Admin)
+  "POST:/api/upload": 10,
+
+  // Pengaturan & Notifikasi Tambahan
+  "GET:/api/pengaturan": 50,
+  "POST:/api/pengaturan": 50,
+  "POST:/api/notifikasi/retry": 20,
+
+  // Pelanggan Bulk & Master Pembayaran
+  "POST:/api/pelanggan/bulk": 50,
+  "GET:/api/pembayaran/": 10,
+  "GET:/api/survei": 10,
 };
 
 async function verifyToken(token: string) {
@@ -459,7 +481,7 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/api/pickup") ||
     pathname.startsWith("/api/pembayaran/search") ||
     pathname.startsWith("/api/integrasi/google-contacts/callback") ||
-    pathname.startsWith("/api/core")
+    (pathname === "/api/core/mitra/register" && request.method === "POST")
   ) {
     return NextResponse.next({ request: { headers: reqHeaders } });
   }
@@ -651,12 +673,14 @@ export async function proxy(request: NextRequest) {
     }
 
     const apiKey = `${request.method}:${pathname}`;
-    let requiredLevel = API_ROLE_MAP[apiKey];
+    const normalizedApiKey = apiKey.endsWith("/") ? apiKey.slice(0, -1) : apiKey;
+    const apiKeyWithSlash = apiKey.endsWith("/") ? apiKey : `${apiKey}/`;
+    let requiredLevel = API_ROLE_MAP[apiKey] ?? API_ROLE_MAP[normalizedApiKey] ?? API_ROLE_MAP[apiKeyWithSlash];
 
     // Fallback: prefix match untuk route /[id]
     if (!requiredLevel) {
       for (const [key, level] of Object.entries(API_ROLE_MAP)) {
-        if (key.endsWith("/") && apiKey.startsWith(key)) {
+        if (key.endsWith("/") && (apiKeyWithSlash.startsWith(key) || apiKey.startsWith(key))) {
           requiredLevel = level;
           break;
         }

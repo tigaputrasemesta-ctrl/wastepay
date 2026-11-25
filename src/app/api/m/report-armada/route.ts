@@ -101,30 +101,45 @@ export async function GET(request: Request) {
 
     const totalVolume = tugasList.reduce((acc, t) => acc + (t.volume || 0), 0);
     const totalBerat = tugasList.reduce((acc, t) => acc + (t.berat || 0), 0);
+    const ritCount = Math.max(1, Math.ceil(totalVolume / (kendaraan?.kapasitas || 4)));
+
+    const summaryObj = {
+      totalTugas: totalTarget,
+      totalTarget,
+      selesai: diambil,
+      diambil,
+      kosong,
+      terlewat: tidakDiangkut,
+      tidakDiangkut,
+      belum: belumDiambil,
+      belumDiambil,
+      persentase,
+      totalVolumeM3: totalVolume,
+      totalVolume,
+      totalBerat,
+      ritCount,
+    };
+
+    const activeRuteObj = activeRute
+      ? {
+          id: activeRute.id,
+          nama: activeRute.nama,
+          hari: activeRute.hari,
+          zonas: cakupanZonas,
+        }
+      : null;
 
     return NextResponse.json({
       tanggal: tanggalStr,
       hari: hariIndo,
       kendaraan,
+      allKendaraan,
       daftarKendaraan: allKendaraan,
-      rute: activeRute
-        ? {
-            id: activeRute.id,
-            nama: activeRute.nama,
-            hari: activeRute.hari,
-            zonas: cakupanZonas,
-          }
-        : null,
-      ringkasan: {
-        totalTarget,
-        diambil,
-        kosong,
-        tidakDiangkut,
-        belumDiambil,
-        persentase,
-        totalVolume,
-        totalBerat,
-      },
+      activeRute: activeRuteObj,
+      rute: activeRuteObj,
+      cakupanZonas,
+      summary: summaryObj,
+      ringkasan: summaryObj,
       tugasTerbaru: tugasList.slice(0, 50).map((t) => ({
         id: t.id,
         status: t.status,
@@ -132,7 +147,12 @@ export async function GET(request: Request) {
         alamat: t.pelanggan.alamat,
         zona: t.pelanggan.wilayah?.zona?.nama || "-",
         petugasNama: t.petugas?.nama || "-",
-        jam: t.updatedAt.toISOString().slice(11, 16),
+        jam: new Intl.DateTimeFormat("id-ID", {
+          hour: "2-digit",
+          minute: "2-digit",
+          timeZone: "Asia/Jakarta",
+          hour12: false,
+        }).format(t.updatedAt),
         catatan: t.catatan,
       })),
     });

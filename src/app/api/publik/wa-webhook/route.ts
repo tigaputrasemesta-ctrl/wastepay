@@ -14,14 +14,9 @@ import {
 export const dynamic = "force-dynamic";
 
 function logWebhookHit(data: any) {
-  try {
-    const dir = join(process.cwd(), "public", "uploads");
-    mkdirSync(dir, { recursive: true });
-    const logPath = join(dir, "webhook_hits.log");
-    const line = `[${new Date().toISOString()}] ${JSON.stringify(data)}\n`;
-    appendFileSync(logPath, line, "utf8");
-  } catch (e) {
-    console.error("Failed to write webhook log:", e);
+  // Hanya log ringkasan metadata ke console saat dev (jangan tulis PII ke public uploads)
+  if (process.env.NODE_ENV !== "production") {
+    console.log("[Webhook Hit]", data?.sender, data?.message?.slice?.(0, 30));
   }
 }
 
@@ -68,42 +63,37 @@ export async function OPTIONS() {
  */
 export async function GET(request: Request) {
   const url = new URL(request.url);
+  const action = url.searchParams.get("action");
+  const isDebug = url.searchParams.get("debug") === "1";
 
-  // Aksi operasional via URL (misal: lepaskan bot tidur secara manual)
-  if (url.searchParams.get("action") === "release") {
-    const phone = url.searchParams.get("phone") || "";
-    const released = releaseTakeover(phone);
-    return NextResponse.json({ status: "ok", action: "release", released, phone });
-  }
+  // Aksi operasional & debug wajib menyertakan secret
+  if (action || isDebug) {
+    const authHeader = request.headers.get("x-webhook-secret") || url.searchParams.get("secret") || "";
+    const expectedSecret = process.env.WEBHOOK_SECRET || process.env.JWT_SECRET || "";
+    if (!expectedSecret || !verifySecret(authHeader, expectedSecret)) {
+      return NextResponse.json({ error: "Unauthorized: Webhook secret diperlukan" }, { status: 401 });
+    }
 
-  if (url.searchParams.get("action") === "takeover") {
-    const phone = url.searchParams.get("phone") || "";
-    const hours = Number(url.searchParams.get("hours")) || 12;
-    setTakeover(phone, hours, "manual_pause");
-    return NextResponse.json({ status: "ok", action: "takeover", set: true, phone, hours });
-  }
+    if (action === "release") {
+      const phone = url.searchParams.get("phone") || "";
+      const released = releaseTakeover(phone);
+      return NextResponse.json({ status: "ok", action: "release", released, phone });
+    }
 
-  if (url.searchParams.get("debug") === "1") {
-    try {
+    if (action === "takeover") {
+      const phone = url.searchParams.get("phone") || "";
+      const hours = Number(url.searchParams.get("hours")) || 12;
+      setTakeover(phone, hours, "manual_pause");
+      return NextResponse.json({ status: "ok", action: "takeover", set: true, phone, hours });
+    }
+
+    if (isDebug) {
       const activeTakeovers = getAllActiveTakeovers();
-      const logPath = join(process.cwd(), "public", "uploads", "webhook_hits.log");
-      let recentHits: any[] = [];
-      if (existsSync(logPath)) {
-        const content = readFileSync(logPath, "utf8");
-        const lines = content.trim().split("\n").filter(Boolean).slice(-30);
-        recentHits = lines.map((l) => {
-          try { return JSON.parse(l.replace(/^\[[^\]]+\]\s*/, "")); } catch { return l; }
-        });
-      }
       return NextResponse.json({
         status: "ok",
         activeTakeoversCount: activeTakeovers.length,
         activeTakeovers,
-        totalLines: recentHits.length,
-        recentHits,
       });
-    } catch (e: any) {
-      return NextResponse.json({ status: "error", error: e.message });
     }
   }
 

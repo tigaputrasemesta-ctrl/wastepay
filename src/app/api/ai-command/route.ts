@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getPengaturanString, setPengaturan } from "@/lib/pengaturan";
+import { getSession } from "@/lib/auth";
 import fs from "fs";
 import path from "path";
 
@@ -224,6 +225,11 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await req.json();
     const { action, payload } = body;
     const clientGeminiKey = req.headers.get("x-gemini-key") || payload?.geminiApiKey;
@@ -245,7 +251,7 @@ export async function POST(req: NextRequest) {
       }
 
       // Kirim via Fonnte Gateway ke nomor konsumen/mitra
-      const waApiKey = process.env.WA_API_KEY || "yZeWGJymbrnTpub2x5rL";
+      const waApiKey = process.env.WA_API_KEY || "";
       const waApiUrl = process.env.WA_API_URL || "https://api.fonnte.com/send";
 
       const formPayload = new URLSearchParams();
@@ -330,6 +336,10 @@ export async function POST(req: NextRequest) {
 
     // ACTION: SAVE / TEST GEMINI API KEY
     if (action === "save_gemini_key") {
+      if (session.role !== "superadmin" && session.role !== "admin") {
+        return NextResponse.json({ success: false, error: "Hanya Admin yang berwenang mengubah API Key Gemini" }, { status: 403 });
+      }
+
       const { key, skipTest } = payload;
       const cleanKey = (key || "").trim();
 
@@ -347,25 +357,6 @@ export async function POST(req: NextRequest) {
         await setPengaturan("GEMINI_MODEL", "gemini-flash-lite-latest");
       } catch (e) {
         console.warn("[Save Pengaturan DB warning]", e);
-      }
-
-      // 2. Persist to .env file on disk if accessible
-      try {
-        const envPath = path.join(process.cwd(), ".env");
-        if (fs.existsSync(envPath)) {
-          let envContent = fs.readFileSync(envPath, "utf-8");
-          if (envContent.includes("GEMINI_API_KEY=")) {
-            envContent = envContent.replace(/GEMINI_API_KEY=.*/g, `GEMINI_API_KEY="${cleanKey}"`);
-          } else {
-            envContent += `\nGEMINI_API_KEY="${cleanKey}"\nGEMINI_MODEL="gemini-flash-lite-latest"\n`;
-          }
-          if (envContent.includes("GEMINI_MODEL=")) {
-            envContent = envContent.replace(/GEMINI_MODEL=.*/g, `GEMINI_MODEL="gemini-flash-lite-latest"`);
-          }
-          fs.writeFileSync(envPath, envContent, "utf-8");
-        }
-      } catch (e) {
-        console.warn("[Save .env disk warning]", e);
       }
 
       // Jika skipTest aktif, langsung return sukses
@@ -715,8 +706,8 @@ Gaya bahasa: Tajam, ringkas, berorientasi eksekutif, berbasis data metrik riil.`
     // ACTION: SEND WHATSAPP
     if (action === "send_whatsapp") {
       const message = payload?.message;
-      const ownerPhone = process.env.OWNER_PHONE || "081532843224";
-      const waApiKey = process.env.WA_API_KEY || "yZeWGJymbrnTpub2x5rL";
+      const ownerPhone = process.env.OWNER_PHONE || "";
+      const waApiKey = process.env.WA_API_KEY || "";
       const waApiUrl = process.env.WA_API_URL || "https://api.fonnte.com/send";
 
       if (!message) {

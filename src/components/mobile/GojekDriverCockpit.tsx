@@ -1203,6 +1203,7 @@ export default function GojekDriverCockpit({
               <MotionDiv layout className="pt-1">
                 {currentIsMenunggak ? (
                   <SlideToConfirm
+                    key={`skip-${currentTask.id}`}
                     variant="danger"
                     text="Geser Lewati (Menunggak)"
                     successText="Mencatat Lewati..."
@@ -1215,6 +1216,7 @@ export default function GojekDriverCockpit({
                   />
                 ) : (
                   <SlideToConfirm
+                    key={`pickup-${currentTask.id}`}
                     variant="success"
                     text="Geser Jika Sudah Diangkut"
                     successText="Menyelesaikan..."

@@ -43,6 +43,13 @@ export default function SlideToConfirm({
     return () => window.removeEventListener("resize", updateMaxDrag);
   }, [updateMaxDrag]);
 
+  // Reset internal state jika berganti task atau props
+  useEffect(() => {
+    setIsConfirmed(false);
+    setDragX(0);
+    setLoading(false);
+  }, [text, variant, disabled]);
+
   // Touch Handlers
   const handleTouchStart = (e: React.TouchEvent) => {
     if (disabled || isConfirmed || loading) return;

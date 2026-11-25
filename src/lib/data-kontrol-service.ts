@@ -139,13 +139,13 @@ export const DEVICE_CONFIG = {
   admin: {
     phone: '081400782617',
     label: 'HP Admin Utama (081400782617)',
-    token: process.env.WA_API_KEY?.trim() || 'yZeWGJymbrnTpub2x5rL',
+    token: process.env.WA_API_KEY?.trim() || '',
     isPrimaryAdmin: true,
   },
   petugas: {
     phone: '089688151473',
     label: 'HP Petugas Survei (089688151473 - Novi)',
-    token: '8n46RV2x9GosQYgtAS1j',
+    token: process.env.WA_API_KEY_PETUGAS?.trim() || '',
     isPrimaryAdmin: false,
   },
 };

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/auth";
 import { buildCorsHeaders } from "@/lib/server/wastepay-backend-core-services";
 
 export async function OPTIONS(request: Request) {
@@ -78,6 +79,11 @@ export async function PATCH(request: Request) {
   const corsHeaders = buildCorsHeaders(request);
 
   try {
+    const session = await getSession();
+    if (!session || (session.role !== "superadmin" && session.role !== "admin")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401, headers: corsHeaders });
+    }
+
     const body = await request.json();
     const { id, status, catatanAdmin } = body;
 

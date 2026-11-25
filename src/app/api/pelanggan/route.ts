@@ -137,7 +137,7 @@ export async function GET(request: Request) {
 
   if (isPaginated) {
     page = Math.max(1, parseInt(pageParam || "1") || 1);
-    limit = Math.min(200, Math.max(1, parseInt(limitParam || "50") || 50));
+    limit = Math.min(1000, Math.max(1, parseInt(limitParam || "50") || 50));
     skip = (page - 1) * limit;
     take = limit;
   }

@@ -13,6 +13,10 @@ export async function OPTIONS(request: Request) {
 export async function GET(request: Request) {
   const corsHeaders = buildCorsHeaders(request);
   try {
+    const session = await getSession();
+    if (!session || (session.role !== "superadmin" && session.role !== "admin")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401, headers: corsHeaders });
+    }
     const leads = await prisma.mitraRegistration.findMany({
       orderBy: { createdAt: "desc" },
       include: { tenant: { select: { namaMitra: true, slug: true } } },

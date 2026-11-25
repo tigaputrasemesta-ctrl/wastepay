@@ -13,6 +13,10 @@ export async function OPTIONS(request: Request) {
 export async function GET(request: Request) {
   const corsHeaders = buildCorsHeaders(request);
   try {
+    const session = await getSession();
+    if (!session || session.role !== "superadmin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401, headers: corsHeaders });
+    }
     const ledgers = await prisma.tenantLedger.findMany({
       include: { tenant: { select: { namaMitra: true, slug: true, paketLangganan: true } } },
       orderBy: { createdAt: "desc" },

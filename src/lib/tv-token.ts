@@ -1,4 +1,9 @@
-import { timingSafeEqual } from "crypto";
+import { timingSafeEqual, createHash } from "crypto";
+
+function getDerivedTvToken(): string {
+  const seed = process.env.JWT_SECRET || "wastepay-tv-view-secure-seed";
+  return createHash("sha256").update(`${seed}:tv-view-token`).digest("hex").slice(0, 32);
+}
 
 /**
  * Validasi token akses "TV mode" / "Peta Keseluruhan Pelanggan" menggunakan
@@ -15,7 +20,7 @@ export function tvTokenValid(token: string | null | undefined): boolean {
     process.env.TV_VIEW_TOKEN?.trim(),
     process.env.MAP_VIEW_TOKEN?.trim(),
     process.env.PETA_TOKEN?.trim(),
-    "oeZcx4nhgyjcJVJUVnMDrxY5Bw2vrdJL2-aYGm0_o1k",
+    getDerivedTvToken(),
   ].filter((t): t is string => Boolean(t && t.length > 0));
 
   const candidateBuf = Buffer.from(candidate);
@@ -38,6 +43,6 @@ export function getDefaultMapToken(): string {
     process.env.TV_VIEW_TOKEN?.trim() ||
     process.env.MAP_VIEW_TOKEN?.trim() ||
     process.env.PETA_TOKEN?.trim() ||
-    "oeZcx4nhgyjcJVJUVnMDrxY5Bw2vrdJL2-aYGm0_o1k"
+    getDerivedTvToken()
   );
 }

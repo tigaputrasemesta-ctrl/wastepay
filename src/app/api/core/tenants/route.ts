@@ -18,6 +18,13 @@ export async function GET(request: Request) {
   const corsHeaders = buildCorsHeaders(request);
 
   try {
+    const session = await getSession();
+    if (!session || (session.role !== "superadmin" && session.role !== "admin")) {
+      return NextResponse.json(
+        { error: "Unauthorized: Hanya admin atau superadmin yang dapat mengakses data tenant." },
+        { status: 401, headers: corsHeaders }
+      );
+    }
     // Ambil tenant dinamis dari DB jika ada
     let dbTenants: any[] = [];
     try {
