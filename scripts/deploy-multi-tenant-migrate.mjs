@@ -17,6 +17,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import pg from "pg";
+import bcrypt from "bcryptjs";
 
 const { Pool } = pg;
 
@@ -233,6 +234,42 @@ async function main() {
       WHERE "tenantId" IS NOT NULL AND "aktif" = true
       ON CONFLICT ("userId", "tenantId") DO NOTHING;
     `);
+
+    // 4b. Tetapkan akun cv.herozerowaste@gmail.com sebagai admin resmi di tenant-pilot-upsheru
+    const upsheruAdminEmail = "cv.herozerowaste@gmail.com";
+    const existingAdminRes = await client.query(
+      `SELECT "id" FROM "User" WHERE LOWER("email") = LOWER($1);`,
+      [upsheruAdminEmail]
+    );
+
+    let upsheruUserId;
+    const defaultAdminHash = await bcrypt.hash("Hero2026!", 12);
+
+    if (existingAdminRes.rows.length > 0) {
+      upsheruUserId = existingAdminRes.rows[0].id;
+      await client.query(
+        `UPDATE "User" SET "password" = $1, "role" = 'admin', "tenantId" = $2, "aktif" = true, "tokenVersion" = COALESCE("tokenVersion", 1) + 1, "updatedAt" = NOW() WHERE "id" = $3;`,
+        [defaultAdminHash, PILOT_TENANT_ID, upsheruUserId]
+      );
+      console.log(`✓ User ${upsheruAdminEmail} (ID: ${upsheruUserId}) diperbarui menjadi role 'admin' di ${PILOT_TENANT_ID}.`);
+    } else {
+      const insertRes = await client.query(
+        `INSERT INTO "User" ("email", "password", "nama", "role", "noTelepon", "aktif", "tenantId", "tokenVersion", "createdAt", "updatedAt")
+         VALUES ($1, $2, 'Admin UPS HERU', 'admin', '081400782617', true, $3, 1, NOW(), NOW())
+         RETURNING "id";`,
+        [upsheruAdminEmail, defaultAdminHash, PILOT_TENANT_ID]
+      );
+      upsheruUserId = insertRes.rows[0].id;
+      console.log(`✓ User ${upsheruAdminEmail} (ID: ${upsheruUserId}) berhasil dibuat sebagai role 'admin' di ${PILOT_TENANT_ID}.`);
+    }
+
+    await client.query(
+      `INSERT INTO "TenantMembership" ("userId", "tenantId", "role", "aktif", "createdAt", "updatedAt")
+       VALUES ($1, $2, 'admin', true, NOW(), NOW())
+       ON CONFLICT ("userId", "tenantId")
+       DO UPDATE SET "role" = 'admin', "aktif" = true, "updatedAt" = NOW();`,
+      [upsheruUserId, PILOT_TENANT_ID]
+    );
 
     // 5. Pastikan pilot UPS HERU memiliki record subscription aktif (domainSetupFee = 0 sebagai pilot)
     await client.query(
