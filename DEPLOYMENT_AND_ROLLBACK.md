@@ -91,14 +91,16 @@ DO $$
 DECLARE
     tbl text;
     tables text[] := ARRAY[
-      'User', 'Pelanggan', 'Petugas', 'Tagihan', 'Pembayaran',
-      'DuitkuTransaction', 'Kendaraan', 'LokasiKendaraan', 'Rute', 'Jadwal',
-      'Pengangkutan', 'Absensi', 'KlaimPetugas', 'Komplain', 'Pengeluaran',
-      'Rekonsiliasi', 'AuditLog', 'LogAktivitas', 'RiwayatTagihan', 'CatatanTagihan',
-      'ItemTagihan', 'RincianPengeluaran', 'KategoriPengeluaran', 'DaftarHitam',
-      'Pengaturan', 'TemplatePesan', 'PesanTerkirim', 'PesanMasuk', 'AntreanPesan',
-      'InsidentalRequest', 'InsidentalFoto', 'InsidentalPembayaran',
-      'MitraMarketplace', 'BarangMarketplace', 'PesananMarketplace', 'DetailPesananMarketplace'
+      'Pelanggan', 'Petugas', 'LokasiPetugas', 'Kendaraan', 'LokasiKendaraan',
+      'TitikTransit', 'Rute', 'Jadwal', 'Tagihan', 'Pembayaran',
+      'DuitkuTransaction', 'Pengangkutan', 'Komplain', 'LiburSementara',
+      'Pengumuman', 'Pengeluaran', 'Tpa', 'AuditLog', 'Notifikasi',
+      'Rekonsiliasi', 'Pengaturan', 'Absensi', 'KlaimPetugas', 'ChatPesan',
+      'Wilayah', 'Zona', 'ZonaPetugas', 'KategoriTarif', 'Paket',
+      'Artikel', 'Produk', 'MarketplaceOrder', 'MarketplaceOrderItem',
+      'KategoriPickup', 'PesananPickup',
+      'TenantMembership', 'TenantSubscription', 'TenantWhatsAppConfig',
+      'TenantQuotaUsage', 'TenantPaymentConfig', 'TenantLedger', 'TenantPayout'
     ];
 BEGIN
     FOREACH tbl IN ARRAY tables LOOP

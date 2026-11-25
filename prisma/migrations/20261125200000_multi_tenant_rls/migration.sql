@@ -39,18 +39,40 @@ CREATE INDEX IF NOT EXISTS "TenantMembership_userId_idx" ON "TenantMembership"("
 CREATE INDEX IF NOT EXISTS "TenantSubscription_tenantId_idx" ON "TenantSubscription"("tenantId");
 CREATE INDEX IF NOT EXISTS "TenantSubscription_status_idx" ON "TenantSubscription"("status");
 
--- Add foreign keys for new tables
-ALTER TABLE "TenantMembership" ADD CONSTRAINT "TenantMembership_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "TenantMembership" ADD CONSTRAINT "TenantMembership_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "Tenant"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "TenantSubscription" ADD CONSTRAINT "TenantSubscription_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "Tenant"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+-- Idempotent foreign keys for new tables & User
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'TenantMembership_userId_fkey') THEN
+    ALTER TABLE "TenantMembership" ADD CONSTRAINT "TenantMembership_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'TenantMembership_tenantId_fkey') THEN
+    ALTER TABLE "TenantMembership" ADD CONSTRAINT "TenantMembership_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "Tenant"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'TenantSubscription_tenantId_fkey') THEN
+    ALTER TABLE "TenantSubscription" ADD CONSTRAINT "TenantSubscription_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "Tenant"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+  END IF;
+END $$;
 
 ALTER TABLE "TenantSubscription" ADD COLUMN IF NOT EXISTS "domainSetupFee" DOUBLE PRECISION NOT NULL DEFAULT 2000000;
 ALTER TABLE "TenantSubscription" ADD COLUMN IF NOT EXISTS "setupFeePaid" BOOLEAN NOT NULL DEFAULT false;
 
+-- Ensure dynamic fee columns exist on TenantPaymentConfig if table exists
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'TenantPaymentConfig') THEN
+    ALTER TABLE "TenantPaymentConfig" ADD COLUMN IF NOT EXISTS "platformFeeRate" DOUBLE PRECISION NOT NULL DEFAULT 0;
+  END IF;
+END $$;
+
 -- Add tenantId column and indexes to tenant-owned models (IF NOT EXISTS pattern for backward-compatibility)
 ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "tenantId" TEXT;
 CREATE INDEX IF NOT EXISTS "User_tenantId_idx" ON "User"("tenantId");
-ALTER TABLE "User" ADD CONSTRAINT "User_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "Tenant"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'User_tenantId_fkey') THEN
+    ALTER TABLE "User" ADD CONSTRAINT "User_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "Tenant"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+  END IF;
+END $$;
 
 ALTER TABLE "Pelanggan" ADD COLUMN IF NOT EXISTS "tenantId" TEXT;
 CREATE INDEX IF NOT EXISTS "Pelanggan_tenantId_idx" ON "Pelanggan"("tenantId");

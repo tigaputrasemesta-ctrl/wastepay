@@ -1,61 +1,85 @@
 /**
  * Phase 9 — Safe Migration & Backfill Script for UPS HERU Pilot Tenant
- * 
+ *
  * Objectives:
  * 1. Safely identify or create Pilot Tenant ('tenant-pilot-upsheru') and Core Tenant ('tenant-core-o2w').
  * 2. Backfill existing legacy records where tenantId IS NULL to 'tenant-pilot-upsheru'.
  * 3. Verify record counts before and after to ensure zero data loss.
- * 4. Verify referential integrity across all relationships.
+ * 4. Sync TenantMembership rows from User table safely.
  * 5. Report NOT NULL enforcement readiness.
- * 
+ *
  * Usage:
  *   node scripts/backfill-upsheru-tenant.mjs [--dry-run]
  */
 
+import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 
-const prisma = new PrismaClient();
+const rawConn = (process.env.DATABASE_URL || "").trim().replace(/^["']|["']$/g, "");
+if (!rawConn) {
+  console.error("❌ DATABASE_URL tidak ditemukan!");
+  process.exit(1);
+}
+
+const cleanConn = rawConn.replace(/[?&]sslmode=[^&]+/g, "").replace(/\?$/, "");
+const useSsl =
+  process.env.NODE_ENV === "production" ||
+  process.env.DATABASE_SSL === "true" ||
+  rawConn.includes("supabase.com") ||
+  rawConn.includes("sumobase.my.id");
+
+const pool = new Pool({
+  connectionString: cleanConn,
+  ssl: useSsl ? { rejectUnauthorized: false } : undefined,
+});
+
+const prisma = new PrismaClient({
+  adapter: new PrismaPg(pool),
+});
 
 const PILOT_TENANT_ID = "tenant-pilot-upsheru";
 const CORE_TENANT_ID = "tenant-core-o2w";
 
+// Sesuai persis dengan daftar seluruh model berkolom `tenantId` pada prisma/schema.prisma
 const OPERATIONAL_TABLES = [
   "user",
+  "wilayah",
+  "zona",
+  "zonaPetugas",
+  "kategoriTarif",
+  "paket",
   "pelanggan",
   "petugas",
+  "lokasiPetugas",
+  "kendaraan",
+  "lokasiKendaraan",
+  "titikTransit",
+  "rute",
+  "jadwal",
   "tagihan",
   "pembayaran",
   "duitkuTransaction",
-  "kendaraan",
-  "lokasiKendaraan",
-  "rute",
-  "jadwal",
   "pengangkutan",
   "absensi",
   "klaimPetugas",
   "komplain",
+  "liburSementara",
+  "pengumuman",
   "pengeluaran",
-  "rekonsiliasi",
+  "tpa",
   "auditLog",
-  "logAktivitas",
-  "riwayatTagihan",
-  "catatanTagihan",
-  "itemTagihan",
-  "rincianPengeluaran",
-  "kategoriPengeluaran",
-  "daftarHitam",
+  "notifikasi",
+  "rekonsiliasi",
   "pengaturan",
-  "templatePesan",
-  "pesanTerkirim",
-  "pesanMasuk",
-  "antreanPesan",
-  "insidentalRequest",
-  "insidentalFoto",
-  "insidentalPembayaran",
-  "mitraMarketplace",
-  "barangMarketplace",
-  "pesananMarketplace",
-  "detailPesananMarketplace",
+  "chatPesan",
+  "artikel",
+  "produk",
+  "marketplaceOrder",
+  "marketplaceOrderItem",
+  "kategoriPickup",
+  "pesananPickup",
 ];
 
 async function main() {
@@ -68,7 +92,7 @@ async function main() {
   try {
     // 1. Pastikan Core & Pilot Tenant terdaftar
     console.log(`[*] Verifikasi keberadaan Core & Pilot Tenant di database...`);
-    
+
     let pilotTenant = await prisma.tenant.findUnique({ where: { id: PILOT_TENANT_ID } });
     if (!pilotTenant) {
       console.log(`    + Membuat tenant pilot UPS HERU (${PILOT_TENANT_ID})...`);
@@ -78,8 +102,8 @@ async function main() {
             id: PILOT_TENANT_ID,
             slug: "upsheru",
             namaMitra: "UPS HERU",
-            tipe: "mitra_percontohan",
-            primaryDomain: "upsheru.com",
+            tipePengelola: "tps3r",
+            paketLangganan: "percontohan",
             customDomain: "upsheru.com",
             subdomain: "upsheru.o2whero.com",
             warnaTema: "#059669",
@@ -109,8 +133,8 @@ async function main() {
             id: CORE_TENANT_ID,
             slug: "o2w-core",
             namaMitra: "O2W Hero",
-            tipe: "core",
-            primaryDomain: "o2whero.com",
+            tipePengelola: "core",
+            paketLangganan: "enterprise",
             customDomain: "o2whero.com",
             subdomain: "core.o2whero.com",
             warnaTema: "#0284c7",
@@ -135,7 +159,7 @@ async function main() {
 
     for (const modelKey of OPERATIONAL_TABLES) {
       if (!prisma[modelKey]) continue;
-      
+
       try {
         const totalRows = await prisma[modelKey].count();
         const unassignedRows = await prisma[modelKey].count({
@@ -152,7 +176,7 @@ async function main() {
           assignedPilot: assignedPilotRows,
         });
       } catch (err) {
-        console.warn(`    ! Lewati ${modelKey} (tabel mungkin belum dibuat atau kolom berbeda): ${err.message}`);
+        console.warn(`    ! Lewati ${modelKey} (tabel/kolom mungkin berbeda): ${err.message}`);
       }
     }
 
@@ -188,6 +212,24 @@ async function main() {
       });
       if (superadminUpdate.count > 0) {
         console.log(`    ✓ Menetapkan ${superadminUpdate.count} akun superadmin ke Core Tenant (${CORE_TENANT_ID}).`);
+      }
+
+      // Sinkronkan TenantMembership dari User
+      const users = await prisma.user.findMany({
+        where: { tenantId: { not: null }, aktif: true },
+        select: { id: true, tenantId: true, role: true },
+      });
+      if (users.length > 0 && prisma.tenantMembership) {
+        await prisma.tenantMembership.createMany({
+          data: users.map((u) => ({
+            userId: u.id,
+            tenantId: u.tenantId,
+            role: u.role,
+            aktif: true,
+          })),
+          skipDuplicates: true,
+        });
+        console.log(`    ✓ Sinkronisasi TenantMembership selesai untuk ${users.length} akun.`);
       }
     }
 
@@ -226,6 +268,7 @@ async function main() {
     process.exit(1);
   } finally {
     await prisma.$disconnect();
+    await pool.end();
   }
 }
 
