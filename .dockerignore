@@ -7,6 +7,7 @@ node_modules
 .claude
 android
 mobile_petugas
+public/uploads
 *.log
 .env*.local
 .env
