@@ -91,6 +91,7 @@ const API_ROLE_MAP: Record<string, number> = {
   "POST:/api/core/tenants": 100,
   "GET:/api/core/control-tower": 50,
   "POST:/api/core/control-tower": 100,
+  "GET:/api/core/subscriptions/reports": 50,
   "GET:/api/core/billing": 50,
   "POST:/api/core/billing": 100,
   "GET:/api/core/crm": 50,
