@@ -68,6 +68,15 @@ export async function PUT(
         },
       });
 
+      // Jika nominal tagihan diubah oleh admin/kasir, otomatis sinkronkan ke Master Pelanggan (customTarif)
+      // agar tagihan bulan-bulan mendatang selalu menggunakan harga terbaru yang disepakati ini
+      if (newJumlah !== undefined) {
+        await tx.pelanggan.update({
+          where: { id: existing.pelangganId },
+          data: { customTarif: newJumlah },
+        });
+      }
+
       // Integritas Pembukuan: Jika tagihan ditandai lunas secara manual,
       // pastikan ada record Pembayaran terverifikasi yang tercatat di kas masuk sistem
       if (status === "lunas") {

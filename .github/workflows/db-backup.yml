@@ -14,25 +14,29 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - name: Install PostgreSQL 15 Client & zstd
+      - name: Install PostgreSQL Client & zstd
         run: |
           sudo apt-get update
-          sudo apt-get install -y postgresql-client-15 zstd || sudo apt-get install -y postgresql-client zstd
+          sudo apt-get install -y postgresql-client zstd
 
-      - name: Run pg_dump via IPv4 Session Pooler
+      - name: Run pg_dump Database Backup
         env:
-          SUPABASE_DB_URL: ${{ secrets.SUPABASE_SESSION_POOLER_URL || secrets.DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL || secrets.SUPABASE_SESSION_POOLER_URL }}
         run: |
-          if [ -z "$SUPABASE_DB_URL" ]; then
-            echo "::error::Secret SUPABASE_SESSION_POOLER_URL atau DATABASE_URL belum diatur di GitHub Settings > Secrets!"
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::Secret DATABASE_URL belum diatur di GitHub Settings > Secrets!"
             exit 1
           fi
 
           TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
           echo "Memulai backup database ke wastepay_backup_${TIMESTAMP}.sql.zst..."
 
-          # Otomatis alihkan port 6543 (transaction) ke 5432 (session pooler) agar pg_dump tidak error
-          TARGET_URL=$(echo "$SUPABASE_DB_URL" | sed 's/:6543/:5432/' | sed 's/[?&]pgbouncer=true//g')
+          # Bersihkan parameter non-standar libpq (seperti ?schema=public, pgbouncer=true) yang ditolak pg_dump
+          TARGET_URL=$(echo "$DATABASE_URL" \
+            | sed 's/:6543/:5432/' \
+            | sed -E 's/([?&])schema=[^&]*(&|$)/\1/g' \
+            | sed -E 's/([?&])pgbouncer=[^&]*(&|$)/\1/g' \
+            | sed -E 's/[?&]$//')
 
           pg_dump "$TARGET_URL" \
             --schema=public \
