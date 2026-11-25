@@ -7,6 +7,9 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 concurrency:
   group: deploy-vps
   cancel-in-progress: false
@@ -31,8 +34,8 @@ jobs:
             cd /home/ubuntu/wastepay
             
             echo "📥 Menarik perubahan kode terbaru dari Git..."
-            git fetch origin master
-            git reset --hard origin/master
+            GIT_TERMINAL_PROMPT=0 git fetch --quiet "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" master
+            git reset --hard FETCH_HEAD
             
             mkdir -p public/uploads
             chmod 777 public/uploads
