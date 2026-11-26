@@ -48,20 +48,6 @@ jobs:
             
             echo "🔄 Me-restart container aplikasi dengan image terbaru..."
             docker compose up -d --no-build
-            
-            echo "🔒 Mengonfigurasi Caddy reverse proxy untuk domain tenant potonglink.com..."
-            if [ -f /etc/caddy/Caddyfile ]; then
-              if ! sudo grep -q "potonglink.com" /etc/caddy/Caddyfile; then
-                echo -e "\npotonglink.com, www.potonglink.com {\n    reverse_proxy 127.0.0.1:3000\n}\n" | sudo tee -a /etc/caddy/Caddyfile
-                sudo systemctl reload caddy || sudo service caddy reload || true
-                echo "🌐 Caddyfile diperbarui dan Caddy di-reload."
-              else
-                sudo systemctl reload caddy || sudo service caddy reload || true
-                echo "🌐 Domain potonglink.com sudah terdaftar di Caddyfile."
-              fi
-            else
-              echo "⚠️ /etc/caddy/Caddyfile tidak ditemukan di host VPS."
-            fi
 
             echo "🧹 Membersihkan image lama..."
             docker image prune -f
