@@ -718,6 +718,8 @@ export type DisposisiKomplain = {
   patokanLokasi?: string | null;
   zonaWilayah?: string | null;
   googleMapsUrl?: string | null;
+  petaPdfUrl?: string | null;
+  fotoKeluhanUrl?: string | null;
   jenisKomplain: string;
   deskripsi: string;
   catatanAdmin?: string | null;
@@ -735,7 +737,7 @@ export function templateDisposisiKomplainPetugas(
     `🚨 *DISPOSISI PENGADUAN SAMPAH — ${NAMA().toUpperCase()}*`,
     `ID Tiket: *#KMP-${p.idKomplain}*`,
     ``,
-    `Kepada Yth. Petugas: *${p.namaPetugas}*`,
+    `Kepada Yth. Petugas/Driver: *${p.namaPetugas}*`,
     `Mohon segera ditindaklanjuti laporan kendala sampah warga berikut:`,
     ``,
     `👤 *Pelanggan* : ${p.namaPelanggan}${p.kodePelanggan ? ` (${p.kodePelanggan})` : ""}`,
@@ -754,6 +756,12 @@ export function templateDisposisiKomplainPetugas(
   }
   if (p.googleMapsUrl) {
     baris.push(`🗺️ *Titik Navigasi Maps* : ${p.googleMapsUrl}`);
+  }
+  if (p.petaPdfUrl) {
+    baris.push(`📄 *Lembar Peta & Foto Rumah (PDF)* : ${p.petaPdfUrl}`);
+  }
+  if (p.fotoKeluhanUrl) {
+    baris.push(`📸 *Foto Keluhan Warga* : ${p.fotoKeluhanUrl}`);
   }
 
   baris.push(
@@ -781,6 +789,44 @@ export function templateDisposisiKomplainPetugas(
 
   return {
     judul: `Disposisi Komplain #KMP-${p.idKomplain} ke ${p.namaPetugas}`,
+    pesan: baris.join("\n"),
+  };
+}
+
+/**
+ * Template WhatsApp konfirmasi tiket masuk kepada Warga Pelapor.
+ */
+export function templateKonfirmasiPengaduanPelanggan(params: {
+  tiketId: number;
+  namaPelanggan: string;
+  jenisPengaduan: string;
+  deskripsi: string;
+  namaPetugas?: string | null;
+  namaMitra?: string;
+}): { judul: string; pesan: string } {
+  const brand = params.namaMitra || NAMA();
+  const baseUrl = appBaseUrl();
+  const baris = [
+    `✅ *LAPORAN PENGADUAN DITERIMA — ${brand.toUpperCase()}*`,
+    `Nomor Tiket: *#KMP-${params.tiketId}*`,
+    ``,
+    `Halo Bapak/Ibu *${params.namaPelanggan}*,`,
+    `Terima kasih telah menyampaikan laporan kendala pengangkutan sampah Anda. Laporan Anda telah tercatat dan otomatis diteruskan ke tim armada lapangan untuk penanganan ke lokasi.`,
+    ``,
+    `⚠️ *Kategori Masalah*: ${params.jenisPengaduan}`,
+    `📝 *Isi Laporan*:`,
+    `"${params.deskripsi}"`,
+    ...(params.namaPetugas ? [``, `🚛 *Armada Penjemput*: ${params.namaPetugas}`] : []),
+    ``,
+    `Anda dapat memantau perkembangan status penanganan melalui portal:`,
+    `🌐 ${baseUrl}/pengaduan`,
+    ``,
+    `Terima kasih atas kerja samanya dalam menjaga kebersihan lingkungan bersama. 🙏`,
+    `Salam,`,
+    `*Customer Service ${brand}*`,
+  ];
+  return {
+    judul: `Konfirmasi Tiket Pengaduan #KMP-${params.tiketId}`,
     pesan: baris.join("\n"),
   };
 }
