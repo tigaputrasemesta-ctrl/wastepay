@@ -1,62 +1,75 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getTenantFromRequest, buildTenantFilter } from "@/lib/tenant";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 /**
  * GET /api/publik/daftar-options
- * Opsi form pendaftaran mandiri (tanpa login):
+ * Opsi form pendaftaran mandiri (tanpa login) terisolasi per tenant:
  *  - wilayah: daftar kecamatan → kelurahan (dari data Wilayah, non-sensitif)
  *  - paket: daftar paket layanan yang bisa dipilih konsumen
- *  - kategoriTarif: tarif default per kategori (ditampilkan sebagai hint)
+ *  - kategoriTarif: tarif default per kategori
  */
-export async function GET() {
+export async function GET(request: Request) {
+  const tenantCtx = await getTenantFromRequest(request);
+  if (!tenantCtx.isValid || tenantCtx.isCore) {
+    return NextResponse.json(
+      { error: "Opsi pendaftaran pelanggan hanya tersedia pada portal mitra operasional." },
+      { status: 403 }
+    );
+  }
+  const tenantScope = buildTenantFilter(tenantCtx.tenant.id, tenantCtx.isPilot);
+
   const [wilayahRows, paketRows, kategoriTarif, zonas, petugas, rute] = await Promise.all([
     prisma.kelurahan.findMany({
       select: { nama: true, kecamatan: true },
       orderBy: [{ kecamatan: "asc" }, { nama: "asc" }],
     }),
     prisma.paket.findMany({
+      where: tenantScope,
       orderBy: { harga: "asc" },
       select: { id: true, nama: true, harga: true, deskripsi: true },
     }),
     prisma.kategoriTarif.findMany({
+      where: tenantScope,
       orderBy: { tarif: "asc" },
       select: { kategori: true, label: true, tarif: true, deskripsi: true },
     }),
     prisma.zona.findMany({
-      where: { deletedAt: null },
+      where: { ...tenantScope, deletedAt: null },
       select: { id: true, nama: true, kelurahan: { select: { nama: true } } },
       orderBy: { nama: "asc" },
     }),
     prisma.petugas.findMany({
-      where: { aktif: true, deletedAt: null },
+      where: { ...tenantScope, aktif: true, deletedAt: null },
       select: { id: true, nama: true },
       orderBy: { nama: "asc" },
     }),
     prisma.rute.findMany({
+      where: tenantScope,
       select: { id: true, nama: true },
       orderBy: { nama: "asc" },
     }),
   ]);
 
-  // Pastikan Paket Langganan 40.000 selalu tersedia dan presisi
+  // Pastikan Paket Langganan dasar tersedia tanpa meng-override harga DB yang dikonfigurasi tenant
   let foundLangganan = false;
   const paket = paketRows.map((p) => {
     if (p.id === 18 || p.nama.toLowerCase().includes("langganan")) {
       foundLangganan = true;
       return {
         ...p,
-        nama: "Paket Langganan",
-        harga: 40000,
-        deskripsi: p.deskripsi || "Pengangkutan sampah rutin perumahan / rumah tangga 3x seminggu (Rp 40.000/bulan)",
+        nama: p.nama || "Paket Langganan",
+        harga: p.harga ?? 40000,
+        deskripsi: p.deskripsi || "Pengangkutan sampah rutin perumahan / rumah tangga 3x seminggu",
       };
     }
     return p;
   });
 
-  if (!foundLangganan) {
+  if (!foundLangganan && tenantCtx.isPilot) {
     paket.unshift({
       id: 18,
       nama: "Paket Langganan",
@@ -80,13 +93,12 @@ export async function GET() {
     }))
     .sort((a, b) => a.kecamatan.localeCompare(b.kecamatan));
 
-  // Pastikan kategori Level 1 (Rumah Tangga) terstandar Rp 50.000/bulan
+  // Gunakan tarif DB apa adanya agar konsisten dengan halaman /tarif
   const kategoriTarifSanitized = kategoriTarif.map((k) => {
     if (k.kategori === "level_1") {
       return {
         ...k,
         label: k.label && k.label !== "Level 1" ? k.label : "Level 1 (Rumah Tangga)",
-        tarif: 50000,
       };
     }
     return k;

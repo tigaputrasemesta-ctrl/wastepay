@@ -17,26 +17,26 @@ export interface ButtonProps
 
 const variantStyles: Record<NonNullable<ButtonProps["variant"]>, string> = {
   default:
-    "bg-emerald-600 text-white shadow-xs hover:bg-emerald-700 active:scale-[0.98] dark:bg-emerald-600 dark:hover:bg-emerald-500",
+    "bg-emerald-700 text-white shadow-sm hover:bg-emerald-800 active:scale-[0.98] dark:bg-emerald-700 dark:hover:bg-emerald-600",
   destructive:
-    "bg-rose-600 text-white shadow-xs hover:bg-rose-700 active:scale-[0.98] dark:bg-rose-600 dark:hover:bg-rose-500",
+    "bg-rose-600 text-white shadow-sm hover:bg-rose-700 active:scale-[0.98] dark:bg-rose-600 dark:hover:bg-rose-500",
   outline:
-    "border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 shadow-xs hover:bg-slate-100 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-zinc-50 active:scale-[0.98]",
+    "border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 shadow-sm hover:bg-slate-100 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-zinc-50 active:scale-[0.98]",
   secondary:
-    "bg-slate-100 dark:bg-zinc-800 text-slate-900 dark:text-zinc-100 shadow-xs hover:bg-slate-200/80 dark:hover:bg-zinc-700 active:scale-[0.98]",
+    "bg-slate-100 dark:bg-zinc-800 text-slate-900 dark:text-zinc-100 shadow-sm hover:bg-slate-200/80 dark:hover:bg-zinc-700 active:scale-[0.98]",
   ghost:
     "text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-zinc-50 active:scale-[0.98]",
   link:
-    "text-emerald-600 dark:text-emerald-400 underline-offset-4 hover:underline p-0 h-auto font-medium",
+    "text-emerald-700 dark:text-emerald-400 underline-offset-4 hover:underline p-0 h-auto font-medium",
   success:
-    "bg-emerald-600 text-white shadow-xs hover:bg-emerald-700 active:scale-[0.98] dark:bg-emerald-600 dark:hover:bg-emerald-500",
+    "bg-emerald-700 text-white shadow-sm hover:bg-emerald-800 active:scale-[0.98] dark:bg-emerald-700 dark:hover:bg-emerald-600",
 };
 
 const sizeStyles: Record<NonNullable<ButtonProps["size"]>, string> = {
-  default: "h-9 px-4 py-2 text-xs sm:text-sm",
-  sm: "h-8 rounded-lg px-3 text-xs",
-  lg: "h-10 rounded-xl px-6 text-sm font-semibold",
-  icon: "h-9 w-9 rounded-lg p-0 flex items-center justify-center shrink-0",
+  default: "min-h-[44px] sm:min-h-0 sm:h-9 px-4 py-2 text-xs sm:text-sm",
+  sm: "min-h-[40px] sm:min-h-0 sm:h-8 rounded-lg px-3 text-xs",
+  lg: "min-h-[44px] h-11 rounded-xl px-6 text-sm font-semibold",
+  icon: "min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:h-9 sm:w-9 rounded-lg p-0 flex items-center justify-center shrink-0",
 };
 
 export const buttonVariants = ({

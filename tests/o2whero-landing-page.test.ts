@@ -80,4 +80,24 @@ describe("O2WHERO Landing Page Business Ecosystem & Positioning", () => {
     expect(onDemandModel.billingType).toBe("volume_vehicle_based");
     expect(recurringModel.targets).not.toEqual(onDemandModel.targets);
   });
+
+  it("calculates the new flagship partnership tier (Rp 2 Jt / bln + 10% commission all-fitur)", () => {
+    const kk = 1500;
+    const tarifIuran = 35000;
+    const grossIuran = kk * tarifIuran; // Rp 52.500.000
+    const subsBulanan = 2000000; // Rp 2.000.000
+    const komisiRate = 0.10; // 10%
+    const komisiPlatform = grossIuran * komisiRate; // Rp 5.250.000
+
+    const kasBersihMitra = grossIuran - subsBulanan - komisiPlatform; // Rp 45.250.000
+    const manualTunggakanLost = grossIuran * 0.35; // Rp 18.375.000 hilang jika cara manual
+    const surplusKeuntungan = manualTunggakanLost - subsBulanan - komisiPlatform; // Rp 11.125.000
+
+    expect(grossIuran).toBe(52500000);
+    expect(subsBulanan).toBe(2000000);
+    expect(komisiPlatform).toBe(5250000);
+    expect(kasBersihMitra).toBe(45250000);
+    expect(manualTunggakanLost).toBe(18375000);
+    expect(surplusKeuntungan).toBe(11125000);
+  });
 });

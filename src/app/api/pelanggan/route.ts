@@ -121,6 +121,7 @@ export async function GET(request: Request) {
   if (skemaBayarParam === "kolektif_induk" && !search && !searchParams.get("full")) {
     const indukList = await prisma.pelanggan.findMany({
       where: {
+        ...(where.tenantId ? { tenantId: where.tenantId } : {}),
         skemaBayar: "kolektif_induk",
         deletedAt: null,
         ...(status ? { status } : {}),
@@ -329,30 +330,34 @@ export async function POST(request: Request) {
       );
     }
 
-    // Resolusi wilayah & zona area pickup
+    const effectiveTenantId = !tenantCtx.isCore
+      ? tenantCtx.tenant.id
+      : (session.role === "superadmin" && body.tenantId ? body.tenantId : (session.tenantId || tenantCtx.tenant.id));
+
+    // Resolusi wilayah & zona area pickup (terisolasi per tenant)
     let finalWilayahId = wilayahId ? parseInt(wilayahId) : null;
     if (zonaId && !finalWilayahId && kelurahanId) {
       const zid = parseInt(zonaId);
       const kid = parseInt(kelurahanId);
       let w = await prisma.wilayah.findFirst({
-        where: { kelurahanId: kid, zonaId: zid },
+        where: { kelurahanId: kid, zonaId: zid, tenantId: effectiveTenantId },
       });
       if (!w) {
-        const zona = await prisma.zona.findUnique({ where: { id: zid }, select: { nama: true } });
+        const zona = await prisma.zona.findFirst({
+          where: { id: zid },
+          select: { nama: true },
+        });
         w = await prisma.wilayah.create({
           data: {
             nama: rtRw ? `RT/RW ${rtRw}` : (zona?.nama || `Zona ${zid}`),
             kelurahanId: kid,
             zonaId: zid,
+            tenantId: effectiveTenantId,
           },
         });
       }
       finalWilayahId = w.id;
     }
-
-    const effectiveTenantId = !tenantCtx.isCore
-      ? tenantCtx.tenant.id
-      : (session.role === "superadmin" && body.tenantId ? body.tenantId : (session.tenantId || tenantCtx.tenant.id));
 
     // Simpan foto rumah ke file storage jika berupa Base64 terisolasi per tenant
     const savedFotoRumah = await persistBase64Image(fotoRumah, "pelanggan", effectiveTenantId);

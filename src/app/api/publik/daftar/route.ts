@@ -15,6 +15,7 @@ import { logAudit } from "@/lib/audit";
 import { formatRtRw, normalisasiTelepon, teleponValid } from "@/lib/daftar";
 import { tetapkanJadwalDanPetugasPelanggan } from "@/lib/penugasan-jadwal";
 import { persistBase64Image } from "@/lib/server/media-storage";
+import { getTenantFromRequest, buildTenantFilter } from "@/lib/tenant";
 
 export const dynamic = "force-dynamic";
 
@@ -40,6 +41,8 @@ async function cariLokasi(opts: {
   rw?: string;
   kelurahan: string;
   kecamatan: string;
+  tenantId: string;
+  isPilot: boolean;
 }) {
   const rt = opts.rt?.trim();
   const rw = opts.rw?.trim();
@@ -52,11 +55,12 @@ async function cariLokasi(opts: {
   });
   if (!kel) return null;
 
-  // Wilayah (RT/RW) opsional — hanya utk presisi anchor RT bila ada
+  // Wilayah (RT/RW) opsional — hanya utk presisi anchor RT bila ada & terisolasi per tenant
   let wilayahId: number | null = null;
   if (rt || rw) {
     const w = await prisma.wilayah.findFirst({
       where: {
+        ...buildTenantFilter(opts.tenantId, opts.isPilot),
         kelurahanId: kel.id,
         ...(rt && rw ? { rt, rw } : rt ? { rt } : { rw }),
       },
@@ -81,6 +85,15 @@ async function cariLokasi(opts: {
  *         patokanLokasi?, paketId?, website? (honeypot) }
  */
 export async function POST(request: Request) {
+  const tenantCtx = await getTenantFromRequest(request);
+  if (!tenantCtx.isValid || tenantCtx.isCore) {
+    return NextResponse.json(
+      { error: "Pendaftaran pelanggan hanya tersedia pada portal mitra operasional." },
+      { status: 403 }
+    );
+  }
+  const activeTenantId = tenantCtx.tenant.id;
+
   // Rate limit per IP: cegah spam formulir publik
   const ip =
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
@@ -167,13 +180,25 @@ export async function POST(request: Request) {
     }
     const jadwalHari = typeof body.jadwalHari === "string" && body.jadwalHari.trim() ? body.jadwalHari.trim() : null;
 
+    const tenantScope = buildTenantFilter(activeTenantId, tenantCtx.isPilot);
+
     if (!zonaId && ruteId) {
-      const r = await prisma.rute.findUnique({ where: { id: ruteId }, select: { zonaId: true } });
+      const r = await prisma.rute.findFirst({
+        where: { id: ruteId, ...tenantScope },
+        select: { zonaId: true },
+      });
       if (r?.zonaId) zonaId = r.zonaId;
     }
 
     // Cocokkan lokasi: anchor kelurahan (canonical) + opsional RT/RW
-    const lokasi = await cariLokasi({ rt, rw, kelurahan, kecamatan });
+    const lokasi = await cariLokasi({
+      rt,
+      rw,
+      kelurahan,
+      kecamatan,
+      tenantId: activeTenantId,
+      isPilot: tenantCtx.isPilot,
+    });
 
     // Kelurahan wajib cocok — kode pelanggan berbasis kelurahan ({kodeKelurahan}-{token})
     if (!lokasi) {
@@ -187,41 +212,49 @@ export async function POST(request: Request) {
     let wilayahId = lokasi.wilayahId;
 
     if (zonaId) {
-      if (wilayahId) {
-        await prisma.wilayah.update({
-          where: { id: wilayahId },
-          data: { zonaId },
-        });
+      const zonaInfo = await prisma.zona.findFirst({
+        where: { id: zonaId, ...tenantScope },
+        select: { nama: true },
+      });
+      if (zonaInfo) {
+        if (wilayahId) {
+          await prisma.wilayah.update({
+            where: { id: wilayahId },
+            data: { zonaId },
+          });
+        } else {
+          const newW = await prisma.wilayah.create({
+            data: {
+              nama: formatRtRw(rt, rw) ? `RT/RW ${formatRtRw(rt, rw)}` : (zonaInfo.nama || `Zona ${zonaId}`),
+              kelurahanId,
+              zonaId,
+              rt: rt || null,
+              rw: rw || null,
+              tenantId: activeTenantId,
+            },
+          });
+          wilayahId = newW.id;
+        }
       } else {
-        const zonaInfo = await prisma.zona.findUnique({ where: { id: zonaId }, select: { nama: true } });
-        const newW = await prisma.wilayah.create({
-          data: {
-            nama: formatRtRw(rt, rw) ? `RT/RW ${formatRtRw(rt, rw)}` : (zonaInfo?.nama || `Zona ${zonaId}`),
-            kelurahanId,
-            zonaId,
-            rt: rt || null,
-            rw: rw || null,
-          },
-        });
-        wilayahId = newW.id;
+        zonaId = null;
       }
     }
 
-    // Paket (opsional) — validasi keberadaan
+    // Paket (opsional) — validasi keberadaan dalam scope tenant
     let paketNama: string | null = null;
     let paketHarga: number | null = null;
     const paketIdRaw = body.paketId ? parseInt(body.paketId) : NaN;
     let paketId: number | null = null;
     if (Number.isFinite(paketIdRaw)) {
-      const p = await prisma.paket.findUnique({
-        where: { id: paketIdRaw },
+      const p = await prisma.paket.findFirst({
+        where: { id: paketIdRaw, ...tenantScope },
         select: { id: true, nama: true, harga: true },
       });
       if (p) {
         paketId = p.id;
-        paketNama = p.id === 18 ? "Paket Langganan" : p.nama;
-        paketHarga = p.id === 18 ? 40000 : p.harga;
-      } else if (paketIdRaw === 18) {
+        paketNama = p.id === 18 ? (p.nama || "Paket Langganan") : p.nama;
+        paketHarga = p.id === 18 ? (p.harga ?? 40000) : p.harga;
+      } else if (paketIdRaw === 18 && tenantCtx.isPilot) {
         paketId = 18;
         paketNama = "Paket Langganan";
         paketHarga = 40000;
@@ -229,7 +262,7 @@ export async function POST(request: Request) {
     }
 
     // Simpan foto rumah ke file storage jika berupa Base64
-    const savedFotoRumah = await persistBase64Image(fotoRumah, "pelanggan");
+    const savedFotoRumah = await persistBase64Image(fotoRumah, "pelanggan", activeTenantId);
 
     // Kode pelanggan kini menggunakan nomor WhatsApp (noTelepon)
     const kodePelanggan = noTelepon;
@@ -249,7 +282,7 @@ export async function POST(request: Request) {
           patokanLokasi: patokanLokasi || null,
           penanggungjawab: penanggungjawab || null,
           referal: referal || null,
-          customTarif: customTarif ?? (paketHarga ?? (kategori === "level_1" ? 50000 : undefined)),
+          customTarif: customTarif ?? (paketHarga ?? undefined),
           latitude,
           longitude,
           koordinatSumber,
@@ -258,6 +291,7 @@ export async function POST(request: Request) {
           wilayahId,
           kelurahanId,
           paketId,
+          tenantId: activeTenantId,
           catatan: [
             "Daftar mandiri via website",
             `(${kecamatan} / ${kelurahan})`,

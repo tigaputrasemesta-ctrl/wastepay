@@ -114,9 +114,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             <span className={cn("flex-shrink-0", ICON_COLOR[toast.type])}>{ICONS[toast.type]}</span>
             <p className="text-xs font-semibold text-slate-800 dark:text-zinc-100 flex-1">{toast.message}</p>
             <button
+              type="button"
               onClick={() => removeToast(toast.id)}
               aria-label="Tutup notifikasi"
-              className="text-slate-400 hover:text-slate-600 dark:hover:text-zinc-200 p-1 rounded-lg transition-colors"
+              className="min-h-[40px] min-w-[40px] inline-flex items-center justify-center text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

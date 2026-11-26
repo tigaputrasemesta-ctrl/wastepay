@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 import { persistBase64Image } from "@/lib/server/media-storage";
+import { getTenantFromRequest } from "@/lib/tenant";
 
 /**
  * Detail pendaftar khusus petugas — hanya field survei, TANPA data keuangan
@@ -12,11 +13,22 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await getSession(request);
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const tenantCtx = await getTenantFromRequest(request);
+  if (!tenantCtx.isValid || tenantCtx.isCore) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   const id = parseInt((await params).id);
   const pelanggan = await prisma.pelanggan.findUnique({
     where: { id },
     select: {
       id: true,
+      tenantId: true,
       nama: true,
       kodePelanggan: true,
       noTelepon: true,
@@ -45,12 +57,18 @@ export async function GET(
     return NextResponse.json({ error: "Pelanggan tidak ditemukan" }, { status: 404 });
   }
 
+  const recordTenantId = pelanggan.tenantId ?? (tenantCtx.isPilot ? tenantCtx.tenant.id : null);
+  if (!recordTenantId || recordTenantId !== tenantCtx.tenant.id) {
+    return NextResponse.json({ error: "Forbidden: Pelanggan bukan milik tenant ini" }, { status: 403 });
+  }
+  if (session.role !== "superadmin" && session.tenantId && session.tenantId !== tenantCtx.tenant.id) {
+    return NextResponse.json({ error: "Forbidden: Tenant mismatch" }, { status: 403 });
+  }
+
   // Scope kelurahan: petugas hanya boleh lihat pelanggan di kelurahannya sendiri
   // (nonaktif sementara — PETUGAS_SCOPE_ALL = semua kelurahan).
-  const session = await getSession();
-  if (session && session.role === "petugas" && !PETUGAS_SCOPE_ALL) {
+  if (session.role === "petugas" && !PETUGAS_SCOPE_ALL) {
     const kelurahanId = await getPetugasKelurahan(session.id);
-    // 404 (bukan 403) agar tidak membocorkan keberadaan pelanggan (anti-enumerasi).
     if (!kelurahanId || pelanggan.kelurahanId !== kelurahanId) {
       return NextResponse.json({ error: "Pelanggan tidak ditemukan" }, { status: 404 });
     }
@@ -70,12 +88,32 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const tenantCtx = await getTenantFromRequest(request);
+    if (!tenantCtx.isValid || tenantCtx.isCore) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const existing = await prisma.pelanggan.findUnique({
+      where: { id },
+      select: { id: true, tenantId: true },
+    });
+    if (!existing) {
+      return NextResponse.json({ error: "Pelanggan tidak ditemukan" }, { status: 404 });
+    }
+    const recordTenantId = existing.tenantId ?? (tenantCtx.isPilot ? tenantCtx.tenant.id : null);
+    if (!recordTenantId || recordTenantId !== tenantCtx.tenant.id) {
+      return NextResponse.json({ error: "Forbidden: Pelanggan bukan milik tenant ini" }, { status: 403 });
+    }
+
     const body = await request.json();
     const { fotoRumah, patokanLokasi, latitude, longitude, koordinatSumber, status, kategori, customTarif } = body;
 
     const data: Record<string, unknown> = {};
     if (fotoRumah !== undefined) {
-      data.fotoRumah = await persistBase64Image(fotoRumah, "pelanggan");
+      data.fotoRumah = await persistBase64Image(fotoRumah, "pelanggan", recordTenantId);
+    }
+    if (!existing.tenantId && tenantCtx.isPilot) {
+      data.tenantId = tenantCtx.tenant.id;
     }
     if (patokanLokasi !== undefined) data.patokanLokasi = patokanLokasi;
     if (latitude !== undefined) data.latitude = latitude ? parseFloat(latitude) : null;

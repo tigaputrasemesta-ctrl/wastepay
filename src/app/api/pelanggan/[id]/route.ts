@@ -173,6 +173,9 @@ export async function PUT(
     }
 
     const data: Record<string, unknown> = {};
+    if (!targetPelanggan.tenantId) {
+      data.tenantId = recordTenantId;
+    }
     if (nama !== undefined) data.nama = nama;
     if (noTelepon !== undefined) data.noTelepon = noTelepon;
     if (kategori !== undefined) data.kategori = kategori;
@@ -243,6 +246,7 @@ export async function PUT(
                 nama: currentPel?.rtRw ? `RT/RW ${currentPel.rtRw}` : (zona?.nama || `Zona ${zid}`),
                 kelurahanId: targetKel,
                 zonaId: zid,
+                tenantId: recordTenantId,
               },
             });
           }
@@ -310,6 +314,7 @@ export async function PUT(
 
           const tagihanPerdana = await prisma.tagihan.create({
             data: {
+              tenantId: recordTenantId,
               pelangganId: pelanggan.id,
               bulan,
               tahun,

@@ -49,8 +49,8 @@ export default function SaasBillingPage() {
 
   const [form, setForm] = useState({
     tenantId: "",
-    nominalGross: 1250000,
-    keterangan: "Tagihan SaaS Paket Pro Periode Berjalan",
+    nominalGross: 2000000,
+    keterangan: "Tagihan SaaS Paket Kemitraan All-in-One Periode Berjalan",
   });
 
   const loadData = async () => {

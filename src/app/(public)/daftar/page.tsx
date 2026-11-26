@@ -2,41 +2,49 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ClipboardEdit, MapPin, CheckCircle2, Truck, ArrowRight } from "lucide-react";
 import FormDaftar from "@/components/FormDaftar";
+import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { formatRupiah } from "@/lib/utils";
+import { resolveTenantByHost, buildTenantFilter } from "@/lib/tenant";
 
-export const metadata: Metadata = {
-  title: "Daftar Jasa Angkut Sampah Depok - UPS HERU",
-  description:
-    "Formulir online pendaftaran layanan jasa angkut sampah terpadu Kota Depok untuk perumahan, RT/RW, dan tempat usaha. Bebas biaya pendaftaran awal.",
-  alternates: {
-    canonical: "/daftar",
-  },
-  openGraph: {
-    title: "Daftar Jasa Angkut Sampah Kota Depok | UPS HERU",
-    description:
-      "Daftar layanan jemput sampah rutin terpercaya di Depok. Penjemputan terjadwal dan bayar retribusi digital.",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const h = await headers();
+  const host = h.get("x-forwarded-host") || h.get("host") || "";
+  const tenantCtx = resolveTenantByHost(host);
+  const brand = tenantCtx.tenant.namaMitra || "UPS HERU";
+  const city = tenantCtx.tenant.branding?.kota || "Kota Depok";
+
+  return {
+    title: "Daftar Layanan Angkut Sampah",
+    description: `Formulir online pendaftaran layanan jasa angkut sampah terpadu ${city} bersama ${brand} untuk perumahan, RT/RW, dan tempat usaha. Bebas biaya pendaftaran awal.`,
+    alternates: {
+      canonical: "/daftar",
+    },
+    openGraph: {
+      title: `Daftar Jasa Angkut Sampah ${city} | ${brand}`,
+      description: `Daftar layanan jemput sampah rutin terpercaya di ${city}. Penjemputan terjadwal dan bayar retribusi digital.`,
+    },
+  };
+}
 
 const ALUR_DAFTAR = [
   {
-    icon: <ClipboardEdit className="w-5 h-5 text-emerald-600" />,
+    icon: <ClipboardEdit className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />,
     judul: "Isi Formulir Online",
     desc: "Lengkapi data diri dan lokasi penjemputan dalam 1 menit. 100% Gratis.",
   },
   {
-    icon: <MapPin className="w-5 h-5 text-sky-600" />,
+    icon: <MapPin className="w-5 h-5 text-sky-700 dark:text-sky-400" />,
     judul: "Pemetaan Rute",
     desc: "Tim lapangan kami akan memverifikasi titik lokasi rumah Anda ke rute armada terdekat.",
   },
   {
-    icon: <CheckCircle2 className="w-5 h-5 text-amber-600" />,
+    icon: <CheckCircle2 className="w-5 h-5 text-amber-700 dark:text-amber-400" />,
     judul: "Terima ID Pelanggan",
     desc: "Kode pelanggan resmi akan otomatis dikirimkan ke WhatsApp Anda.",
   },
   {
-    icon: <Truck className="w-5 h-5 text-rose-600" />,
+    icon: <Truck className="w-5 h-5 text-rose-700 dark:text-rose-400" />,
     judul: "Pengangkutan Rutin",
     desc: "Sampah mulai diangkut teratur. Anda bisa melacak truk kami langsung dari HP.",
   },
@@ -54,15 +62,21 @@ export default async function DaftarPage({
   const initialReferal = (sp?.ref || sp?.referal || "").trim();
   const isPetugas = sp?.mode === "petugas";
 
+  const h = await headers();
+  const host = h.get("x-forwarded-host") || h.get("host") || "";
+  const tenantCtx = resolveTenantByHost(host);
+  const tenantScope = buildTenantFilter(tenantCtx.tenant.id, tenantCtx.isPilot);
+
   let tarifMin = 40000;
   try {
     const [k, p] = await Promise.all([
       prisma.kategoriTarif.findMany({
+        where: tenantScope,
         orderBy: { tarif: "asc" },
         select: { tarif: true },
       }),
       prisma.paket.findMany({
-        where: { harga: { not: null, gt: 0 } },
+        where: { ...tenantScope, harga: { not: null, gt: 0 } },
         orderBy: { harga: "asc" },
         select: { harga: true },
       }),
@@ -78,13 +92,17 @@ export default async function DaftarPage({
     tarifMin = 40000;
   }
 
+  const waDigits = (tenantCtx.tenant.branding?.whatsappKontak || "6281400782617").replace(/\D/g, "") || "6281400782617";
+  const city = tenantCtx.tenant.branding?.kota || "Kota Depok";
+  const brandName = tenantCtx.tenant.namaMitra || "UPS HERU";
+
   return (
     <div className={`py-4 sm:py-6 md:py-10 ${isPetugas ? 'max-w-3xl mx-auto' : 'space-y-6 sm:space-y-10 md:space-y-12'}`}>
       {/* Header Section */}
       {!isPetugas && (
         <div className="max-w-3xl mb-6 sm:mb-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-100/60 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300 text-xs sm:text-sm font-bold mb-3 sm:mb-4 shadow-xs">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-100/60 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300 text-xs sm:text-sm font-bold mb-3 sm:mb-4 shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-emerald-700 dark:bg-emerald-400 animate-pulse" />
             <span>Bebas Biaya Registrasi Awal</span>
           </div>
           <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.2] sm:leading-tight">
@@ -107,7 +125,13 @@ export default async function DaftarPage({
       <div className={`grid gap-6 sm:gap-8 lg:gap-10 items-start ${isPetugas ? 'grid-cols-1' : 'lg:grid-cols-12'}`}>
         {/* Form Pendaftaran: Prioritas Utama */}
         <div className={isPetugas ? 'col-span-1' : 'lg:col-span-7 order-1 lg:order-2'}>
-          <FormDaftar initialReferal={initialReferal} isPetugas={isPetugas} />
+          <FormDaftar
+            initialReferal={initialReferal}
+            isPetugas={isPetugas}
+            brandName={brandName}
+            city={city}
+            whatsappDigits={waDigits}
+          />
         </div>
 
         {/* Panduan Alur & Informasi: Di HP tampil teratur */}
@@ -120,7 +144,7 @@ export default async function DaftarPage({
               <div className="space-y-5 sm:space-y-6 relative before:absolute before:inset-0 before:ml-[1.15rem] sm:before:ml-[1.4rem] before:h-full before:w-0.5 before:bg-gradient-to-b before:from-emerald-100 dark:before:from-emerald-950 before:via-slate-100 dark:before:via-zinc-800 before:to-transparent">
                 {ALUR_DAFTAR.map((l, i) => (
                   <div key={i} className="relative flex items-start gap-3.5 sm:gap-5">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white dark:bg-zinc-800 border-2 border-slate-100 dark:border-zinc-700 flex items-center justify-center shrink-0 z-10 shadow-xs">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white dark:bg-zinc-800 border-2 border-slate-100 dark:border-zinc-700 flex items-center justify-center shrink-0 z-10 shadow-sm">
                       {l.icon}
                     </div>
                     <div className="pt-1 sm:pt-2">
@@ -132,7 +156,7 @@ export default async function DaftarPage({
               </div>
             </div>
 
-            <div className="p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-900/40 text-amber-950 dark:text-amber-200 shadow-xs transition-colors">
+            <div className="p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-900/40 text-amber-950 dark:text-amber-200 shadow-sm transition-colors">
               <div className="flex items-center gap-2 mb-2 sm:mb-3">
                 <span className="w-2 h-2 rounded-full bg-amber-500" />
                 <p className="font-bold text-xs sm:text-sm">Informasi Penting</p>
@@ -146,7 +170,7 @@ export default async function DaftarPage({
 
             <Link
               href="/bayar"
-              className="flex items-center justify-between p-4 sm:p-6 bg-white dark:bg-zinc-900 hover:bg-emerald-50 dark:hover:bg-zinc-800/70 border border-slate-200 dark:border-zinc-800 hover:border-emerald-200 dark:hover:border-emerald-800/60 rounded-2xl sm:rounded-[2rem] transition-all shadow-xs group cursor-pointer"
+              className="flex items-center justify-between p-4 sm:p-6 bg-white dark:bg-zinc-900 hover:bg-emerald-50 dark:hover:bg-zinc-800/70 border border-slate-200 dark:border-zinc-800 hover:border-emerald-200 dark:hover:border-emerald-800/60 rounded-2xl sm:rounded-[2rem] transition-all shadow-sm group cursor-pointer min-h-[64px]"
             >
               <div>
                 <p className="text-xs sm:text-sm font-black text-slate-900 dark:text-white group-hover:text-emerald-800 dark:group-hover:text-emerald-400 transition-colors">Sudah Pernah Mendaftar?</p>

@@ -8,6 +8,7 @@ import {
 } from "@/lib/invoice";
 import { getPajakDaerahRate } from "@/lib/pengaturan";
 import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
+import { getTenantFromRequest } from "@/lib/tenant";
 
 /**
  * GET /api/publik/tagihan-detail?invoice=INV/XXX/202606
@@ -21,6 +22,14 @@ import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
  * alamat & noTelepon tidak dikembalikan.)
  */
 export async function GET(request: Request) {
+  const tenantCtx = await getTenantFromRequest(request);
+  if (!tenantCtx.isValid || tenantCtx.isCore) {
+    return NextResponse.json(
+      { error: "Layanan tagihan warga hanya tersedia melalui portal mitra operasional." },
+      { status: 403 }
+    );
+  }
+
   const { searchParams } = new URL(request.url);
   const invoiceParam = searchParams.get("invoice")?.trim();
   const merchantOrderId = searchParams.get("merchantOrderId")?.trim();
@@ -63,7 +72,10 @@ export async function GET(request: Request) {
 
   await updateTunggakan();
 
-  const tagihan = await getTagihanByNoInvoice(invoice);
+  const tagihan = await getTagihanByNoInvoice(invoice, {
+    tenantId: tenantCtx.tenant.id,
+    isPilot: tenantCtx.isPilot,
+  });
   if (!tagihan) {
     return NextResponse.json({ error: `Tagihan tidak ditemukan untuk invoice: ${invoice}` }, { status: 404 });
   }

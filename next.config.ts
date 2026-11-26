@@ -17,10 +17,6 @@ const nextConfig: NextConfig = {
 
   serverExternalPackages: ["pdfkit", "pg"],
 
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-
   images: {
     unoptimized: true,
     remotePatterns: [

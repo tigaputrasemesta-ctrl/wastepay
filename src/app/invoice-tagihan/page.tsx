@@ -24,6 +24,7 @@ import {
   terbilangRupiah,
 } from "@/lib/invoice";
 import { getPajakDaerahRate } from "@/lib/pengaturan";
+import { resolveTenantByHost } from "@/lib/tenant";
 import "./invoice.css";
 
 /**
@@ -62,7 +63,14 @@ export default async function InvoiceTagihanPage({
   const { invoice } = await searchParams;
   if (!invoice) notFound();
 
-  const tagihan = await getTagihanByNoInvoice(invoice);
+  const h = await headers();
+  const host = h.get("x-forwarded-host") || h.get("host") || "localhost:3000";
+  const tenantCtx = resolveTenantByHost(host);
+
+  const tagihan = await getTagihanByNoInvoice(invoice, {
+    tenantId: tenantCtx.tenant.id,
+    isPilot: tenantCtx.isPilot,
+  });
   if (!tagihan) notFound();
 
   const pajakRate = await getPajakDaerahRate();
@@ -71,8 +79,6 @@ export default async function InvoiceTagihanPage({
   const namaPeriode = `${BULAN_INDO[tagihan.bulan - 1]} ${tagihan.tahun}`;
   const perusahaan = companyInfo();
 
-  const h = await headers();
-  const host = h.get("x-forwarded-host") || h.get("host") || "localhost:3000";
   const proto = h.get("x-forwarded-proto") || "http";
   const baseUrl = `${proto}://${host}`;
   const qrData = `${baseUrl}/invoice-tagihan?invoice=${encodeURIComponent(tagihan.noInvoice || "")}`;

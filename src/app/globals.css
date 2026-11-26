@@ -22,13 +22,25 @@
     --destructive-foreground: 255 255 255;
     --border: 226 232 240;
     --input: 226 232 240;
-    --ring: 16 185 129;
+    --ring: 4 120 87;
     --radius: 0.75rem;
     --wp-primary: #0F3D3E;
-    --wp-emerald: #10B981;
-    --wp-amber: #F59E0B;
-    --wp-rose: #E11D48;
+    --wp-emerald: #047857;
+    --wp-amber: #B45309;
+    --wp-rose: #BE123C;
     --wp-dark: #020617;
+    --brand-primary: #047857;
+    --brand-primary-hover: #065f46;
+    --brand-primary-fg: #ffffff;
+    --brand-accent: #0c3d3a;
+  }
+
+  [data-brand="o2whero"] {
+    --brand-primary: #0369a1;
+    --brand-primary-hover: #075985;
+    --brand-primary-fg: #ffffff;
+    --brand-accent: #10b981;
+    --ring: 3 105 161;
   }
 
   .dark {
@@ -120,7 +132,7 @@
   }
 
   .thumb-button-primary {
-    @apply h-12 sm:h-14 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm tracking-wide shadow-md hover:shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 select-none;
+    @apply h-12 sm:h-14 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm tracking-wide shadow-md hover:shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 select-none;
   }
 
   .thumb-button-secondary {
@@ -136,35 +148,35 @@
   }
   
   .hm-btn {
-    @apply inline-flex items-center justify-center px-4 py-2 bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-zinc-800 font-medium text-xs sm:text-sm rounded-lg shadow-xs hover:bg-slate-50 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-zinc-100 active:scale-[0.98] transition-all text-center select-none;
+    @apply inline-flex items-center justify-center px-4 py-2 bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 border border-slate-200 dark:border-zinc-800 font-medium text-xs sm:text-sm rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-zinc-100 active:scale-[0.98] transition-all text-center select-none;
   }
   
   .hm-btn-red {
-    @apply inline-flex items-center justify-center px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-medium text-xs sm:text-sm rounded-lg shadow-xs active:scale-[0.98] transition-all text-center select-none;
+    @apply inline-flex items-center justify-center px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-medium text-xs sm:text-sm rounded-lg shadow-sm active:scale-[0.98] transition-all text-center select-none;
   }
   
   .hm-btn-green {
-    @apply inline-flex items-center justify-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs sm:text-sm rounded-lg shadow-xs active:scale-[0.98] transition-all text-center select-none;
+    @apply inline-flex items-center justify-center px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-medium text-xs sm:text-sm rounded-lg shadow-sm active:scale-[0.98] transition-all text-center select-none;
   }
 
   .btn {
-    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-xs sm:text-sm font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/20 disabled:pointer-events-none disabled:opacity-50 select-none;
+    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-xs sm:text-sm font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700/25 disabled:pointer-events-none disabled:opacity-50 select-none;
   }
 
   .btn-primary {
-    @apply btn h-9 px-4 py-2 bg-emerald-600 text-white shadow-xs hover:bg-emerald-700 active:scale-[0.98] dark:bg-emerald-600 dark:hover:bg-emerald-500;
+    @apply btn h-9 px-4 py-2 bg-emerald-700 text-white shadow-sm hover:bg-emerald-800 active:scale-[0.98] dark:bg-emerald-700 dark:hover:bg-emerald-600;
   }
 
   .btn-secondary {
-    @apply btn h-9 px-4 py-2 bg-slate-100 dark:bg-zinc-800 text-slate-900 dark:text-zinc-100 shadow-xs hover:bg-slate-200/80 dark:hover:bg-zinc-700 active:scale-[0.98];
+    @apply btn h-9 px-4 py-2 bg-slate-100 dark:bg-zinc-800 text-slate-900 dark:text-zinc-100 shadow-sm hover:bg-slate-200/80 dark:hover:bg-zinc-700 active:scale-[0.98];
   }
 
   .btn-outline {
-    @apply btn h-9 px-4 py-2 border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 shadow-xs hover:bg-slate-100 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-zinc-50 active:scale-[0.98];
+    @apply btn h-9 px-4 py-2 border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-200 shadow-sm hover:bg-slate-100 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-zinc-50 active:scale-[0.98];
   }
 
   .btn-destructive {
-    @apply btn h-9 px-4 py-2 bg-rose-600 text-white shadow-xs hover:bg-rose-700 active:scale-[0.98] dark:bg-rose-600 dark:hover:bg-rose-500;
+    @apply btn h-9 px-4 py-2 bg-rose-600 text-white shadow-sm hover:bg-rose-700 active:scale-[0.98] dark:bg-rose-600 dark:hover:bg-rose-500;
   }
 
   .btn-ghost {
@@ -207,13 +219,13 @@
 
 /* Mencegah auto-zoom agresif di iOS Safari pada layar mobile saat fokus input */
 @media screen and (max-width: 768px) {
-  input[type="text"],
-  input[type="number"],
-  input[type="date"],
-  input[type="email"],
-  input[type="password"],
-  select,
-  textarea {
+  input[type="text"]:not(.compact-filter),
+  input[type="number"]:not(.compact-filter),
+  input[type="date"]:not(.compact-filter),
+  input[type="email"]:not(.compact-filter),
+  input[type="password"]:not(.compact-filter),
+  select:not(.compact-filter),
+  textarea:not(.compact-filter) {
     font-size: 16px !important;
   }
 }
@@ -257,8 +269,8 @@
   white-space: nowrap;
   background: #0f172a;
   color: #ffffff;
-  font-family: ui-sans-serif, system-ui, sans-serif;
-  font-size: 10px;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
   padding: 3px 9px;
@@ -680,4 +692,43 @@ button.rounded-none {
 /* ── Obsidian Dark Glowing Basemap for Leaflet (100% Free, No Watermark, No API Key Required) ── */
 .dark-map-tiles .leaflet-tile-pane {
   filter: invert(100%) hue-rotate(180deg) brightness(90%) contrast(135%) saturate(85%);
+}
+
+/* ── Premium SaaS Animation Suite for O2W HERO High-Conversion Landing Page ── */
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.3; filter: blur(24px); transform: scale(1); }
+  50% { opacity: 0.7; filter: blur(36px); transform: scale(1.06); }
+}
+
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes shimmerSweep {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+.animate-float-slow {
+  animation: floatSlow 5s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+.animate-gradient-flow {
+  background-size: 200% 200%;
+  animation: gradientFlow 5s ease infinite;
+}
+
+.animate-shimmer {
+  animation: shimmerSweep 2.5s infinite;
 }

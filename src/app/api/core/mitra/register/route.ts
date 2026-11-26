@@ -80,8 +80,14 @@ export async function PATCH(request: Request) {
 
   try {
     const session = await getSession();
-    if (!session || (session.role !== "superadmin" && session.role !== "admin")) {
+    if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401, headers: corsHeaders });
+    }
+    if (session.role !== "superadmin") {
+      return NextResponse.json(
+        { error: "Forbidden: Hanya Superadmin yang dapat memverifikasi pendaftaran mitra." },
+        { status: 403, headers: corsHeaders }
+      );
     }
 
     const body = await request.json();

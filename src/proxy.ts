@@ -67,6 +67,7 @@ const PAGE_ROLES: Record<string, number> = {
   "/data-kontrol": 50, // admin+: kontrol data kontak hp admin & petugas
   "/manajemen-marketplace": 50, // admin+: kelola toko resmi & pesanan
   "/pickup-insidental": 50, // admin+: kelola layanan pickup sampah
+  "/driver/peta": 10, // petugas+ / driver OSRM map
 };
 
 // API routes that require specific roles.
@@ -87,20 +88,21 @@ const API_ROLE_MAP: Record<string, number> = {
   "DELETE:/api/users": 50,
 
   // Tenants & Mitra Multi-Tenant Core (superadmin only)
-  "GET:/api/core/tenants": 50,
-  "GET:/api/core/tenants/": 50,
+  "GET:/api/core/tenants": 100,
+  "GET:/api/core/tenants/": 100,
   "POST:/api/core/tenants": 100,
   "PATCH:/api/core/tenants/": 100,
   "DELETE:/api/core/tenants": 100,
   "DELETE:/api/core/tenants/": 100,
-  "GET:/api/core/control-tower": 50,
+  "GET:/api/core/control-tower": 100,
   "POST:/api/core/control-tower": 100,
-  "GET:/api/core/subscriptions/reports": 50,
-  "GET:/api/core/billing": 50,
+  "GET:/api/core/subscriptions/reports": 100,
+  "GET:/api/core/billing": 100,
   "POST:/api/core/billing": 100,
-  "GET:/api/core/crm": 50,
-  "POST:/api/core/crm": 50,
-  "PATCH:/api/core/crm": 50,
+  "GET:/api/core/crm": 100,
+  "POST:/api/core/crm": 100,
+  "PATCH:/api/core/crm": 100,
+  "PATCH:/api/core/mitra/register": 100,
 
   // Data Kontrol Kontak WA & Blast Calon Pelanggan (admin+)
   "GET:/api/data-kontrol": 50,
@@ -464,10 +466,63 @@ export async function proxy(request: NextRequest) {
   reqHeaders.set("x-tenant-id", tenantCtx.tenant.id);
   reqHeaders.set("x-is-core", tenantCtx.isCore ? "1" : "0");
 
+const TENANT_ONLY_PUBLIC_PATHS = [
+  "/bayar",
+  "/bayar-tagihan",
+  "/daftar",
+  "/tarif",
+  "/pengaduan",
+  "/lacak",
+  "/coverage",
+  "/pickup",
+  "/marketplace",
+  "/artikel",
+  "/unduh",
+  "/peta",
+  "/peta-lapangan",
+  "/petalapangan",
+  "/live",
+  "/driver",
+  "/invoice-tagihan",
+  "/kwitansi",
+];
+
+function isTenantOnlyPublicPath(lowerPath: string): boolean {
+  return TENANT_ONLY_PUBLIC_PATHS.some(
+    (prefix) => lowerPath === prefix || lowerPath.startsWith(prefix + "/")
+  );
+}
+
+  const lowerPath = pathname.toLowerCase();
+  if (tenantCtx.isCore && lowerPath === "/sitemap.xml") {
+    const coreBase = tenantCtx.baseUrl || "https://o2whero.com";
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>${coreBase}</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>\n  <url><loc>${coreBase}/mitra</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>\n</urlset>`;
+    return new NextResponse(xml, { status: 200, headers: { "Content-Type": "application/xml; charset=utf-8" } });
+  }
+  if (tenantCtx.isCore && lowerPath === "/robots.txt") {
+    const coreBase = tenantCtx.baseUrl || "https://o2whero.com";
+    const txt = `User-Agent: *\nAllow: /\nAllow: /mitra\nDisallow: /dashboard\nDisallow: /tenants\nDisallow: /crm-prospek\nDisallow: /subscriptions\nDisallow: /saas-billing\nDisallow: /revenue\nDisallow: /tenant-roi\nDisallow: /platform-settings\nDisallow: /api/\nDisallow: /login\nSitemap: ${coreBase}/sitemap.xml\n`;
+    return new NextResponse(txt, { status: 200, headers: { "Content-Type": "text/plain; charset=utf-8" } });
+  }
+  if (tenantCtx.isCore && lowerPath === "/manifest.webmanifest") {
+    return NextResponse.json({
+      name: "O2W HERO — SaaS Pengelolaan Sampah",
+      short_name: "O2W HERO",
+      description: "Platform SaaS Multi-Tenant Pengelolaan Sampah & Retribusi Digital",
+      start_url: "/",
+      display: "standalone",
+      background_color: "#020617",
+      theme_color: "#020617",
+      icons: [{ src: "/images/o2w-logo.svg", sizes: "192x192", type: "image/svg+xml" }],
+    });
+  }
+  if (tenantCtx.isCore && isTenantOnlyPublicPath(lowerPath)) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
   // Halaman publik
   // /peta dan /peta-lapangan dapat diakses langsung oleh petugas lapangan / publik tanpa perlu login.
   // /peta/tv dilindungi token TV (env TV_VIEW_TOKEN) di dalam page-nya sendiri.
-  const lowerPath = pathname.toLowerCase();
   if (
     lowerPath === "/login" ||
     lowerPath === "/login/" ||
@@ -677,9 +732,7 @@ export async function proxy(request: NextRequest) {
         pathname.startsWith("/api/users") ||
         pathname.startsWith("/api/audit-log") ||
         pathname.startsWith("/api/notifikasi/summary") ||
-        pathname.startsWith("/api/ai-command") ||
-        pathname === "/api/pelanggan" ||
-        pathname === "/api/tagihan";
+        pathname.startsWith("/api/ai-command");
 
       if (!isAllowedCoreApi) {
         return NextResponse.json(
@@ -765,6 +818,8 @@ export async function proxy(request: NextRequest) {
     const isAllowedCorePage =
       pathname === "/" ||
       pathname === "/login" ||
+      pathname === "/mitra" ||
+      pathname.startsWith("/mitra/") ||
       pathname === "/dashboard" ||
       pathname.startsWith("/dashboard/") ||
       pathname === "/ai-command" ||

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { buildCorsHeaders } from "@/lib/server/wastepay-backend-core-services";
+import { SAAS_TIER_RATES } from "@/lib/saas-plans";
 
 export async function OPTIONS(request: Request) {
   return new NextResponse(null, {
@@ -93,18 +94,10 @@ export async function GET(request: Request) {
     const suspendedTenants = tenants.filter((t) => t.status === "suspend").length;
 
     // Hitung proyeksi & realisasi SaaS MRR dari paket tenant aktif
-    const TIER_PRICES: Record<string, number> = {
-      starter: 349000,
-      basic: 349000,
-      pro: 1250000,
-      enterprise: 2990000,
-      percontohan: 0,
-    };
-
     let realSaaSMrr = 0;
     for (const t of tenants) {
       if (t.status === "aktif" && t.paketLangganan) {
-        realSaaSMrr += TIER_PRICES[t.paketLangganan.toLowerCase()] || 0;
+        realSaaSMrr += SAAS_TIER_RATES[t.paketLangganan.toLowerCase()] || 0;
       }
     }
 

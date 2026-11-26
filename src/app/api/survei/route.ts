@@ -2,11 +2,12 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
+import { getTenantFromRequest, buildTenantFilter } from "@/lib/tenant";
 
 export const dynamic = "force-dynamic";
 
 /**
- * Daftar calon pelanggan baru untuk survei lapangan.
+ * Daftar calon pelanggan baru untuk survei lapangan (terisolasi per tenant).
  * GET /api/survei?kelurahan=...
  */
 export async function GET(request: Request) {
@@ -16,10 +17,19 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const tenantCtx = await getTenantFromRequest(request);
+    if (!tenantCtx.isValid || tenantCtx.isCore) {
+      return NextResponse.json({ error: "Forbidden: Khusus portal tenant operasional" }, { status: 403 });
+    }
+    if (session.role !== "superadmin" && session.tenantId && session.tenantId !== tenantCtx.tenant.id) {
+      return NextResponse.json({ error: "Forbidden: Tenant mismatch" }, { status: 403 });
+    }
+
     const { searchParams } = new URL(request.url);
     const kelurahanParam = searchParams.get("kelurahan");
 
     const where: any = {
+      ...buildTenantFilter(tenantCtx.tenant.id, tenantCtx.isPilot),
       status: "calon",
       deletedAt: null,
     };

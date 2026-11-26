@@ -20,7 +20,6 @@ export default function robots(): MetadataRoute.Robots {
           "/unduh",
         ],
         disallow: [
-          // Rute admin / operasional internal
           "/dashboard",
           "/pelanggan",
           "/tagihan",
@@ -46,12 +45,9 @@ export default function robots(): MetadataRoute.Robots {
           "/kendaraan",
           "/klaim",
           "/zona",
-          // API endpoints
           "/api/",
-          // Autentikasi & Aplikasi Mobile Driver
           "/login",
           "/m",
-          // Faktur spesifik & dokumen cetak kasir (privasi data keuangan warga)
           "/bayar-tagihan",
           "/invoice-tagihan",
           "/kwitansi",

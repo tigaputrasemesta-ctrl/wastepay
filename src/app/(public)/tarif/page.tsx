@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { formatRupiah } from "@/lib/utils";
+import { resolveTenantByHost, buildTenantFilter } from "@/lib/tenant";
 
 export const metadata: Metadata = {
   title: "Daftar Tarif & Paket Retribusi Resmi",
@@ -21,15 +23,22 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function TarifPage() {
+  const h = await headers();
+  const host = h.get("x-forwarded-host") || h.get("host") || "";
+  const tenantCtx = resolveTenantByHost(host);
+  const tenantScope = buildTenantFilter(tenantCtx.tenant.id, tenantCtx.isPilot);
+
   let kategoriTarifRaw: { kategori: string; label: string; tarif: number; deskripsi: string | null }[] = [];
   let paketRaw: { nama: string; harga: number | null; deskripsi: string | null }[] = [];
   try {
     [kategoriTarifRaw, paketRaw] = await Promise.all([
       prisma.kategoriTarif.findMany({
+        where: tenantScope,
         orderBy: { tarif: "asc" },
         select: { kategori: true, label: true, tarif: true, deskripsi: true },
       }),
       prisma.paket.findMany({
+        where: tenantScope,
         orderBy: { harga: { sort: "asc", nulls: "last" } },
         select: { nama: true, harga: true, deskripsi: true },
       }),
@@ -38,25 +47,24 @@ export default async function TarifPage() {
     // DB offline
   }
 
-  // Standarisasi kategori Level 1 (Rumah Tangga) ke Rp 50.000
+  // Fallback hanya saat DB kosong; hindari override harga berbeda dari homepage/Paket Langganan
   const kategoriTarif = (kategoriTarifRaw.length > 0 ? kategoriTarifRaw : [
-    { kategori: "level_1", label: "Level 1 (Rumah Tangga)", tarif: 50000, deskripsi: "Rutin 3x seminggu" }
+    { kategori: "level_1", label: "Level 1 (Rumah Tangga)", tarif: 40000, deskripsi: "Rutin 3x seminggu" }
   ]).map((k) => {
     if (k.kategori === "level_1") {
       return {
         ...k,
         label: k.label && k.label !== "Level 1" ? k.label : "Level 1 (Rumah Tangga)",
-        tarif: 50000,
         deskripsi: k.deskripsi || "Rutin perumahan / rumah tangga",
       };
     }
     return k;
   });
 
-  // Pastikan Paket Langganan 40.000 tercantum
+  // Pastikan Paket Langganan fallback konsisten jika belum diisi di DB tenant
   const hasPaketLangganan = paketRaw.some((p) => p.nama.toLowerCase().includes("langganan"));
   const paket = paketRaw.map((p) => {
-    if (p.nama.toLowerCase().includes("langganan")) {
+    if (p.nama.toLowerCase().includes("langganan") && p.harga == null) {
       return {
         ...p,
         nama: "Paket Langganan",

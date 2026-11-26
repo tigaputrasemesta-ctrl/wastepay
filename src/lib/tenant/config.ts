@@ -46,8 +46,8 @@ export const CORE_TENANT: TenantConfig = {
   branding: {
     namaMitra: "O2W Hero Platform",
     tagline: "Ekosistem & Solusi Terpadu Pengelolaan Sampah Multi-Mitra",
-    logoUrl: "/images/o2w-logo.png",
-    warnaTema: "#0284c7", // Sky/Blue for Core SaaS
+    logoUrl: "/images/o2w-logo.svg",
+    warnaTema: "#0369a1", // Accessible Sky/Blue for Core SaaS
     kota: "Indonesia",
     emailKontak: "kontak@o2whero.com",
     whatsappKontak: "+62 815-3284-3224",
@@ -84,8 +84,8 @@ export const PILOT_TENANT: TenantConfig = {
   branding: {
     namaMitra: "UPS HERU",
     tagline: "Unit Pengelolaan & Retribusi Kebersihan (TPS 3R)",
-    logoUrl: "/ups_heru_logo.jpg",
-    warnaTema: "#059669", // Emerald green
+    logoUrl: "/ups-heru-logo.jpg",
+    warnaTema: "#047857", // Accessible Emerald green
     alamat: "Jl. Kandang Ayam, Kalibaru, Kec. Cilodong, Kota Depok, Jawa Barat 16414",
     kota: "Kota Depok",
     emailKontak: process.env.COMPANY_EMAIL || "cv.herozerowaste@gmail.com",

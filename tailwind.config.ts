@@ -42,10 +42,16 @@ export default {
         },
         wp: {
           primary: '#0F3D3E',
-          emerald: '#10B981',
-          amber: '#F59E0B',
-          rose: '#E11D48',
+          emerald: '#047857',
+          amber: '#B45309',
+          rose: '#BE123C',
           dark: '#020617',
+        },
+        tenant: {
+          primary: 'var(--brand-primary, #047857)',
+          hover: 'var(--brand-primary-hover, #065f46)',
+          fg: 'var(--brand-primary-fg, #ffffff)',
+          accent: 'var(--brand-accent, #0c3d3a)',
         },
       },
       fontFamily: {

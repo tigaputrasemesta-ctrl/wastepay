@@ -24,6 +24,18 @@ export function scopeTenantWhere<T extends Record<string, any>>(
 }
 
 /**
+ * Bangun filter `where` Prisma yang terisolasi pada `tenantId`.
+ * Hanya untuk tenant percontohan (`allowPilotNullFallback = true`), data lama dengan `tenantId: null`
+ * tetap terbaca agar kompatibel mundur sebelum backfill penuh.
+ */
+export function buildTenantFilter(tenantId: string, allowPilotNullFallback = false) {
+  if (allowPilotNullFallback) {
+    return { OR: [{ tenantId }, { tenantId: null }] };
+  }
+  return { tenantId };
+}
+
+/**
  * Menyuntikkan tenantId secara aman ke dalam data mutasi (create/insert).
  */
 export function scopeTenantCreate<T extends Record<string, any>>(

@@ -2,7 +2,9 @@ import { prisma } from "@/lib/prisma";
 import { formatRupiah, KATEGORI_PENGELUARAN } from "@/lib/utils";
 import Link from "next/link";
 import { headers } from "next/headers";
-import { resolveTenantByHost } from "@/lib/tenant";
+import { Prisma } from "@prisma/client";
+import { resolveTenantByHost, buildTenantFilter } from "@/lib/tenant";
+import { SAAS_TIER_RATES } from "@/lib/saas-plans";
 import CoreSaaSDashboard, { type CoreStatsData } from "@/components/core/CoreSaaSDashboard";
 import {
   Users,
@@ -41,7 +43,8 @@ const NAMA_BULAN = [
   "Jul", "Agu", "Sep", "Okt", "Nov", "Des",
 ];
 
-async function getStats() {
+async function getStats(tenantId: string, isPilot: boolean) {
+  const tenantWhere = buildTenantFilter(tenantId, isPilot);
   const now = new Date();
   const bulanIni = now.getMonth(); 
   const tahunIni = now.getFullYear();
@@ -98,61 +101,65 @@ async function getStats() {
       topReferral,
       komposisiSampah
     ] = await Promise.all([
-      prisma.pelanggan.count({ where: { deletedAt: null } }),
-      prisma.pelanggan.count({ where: { status: "aktif", deletedAt: null } }),
+      prisma.pelanggan.count({ where: { ...tenantWhere, deletedAt: null } }),
+      prisma.pelanggan.count({ where: { ...tenantWhere, status: "aktif", deletedAt: null } }),
       prisma.tagihan.count({
-        where: { bulan: bulanIni + 1, tahun: tahunIni, status: { in: ["belum_bayar", "tunggakan"] }, deletedAt: null },
+        where: { ...tenantWhere, bulan: bulanIni + 1, tahun: tahunIni, status: { in: ["belum_bayar", "tunggakan"] }, deletedAt: null },
       }),
       prisma.tagihan.aggregate({
-        where: { bulan: bulanIni + 1, tahun: tahunIni, deletedAt: null },
+        where: { ...tenantWhere, bulan: bulanIni + 1, tahun: tahunIni, deletedAt: null },
         _sum: { jumlah: true },
       }),
       prisma.pembayaran.aggregate({
-        where: { createdAt: { gte: bulanIniStart }, status: "terverifikasi" },
+        where: { ...tenantWhere, createdAt: { gte: bulanIniStart }, status: "terverifikasi" },
         _sum: { jumlah: true },
       }),
-      prisma.komplain.count({ where: { status: "baru" } }),
-      prisma.petugas.count({ where: { aktif: true, deletedAt: null } }),
+      prisma.komplain.count({ where: { ...tenantWhere, status: "baru" } }),
+      prisma.petugas.count({ where: { ...tenantWhere, aktif: true, deletedAt: null } }),
       
-      prisma.pembayaran.count({ where: { status: "pending", metode: { not: "duitku" } } }),
-      prisma.pembayaran.aggregate({ where: { status: "pending", metode: { not: "duitku" } }, _sum: { jumlah: true } }),
+      prisma.pembayaran.count({ where: { ...tenantWhere, status: "pending", metode: { not: "duitku" } } }),
+      prisma.pembayaran.aggregate({ where: { ...tenantWhere, status: "pending", metode: { not: "duitku" } }, _sum: { jumlah: true } }),
       
-      prisma.klaimPetugas.count({ where: { status: "menunggu" } }),
-      prisma.klaimPetugas.aggregate({ where: { status: "menunggu" }, _sum: { nominal: true } }),
+      prisma.klaimPetugas.count({ where: { ...tenantWhere, status: "menunggu" } }),
+      prisma.klaimPetugas.aggregate({ where: { ...tenantWhere, status: "menunggu" }, _sum: { nominal: true } }),
       
-      prisma.chatPesan.count({ where: { dariPetugas: true, dibaca: false } }),
-      prisma.pengangkutan.count({ where: { tanggal: { gte: todayStart, lt: todayEnd }, status: "tidak_diangkut", deletedAt: null } }),
-      prisma.notifikasi.count({ where: { status: "gagal" } }),
+      prisma.chatPesan.count({ where: { ...tenantWhere, dariPetugas: true, dibaca: false } }),
+      prisma.pengangkutan.count({ where: { ...tenantWhere, tanggal: { gte: todayStart, lt: todayEnd }, status: "tidak_diangkut", deletedAt: null } }),
+      prisma.notifikasi.count({ where: { ...tenantWhere, status: "gagal" } }),
       
-      prisma.pengangkutan.count({ where: { tanggal: { gte: todayStart, lt: todayEnd }, deletedAt: null } }),
-      prisma.pengangkutan.count({ where: { tanggal: { gte: todayStart, lt: todayEnd }, status: "diambil", deletedAt: null } }),
-      prisma.pengangkutan.aggregate({ where: { tanggal: { gte: todayStart, lt: todayEnd }, status: "diambil", deletedAt: null }, _sum: { volume: true, berat: true } }),
+      prisma.pengangkutan.count({ where: { ...tenantWhere, tanggal: { gte: todayStart, lt: todayEnd }, deletedAt: null } }),
+      prisma.pengangkutan.count({ where: { ...tenantWhere, tanggal: { gte: todayStart, lt: todayEnd }, status: "diambil", deletedAt: null } }),
+      prisma.pengangkutan.aggregate({ where: { ...tenantWhere, tanggal: { gte: todayStart, lt: todayEnd }, status: "diambil", deletedAt: null }, _sum: { volume: true, berat: true } }),
       
-      prisma.absensi.count({ where: { waktuMasuk: { gte: todayStart }, status: "hadir" } }),
-      prisma.absensi.count({ where: { waktuMasuk: { gte: todayStart }, waktuSelesai: null, status: "hadir" } }),
+      prisma.absensi.count({ where: { ...tenantWhere, waktuMasuk: { gte: todayStart }, status: "hadir" } }),
+      prisma.absensi.count({ where: { ...tenantWhere, waktuMasuk: { gte: todayStart }, waktuSelesai: null, status: "hadir" } }),
       
-      prisma.pengeluaran.aggregate({ where: { tanggal: { gte: bulanIniStart } }, _sum: { jumlah: true } }),
+      prisma.pengeluaran.aggregate({ where: { ...tenantWhere, tanggal: { gte: bulanIniStart } }, _sum: { jumlah: true } }),
       
-      prisma.kendaraan.count({ where: { aktif: true, deletedAt: null } }),
-      prisma.kendaraan.count({ where: { deletedAt: null } }),
-      prisma.duitkuTransaction.count({ where: { statusCode: "01" } }),
-      prisma.notifikasi.count({ where: { status: "terkirim", createdAt: { gte: bulanIniStart } } }),
-      prisma.notifikasi.count({ where: { createdAt: { gte: bulanIniStart } } }),
+      prisma.kendaraan.count({ where: { ...tenantWhere, aktif: true, deletedAt: null } }),
+      prisma.kendaraan.count({ where: { ...tenantWhere, deletedAt: null } }),
+      prisma.duitkuTransaction.count({ where: { ...tenantWhere, statusCode: "01" } }),
+      prisma.notifikasi.count({ where: { ...tenantWhere, status: "terkirim", createdAt: { gte: bulanIniStart } } }),
+      prisma.notifikasi.count({ where: { ...tenantWhere, createdAt: { gte: bulanIniStart } } }),
       
-      prisma.rekonsiliasi.findFirst({ where: { tanggal: { gte: todayStart } }, orderBy: { tanggal: "desc" }, select: { selisih: true, totalTunaiSistem: true, totalTunaiFisik: true } }),
+      prisma.rekonsiliasi.findFirst({ where: { ...tenantWhere, tanggal: { gte: todayStart } }, orderBy: { tanggal: "desc" }, select: { selisih: true, totalTunaiSistem: true, totalTunaiFisik: true } }),
       
-      prisma.kendaraan.groupBy({ by: ["jenis"], where: { aktif: true, deletedAt: null }, _count: { id: true } }),
+      prisma.kendaraan.groupBy({ by: ["jenis"], where: { ...tenantWhere, aktif: true, deletedAt: null }, _count: { id: true } }),
       
-      prisma.tagihan.aggregate({ where: { bulan: bulanIni + 1, tahun: tahunIni, deletedAt: null, denda: { not: null } }, _sum: { denda: true } }),
+      prisma.tagihan.aggregate({ where: { ...tenantWhere, bulan: bulanIni + 1, tahun: tahunIni, deletedAt: null, denda: { not: null } }, _sum: { denda: true } }),
       
-      prisma.pengeluaran.groupBy({ by: ["kategori"], where: { tanggal: { gte: bulanIniStart } }, _sum: { jumlah: true }, orderBy: { _sum: { jumlah: "desc" } } }),
+      prisma.pengeluaran.groupBy({ by: ["kategori"], where: { ...tenantWhere, tanggal: { gte: bulanIniStart } }, _sum: { jumlah: true }, orderBy: { _sum: { jumlah: "desc" } } }),
       
-      prisma.pengumuman.findFirst({ where: { penting: true, createdAt: { gte: tujuhHariLalu } }, orderBy: { createdAt: "desc" }, select: { judul: true, isi: true, createdAt: true } }),
+      prisma.pengumuman.findFirst({ where: { ...tenantWhere, penting: true, createdAt: { gte: tujuhHariLalu } }, orderBy: { createdAt: "desc" }, select: { judul: true, isi: true, createdAt: true } }),
       
-      prisma.pelanggan.groupBy({ by: ["referal"], where: { referal: { not: null }, deletedAt: null }, _count: { id: true }, orderBy: { _count: { id: "desc" } }, take: 5 }),
+      prisma.pelanggan.groupBy({ by: ["referal"], where: { ...tenantWhere, referal: { not: null }, deletedAt: null }, _count: { id: true }, orderBy: { _count: { id: "desc" } }, take: 5 }),
       
-      prisma.pengangkutan.groupBy({ by: ["jenisSampah"], where: { tanggal: { gte: bulanIniStart }, status: "diambil", jenisSampah: { not: null }, deletedAt: null }, _sum: { volume: true, berat: true }, _count: { id: true } })
+      prisma.pengangkutan.groupBy({ by: ["jenisSampah"], where: { ...tenantWhere, tanggal: { gte: bulanIniStart }, status: "diambil", jenisSampah: { not: null }, deletedAt: null }, _sum: { volume: true, berat: true }, _count: { id: true } })
     ]);
+
+    const tenantSqlFilter = isPilot
+      ? Prisma.sql`AND (t."tenantId" = ${tenantId} OR t."tenantId" IS NULL) AND (p."tenantId" = ${tenantId} OR p."tenantId" IS NULL)`
+      : Prisma.sql`AND t."tenantId" = ${tenantId} AND p."tenantId" = ${tenantId}`;
 
     const performaKelurahanRaw = await prisma.$queryRaw<any[]>`
       SELECT
@@ -170,6 +177,7 @@ async function getStats() {
         AND t.tahun = ${tahunIni}
         AND t."deletedAt" IS NULL
         AND p."deletedAt" IS NULL
+        ${tenantSqlFilter}
       GROUP BY k.nama
       ORDER BY persen_lunas ASC
       LIMIT 8
@@ -185,11 +193,11 @@ async function getStats() {
     const startTren = new Date(tahunIni, bulanIni - 5, 1);
     const [pembayaranTren, pengeluaranTren] = await Promise.all([
       prisma.pembayaran.findMany({
-        where: { status: "terverifikasi", tanggal: { gte: startTren } },
+        where: { ...tenantWhere, status: "terverifikasi", tanggal: { gte: startTren } },
         select: { tanggal: true, jumlah: true },
       }),
       prisma.pengeluaran.findMany({
-        where: { tanggal: { gte: startTren } },
+        where: { ...tenantWhere, tanggal: { gte: startTren } },
         select: { tanggal: true, jumlah: true },
       }),
     ]);
@@ -207,7 +215,7 @@ async function getStats() {
     const maxTren = Math.max(1, ...pemasukanTren, ...pengeluaranTrenArr);
 
     const tunggakanRows = await prisma.tagihan.findMany({
-      where: { deletedAt: null, status: { in: ["belum_bayar", "tunggakan"] } },
+      where: { ...tenantWhere, deletedAt: null, status: { in: ["belum_bayar", "tunggakan"] } },
       select: {
         pelangganId: true, jumlah: true, denda: true,
         pelanggan: { select: { nama: true, kodePelanggan: true, kelurahan: { select: { nama: true } } } },
@@ -304,14 +312,6 @@ async function getCoreStats(): Promise<CoreStatsData> {
     ]);
 
     // Hitung real MRR dari paket tenant aktif
-    const TIER_RATES: Record<string, number> = {
-      starter: 349000,
-      basic: 349000,
-      pro: 1250000,
-      enterprise: 2990000,
-      percontohan: 0,
-    };
-
     const allActiveTenants = await prisma.tenant.findMany({
       where: { status: "aktif" },
       select: { paketLangganan: true },
@@ -320,7 +320,7 @@ async function getCoreStats(): Promise<CoreStatsData> {
     let mrrEstimasi = 0;
     for (const t of allActiveTenants) {
       const p = (t.paketLangganan || "").toLowerCase();
-      mrrEstimasi += TIER_RATES[p] ?? 349000;
+      mrrEstimasi += SAAS_TIER_RATES[p] ?? 349000;
     }
 
     const estimasiWargaEkosistem = totalWargaDb;
@@ -362,8 +362,8 @@ export default async function DashboardPage() {
   }
 
   // JIKA DIAKSES DARI TENANT OPERASIONAL (upsheru.com / sub-tenant),
-  // JALANKAN DASHBOARD ASLI UPS HERU DEPOK 100% UNTOUCHED DAN TETAP LIVE
-  const stats = await getStats();
+  // JALANKAN DASHBOARD TENANT TERISOLASI PER `tenantCtx.tenant.id`
+  const stats = await getStats(tenantCtx.tenant.id, tenantCtx.isPilot);
   const { bulanLabels, pemasukanTren, pengeluaranTren, maxTren, topTunggakan } = stats;
   const now = new Date();
   const bulan = [

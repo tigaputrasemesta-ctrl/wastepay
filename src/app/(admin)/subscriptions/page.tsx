@@ -30,94 +30,9 @@ import {
   Percent,
 } from "lucide-react";
 import { TenantCommissionReportItem } from "@/app/api/core/subscriptions/reports/route";
+import { SAAS_PLANS, type SaasPlanDefinition as SaasTier } from "@/lib/saas-plans";
 
-interface SaasTier {
-  id: string;
-  name: string;
-  target: string;
-  priceMonthly: number;
-  priceFormatted: string;
-  waQuota: number;
-  wargaMax: string;
-  dbType: string;
-  features: string[];
-  recommended?: boolean;
-}
-
-const TIERS: SaasTier[] = [
-  {
-    id: "starter",
-    name: "Starter",
-    target: "Bank Sampah / KSM Mandiri",
-    priceMonthly: 349000,
-    priceFormatted: "Rp 349 rb / bln",
-    waQuota: 1000,
-    wargaMax: "Hingga 500 Nasabah",
-    dbType: "Multi-Tenant Shared Schema",
-    features: [
-      "Pencatatan tabungan sampah digital",
-      "Kuitansi & laporan timbangan WA",
-      "Subdomain: namapengelola.o2whero.com",
-      "1 Nomor WhatsApp Bot Notifikasi",
-      "Support chat jam kerja",
-    ],
-  },
-  {
-    id: "pro",
-    name: "Pro",
-    target: "TPS 3R & Kelurahan (Rujukan: UPS HERU)",
-    priceMonthly: 1250000,
-    priceFormatted: "Rp 1,25 jt / bln",
-    waQuota: 5000,
-    wargaMax: "Hingga 3.000 KK",
-    dbType: "Dedicated Tenant Database (Isolasi Penuh)",
-    recommended: true,
-    features: [
-      "Semua fitur paket Starter",
-      "Manajemen retribusi bulanan & tunggakan",
-      "Dual WhatsApp (Bot Tagihan + Nomor CS Warga)",
-      "Pelacakan GPS armada truk & aplikasi driver",
-      "Payment gateway QRIS & VA otomatis lunas",
-      "Dukungan custom domain sendiri (misal: upsheru.com)",
-      "Prioritas bantuan teknis 7x24 jam",
-    ],
-  },
-  {
-    id: "enterprise",
-    name: "Enterprise",
-    target: "Kawasan Industri, Real Estate & Swasta",
-    priceMonthly: 2990000,
-    priceFormatted: "Rp 2,99 - 4,99 jt / bln",
-    waQuota: 20000,
-    wargaMax: "Tanpa Batas KK",
-    dbType: "Dedicated Cluster DB + High Availability",
-    features: [
-      "Semua fitur paket Pro",
-      "Multi-Armada & Multi-Zona Tanpa Batas",
-      "Integrasi timbangan digital bridge API",
-      "Marketplace agregasi material off-taker",
-      "Dedicated Account Manager & SLA 99.9%",
-      "Custom SLA & Integrasi ERP Korporat",
-    ],
-  },
-  {
-    id: "government",
-    name: "Government / DLH",
-    target: "Dinas Lingkungan Hidup Kab / Kota",
-    priceMonthly: 0,
-    priceFormatted: "Kontrak Tahunan APBD",
-    waQuota: 50000,
-    wargaMax: "Skala Kota / Kabupaten",
-    dbType: "Gov-Cloud Dedicated Instance",
-    features: [
-      "Dashboard agregat seluruh TPS 3R kota",
-      "Integrasi sinkronisasi data SIPSN KLHK",
-      "Pelaporan otomatis reduksi karbon & tonase TPA",
-      "Pelatihan petugas DLH & pendampingan lapangan",
-      "Perjanjian Kerjasama Resmi Pemda",
-    ],
-  },
-];
+const TIERS: SaasTier[] = SAAS_PLANS;
 
 interface RealTenantSub {
   id: string;

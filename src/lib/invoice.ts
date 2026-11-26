@@ -16,8 +16,11 @@ import { prisma } from "./prisma";
  */
 export * from "./invoice-format";
 
-/** Ambil tagihan berdasarkan nomor invoice (untuk halaman publik) */
-export async function getTagihanByNoInvoice(noInvoice: string) {
+/** Ambil tagihan berdasarkan nomor invoice (untuk halaman publik), opsional terikat tenant */
+export async function getTagihanByNoInvoice(
+  noInvoice: string,
+  tenantScope?: { tenantId: string; isPilot?: boolean }
+) {
   const invoice = decodeURIComponent(noInvoice).trim();
 
   const tagihan = await prisma.tagihan.findUnique({
@@ -26,6 +29,7 @@ export async function getTagihanByNoInvoice(noInvoice: string) {
       pelanggan: {
         select: {
           id: true,
+          tenantId: true,
           nama: true,
           noTelepon: true,
           kodePelanggan: true,
@@ -65,6 +69,14 @@ export async function getTagihanByNoInvoice(noInvoice: string) {
   });
 
   if (!tagihan || tagihan.deletedAt) return null;
+  if (tenantScope) {
+    const recordTenantId = tagihan.tenantId ?? tagihan.pelanggan?.tenantId ?? null;
+    if (recordTenantId) {
+      if (recordTenantId !== tenantScope.tenantId) return null;
+    } else if (!tenantScope.isPilot) {
+      return null;
+    }
+  }
   return tagihan;
 }
 

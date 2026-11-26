@@ -2,7 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 
-export default function FloatingWhatsApp({ phoneNumber }: { phoneNumber: string }) {
+export default function FloatingWhatsApp({
+  phoneNumber,
+  brandName = "Admin",
+}: {
+  phoneNumber: string;
+  brandName?: string;
+}) {
   const [show, setShow] = useState(false);
   const [tooltipDismissed, setTooltipDismissed] = useState(false);
 
@@ -14,27 +20,29 @@ export default function FloatingWhatsApp({ phoneNumber }: { phoneNumber: string 
 
   if (!show) return null;
 
+  const cleanWa = phoneNumber.replace(/\D/g, "").replace(/^0/, "62") || "6281400782617";
+
   return (
     <div className="fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-40 flex flex-col items-end gap-2 animate-in slide-in-from-bottom-5 fade-in duration-500">
       {/* Tooltip: Hanya muncul di Desktop (sm:flex), di HP (mobile) disembunyikan agar TIDAK menutupi layar */}
       {!tooltipDismissed && (
-        <div className="hidden sm:flex items-center gap-2 bg-white px-3.5 py-2 rounded-xl shadow-lg border border-slate-200 text-xs font-semibold text-slate-700 relative animate-in fade-in slide-in-from-bottom-2">
-          <span>Butuh bantuan? Chat kami! 👋</span>
+        <div className="hidden sm:flex items-center gap-2 bg-white dark:bg-zinc-900 px-3.5 py-2 rounded-xl shadow-lg border border-slate-200 dark:border-zinc-800 text-xs font-semibold text-slate-700 dark:text-zinc-200 relative animate-in fade-in slide-in-from-bottom-2">
+          <span>Butuh bantuan? Chat kami!</span>
           <button
             type="button"
             onClick={() => setTooltipDismissed(true)}
-            className="text-slate-400 hover:text-slate-700 font-bold ml-1 text-xs transition"
+            className="text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200 font-bold ml-1 p-1 rounded-md text-xs transition"
             aria-label="Tutup pesan bantuan"
           >
             ✕
           </button>
-          <div className="absolute -bottom-1.5 right-6 w-3 h-3 bg-white border-b border-r border-slate-200 transform rotate-45"></div>
+          <div className="absolute -bottom-1.5 right-6 w-3 h-3 bg-white dark:bg-zinc-900 border-b border-r border-slate-200 dark:border-zinc-800 transform rotate-45"></div>
         </div>
       )}
 
       {/* WA Button: Compact di mobile (w-12 h-12), nyaman di desktop (w-14 h-14) */}
       <a
-        href={`https://wa.me/${phoneNumber}?text=Halo%20Admin%20UPS%20HERU,%20saya%20ingin%20bertanya`}
+        href={`https://wa.me/${cleanWa}?text=${encodeURIComponent(`Halo ${brandName}, saya ingin bertanya`)}`}
         target="_blank"
         rel="noopener noreferrer"
         className="group relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-full shadow-lg hover:scale-105 active:scale-95 hover:shadow-xl transition-all duration-300"

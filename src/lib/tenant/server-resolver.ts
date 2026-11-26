@@ -51,8 +51,8 @@ export function dbTenantToConfig(t: any): TenantConfig {
     branding: {
       namaMitra: t.namaMitra,
       tagline: t.catatan || `Unit Pengelolaan Sampah ${t.namaMitra}`,
-      logoUrl: t.logoUrl || "/ups_heru_logo.jpg",
-      warnaTema: t.warnaTema || "#059669",
+      logoUrl: t.logoUrl || (t.slug === "upsheru" ? "/ups-heru-logo.jpg" : "/images/o2w-logo.svg"),
+      warnaTema: t.warnaTema || "#047857",
       alamat: t.alamat || undefined,
       kota: t.kota || "Indonesia",
       emailKontak: t.email || undefined,

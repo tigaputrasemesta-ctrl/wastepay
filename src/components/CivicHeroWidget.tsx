@@ -62,7 +62,13 @@ const JADWAL_WILAYAH: Record<string, ScheduleInfo> = {
   },
 };
 
-export default function CivicHeroWidget() {
+export default function CivicHeroWidget({
+  brandName = "UPS HERU",
+  whatsappDigits = "6281400782617",
+}: {
+  brandName?: string;
+  whatsappDigits?: string;
+}) {
   const [tab, setTab] = useState<"tagihan" | "jadwal">("tagihan");
   const [inputVal, setInputVal] = useState("");
   const [selectedKelurahan, setSelectedKelurahan] = useState<string>("kalibaru");
@@ -78,53 +84,53 @@ export default function CivicHeroWidget() {
   const currentJadwal = JADWAL_WILAYAH[selectedKelurahan] || JADWAL_WILAYAH.kalibaru;
 
   return (
-    <div className="bg-white border border-slate-200/90 rounded-2xl shadow-xl shadow-slate-900/5 overflow-hidden">
-      {/* Console Top Bar (Mac/SaaS Browser Window Header) */}
-      <div className="bg-slate-100/80 px-4 py-2.5 border-b border-slate-200/80 flex items-center justify-between">
+    <div className="bg-white dark:bg-zinc-900 border border-slate-200/90 dark:border-zinc-800 rounded-2xl shadow-xl shadow-slate-900/5 overflow-hidden transition-colors">
+      {/* Console Top Bar */}
+      <div className="bg-slate-100/80 dark:bg-zinc-950 px-4 py-2.5 border-b border-slate-200/80 dark:border-zinc-800 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-slate-300" />
-            <span className="w-2.5 h-2.5 rounded-full bg-slate-300" />
-            <span className="w-2.5 h-2.5 rounded-full bg-slate-300" />
+            <span className="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-zinc-700" />
+            <span className="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-zinc-700" />
+            <span className="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-zinc-700" />
           </div>
-          <span className="text-xs font-semibold text-slate-500 pl-2 border-l border-slate-200 truncate">
-            UPS HERU <span className="hidden sm:inline">• Control Console</span>
+          <span className="text-xs font-semibold text-slate-600 dark:text-zinc-400 pl-2 border-l border-slate-200 dark:border-zinc-800 truncate">
+            {brandName} <span className="hidden sm:inline">• Control Console</span>
           </span>
         </div>
-        <div className="flex items-center gap-1.5 text-xs font-bold text-[#0d7a75] bg-[#e6f5f4] px-2 py-0.5 rounded-md shrink-0">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#0d7a75] animate-pulse" />
+        <div className="flex items-center gap-1.5 text-xs font-bold text-[#0c3d3a] dark:text-emerald-300 bg-[#e6f5f4] dark:bg-emerald-950/60 px-2 py-0.5 rounded-md shrink-0">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#0c3d3a] dark:bg-emerald-400 animate-pulse" />
           <span>Sistem Aktif</span>
         </div>
       </div>
 
-      {/* Mini KPI Highlights Row (Inspired by BeCycle Dashboard) */}
-      <div className="grid grid-cols-3 divide-x divide-slate-100 border-b border-slate-100 bg-[#fbfdfd] px-2 py-2.5 text-center">
+      {/* Mini KPI Highlights Row */}
+      <div className="grid grid-cols-3 divide-x divide-slate-100 dark:divide-zinc-800 border-b border-slate-100 dark:border-zinc-800 bg-[#fbfdfd] dark:bg-zinc-900/80 px-2 py-2.5 text-center">
         <div className="px-1.5 sm:px-2">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Olah Harian</span>
-          <span className="text-xs sm:text-sm font-extrabold text-slate-800">15.4 Ton</span>
+          <span className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider block">Olah Harian</span>
+          <span className="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-zinc-100">15.4 Ton</span>
         </div>
         <div className="px-1.5 sm:px-2">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Daur Ulang</span>
-          <span className="text-xs sm:text-sm font-extrabold text-[#0d7a75]">82.4%</span>
+          <span className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider block">Daur Ulang</span>
+          <span className="text-xs sm:text-sm font-extrabold text-[#0c3d3a] dark:text-emerald-400">82.4%</span>
         </div>
         <div className="px-1.5 sm:px-2">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Pelanggan</span>
-          <span className="text-xs sm:text-sm font-extrabold text-slate-800">2.450+ KK</span>
+          <span className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider block">Pelanggan</span>
+          <span className="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-zinc-100">2.450+ KK</span>
         </div>
       </div>
 
       {/* Primary Tab Controls */}
-      <div className="flex border-b border-slate-200/80 bg-slate-50/70 p-1.5 gap-1.5">
+      <div className="flex border-b border-slate-200/80 dark:border-zinc-800 bg-slate-50/70 dark:bg-zinc-950/50 p-1.5 gap-1.5">
         <button
           type="button"
           onClick={() => setTab("tagihan")}
           className={`flex-1 min-h-[44px] py-2.5 px-2.5 sm:px-3 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1 sm:gap-1.5 ${
             tab === "tagihan"
-              ? "bg-white text-[#0d7a75] shadow-xs border border-slate-200/80"
-              : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
+              ? "bg-white dark:bg-zinc-800 text-[#0c3d3a] dark:text-emerald-300 shadow-sm border border-slate-200/80 dark:border-zinc-700"
+              : "text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-white/60 dark:hover:bg-zinc-800/50"
           }`}
         >
-          <Search className="w-3.5 h-3.5 text-[#0d7a75] shrink-0" />
+          <Search className="w-3.5 h-3.5 text-[#0c3d3a] dark:text-emerald-400 shrink-0" />
           <span>Cek Tagihan<span className="hidden sm:inline"> Warga</span></span>
         </button>
         <button
@@ -132,11 +138,11 @@ export default function CivicHeroWidget() {
           onClick={() => setTab("jadwal")}
           className={`flex-1 min-h-[44px] py-2.5 px-2.5 sm:px-3 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1 sm:gap-1.5 ${
             tab === "jadwal"
-              ? "bg-white text-[#0d7a75] shadow-xs border border-slate-200/80"
-              : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
+              ? "bg-white dark:bg-zinc-800 text-[#0c3d3a] dark:text-emerald-300 shadow-sm border border-slate-200/80 dark:border-zinc-700"
+              : "text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-white/60 dark:hover:bg-zinc-800/50"
           }`}
         >
-          <Calendar className="w-3.5 h-3.5 text-[#0d7a75] shrink-0" />
+          <Calendar className="w-3.5 h-3.5 text-[#0c3d3a] dark:text-emerald-400 shrink-0" />
           <span>Jadwal Angkut<span className="hidden sm:inline"> Wilayah</span></span>
         </button>
       </div>
@@ -147,40 +153,44 @@ export default function CivicHeroWidget() {
           <>
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-extrabold text-slate-900 tracking-tight">
+                <h3 className="text-sm font-extrabold text-slate-900 dark:text-zinc-100 tracking-tight">
                   Status Iuran & Kwitansi Digital
                 </h3>
-                <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
                   QRIS Instant
                 </span>
               </div>
-              <p className="text-xs text-slate-500 leading-relaxed font-normal">
+              <p className="text-xs text-slate-600 dark:text-zinc-400 leading-relaxed font-normal">
                 Ketik nomor WhatsApp terdaftar atau ID pelanggan untuk melihat tagihan bulan ini.
               </p>
             </div>
 
             <form onSubmit={handleCekTagihan} className="space-y-3">
               <div className="relative">
+                <label htmlFor="civic-bill-lookup" className="sr-only">
+                  Nomor WhatsApp atau ID Pelanggan
+                </label>
                 <input
+                  id="civic-bill-lookup"
                   type="text"
                   value={inputVal}
                   onChange={(e) => setInputVal(e.target.value)}
                   placeholder="Contoh: 08123456789 atau DPK-001"
-                  className="w-full h-11 px-3.5 text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0d7a75] focus:bg-white font-medium"
+                  className="w-full min-h-[44px] px-3.5 text-xs sm:text-sm bg-slate-50 dark:bg-zinc-950 border border-slate-300 dark:border-zinc-700 rounded-xl text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-700/30 focus:bg-white dark:focus:bg-zinc-900 font-medium"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full h-11 bg-[#0d7a75] hover:bg-[#0b6460] text-white text-xs font-bold rounded-xl transition-all shadow-sm active:scale-95 flex items-center justify-center gap-2"
+                className="w-full min-h-[44px] bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-sm active:scale-95 flex items-center justify-center gap-2"
               >
                 <span>Periksa Tagihan Sekarang</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </form>
 
-            <div className="pt-2 border-t border-slate-100 flex items-center text-xs text-slate-500">
-              <span className="flex items-center gap-1 text-[#0d7a75] font-semibold">
+            <div className="pt-2 border-t border-slate-100 dark:border-zinc-800 flex items-center text-xs text-slate-600 dark:text-zinc-400">
+              <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-semibold">
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 Terhubung WhatsApp Bot
               </span>
@@ -190,14 +200,14 @@ export default function CivicHeroWidget() {
           <>
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-extrabold text-slate-900 tracking-tight">
+                <h3 className="text-sm font-extrabold text-slate-900 dark:text-zinc-100 tracking-tight">
                   Pilih Kelurahan Tempat Tinggal
                 </h3>
-                <span className="text-xs font-bold text-sky-800 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200">
+                <span className="text-xs font-bold text-sky-800 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 px-2 py-0.5 rounded-full border border-sky-200 dark:border-sky-800">
                   Rute Terjadwal
                 </span>
               </div>
-              <p className="text-xs text-slate-500 leading-relaxed font-normal">
+              <p className="text-xs text-slate-600 dark:text-zinc-400 leading-relaxed font-normal">
                 Pilih kelurahan Anda untuk memeriksa hari penjemputan rutin armada truk/pickup.
               </p>
             </div>
@@ -210,7 +220,7 @@ export default function CivicHeroWidget() {
                 id="kelurahan-select"
                 value={selectedKelurahan}
                 onChange={(e) => setSelectedKelurahan(e.target.value)}
-                className="w-full h-11 px-3 text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-[#0d7a75]"
+                className="w-full min-h-[44px] px-3 text-xs sm:text-sm bg-slate-50 dark:bg-zinc-950 border border-slate-300 dark:border-zinc-700 rounded-xl text-slate-900 dark:text-zinc-100 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-700/30"
               >
                 <option value="kalibaru">Kelurahan Kalibaru (Kec. Cilodong)</option>
                 <option value="cilodong">Kelurahan Cilodong (Kec. Cilodong)</option>
@@ -221,32 +231,31 @@ export default function CivicHeroWidget() {
             </div>
 
             {/* Schedule Details Card */}
-            <div className="bg-[#f8fafb] border border-slate-200/90 rounded-xl p-3.5 space-y-2 text-xs">
+            <div className="bg-[#f8fafb] dark:bg-zinc-950/70 border border-slate-200/90 dark:border-zinc-800 rounded-xl p-3.5 space-y-2 text-xs">
               <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-0.5 xs:gap-2">
-                <span className="text-slate-500 font-medium">Hari Penjemputan:</span>
-                <span className="text-[#0d7a75] font-extrabold">{currentJadwal.hari}</span>
+                <span className="text-slate-600 dark:text-zinc-400 font-medium">Hari Penjemputan:</span>
+                <span className="text-emerald-700 dark:text-emerald-400 font-extrabold">{currentJadwal.hari}</span>
               </div>
               <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-0.5 xs:gap-2">
-                <span className="text-slate-500 font-medium">Estimasi Jam Melintas:</span>
-                <span className="text-slate-900 font-bold">{currentJadwal.waktu}</span>
+                <span className="text-slate-600 dark:text-zinc-400 font-medium">Estimasi Jam Melintas:</span>
+                <span className="text-slate-900 dark:text-zinc-100 font-bold">{currentJadwal.waktu}</span>
               </div>
               <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-0.5 xs:gap-2">
-                <span className="text-slate-500 font-medium">Jenis Armada:</span>
-                <span className="text-slate-700 font-medium">{currentJadwal.armada}</span>
+                <span className="text-slate-600 dark:text-zinc-400 font-medium">Jenis Armada:</span>
+                <span className="text-slate-700 dark:text-zinc-300 font-medium">{currentJadwal.armada}</span>
               </div>
-              <p className="text-xs text-slate-500 pt-1.5 border-t border-slate-200/80">
+              <p className="text-xs text-slate-600 dark:text-zinc-400 pt-1.5 border-t border-slate-200/80 dark:border-zinc-800">
                 {currentJadwal.catatan}
               </p>
             </div>
 
-            {/* Fitur /lacak disimpan & di-hide sementara */}
             <a
-              href="https://wa.me/6281400782617?text=Halo%20UPS%20HERU,%20apakah%20truk%20sampah%20hari%20ini%20sudah%20melintas%20di%20lingkungan%20saya?"
+              href={`https://wa.me/${whatsappDigits}?text=${encodeURIComponent(`Halo ${brandName}, apakah truk sampah hari ini sudah melintas di lingkungan saya?`)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full h-10 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5"
+              className="w-full min-h-[44px] bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-200 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5"
             >
-              <MapPin className="w-3.5 h-3.5 text-[#0d7a75]" />
+              <MapPin className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
               <span>Konfirmasi Posisi Truk via WhatsApp</span>
             </a>
           </>
@@ -254,12 +263,12 @@ export default function CivicHeroWidget() {
       </div>
 
       {/* Widget Footer Status */}
-      <div className="px-5 py-3 bg-slate-50 border-t border-slate-200/80 flex items-center justify-end text-xs text-slate-500">
+      <div className="px-5 py-3 bg-slate-50 dark:bg-zinc-950/60 border-t border-slate-200/80 dark:border-zinc-800 flex items-center justify-end text-xs text-slate-500">
         <a
-          href="https://wa.me/6281400782617"
+          href={`https://wa.me/${whatsappDigits}`}
           target="_blank"
           rel="noreferrer"
-          className="text-[#0d7a75] font-bold hover:underline inline-flex items-center gap-1"
+          className="text-emerald-700 dark:text-emerald-400 font-bold hover:underline inline-flex items-center gap-1"
         >
           <PhoneCall className="w-3 h-3" />
           <span>Hotline CS 24 Jam</span>

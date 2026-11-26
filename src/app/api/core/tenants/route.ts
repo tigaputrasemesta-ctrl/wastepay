@@ -204,10 +204,10 @@ export async function POST(request: Request) {
           domainSetupFee,
           setupFeePaid,
           pricePerMonth:
-            paketLangganan === "pro"
-              ? 1250000
+            paketLangganan === "pro" || paketLangganan === "pro_2jt"
+              ? 2000000
               : paketLangganan === "enterprise"
-              ? 2990000
+              ? 4990000
               : paketLangganan === "starter" || paketLangganan === "basic"
               ? 349000
               : 0,
@@ -219,11 +219,12 @@ export async function POST(request: Request) {
 
     // Inisialisasi Konfigurasi Payment Gateway & Komisi Platform (Nominal + Rate %)
     try {
+      const isPro2Jt = paketLangganan === "pro" || paketLangganan === "pro_2jt";
       await prisma.tenantPaymentConfig.create({
         data: {
           tenantId: newTenant.id,
-          platformFeeNominal,
-          platformFeeRate,
+          platformFeeNominal: isPro2Jt ? 0 : platformFeeNominal,
+          platformFeeRate: isPro2Jt ? 10.0 : platformFeeRate,
           gatewayMode: "centralized_pool",
           feeBearerPolicy: "hybrid",
         },
