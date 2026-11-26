@@ -68,15 +68,20 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const session = await getSession();
     if (!session) {
       return NextResponse.json({ error: "Tidak terautentikasi" }, { status: 401 });
     }
 
+    const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+    const { resolveTenantByHost, buildTenantFilter } = await import("@/lib/tenant");
+    const tenantCtx = resolveTenantByHost(rawHost);
+    const tenantFilter = buildTenantFilter(tenantCtx.tenant.id, tenantCtx.isPilot);
+
     // Scope: petugas hanya melihat lokasi petugas SEKELURAHAN (anti bocor PII GPS lintas zona).
-    // Admin/kasir/superadmin melihat semua.
+    // Admin/kasir/superadmin melihat semua dalam tenant.
     const kelurahanPetugas =
       session.role === "petugas" && !PETUGAS_SCOPE_ALL
         ? await getPetugasKelurahan(session.id)
@@ -87,10 +92,14 @@ export async function GET() {
 
     // Lokasi terakhir per petugas (aktif) — untuk marker peta
     const semua = await prisma.lokasiPetugas.findMany({
-      where:
-        kelurahanPetugas != null
-          ? { petugas: { wilayah: { kelurahanId: kelurahanPetugas }, aktif: true } }
-          : undefined,
+      where: {
+        ...tenantFilter,
+        petugas: {
+          ...tenantFilter,
+          aktif: true,
+          ...(kelurahanPetugas != null ? { wilayah: { kelurahanId: kelurahanPetugas } } : {}),
+        },
+      },
       select: {
         id: true,
         latitude: true,

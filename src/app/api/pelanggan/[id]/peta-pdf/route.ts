@@ -24,6 +24,24 @@ export async function GET(
       return new NextResponse("ID Pelanggan tidak valid", { status: 400 });
     }
 
+    const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+    const { resolveTenantByHost, buildTenantFilter } = await import("@/lib/tenant");
+    const { prisma } = await import("@/lib/prisma");
+    const tenantCtx = resolveTenantByHost(rawHost);
+
+    const pelanggan = await prisma.pelanggan.findFirst({
+      where: {
+        id: pelangganId,
+        deletedAt: null,
+        ...buildTenantFilter(tenantCtx.tenant.id, tenantCtx.isPilot),
+      },
+      select: { id: true },
+    });
+
+    if (!pelanggan) {
+      return new NextResponse("Pelanggan tidak ditemukan untuk tenant ini", { status: 404 });
+    }
+
     const { buffer, kodePelanggan } = await generateSinglePelangganMapPdfBuffer(pelangganId);
     const filename = `Peta_Pelanggan_${kodePelanggan || pelangganId}.pdf`;
 

@@ -36,6 +36,11 @@ type KomplainMentah = Omit<KomplainPeta, "posisi">;
 type Props = {
   pelanggan: PelangganPeta[];
   token: string;
+  tenant?: {
+    namaMitra?: string;
+    kota?: string;
+    isPilot?: boolean;
+  };
 };
 
 /**
@@ -43,7 +48,7 @@ type Props = {
  * Menampilkan seluruh pelanggan + realtime (petugas, kendaraan, lapak,
  * pengaduan) dengan polling 10 detik ke endpoint publik token `t`.
  */
-export default function TvMap({ pelanggan, token }: Props) {
+export default function TvMap({ pelanggan, token, tenant }: Props) {
   const [petugas, setPetugas] = useState<PetugasPeta[]>([]);
   const [kendaraan, setKendaraan] = useState<KendaraanPeta[]>([]);
   const [transit, setTransit] = useState<TransitPeta[]>([]);
@@ -124,6 +129,7 @@ export default function TvMap({ pelanggan, token }: Props) {
   return (
     <div className="relative w-screen h-[100dvh] bg-slate-950 overflow-hidden">
       <MapView
+        isPilot={tenant?.isPilot ?? true}
         pelanggan={pelangganPeta}
         komplain={komplainPosisi}
         petugas={petugas}
@@ -153,7 +159,7 @@ export default function TvMap({ pelanggan, token }: Props) {
             </h1>
           </div>
           <p className="text-xs font-semibold text-emerald-400 mt-2 uppercase tracking-wider">
-            UPS HERU · Kota Depok · LIVE MONITORING
+            {tenant?.namaMitra || "UPS HERU"} · {tenant?.kota || "Kota Depok"} · LIVE MONITORING
           </p>
         </div>
 

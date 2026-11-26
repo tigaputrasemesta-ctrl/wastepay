@@ -128,6 +128,7 @@ type Props = {
   modeCluster?: "cluster" | "single";
   modeWarnaMarker?: "tagihan" | "blok";
   tampilkanBatasBlok?: boolean;
+  isPilot?: boolean;
 };
 
 const KATEGORI_LABEL: Record<string, string> = {
@@ -1115,6 +1116,7 @@ export default function MapView({
   modeCluster = "cluster",
   modeWarnaMarker = "tagihan",
   tampilkanBatasBlok = false,
+  isPilot = true,
 }: Props) {
   const [zoom, setZoom] = useState(13);
   const isMovingRef = useRef(false);
@@ -1227,6 +1229,21 @@ export default function MapView({
   const setTileMode = externalSetTileMode ?? setInternalTileMode;
   const tileConfig = useMemo(() => getMapTileConfig(tileMode), [tileMode]);
 
+  const initialCenter = useMemo<[number, number]>(() => {
+    const validPoints = pelanggan.filter(
+      (p) => p.latitude != null && p.longitude != null && !isNaN(p.latitude) && !isNaN(p.longitude)
+    );
+    if (validPoints.length > 0) {
+      const latSum = validPoints.reduce((acc, p) => acc + (p.latitude ?? 0), 0);
+      const lngSum = validPoints.reduce((acc, p) => acc + (p.longitude ?? 0), 0);
+      return [latSum / validPoints.length, lngSum / validPoints.length];
+    }
+    if (isPilot) {
+      return [-6.424838, 106.832667];
+    }
+    return [-6.2088, 106.8456];
+  }, [pelanggan, isPilot]);
+
   return (
     <div className="relative h-full w-full">
       {/* Tombol Pilihan Basemap: Siang / Satelit / Mode Malam */}
@@ -1272,7 +1289,7 @@ export default function MapView({
       )}
 
       <MapContainer
-        center={[-6.424838, 106.832667]}
+        center={initialCenter}
         zoom={14}
         scrollWheelZoom
         className={`h-full w-full ${tileConfig.isDarkFilter ? "dark-map-tiles" : ""}`}
@@ -1290,8 +1307,8 @@ export default function MapView({
         <MapMotionTracker isMovingRef={isMovingRef} onMapClick={onMapClick} />
         <InvalidateSize invalidateKey={invalidateKey} />
 
-      {/* Batas kecamatan resmi (BPS Kota Depok) */}
-      {tampilkanBatas && (
+      {/* Batas kecamatan resmi (BPS Kota Depok) - Khusus pilot Depok */}
+      {isPilot && tampilkanBatas && (
         <>
           {KECAMATAN_DEPOK.map((k) => (
             <Polygon
@@ -1323,8 +1340,8 @@ export default function MapView({
         </>
       )}
 
-      {/* Batas zonasi kelurahan (Tessellation GIS Kota Depok) */}
-      {tampilkanBatasKelurahan && (
+      {/* Batas zonasi kelurahan (Tessellation GIS Kota Depok) - Khusus pilot Depok */}
+      {isPilot && tampilkanBatasKelurahan && (
         <>
           {zoom >= 15 &&
             kelurahanGeom.map((kel) => (
@@ -1389,8 +1406,8 @@ export default function MapView({
           </Polygon>
         ))}
 
-      {/* Titik RT RTRW — hanya saat zoom cukup dalam */}
-      {tampilkanRt && zoom >= 13 && (
+      {/* Titik RT RTRW — hanya saat zoom cukup dalam (Khusus pilot Depok) */}
+      {isPilot && tampilkanRt && zoom >= 13 && (
         <>
           {RT_RTRW_DEPOK.map((rt) => (
             <CircleMarker

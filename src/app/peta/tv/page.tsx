@@ -1,12 +1,22 @@
+import { headers } from "next/headers";
+import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { tvTokenValid } from "@/lib/tv-token";
+import { resolveTenantByHost, buildTenantFilter } from "@/lib/tenant";
 import TvMap from "@/components/TvMap";
 import type { PelangganPeta } from "@/components/PetaMap";
 
-export const metadata = {
-  title: "Peta TV | UPS HERU",
-  description: "Peta operasional fullscreen untuk layar besar / TV",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const headersList = await headers();
+  const rawHost = headersList.get("x-forwarded-host") || headersList.get("host") || "";
+  const tenantCtx = resolveTenantByHost(rawHost);
+  const branding = tenantCtx.tenant.branding;
+
+  return {
+    title: `Peta TV | ${branding.namaMitra}`,
+    description: `Peta operasional fullscreen untuk layar besar / TV ${branding.namaMitra} - ${branding.kota}`,
+  };
+}
 
 export const dynamic = "force-dynamic";
 
@@ -16,12 +26,18 @@ export const dynamic = "force-dynamic";
  * Mode layar besar (TV / wallboard). Tanpa sidebar admin, fullscreen, dan
  * read-only. Akses dilindungi token `t` (env TV_VIEW_TOKEN) — tanpa sesi
  * login, cocok untuk browser kiosk yang tidak bisa menyimpan cookie login.
+ * Terisolasi ketat sesuai tenant domain host.
  */
 export default async function PetaTvPage({
   searchParams,
 }: {
   searchParams: Promise<{ t?: string }>;
 }) {
+  const headersList = await headers();
+  const rawHost = headersList.get("x-forwarded-host") || headersList.get("host") || "";
+  const tenantCtx = resolveTenantByHost(rawHost);
+  const tenantFilter = buildTenantFilter(tenantCtx.tenant.id, tenantCtx.isPilot);
+
   const { t } = await searchParams;
 
   if (!tvTokenValid(t)) {
@@ -42,10 +58,15 @@ export default async function PetaTvPage({
     );
   }
 
-  // Data statis (pelanggan berkoordinat) diambil server-side sekali; data
+  // Data statis (pelanggan berkoordinat) diambil server-side sekali terisolasi per-tenant; data
   // realtime (petugas/kendaraan/lapak/pengaduan) di-polling oleh TvMap.
   const pelanggan = await prisma.pelanggan.findMany({
-    where: { deletedAt: null, latitude: { not: null }, longitude: { not: null } },
+    where: {
+      deletedAt: null,
+      ...tenantFilter,
+      latitude: { not: null },
+      longitude: { not: null },
+    },
     select: {
       id: true,
       nama: true,
@@ -69,5 +90,15 @@ export default async function PetaTvPage({
     statusTagihan: null,
   }));
 
-  return <TvMap pelanggan={pelangganPeta} token={t!} />;
+  return (
+    <TvMap
+      pelanggan={pelangganPeta}
+      token={t!}
+      tenant={{
+        namaMitra: tenantCtx.tenant.namaMitra,
+        kota: tenantCtx.tenant.branding.kota,
+        isPilot: tenantCtx.isPilot,
+      }}
+    />
+  );
 }

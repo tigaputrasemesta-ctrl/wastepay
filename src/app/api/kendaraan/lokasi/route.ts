@@ -83,15 +83,20 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const session = await getSession();
     if (!session) {
       return NextResponse.json({ error: "Tidak terautentikasi" }, { status: 401 });
     }
 
+    const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+    const { resolveTenantByHost, buildTenantFilter } = await import("@/lib/tenant");
+    const tenantCtx = resolveTenantByHost(rawHost);
+    const tenantFilter = buildTenantFilter(tenantCtx.tenant.id, tenantCtx.isPilot);
+
     // Scope: petugas hanya melihat kendaraan yang pengemudinya SEKELURAHAN
-    // (anti bocor lokasi armada lintas zona). Admin/kasir/superadmin lihat semua.
+    // (anti bocor lokasi armada lintas zona). Admin/kasir/superadmin lihat semua dalam tenant.
     const kelurahanPetugas =
       session.role === "petugas" && !PETUGAS_SCOPE_ALL
         ? await getPetugasKelurahan(session.id)
@@ -101,10 +106,14 @@ export async function GET() {
     }
 
     const semua = await prisma.lokasiKendaraan.findMany({
-      where:
-        kelurahanPetugas != null
-          ? { kendaraan: { aktif: true, petugas: { wilayah: { kelurahanId: kelurahanPetugas } } } }
-          : undefined,
+      where: {
+        ...tenantFilter,
+        kendaraan: {
+          ...tenantFilter,
+          aktif: true,
+          ...(kelurahanPetugas != null ? { petugas: { wilayah: { kelurahanId: kelurahanPetugas } } } : {}),
+        },
+      },
       select: {
         id: true,
         latitude: true,

@@ -6,11 +6,19 @@ import { useRouter } from "next/navigation";
 
 interface PetaTokenGateProps {
   tokenInvalid?: boolean;
+  tenant?: {
+    namaMitra?: string;
+    kota?: string;
+    warnaTema?: string;
+  };
 }
 
-export default function PetaTokenGate({ tokenInvalid = false }: PetaTokenGateProps) {
+export default function PetaTokenGate({ tokenInvalid = false, tenant }: PetaTokenGateProps) {
   const [inputToken, setInputToken] = useState("");
   const router = useRouter();
+
+  const mitraName = (tenant?.namaMitra || "UPS HERU").toUpperCase();
+  const cityName = (tenant?.kota || "KOTA DEPOK").toUpperCase();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +39,7 @@ export default function PetaTokenGate({ tokenInvalid = false }: PetaTokenGatePro
             🗺️
           </div>
           <span className="text-[11px] font-mono font-bold uppercase tracking-widest text-emerald-400 bg-emerald-950/60 border border-emerald-800/40 px-2.5 py-0.5 rounded-full mb-1">
-            UPS HERU • KOTA DEPOK
+            {mitraName} • {cityName}
           </span>
           <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white mt-1">
             Peta Navigasi Pelanggan

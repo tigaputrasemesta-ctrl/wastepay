@@ -1,3 +1,6 @@
+import { headers } from "next/headers";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import PetaMap from "@/components/PetaMap";
 import type { PelangganPeta, RutePeta } from "@/components/PetaMap";
@@ -5,21 +8,30 @@ import type { KendaraanPeta, PetugasPeta, TransitPeta } from "@/components/MapVi
 import { getSession } from "@/lib/auth";
 import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 import { tvTokenValid, getDefaultMapToken } from "@/lib/tv-token";
+import { resolveTenantByHost, buildTenantFilter } from "@/lib/tenant";
 import PetaTokenGate from "@/components/PetaTokenGate";
 import "./peta.css";
 
-export const metadata = {
-  title: "Peta Wilayah & Navigasi Lapangan | UPS HERU",
-  description: "Peta interaktif seluruh pelanggan dan rute armada kebersihan Kota Depok",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const headersList = await headers();
+  const rawHost = headersList.get("x-forwarded-host") || headersList.get("host") || "";
+  const tenantCtx = resolveTenantByHost(rawHost);
+  const branding = tenantCtx.tenant.branding;
+
+  return {
+    title: `Peta Wilayah & Navigasi Lapangan | ${branding.namaMitra}`,
+    description: `Peta interaktif seluruh pelanggan dan rute armada kebersihan ${branding.namaMitra} - ${branding.kota}`,
+  };
+}
 
 export const dynamic = "force-dynamic";
 
 /**
  * Halaman Peta Publik & Lapangan:
+ * - Terisolasi ketat per-tenant berdasarkan host domain permintaan.
  * - Dilindungi oleh Token Akses (seperti Map TV Token) atau Sesi Login Petugas/Admin.
- * - Akses via link ber-token (?token=... atau ?t=...) membuka akses peta KESELURUHAN pelanggan (1.242 titik).
- * - Petugas / admin yang sedang login dapat mengakses langsung sesuai hak aksesnya.
+ * - Akses via link ber-token (?token=... atau ?t=...) membuka akses peta KESELURUHAN pelanggan dalam tenant tersebut.
+ * - Petugas / admin yang sedang login dapat mengakses langsung sesuai hak akses & tenant-nya.
  * - Fullscreen, responsif mobile & desktop, tanpa gangguan sidebar/navbar admin.
  */
 export default async function PetaPage({
@@ -27,6 +39,16 @@ export default async function PetaPage({
 }: {
   searchParams?: Promise<{ token?: string; t?: string; mode?: string; [key: string]: any }>;
 }) {
+  const headersList = await headers();
+  const rawHost = headersList.get("x-forwarded-host") || headersList.get("host") || "";
+  const tenantCtx = resolveTenantByHost(rawHost);
+
+  if (!tenantCtx.isValid) {
+    notFound();
+  }
+
+  const tenantFilter = buildTenantFilter(tenantCtx.tenant.id, tenantCtx.isPilot);
+
   const resolvedSearchParams = searchParams ? await searchParams : {};
   const queryToken = (resolvedSearchParams.token || resolvedSearchParams.t)?.trim();
   const session = await getSession();
@@ -34,19 +56,19 @@ export default async function PetaPage({
 
   // Jika pengunjung belum login dan tidak membawa token akses valid
   if (!session && !isTokenAuth) {
-    return <PetaTokenGate tokenInvalid={Boolean(queryToken)} />;
+    return <PetaTokenGate tokenInvalid={Boolean(queryToken)} tenant={tenantCtx.tenant.branding} />;
   }
 
   // ── Scope kelurahan jika petugas login dengan profil khusus ──
   // Catatan: Jika membawa token akses valid (link peta keseluruhan), scope kelurahan dilepas
-  // agar petugas/lapangan dapat melihat keseluruhan 1.242 pelanggan.
+  // agar petugas/lapangan dapat melihat keseluruhan pelanggan tenant ini.
   let scopeKelurahanId: number | null = null;
   let petugasTanpaProfil = false;
   if (!isTokenAuth && session && session.role === "petugas" && !PETUGAS_SCOPE_ALL) {
     scopeKelurahanId = await getPetugasKelurahan(session.id);
     if (!scopeKelurahanId) petugasTanpaProfil = true;
   }
-  // Pengunjung ber-token / non-scoped / admin → lihat semua titik (1,242 pelanggan);
+  // Pengunjung ber-token / non-scoped / admin → lihat semua titik dalam tenant;
   // Petugas berprofil spesifik (tanpa token) → hanya kelurahannya;
   // Petugas tanpa profil → tidak dapat data
   const scope = scopeKelurahanId
@@ -65,7 +87,11 @@ export default async function PetaPage({
   try {
     const [pList, wList, tagihanList, rList] = await Promise.all([
       prisma.pelanggan.findMany({
-        where: { deletedAt: null, ...scope },
+        where: {
+          deletedAt: null,
+          ...tenantFilter,
+          ...scope,
+        },
         select: {
           id: true,
           nama: true,
@@ -83,11 +109,13 @@ export default async function PetaPage({
         orderBy: { kodePelanggan: "asc" },
       }),
       prisma.wilayah.findMany({
+        where: tenantFilter,
         select: { id: true, nama: true, kelurahanRef: { select: { nama: true } } },
         orderBy: { nama: "asc" },
       }),
       prisma.tagihan.findMany({
         where: {
+          ...tenantFilter,
           tahun: { gte: new Date().getFullYear() - 1 },
           ...(scopeKelurahanId
             ? { pelanggan: { kelurahanId: scopeKelurahanId } }
@@ -99,11 +127,14 @@ export default async function PetaPage({
         orderBy: [{ tahun: "desc" }, { bulan: "desc" }],
       }),
       prisma.rute.findMany({
-        where: scopeKelurahanId
-          ? { aktif: true, kelurahanId: scopeKelurahanId }
-          : petugasTanpaProfil
-            ? { id: -1 }
-            : { aktif: true },
+        where: {
+          ...tenantFilter,
+          ...(scopeKelurahanId
+            ? { aktif: true, kelurahanId: scopeKelurahanId }
+            : petugasTanpaProfil
+              ? { id: -1 }
+              : { aktif: true }),
+        },
         select: {
           id: true,
           nama: true,
@@ -164,11 +195,17 @@ export default async function PetaPage({
 
     // ── Lokasi terakhir petugas aktif (data awal peta realtime) ──
     const lokasiRaw = await prisma.lokasiPetugas.findMany({
-      where: scopeKelurahanId
-        ? { petugas: { kelurahanId: scopeKelurahanId, aktif: true } }
-        : petugasTanpaProfil
-          ? { id: -1 }
-          : { petugas: { aktif: true } },
+      where: {
+        ...tenantFilter,
+        petugas: {
+          ...tenantFilter,
+          ...(scopeKelurahanId
+            ? { kelurahanId: scopeKelurahanId, aktif: true }
+            : petugasTanpaProfil
+              ? { id: -1 }
+              : { aktif: true }),
+        },
+      },
       distinct: ["petugasId"],
       orderBy: { createdAt: "desc" },
       select: {
@@ -196,11 +233,17 @@ export default async function PetaPage({
     // ── Kendaraan: lokasi terakhir + titik transit (data awal peta) ──
     const [kendaraanRaw, transitList] = await Promise.all([
       prisma.lokasiKendaraan.findMany({
-        where: scopeKelurahanId
-          ? { kendaraan: { aktif: true, petugas: { kelurahanId: scopeKelurahanId } } }
-          : petugasTanpaProfil
-            ? { id: -1 }
-            : { kendaraan: { aktif: true } },
+        where: {
+          ...tenantFilter,
+          kendaraan: {
+            ...tenantFilter,
+            ...(scopeKelurahanId
+              ? { aktif: true, petugas: { kelurahanId: scopeKelurahanId } }
+              : petugasTanpaProfil
+                ? { id: -1 }
+                : { aktif: true }),
+          },
+        },
         distinct: ["kendaraanId"],
         orderBy: { createdAt: "desc" },
         select: {
@@ -214,6 +257,7 @@ export default async function PetaPage({
         },
       }),
       prisma.titikTransit.findMany({
+        where: tenantFilter,
         select: { id: true, nama: true, alamat: true, latitude: true, longitude: true, aktif: true, catatan: true },
         orderBy: { nama: "asc" },
       }),
@@ -248,14 +292,14 @@ export default async function PetaPage({
   let profilSaya: { id: number; nama: string; jabatan: string | null } | null = null;
   let kendaraanSaya: { id: number; nama: string; platNomor: string | null; jenis: string }[] = [];
   if (session && session.role === "petugas") {
-    const profil = await prisma.petugas.findUnique({
-      where: { userId: session.id },
+    const profil = await prisma.petugas.findFirst({
+      where: { userId: session.id, ...tenantFilter },
       select: { id: true, nama: true, jabatan: true },
     });
     profilSaya = profil ?? null;
     if (profil) {
       const ks = await prisma.kendaraan.findMany({
-        where: { petugasId: profil.id, deletedAt: null, aktif: true },
+        where: { petugasId: profil.id, deletedAt: null, aktif: true, ...tenantFilter },
         select: { id: true, nama: true, platNomor: true, jenis: true },
         orderBy: { nama: "asc" },
       });
@@ -277,6 +321,13 @@ export default async function PetaPage({
         profilSaya={profilSaya}
         kendaraanSaya={kendaraanSaya}
         token={activeToken}
+        tenant={{
+          id: tenantCtx.tenant.id,
+          slug: tenantCtx.tenant.slug,
+          namaMitra: tenantCtx.tenant.namaMitra,
+          kota: tenantCtx.tenant.branding.kota || "Indonesia",
+          isPilot: tenantCtx.isPilot,
+        }}
       />
     </div>
   );

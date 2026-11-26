@@ -144,6 +144,13 @@ type Props = {
   profilSaya?: { id: number; nama: string; jabatan: string | null } | null;
   kendaraanSaya?: { id: number; nama: string; platNomor: string | null; jenis: string }[];
   token?: string | null;
+  tenant?: {
+    id: string;
+    slug: string;
+    namaMitra: string;
+    kota: string;
+    isPilot: boolean;
+  };
 };
 
 const WARNA_STATUS: Record<string, string> = {
@@ -192,6 +199,7 @@ export default function PetaMap({
   profilSaya,
   kendaraanSaya = [],
   token = null,
+  tenant,
 }: Props) {
   // Navigation & Layout State
   const { resolvedTheme } = useTheme();
@@ -696,7 +704,9 @@ export default function PetaMap({
             isDark ? "bg-slate-900 border-slate-800 text-slate-200" : "bg-emerald-50 border-emerald-300 text-emerald-900 shadow-xs"
           }`}>
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="tracking-wide uppercase font-mono">🛵 GOJEK CLEAN GIS</span>
+            <span className="tracking-wide uppercase font-mono">
+              🗺️ {tenant?.namaMitra || "CLEAN GIS"} • {tenant?.kota || "INDONESIA"}
+            </span>
           </div>
 
           {!isOnlineStatus && (
@@ -2066,6 +2076,7 @@ export default function PetaMap({
           )}
           <MapErrorBoundary>
             <MapView
+              isPilot={tenant?.isPilot ?? true}
               pelanggan={peta}
               komplain={komplainFilter}
               petugas={petugas}

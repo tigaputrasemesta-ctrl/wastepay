@@ -16,17 +16,26 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Status tidak valid" }, { status: 400 });
   }
 
+  const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+  const { resolveTenantByHost, buildTenantFilter } = await import("@/lib/tenant");
+  const tenantCtx = resolveTenantByHost(rawHost);
+  const tenantFilter = buildTenantFilter(tenantCtx.tenant.id, tenantCtx.isPilot);
+
   // Scope wilayah: petugas hanya melihat komplain pelanggan di wilayahnya (PII terlindungi)
   const session = await getSession();
-  let where: Prisma.KomplainWhereInput | undefined =
-    status && status !== "semua" ? { status } : undefined;
+  const where: Prisma.KomplainWhereInput = {
+    ...tenantFilter,
+    ...(status && status !== "semua" ? { status } : {}),
+  };
+
   if (session && session.role === "petugas" && !PETUGAS_SCOPE_ALL) {
     const kelurahanId = await getPetugasKelurahan(session.id);
     if (!kelurahanId) {
       return NextResponse.json({ error: "Akun belum ter-link ke kelurahan petugas" }, { status: 403 });
     }
-    const scopeKelurahan = { pelanggan: { kelurahanId } };
-    where = where ? { ...where, ...scopeKelurahan } : scopeKelurahan;
+    where.pelanggan = { kelurahanId, ...tenantFilter };
+  } else {
+    where.pelanggan = tenantFilter;
   }
 
   const komplain = await prisma.komplain.findMany({

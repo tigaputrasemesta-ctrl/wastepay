@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { tvTokenValid } from "@/lib/tv-token";
+import { resolveTenantByHost, buildTenantFilter } from "@/lib/tenant";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +14,7 @@ export const dynamic = "force-dynamic";
  *
  * Keamanan: tidak memakai sesi cookie, melainkan header
  * `x-tv-token` yang diverifikasi constant-time. Data yang dikembalikan adalah
- * scope admin (seluruh wilayah) — cocok untuk wallboard kantor.
+ * scope tenant aktif sesuai host domain permintaan.
  */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -24,9 +25,17 @@ export async function GET(request: Request) {
   }
 
   try {
+    const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+    const tenantCtx = resolveTenantByHost(rawHost);
+    const tenantFilter = buildTenantFilter(tenantCtx.tenant.id, tenantCtx.isPilot);
+
     const [petugasRaw, kendaraanRaw, transit, komplain] = await Promise.all([
-      // Lokasi terakhir semua petugas aktif
+      // Lokasi terakhir semua petugas aktif dalam tenant
       prisma.lokasiPetugas.findMany({
+        where: {
+          ...tenantFilter,
+          petugas: { ...tenantFilter, aktif: true },
+        },
         select: {
           latitude: true,
           longitude: true,
@@ -37,8 +46,12 @@ export async function GET(request: Request) {
         },
         orderBy: { createdAt: "desc" },
       }),
-      // Lokasi terakhir semua kendaraan aktif
+      // Lokasi terakhir semua kendaraan aktif dalam tenant
       prisma.lokasiKendaraan.findMany({
+        where: {
+          ...tenantFilter,
+          kendaraan: { ...tenantFilter, aktif: true },
+        },
         select: {
           latitude: true,
           longitude: true,
@@ -57,13 +70,18 @@ export async function GET(request: Request) {
         },
         orderBy: { createdAt: "desc" },
       }),
-      // Titik transit / lapak
+      // Titik transit / lapak dalam tenant
       prisma.titikTransit.findMany({
+        where: tenantFilter,
         select: { id: true, nama: true, alamat: true, latitude: true, longitude: true, aktif: true, catatan: true },
         orderBy: { nama: "asc" },
       }),
-      // Pengaduan terbaru (pola sama dengan /api/komplain)
+      // Pengaduan terbaru dalam tenant
       prisma.komplain.findMany({
+        where: {
+          ...tenantFilter,
+          pelanggan: { ...tenantFilter },
+        },
         include: {
           pelanggan: {
             select: {
