@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Truck, LogIn, Smartphone, ShieldCheck, Loader2, Database, Sparkles } from "lucide-react";
+import { Truck, LogIn, Smartphone, ShieldCheck, Loader2, Database, Sparkles, ArrowLeft } from "lucide-react";
 import { NativeGuardedLink } from "@/components/mobile/LandingApkBanner";
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -123,6 +123,16 @@ export default function LoginPage() {
           </p>
         </div>
 
+        <div className="mb-4">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-500 dark:text-zinc-400 hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors group"
+          >
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+            <span>Kembali ke Beranda</span>
+          </Link>
+        </div>
+
         <div className="bg-white dark:bg-zinc-900 px-6 sm:px-10 py-8 shadow-sm border border-slate-200/60 dark:border-zinc-800 rounded-2xl">
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
@@ -142,7 +152,7 @@ export default function LoginPage() {
                     ? "focus:ring-2 focus:ring-sky-600/20 focus:border-sky-600"
                     : "focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600"
                 }`}
-                placeholder={isCore ? "admin@hero.com atau wahyudin@hero.com" : "nama@hero.com atau 0812xxxx"}
+                placeholder={isCore ? "admin@upsheru.com" : "petugas@upsheru.com atau 0812xxxx"}
               />
             </div>
 

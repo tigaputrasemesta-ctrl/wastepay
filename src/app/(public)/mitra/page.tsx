@@ -69,11 +69,11 @@ export default function MitraRegistrationPage() {
       <div className="text-center space-y-4 max-w-3xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/70 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold uppercase tracking-wider">
           <ShieldCheck className="w-3.5 h-3.5" />
-          Kemitraan Resmi O2W HERO
+          Kemitraan Jaringan UPS HERU
         </div>
         <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
           Modernisasi Pengelolaan Sampah Unit Anda Bersama{" "}
-          <span className="text-emerald-700 dark:text-emerald-400">O2W HERO</span>
+          <span className="text-emerald-700 dark:text-emerald-400">UPS HERU</span>
         </h1>
         <p className="text-base text-slate-600 dark:text-zinc-400 leading-relaxed">
           Tingkatkan efisiensi penarikan sampah, tagihan iuran QRIS otomatis, dan pencatatan kasir
@@ -109,7 +109,7 @@ export default function MitraRegistrationPage() {
           </div>
           <h2 className="font-bold text-slate-900 dark:text-zinc-100 text-base">Website Sendiri</h2>
           <p className="text-xs text-slate-600 dark:text-zinc-400 leading-relaxed">
-            Unit Anda mendapatkan subdomain resmi (misal: <code>unitanda.o2whero.com</code>) atau domain sendiri.
+            Unit Anda mendapatkan subdomain resmi (misal: <code>unitanda.upsheru.com</code>) atau domain sendiri.
           </p>
         </div>
 
@@ -141,7 +141,7 @@ export default function MitraRegistrationPage() {
             <div className="p-4 rounded-xl bg-slate-50 dark:bg-zinc-800 text-left text-xs text-slate-600 dark:text-zinc-300 space-y-2">
               <p className="font-semibold text-slate-900 dark:text-white">Langkah Selanjutnya:</p>
               <ul className="list-disc pl-4 space-y-1">
-                <li>Tim O2W HERO akan menghubungi WhatsApp Anda dalam 1x24 jam untuk verifikasi awal.</li>
+                <li>Tim UPS HERU akan menghubungi WhatsApp Anda dalam 1x24 jam untuk verifikasi awal.</li>
                 <li>Setelah diverifikasi, subdomain uji coba dan akses akun admin akan langsung aktif.</li>
                 <li>Panduan instalasi aplikasi mobile untuk supir akan dikirimkan lengkap.</li>
               </ul>
@@ -327,7 +327,7 @@ export default function MitraRegistrationPage() {
             {/* Tombol Submit */}
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
               <p className="text-xs text-slate-500 dark:text-zinc-400">
-                Dengan mendaftar, Anda menyetujui Ketentuan Layanan & Kebijakan Privasi Data O2W HERO.
+                Dengan mendaftar, Anda menyetujui Ketentuan Layanan & Kebijakan Privasi Data UPS HERU.
               </p>
               <button
                 type="submit"
@@ -366,7 +366,7 @@ export default function MitraRegistrationPage() {
           <div className="p-4 rounded-xl bg-slate-100/70 dark:bg-zinc-800/60 border border-slate-200 dark:border-zinc-700">
             <h3 className="font-semibold text-slate-900 dark:text-zinc-100">Apakah data warga saya aman dari operator lain?</h3>
             <p className="text-xs text-slate-600 dark:text-zinc-400 mt-1">
-              Sangat aman. Sistem O2W HERO menggunakan isolasi database hibrida dan PostgreSQL Row-Level Security. Data warga Anda hanya dapat diakses oleh admin dan petugas unit Anda sendiri.
+              Sangat aman. Sistem UPS HERU menggunakan isolasi database hibrida dan PostgreSQL Row-Level Security. Data warga Anda hanya dapat diakses oleh admin dan petugas unit Anda sendiri.
             </p>
           </div>
         </div>

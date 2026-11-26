@@ -276,15 +276,19 @@ Bila sampah di rumah Anda terlewat karena pintu pagar terkunci atau akses jalan 
     isi: `UPS HERU menghadirkan transformasi digital menyeluruh pada sistem pembayaran retribusi sampah di Kota Depok. Tidak perlu lagi repot menyiapkan uang tunai pas atau menunggu petugas penagih datang ke rumah.
 
 ### 1. Notifikasi Tagihan Otomatis via WhatsApp
+
 Setiap awal siklus tagihan, warga terdaftar akan menerima pesan WhatsApp resmi berisi rincian periode retribusi, nomor pelanggan, dan nominal tagihan transparan tanpa biaya tersembunyi.
 
 ### 2. Bayar Sekali Scan dengan QRIS
+
 Cukup klik tautan bayar atau scan barcode QRIS yang tercantum. Pembayaran dapat dilakukan melalui seluruh aplikasi mobile banking (BCA, Mandiri, BRI, BNI, BSI, dll) maupun dompet digital ternama (GoPay, OVO, Dana, ShopeePay, LinkAja).
 
 ### 3. Verifikasi Otomatis Tanpa Kirim Bukti Transfer
+
 Sistem WastePay terhubung langsung secara real-time dengan payment gateway perbankan. Begitu pembayaran berhasil, status tagihan otomatis berubah menjadi "Lunas" dan kwitansi digital resmi langsung terbit seketika.
 
 ### 4. Cek Riwayat Tagihan Kapan Saja
+
 Anda dapat memeriksa status tagihan dan mengunduh bukti bayar kapan saja melalui menu "Cek Tagihan" di upsheru.com dengan memasukkan nomor WhatsApp atau nomor pelanggan.`,
   },
 ];

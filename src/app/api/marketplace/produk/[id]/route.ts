@@ -27,8 +27,14 @@ export async function GET(
       );
     }
 
+    let foto = product.foto;
+    if (foto && (foto.includes("photo-1585336261026-699708785089") || foto.includes("1585336261026"))) {
+      foto = "https://images.unsplash.com/photo-1585314062340-f1a5a7c9328d?auto=format&fit=crop&w=800&q=80";
+    }
+    const sanitizedProduct = { ...product, foto };
+
     return NextResponse.json(
-      { ok: true, data: product },
+      { ok: true, data: sanitizedProduct },
       { headers: buildCorsHeaders(request) }
     );
   } catch (error) {

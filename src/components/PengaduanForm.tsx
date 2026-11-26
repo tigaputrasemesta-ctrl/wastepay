@@ -244,7 +244,8 @@ export default function PengaduanForm() {
               placeholder="Contoh: 081234567890"
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all placeholder:text-slate-400"
               required
-              autoComplete="off"
+              autoComplete="tel"
+              inputMode="tel"
             />
           </div>
 
@@ -410,6 +411,8 @@ export default function PengaduanForm() {
               placeholder="Masukkan No. WhatsApp / ID Pelanggan..."
               className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all placeholder:text-slate-400"
               required
+              autoComplete="tel"
+              inputMode="tel"
             />
             <button
               type="submit"

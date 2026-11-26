@@ -134,7 +134,7 @@ export default async function ArtikelDetail({ params }: { params: Promise<{ slug
           </h1>
 
           <div className="flex items-center gap-3 pt-2 text-xs sm:text-sm text-slate-500">
-            <div className="w-9 h-9 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+            <div className="w-9 h-9 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
               UPS
             </div>
             <div>
@@ -147,7 +147,7 @@ export default async function ArtikelDetail({ params }: { params: Promise<{ slug
         </header>
 
         {/* Main Cover Photo */}
-        <div className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/90 shadow-xs aspect-video max-h-[440px] bg-slate-900">
+        <div className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/90 shadow-sm aspect-video max-h-[440px] bg-slate-900">
           <ArticleImage
             src={coverImage}
             alt={artikel.judul}
@@ -199,10 +199,11 @@ export default async function ArtikelDetail({ params }: { params: Promise<{ slug
 }
 
 function RenderIsiArtikel({ isi }: { isi: string }) {
-  const blocks = isi.split(/\n\s*\n/);
+  const normalized = isi.replace(/\r\n/g, "\n");
+  const blocks = normalized.split(/\n\s*\n/);
 
   return (
-    <div className="space-y-6 text-slate-700 leading-relaxed text-base sm:text-lg">
+    <div className="max-w-[65ch] mx-auto text-slate-700 dark:text-zinc-300 leading-[1.7] text-base sm:text-[17px] space-y-5">
       {blocks.map((block, idx) => {
         const trimmed = block.trim();
         if (!trimmed) return null;
@@ -213,7 +214,7 @@ function RenderIsiArtikel({ isi }: { isi: string }) {
           const alt = imgMatch[1];
           const src = imgMatch[2];
           return (
-            <figure key={idx} className="my-8 rounded-2xl overflow-hidden border border-slate-200/90 shadow-xs bg-slate-900">
+            <figure key={idx} className="my-8 rounded-2xl overflow-hidden border border-slate-200/90 dark:border-zinc-800 shadow-sm bg-slate-900">
               <ArticleImage
                 src={src}
                 alt={alt || "Foto Ilustrasi UPS HERU"}
@@ -228,26 +229,48 @@ function RenderIsiArtikel({ isi }: { isi: string }) {
           );
         }
 
-        // 2. Heading: ###
+        // 2. Heading: ### (Subbab bernomor / judul bagian)
         if (trimmed.startsWith("### ")) {
+          const lines = trimmed.split("\n");
+          const headingText = lines[0].replace(/^###\s+/, "").trim();
+          const paragraphBody = lines.slice(1).join("\n").trim();
+
           return (
-            <div key={idx} className="pt-6 pb-2 border-b border-slate-100 flex items-center gap-2.5">
-              <div className="w-1.5 h-6 bg-emerald-600 rounded-full shrink-0" />
-              <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
-                {trimmed.replace(/^###\s+/, "")}
-              </h3>
+            <div key={idx} className="mt-8 mb-3 space-y-3">
+              <div className="pt-2 pb-1 border-b border-slate-100 dark:border-zinc-800 flex items-center gap-2.5">
+                <div className="w-1.5 h-5 bg-emerald-600 rounded-full shrink-0" />
+                <h3 className="text-xl sm:text-[22px] font-extrabold text-slate-900 dark:text-white tracking-tight">
+                  {headingText}
+                </h3>
+              </div>
+              {paragraphBody && (
+                <p className="leading-[1.7] text-slate-700 dark:text-zinc-300 text-base sm:text-[17px]">
+                  {renderFormattedInline(paragraphBody)}
+                </p>
+              )}
             </div>
           );
         }
 
-        // 3. Heading: ##
+        // 3. Heading: ## (Bab Utama)
         if (trimmed.startsWith("## ")) {
+          const lines = trimmed.split("\n");
+          const headingText = lines[0].replace(/^##\s+/, "").trim();
+          const paragraphBody = lines.slice(1).join("\n").trim();
+
           return (
-            <div key={idx} className="pt-8 pb-3 border-b border-slate-200 flex items-center gap-2.5">
-              <div className="w-2 h-7 bg-emerald-700 rounded-full shrink-0" />
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                {trimmed.replace(/^##\s+/, "")}
-              </h2>
+            <div key={idx} className="mt-9 mb-4 space-y-3">
+              <div className="pt-3 pb-1.5 border-b border-slate-200 dark:border-zinc-700 flex items-center gap-2.5">
+                <div className="w-2 h-6 bg-emerald-700 rounded-full shrink-0" />
+                <h2 className="text-2xl sm:text-[26px] font-extrabold text-slate-900 dark:text-white tracking-tight">
+                  {headingText}
+                </h2>
+              </div>
+              {paragraphBody && (
+                <p className="leading-[1.7] text-slate-700 dark:text-zinc-300 text-base sm:text-[17px]">
+                  {renderFormattedInline(paragraphBody)}
+                </p>
+              )}
             </div>
           );
         }
@@ -264,10 +287,10 @@ function RenderIsiArtikel({ isi }: { isi: string }) {
                 return (
                   <li
                     key={lIdx}
-                    className="flex items-start gap-3 bg-slate-50/80 p-3.5 sm:p-4 rounded-2xl border border-slate-200/70 text-slate-700 text-sm sm:text-base leading-relaxed"
+                    className="flex items-start gap-3 bg-slate-50/80 dark:bg-zinc-800/50 p-3.5 sm:p-4 rounded-2xl border border-slate-200/70 dark:border-zinc-700 text-slate-700 dark:text-zinc-300 text-sm sm:text-base leading-relaxed"
                   >
-                    <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0 mt-0.5">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <div className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 flex items-center justify-center shrink-0 mt-0.5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     </div>
                     <div className="flex-1">
                       {renderFormattedInline(bulletText)}
@@ -292,9 +315,9 @@ function RenderIsiArtikel({ isi }: { isi: string }) {
                 return (
                   <li
                     key={lIdx}
-                    className="flex items-start gap-3.5 bg-emerald-50/40 p-4 rounded-2xl border border-emerald-100/90 text-slate-800 text-sm sm:text-base leading-relaxed"
+                    className="flex items-start gap-3.5 bg-emerald-50/40 dark:bg-emerald-950/20 p-4 rounded-2xl border border-emerald-100/90 dark:border-emerald-800/50 text-slate-800 dark:text-zinc-200 text-sm sm:text-base leading-relaxed"
                   >
-                    <div className="w-7 h-7 rounded-xl bg-emerald-700 text-white flex items-center justify-center shrink-0 font-extrabold text-xs shadow-xs mt-0.5">
+                    <div className="w-7 h-7 rounded-xl bg-emerald-700 text-white flex items-center justify-center shrink-0 font-extrabold text-xs shadow-sm mt-0.5">
                       {num}
                     </div>
                     <div className="flex-1">
@@ -309,7 +332,7 @@ function RenderIsiArtikel({ isi }: { isi: string }) {
 
         // 6. Paragraf biasa dengan parsing bold dan italic
         return (
-          <p key={idx} className="leading-relaxed text-slate-700 text-base sm:text-lg">
+          <p key={idx} className="leading-[1.7] text-slate-700 dark:text-zinc-300 text-base sm:text-[17px]">
             {renderFormattedInline(trimmed)}
           </p>
         );

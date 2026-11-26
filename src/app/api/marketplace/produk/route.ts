@@ -32,8 +32,16 @@ export async function GET(request: Request) {
       orderBy: { id: 'asc' },
     });
 
+    const sanitizedProducts = products.map((p) => {
+      let foto = p.foto;
+      if (foto && (foto.includes("photo-1585336261026-699708785089") || foto.includes("1585336261026"))) {
+        foto = "https://images.unsplash.com/photo-1585314062340-f1a5a7c9328d?auto=format&fit=crop&w=800&q=80";
+      }
+      return { ...p, foto };
+    });
+
     return NextResponse.json(
-      { ok: true, data: products },
+      { ok: true, data: sanitizedProducts },
       { headers: buildCorsHeaders(request) }
     );
   } catch (error) {

@@ -1439,6 +1439,7 @@ function BayarPortalContent() {
                 <input
                   type="tel"
                   inputMode="tel"
+                  autoComplete="tel"
                   placeholder="cth: 08123456789 atau 628..."
                   value={kode}
                   onChange={(e) => {

@@ -223,18 +223,14 @@ export default function ProdukDetailPage({
             <div className="md:col-span-7 space-y-6">
               {/* Product Visual Box */}
               <div className="relative aspect-4/3 sm:aspect-16/10 w-full rounded-3xl overflow-hidden bg-slate-100 dark:bg-zinc-800 border-2 border-slate-200/90 dark:border-zinc-800 shadow-sm">
-                {product.foto ? (
-                  <img
-                    src={product.foto}
-                    alt={product.nama}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">
-                    <Leaf className="w-16 h-16 text-emerald-600/40 mb-2" />
-                    <span className="text-xs font-bold">Produk Olahan Organik UPS HERU</span>
-                  </div>
-                )}
+                <img
+                  src={product.foto || "/images/upsheru-product-fallback.svg"}
+                  alt={product.nama}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = "/images/upsheru-product-fallback.svg";
+                  }}
+                />
 
                 {/* Badges */}
                 <div className="absolute top-4 left-4 flex flex-wrap gap-2">
@@ -410,20 +406,22 @@ export default function ProdukDetailPage({
                         type="button"
                         onClick={() => setQty((q) => Math.max(1, q - 1))}
                         disabled={qty <= 1}
-                        className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 disabled:opacity-30"
+                        className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-lg flex items-center justify-center text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 disabled:opacity-30"
+                        aria-label="Kurangi jumlah pesanan"
                       >
-                        <Minus className="w-3.5 h-3.5" />
+                        <Minus className="w-4 h-4" />
                       </button>
-                      <span className="w-8 text-center font-black text-sm text-slate-900 dark:text-white tabular-nums">
+                      <span className="w-10 text-center font-black text-sm text-slate-900 dark:text-white tabular-nums">
                         {qty}
                       </span>
                       <button
                         type="button"
                         onClick={() => setQty((q) => Math.min(product.stok || 99, q + 1))}
                         disabled={qty >= product.stok}
-                        className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 disabled:opacity-30"
+                        className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-lg flex items-center justify-center text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 disabled:opacity-30"
+                        aria-label="Tambah jumlah pesanan"
                       >
-                        <Plus className="w-3.5 h-3.5" />
+                        <Plus className="w-4 h-4" />
                       </button>
                     </div>
                   </div>

@@ -60,8 +60,13 @@ export default {
         mono: ["var(--font-jetbrains)", "ui-monospace", "monospace"],
       },
       boxShadow: {
+        '2xs': '0 1px rgb(0 0 0 / 0.05)',
+        'xs': '0 1px 2px 0 rgb(0 0 0 / 0.05)',
         'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
         'float': '0 10px 30px -5px rgba(16, 185, 129, 0.15)',
+      },
+      backdropBlur: {
+        'xs': '2px',
       },
       backgroundImage: {
         'gradient-eco': 'linear-gradient(135deg, #10b981 0%, #14b8a6 100%)',

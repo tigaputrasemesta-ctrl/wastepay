@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b" />
+      <stop offset="50%" stop-color="#065f46" />
+      <stop offset="100%" stop-color="#042f2e" />
+    </linearGradient>
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" fill="url(#bgGrad)" />
+  <g opacity="0.08">
+    <circle cx="100" cy="80" r="120" fill="#ffffff" />
+    <circle cx="500" cy="320" r="140" fill="#ffffff" />
+  </g>
+  <g transform="translate(250, 120)">
+    <path d="M50 0 C20 40 0 80 0 110 C0 145 22 160 50 160 C78 160 100 145 100 110 C100 80 80 40 50 0 Z" fill="url(#leafGrad)" />
+    <path d="M50 30 L50 145 M50 70 L30 55 M50 95 L70 80 M50 120 L32 108" stroke="#042f2e" stroke-width="4" stroke-linecap="round" />
+  </g>
+  <text x="300" y="310" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="800" fill="#ffffff" letter-spacing="0.05em">UPS HERU KOTA DEPOK</text>
+  <text x="300" y="338" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#a7f3d0" letter-spacing="0.08em">PRODUK OLAHAN ORGANIK TPS 3R</text>
+</svg>

@@ -749,7 +749,7 @@ export default function FormDaftar({
                   className={`font-bold transition-all disabled:opacity-50 whitespace-nowrap shrink-0 flex items-center justify-center gap-1.5 ${
                     isPetugas
                       ? "bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 text-slate-700 dark:text-zinc-300 rounded-lg border border-slate-200 dark:border-zinc-700 px-2 py-1 text-xs"
-                      : "bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-4 py-3 text-xs sm:text-sm rounded-xl min-h-[46px] active:scale-95"
+                      : "bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-700 dark:hover:bg-emerald-600 dark:text-white dark:border-emerald-500 px-4 py-3 text-xs sm:text-sm rounded-xl min-h-[46px] active:scale-95 shadow-sm font-bold transition-colors"
                   }`}
                 >
                   {cekWaLoading ? (

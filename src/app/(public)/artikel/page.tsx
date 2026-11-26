@@ -1,10 +1,10 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, Clock, ArrowRight, BookOpen } from "lucide-react";
+import { ArrowLeft, BookOpen } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
-import { DEFAULT_ARTIKEL, getArticleCoverImage, cleanArticleSnippet } from "@/lib/default-articles";
-import ArticleImage from "@/components/ArticleImage";
+import { DEFAULT_ARTIKEL } from "@/lib/default-articles";
+import ArtikelListClient, { ArticleItem } from "@/components/ArtikelListClient";
 
 export const metadata: Metadata = {
   title: "Artikel & Edukasi Lingkungan | UPS HERU Depok",
@@ -36,84 +36,45 @@ export default async function ArtikelPage() {
   // Gabungkan artikel dari database dengan artikel SEO unggulan (hindari duplikasi slug)
   const existingSlugs = new Set(artikelList.map((a) => a.slug));
   const fallbackList = DEFAULT_ARTIKEL.filter((a) => !existingSlugs.has(a.slug));
-  const displayedList = [...artikelList, ...fallbackList];
+  const rawList = [...artikelList, ...fallbackList];
+
+  const serializedArticles: ArticleItem[] = rawList.map((a) => ({
+    id: a.id,
+    slug: a.slug,
+    judul: a.judul,
+    isi: a.isi,
+    kategori: a.kategori,
+    gambar: a.gambar,
+    createdAt: a.createdAt instanceof Date ? a.createdAt.toISOString() : String(a.createdAt),
+    formattedDate: formatDate(a.createdAt),
+  }));
 
   return (
-    <div className="min-h-screen bg-slate-50 py-10 sm:py-14 px-4 sm:px-6">
-      <div className="max-w-4xl mx-auto space-y-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 py-8 sm:py-12 px-4 sm:px-6 transition-colors">
+      <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-emerald-700 hover:text-emerald-800 transition-colors"
+          className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Kembali ke Beranda</span>
         </Link>
 
-        <div className="space-y-2 border-b border-slate-200/80 pb-6">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100/80 text-emerald-800 rounded-full text-xs font-extrabold uppercase tracking-wide">
-            <BookOpen className="w-3.5 h-3.5" />
+        <div className="space-y-2 border-b border-slate-200/80 dark:border-zinc-800 pb-6">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100/80 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 rounded-full text-xs font-extrabold uppercase tracking-wide border border-emerald-200/60 dark:border-emerald-800/60">
+            <BookOpen className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
             <span>Pusat Edukasi & Informasi Lingkungan</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900">
+          <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-zinc-100">
             Artikel & Tips Kebersihan Kota Depok
           </h1>
-          <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
+          <p className="text-slate-600 dark:text-zinc-400 text-sm sm:text-base leading-relaxed">
             Temukan panduan resmi penjemputan sampah, tarif retribusi transparan, regulasi kebersihan, dan cara pilah sampah bernilai rupiah bersama UPS HERU.
           </p>
         </div>
 
-        <div className="grid gap-6">
-          {displayedList.map((artikel) => {
-            const cover = getArticleCoverImage(artikel.gambar, artikel.kategori);
-            const snippet = cleanArticleSnippet(artikel.isi, 160);
-            const wordCount = artikel.isi.split(/\s+/).length;
-            const readMinutes = Math.max(2, Math.ceil(wordCount / 180));
-
-            return (
-              <Link
-                key={artikel.id}
-                href={`/artikel/${artikel.slug}`}
-                className="group bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/90 shadow-xs flex flex-col sm:flex-row gap-6 hover:shadow-md hover:border-emerald-300 transition-all"
-              >
-                <div className="w-full sm:w-56 h-48 sm:h-36 rounded-2xl overflow-hidden shrink-0 border border-slate-200/80 bg-slate-900 relative">
-                  <ArticleImage
-                    src={cover}
-                    alt={artikel.judul}
-                    fallbackCategory={artikel.kategori}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 bg-black/60 backdrop-blur-md text-white text-xs font-extrabold uppercase rounded-md z-10">
-                    {artikel.kategori}
-                  </span>
-                </div>
-
-                <div className="flex flex-col justify-between flex-1 space-y-2.5">
-                  <div>
-                    <div className="flex items-center gap-2 text-xs text-slate-400 font-semibold mb-1.5">
-                      <span>{formatDate(artikel.createdAt)}</span>
-                      <span>•</span>
-                      <span className="inline-flex items-center gap-1 text-slate-500">
-                        <Clock className="w-3 h-3" />
-                        <span>{readMinutes} Menit</span>
-                      </span>
-                    </div>
-                    <h2 className="text-lg sm:text-xl font-black text-slate-900 group-hover:text-emerald-700 transition-colors leading-snug">
-                      {artikel.judul}
-                    </h2>
-                    <p className="text-slate-600 text-sm mt-2 line-clamp-2 leading-relaxed">
-                      {snippet}
-                    </p>
-                  </div>
-
-                  <div className="pt-2 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-emerald-700 group-hover:translate-x-1 transition-transform">
-                    <span>Baca Panduan Selengkapnya</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+        {/* Interactive Search & Filter Client Component */}
+        <ArtikelListClient articles={serializedArticles} />
       </div>
     </div>
   );

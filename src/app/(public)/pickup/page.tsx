@@ -43,6 +43,11 @@ const KATEGORI_ICONS: Record<string, any> = {
   ewaste: Tv,
 };
 
+function formatSatuanMuatan(satuan: string | null | undefined): string {
+  if (!satuan) return "unit";
+  return satuan.replace(/\s*\/\s*$/, "").trim();
+}
+
 export default function PickupSekaliAngkutPage() {
   const router = useRouter();
   const [categories, setCategories] = useState<KategoriPickup[]>([]);
@@ -198,7 +203,7 @@ export default function PickupSekaliAngkutPage() {
         longitude,
         kategoriPickupId: selectedCatId,
         jumlahUnit,
-        estimasiMuatan: estimasiMuatan.trim() || `${jumlahUnit} ${selectedCategory?.satuanMuatan || "muatan"}`,
+        estimasiMuatan: estimasiMuatan.trim() || `${jumlahUnit} ${formatSatuanMuatan(selectedCategory?.satuanMuatan)}`,
         fotoSampah: fotoSampah || null,
         tanggalJemput,
         waktuJemput,
@@ -305,7 +310,7 @@ export default function PickupSekaliAngkutPage() {
                         <h3 className="font-semibold text-sm text-slate-900 dark:text-zinc-100 mb-1">
                           {cat.nama}
                         </h3>
-                        <p className="text-xs text-slate-500 dark:text-zinc-400 leading-relaxed mb-3 line-clamp-2">
+                        <p className="text-xs text-slate-500 dark:text-zinc-400 leading-relaxed mb-3 line-clamp-3 min-h-[3rem]">
                           {cat.deskripsi}
                         </p>
                       </div>
@@ -328,7 +333,7 @@ export default function PickupSekaliAngkutPage() {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1">
-                      Estimasi Jumlah / Volume ({selectedCategory.satuanMuatan}):
+                      Estimasi Jumlah / Volume ({formatSatuanMuatan(selectedCategory.satuanMuatan)}):
                     </label>
                     <p className="text-[11px] text-slate-500 dark:text-zinc-400">
                       Tambahan {selectedCategory.tarifPerUnit ? `+Rp ${selectedCategory.tarifPerUnit.toLocaleString("id-ID")} per unit tambahan` : "sesuai kubikasi"}
@@ -339,7 +344,8 @@ export default function PickupSekaliAngkutPage() {
                     <button
                       type="button"
                       onClick={() => setJumlahUnit((prev) => Math.max(1, prev - 1))}
-                      className="w-9 h-9 rounded-lg bg-white dark:bg-zinc-700 border border-slate-300 dark:border-zinc-600 font-bold text-slate-700 dark:text-zinc-200 hover:bg-slate-100 flex items-center justify-center"
+                      aria-label="Kurangi jumlah unit"
+                      className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-lg bg-white dark:bg-zinc-700 border border-slate-300 dark:border-zinc-600 font-bold text-slate-700 dark:text-zinc-200 hover:bg-slate-100 active:bg-slate-200 flex items-center justify-center transition-colors text-base"
                     >
                       -
                     </button>
@@ -349,7 +355,8 @@ export default function PickupSekaliAngkutPage() {
                     <button
                       type="button"
                       onClick={() => setJumlahUnit((prev) => prev + 1)}
-                      className="w-9 h-9 rounded-lg bg-white dark:bg-zinc-700 border border-slate-300 dark:border-zinc-600 font-bold text-slate-700 dark:text-zinc-200 hover:bg-slate-100 flex items-center justify-center"
+                      aria-label="Tambah jumlah unit"
+                      className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-lg bg-white dark:bg-zinc-700 border border-slate-300 dark:border-zinc-600 font-bold text-slate-700 dark:text-zinc-200 hover:bg-slate-100 active:bg-slate-200 flex items-center justify-center transition-colors text-base"
                     >
                       +
                     </button>
@@ -613,6 +620,8 @@ export default function PickupSekaliAngkutPage() {
                   <Phone className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400" />
                   <input
                     type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
                     required
                     value={noTelepon}
                     onChange={(e) => setNoTelepon(e.target.value)}

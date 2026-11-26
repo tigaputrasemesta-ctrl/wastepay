@@ -47,18 +47,64 @@ export default async function TarifPage() {
     // DB offline
   }
 
+  const LABEL_KATEGORI_TARIF: Record<string, { label: string; schedule: string }> = {
+    level_1: {
+      label: "Level 1 — Volume Sangat Kecil (Rumah Tangga)",
+      schedule: "Rutin 3x / minggu (Rumah Tangga / Komplek)",
+    },
+    level_2: {
+      label: "Level 2 — Volume Kecil–Sedang (Rumah Tingkat)",
+      schedule: "Rutin 3x / minggu (Rumah Tangga Sedang)",
+    },
+    level_3: {
+      label: "Level 3 — Volume Sedang (Hunian / Kosan Kecil)",
+      schedule: "Rutin 3x / minggu (Hunian / Kosan Kecil)",
+    },
+    level_4: {
+      label: "Level 4 — Volume Sedang–Besar (Kosan / Ruko)",
+      schedule: "Rutin 3–4x / minggu (Kosan / Ruko Sedang)",
+    },
+    level_5: {
+      label: "Level 5 — Volume Besar (Usaha / Ruko 2 Pintu)",
+      schedule: "Rutin 3–4x / minggu (Usaha / Ruko 2 Pintu)",
+    },
+    level_6: {
+      label: "Level 6 — Volume Sangat Besar (Restoran / Niaga)",
+      schedule: "Rutin 4–5x / minggu (Restoran / Kafe / Niaga)",
+    },
+    level_7: {
+      label: "Level 7 — Volume Ekstra Besar (Sentra Kuliner)",
+      schedule: "Rutin 5–6x / minggu (Sentra Kuliner / Bisnis)",
+    },
+    level_8: {
+      label: "Level 8 — Volume Komersial Besar (Pasar / Swalayan)",
+      schedule: "Rutin setiap hari (Pasar / Minimarket)",
+    },
+    level_9: {
+      label: "Level 9 — Volume Maksimal (Sentra Industri)",
+      schedule: "Rutin setiap hari (Sentra Industri / Gudang)",
+    },
+    level_10: {
+      label: "Level 10 — Volume Korporat (Instansi / Kawasan Khusus)",
+      schedule: "Jadwal harian khusus (Kawasan Korporasi)",
+    },
+  };
+
   // Fallback hanya saat DB kosong; hindari override harga berbeda dari homepage/Paket Langganan
   const kategoriTarif = (kategoriTarifRaw.length > 0 ? kategoriTarifRaw : [
     { kategori: "level_1", label: "Level 1 (Rumah Tangga)", tarif: 40000, deskripsi: "Rutin 3x seminggu" }
   ]).map((k) => {
-    if (k.kategori === "level_1") {
-      return {
-        ...k,
-        label: k.label && k.label !== "Level 1" ? k.label : "Level 1 (Rumah Tangga)",
-        deskripsi: k.deskripsi || "Rutin perumahan / rumah tangga",
-      };
-    }
-    return k;
+    const meta = LABEL_KATEGORI_TARIF[k.kategori];
+    const cleanDeskripsi = k.deskripsi && k.deskripsi.trim().length > 0 ? k.deskripsi.trim() : null;
+    const cleanLabel = k.label && k.label !== k.kategori && !/^Level \d+$/i.test(k.label.trim())
+      ? k.label.trim()
+      : meta?.label || k.label || k.kategori;
+
+    return {
+      ...k,
+      label: cleanLabel,
+      deskripsi: cleanDeskripsi || meta?.schedule || "2–3x / minggu sesuai zona",
+    };
   });
 
   // Pastikan Paket Langganan fallback konsisten jika belum diisi di DB tenant
@@ -120,8 +166,9 @@ export default async function TarifPage() {
       <div className="grid lg:grid-cols-3 gap-8 items-start">
         {/* Main tariff list */}
         <div className="lg:col-span-2 space-y-4">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="grid grid-cols-12 px-6 py-3.5 bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          {/* Desktop Table View (hidden on mobile) */}
+          <div className="hidden md:block bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+            <div className="grid grid-cols-12 px-6 py-3.5 bg-slate-50 dark:bg-zinc-800/60 border-b border-slate-200 dark:border-zinc-800 text-xs font-semibold text-slate-500 dark:text-zinc-400 uppercase tracking-wider">
               <span className="col-span-6">Kategori Pelanggan</span>
               <span className="col-span-3">Jadwal / Keterangan</span>
               <span className="col-span-3 text-right">Tarif Bulanan</span>
@@ -131,21 +178,58 @@ export default async function TarifPage() {
                 Belum ada data tarif yang dipublikasikan.
               </p>
             ) : (
-              <div className="divide-y divide-slate-100">
+              <div className="divide-y divide-slate-100 dark:divide-zinc-800">
                 {kategoriTarif.map((k) => (
                   <div
                     key={k.kategori}
-                    className="grid grid-cols-12 px-6 py-4 items-center hover:bg-slate-50/75 transition-colors"
+                    className="grid grid-cols-12 px-6 py-4 items-center hover:bg-slate-50/75 dark:hover:bg-zinc-800/40 transition-colors"
                   >
                     <div className="col-span-6 pr-2">
-                      <p className="text-sm font-semibold text-slate-900">{k.label}</p>
-                      <p className="text-xs text-slate-500 mt-0.5 capitalize">{k.kategori.replace(/_/g, " ")}</p>
+                      <p className="text-sm font-semibold text-slate-900 dark:text-zinc-100">{k.label}</p>
+                      <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5 capitalize">{k.kategori.replace(/_/g, " ")}</p>
                     </div>
-                    <span className="col-span-3 text-xs text-slate-600">{k.deskripsi ?? "Rutin terkoordinasi"}</span>
-                    <span className="col-span-3 text-right font-bold text-base text-emerald-700">{formatRupiah(k.tarif)}</span>
+                    <span className="col-span-3 text-xs text-slate-600 dark:text-zinc-300 font-medium">{k.deskripsi}</span>
+                    <span className="col-span-3 text-right font-bold text-base text-emerald-700 dark:text-emerald-400">{formatRupiah(k.tarif)}</span>
                   </div>
                 ))}
               </div>
+            )}
+          </div>
+
+          {/* Mobile Stacked Cards View (md:hidden) */}
+          <div className="md:hidden space-y-3">
+            {kategoriTarif.length === 0 ? (
+              <p className="p-6 text-sm text-slate-500 text-center font-medium bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800">
+                Belum ada data tarif yang dipublikasikan.
+              </p>
+            ) : (
+              kategoriTarif.map((k) => (
+                <div
+                  key={k.kategori}
+                  className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-4 shadow-sm space-y-2.5"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-slate-900 dark:text-zinc-100 leading-snug">
+                        {k.label}
+                      </p>
+                      <p className="text-[11px] text-slate-500 dark:text-zinc-400 capitalize mt-0.5">
+                        {k.kategori.replace(/_/g, " ")}
+                      </p>
+                    </div>
+                    <span className="text-base font-extrabold text-emerald-700 dark:text-emerald-400 shrink-0">
+                      {formatRupiah(k.tarif)}
+                    </span>
+                  </div>
+
+                  <div className="pt-2 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-between text-xs">
+                    <span className="text-slate-400 font-medium text-[11px]">Jadwal Jemput:</span>
+                    <span className="font-semibold text-slate-700 dark:text-zinc-200 text-right">
+                      {k.deskripsi}
+                    </span>
+                  </div>
+                </div>
+              ))
             )}
           </div>
 

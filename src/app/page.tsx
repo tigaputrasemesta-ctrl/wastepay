@@ -26,6 +26,8 @@ import { formatDate } from "@/lib/utils";
 
 import JsonLd from "@/components/JsonLd";
 import PublicNavbar from "@/components/PublicNavbar";
+import PublicFooter from "@/components/PublicFooter";
+import MobileBottomNav from "@/components/mobile/MobileBottomNav";
 import CivicHeroWidget from "@/components/CivicHeroWidget";
 import { generateLocalBusinessJsonLd } from "@/lib/seo";
 import { DEFAULT_ARTIKEL, getArticleCoverImage, cleanArticleSnippet } from "@/lib/default-articles";
@@ -190,7 +192,7 @@ export default async function LandingPage() {
   const brandEmail = tenantCtx.tenant.branding?.emailKontak || "kontak@upsheru.com";
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 font-sans selection:bg-emerald-700 selection:text-white overflow-x-hidden transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 font-sans selection:bg-emerald-700 selection:text-white overflow-x-hidden transition-colors pb-20 md:pb-0">
       <JsonLd data={generateLocalBusinessJsonLd()} />
 
       {/* ── Primary Public Navbar ── */}
@@ -689,9 +691,12 @@ export default async function LandingPage() {
 
                 <div className="relative aspect-[16/10] w-full bg-slate-900 overflow-hidden border-b border-slate-100 dark:border-zinc-800">
                   <img
-                    src="https://images.unsplash.com/photo-1585336261026-699708785089?auto=format&fit=crop&w=600&q=80"
+                    src="https://images.unsplash.com/photo-1585314062340-f1a5a7c9328d?auto=format&fit=crop&w=800&q=80"
                     alt="Pupuk Kompos Organik TPS 3R UPS HERU 5kg"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-95"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = "/images/upsheru-product-fallback.svg";
+                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
                   <span className="absolute bottom-2.5 left-3.5 text-[11px] font-bold text-white drop-shadow flex items-center gap-1.5 z-10">
@@ -762,6 +767,9 @@ export default async function LandingPage() {
                     src="https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=600&q=80"
                     alt="Pupuk Organik Cair POC UPS HERU 1 Liter"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-95"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = "/images/upsheru-product-fallback.svg";
+                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
                   <span className="absolute bottom-2.5 left-3.5 text-[11px] font-bold text-white drop-shadow flex items-center gap-1.5 z-10">
@@ -832,6 +840,9 @@ export default async function LandingPage() {
                     src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=600&q=80"
                     alt="Tempat Sampah Pilah 2 in 1 UPS HERU"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-95"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = "/images/upsheru-product-fallback.svg";
+                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
                   <span className="absolute bottom-2.5 left-3.5 text-[11px] font-bold text-white drop-shadow flex items-center gap-1.5 z-10">
@@ -1246,119 +1257,10 @@ export default async function LandingPage() {
       </main>
 
       {/* ── 13. Comprehensive Municipal Footer ── */}
-      <footer className="bg-slate-950 text-white pt-14 pb-10 px-4 sm:px-6 border-t border-slate-800">
-        <div className="max-w-6xl mx-auto space-y-12">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-xs">
-            {/* Col 1: Brand & Bio */}
-            <div className="space-y-3 md:col-span-1">
-              <div className="flex items-center gap-2.5">
-                <img
-                  src="/ups-heru-logo.jpg"
-                  alt="UPS HERU Logo"
-                  className="w-9 h-9 rounded-lg object-contain bg-white p-0.5"
-                />
-                <span className="font-extrabold text-base tracking-tight text-white">UPS HERU</span>
-              </div>
-              <p className="text-slate-400 text-xs leading-relaxed">
-                Unit Pengolahan Sampah (UPS HERU) Kalibaru Kota Depok. Melayani retribusi dan operasional kebersihan terpadu.
-              </p>
-            </div>
+      <PublicFooter />
 
-            {/* Col 2: Layanan Warga */}
-            <div className="space-y-3">
-              <p className="font-bold text-slate-200 uppercase tracking-wider text-[11px]">Layanan Warga</p>
-              <ul className="space-y-2 text-slate-400 font-medium">
-                <li>
-                  <Link href="/pickup" className="hover:text-white transition-colors">
-                    Pickup Sampah Sekali Angkut
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/marketplace" className="hover:text-white transition-colors">
-                    Toko Pupuk Kompos & Daur Ulang
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/bayar" className="hover:text-white transition-colors">
-                    Cek & Bayar Tagihan QRIS
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/daftar" className="hover:text-white transition-colors">
-                    Pendaftaran Warga Baru
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/tarif" className="hover:text-white transition-colors">
-                    Tarif Retribusi Resmi
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/pengaduan" className="hover:text-white transition-colors">
-                    Pusat Pengaduan Kebersihan
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/artikel" className="hover:text-white transition-colors">
-                    Edukasi Lingkungan & Artikel
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Col 3: Kontak Resmi */}
-            <div className="space-y-3">
-              <p className="font-bold text-slate-200 uppercase tracking-wider text-[11px]">Kontak Operasional</p>
-              <ul className="space-y-2 text-slate-400 font-medium">
-                <li>
-                  WhatsApp:{" "}
-                  <a
-                    href="https://wa.me/6281400782617"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-emerald-400 font-bold hover:underline"
-                  >
-                    0814-0078-2617
-                  </a>
-                </li>
-                <li>
-                  Email:{" "}
-                  <a href="mailto:kontak@upsheru.com" className="hover:text-white transition-colors">
-                    kontak@upsheru.com
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Col 4: Fasilitas Fisik */}
-            <div className="space-y-3">
-              <p className="font-bold text-slate-200 uppercase tracking-wider text-[11px]">Kantor UPS HERU</p>
-              <p className="text-slate-400 text-xs leading-relaxed">
-                Jl. Kandang Ayam, Kel. Kalibaru, Kec. Cilodong, Kota Depok, Jawa Barat 16414
-              </p>
-              <p className="text-[11px] text-slate-500 font-mono">Koordinat: -6.424838, 106.832667</p>
-            </div>
-          </div>
-
-          <div className="pt-6 border-t border-slate-800 text-slate-500 text-xs flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-            <span>© {new Date().getFullYear()} UPS HERU Kota Depok. Hak Cipta Dilindungi.</span>
-            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
-              <Link href="/login" className="hover:text-white transition-colors">
-                Portal Petugas
-              </Link>
-              <NativeGuardedLink href="/unduh" className="hover:text-white transition-colors">
-                App Android Petugas
-              </NativeGuardedLink>
-              <span>
-                Didukung oleh{" "}
-                <a href="https://wastepay.id" target="_blank" rel="noreferrer" className="text-emerald-500 hover:text-emerald-400 font-semibold">
-                  wastepay.id
-                </a>
-              </span>
-            </div>
-          </div>
-        </div>
-      </footer>
+      {/* ── Mobile-First Fixed Bottom Navigation Bar (md:hidden) ── */}
+      <MobileBottomNav />
 
       {/* Floating WA Button (Khusus Landing Page) */}
       <FloatingWhatsApp phoneNumber="6281400782617" />
