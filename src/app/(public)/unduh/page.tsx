@@ -59,7 +59,7 @@ export default function UnduhPage() {
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-10 md:py-14">
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 mb-3 shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+            <Sparkles className="w-3.5 h-3.5 text-emerald-700" />
             Pilihan Aplikasi Android Resmi Sesuai Peran
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
@@ -218,7 +218,7 @@ export default function UnduhPage() {
         {/* Petunjuk Penggunaan & Pemasangan */}
         <div className="mt-12 bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 text-xs text-slate-600 space-y-4">
           <div className="flex items-center gap-2 font-bold text-slate-900 text-sm">
-            <ShieldCheck className="w-5 h-5 text-emerald-600" />
+            <ShieldCheck className="w-5 h-5 text-emerald-700" />
             <span>Petunjuk Pemasangan File APK di Android</span>
           </div>
           <ol className="list-decimal pl-5 space-y-1.5 leading-relaxed">

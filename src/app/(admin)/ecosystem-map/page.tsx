@@ -119,19 +119,19 @@ export default function EcosystemMapPage() {
 
       {/* Stats KPI Top - Data Riil */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
             Total Mitra Terdaftar
           </span>
           <div className="text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
             {loading ? "..." : `${totalTenants} Mitra`}
           </div>
-          <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-2 font-medium flex items-center gap-1">
+          <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-2 font-medium flex items-center gap-1">
             <CheckCircle2 className="w-3.5 h-3.5" /> {activeTenants} Mitra Beroperasi
           </p>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
             Provinsi Terjangkau
           </span>
@@ -143,7 +143,7 @@ export default function EcosystemMapPage() {
           </p>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
             Total Warga Terlayani
           </span>
@@ -155,14 +155,14 @@ export default function EcosystemMapPage() {
           </p>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
             Status Klaster
           </span>
           <div className="text-xl font-bold text-slate-900 dark:text-white mt-1 flex items-center gap-2">
             <span>Operasional Normal</span>
           </div>
-          <p className="text-xs text-emerald-600 mt-2">
+          <p className="text-xs text-emerald-700 mt-2">
             Multi-Tenant Zero-Leakage Aktif
           </p>
         </div>
@@ -177,7 +177,7 @@ export default function EcosystemMapPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Cari provinsi, kota, atau nama mitra..."
-            className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800 text-slate-900 dark:text-zinc-100 focus:outline-hidden focus:ring-2 focus:ring-sky-500"
+            className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800 text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500"
           />
         </div>
 
@@ -186,7 +186,7 @@ export default function EcosystemMapPage() {
             onClick={() => setSelectedProv("all")}
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
               selectedProv === "all"
-                ? "bg-sky-600 text-white shadow-xs"
+                ? "bg-sky-600 text-white shadow-sm"
                 : "bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 hover:bg-slate-200"
             }`}
           >
@@ -198,7 +198,7 @@ export default function EcosystemMapPage() {
               onClick={() => setSelectedProv(prov)}
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                 selectedProv === prov
-                  ? "bg-sky-600 text-white shadow-xs"
+                  ? "bg-sky-600 text-white shadow-sm"
                   : "bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 hover:bg-slate-200"
               }`}
             >
@@ -225,14 +225,14 @@ export default function EcosystemMapPage() {
           {filteredRegions.map((region, idx) => (
             <div
               key={idx}
-              className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
+              className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
                     Provinsi
                   </span>
-                  <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                  <span className="text-xs text-emerald-700 dark:text-emerald-400 font-semibold flex items-center gap-1">
                     <CheckCircle2 className="w-3.5 h-3.5" /> {region.activeTenants} Aktif
                   </span>
                 </div>

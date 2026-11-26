@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { ROLE_LABELS, getAllowedMenus } from "@/lib/rbac";
 import { isCoreHostname } from "@/lib/tenant/url-helper";
 import { resolveTenantByHost } from "@/lib/tenant/config";
+import { isFeatureEnabled, TenantFeatureKey } from "@/lib/tenant/features";
 import ThemeToggle from "@/components/ThemeToggle";
 import {
   LayoutDashboard,
@@ -105,7 +106,7 @@ const menuConfig: Record<string, MenuItemDef> = {
   tenants: { label: "Mitra & Database", href: "/tenants", icon: Building2 },
   "data-kontrol": { label: "Kontrol Kontak WA", href: "/data-kontrol", icon: Smartphone },
   "pickup-insidental": { label: "Pickup Sekali Angkut", href: "/pickup-insidental", icon: PackageCheck },
-  "manajemen-marketplace": { label: "Marketplace UPS HERU", href: "/manajemen-marketplace", icon: ShoppingBag },
+  "manajemen-marketplace": { label: "Toko Olahan & Pupuk", href: "/manajemen-marketplace", icon: ShoppingBag },
   "ecosystem-map": { label: "Peta Ekosistem Mitra", href: "/ecosystem-map", icon: Globe },
   "notifikasi-saas": { label: "Alert & Insiden SaaS", href: "/notifikasi-saas", icon: AlertTriangle },
   subscriptions: { label: "Paket & Langganan", href: "/subscriptions", icon: Package },
@@ -186,6 +187,7 @@ export default function Sidebar({
 
   const isCollapsedEffective = isMobileDrawer ? false : collapsed;
   const [isCore, setIsCore] = useState(false);
+  const [activeTenant, setActiveTenant] = useState<any>(null);
   const [brandName, setBrandName] = useState("UPS HERU");
   const [brandTagline, setBrandTagline] = useState("Kota Depok");
   const [brandLogo, setBrandLogo] = useState("/ups-heru-logo.jpg");
@@ -195,6 +197,7 @@ export default function Sidebar({
       const core = isCoreHostname(window.location.hostname);
       setIsCore(core);
       const resolved = resolveTenantByHost(window.location.hostname);
+      setActiveTenant(resolved.tenant);
       setBrandName(core ? "O2W HERO" : resolved.tenant.branding.namaMitra || "UPS HERU");
       setBrandTagline(core ? "SaaS Control Center" : resolved.tenant.branding.kota || resolved.tenant.branding.tagline || "Kota Depok");
       setBrandLogo(core ? "" : resolved.tenant.branding.logoUrl || "/ups-heru-logo.jpg");
@@ -256,9 +259,27 @@ export default function Sidebar({
     "notifikasi-saas",
   ]);
 
-  const allowedMenus = isCore
+  const MENU_TO_FEATURE: Record<string, TenantFeatureKey> = {
+    "manajemen-marketplace": "marketplace",
+    artikel: "artikel",
+    "ai-command": "ai_command",
+    "pickup-insidental": "pickup_incidental",
+    sticker: "sticker",
+    transit: "transit_tpa",
+    tpa: "transit_tpa",
+    chat: "chat_internal",
+    absensi: "absensi_klaim",
+    klaim: "absensi_klaim",
+  };
+
+  const allowedMenus = (isCore
     ? rawAllowedMenus.filter((key) => CORE_ALLOWED_KEYS.includes(key))
-    : rawAllowedMenus.filter((key) => !CORE_EXCLUSIVE_KEYS.has(key));
+    : rawAllowedMenus.filter((key) => !CORE_EXCLUSIVE_KEYS.has(key))
+  ).filter((key) => {
+    const featKey = MENU_TO_FEATURE[key];
+    if (!featKey) return true;
+    return isFeatureEnabled(activeTenant, featKey);
+  });
 
   const CORE_GROUPS = [
     { key: "core_overview", label: "OVERVIEW" },
@@ -333,7 +354,7 @@ export default function Sidebar({
                 O2W
               </div>
             ) : (
-              <div className="w-9 h-9 rounded-lg bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 shadow-xs flex items-center justify-center p-1 shrink-0 overflow-hidden">
+              <div className="w-9 h-9 rounded-lg bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 shadow-sm flex items-center justify-center p-1 shrink-0 overflow-hidden">
                 <img src={brandLogo} alt="Logo" className="w-full h-full object-contain" />
               </div>
             )}
@@ -391,7 +412,7 @@ export default function Sidebar({
           <div className="flex items-center gap-1.5 min-w-0">
             <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 animate-pulse" />
             <span className="text-slate-500 dark:text-zinc-400 truncate">Tenant:</span>
-            <span className="font-bold text-slate-800 dark:text-zinc-200 truncate">UPS HERU</span>
+            <span className="font-bold text-slate-800 dark:text-zinc-200 truncate">Pilot UPS HERU</span>
           </div>
           <Link
             href="/tenants"
@@ -406,7 +427,7 @@ export default function Sidebar({
       {user && !isCollapsedEffective && (
         <div className="px-3 pt-3 pb-1 shrink-0">
           <div className="px-3 py-2 rounded-lg bg-slate-50/90 dark:bg-zinc-900/90 border border-slate-200/60 dark:border-zinc-800/80 flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-full bg-emerald-600 text-white font-medium flex items-center justify-center text-xs shadow-xs ring-2 ring-emerald-500/15 shrink-0">
+            <div className="w-7 h-7 rounded-full bg-emerald-700 text-white font-medium flex items-center justify-center text-xs shadow-sm ring-2 ring-emerald-500/15 shrink-0">
               {user.nama.charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0 flex-1">
@@ -473,7 +494,7 @@ export default function Sidebar({
                           "flex items-center gap-2.5 px-2.5 py-2 text-xs rounded-lg transition-all duration-150 relative group",
                           isCollapsedEffective ? "justify-center px-0 h-9 w-9 mx-auto" : "",
                           isActive
-                            ? "bg-emerald-50/90 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-300 font-semibold shadow-xs border border-emerald-200/60 dark:border-emerald-800/50"
+                            ? "bg-emerald-50/90 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-300 font-semibold shadow-sm border border-emerald-200/60 dark:border-emerald-800/50"
                             : "text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-100/70 dark:hover:bg-zinc-900/70 font-medium"
                         )}
                         title={isCollapsedEffective ? item.label : undefined}

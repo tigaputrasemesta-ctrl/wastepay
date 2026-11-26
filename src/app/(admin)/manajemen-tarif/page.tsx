@@ -398,7 +398,7 @@ function TarifContent() {
         </div>
         <button
           onClick={fetchData}
-          className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-600 dark:text-zinc-300 text-xs font-semibold hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors shadow-xs"
+          className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-600 dark:text-zinc-300 text-xs font-semibold hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors shadow-sm"
         >
           <RefreshCw className="w-3.5 h-3.5" />
           <span>Segarkan Data</span>
@@ -411,7 +411,7 @@ function TarifContent() {
           onClick={() => setActiveTab("retribusi")}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
             activeTab === "retribusi"
-              ? "bg-white dark:bg-zinc-800 text-emerald-700 dark:text-emerald-400 shadow-xs"
+              ? "bg-white dark:bg-zinc-800 text-emerald-700 dark:text-emerald-400 shadow-sm"
               : "text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200"
           }`}
         >
@@ -426,7 +426,7 @@ function TarifContent() {
           onClick={() => setActiveTab("paket")}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
             activeTab === "paket"
-              ? "bg-white dark:bg-zinc-800 text-emerald-700 dark:text-emerald-400 shadow-xs"
+              ? "bg-white dark:bg-zinc-800 text-emerald-700 dark:text-emerald-400 shadow-sm"
               : "text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200"
           }`}
         >
@@ -441,7 +441,7 @@ function TarifContent() {
           onClick={() => setActiveTab("pickup")}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
             activeTab === "pickup"
-              ? "bg-white dark:bg-zinc-800 text-emerald-700 dark:text-emerald-400 shadow-xs"
+              ? "bg-white dark:bg-zinc-800 text-emerald-700 dark:text-emerald-400 shadow-sm"
               : "text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200"
           }`}
         >
@@ -457,7 +457,7 @@ function TarifContent() {
       {/* TAB 1: KATEGORI RETRIBUSI BULANAN */}
       {/* ======================================================== */}
       {activeTab === "retribusi" && (
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs overflow-hidden">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between p-4 px-6 border-b border-slate-200 dark:border-zinc-800 bg-slate-50/70 dark:bg-zinc-900">
             <div>
               <h2 className="font-bold text-slate-900 dark:text-white text-base">Kategori Tarif Pelanggan</h2>
@@ -465,7 +465,7 @@ function TarifContent() {
             </div>
             <button
               onClick={() => openKat(null)}
-              className="bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl px-3.5 py-2 text-xs font-semibold shadow-xs hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5"
+              className="bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl px-3.5 py-2 text-xs font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Tambah Kategori</span>
@@ -573,7 +573,7 @@ function TarifContent() {
       {/* TAB 2: PAKET KHUSUS */}
       {/* ======================================================== */}
       {activeTab === "paket" && (
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs overflow-hidden">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between p-4 px-6 border-b border-slate-200 dark:border-zinc-800 bg-slate-50/70 dark:bg-zinc-900">
             <div>
               <h2 className="font-bold text-slate-900 dark:text-white text-base">Paket Khusus & Promosi</h2>
@@ -581,7 +581,7 @@ function TarifContent() {
             </div>
             <button
               onClick={() => openPaket(null)}
-              className="bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl px-3.5 py-2 text-xs font-semibold shadow-xs hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5"
+              className="bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl px-3.5 py-2 text-xs font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Tambah Paket</span>
@@ -689,7 +689,7 @@ function TarifContent() {
       {/* TAB 3: TARIF PICKUP INSIDENTAL (ON-DEMAND) */}
       {/* ======================================================== */}
       {activeTab === "pickup" && (
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs overflow-hidden">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm overflow-hidden">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 px-6 border-b border-slate-200 dark:border-zinc-800 bg-slate-50/70 dark:bg-zinc-900 gap-3">
             <div>
               <div className="flex items-center gap-2">
@@ -704,7 +704,7 @@ function TarifContent() {
             </div>
             <button
               onClick={() => openPickup(null)}
-              className="self-start sm:self-auto bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl px-3.5 py-2 text-xs font-semibold shadow-xs hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5 shrink-0"
+              className="self-start sm:self-auto bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl px-3.5 py-2 text-xs font-semibold shadow-sm hover:shadow active:scale-[0.98] transition-all flex items-center gap-1.5 shrink-0"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Tambah Kategori Pickup</span>
@@ -911,7 +911,7 @@ function TarifContent() {
       {/* MODAL: KATEGORI RETRIBUSI BULANAN */}
       {/* ======================================================== */}
       {showKatForm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto">
           <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-zinc-800 shrink-0">
               <div>
@@ -983,7 +983,7 @@ function TarifContent() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-colors"
+                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-700 hover:bg-emerald-700 text-white shadow-sm transition-colors"
                 >
                   Simpan Kategori
                 </button>
@@ -997,7 +997,7 @@ function TarifContent() {
       {/* MODAL: PAKET KHUSUS */}
       {/* ======================================================== */}
       {showPaketForm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto">
           <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-zinc-800 shrink-0">
               <div>
@@ -1066,7 +1066,7 @@ function TarifContent() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-colors"
+                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-700 hover:bg-emerald-700 text-white shadow-sm transition-colors"
                 >
                   Simpan Paket
                 </button>
@@ -1080,7 +1080,7 @@ function TarifContent() {
       {/* MODAL: KATEGORI PICKUP INSIDENTAL */}
       {/* ======================================================== */}
       {showPickupForm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto">
           <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-zinc-800 shrink-0">
               <div>
@@ -1261,7 +1261,7 @@ function TarifContent() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-colors"
+                  className="px-5 py-2 text-xs font-semibold rounded-lg bg-emerald-700 hover:bg-emerald-700 text-white shadow-sm transition-colors"
                 >
                   Simpan Kategori Pickup
                 </button>

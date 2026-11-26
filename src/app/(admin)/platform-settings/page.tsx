@@ -85,13 +85,13 @@ export default function PlatformSettingsPage() {
       {/* Grid Status Infrastruktur Riil */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Box 1: Multi-Tenant Database Health */}
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs space-y-4">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2 text-sm">
-              <Database className="w-4 h-4 text-emerald-600" />
+              <Database className="w-4 h-4 text-emerald-700" />
               <span>Database Multi-Tenant</span>
             </h3>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center gap-1">
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-700 flex items-center gap-1">
               <CheckCircle2 className="w-3 h-3" /> Connected
             </span>
           </div>
@@ -117,7 +117,7 @@ export default function PlatformSettingsPage() {
         </div>
 
         {/* Box 2: Dual WhatsApp Gateway Cluster */}
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs space-y-4">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2 text-sm">
               <MessageCircle className="w-4 h-4 text-teal-600" />
@@ -135,11 +135,11 @@ export default function PlatformSettingsPage() {
             </div>
             <div className="flex justify-between">
               <span className="text-slate-400">Device 1 (Bot Tagihan):</span>
-              <span className="font-medium text-emerald-600">Siap Operasional</span>
+              <span className="font-medium text-emerald-700">Siap Operasional</span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-400">Device 2 (CS &amp; Pengaduan):</span>
-              <span className="font-medium text-emerald-600">Siap Operasional</span>
+              <span className="font-medium text-emerald-700">Siap Operasional</span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-400">Batas Kuota Bulanan:</span>
@@ -149,7 +149,7 @@ export default function PlatformSettingsPage() {
         </div>
 
         {/* Box 3: Duitku Payment Gateway Health */}
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs space-y-4">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2 text-sm">
               <CreditCard className="w-4 h-4 text-sky-600" />
@@ -167,7 +167,7 @@ export default function PlatformSettingsPage() {
             </div>
             <div className="flex justify-between">
               <span className="text-slate-400">QRIS Dinamis &amp; VA:</span>
-              <span className="font-medium text-emerald-600">Aktif</span>
+              <span className="font-medium text-emerald-700">Aktif</span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-400">Total Transaksi Lunas:</span>
@@ -175,14 +175,14 @@ export default function PlatformSettingsPage() {
             </div>
             <div className="flex justify-between">
               <span className="text-slate-400">Callback Endpoint:</span>
-              <span className="font-medium text-emerald-600">/api/duitku/callback</span>
+              <span className="font-medium text-emerald-700">/api/duitku/callback</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Feature Flags & Control Toggles */}
-      <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-6 shadow-xs space-y-4">
+      <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm space-y-4">
         <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
           <Sliders className="w-4 h-4 text-sky-600" />
           <span>Feature Flags & Kontrol Operasional Platform</span>
@@ -220,7 +220,7 @@ export default function PlatformSettingsPage() {
             <button
               onClick={() => setAutoBackupEnabled(!autoBackupEnabled)}
               className={`p-1 rounded-full transition-colors ${
-                autoBackupEnabled ? "text-emerald-600" : "text-slate-300 dark:text-zinc-600"
+                autoBackupEnabled ? "text-emerald-700" : "text-slate-300 dark:text-zinc-600"
               }`}
             >
               {autoBackupEnabled ? <ToggleRight className="w-8 h-8" /> : <ToggleLeft className="w-8 h-8" />}
@@ -239,7 +239,7 @@ export default function PlatformSettingsPage() {
             <button
               onClick={() => setDebugLogEnabled(!debugLogEnabled)}
               className={`p-1 rounded-full transition-colors ${
-                debugLogEnabled ? "text-emerald-600" : "text-slate-300 dark:text-zinc-600"
+                debugLogEnabled ? "text-emerald-700" : "text-slate-300 dark:text-zinc-600"
               }`}
             >
               {debugLogEnabled ? <ToggleRight className="w-8 h-8" /> : <ToggleLeft className="w-8 h-8" />}
@@ -252,7 +252,7 @@ export default function PlatformSettingsPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Link
           href="/users"
-          className="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-xs hover:border-sky-500 flex items-center justify-between transition-all"
+          className="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm hover:border-sky-500 flex items-center justify-between transition-all"
         >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-sky-50 dark:bg-sky-950 text-sky-600 flex items-center justify-center">
@@ -270,7 +270,7 @@ export default function PlatformSettingsPage() {
 
         <Link
           href="/audit-log"
-          className="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-xs hover:border-sky-500 flex items-center justify-between transition-all"
+          className="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm hover:border-sky-500 flex items-center justify-between transition-all"
         >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950 text-purple-600 flex items-center justify-center">

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { createPayment, isDuitkuEnabled, truncateRaw } from "@/lib/duitku";
 import { hitungRincian } from "@/lib/invoice";
 import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
+import { getTenantFromRequest, buildTenantFilter } from "@/lib/tenant";
 
 const BULAN = [
   "Januari", "Februari", "Maret", "April", "Mei", "Juni",
@@ -21,6 +22,15 @@ const BULAN = [
  */
 export async function POST(request: Request) {
   try {
+    const tenantCtx = await getTenantFromRequest(request);
+    if (!tenantCtx.isValid || tenantCtx.isCore) {
+      return NextResponse.json(
+        { error: "Layanan pembayaran online hanya tersedia melalui portal mitra operasional." },
+        { status: 403 }
+      );
+    }
+    const tenantFilter = buildTenantFilter(tenantCtx.tenant.id, tenantCtx.isPilot);
+
     if (!isDuitkuEnabled()) {
       return NextResponse.json(
         { error: "Pembayaran online belum diaktifkan. Hubungi pengelola." },
@@ -51,8 +61,11 @@ export async function POST(request: Request) {
       );
     }
 
-    const pelanggan = await prisma.pelanggan.findUnique({
-      where: { kodePelanggan: String(kode).trim() },
+    const pelanggan = await prisma.pelanggan.findFirst({
+      where: {
+        kodePelanggan: String(kode).trim(),
+        ...tenantFilter,
+      },
       select: {
         id: true,
         nama: true,
@@ -77,8 +90,11 @@ export async function POST(request: Request) {
       );
     }
 
-    const tagihan = await prisma.tagihan.findUnique({
-      where: { id: parseInt(tagihanId) },
+    const tagihan = await prisma.tagihan.findFirst({
+      where: {
+        id: parseInt(tagihanId),
+        ...tenantFilter,
+      },
       select: {
         id: true, pelangganId: true, jumlah: true, denda: true,
         status: true, bulan: true, tahun: true,
@@ -100,6 +116,7 @@ export async function POST(request: Request) {
         tagihanId: tagihan.id,
         metode: { in: ["transfer", "tunai", "ewallet", "virtual_account"] },
         status: "pending",
+        ...tenantFilter,
       },
       select: { id: true, metode: true },
     });
@@ -131,6 +148,7 @@ export async function POST(request: Request) {
           metode: "duitku",
           status: "pending",
           createdAt: { gte: thirtyMinutesAgo },
+          ...tenantFilter,
           duitkuTransaction: {
             is: {
               paymentMethod: metodeUpper,
@@ -200,6 +218,7 @@ export async function POST(request: Request) {
           metode: "duitku",
           status: "pending",
           catatan: `Payment Gateway Via Duitku (${metodeUpper})${biayaAdmin ? ` — biaya layanan sistem web Rp ${biayaAdmin.toLocaleString("id-ID")}` : ""}`,
+          tenantId: tenantCtx.tenant.id,
         },
       });
 
@@ -214,6 +233,7 @@ export async function POST(request: Request) {
           statusMessage: dt.statusMessage || "PROCESS",
           amount: dt.amount ? Number(dt.amount) : total,
           rawResponse: truncateRaw(dt),
+          tenantId: tenantCtx.tenant.id,
         },
       });
 

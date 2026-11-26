@@ -32,7 +32,7 @@ const CoverageLeafletMap = dynamic(
     ssr: false,
     loading: () => (
       <div className="w-full h-[400px] sm:h-[480px] bg-slate-100 rounded-3xl flex flex-col items-center justify-center p-6 text-center border border-slate-200">
-        <RefreshCw className="w-7 h-7 animate-spin text-emerald-600 mb-2" />
+        <RefreshCw className="w-7 h-7 animate-spin text-emerald-700 mb-2" />
         <p className="text-sm font-extrabold text-slate-800">
           Memuat Peta Layanan Depok...
         </p>
@@ -229,9 +229,9 @@ export default function CoverageExplorer() {
             <div className="flex-1 flex items-center bg-white border border-slate-300 rounded-2xl shadow-sm focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all p-1">
               <div className="pl-3 pr-2 text-slate-400">
                 {isSearchingGeocode ? (
-                  <RefreshCw className="w-4 h-4 animate-spin text-emerald-600" />
+                  <RefreshCw className="w-4 h-4 animate-spin text-emerald-700" />
                 ) : (
-                  <Search className="w-4 h-4 text-emerald-600" />
+                  <Search className="w-4 h-4 text-emerald-700" />
                 )}
               </div>
 
@@ -294,7 +294,7 @@ export default function CoverageExplorer() {
                       onClick={() => handleSelectLocation(loc)}
                       className="w-full text-left px-3.5 py-2.5 hover:bg-slate-50 transition-colors flex items-center gap-2.5"
                     >
-                      <MapPin className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <MapPin className="w-4 h-4 text-emerald-700 shrink-0" />
                       <div className="min-w-0">
                         <p className="text-xs font-bold text-slate-900 truncate">{loc.label}</p>
                         <p className="text-xs text-slate-600 truncate">{loc.sublabel}</p>

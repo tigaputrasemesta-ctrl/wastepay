@@ -460,7 +460,7 @@ export default function MarketplacePage() {
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            <Leaf className="w-5 h-5 text-emerald-600 m-auto mt-3.5" />
+                            <Leaf className="w-5 h-5 text-emerald-700 m-auto mt-3.5" />
                           )}
                         </div>
                         <div className="min-w-0">
@@ -531,7 +531,7 @@ export default function MarketplacePage() {
                         className="sr-only"
                       />
                       <div className="flex items-center gap-1.5">
-                        <Truck className="w-3.5 h-3.5 text-emerald-600" />
+                        <Truck className="w-3.5 h-3.5 text-emerald-700" />
                         <span>Kurir Armada Depok</span>
                       </div>
                       <span className="text-[10px] font-normal text-slate-500 mt-1">
@@ -555,7 +555,7 @@ export default function MarketplacePage() {
                         className="sr-only"
                       />
                       <div className="flex items-center gap-1.5">
-                        <Building2 className="w-3.5 h-3.5 text-emerald-600" />
+                        <Building2 className="w-3.5 h-3.5 text-emerald-700" />
                         <span>Ambil di TPS 3R</span>
                       </div>
                       <span className="text-[10px] font-normal text-slate-500 mt-1">
@@ -664,7 +664,7 @@ export default function MarketplacePage() {
                       }`}
                     >
                       <div className="flex items-center gap-1.5">
-                        <CreditCard className="w-3.5 h-3.5 text-emerald-600" />
+                        <CreditCard className="w-3.5 h-3.5 text-emerald-700" />
                         <span>Duitku Payment</span>
                       </div>
                       <span className="text-[10px] font-normal text-slate-500 mt-1">
@@ -681,7 +681,7 @@ export default function MarketplacePage() {
                       }`}
                     >
                       <div className="flex items-center gap-1.5">
-                        <Truck className="w-3.5 h-3.5 text-emerald-600" />
+                        <Truck className="w-3.5 h-3.5 text-emerald-700" />
                         <span>Bayar di Tempat</span>
                       </div>
                       <span className="text-[10px] font-normal text-slate-500 mt-1">
@@ -713,7 +713,7 @@ export default function MarketplacePage() {
                   </span>
                 </div>
                 {isGratisOngkir && !isAmbilSendiri && (
-                  <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-semibold text-[11px]">
+                  <div className="flex justify-between text-emerald-700 dark:text-emerald-400 font-semibold text-[11px]">
                     <span>Diskon Promo Ongkir:</span>
                     <span>-Rp 10.000</span>
                   </div>

@@ -120,7 +120,7 @@ const SECONDARY_MENU_ITEMS = [
   {
     title: "Keuangan & Pelayanan Warga",
     items: [
-      { label: "Marketplace UPS HERU", href: "/manajemen-marketplace", icon: ShoppingBag, desc: "Katalog produk olahan pupuk & pesanan warga", badge: "Toko" },
+      { label: "Toko Olahan & Pupuk", href: "/manajemen-marketplace", icon: ShoppingBag, desc: "Katalog produk olahan pupuk & pesanan warga", badge: "Toko" },
       { label: "Komplain & Masalah", href: "/komplain", icon: MessageSquare, desc: "Tiket keluhan & aduan warga", badge: null },
       { label: "Laporan & Rekapitulasi", href: "/laporan", icon: BarChart3, desc: "Analitik retribusi, tonase & performa", badge: "Laporan" },
       { label: "Pengeluaran Operasional", href: "/pengeluaran", icon: Wallet, desc: "Biaya solar, tol & pemeliharaan armada", badge: null },
@@ -307,7 +307,7 @@ export default function AdminMobileResponsiveShell({
             <div className="md:hidden flex items-center gap-2">
               <span
                 style={!isCore && brandColor ? { backgroundColor: brandColor } : undefined}
-                className={`w-7 h-7 rounded-lg text-white font-black flex items-center justify-center text-[10px] shadow-xs overflow-hidden ${
+                className={`w-7 h-7 rounded-lg text-white font-black flex items-center justify-center text-[10px] shadow-sm overflow-hidden ${
                   isCore
                     ? "bg-gradient-to-tr from-sky-600 to-teal-500 shadow-sky-600/20"
                     : "bg-emerald-700"
@@ -460,14 +460,14 @@ export default function AdminMobileResponsiveShell({
                               onClick={() => setDrawerOpen(false)}
                               className={`flex items-center justify-between p-3 rounded-2xl transition-all ${
                                 isItemActive
-                                  ? "bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 text-emerald-900 dark:text-emerald-300 shadow-xs"
+                                  ? "bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 text-emerald-900 dark:text-emerald-300 shadow-sm"
                                   : "bg-slate-50/60 dark:bg-zinc-800/50 hover:bg-slate-100 dark:hover:bg-zinc-800 border border-slate-100 dark:border-zinc-700/60 text-slate-800 dark:text-zinc-200"
                               }`}
                             >
                               <div className="flex items-center gap-3 min-w-0">
                                 <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
                                   isItemActive
-                                    ? "bg-emerald-600 text-white shadow-xs"
+                                    ? "bg-emerald-700 text-white shadow-sm"
                                     : "bg-white dark:bg-zinc-900 text-slate-600 dark:text-zinc-300 border border-slate-200 dark:border-zinc-700"
                                 }`}>
                                   <Icon className="w-4 h-4" />

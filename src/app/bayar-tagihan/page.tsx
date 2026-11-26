@@ -410,7 +410,7 @@ function BayarTagihanContent() {
               />
               <button
                 type="submit"
-                className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold shadow-md transition"
+                className="w-full py-3 bg-emerald-700 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold shadow-md transition"
               >
                 Cari Tagihan &rarr;
               </button>
@@ -657,7 +657,7 @@ function BayarTagihanContent() {
 
                       <div className="pp-bca-row">
                         <span className="text-slate-500 text-xs">Kode Unik Transfer</span>
-                        <span className="val text-xs font-mono font-bold text-emerald-600">+ Rp{kodeUnik}</span>
+                        <span className="val text-xs font-mono font-bold text-emerald-700">+ Rp{kodeUnik}</span>
                       </div>
 
                       <div className="pp-bca-total-box">
@@ -730,7 +730,7 @@ function BayarTagihanContent() {
                                 onClick={() => fileInputRef.current?.click()}
                                 className="pp-dropzone"
                               >
-                                <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-xl mb-1.5 shadow-xs">
+                                <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-xl mb-1.5 shadow-sm">
                                   📷
                                 </div>
                                 <div className="text-xs font-bold text-slate-800">

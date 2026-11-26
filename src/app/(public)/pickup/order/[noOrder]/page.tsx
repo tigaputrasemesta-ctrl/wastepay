@@ -88,7 +88,7 @@ export default function PickupOrderDetailPage({
           </p>
           <Link
             href="/pickup"
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700 w-full"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-700 text-white text-xs font-semibold hover:bg-emerald-700 w-full"
           >
             <ChevronLeft className="w-4 h-4" />
             Kembali ke Form Pemesanan
@@ -173,7 +173,7 @@ export default function PickupOrderDetailPage({
                         <div
                           className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-colors flex-shrink-0 ${
                             isDone
-                              ? "bg-emerald-600 text-white ring-4 ring-emerald-100 dark:ring-emerald-950/60"
+                              ? "bg-emerald-700 text-white ring-4 ring-emerald-100 dark:ring-emerald-950/60"
                               : "bg-slate-100 dark:bg-zinc-800 text-slate-400 border border-slate-300 dark:border-zinc-700"
                           }`}
                         >
@@ -183,7 +183,7 @@ export default function PickupOrderDetailPage({
                           <div
                             className={`text-xs font-bold ${
                               isCurrent
-                                ? "text-emerald-600 dark:text-emerald-400"
+                                ? "text-emerald-700 dark:text-emerald-400"
                                 : isDone
                                 ? "text-slate-800 dark:text-zinc-200"
                                 : "text-slate-400"
@@ -211,7 +211,7 @@ export default function PickupOrderDetailPage({
           {order.petugas && (
             <div className="mt-4 p-4 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm">
+                <div className="w-10 h-10 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-sm">
                   {order.petugas.nama.charAt(0)}
                 </div>
                 <div>
@@ -234,7 +234,7 @@ export default function PickupOrderDetailPage({
                   href={`https://wa.me/${order.petugas.noTelepon.replace(/^0/, "62")}?text=Halo%20pak%20${encodeURIComponent(order.petugas.nama)},%20saya%20pemesan%20pickup%20nomor%20${encodeURIComponent(order.noOrder)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-semibold flex items-center gap-1.5 hover:bg-emerald-700"
+                  className="px-3 py-1.5 rounded-lg bg-emerald-700 text-white text-xs font-semibold flex items-center gap-1.5 hover:bg-emerald-700"
                 >
                   <Phone className="w-3.5 h-3.5" />
                   Hubungi Supir
@@ -249,7 +249,7 @@ export default function PickupOrderDetailPage({
           {/* Detail Muatan */}
           <div className="bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 rounded-2xl p-5 shadow-sm space-y-3">
             <h3 className="font-bold text-sm text-slate-900 dark:text-zinc-100 flex items-center gap-2">
-              <Truck className="w-4 h-4 text-emerald-600" />
+              <Truck className="w-4 h-4 text-emerald-700" />
               Rincian Muatan Sampah
             </h3>
 
@@ -316,7 +316,7 @@ export default function PickupOrderDetailPage({
           {/* Detail Lokasi & Pemesan */}
           <div className="bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 rounded-2xl p-5 shadow-sm space-y-3">
             <h3 className="font-bold text-sm text-slate-900 dark:text-zinc-100 flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-emerald-600" />
+              <MapPin className="w-4 h-4 text-emerald-700" />
               Lokasi & Kontak Pemesan
             </h3>
 
@@ -372,7 +372,7 @@ export default function PickupOrderDetailPage({
                 href={`https://wa.me/6285353286062?text=Halo%20Admin%20UPS%20HERU,%20saya%20ingin%20menanyakan%20status%20order%20pickup%20nomor%20${encodeURIComponent(order.noOrder)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-1.5 w-full py-2 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700"
+                className="inline-flex items-center justify-center gap-1.5 w-full py-2 rounded-lg bg-emerald-700 text-white text-xs font-bold hover:bg-emerald-700"
               >
                 <Phone className="w-3.5 h-3.5" />
                 Hubungi Admin UPS HERU

@@ -684,7 +684,7 @@ export default async function LandingPage() {
 
             <div className="grid md:grid-cols-3 gap-6 items-stretch">
               {/* Box 1: Pupuk Kompos Organik 5kg */}
-              <div className="group bg-slate-50 dark:bg-zinc-950 border-2 border-slate-200 dark:border-zinc-800 hover:border-[#0d7a75] dark:hover:border-emerald-500 rounded-2xl overflow-hidden flex flex-col justify-between shadow-xs hover:shadow-xl transition-all duration-300">
+              <div className="group bg-slate-50 dark:bg-zinc-950 border-2 border-slate-200 dark:border-zinc-800 hover:border-[#0d7a75] dark:hover:border-emerald-500 rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-xl transition-all duration-300">
                 <div className="bg-[#0d7a75] text-white text-[11px] font-extrabold uppercase py-1.5 px-4 text-center tracking-wider flex items-center justify-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-amber-300 shrink-0" />
                   <span>Pilihan Terfavorit Pekarangan</span>
@@ -754,7 +754,7 @@ export default async function LandingPage() {
               </div>
 
               {/* Box 2: Pupuk Organik Cair (POC) 1 Liter */}
-              <div className="group bg-slate-50 dark:bg-zinc-950 border-2 border-slate-200 dark:border-zinc-800 hover:border-emerald-500 rounded-2xl overflow-hidden flex flex-col justify-between shadow-xs hover:shadow-xl transition-all duration-300">
+              <div className="group bg-slate-50 dark:bg-zinc-950 border-2 border-slate-200 dark:border-zinc-800 hover:border-emerald-500 rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-xl transition-all duration-300">
                 <div className="bg-emerald-700 text-white text-[11px] font-extrabold uppercase py-1.5 px-4 text-center tracking-wider flex items-center justify-center gap-1.5">
                   <Leaf className="w-3.5 h-3.5 text-emerald-300 shrink-0" />
                   <span>Konsentrat Nutrisi Daun & Akar</span>
@@ -792,19 +792,19 @@ export default async function LandingPage() {
                     </div>
                     <ul className="space-y-2.5 text-xs text-slate-600 dark:text-zinc-300 font-medium">
                       <li className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
                         <span>Kaya mikroba aktif pemacu pertumbuhan</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
                         <span>Mudah diserap daun melalui stomata</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
                         <span>Sangat hemat, 1 botol menghasilkan puluhan liter</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
                         <span>Aman untuk tanaman sayur konsumsi & hias</span>
                       </li>
                     </ul>
@@ -824,7 +824,7 @@ export default async function LandingPage() {
               </div>
 
               {/* Box 3: Tempat Sampah Pilah 2-in-1 */}
-              <div className="group bg-slate-50 dark:bg-zinc-950 border-2 border-slate-200 dark:border-zinc-800 hover:border-teal-500 rounded-2xl overflow-hidden flex flex-col justify-between shadow-xs hover:shadow-xl transition-all duration-300">
+              <div className="group bg-slate-50 dark:bg-zinc-950 border-2 border-slate-200 dark:border-zinc-800 hover:border-teal-500 rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-xl transition-all duration-300">
                 <div className="bg-teal-700 text-white text-[11px] font-extrabold uppercase py-1.5 px-4 text-center tracking-wider flex items-center justify-center gap-1.5">
                   <PackageCheck className="w-3.5 h-3.5 text-teal-300 shrink-0" />
                   <span>Solusi Pilah Praktis Keluarga</span>
@@ -898,7 +898,7 @@ export default async function LandingPage() {
             <div className="text-center pt-2">
               <Link
                 href="/marketplace"
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-200 font-bold text-xs sm:text-sm transition-all shadow-xs active:scale-95"
+                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-200 font-bold text-xs sm:text-sm transition-all shadow-sm active:scale-95"
               >
                 <ShoppingBag className="w-4 h-4 text-[#0d7a75] dark:text-emerald-400" />
                 <span>Lihat Semua Produk (Maggot BSF, Kompos Curah 20kg & Kantong Ramah Lingkungan)</span>
@@ -942,7 +942,7 @@ export default async function LandingPage() {
                 { name: "Sukamaju", days: "Sel, Kam, Sab", area: "Poros Tole Iskandar & Sekitarnya" },
                 { name: "Kalimulya", days: "Sen, Kam, Sab", area: "Kebon Duren & Sektor Pemukiman" },
               ].map((w, i) => (
-                <div key={i} className="p-3.5 sm:p-4 rounded-2xl bg-white border border-slate-200/90 shadow-xs space-y-1.5 hover:border-[#0d7a75]/40 transition-all">
+                <div key={i} className="p-3.5 sm:p-4 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-1.5 hover:border-[#0d7a75]/40 transition-all">
                   <div className="flex items-center gap-1.5 text-xs font-extrabold text-slate-900">
                     <MapPin className="w-3.5 h-3.5 text-[#0d7a75] shrink-0" />
                     <span>Kel. {w.name}</span>
@@ -1088,7 +1088,7 @@ export default async function LandingPage() {
               </div>
               <Link
                 href="/artikel"
-                className="inline-flex items-center justify-center w-full sm:w-auto gap-1.5 px-4 py-2 bg-white border border-slate-200 hover:border-slate-300 text-slate-800 rounded-xl text-xs font-bold transition-colors shrink-0 shadow-xs"
+                className="inline-flex items-center justify-center w-full sm:w-auto gap-1.5 px-4 py-2 bg-white border border-slate-200 hover:border-slate-300 text-slate-800 rounded-xl text-xs font-bold transition-colors shrink-0 shadow-sm"
               >
                 <span>Lihat Semua Artikel</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -1103,7 +1103,7 @@ export default async function LandingPage() {
                   <Link
                     key={a.id}
                     href={`/artikel/${a.slug}`}
-                    className="group flex flex-col bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-xs hover:shadow-md hover:border-emerald-300 transition-all"
+                    className="group flex flex-col bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-sm hover:shadow-md hover:border-emerald-300 transition-all"
                   >
                     <div className="h-44 bg-slate-900 border-b border-slate-100 relative overflow-hidden flex items-center justify-center">
                       <ArticleImage
@@ -1112,7 +1112,7 @@ export default async function LandingPage() {
                         fallbackCategory={a.kategori}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
-                      <span className="absolute top-3 left-3 px-2.5 py-0.5 bg-black/60 backdrop-blur-md text-white text-[10px] font-extrabold uppercase rounded-md shadow-xs z-10">
+                      <span className="absolute top-3 left-3 px-2.5 py-0.5 bg-black/60 backdrop-blur-md text-white text-[10px] font-extrabold uppercase rounded-md shadow-sm z-10">
                         {a.kategori}
                       </span>
                     </div>
@@ -1249,13 +1249,20 @@ export default async function LandingPage() {
       </main>
 
       {/* ── 13. Comprehensive Municipal Footer ── */}
-      <PublicFooter />
+      <PublicFooter
+        brandName={brandName}
+        city={brandCity}
+        logoUrl={brandLogo}
+        whatsappDigits={whatsappDigits}
+        alamatKantor={brandAddress}
+        email={brandEmail}
+      />
 
       {/* ── Mobile-First Fixed Bottom Navigation Bar (md:hidden) ── */}
       <MobileBottomNav />
 
       {/* Floating WA Button (Khusus Landing Page) */}
-      <FloatingWhatsApp phoneNumber="6281400782617" />
+      <FloatingWhatsApp phoneNumber={whatsappDigits} brandName={brandName} />
     </div>
   );
 }

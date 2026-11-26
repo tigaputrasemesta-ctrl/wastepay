@@ -4,6 +4,7 @@ import { hitungRincian, labelMetodePembayaran } from "@/lib/invoice";
 import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
 import { isWaEnabled, kirimReportOwner, templateBuktiBayarBaruOwner } from "@/lib/wa";
 import { persistBase64Image } from "@/lib/server/media-storage";
+import { getTenantFromRequest, buildTenantFilter } from "@/lib/tenant";
 
 const METODE_VALID = ["transfer", "ewallet", "qris", "virtual_account", "tunai"];
 
@@ -14,6 +15,15 @@ const METODE_VALID = ["transfer", "ewallet", "qris", "virtual_account", "tunai"]
  */
 export async function POST(request: Request) {
   try {
+    const tenantCtx = await getTenantFromRequest(request);
+    if (!tenantCtx.isValid || tenantCtx.isCore) {
+      return NextResponse.json(
+        { error: "Layanan pembayaran tagihan hanya tersedia melalui portal mitra operasional." },
+        { status: 403 }
+      );
+    }
+    const tenantFilter = buildTenantFilter(tenantCtx.tenant.id, tenantCtx.isPilot);
+
     // Rate limit per IP — cegah spam unggah bukti (banjir antrian verifikasi admin).
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
     if (!(await allowAttempt(`publik-bayar:${ip}`, { max: 10, windowMs: 15 * 60 * 1000 }))) {
@@ -33,8 +43,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Metode tidak valid" }, { status: 400 });
     }
 
-    const pelanggan = await prisma.pelanggan.findUnique({
-      where: { kodePelanggan: kode.trim() },
+    const pelanggan = await prisma.pelanggan.findFirst({
+      where: {
+        kodePelanggan: kode.trim(),
+        ...tenantFilter,
+      },
       select: {
         id: true,
         nama: true,
@@ -60,8 +73,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const tagihan = await prisma.tagihan.findUnique({
-      where: { id: parseInt(tagihanId) },
+    const tagihan = await prisma.tagihan.findFirst({
+      where: {
+        id: parseInt(tagihanId),
+        pelangganId: pelanggan.id,
+        ...tenantFilter,
+      },
       select: { id: true, pelangganId: true, noInvoice: true, jumlah: true, denda: true, status: true },
     });
     if (!tagihan || tagihan.pelangganId !== pelanggan.id) {
@@ -79,6 +96,7 @@ export async function POST(request: Request) {
       where: {
         tagihanId: tagihan.id,
         status: "pending",
+        ...tenantFilter,
       },
       select: { id: true, metode: true, createdAt: true },
     });
@@ -117,6 +135,7 @@ export async function POST(request: Request) {
         buktiBayar: savedBuktiBayar || null,
         catatan: catatan || null,
         status: "pending",
+        tenantId: tenantCtx.tenant.id,
       },
     });
 

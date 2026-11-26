@@ -263,7 +263,7 @@ export default function SelesaiForm({
                         onClick={() => setCatatan(chip)}
                         className={`text-[11px] px-2.5 py-1 rounded-full border transition-all ${
                           catatan === chip
-                            ? "bg-emerald-600 text-white border-emerald-600 font-bold"
+                            ? "bg-emerald-700 text-white border-emerald-600 font-bold"
                             : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
                         }`}
                       >
@@ -290,7 +290,7 @@ export default function SelesaiForm({
                     Foto Bukti Sampah Terangkut:
                   </label>
                   <label className="flex items-center justify-center gap-2 border-2 border-dashed border-slate-300 hover:border-emerald-500 rounded-2xl p-4 cursor-pointer bg-slate-50 text-slate-600 text-xs font-semibold transition-all">
-                    <Camera className="w-5 h-5 text-emerald-600" />
+                    <Camera className="w-5 h-5 text-emerald-700" />
                     <span>{fotoPreview ? "Ganti Foto Kamera" : "Ambil Foto Lewat Kamera"}</span>
                     <input
                       type="file"
@@ -330,7 +330,7 @@ export default function SelesaiForm({
             type="button"
             onClick={handleSelesaikan}
             disabled={loading}
-            className="w-full min-h-[64px] bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-60 text-white rounded-2xl font-black text-base shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-3 transition-all cursor-pointer"
+            className="w-full min-h-[64px] bg-emerald-700 hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-60 text-white rounded-2xl font-black text-base shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-3 transition-all cursor-pointer"
           >
             {loading ? (
               <div className="flex items-center gap-2">

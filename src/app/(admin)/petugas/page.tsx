@@ -283,7 +283,7 @@ export default function PetugasPage() {
                             onClick={() => copyReferralLink(p)}
                             className={`p-1 rounded-md transition flex items-center gap-1 ${
                               copiedId === p.id
-                                ? "bg-emerald-600 text-white"
+                                ? "bg-emerald-700 text-white"
                                 : "text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 border border-transparent hover:border-emerald-200"
                             }`}
                             title={`Salin link pendaftaran: /daftar?ref=${encodeURIComponent(p.nama)}`}
@@ -406,7 +406,7 @@ export default function PetugasPage() {
                   onClick={() => copyReferralLink(p)}
                   className={`text-xs font-semibold px-2.5 py-1 rounded-lg transition border flex items-center gap-1 ${
                     copiedId === p.id
-                      ? "bg-emerald-600 text-white border-emerald-600"
+                      ? "bg-emerald-700 text-white border-emerald-600"
                       : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
                   }`}
                 >
@@ -547,7 +547,7 @@ export default function PetugasPage() {
                                 : form.jabatan.filter((x) => x !== j.value),
                             })
                           }
-                          className="mt-0.5 w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 dark:border-zinc-700"
+                          className="mt-0.5 w-4 h-4 rounded text-emerald-700 focus:ring-emerald-500 border-slate-300 dark:border-zinc-700"
                         />
                         <span>
                           <span className="block text-sm font-semibold text-slate-900 dark:text-zinc-100">{j.label}</span>
@@ -607,7 +607,7 @@ export default function PetugasPage() {
                 <button
                   type="submit"
                   form="petugas-modal-form"
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-xs active:scale-95 transition-all"
+                  className="px-5 py-2 bg-emerald-700 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm active:scale-95 transition-all"
                 >
                   {editing ? "Simpan Perubahan" : "Tambah Petugas"}
                 </button>

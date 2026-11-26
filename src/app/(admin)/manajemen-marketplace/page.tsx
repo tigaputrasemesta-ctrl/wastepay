@@ -367,7 +367,7 @@ export default function ManajemenMarketplacePage() {
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-600/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-emerald-600/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 flex items-center justify-center">
             <ShoppingBag className="w-6 h-6" />
           </div>
           <div>
@@ -386,7 +386,7 @@ export default function ManajemenMarketplacePage() {
             onClick={() => setActiveTab("orders")}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
               activeTab === "orders"
-                ? "bg-white dark:bg-zinc-900 text-emerald-700 dark:text-emerald-400 shadow-xs"
+                ? "bg-white dark:bg-zinc-900 text-emerald-700 dark:text-emerald-400 shadow-sm"
                 : "text-slate-600 dark:text-zinc-400 hover:text-slate-900"
             }`}
           >
@@ -397,7 +397,7 @@ export default function ManajemenMarketplacePage() {
             onClick={() => setActiveTab("products")}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
               activeTab === "products"
-                ? "bg-white dark:bg-zinc-900 text-emerald-700 dark:text-emerald-400 shadow-xs"
+                ? "bg-white dark:bg-zinc-900 text-emerald-700 dark:text-emerald-400 shadow-sm"
                 : "text-slate-600 dark:text-zinc-400 hover:text-slate-900"
             }`}
           >
@@ -409,7 +409,7 @@ export default function ManajemenMarketplacePage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200/90 dark:border-zinc-800 rounded-2xl p-4 shadow-xs">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200/90 dark:border-zinc-800 rounded-2xl p-4 shadow-sm">
           <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Total Pesanan</span>
           <span className="text-2xl font-black text-slate-900 dark:text-white mt-1 block tabular-nums">
             {totalOrdersCount}
@@ -417,15 +417,15 @@ export default function ManajemenMarketplacePage() {
           <span className="text-[10px] text-slate-500 mt-0.5 block">Semua pesanan masuk</span>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 border border-amber-200/70 dark:border-amber-900/50 rounded-2xl p-4 shadow-xs">
-          <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider block">Menunggu Bayar</span>
+        <div className="bg-white dark:bg-zinc-900 border border-amber-200/70 dark:border-amber-900/50 rounded-2xl p-4 shadow-sm">
+          <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider block">Menunggu Bayar</span>
           <span className="text-2xl font-black text-amber-700 dark:text-amber-300 mt-1 block tabular-nums">
             {menungguBayarCount}
           </span>
-          <span className="text-[10px] text-amber-600/80 mt-0.5 block">Perlu verifikasi</span>
+          <span className="text-[10px] text-amber-700/80 mt-0.5 block">Perlu verifikasi</span>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 border border-blue-200/70 dark:border-blue-900/50 rounded-2xl p-4 shadow-xs">
+        <div className="bg-white dark:bg-zinc-900 border border-blue-200/70 dark:border-blue-900/50 rounded-2xl p-4 shadow-sm">
           <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider block">Sedang Dikemas</span>
           <span className="text-2xl font-black text-blue-700 dark:text-blue-300 mt-1 block tabular-nums">
             {diprosesCount}
@@ -433,15 +433,15 @@ export default function ManajemenMarketplacePage() {
           <span className="text-[10px] text-blue-600/80 mt-0.5 block">Siap kirim ke kurir</span>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 border border-emerald-200/70 dark:border-emerald-900/50 rounded-2xl p-4 shadow-xs">
-          <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">Pesanan Selesai</span>
+        <div className="bg-white dark:bg-zinc-900 border border-emerald-200/70 dark:border-emerald-900/50 rounded-2xl p-4 shadow-sm">
+          <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider block">Pesanan Selesai</span>
           <span className="text-2xl font-black text-emerald-700 dark:text-emerald-300 mt-1 block tabular-nums">
             {selesaiCount}
           </span>
-          <span className="text-[10px] text-emerald-600/80 mt-0.5 block">Diterima warga</span>
+          <span className="text-[10px] text-emerald-700/80 mt-0.5 block">Diterima warga</span>
         </div>
 
-        <div className="col-span-2 lg:col-span-1 bg-white dark:bg-zinc-900 border border-slate-200/90 dark:border-zinc-800 rounded-2xl p-4 shadow-xs">
+        <div className="col-span-2 lg:col-span-1 bg-white dark:bg-zinc-900 border border-slate-200/90 dark:border-zinc-800 rounded-2xl p-4 shadow-sm">
           <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Total Omset Produk</span>
           <span className="text-xl font-black text-emerald-700 dark:text-emerald-400 mt-1 block tabular-nums truncate">
             Rp {totalOmset.toLocaleString("id-ID")}
@@ -469,7 +469,7 @@ export default function ManajemenMarketplacePage() {
             </div>
             <button
               onClick={() => fetchOrders()}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-xs font-bold text-slate-700 dark:text-zinc-300 hover:bg-slate-50 shadow-xs"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-xs font-bold text-slate-700 dark:text-zinc-300 hover:bg-slate-50 shadow-sm"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               <span>Refresh</span>
@@ -486,7 +486,7 @@ export default function ManajemenMarketplacePage() {
                   onClick={() => setActiveOrderStatus(tab.id)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                     active
-                      ? "bg-emerald-700 text-white shadow-xs"
+                      ? "bg-emerald-700 text-white shadow-sm"
                       : "bg-white dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-800"
                   }`}
                 >
@@ -524,7 +524,7 @@ export default function ManajemenMarketplacePage() {
                 return (
                   <div
                     key={order.id}
-                    className="bg-white dark:bg-zinc-900 border border-slate-200/90 dark:border-zinc-800 rounded-2xl p-4 shadow-xs flex flex-col justify-between hover:border-emerald-400/70 transition-all space-y-4"
+                    className="bg-white dark:bg-zinc-900 border border-slate-200/90 dark:border-zinc-800 rounded-2xl p-4 shadow-sm flex flex-col justify-between hover:border-emerald-400/70 transition-all space-y-4"
                   >
                     <div className="space-y-3">
                       {/* Header */}
@@ -619,7 +619,7 @@ export default function ManajemenMarketplacePage() {
                           </span>
                         </div>
                         {order.tanggalBayar && (
-                          <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1 pt-0.5">
+                          <div className="text-[10px] text-emerald-700 dark:text-emerald-400 font-bold flex items-center gap-1 pt-0.5">
                             <CheckCircle2 className="w-3 h-3" />
                             <span>Lunas: {new Date(order.tanggalBayar).toLocaleDateString("id-ID")}</span>
                           </div>
@@ -651,7 +651,7 @@ export default function ManajemenMarketplacePage() {
 
                       <button
                         onClick={() => openEditOrderModal(order)}
-                        className="flex-1 px-3 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95 shadow-xs"
+                        className="flex-1 px-3 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95 shadow-sm"
                       >
                         <Edit3 className="w-3.5 h-3.5" />
                         <span>Update Status & Resi</span>
@@ -685,7 +685,7 @@ export default function ManajemenMarketplacePage() {
 
             <button
               onClick={() => openProductForm()}
-              className="w-full sm:w-auto px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-xs active:scale-95"
+              className="w-full sm:w-auto px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95"
             >
               <Plus className="w-4 h-4" />
               <span>Tambah Produk Baru</span>
@@ -711,7 +711,7 @@ export default function ManajemenMarketplacePage() {
               {filteredProducts.map((prod) => (
                 <div
                   key={prod.id}
-                  className="bg-white dark:bg-zinc-900 border border-slate-200/90 dark:border-zinc-800 rounded-2xl p-4 shadow-xs flex flex-col justify-between hover:border-emerald-400 transition-all space-y-3"
+                  className="bg-white dark:bg-zinc-900 border border-slate-200/90 dark:border-zinc-800 rounded-2xl p-4 shadow-sm flex flex-col justify-between hover:border-emerald-400 transition-all space-y-3"
                 >
                   <div className="space-y-2">
                     {/* Image / Thumbnail */}
@@ -723,7 +723,7 @@ export default function ManajemenMarketplacePage() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <Leaf className="w-10 h-10 text-emerald-600/40" />
+                        <Leaf className="w-10 h-10 text-emerald-700/40" />
                       )}
                       {!prod.aktif && (
                         <div className="absolute inset-0 bg-black/50 backdrop-blur-2xs flex items-center justify-center">
@@ -732,7 +732,7 @@ export default function ManajemenMarketplacePage() {
                           </span>
                         </div>
                       )}
-                      <span className="absolute top-2 left-2 text-[10px] font-bold bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xs px-2 py-0.5 rounded-md text-slate-700 dark:text-zinc-300 shadow-2xs">
+                      <span className="absolute top-2 left-2 text-[10px] font-bold bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm px-2 py-0.5 rounded-md text-slate-700 dark:text-zinc-300 shadow-sm">
                         {prod.kategori.replace(/_/g, " ")}
                       </span>
                     </div>
@@ -795,7 +795,7 @@ export default function ManajemenMarketplacePage() {
       {/* MODAL UPDATE STATUS PESANAN */}
       {/* ========================================================== */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in overflow-y-auto">
           <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl max-w-md w-full max-h-[90vh] flex flex-col p-6 shadow-2xl">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-zinc-800 shrink-0">
               <div>
@@ -835,7 +835,7 @@ export default function ManajemenMarketplacePage() {
                 </div>
                 <div className="flex justify-between pt-1 border-t border-slate-200 dark:border-zinc-700 font-extrabold text-slate-900 dark:text-white">
                   <span>Total Tagihan:</span>
-                  <span className="text-emerald-600 dark:text-emerald-400">
+                  <span className="text-emerald-700 dark:text-emerald-400">
                     Rp {selectedOrder.totalHarga.toLocaleString("id-ID")}
                   </span>
                 </div>
@@ -903,7 +903,7 @@ export default function ManajemenMarketplacePage() {
                 type="button"
                 onClick={handleSaveOrder}
                 disabled={savingOrder}
-                className="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs active:scale-95 disabled:opacity-50"
+                className="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95 disabled:opacity-50"
               >
                 {savingOrder ? "Menyimpan..." : "Simpan Perubahan"}
               </button>
@@ -916,7 +916,7 @@ export default function ManajemenMarketplacePage() {
       {/* MODAL TAMBAH / EDIT PRODUK */}
       {/* ========================================================== */}
       {showProductModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in overflow-y-auto">
           <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl max-w-lg w-full max-h-[90vh] flex flex-col p-6 shadow-2xl">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-zinc-800 shrink-0">
               <h3 className="text-base font-black text-slate-900 dark:text-white">
@@ -1054,7 +1054,7 @@ export default function ManajemenMarketplacePage() {
                     id="prodAktif"
                     checked={prodForm.aktif}
                     onChange={(e) => setProdForm({ ...prodForm, aktif: e.target.checked })}
-                    className="w-4 h-4 rounded-md text-emerald-600 focus:ring-emerald-500"
+                    className="w-4 h-4 rounded-md text-emerald-700 focus:ring-emerald-500"
                   />
                   <label htmlFor="prodAktif" className="font-bold text-slate-800 dark:text-zinc-200">
                     Tampilkan produk ini di etalase toko (Aktif)
@@ -1073,7 +1073,7 @@ export default function ManajemenMarketplacePage() {
                 <button
                   type="submit"
                   disabled={savingProduct}
-                  className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs active:scale-95 disabled:opacity-50"
+                  className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95 disabled:opacity-50"
                 >
                   {savingProduct ? "Menyimpan..." : "Simpan Produk"}
                 </button>

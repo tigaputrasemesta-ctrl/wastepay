@@ -322,8 +322,8 @@ export default function ModalApprovalPelanggan({
         {/* Modal Header */}
         <div className="px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center justify-center text-base font-bold">
-              <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 flex items-center justify-center text-base font-bold">
+              <ShieldCheck className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
             </div>
             <div>
               <h2 className="text-base font-semibold text-slate-900 dark:text-zinc-100 leading-tight tracking-tight">
@@ -359,7 +359,7 @@ export default function ModalApprovalPelanggan({
                     target="_blank"
                     className="inline-flex items-center gap-1 text-emerald-700 hover:underline font-semibold"
                   >
-                    <Phone className="w-3.5 h-3.5 text-emerald-600" />
+                    <Phone className="w-3.5 h-3.5 text-emerald-700" />
                     <span>{pelanggan.noTelepon}</span>
                   </a>
                   <span>•</span>
@@ -371,10 +371,10 @@ export default function ModalApprovalPelanggan({
               {/* Badge Referral */}
               <div className="shrink-0">
                 {pelanggan.referal ? (
-                  <div className="px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-semibold flex items-center gap-1.5 shadow-xs">
+                  <div className="px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-semibold flex items-center gap-1.5 shadow-sm">
                     <span>🤝</span>
                     <div>
-                      <span className="text-[9px] font-bold uppercase tracking-wider block text-emerald-600">
+                      <span className="text-[9px] font-bold uppercase tracking-wider block text-emerald-700">
                         Referral / Petugas
                       </span>
                       <span>{pelanggan.referal}</span>
@@ -390,7 +390,7 @@ export default function ModalApprovalPelanggan({
           </div>
 
           {/* Status Hasil Survei Lapangan */}
-          <div className="p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 space-y-3 shadow-xs">
+          <div className="p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 space-y-3 shadow-sm">
             <div className="flex items-center justify-between">
               <h4 className="text-xs font-black text-slate-800 dark:text-zinc-100 uppercase tracking-wider flex items-center gap-1.5">
                 <span>📋</span>
@@ -426,9 +426,9 @@ export default function ModalApprovalPelanggan({
                   </div>
                 ) : (
                   <div className="h-28 rounded-lg border border-dashed border-amber-300 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/30 flex flex-col items-center justify-center text-center p-2">
-                    <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 mb-1" />
+                    <AlertTriangle className="w-5 h-5 text-amber-700 dark:text-amber-400 mb-1" />
                     <span className="text-xs font-semibold text-amber-800 dark:text-amber-300">Foto Belum Diambil</span>
-                    <span className="text-[10px] text-amber-600 dark:text-amber-400">Survei petugas belum upload foto</span>
+                    <span className="text-[10px] text-amber-700 dark:text-amber-400">Survei petugas belum upload foto</span>
                   </div>
                 )}
               </div>
@@ -464,7 +464,7 @@ export default function ModalApprovalPelanggan({
                       <span className="text-xs font-semibold text-amber-800 dark:text-amber-300 block">
                         Titik Belum Ditandai
                       </span>
-                      <span className="text-[10px] text-amber-600 dark:text-amber-400">
+                      <span className="text-[10px] text-amber-700 dark:text-amber-400">
                         Koordinat GPS belum dimasukkan petugas
                       </span>
                     </div>
@@ -499,7 +499,7 @@ export default function ModalApprovalPelanggan({
             </div>
 
             {/* Bagian 1: Zonasi & Wilayah */}
-            <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-3">
+            <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-3">
               <span className="text-[10px] font-black text-slate-700 dark:text-zinc-300 uppercase tracking-wider block">
                 1. Wilayah &amp; Penetapan Zona Pickup
               </span>
@@ -532,12 +532,12 @@ export default function ModalApprovalPelanggan({
                 <div>
                   <label className="block text-xs font-bold text-emerald-800 dark:text-emerald-300 mb-1 flex items-center gap-1">
                     <span>📍 Zona Area Pickup *</span>
-                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-normal">(Wajib)</span>
+                    <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-normal">(Wajib)</span>
                   </label>
                   <select
                     value={selectedZona}
                     onChange={(e) => setSelectedZona(e.target.value)}
-                    className="w-full px-3 py-2 border-2 border-emerald-500 dark:border-emerald-600 rounded-xl text-xs font-bold bg-white dark:bg-zinc-950 text-emerald-900 dark:text-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-xs"
+                    className="w-full px-3 py-2 border-2 border-emerald-500 dark:border-emerald-600 rounded-xl text-xs font-bold bg-white dark:bg-zinc-950 text-emerald-900 dark:text-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm"
                   >
                     <option value="">— Pilih Zona Angkut Pelanggan —</option>
                     {availableZonas.map((z) => (
@@ -588,7 +588,7 @@ export default function ModalApprovalPelanggan({
             </div>
 
             {/* Bagian 2: Mobil Armada Pickup & Jadwal Multi-Hari */}
-            <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-3.5">
+            <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-3.5">
               <span className="text-[10px] font-black text-slate-700 dark:text-zinc-300 uppercase tracking-wider block">
                 2. Mobil Armada Pickup &amp; Jadwal Penjemputan (Bisa &gt; 1 Hari)
               </span>
@@ -726,7 +726,7 @@ export default function ModalApprovalPelanggan({
                         onClick={() => toggleHari(h)}
                         className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                           isSelected
-                            ? "bg-emerald-700 text-white shadow-xs scale-[1.02]"
+                            ? "bg-emerald-700 text-white shadow-sm scale-[1.02]"
                             : "bg-slate-50 dark:bg-zinc-950 text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800 border border-slate-200 dark:border-zinc-800"
                         }`}
                       >
@@ -754,7 +754,7 @@ export default function ModalApprovalPelanggan({
             </div>
 
             {/* Bagian 3: Tarif & Kategori */}
-            <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 shadow-xs space-y-3">
+            <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 shadow-sm space-y-3">
               <span className="text-[10px] font-black text-slate-700 dark:text-zinc-300 uppercase tracking-wider block">
                 3. Kategori Tarif &amp; Paket Layanan
               </span>
@@ -824,7 +824,7 @@ export default function ModalApprovalPelanggan({
               type="button"
               onClick={handleApprove}
               disabled={submitting || rejecting}
-              className="flex-1 sm:flex-none px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white text-xs font-semibold shadow-xs transition flex items-center justify-center gap-1.5"
+              className="flex-1 sm:flex-none px-5 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-700 active:scale-[0.98] text-white text-xs font-semibold shadow-sm transition flex items-center justify-center gap-1.5"
             >
               <CheckCircle2 className="w-4 h-4" />
               <span>{submitting ? "Memproses Approval…" : "✓ Setujui & Aktifkan Layanan"}</span>

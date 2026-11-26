@@ -284,7 +284,7 @@ export default function PickupInsidentalPage() {
         <div className="flex items-center gap-2 self-start md:self-auto">
           <Link
             href="/manajemen-tarif?tab=pickup"
-            className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 active:scale-95 transition-all shadow-xs"
+            className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 active:scale-95 transition-all shadow-sm"
           >
             <DollarSign className="w-3.5 h-3.5" />
             <span>Pengaturan Tarif Pickup</span>
@@ -292,7 +292,7 @@ export default function PickupInsidentalPage() {
           <button
             onClick={() => fetchOrders()}
             disabled={refreshing}
-            className="flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-zinc-800 active:scale-95 transition-all shadow-xs"
+            className="flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-zinc-800 active:scale-95 transition-all shadow-sm"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin text-teal-600" : ""}`} />
             <span>Segarkan</span>
@@ -302,7 +302,7 @@ export default function PickupInsidentalPage() {
 
       {/* Summary KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200/90 dark:border-zinc-800 rounded-2xl p-4 shadow-xs">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200/90 dark:border-zinc-800 rounded-2xl p-4 shadow-sm">
           <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Total Pesanan</span>
           <span className="text-2xl font-black text-slate-900 dark:text-white mt-1 block tabular-nums">
             {totalCount}
@@ -310,18 +310,18 @@ export default function PickupInsidentalPage() {
           <span className="text-[10px] text-slate-500 dark:text-zinc-400 mt-0.5 block">Di filter saat ini</span>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 border border-amber-200/70 dark:border-amber-900/50 rounded-2xl p-4 shadow-xs">
+        <div className="bg-white dark:bg-zinc-900 border border-amber-200/70 dark:border-amber-900/50 rounded-2xl p-4 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider block">Menunggu</span>
+            <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider block">Menunggu</span>
             <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
           </div>
           <span className="text-2xl font-black text-amber-700 dark:text-amber-300 mt-1 block tabular-nums">
             {menungguCount}
           </span>
-          <span className="text-[10px] text-amber-600/80 dark:text-amber-400/80 mt-0.5 block">Perlu konfirmasi</span>
+          <span className="text-[10px] text-amber-700/80 dark:text-amber-400/80 mt-0.5 block">Perlu konfirmasi</span>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 border border-blue-200/70 dark:border-blue-900/50 rounded-2xl p-4 shadow-xs">
+        <div className="bg-white dark:bg-zinc-900 border border-blue-200/70 dark:border-blue-900/50 rounded-2xl p-4 shadow-sm">
           <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider block">Dalam Proses</span>
           <span className="text-2xl font-black text-blue-700 dark:text-blue-300 mt-1 block tabular-nums">
             {aktifCount}
@@ -329,15 +329,15 @@ export default function PickupInsidentalPage() {
           <span className="text-[10px] text-blue-600/80 dark:text-blue-400/80 mt-0.5 block">Ditugaskan / OTW</span>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 border border-emerald-200/70 dark:border-emerald-900/50 rounded-2xl p-4 shadow-xs">
-          <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">Selesai Angkut</span>
+        <div className="bg-white dark:bg-zinc-900 border border-emerald-200/70 dark:border-emerald-900/50 rounded-2xl p-4 shadow-sm">
+          <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider block">Selesai Angkut</span>
           <span className="text-2xl font-black text-emerald-700 dark:text-emerald-300 mt-1 block tabular-nums">
             {selesaiCount}
           </span>
-          <span className="text-[10px] text-emerald-600/80 dark:text-emerald-400/80 mt-0.5 block">Berhasil dijemput</span>
+          <span className="text-[10px] text-emerald-700/80 dark:text-emerald-400/80 mt-0.5 block">Berhasil dijemput</span>
         </div>
 
-        <div className="col-span-2 lg:col-span-1 bg-white dark:bg-zinc-900 border border-slate-200/90 dark:border-zinc-800 rounded-2xl p-4 shadow-xs">
+        <div className="col-span-2 lg:col-span-1 bg-white dark:bg-zinc-900 border border-slate-200/90 dark:border-zinc-800 rounded-2xl p-4 shadow-sm">
           <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Total Nilai Layanan</span>
           <span className="text-xl font-black text-slate-900 dark:text-white mt-1 block tabular-nums text-teal-600 dark:text-teal-400 truncate">
             Rp {totalNominal.toLocaleString("id-ID")}
@@ -371,7 +371,7 @@ export default function PickupInsidentalPage() {
                 onClick={() => setActiveStatus(tab.id)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                   active
-                    ? "bg-teal-600 text-white shadow-xs"
+                    ? "bg-teal-600 text-white shadow-sm"
                     : "bg-white dark:bg-zinc-900 text-slate-600 dark:text-zinc-400 border border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-800"
                 }`}
               >
@@ -411,7 +411,7 @@ export default function PickupInsidentalPage() {
             return (
               <div
                 key={order.id}
-                className="bg-white dark:bg-zinc-900 border border-slate-200/90 dark:border-zinc-800 rounded-2xl p-4 shadow-xs flex flex-col justify-between hover:border-teal-400/70 transition-all space-y-4"
+                className="bg-white dark:bg-zinc-900 border border-slate-200/90 dark:border-zinc-800 rounded-2xl p-4 shadow-sm flex flex-col justify-between hover:border-teal-400/70 transition-all space-y-4"
               >
                 {/* Header Card */}
                 <div className="space-y-2">
@@ -518,7 +518,7 @@ export default function PickupInsidentalPage() {
                       <button
                         type="button"
                         onClick={() => setPreviewFoto(order.fotoSelesai)}
-                        className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 hover:underline"
+                        className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1 hover:underline"
                       >
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         <span>Lihat Foto Bukti Selesai Muat</span>
@@ -560,7 +560,7 @@ export default function PickupInsidentalPage() {
                   {/* Kelola Button */}
                   <button
                     onClick={() => openEditModal(order)}
-                    className="flex-1 px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95 shadow-xs"
+                    className="flex-1 px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95 shadow-sm"
                   >
                     <Edit3 className="w-3.5 h-3.5" />
                     <span>Kelola & Assign</span>
@@ -574,7 +574,7 @@ export default function PickupInsidentalPage() {
 
       {/* MODAL KELOLA / ASSIGN ORDER */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200 overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200 overflow-y-auto">
           <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl max-w-lg w-full max-h-[90vh] flex flex-col p-6 shadow-2xl">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-zinc-800 shrink-0">
               <div>
@@ -725,7 +725,7 @@ export default function PickupInsidentalPage() {
                 type="button"
                 onClick={handleSaveEdit}
                 disabled={savingEdit}
-                className="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs active:scale-95 disabled:opacity-50"
+                className="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95 disabled:opacity-50"
               >
                 {savingEdit ? "Menyimpan..." : "Simpan Perubahan"}
               </button>
@@ -738,7 +738,7 @@ export default function PickupInsidentalPage() {
       {previewFoto && (
         <div
           onClick={() => setPreviewFoto(null)}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xs p-4 animate-in fade-in overflow-y-auto"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in overflow-y-auto"
         >
           <div className="relative max-w-2xl w-full bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden p-3 shadow-2xl">
             <button

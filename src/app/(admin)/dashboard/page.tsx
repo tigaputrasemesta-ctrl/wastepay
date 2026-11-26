@@ -499,10 +499,10 @@ export default async function DashboardPage() {
   ];
 
   const quickActions = [
-    { label: "Verifikasi Pembayaran", desc: stats.pembayaranPending > 0 ? `${stats.pembayaranPending} pembayaran review` : "Semua pembayaran terverifikasi", href: "/tagihan", icon: <CreditCard size={18} className="text-emerald-600 dark:text-emerald-400" strokeWidth={1.75} /> },
+    { label: "Verifikasi Pembayaran", desc: stats.pembayaranPending > 0 ? `${stats.pembayaranPending} pembayaran review` : "Semua pembayaran terverifikasi", href: "/tagihan", icon: <CreditCard size={18} className="text-emerald-700 dark:text-emerald-400" strokeWidth={1.75} /> },
     { label: "Generate Tagihan", desc: `Terbitkan tagihan ${bulan} ${tahun}`, href: "/tagihan", icon: <Receipt size={18} className="text-blue-600 dark:text-blue-400" strokeWidth={1.75} /> },
     { label: "Rekonsiliasi Kas", desc: stats.rekonHariIni ? "Sudah dilakukan hari ini" : "Belum audit kas hari ini", href: "/rekonsiliasi", icon: <Building2 size={18} className="text-violet-600 dark:text-violet-400" strokeWidth={1.75} /> },
-    { label: "Setujui Klaim Petugas", desc: stats.klaimMenunggu > 0 ? `${stats.klaimMenunggu} klaim menunggu` : "Tidak ada klaim pending", href: "/klaim", icon: <Coins size={18} className="text-amber-600 dark:text-amber-400" strokeWidth={1.75} /> },
+    { label: "Setujui Klaim Petugas", desc: stats.klaimMenunggu > 0 ? `${stats.klaimMenunggu} klaim menunggu` : "Tidak ada klaim pending", href: "/klaim", icon: <Coins size={18} className="text-amber-700 dark:text-amber-400" strokeWidth={1.75} /> },
     { label: "Registrasi Pelanggan", desc: "Daftarkan warga atau rute baru", href: "/pelanggan", icon: <UserPlus size={18} className="text-teal-600 dark:text-teal-400" strokeWidth={1.75} /> },
     { label: "Peta Realtime", desc: "Pantau armada & koordinat warga", href: "/peta", icon: <MapPin size={18} className="text-indigo-600 dark:text-indigo-400" strokeWidth={1.75} /> },
     { label: "Rekap Absensi", desc: `${stats.petugasHadir} petugas hadir hari ini`, href: "/absensi", icon: <CalendarCheck size={18} className="text-sky-600 dark:text-sky-400" strokeWidth={1.75} /> },
@@ -528,7 +528,7 @@ export default async function DashboardPage() {
     <div className="p-4 sm:p-6 pb-12 space-y-6 w-full text-slate-900 dark:text-zinc-100">
       {/* Pengumuman Penting Banner */}
       {stats.pengumumanPenting && (
-        <div className="bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/60 text-amber-900 dark:text-amber-200 px-4 py-3 rounded-2xl flex items-start sm:items-center justify-between gap-4 shadow-xs relative">
+        <div className="bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/60 text-amber-900 dark:text-amber-200 px-4 py-3 rounded-2xl flex items-start sm:items-center justify-between gap-4 shadow-sm relative">
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300 flex items-center justify-center shrink-0 border border-amber-200/60 dark:border-amber-800/60">
               <Megaphone size={16} strokeWidth={2} />
@@ -543,7 +543,7 @@ export default async function DashboardPage() {
 
       {/* Action Inbox Alerts */}
       {(stats.pembayaranPending > 0 || stats.klaimMenunggu > 0 || stats.chatBelumDibaca > 0 || stats.tidakDiangkut > 0 || stats.notifGagal > 0) && (
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs overflow-hidden">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm overflow-hidden">
           <div className="px-5 py-3 border-b border-slate-100 dark:border-zinc-800 flex items-center justify-between bg-slate-50/70 dark:bg-zinc-950/80">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
@@ -688,14 +688,14 @@ export default async function DashboardPage() {
           )}
           <Link
             href="/tagihan"
-            className="h-9 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium shadow-xs transition-colors flex items-center gap-1.5 active:scale-[0.98]"
+            className="h-9 px-4 rounded-lg bg-emerald-700 hover:bg-emerald-700 text-white text-xs font-medium shadow-sm transition-colors flex items-center gap-1.5 active:scale-[0.98]"
           >
             <Plus size={14} strokeWidth={2} />
             <span>Kelola Tagihan</span>
           </Link>
           <Link
             href="/laporan"
-            className="h-9 px-4 rounded-lg bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-200 text-xs font-medium border border-slate-200/80 dark:border-zinc-800 shadow-xs transition-colors flex items-center gap-1.5 active:scale-[0.98]"
+            className="h-9 px-4 rounded-lg bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-200 text-xs font-medium border border-slate-200/80 dark:border-zinc-800 shadow-sm transition-colors flex items-center gap-1.5 active:scale-[0.98]"
           >
             <Download size={14} className="text-slate-500 dark:text-zinc-400" />
             <span>Unduh Laporan</span>
@@ -723,7 +723,7 @@ export default async function DashboardPage() {
         </div>
         <Link
           href="/ai-command"
-          className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-2 transition shadow-sm whitespace-nowrap self-stretch sm:self-auto justify-center"
+          className="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-2 transition shadow-sm whitespace-nowrap self-stretch sm:self-auto justify-center"
         >
           <span>Buka AI Hub & Review Draf</span>
           <ArrowRight size={14} />
@@ -733,7 +733,7 @@ export default async function DashboardPage() {
       {/* Stat Cards Grid (2 rows x 4 cols) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {cards.map((c) => (
-          <div key={c.no} className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 p-4.5 shadow-xs hover:border-slate-300 dark:hover:border-zinc-700 transition-all flex flex-col justify-between relative overflow-hidden">
+          <div key={c.no} className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 p-4.5 shadow-sm hover:border-slate-300 dark:hover:border-zinc-700 transition-all flex flex-col justify-between relative overflow-hidden">
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-medium text-slate-600 dark:text-zinc-400 uppercase tracking-wider">{c.label}</span>
               <div className={`w-9 h-9 rounded-xl border flex items-center justify-center ${c.iconBg}`}>
@@ -762,14 +762,14 @@ export default async function DashboardPage() {
       </div>
 
       {/* Collection Progress & Denda */}
-      <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 p-5 shadow-xs">
+      <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 p-5 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
           <div>
             <h2 className="text-xs font-semibold text-slate-900 dark:text-zinc-100 uppercase tracking-wider">Realisasi Penagihan Retribusi Bulan Ini</h2>
             <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5 font-normal">Rasio perolehan kas pembayaran terhadap tagihan yang diterbitkan</p>
           </div>
           <div className="flex items-baseline gap-1.5">
-            <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 font-mono tabular-nums">{persenTerkumpul}%</span>
+            <span className="text-2xl font-bold text-emerald-700 dark:text-emerald-400 font-mono tabular-nums">{persenTerkumpul}%</span>
             <span className="text-xs font-medium text-slate-500 dark:text-zinc-400">terkumpul</span>
           </div>
         </div>
@@ -804,7 +804,7 @@ export default async function DashboardPage() {
             <span className={`w-2 h-2 rounded-full shrink-0 ${stats.totalDendaBulanIni > 0 ? "bg-amber-500" : "bg-emerald-500"}`} />
             <div>
               <span className="text-slate-600 dark:text-zinc-300 block text-xs font-normal">Denda Terakumulasi</span>
-              <span className={`font-semibold text-xs font-mono tabular-nums ${stats.totalDendaBulanIni > 0 ? "text-amber-600 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400"}`}>
+              <span className={`font-semibold text-xs font-mono tabular-nums ${stats.totalDendaBulanIni > 0 ? "text-amber-700 dark:text-amber-400" : "text-emerald-700 dark:text-emerald-400"}`}>
                 {formatRupiah(stats.totalDendaBulanIni)}
               </span>
             </div>
@@ -815,7 +815,7 @@ export default async function DashboardPage() {
       {/* Tren & Tunggakan & Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
         {/* Trend Bar Chart */}
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 p-5 shadow-xs lg:col-span-3 flex flex-col justify-between">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 p-5 shadow-sm lg:col-span-3 flex flex-col justify-between">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
             <div>
               <h2 className="text-xs font-semibold text-slate-900 dark:text-zinc-100 uppercase tracking-wider">Tren Pemasukan vs Pengeluaran</h2>
@@ -850,7 +850,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Breakdown Pengeluaran */}
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 p-5 shadow-xs lg:col-span-3 flex flex-col justify-between">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 p-5 shadow-sm lg:col-span-3 flex flex-col justify-between">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
             <div>
               <h2 className="text-xs font-semibold text-slate-900 dark:text-zinc-100 uppercase tracking-wider">Breakdown Pengeluaran Bulan Ini</h2>
@@ -863,7 +863,7 @@ export default async function DashboardPage() {
             {stats.pengeluaranPerKategori.length === 0 ? (
                <div className="text-center py-10 text-slate-500 dark:text-zinc-400 text-xs font-normal">
                  <p className="mb-2">Belum ada data pengeluaran bulan ini</p>
-                 <Link href="/laporan" className="text-emerald-600 dark:text-emerald-400 hover:underline font-medium">+ Catat Pengeluaran Baru</Link>
+                 <Link href="/laporan" className="text-emerald-700 dark:text-emerald-400 hover:underline font-medium">+ Catat Pengeluaran Baru</Link>
                </div>
             ) : stats.pengeluaranPerKategori.map((k) => {
                const catMap: Record<string, { label: string, color: string }> = {
@@ -898,7 +898,7 @@ export default async function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
         {/* Top Tunggakan */}
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs overflow-hidden lg:col-span-3 flex flex-col">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm overflow-hidden lg:col-span-3 flex flex-col">
           <div className="px-5 py-4 border-b border-slate-100 dark:border-zinc-800 flex justify-between items-center bg-slate-50/70 dark:bg-zinc-950/80">
             <div>
               <h2 className="text-xs font-semibold text-slate-900 dark:text-zinc-100 uppercase tracking-wider">Tunggakan Terbesar</h2>
@@ -910,7 +910,7 @@ export default async function DashboardPage() {
           <div className="p-4 flex-1 flex flex-col justify-between space-y-2.5">
             {topTunggakan.length === 0 ? (
               <div className="text-center py-10">
-                <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400">Nihil Tunggakan Kritis</p>
+                <p className="text-xs font-medium text-emerald-700 dark:text-emerald-400">Nihil Tunggakan Kritis</p>
                 <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5 font-normal">Semua pelanggan tertib bayar tepat waktu</p>
               </div>
             ) : (
@@ -932,7 +932,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Performa Kelurahan */}
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs overflow-hidden lg:col-span-3 flex flex-col">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm overflow-hidden lg:col-span-3 flex flex-col">
           <div className="px-5 py-4 border-b border-slate-100 dark:border-zinc-800 flex justify-between items-center bg-slate-50/70 dark:bg-zinc-950/80">
             <div>
               <h2 className="text-xs font-semibold text-slate-900 dark:text-zinc-100 uppercase tracking-wider">Performa Penagihan per Kelurahan</h2>
@@ -970,7 +970,7 @@ export default async function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
         {/* Referral Leaderboard */}
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs overflow-hidden lg:col-span-2 flex flex-col">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm overflow-hidden lg:col-span-2 flex flex-col">
           <div className="px-5 py-4 border-b border-slate-100 dark:border-zinc-800 flex justify-between items-center bg-slate-50/70 dark:bg-zinc-950/80">
             <div>
               <div className="flex items-center gap-1.5">
@@ -984,7 +984,7 @@ export default async function DashboardPage() {
             {stats.topReferral.length === 0 ? (
               <div className="text-center py-6 text-slate-500 dark:text-zinc-400 text-xs font-normal">
                  <p className="mb-2">Belum ada data referral</p>
-                 <Link href="/petugas" className="text-emerald-600 dark:text-emerald-400 hover:underline font-medium">Lihat Petugas</Link>
+                 <Link href="/petugas" className="text-emerald-700 dark:text-emerald-400 hover:underline font-medium">Lihat Petugas</Link>
               </div>
             ) : stats.topReferral.map((r, i) => (
               <div key={r.referal} className="flex items-center justify-between text-xs">
@@ -1007,7 +1007,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Komposisi Sampah */}
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs overflow-hidden lg:col-span-4 flex flex-col">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm overflow-hidden lg:col-span-4 flex flex-col">
           <div className="px-5 py-4 border-b border-slate-100 dark:border-zinc-800 flex justify-between items-center bg-slate-50/70 dark:bg-zinc-950/80">
             <div>
               <h2 className="text-xs font-semibold text-slate-900 dark:text-zinc-100 uppercase tracking-wider">Komposisi Sampah Bulan Ini</h2>
@@ -1018,7 +1018,7 @@ export default async function DashboardPage() {
             {stats.komposisiSampah.length === 0 ? (
               <div className="text-center py-6 text-slate-500 dark:text-zinc-400 text-xs font-normal">
                  <p className="mb-2">Belum ada data pengangkutan sampah</p>
-                 <Link href="/jadwal" className="text-emerald-600 dark:text-emerald-400 hover:underline font-medium">Jadwalkan Pengangkutan</Link>
+                 <Link href="/jadwal" className="text-emerald-700 dark:text-emerald-400 hover:underline font-medium">Jadwalkan Pengangkutan</Link>
               </div>
             ) : stats.komposisiSampah.map(k => {
               const catMap: Record<string, { label: string, color: string, dot: string }> = {
@@ -1051,12 +1051,12 @@ export default async function DashboardPage() {
       {/* Quick Actions & System Status */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Quick Actions */}
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 p-5 shadow-xs">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 p-5 shadow-sm">
           <h2 className="text-xs font-semibold text-slate-900 dark:text-zinc-100 uppercase tracking-wider mb-0.5">Menu Akses Cepat</h2>
           <p className="text-xs text-slate-500 dark:text-zinc-400 mb-4 font-normal">Pintasan operasional harian dinas</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             {quickActions.map((a) => (
-              <Link key={a.href + a.label} href={a.href} className="group p-3 rounded-xl border border-slate-200/70 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-slate-50/70 dark:hover:bg-zinc-800/60 hover:border-slate-300 dark:hover:border-zinc-700 hover:shadow-xs transition-all flex items-start gap-3">
+              <Link key={a.href + a.label} href={a.href} className="group p-3 rounded-xl border border-slate-200/70 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-slate-50/70 dark:hover:bg-zinc-800/60 hover:border-slate-300 dark:hover:border-zinc-700 hover:shadow-sm transition-all flex items-start gap-3">
                 <span className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-zinc-800 border border-slate-200/80 dark:border-zinc-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">{a.icon}</span>
                 <span className="flex-1 min-w-0">
                   <span className="block text-xs font-medium text-slate-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">{a.label}</span>
@@ -1068,7 +1068,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* System Status */}
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 p-5 shadow-xs flex flex-col justify-between">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 p-5 shadow-sm flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
               <div>
@@ -1092,7 +1092,7 @@ export default async function DashboardPage() {
           <div className="mt-5 pt-4 border-t border-slate-100 dark:border-zinc-800">
             <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50/70 dark:bg-zinc-950/80 border border-slate-200/80 dark:border-zinc-800">
               <span className="text-xs font-medium text-slate-700 dark:text-zinc-300">Piutang Retribusi Belum Masuk</span>
-              <span className={`text-sm font-bold font-mono tabular-nums ${sisa > 0 ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"}`}>{formatRupiah(sisa)}</span>
+              <span className={`text-sm font-bold font-mono tabular-nums ${sisa > 0 ? "text-rose-600 dark:text-rose-400" : "text-emerald-700 dark:text-emerald-400"}`}>{formatRupiah(sisa)}</span>
             </div>
           </div>
         </div>

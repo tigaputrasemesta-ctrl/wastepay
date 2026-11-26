@@ -5,6 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ThemeToggle from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
+import { isFeatureEnabled } from "@/lib/tenant/features";
+import { resolveTenantByHost } from "@/lib/tenant/config";
 import {
   PackageCheck,
   Tag,
@@ -26,18 +28,33 @@ export interface PublicNavbarProps {
   tagline?: string;
   logoUrl?: string;
   whatsappDigits?: string;
+  fiturAktif?: string | string[] | null;
 }
 
 export default function PublicNavbar({
   brandName = "UPS HERU",
   logoUrl = "/ups-heru-logo.jpg",
   whatsappDigits = "6281400782617",
+  fiturAktif,
 }: PublicNavbarProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [layananOpen, setLayananOpen] = useState(false);
   const [prevPathname, setPrevPathname] = useState(pathname);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [activeTenant, setActiveTenant] = useState<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const resolved = resolveTenantByHost(window.location.hostname);
+      setActiveTenant(resolved.tenant);
+    }
+  }, []);
+
+  const tenantForCheck = activeTenant || (fiturAktif ? { fiturAktif } : null);
+  const hasMarketplace = isFeatureEnabled(tenantForCheck, "marketplace");
+  const hasArtikel = isFeatureEnabled(tenantForCheck, "artikel");
+  const hasPickup = isFeatureEnabled(tenantForCheck, "pickup_incidental");
 
   // Close mobile drawer and dropdown on route change
   if (pathname !== prevPathname) {
@@ -101,7 +118,7 @@ export default function PublicNavbar({
           />
           <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight leading-none">
             {brandName}
-            <span className="text-emerald-600 dark:text-emerald-400">.</span>
+            <span className="text-emerald-700 dark:text-emerald-400">.</span>
           </span>
         </Link>
 
@@ -139,23 +156,25 @@ export default function PublicNavbar({
                 onMouseLeave={() => setLayananOpen(false)}
                 className="absolute top-full left-0 mt-1 w-64 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl shadow-xl p-2 space-y-1 animate-in fade-in slide-in-from-top-2 duration-150 z-50"
               >
-                <Link
-                  href="/pickup"
-                  className={cn(
-                    "flex items-start gap-2.5 p-2.5 rounded-xl transition-all",
-                    pathname === "/pickup"
-                      ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold"
-                      : "hover:bg-slate-50 dark:hover:bg-zinc-800/80 text-slate-700 dark:text-zinc-200"
-                  )}
-                >
-                  <PackageCheck className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
-                  <div>
-                    <p className="text-xs font-bold leading-tight">Pickup Sekali Angkut</p>
-                    <p className="text-[11px] text-slate-500 dark:text-zinc-400 font-normal mt-0.5">
-                      Puing, ranting, kasur & sampah besar
-                    </p>
-                  </div>
-                </Link>
+                {hasPickup && (
+                  <Link
+                    href="/pickup"
+                    className={cn(
+                      "flex items-start gap-2.5 p-2.5 rounded-xl transition-all",
+                      pathname === "/pickup"
+                        ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold"
+                        : "hover:bg-slate-50 dark:hover:bg-zinc-800/80 text-slate-700 dark:text-zinc-200"
+                    )}
+                  >
+                    <PackageCheck className="w-4 h-4 text-emerald-700 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-xs font-bold leading-tight">Pickup Sekali Angkut</p>
+                      <p className="text-[11px] text-slate-500 dark:text-zinc-400 font-normal mt-0.5">
+                        Puing, ranting, kasur & sampah besar
+                      </p>
+                    </div>
+                  </Link>
+                )}
 
                 <Link
                   href="/tarif"
@@ -166,7 +185,7 @@ export default function PublicNavbar({
                       : "hover:bg-slate-50 dark:hover:bg-zinc-800/80 text-slate-700 dark:text-zinc-200"
                   )}
                 >
-                  <Tag className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
+                  <Tag className="w-4 h-4 text-emerald-700 mt-0.5 shrink-0" />
                   <div>
                     <p className="text-xs font-bold leading-tight">Tarif Resmi</p>
                     <p className="text-[11px] text-slate-500 dark:text-zinc-400 font-normal mt-0.5">
@@ -175,39 +194,43 @@ export default function PublicNavbar({
                   </div>
                 </Link>
 
-                <Link
-                  href="/artikel"
-                  className={cn(
-                    "flex items-start gap-2.5 p-2.5 rounded-xl transition-all",
-                    pathname.startsWith("/artikel")
-                      ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold"
-                      : "hover:bg-slate-50 dark:hover:bg-zinc-800/80 text-slate-700 dark:text-zinc-200"
-                  )}
-                >
-                  <BookOpen className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
-                  <div>
-                    <p className="text-xs font-bold leading-tight">Edukasi & Artikel</p>
-                    <p className="text-[11px] text-slate-500 dark:text-zinc-400 font-normal mt-0.5">
-                      Panduan pilah sampah & kebersihan
-                    </p>
-                  </div>
-                </Link>
+                {hasArtikel && (
+                  <Link
+                    href="/artikel"
+                    className={cn(
+                      "flex items-start gap-2.5 p-2.5 rounded-xl transition-all",
+                      pathname.startsWith("/artikel")
+                        ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold"
+                        : "hover:bg-slate-50 dark:hover:bg-zinc-800/80 text-slate-700 dark:text-zinc-200"
+                    )}
+                  >
+                    <BookOpen className="w-4 h-4 text-emerald-700 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-xs font-bold leading-tight">Edukasi & Artikel</p>
+                      <p className="text-[11px] text-slate-500 dark:text-zinc-400 font-normal mt-0.5">
+                        Panduan pilah sampah & kebersihan
+                      </p>
+                    </div>
+                  </Link>
+                )}
               </div>
             )}
           </div>
 
-          {/* Item 2: Toko */}
-          <Link
-            href="/marketplace"
-            className={cn(
-              "px-3 py-2 rounded-xl transition-all",
-              pathname.startsWith("/marketplace")
-                ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-extrabold"
-                : "hover:text-emerald-700 dark:hover:text-emerald-400 hover:bg-slate-100 dark:hover:bg-zinc-900 text-slate-700 dark:text-zinc-300"
-            )}
-          >
-            Toko
-          </Link>
+          {/* Item 2: Toko (Optional) */}
+          {hasMarketplace && (
+            <Link
+              href="/marketplace"
+              className={cn(
+                "px-3 py-2 rounded-xl transition-all",
+                pathname.startsWith("/marketplace")
+                  ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-extrabold"
+                  : "hover:text-emerald-700 dark:hover:text-emerald-400 hover:bg-slate-100 dark:hover:bg-zinc-900 text-slate-700 dark:text-zinc-300"
+              )}
+            >
+              Toko
+            </Link>
+          )}
 
           {/* Item 3: Cek Tagihan */}
           <Link
@@ -298,39 +321,43 @@ export default function PublicNavbar({
                 Layanan Publik Warga
               </span>
 
-              <Link
-                href="/pickup"
-                onClick={() => setIsOpen(false)}
-                className="flex items-center justify-between p-3 rounded-2xl transition-all hover:bg-slate-50 dark:hover:bg-zinc-900 text-slate-800 dark:text-zinc-200"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-zinc-800 flex items-center justify-center text-emerald-700 dark:text-emerald-400 shrink-0">
-                    <PackageCheck className="w-5 h-5" />
+              {hasPickup && (
+                <Link
+                  href="/pickup"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center justify-between p-3 rounded-2xl transition-all hover:bg-slate-50 dark:hover:bg-zinc-900 text-slate-800 dark:text-zinc-200"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-zinc-800 flex items-center justify-center text-emerald-700 dark:text-emerald-400 shrink-0">
+                      <PackageCheck className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold">Pickup Sekali Angkut</p>
+                      <p className="text-xs text-slate-500 dark:text-zinc-400">Puing, ranting & sampah besar</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-bold">Pickup Sekali Angkut</p>
-                    <p className="text-xs text-slate-500 dark:text-zinc-400">Puing, ranting & sampah besar</p>
-                  </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-slate-400" />
-              </Link>
+                  <ChevronRight className="w-4 h-4 text-slate-400" />
+                </Link>
+              )}
 
-              <Link
-                href="/marketplace"
-                onClick={() => setIsOpen(false)}
-                className="flex items-center justify-between p-3 rounded-2xl transition-all hover:bg-slate-50 dark:hover:bg-zinc-900 text-slate-800 dark:text-zinc-200"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-zinc-800 flex items-center justify-center text-emerald-700 dark:text-emerald-400 shrink-0">
-                    <ShoppingBag className="w-5 h-5" />
+              {hasMarketplace && (
+                <Link
+                  href="/marketplace"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center justify-between p-3 rounded-2xl transition-all hover:bg-slate-50 dark:hover:bg-zinc-900 text-slate-800 dark:text-zinc-200"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-zinc-800 flex items-center justify-center text-emerald-700 dark:text-emerald-400 shrink-0">
+                      <ShoppingBag className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold">Toko {brandName}</p>
+                      <p className="text-xs text-slate-500 dark:text-zinc-400">Pupuk kompos & olahan organik</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-bold">Toko UPS HERU</p>
-                    <p className="text-xs text-slate-500 dark:text-zinc-400">Pupuk kompos TPS 3R & olahan</p>
-                  </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-slate-400" />
-              </Link>
+                  <ChevronRight className="w-4 h-4 text-slate-400" />
+                </Link>
+              )}
 
               <Link
                 href="/bayar"
@@ -383,22 +410,24 @@ export default function PublicNavbar({
                 <ChevronRight className="w-4 h-4 text-slate-400" />
               </Link>
 
-              <Link
-                href="/artikel"
-                onClick={() => setIsOpen(false)}
-                className="flex items-center justify-between p-3 rounded-2xl transition-all hover:bg-slate-50 dark:hover:bg-zinc-900 text-slate-800 dark:text-zinc-200"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-zinc-800 flex items-center justify-center text-emerald-700 dark:text-emerald-400 shrink-0">
-                    <BookOpen className="w-5 h-5" />
+              {hasArtikel && (
+                <Link
+                  href="/artikel"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center justify-between p-3 rounded-2xl transition-all hover:bg-slate-50 dark:hover:bg-zinc-900 text-slate-800 dark:text-zinc-200"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-zinc-800 flex items-center justify-center text-emerald-700 dark:text-emerald-400 shrink-0">
+                      <BookOpen className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold">Edukasi & Artikel</p>
+                      <p className="text-xs text-slate-500 dark:text-zinc-400">Tips pilah & kelola sampah</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-bold">Edukasi & Artikel</p>
-                    <p className="text-xs text-slate-500 dark:text-zinc-400">Tips pilah & kelola sampah</p>
-                  </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-slate-400" />
-              </Link>
+                  <ChevronRight className="w-4 h-4 text-slate-400" />
+                </Link>
+              )}
             </div>
 
             {/* Quick Action Buttons */}

@@ -182,7 +182,7 @@ export default function MobilePengaduanArmada() {
             <button
               onClick={() => setTabStatus("aktif")}
               className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
-                tabStatus === "aktif" ? "bg-white text-rose-900 shadow-xs" : "text-white/80"
+                tabStatus === "aktif" ? "bg-white text-rose-900 shadow-sm" : "text-white/80"
               }`}
             >
               Perlu Ditindaklanjuti
@@ -190,7 +190,7 @@ export default function MobilePengaduanArmada() {
             <button
               onClick={() => setTabStatus("selesai")}
               className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
-                tabStatus === "selesai" ? "bg-white text-rose-900 shadow-xs" : "text-white/80"
+                tabStatus === "selesai" ? "bg-white text-rose-900 shadow-sm" : "text-white/80"
               }`}
             >
               Riwayat Selesai
@@ -201,7 +201,7 @@ export default function MobilePengaduanArmada() {
 
       {/* Toast Notification */}
       {toastMsg && (
-        <div className="m-4 p-3 bg-emerald-600 text-white text-xs font-bold rounded-xl flex items-center justify-between shadow-md">
+        <div className="m-4 p-3 bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center justify-between shadow-md">
           <span>{toastMsg}</span>
           <button onClick={() => setToastMsg(null)}>
             <X className="w-4 h-4" />
@@ -214,7 +214,7 @@ export default function MobilePengaduanArmada() {
         {loading ? (
           <div className="py-12 text-center text-slate-400 text-xs">Memuat pengaduan warga...</div>
         ) : komplainList.length === 0 ? (
-          <div className="bg-white rounded-2xl p-8 text-center border border-slate-200/80 shadow-xs">
+          <div className="bg-white rounded-2xl p-8 text-center border border-slate-200/80 shadow-sm">
             <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-2 opacity-80" />
             <h3 className="text-sm font-bold text-slate-800">
               {tabStatus === "aktif" ? "Tidak Ada Pengaduan Aktif!" : "Belum Ada Riwayat Selesai"}
@@ -229,7 +229,7 @@ export default function MobilePengaduanArmada() {
           komplainList.map((k) => (
             <div
               key={k.id}
-              className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs space-y-3"
+              className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm space-y-3"
             >
               <div className="flex items-start justify-between gap-2">
                 <div>
@@ -316,7 +316,7 @@ export default function MobilePengaduanArmada() {
                       setResolvingItem(k);
                       setTanggapanText("Sampah telah dijemput dan dituntaskan oleh armada.");
                     }}
-                    className="flex-1 py-2 px-3 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 shadow-xs active:scale-98 transition-all"
+                    className="flex-1 py-2 px-3 bg-emerald-700 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 shadow-sm active:scale-98 transition-all"
                   >
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     <span>Selesaikan</span>
@@ -374,7 +374,7 @@ export default function MobilePengaduanArmada() {
               <button
                 onClick={handleSelesaikan}
                 disabled={submitting}
-                className="flex-1 py-2.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs"
+                className="flex-1 py-2.5 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-700 rounded-xl shadow-sm"
               >
                 {submitting ? "Menyimpan..." : "Tandai Selesai ✓"}
               </button>

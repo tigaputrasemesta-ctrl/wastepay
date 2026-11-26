@@ -111,8 +111,8 @@ export default function NotificationBell() {
         aria-label={`Notifikasi pending (${totalCount})`}
         className={`relative w-9 h-9 rounded-lg border transition-all flex items-center justify-center shrink-0 ${
           isOpen
-            ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 shadow-xs"
-            : "bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 border-slate-200 dark:border-zinc-800 text-slate-700 dark:text-zinc-300 shadow-xs hover:border-slate-300 dark:hover:border-zinc-700"
+            ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 shadow-sm"
+            : "bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 border-slate-200 dark:border-zinc-800 text-slate-700 dark:text-zinc-300 shadow-sm hover:border-slate-300 dark:hover:border-zinc-700"
         }`}
       >
         <Bell className="w-4 h-4 text-slate-700 dark:text-zinc-300" />
@@ -121,7 +121,7 @@ export default function NotificationBell() {
         {totalCount > 0 && (
           <span className="absolute -top-1 -right-1 flex h-4 w-4">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-4 w-4 bg-rose-600 text-white font-bold text-[9px] items-center justify-center shadow-xs">
+            <span className="relative inline-flex rounded-full h-4 w-4 bg-rose-600 text-white font-bold text-[9px] items-center justify-center shadow-sm">
               {totalCount > 9 ? "9+" : totalCount}
             </span>
           </span>
@@ -170,15 +170,15 @@ export default function NotificationBell() {
             <Link
               href="/tagihan"
               onClick={() => setIsOpen(false)}
-              className="p-2 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200/80 dark:border-zinc-800 flex flex-col items-center justify-center hover:border-amber-300 dark:hover:border-amber-700 hover:bg-amber-50/50 dark:hover:bg-amber-950/20 shadow-xs transition-all"
+              className="p-2 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200/80 dark:border-zinc-800 flex flex-col items-center justify-center hover:border-amber-300 dark:hover:border-amber-700 hover:bg-amber-50/50 dark:hover:bg-amber-950/20 shadow-sm transition-all"
             >
               <span className="text-slate-500 dark:text-zinc-400 text-xs font-medium">BAYAR PENDING</span>
-              <span className="text-base font-bold text-amber-600 dark:text-amber-400 mt-0.5">{counts.pembayaran}</span>
+              <span className="text-base font-bold text-amber-700 dark:text-amber-400 mt-0.5">{counts.pembayaran}</span>
             </Link>
             <Link
               href="/pelanggan"
               onClick={() => setIsOpen(false)}
-              className="p-2 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200/80 dark:border-zinc-800 flex flex-col items-center justify-center hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 shadow-xs transition-all"
+              className="p-2 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200/80 dark:border-zinc-800 flex flex-col items-center justify-center hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 shadow-sm transition-all"
             >
               <span className="text-slate-500 dark:text-zinc-400 text-xs font-medium">CALON WARGA</span>
               <span className="text-base font-bold text-blue-600 dark:text-blue-400 mt-0.5">{counts.pendaftaran}</span>
@@ -186,7 +186,7 @@ export default function NotificationBell() {
             <Link
               href="/komplain"
               onClick={() => setIsOpen(false)}
-              className="p-2 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200/80 dark:border-zinc-800 flex flex-col items-center justify-center hover:border-rose-300 dark:hover:border-rose-700 hover:bg-rose-50/50 dark:hover:bg-rose-950/20 shadow-xs transition-all"
+              className="p-2 bg-white dark:bg-zinc-900 rounded-xl border border-slate-200/80 dark:border-zinc-800 flex flex-col items-center justify-center hover:border-rose-300 dark:hover:border-rose-700 hover:bg-rose-50/50 dark:hover:bg-rose-950/20 shadow-sm transition-all"
             >
               <span className="text-slate-500 dark:text-zinc-400 text-xs font-medium">KOMPLAIN BARU</span>
               <span className="text-base font-bold text-rose-600 dark:text-rose-400 mt-0.5">{counts.komplain}</span>
@@ -197,12 +197,12 @@ export default function NotificationBell() {
           <div className="overflow-y-auto flex-1 divide-y divide-slate-100 dark:divide-zinc-800">
             {loading ? (
               <div className="p-8 text-center text-xs font-medium text-slate-500 dark:text-zinc-400 flex flex-col items-center gap-2">
-                <RefreshCw className="w-5 h-5 animate-spin text-emerald-600 dark:text-emerald-400" />
+                <RefreshCw className="w-5 h-5 animate-spin text-emerald-700 dark:text-emerald-400" />
                 Memuat notifikasi...
               </div>
             ) : items.length === 0 ? (
               <div className="p-8 text-center flex flex-col items-center gap-3">
-                <div className="w-11 h-11 rounded-full bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                <div className="w-11 h-11 rounded-full bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center text-emerald-700 dark:text-emerald-400">
                   <CheckCircle2 className="w-6 h-6" />
                 </div>
                 <div>
@@ -253,7 +253,7 @@ export default function NotificationBell() {
             <Link
               href="/notifikasi"
               onClick={() => setIsOpen(false)}
-              className="hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold transition-colors"
+              className="hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 font-semibold transition-colors"
             >
               📢 Buka Pusat Pesan &amp; Blast WA →
             </Link>

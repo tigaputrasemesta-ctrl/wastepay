@@ -238,7 +238,7 @@ export default function MobilePickupPage() {
             onClick={() => setFilterTab("aktif")}
             className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all text-center ${
               filterTab === "aktif"
-                ? "bg-white dark:bg-zinc-900 text-teal-700 dark:text-teal-400 shadow-xs"
+                ? "bg-white dark:bg-zinc-900 text-teal-700 dark:text-teal-400 shadow-sm"
                 : "text-slate-500 dark:text-zinc-400"
             }`}
           >
@@ -248,7 +248,7 @@ export default function MobilePickupPage() {
             onClick={() => setFilterTab("riwayat")}
             className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all text-center ${
               filterTab === "riwayat"
-                ? "bg-white dark:bg-zinc-900 text-teal-700 dark:text-teal-400 shadow-xs"
+                ? "bg-white dark:bg-zinc-900 text-teal-700 dark:text-teal-400 shadow-sm"
                 : "text-slate-500 dark:text-zinc-400"
             }`}
           >
@@ -258,7 +258,7 @@ export default function MobilePickupPage() {
             onClick={() => setFilterTab("semua")}
             className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all text-center ${
               filterTab === "semua"
-                ? "bg-white dark:bg-zinc-900 text-teal-700 dark:text-teal-400 shadow-xs"
+                ? "bg-white dark:bg-zinc-900 text-teal-700 dark:text-teal-400 shadow-sm"
                 : "text-slate-500 dark:text-zinc-400"
             }`}
           >
@@ -275,7 +275,7 @@ export default function MobilePickupPage() {
             <p className="text-xs font-bold text-slate-500">Memuat penugasan pickup...</p>
           </div>
         ) : tugasList.length === 0 ? (
-          <div className="py-16 text-center bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 shadow-xs">
+          <div className="py-16 text-center bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 shadow-sm">
             <PackageCheck className="w-12 h-12 text-slate-300 dark:text-zinc-700 mx-auto mb-2.5" />
             <h3 className="text-sm font-bold text-slate-800 dark:text-zinc-200">
               Tidak ada tugas penjemputan
@@ -300,7 +300,7 @@ export default function MobilePickupPage() {
             return (
               <div
                 key={tugas.id}
-                className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-4 shadow-xs space-y-3"
+                className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-4 shadow-sm space-y-3"
               >
                 {/* Header Card */}
                 <div className="flex items-start justify-between gap-2">
@@ -393,7 +393,7 @@ export default function MobilePickupPage() {
                         rel="noopener noreferrer"
                         className="flex-1 py-2.5 px-3 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all"
                       >
-                        <Navigation className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                        <Navigation className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
                         <span>Buka Peta GPS</span>
                       </a>
 
@@ -416,7 +416,7 @@ export default function MobilePickupPage() {
                       {!isOtw && (
                         <button
                           onClick={() => handleMulaiOtw(tugas)}
-                          className="flex-1 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-xs active:scale-95 transition-all"
+                          className="flex-1 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all"
                         >
                           <Truck className="w-4 h-4" />
                           <span>Mulai Jalan (OTW)</span>
@@ -428,7 +428,7 @@ export default function MobilePickupPage() {
                         onClick={() => openSelesaiModal(tugas)}
                         className={`${
                           isOtw ? "w-full" : "flex-1"
-                        } py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-xs active:scale-95 transition-all`}
+                        } py-3 bg-emerald-700 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all`}
                       >
                         <CheckCircle2 className="w-4 h-4" />
                         <span>Selesaikan Muatan</span>
@@ -444,7 +444,7 @@ export default function MobilePickupPage() {
 
       {/* MODAL SELESAIKAN PENJEMPUTAN */}
       {selectedTask && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-3 animate-in fade-in">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-3 animate-in fade-in">
           <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl w-full max-w-md p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-zinc-800">
               <div>
@@ -553,7 +553,7 @@ export default function MobilePickupPage() {
                 type="button"
                 onClick={handleSimpanSelesai}
                 disabled={submittingSelesai || uploadingFoto}
-                className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs active:scale-95 disabled:opacity-50"
+                className="flex-1 py-2.5 bg-emerald-700 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95 disabled:opacity-50"
               >
                 {submittingSelesai ? "Menyimpan..." : "Konfirmasi Selesai"}
               </button>
@@ -566,7 +566,7 @@ export default function MobilePickupPage() {
       {previewFoto && (
         <div
           onClick={() => setPreviewFoto(null)}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xs p-4 animate-in fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in"
         >
           <div className="relative max-w-sm w-full bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden p-3 shadow-2xl">
             <button

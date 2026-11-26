@@ -5,3 +5,4 @@ export * from "./db-manager";
 export * from "./url-helper";
 export * from "./context-service";
 export * from "./isolation";
+export * from "./features";

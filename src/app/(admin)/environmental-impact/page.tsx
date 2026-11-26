@@ -97,7 +97,7 @@ export default function EnvironmentalImpactPage() {
             </button>
             <button
               onClick={handleExportReport}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold shadow-lg shadow-emerald-600/30 transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-500 text-white text-sm font-semibold shadow-lg shadow-emerald-600/30 transition-all"
             >
               <Download className="w-4 h-4" />
               <span>Export Dokumen DLH</span>
@@ -108,7 +108,7 @@ export default function EnvironmentalImpactPage() {
 
       {/* Aggregate ESG Metrics Strip */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
               Total Sampah Terkelola
@@ -125,16 +125,16 @@ export default function EnvironmentalImpactPage() {
           </p>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
               Waste Diversion Rate
             </span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-700 flex items-center justify-center">
               <Recycle className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-3xl font-black text-emerald-600 dark:text-emerald-400">
+          <div className="text-3xl font-black text-emerald-700 dark:text-emerald-400">
             {loading ? "..." : `${diversionRate}%`}
           </div>
           <p className="text-xs text-slate-500 mt-2">
@@ -142,12 +142,12 @@ export default function EnvironmentalImpactPage() {
           </p>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
               Estimasi Kompos & Daur Ulang
             </span>
-            <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950 text-amber-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950 text-amber-700 flex items-center justify-center">
               <Leaf className="w-4 h-4" />
             </div>
           </div>
@@ -159,7 +159,7 @@ export default function EnvironmentalImpactPage() {
           </p>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">
               Reduksi Emisi Karbon
@@ -178,11 +178,11 @@ export default function EnvironmentalImpactPage() {
       </div>
 
       {/* Breakdown per Tenant Pengelola */}
-      <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-xs">
+      <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-sm">
         <div className="p-4 border-b border-slate-100 dark:border-zinc-800 flex items-center justify-between">
           <div>
             <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Landmark className="w-4 h-4 text-emerald-600" />
+              <Landmark className="w-4 h-4 text-emerald-700" />
               <span>Neraca Pengelolaan Sampah Mitra Terdaftar (SIPSN KLHK)</span>
             </h3>
             <p className="text-xs text-slate-500 dark:text-zinc-400">
@@ -193,7 +193,7 @@ export default function EnvironmentalImpactPage() {
 
         {loading ? (
           <div className="py-16 text-center text-slate-500">
-            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-emerald-600" />
+            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-emerald-700" />
             <p className="text-xs">Menghitung neraca lingkungan...</p>
           </div>
         ) : (
@@ -221,7 +221,7 @@ export default function EnvironmentalImpactPage() {
                   <tr key={t.id} className="hover:bg-slate-50/50 dark:hover:bg-zinc-800/30">
                     <td className="px-6 py-4">
                       <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <Building2 className="w-4 h-4 text-emerald-600" />
+                        <Building2 className="w-4 h-4 text-emerald-700" />
                         <span>{t.namaMitra}</span>
                       </div>
                       <span className="text-xs text-slate-400">{t.kota} • {t.tipePengelola}</span>
@@ -232,7 +232,7 @@ export default function EnvironmentalImpactPage() {
                     <td className="px-6 py-4 text-teal-600 font-semibold">
                       {dUlang > 0 ? `${dUlang} Ton` : "—"}
                     </td>
-                    <td className="px-6 py-4 text-amber-600 font-semibold">
+                    <td className="px-6 py-4 text-amber-700 font-semibold">
                       {kom > 0 ? `${kom} Ton` : "—"}
                     </td>
                     <td className="px-6 py-4 text-slate-500">

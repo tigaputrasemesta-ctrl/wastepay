@@ -28,19 +28,54 @@ export default function MitraRegistrationPage() {
     estimasiWarga: 100,
     kebutuhanDb: "shared",
     catatanAdmin: "",
+    website_hp: "",
   });
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [successData, setSuccessData] = useState<{
     id: number;
     instansi: string;
     status: string;
   } | null>(null);
 
+  const validatePhone = (phone: string): boolean => {
+    const digits = phone.replace(/\D/g, "");
+    if (digits.length < 10 || digits.length > 15) {
+      setPhoneError("Nomor WhatsApp minimal 10 digit (format 08xx atau 628xx)");
+      return false;
+    }
+    if (!digits.startsWith("08") && !digits.startsWith("628")) {
+      setPhoneError("Nomor WhatsApp harus diawali 08 atau 628");
+      return false;
+    }
+    setPhoneError("");
+    return true;
+  };
+
+  const validateEmail = (emailStr: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailStr)) {
+      setEmailError("Format email tidak valid");
+      return false;
+    }
+    setEmailError("");
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg("");
+
+    const isPhoneValid = validatePhone(formData.noWhatsapp);
+    const isEmailValid = validateEmail(formData.email);
+
+    if (!isPhoneValid || !isEmailValid) {
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -159,6 +194,7 @@ export default function MitraRegistrationPage() {
                   estimasiWarga: 100,
                   kebutuhanDb: "shared",
                   catatanAdmin: "",
+                  website_hp: "",
                 });
               }}
               className="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm transition-colors shadow-sm"
@@ -258,9 +294,18 @@ export default function MitraRegistrationPage() {
                   required
                   placeholder="Contoh: 081290429898"
                   value={formData.noWhatsapp}
-                  onChange={(e) => setFormData({ ...formData, noWhatsapp: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-emerald-600 focus:outline-none"
+                  onChange={(e) => {
+                    setFormData({ ...formData, noWhatsapp: e.target.value });
+                    if (phoneError) validatePhone(e.target.value);
+                  }}
+                  onBlur={(e) => validatePhone(e.target.value)}
+                  className={`w-full px-4 py-2.5 rounded-xl border ${
+                    phoneError ? "border-rose-500 dark:border-rose-500" : "border-slate-300 dark:border-zinc-700"
+                  } bg-white dark:bg-zinc-800 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-emerald-600 focus:outline-none`}
                 />
+                {phoneError && (
+                  <p className="text-xs text-rose-600 dark:text-rose-400 font-medium">{phoneError}</p>
+                )}
               </div>
 
               {/* Email Resmi */}
@@ -273,9 +318,18 @@ export default function MitraRegistrationPage() {
                   required
                   placeholder="Contoh: admin@sukamajubersih.org"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-emerald-600 focus:outline-none"
+                  onChange={(e) => {
+                    setFormData({ ...formData, email: e.target.value });
+                    if (emailError) validateEmail(e.target.value);
+                  }}
+                  onBlur={(e) => validateEmail(e.target.value)}
+                  className={`w-full px-4 py-2.5 rounded-xl border ${
+                    emailError ? "border-rose-500 dark:border-rose-500" : "border-slate-300 dark:border-zinc-700"
+                  } bg-white dark:bg-zinc-800 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-emerald-600 focus:outline-none`}
                 />
+                {emailError && (
+                  <p className="text-xs text-rose-600 dark:text-rose-400 font-medium">{emailError}</p>
+                )}
               </div>
 
               {/* Estimasi Warga */}
@@ -304,11 +358,23 @@ export default function MitraRegistrationPage() {
                   onChange={(e) => setFormData({ ...formData, kebutuhanDb: e.target.value })}
                   className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-emerald-600 focus:outline-none"
                 >
-                  <option value="shared">Cloud Shared DB (Rekomendasi TPS 3R & Bank Sampah)</option>
-                  <option value="dedicated">Dedicated Enterprise DB (Instansi DLH / Korporasi)</option>
+                  <option value="shared">Cloud Shared Multi-Tenant (Rekomendasi Cepat & Hemat — 1 Database)</option>
+                  <option value="dedicated" disabled>Dedicated Isolated DB (Khusus Korporasi/DLH — Hubungi Sales)</option>
                 </select>
               </div>
             </div>
+
+            {/* Anti-bot Honeypot Field (Invisible) */}
+            <input
+              type="text"
+              name="website_hp"
+              value={formData.website_hp}
+              onChange={(e) => setFormData({ ...formData, website_hp: e.target.value })}
+              className="hidden"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+            />
 
             {/* Catatan / Kebutuhan Tambahan */}
             <div className="space-y-1.5">

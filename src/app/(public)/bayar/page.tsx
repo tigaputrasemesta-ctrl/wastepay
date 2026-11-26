@@ -16,6 +16,7 @@ import {
 import { DUITKU_METHODS, duitkuChannelLabel } from "@/lib/duitku-channels";
 import AnimatedDumpTruck from "@/components/AnimatedDumpTruck";
 import { PanduanCaraBayarQris } from "@/components/PanduanCaraBayarQris";
+import { resolveTenantByHost } from "@/lib/tenant/config";
 
 type TagihanPublik = {
   id: number;
@@ -151,7 +152,7 @@ const METODE_MANUAL = [
 function StatusBadge({ status, hasPending }: { status: string; hasPending?: boolean }) {
   if (hasPending) {
     return (
-      <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-full border bg-amber-50 text-amber-900 border-amber-300 shadow-2xs">
+      <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-full border bg-amber-50 text-amber-900 border-amber-300 shadow-sm">
         <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
         ⏳ Menunggu Verifikasi Admin
       </span>
@@ -259,6 +260,25 @@ function BayarPortalContent() {
     amount: number;
   } | null>(null);
   const [pollingStatus, setPollingStatus] = useState<string | null>(null);
+
+  const [tenantInfo, setTenantInfo] = useState<{ brandName: string; city: string; whatsapp: string }>({
+    brandName: "UPS HERU",
+    city: "Kota Depok",
+    whatsapp: "6281400782617",
+  });
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const res = resolveTenantByHost(window.location.hostname);
+      if (res.isValid && !res.isCore) {
+        setTenantInfo({
+          brandName: res.tenant.branding?.namaMitra || "UPS HERU",
+          city: res.tenant.branding?.kota || "Kota Depok",
+          whatsapp: res.tenant.branding?.whatsappKontak?.replace(/\D/g, "") || "6281400782617",
+        });
+      }
+    }
+  }, []);
 
   // Load detail invoice jika ada di param
   const muatInvoiceDetail = useCallback(async () => {
@@ -721,7 +741,7 @@ function BayarPortalContent() {
       return (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
           <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl p-6 sm:p-8 max-w-md w-full space-y-4 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center text-2xl mx-auto shadow-xs">
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-700 border border-amber-200 flex items-center justify-center text-2xl mx-auto shadow-sm">
               ⏳
             </div>
             <h3 className="text-base font-extrabold text-slate-900">Pembayaran Sedang Diverifikasi</h3>
@@ -972,7 +992,7 @@ function BayarPortalContent() {
             Konfirmasi Pembayaran
           </h1>
           <p className="text-slate-500 text-xs sm:text-sm">
-            Retribusi kebersihan terpadu UPS HERU Kota Depok
+            Retribusi kebersihan terpadu {tenantInfo.brandName} {tenantInfo.city}
           </p>
         </div>
 
@@ -1106,7 +1126,7 @@ function BayarPortalContent() {
             <div className="space-y-6">
               <div className="bg-amber-50/70 border-2 border-amber-200/90 rounded-3xl p-6 sm:p-7 space-y-4 shadow-sm animate-in fade-in">
                 <div className="flex items-start gap-3.5">
-                  <div className="w-11 h-11 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-xl shrink-0 shadow-xs">
+                  <div className="w-11 h-11 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-xl shrink-0 shadow-sm">
                     ⏳
                   </div>
                   <div className="space-y-1">
@@ -1127,7 +1147,7 @@ function BayarPortalContent() {
                   </div>
                 </div>
 
-                <div className="bg-white/90 rounded-2xl p-4 border border-amber-200/70 text-xs text-slate-700 space-y-2 shadow-2xs">
+                <div className="bg-white/90 rounded-2xl p-4 border border-amber-200/70 text-xs text-slate-700 space-y-2 shadow-sm">
                   <div className="flex items-center gap-2 font-bold text-slate-900">
                     <span>🛡️</span>
                     <span>Sinkronisasi Pembayaran Aman (Tidak Perlu Kirim Ulang):</span>
@@ -1145,12 +1165,12 @@ function BayarPortalContent() {
                 <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
                   <span className="text-amber-800 text-center sm:text-left">Butuh percepatan verifikasi atau konfirmasi darurat?</span>
                   <a
-                    href={`https://wa.me/6281400782617?text=${encodeURIComponent(
-                      `Halo Admin UPS HERU, saya sudah konfirmasi pembayaran untuk invoice ${detail.noInvoice} a.n ${detail.pelanggan.nama}. Mohon bantuannya untuk verifikasi.`
+                    href={`https://wa.me/${tenantInfo.whatsapp}?text=${encodeURIComponent(
+                      `Halo Admin ${tenantInfo.brandName}, saya sudah konfirmasi pembayaran untuk invoice ${detail.noInvoice} a.n ${detail.pelanggan.nama}. Mohon bantuannya untuk verifikasi.`
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl transition shadow-xs flex items-center justify-center gap-1.5 w-full sm:w-auto"
+                    className="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl transition shadow-sm flex items-center justify-center gap-1.5 w-full sm:w-auto"
                   >
                     <span>💬 Chat Petugas Verifikasi</span>
                   </a>
@@ -1209,13 +1229,13 @@ function BayarPortalContent() {
                     onClick={() => setPilihMetode(m.value)}
                     className={`w-full flex items-center justify-between p-4 rounded-2xl border text-left transition ${
                       pilihMetode === m.value
-                        ? "border-emerald-600 bg-emerald-50/60 shadow-xs ring-2 ring-emerald-500/20"
+                        ? "border-emerald-600 bg-emerald-50/60 shadow-sm ring-2 ring-emerald-500/20"
                         : "border-slate-200 bg-white hover:border-slate-300"
                     }`}
                   >
                     <div className="flex items-center gap-3.5 overflow-hidden">
                       {m.imageUrl ? (
-                        <div className="w-14 h-9 px-1.5 py-1 bg-white rounded-xl border border-slate-200/90 shadow-2xs flex items-center justify-center shrink-0">
+                        <div className="w-14 h-9 px-1.5 py-1 bg-white rounded-xl border border-slate-200/90 shadow-sm flex items-center justify-center shrink-0">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={m.imageUrl} alt={m.label} className="w-full h-full object-contain" />
                         </div>
@@ -1303,7 +1323,7 @@ function BayarPortalContent() {
                     type="button"
                     disabled={checkingGateway}
                     onClick={() => checkGatewayStatus()}
-                    className="w-full py-2.5 rounded-2xl bg-sky-50 hover:bg-sky-100 disabled:opacity-60 text-sky-800 font-bold text-xs transition active:scale-95 flex items-center justify-center gap-1.5 border border-sky-200/80 shadow-2xs"
+                    className="w-full py-2.5 rounded-2xl bg-sky-50 hover:bg-sky-100 disabled:opacity-60 text-sky-800 font-bold text-xs transition active:scale-95 flex items-center justify-center gap-1.5 border border-sky-200/80 shadow-sm"
                   >
                     <span className={checkingGateway ? "animate-spin" : ""}>🔄</span>
                     <span>{checkingGateway ? "Memeriksa Status ke Gateway..." : "Sudah Bayar? Cek Status Gateway Sekarang"}</span>
@@ -1333,12 +1353,12 @@ function BayarPortalContent() {
           )
         ) : (
           <div className="bg-emerald-50 border border-emerald-200 rounded-3xl p-6 text-center space-y-2">
-            <div className="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xl mx-auto">
+            <div className="w-12 h-12 rounded-full bg-emerald-700 text-white flex items-center justify-center text-xl mx-auto">
               ✓
             </div>
             <h3 className="font-extrabold text-emerald-900 text-base">Tagihan Sudah Lunas</h3>
             <p className="text-xs text-emerald-800 max-w-sm mx-auto">
-              Terima kasih telah membayar retribusi kebersihan tepat waktu demi Kota Depok yang bersih dan asri.
+              Terima kasih telah membayar retribusi kebersihan tepat waktu demi {tenantInfo.city} yang bersih dan asri.
             </p>
           </div>
         )}
@@ -1417,9 +1437,9 @@ function BayarPortalContent() {
             </p>
 
             {/* Steps Status Indicators */}
-            <div className="mt-6 flex flex-col sm:flex-row items-center gap-3 sm:gap-6 bg-slate-50/90 border border-slate-200/70 px-5 py-2.5 rounded-2xl shadow-xs">
+            <div className="mt-6 flex flex-col sm:flex-row items-center gap-3 sm:gap-6 bg-slate-50/90 border border-slate-200/70 px-5 py-2.5 rounded-2xl shadow-sm">
               <div className="flex items-center gap-2">
-                <span className="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold">✓</span>
+                <span className="w-4 h-4 rounded-full bg-emerald-700 text-white flex items-center justify-center text-xs font-bold">✓</span>
                 <span className="text-xs font-semibold text-slate-700">Koneksi Server Stabil</span>
               </div>
               <div className="hidden sm:block w-1 h-1 rounded-full bg-slate-300"></div>
@@ -1452,13 +1472,13 @@ function BayarPortalContent() {
                     }
                   }}
                   disabled={mencari}
-                  className="w-full pl-4 pr-32 py-3.5 rounded-2xl border border-slate-200 text-slate-900 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-xs disabled:opacity-60 disabled:bg-slate-50"
+                  className="w-full pl-4 pr-32 py-3.5 rounded-2xl border border-slate-200 text-slate-900 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm disabled:opacity-60 disabled:bg-slate-50"
                   required
                 />
                 <button
                   type="submit"
                   disabled={mencari || !kode.trim()}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs active:scale-95 disabled:opacity-50"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95 disabled:opacity-50"
                 >
                   {mencari ? "Memeriksa..." : "Periksa"}
                 </button>
@@ -1515,14 +1535,14 @@ function BayarPortalContent() {
               </div>
 
               <a
-                href="https://wa.me/6281400782617?text=Halo%20Admin%20UPS%20HERU%2C%20saya%20butuh%20bantuan%20cek%20tagihan"
+                href={`https://wa.me/${tenantInfo.whatsapp}?text=${encodeURIComponent(`Halo Admin ${tenantInfo.brandName}, saya butuh bantuan cek tagihan`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200/80 hover:bg-emerald-100 text-emerald-800 space-y-1 transition-colors block"
               >
                 <span className="text-xs">💬</span>
                 <h5 className="text-xs font-bold text-emerald-900">Bantuan CS</h5>
-                <p className="text-xs text-emerald-700 leading-tight">Chat langsung petugas pelayanan Depok.</p>
+                <p className="text-xs text-emerald-700 leading-tight">Chat langsung petugas pelayanan {tenantInfo.city}.</p>
               </a>
             </div>
           </div>
@@ -1559,7 +1579,7 @@ function BayarPortalContent() {
             {/* Box Notifikasi Hasil Cek Gateway */}
             {gatewayCheckResult && (
               <div
-                className={`p-4 rounded-3xl text-xs flex items-start justify-between gap-3 shadow-xs animate-in fade-in ${
+                className={`p-4 rounded-3xl text-xs flex items-start justify-between gap-3 shadow-sm animate-in fade-in ${
                   gatewayCheckResult.success
                     ? "bg-emerald-50 border border-emerald-200 text-emerald-900"
                     : "bg-sky-50 border border-sky-200 text-sky-900"
@@ -1586,8 +1606,8 @@ function BayarPortalContent() {
 
             {/* Banner Khusus Pembayaran Kolektif (Anti-Double Bayar) */}
             {(hasil.pelanggan.isKolektifAnggota || hasil.pelanggan.lockPayment) && (
-              <div className="p-4 bg-purple-50/95 border border-purple-200 rounded-3xl flex items-start gap-3.5 text-xs text-purple-950 shadow-xs animate-in fade-in">
-                <div className="w-9 h-9 rounded-2xl bg-purple-600 text-white flex items-center justify-center text-lg shrink-0 shadow-2xs">
+              <div className="p-4 bg-purple-50/95 border border-purple-200 rounded-3xl flex items-start gap-3.5 text-xs text-purple-950 shadow-sm animate-in fade-in">
+                <div className="w-9 h-9 rounded-2xl bg-purple-600 text-white flex items-center justify-center text-lg shrink-0 shadow-sm">
                   🛡️
                 </div>
                 <div className="space-y-1">
@@ -1608,8 +1628,8 @@ function BayarPortalContent() {
 
             {/* Banner Khusus jika ada pembayaran yang sedang diverifikasi admin */}
             {pendingBills.length > 0 && (
-              <div className="p-4 bg-amber-50/90 border border-amber-200/90 rounded-3xl flex items-start gap-3.5 text-xs text-amber-950 shadow-xs animate-in fade-in">
-                <div className="w-9 h-9 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-lg shrink-0 shadow-2xs">
+              <div className="p-4 bg-amber-50/90 border border-amber-200/90 rounded-3xl flex items-start gap-3.5 text-xs text-amber-950 shadow-sm animate-in fade-in">
+                <div className="w-9 h-9 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-lg shrink-0 shadow-sm">
                   ⏳
                 </div>
                 <div className="space-y-0.5">
@@ -1625,9 +1645,9 @@ function BayarPortalContent() {
 
             {/* Edukasi & Rekomendasi Bayar QRIS */}
             {unpaidBills.length > 0 && (
-              <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border border-emerald-200/90 rounded-3xl p-5 shadow-xs space-y-3">
+              <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border border-emerald-200/90 rounded-3xl p-5 shadow-sm space-y-3">
                 <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-2xl bg-emerald-700 text-white flex items-center justify-center text-lg shrink-0 shadow-xs">
+                  <div className="w-9 h-9 rounded-2xl bg-emerald-700 text-white flex items-center justify-center text-lg shrink-0 shadow-sm">
                     💡
                   </div>
                   <div className="space-y-1">
@@ -1658,7 +1678,7 @@ function BayarPortalContent() {
                 <div className="bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-3">
                   {hasil.pelanggan.status === "calon" ? (
                     <>
-                      <div className="w-12 h-12 mx-auto rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center text-xl">
+                      <div className="w-12 h-12 mx-auto rounded-2xl bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center text-xl">
                         ⏳
                       </div>
                       <p className="font-bold text-slate-900">Pendaftaran Dalam Proses Verifikasi</p>
@@ -1668,7 +1688,7 @@ function BayarPortalContent() {
                     </>
                   ) : (
                     <>
-                      <div className="w-12 h-12 mx-auto rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center text-xl">
+                      <div className="w-12 h-12 mx-auto rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center text-xl">
                         🎉
                       </div>
                       <p className="font-bold text-slate-900">Tidak Ada Tagihan Tertunggak</p>
@@ -1724,7 +1744,7 @@ function BayarPortalContent() {
                           </div>
                         ) : t.pendingPayment ? (
                           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                            <div className="px-3.5 py-2 rounded-2xl bg-amber-50 border border-amber-200/90 text-amber-950 text-xs flex items-center gap-2.5 shadow-2xs">
+                            <div className="px-3.5 py-2 rounded-2xl bg-amber-50 border border-amber-200/90 text-amber-950 text-xs flex items-center gap-2.5 shadow-sm">
                               <span className="text-base shrink-0 animate-pulse">⏳</span>
                               <div>
                                 <p className="font-extrabold leading-tight">Bukti Terkirim (Sedang Diverifikasi)</p>

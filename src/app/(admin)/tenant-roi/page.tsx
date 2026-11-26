@@ -150,7 +150,7 @@ export default function TenantRoiAnalyticsPage() {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+          <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
             <span className="text-[11px] font-bold text-slate-300 uppercase tracking-wider block">
               Collection Rate Riil
             </span>
@@ -160,7 +160,7 @@ export default function TenantRoiAnalyticsPage() {
             <p className="text-[11px] text-slate-400 mt-1">Dari total tagihan diterbitkan</p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+          <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
             <span className="text-[11px] font-bold text-slate-300 uppercase tracking-wider block">
               Digital Payment Riil
             </span>
@@ -170,7 +170,7 @@ export default function TenantRoiAnalyticsPage() {
             <p className="text-[11px] text-slate-400 mt-1">Via QRIS &amp; VA Duitku</p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+          <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
             <span className="text-[11px] font-bold text-slate-300 uppercase tracking-wider block">
               Nasabah Terlayani
             </span>
@@ -180,7 +180,7 @@ export default function TenantRoiAnalyticsPage() {
             <p className="text-[11px] text-slate-400 mt-1">Database warga terdaftar</p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+          <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
             <span className="text-[11px] font-bold text-slate-300 uppercase tracking-wider block">
               Penerimaan Terverifikasi
             </span>
@@ -193,7 +193,7 @@ export default function TenantRoiAnalyticsPage() {
       </div>
 
       {/* Comparison Table Across All Tenants */}
-      <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-xs">
+      <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-sm">
         <div className="p-4 border-b border-slate-100 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <h3 className="text-base font-bold text-slate-900 dark:text-white">
@@ -248,7 +248,7 @@ export default function TenantRoiAnalyticsPage() {
                     </div>
                     <span className="text-xs text-slate-400">{item.kota}</span>
                   </td>
-                  <td className="px-6 py-4 font-extrabold text-emerald-600 dark:text-emerald-400">
+                  <td className="px-6 py-4 font-extrabold text-emerald-700 dark:text-emerald-400">
                     {item.collectionRate > 0 ? `${item.collectionRate}%` : "—"}
                   </td>
                   <td className="px-6 py-4 font-bold text-sky-600 dark:text-sky-400">
@@ -261,7 +261,7 @@ export default function TenantRoiAnalyticsPage() {
                     {item.monthlyRevenueRecovery > 0 ? `Rp ${item.monthlyRevenueRecovery.toLocaleString("id-ID")}` : "—"}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <span className="font-black text-amber-600 dark:text-amber-400 text-base">
+                    <span className="font-black text-amber-700 dark:text-amber-400 text-base">
                       {item.estimatedRoi > 0 ? `+${item.estimatedRoi}%` : "Baru Onboard"}
                     </span>
                   </td>

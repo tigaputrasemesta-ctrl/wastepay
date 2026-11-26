@@ -297,14 +297,14 @@ export default function PickupSekaliAngkutPage() {
                           <div
                             className={`p-2.5 rounded-lg ${
                               isSelected
-                                ? "bg-emerald-600 text-white"
+                                ? "bg-emerald-700 text-white"
                                 : "bg-slate-200 dark:bg-zinc-700 text-slate-700 dark:text-zinc-200"
                             }`}
                           >
                             <Icon className="w-5 h-5" />
                           </div>
                           {isSelected && (
-                            <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                            <CheckCircle2 className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
                           )}
                         </div>
                         <h3 className="font-semibold text-sm text-slate-900 dark:text-zinc-100 mb-1">
@@ -394,7 +394,7 @@ export default function PickupSekaliAngkutPage() {
                 disabled={locatingGps}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 transition-colors"
               >
-                <MapPin className="w-3.5 h-3.5 text-emerald-600" />
+                <MapPin className="w-3.5 h-3.5 text-emerald-700" />
                 {locatingGps ? "Membaca GPS..." : latitude ? "GPS Terpasang ✓" : "Gunakan GPS Saya"}
               </button>
             </div>
@@ -522,7 +522,7 @@ export default function PickupSekaliAngkutPage() {
                       <p className="text-xs text-slate-500 dark:text-zinc-400 mb-2">
                         {uploadingFoto ? "Sedang mengunggah foto..." : "Ambil foto langsung atau pilih dari galeri"}
                       </p>
-                      <label className="inline-block px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-medium cursor-pointer hover:bg-emerald-700">
+                      <label className="inline-block px-3 py-1.5 rounded-lg bg-emerald-700 text-white text-xs font-medium cursor-pointer hover:bg-emerald-700">
                         Pilih File Foto
                         <input
                           type="file"
@@ -663,7 +663,7 @@ export default function PickupSekaliAngkutPage() {
                     name="metodeBayar"
                     checked={metodeBayar === "cod"}
                     onChange={() => setMetodeBayar("cod")}
-                    className="text-emerald-600"
+                    className="text-emerald-700"
                   />
                 </div>
 
@@ -693,7 +693,7 @@ export default function PickupSekaliAngkutPage() {
                     name="metodeBayar"
                     checked={metodeBayar === "qris"}
                     onChange={() => setMetodeBayar("qris")}
-                    className="text-emerald-600"
+                    className="text-emerald-700"
                   />
                 </div>
               </div>
@@ -728,7 +728,7 @@ export default function PickupSekaliAngkutPage() {
         {/* FAQ Section */}
         <section className="mt-12 bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 rounded-2xl p-6">
           <h3 className="font-bold text-base text-slate-900 dark:text-zinc-100 mb-4 flex items-center gap-2">
-            <HelpCircle className="w-5 h-5 text-emerald-600" />
+            <HelpCircle className="w-5 h-5 text-emerald-700" />
             Pertanyaan Umum Layanan Sampah Sekali Angkut
           </h3>
           <div className="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-zinc-400">

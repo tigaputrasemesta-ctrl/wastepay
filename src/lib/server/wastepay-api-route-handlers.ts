@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { getPengaturanNumber, getPengaturanString, setPengaturan } from '@/lib/pengaturan';
+import { getTenantFromRequest, buildTenantFilter } from '@/lib/tenant';
 import {
   DEFAULT_IMG_RUMAH_TANGGA,
   DEFAULT_IMG_NIAGA,
@@ -295,6 +296,15 @@ export async function handleAbsensiPost(request: Request): Promise<NextResponse>
 // ────────────────────────────────────────────────────────────────────────────
 
 export async function handlePublicSearchPayment(request: Request): Promise<NextResponse> {
+  const tenantCtx = await getTenantFromRequest(request);
+  if (!tenantCtx.isValid || tenantCtx.isCore) {
+    return NextResponse.json(
+      { error: 'Layanan pencarian tagihan warga hanya tersedia melalui portal mitra operasional.' },
+      { status: 403, headers: buildCorsHeaders(request) }
+    );
+  }
+  const tenantFilter = buildTenantFilter(tenantCtx.tenant.id, tenantCtx.isPilot);
+
   const { searchParams } = new URL(request.url);
   const rawQuery = searchParams.get('kode') || searchParams.get('noWhatsapp') || searchParams.get('search') || '';
   const trimmed = rawQuery.trim();
@@ -333,6 +343,7 @@ export async function handlePublicSearchPayment(request: Request): Promise<NextR
 
   const pelanggan = await prisma.pelanggan.findFirst({
     where: {
+      ...tenantFilter,
       deletedAt: null,
       OR: [
         { kodePelanggan: trimmed },
@@ -375,7 +386,11 @@ export async function handlePublicSearchPayment(request: Request): Promise<NextR
 
   // Ambil daftar tagihan beserta status verifikasi pembayaran terkini
   const tagihanList = await prisma.tagihan.findMany({
-    where: { pelangganId: pelanggan.id, deletedAt: null },
+    where: {
+      ...tenantFilter,
+      pelangganId: pelanggan.id,
+      deletedAt: null,
+    },
     orderBy: [{ tahun: 'desc' }, { bulan: 'desc' }],
     select: {
       id: true,

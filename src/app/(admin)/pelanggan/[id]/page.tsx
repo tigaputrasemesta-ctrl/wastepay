@@ -219,7 +219,7 @@ export default function DetailPelangganPage() {
         {data.status === "calon" && (
           <button
             onClick={() => setShowApprovalModal(true)}
-            className="ml-2 inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-xs active:scale-95"
+            className="ml-2 inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-sm active:scale-95"
           >
             <ShieldCheck className="w-4 h-4" />
             <span>Approval &amp; Tentukan Zona Pickup</span>
@@ -228,7 +228,7 @@ export default function DetailPelangganPage() {
         {data.status === "aktif" && (
           <button
             onClick={() => setShowStatusModal(true)}
-            className="ml-2 inline-flex items-center gap-1.5 px-3 py-1.5 border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 rounded-xl text-xs font-bold transition shadow-xs active:scale-95"
+            className="ml-2 inline-flex items-center gap-1.5 px-3 py-1.5 border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 rounded-xl text-xs font-bold transition shadow-sm active:scale-95"
             title="Ubah Status / Nonaktifkan Layanan"
           >
             <Pause className="w-3.5 h-3.5 fill-current" />
@@ -238,7 +238,7 @@ export default function DetailPelangganPage() {
         {(data.status === "nonaktif" || data.status === "libur") && (
           <button
             onClick={() => setShowStatusModal(true)}
-            className="ml-2 inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-xs active:scale-95"
+            className="ml-2 inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-sm active:scale-95"
             title="Aktifkan Kembali Layanan"
           >
             <Play className="w-3.5 h-3.5 fill-current" />
@@ -249,7 +249,7 @@ export default function DetailPelangganPage() {
 
       {/* Banner Menunggu Approval & Penentuan Zona */}
       {data.status === "calon" && (
-        <div className="mb-6 p-4 bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-teal-500/10 border border-amber-500/30 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+        <div className="mb-6 p-4 bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-teal-500/10 border border-amber-500/30 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
           <div className="flex items-start sm:items-center gap-3">
             <span className="text-2xl">⏳</span>
             <div>
@@ -266,7 +266,7 @@ export default function DetailPelangganPage() {
           </div>
           <button
             onClick={() => setShowApprovalModal(true)}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-xs whitespace-nowrap active:scale-95"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-sm whitespace-nowrap active:scale-95"
           >
             <ShieldCheck className="w-4 h-4" />
             <span>Approval &amp; Tentukan Zona</span>
@@ -276,9 +276,9 @@ export default function DetailPelangganPage() {
 
       {/* Banner Pelanggan Nonaktif */}
       {data.status === "nonaktif" && (
-        <div className="mb-6 p-4 bg-slate-100 dark:bg-zinc-900 border border-slate-300 dark:border-zinc-800 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+        <div className="mb-6 p-4 bg-slate-100 dark:bg-zinc-900 border border-slate-300 dark:border-zinc-800 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
           <div className="flex items-start sm:items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 flex items-center justify-center text-lg font-black shrink-0 shadow-xs">
+            <div className="w-10 h-10 rounded-2xl bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 flex items-center justify-center text-lg font-black shrink-0 shadow-sm">
               ⏸️
             </div>
             <div>
@@ -293,7 +293,7 @@ export default function DetailPelangganPage() {
           </div>
           <button
             onClick={() => setShowStatusModal(true)}
-            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-xs whitespace-nowrap active:scale-95"
+            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-sm whitespace-nowrap active:scale-95"
           >
             <Play className="w-3.5 h-3.5 fill-current" />
             <span>Aktifkan Kembali</span>
@@ -303,9 +303,9 @@ export default function DetailPelangganPage() {
 
       {/* Banner Pelanggan Libur */}
       {data.status === "libur" && (
-        <div className="mb-6 p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+        <div className="mb-6 p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
           <div className="flex items-start sm:items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 flex items-center justify-center text-lg font-black shrink-0 shadow-xs">
+            <div className="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 flex items-center justify-center text-lg font-black shrink-0 shadow-sm">
               🏖️
             </div>
             <div>
@@ -320,7 +320,7 @@ export default function DetailPelangganPage() {
           </div>
           <button
             onClick={() => setShowStatusModal(true)}
-            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-xs whitespace-nowrap active:scale-95"
+            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-sm whitespace-nowrap active:scale-95"
           >
             <Play className="w-3.5 h-3.5 fill-current" />
             <span>Selesai Libur (Aktifkan)</span>
@@ -361,7 +361,7 @@ export default function DetailPelangganPage() {
           {(data.fotoRumah || (data.latitude && data.longitude)) && (
             <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-sm p-5">
               <h2 className="font-bold text-slate-900 dark:text-zinc-100 text-base mb-3 flex items-center gap-2">
-                <svg className="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-emerald-700 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
@@ -388,7 +388,7 @@ export default function DetailPelangganPage() {
               {data.latitude && data.longitude && (
                 <div className="mt-3 space-y-2 text-sm">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 font-mono">
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400 font-mono">
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -415,7 +415,7 @@ export default function DetailPelangganPage() {
                   <a
                     href={`https://www.google.com/maps?q=${data.latitude},${data.longitude}`}
                     target="_blank"
-                    className="inline-flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-medium"
+                    className="inline-flex items-center gap-1 text-xs text-emerald-700 dark:text-emerald-400 hover:underline font-medium"
                   >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -490,17 +490,17 @@ export default function DetailPelangganPage() {
                     </div>
                     <button
                       onClick={() => setShowApprovalModal(true)}
-                      className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 hover:underline"
+                      className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 hover:underline"
                     >
                       Ubah Zona
                     </button>
                   </div>
                 ) : (
                   <div className="flex items-center justify-between mt-0.5">
-                    <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">Belum ditentukan</span>
+                    <span className="text-xs text-amber-700 dark:text-amber-400 font-medium">Belum ditentukan</span>
                     <button
                       onClick={() => setShowApprovalModal(true)}
-                      className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 hover:underline"
+                      className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 hover:underline"
                     >
                       + Tentukan Zona
                     </button>
@@ -528,7 +528,7 @@ export default function DetailPelangganPage() {
                   <a
                     href={`https://www.google.com/maps?q=${data.latitude},${data.longitude}`}
                     target="_blank"
-                    className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-medium inline-flex items-center gap-1 mt-1"
+                    className="text-xs text-emerald-700 dark:text-emerald-400 hover:underline font-medium inline-flex items-center gap-1 mt-1"
                   >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -553,13 +553,13 @@ export default function DetailPelangganPage() {
                 <div>
                   <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Paket Langganan</p>
                   <p className="font-semibold text-slate-900 dark:text-zinc-100 text-sm">{data.paket.nama}</p>
-                  <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">{data.paket.harga != null ? `${formatRupiah(data.paket.harga)}/bln` : "Tarif variabel"}</p>
+                  <p className="text-xs text-emerald-700 dark:text-emerald-400 font-semibold">{data.paket.harga != null ? `${formatRupiah(data.paket.harga)}/bln` : "Tarif variabel"}</p>
                 </div>
               )}
               {data.customTarif && (
                 <div>
                   <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Tarif Kustom</p>
-                  <p className="font-semibold text-emerald-600 dark:text-emerald-400 text-sm">{formatRupiah(data.customTarif)}/bln</p>
+                  <p className="font-semibold text-emerald-700 dark:text-emerald-400 text-sm">{formatRupiah(data.customTarif)}/bln</p>
                 </div>
               )}
               <div>
@@ -579,11 +579,11 @@ export default function DetailPelangganPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500 dark:text-zinc-400 font-medium">Total Bayar</span>
-                <span className="font-semibold text-emerald-600 dark:text-emerald-400">{formatRupiah(totalBayar)}</span>
+                <span className="font-semibold text-emerald-700 dark:text-emerald-400">{formatRupiah(totalBayar)}</span>
               </div>
               <div className="flex justify-between border-t border-slate-100 dark:border-zinc-800 pt-3">
                 <span className="text-slate-500 dark:text-zinc-400 font-medium">Sisa Tagihan</span>
-                <span className={`font-semibold ${totalTagihan - totalBayar > 0 ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"}`}>
+                <span className={`font-semibold ${totalTagihan - totalBayar > 0 ? "text-rose-600 dark:text-rose-400" : "text-emerald-700 dark:text-emerald-400"}`}>
                   {formatRupiah(Math.max(0, totalTagihan - totalBayar))}
                 </span>
               </div>
@@ -614,7 +614,7 @@ export default function DetailPelangganPage() {
                     <p className="text-xs text-slate-500 dark:text-zinc-400 font-normal mt-0.5">
                       {j.rute.nama}
                       {j.rute.kendaraan && (
-                        <span className="text-emerald-600 dark:text-emerald-400 font-medium"> • 🚛 {j.rute.kendaraan.nama}{j.rute.kendaraan.platNomor ? ` (${j.rute.kendaraan.platNomor})` : ""}</span>
+                        <span className="text-emerald-700 dark:text-emerald-400 font-medium"> • 🚛 {j.rute.kendaraan.nama}{j.rute.kendaraan.platNomor ? ` (${j.rute.kendaraan.platNomor})` : ""}</span>
                       )}
                     </p>
                   </div>
@@ -702,7 +702,7 @@ export default function DetailPelangganPage() {
                     {data.pembayaran.map((p) => (
                       <tr key={p.id} className="border-b border-slate-100 dark:border-zinc-800 hover:bg-slate-50/50 dark:hover:bg-zinc-800/40">
                         <td className="px-3 py-2.5 text-slate-500 dark:text-zinc-400 text-xs">{formatDate(p.createdAt)}</td>
-                        <td className="px-3 py-2.5 text-right font-semibold text-emerald-600 dark:text-emerald-400 tabular-nums">{formatRupiah(p.jumlah)}</td>
+                        <td className="px-3 py-2.5 text-right font-semibold text-emerald-700 dark:text-emerald-400 tabular-nums">{formatRupiah(p.jumlah)}</td>
                         <td className="px-3 py-2.5 text-slate-600 dark:text-zinc-300 capitalize">
                           {p.metode === "duitku" ? "Payment Gateway" : p.metode.charAt(0).toUpperCase() + p.metode.slice(1)}
                         </td>
@@ -721,7 +721,7 @@ export default function DetailPelangganPage() {
                               <Link
                                 href={`/kwitansi/${p.id}`}
                                 target="_blank"
-                                className="text-xs text-emerald-600 dark:text-emerald-400 underline hover:text-emerald-700 font-semibold"
+                                className="text-xs text-emerald-700 dark:text-emerald-400 underline hover:text-emerald-700 font-semibold"
                               >
                                 Kwitansi
                               </Link>
@@ -928,7 +928,7 @@ export default function DetailPelangganPage() {
                         value={opt.value}
                         checked={statusBaru === opt.value}
                         onChange={(e) => setStatusBaru(e.target.value)}
-                        className="mt-0.5 text-emerald-600 focus:ring-emerald-500"
+                        className="mt-0.5 text-emerald-700 focus:ring-emerald-500"
                       />
                       <div className="text-xs">
                         <p className="font-bold">{opt.label}</p>
@@ -964,7 +964,7 @@ export default function DetailPelangganPage() {
                 type="button"
                 onClick={handleUpdateStatusTagihan}
                 disabled={isUpdatingTagihan || statusBaru === editTagihanModal.status}
-                className="px-4 py-2 text-xs font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 text-xs font-semibold rounded-xl bg-emerald-700 hover:bg-emerald-700 text-white transition shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isUpdatingTagihan ? "Menyimpan…" : "Simpan Perubahan"}
               </button>

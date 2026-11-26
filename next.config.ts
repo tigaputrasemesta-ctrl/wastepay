@@ -38,6 +38,16 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/bayar-tagihan",
+        destination: "/bayar",
+        permanent: true,
+      },
+      {
+        source: "/petalapangan",
+        destination: "/peta-lapangan",
+        permanent: true,
+      },
+      {
         source: "/jangkauan",
         destination: "/coverage",
         permanent: true,
@@ -85,7 +95,7 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"}`,
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https: https://images.unsplash.com https://*.unsplash.com https://images.duitku.com https://api.qrserver.com https://*.basemaps.cartocdn.com https://*.tile.openstreetmap.org https://tile.openstreetmap.org https://server.arcgisonline.com https://*.google.com https://*.googleapis.com https://*.gstatic.com https://*.supabase.co",
+              "img-src 'self' data: blob: https://images.unsplash.com https://*.unsplash.com https://images.duitku.com https://api.qrserver.com https://*.basemaps.cartocdn.com https://*.tile.openstreetmap.org https://tile.openstreetmap.org https://server.arcgisonline.com https://*.google.com https://*.googleapis.com https://*.gstatic.com https://*.supabase.co https://upsheru.com https://*.upsheru.com https://o2whero.com https://*.o2whero.com https://raw.githubusercontent.com",
               "font-src 'self' data:",
               "connect-src 'self' https://sandbox.duitku.com https://passport.duitku.com https://api.qrserver.com https://*.supabase.co https://*.project-osrm.org router.project-osrm.org https://*.tile.openstreetmap.org",
               "frame-ancestors 'none'",

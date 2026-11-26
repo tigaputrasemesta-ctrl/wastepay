@@ -507,14 +507,14 @@ export default function AiCommandHubPage() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <span className="p-2 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 rounded-lg">
+            <span className="p-2 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 rounded-lg">
               <Bot className="w-6 h-6" />
             </span>
             <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
               AI Agent Command Hub & Approval Gate
             </h1>
             <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-              <ShieldCheck className="w-3 h-3 text-emerald-600" /> Human-in-the-Loop Active
+              <ShieldCheck className="w-3 h-3 text-emerald-700" /> Human-in-the-Loop Active
             </span>
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -536,7 +536,7 @@ export default function AiCommandHubPage() {
               onClick={() => setShowKeyModal(true)}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800 hover:bg-amber-100 transition animate-pulse"
             >
-              <Key className="w-3.5 h-3.5 text-amber-600" />
+              <Key className="w-3.5 h-3.5 text-amber-700" />
               Hubungkan Gemini API Key
             </button>
           )}
@@ -577,7 +577,7 @@ export default function AiCommandHubPage() {
                 href="https://aistudio.google.com/"
                 target="_blank"
                 rel="noreferrer"
-                className="text-emerald-600 underline font-semibold"
+                className="text-emerald-700 underline font-semibold"
               >
                 aistudio.google.com
               </a>
@@ -615,7 +615,7 @@ export default function AiCommandHubPage() {
               <button
                 onClick={handleSaveAndTestKey}
                 disabled={testingKey || !keyInput.trim()}
-                className="px-4 py-1.5 text-xs rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex items-center gap-1.5 transition"
+                className="px-4 py-1.5 text-xs rounded-xl bg-emerald-700 hover:bg-emerald-700 text-white font-semibold flex items-center gap-1.5 transition"
               >
                 {testingKey ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
                 {testingKey ? "Menguji..." : "Simpan & Uji Live"}
@@ -646,7 +646,7 @@ export default function AiCommandHubPage() {
         <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-800 shadow-sm">
           <div className="flex items-center justify-between">
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Total Pelanggan Aktif</p>
-            <Users className="w-4 h-4 text-emerald-600" />
+            <Users className="w-4 h-4 text-emerald-700" />
           </div>
           <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
             {loadingStats ? "..." : stats?.totalPelanggan.toLocaleString("id-ID") + " KK"}
@@ -659,7 +659,7 @@ export default function AiCommandHubPage() {
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Sisa Tunggakan</p>
             <AlertTriangle className="w-4 h-4 text-amber-500" />
           </div>
-          <p className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-2">
+          <p className="text-2xl font-bold text-amber-700 dark:text-amber-400 mt-2">
             {loadingStats ? "..." : (stats?.tagihanBelumBayar || 0) + " KK"}
           </p>
           <p className="text-xs text-gray-500 mt-1">
@@ -675,7 +675,7 @@ export default function AiCommandHubPage() {
           <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
             {loadingStats ? "..." : stats?.komplainPending + " Laporan"}
           </p>
-          <p className="text-xs text-emerald-600 mt-1 font-medium">Semua rute terjadwal</p>
+          <p className="text-xs text-emerald-700 mt-1 font-medium">Semua rute terjadwal</p>
         </div>
 
         <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-800 shadow-sm">
@@ -701,7 +701,7 @@ export default function AiCommandHubPage() {
       <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5 shadow-sm space-y-4">
         <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-3">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-emerald-600" />
+            <ShieldCheck className="w-5 h-5 text-emerald-700" />
             <h2 className="font-semibold text-base text-gray-900 dark:text-white">
               Antrean Persetujuan Admin (Moderation Gate)
             </h2>
@@ -752,7 +752,7 @@ export default function AiCommandHubPage() {
                       </button>
                       <button
                         onClick={() => handleSaveEdit(item.id)}
-                        className="px-2 py-1 text-[11px] rounded bg-emerald-600 text-white"
+                        className="px-2 py-1 text-[11px] rounded bg-emerald-700 text-white"
                       >
                         Simpan Draf
                       </button>
@@ -790,7 +790,7 @@ export default function AiCommandHubPage() {
                     <button
                       onClick={() => handleApproveItem(item.id)}
                       disabled={loadingAction}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-sm"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-lg bg-emerald-700 hover:bg-emerald-700 text-white transition shadow-sm"
                     >
                       <Check className="w-3.5 h-3.5" />
                       Setujui & Kirim
@@ -799,7 +799,7 @@ export default function AiCommandHubPage() {
                 )}
 
                 {item.status === "APPROVED_AND_SENT" && (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600">
+                  <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700">
                     <CheckCircle2 className="w-3.5 h-3.5" /> Terkirim ke WhatsApp
                   </span>
                 )}
@@ -859,7 +859,7 @@ export default function AiCommandHubPage() {
                         : "text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100/60 dark:hover:bg-gray-800/40"
                     }`}
                   >
-                    <IconComponent className={`w-3.5 h-3.5 ${isActive ? "text-emerald-600 dark:text-emerald-400" : "text-gray-400"}`} />
+                    <IconComponent className={`w-3.5 h-3.5 ${isActive ? "text-emerald-700 dark:text-emerald-400" : "text-gray-400"}`} />
                     <span className="text-[10px] leading-tight truncate w-full">{r.title.split(" ")[0]}</span>
                   </button>
                 );
@@ -892,7 +892,7 @@ export default function AiCommandHubPage() {
                 <div
                   className={`max-w-[88%] rounded-2xl p-3 leading-relaxed ${
                     msg.sender === "owner"
-                      ? "bg-emerald-600 text-white rounded-br-none"
+                      ? "bg-emerald-700 text-white rounded-br-none"
                       : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-none border border-gray-200/50 dark:border-gray-700/50"
                   }`}
                 >
@@ -905,9 +905,9 @@ export default function AiCommandHubPage() {
                         type="button"
                         onClick={() => handleAddToApprovalQueue(msg.text)}
                         disabled={loadingAction}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 transition shadow-xs"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 transition shadow-sm"
                       >
-                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
                         + Masukkan ke Antrean Approval
                       </button>
                     </div>
@@ -940,7 +940,7 @@ export default function AiCommandHubPage() {
                 type="button"
                 onClick={() => handleSendChat(undefined, p)}
                 disabled={isChatting}
-                className="whitespace-nowrap px-2.5 py-1 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 border border-gray-200 dark:border-gray-700 text-[10px] font-medium transition shadow-xs"
+                className="whitespace-nowrap px-2.5 py-1 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 border border-gray-200 dark:border-gray-700 text-[10px] font-medium transition shadow-sm"
               >
                 💡 {p}
               </button>
@@ -960,7 +960,7 @@ export default function AiCommandHubPage() {
             <button
               type="submit"
               disabled={isChatting || !chatInput.trim()}
-              className="p-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition disabled:opacity-50"
+              className="p-2 bg-emerald-700 hover:bg-emerald-700 text-white rounded-xl transition disabled:opacity-50"
             >
               <Send className="w-4 h-4" />
             </button>
@@ -993,7 +993,7 @@ export default function AiCommandHubPage() {
               <button
                 onClick={handleSendToWhatsApp}
                 disabled={loadingAction || !activeOutputContent}
-                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md bg-emerald-600 hover:bg-emerald-700 text-white transition"
+                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md bg-emerald-700 hover:bg-emerald-700 text-white transition"
               >
                 <Share2 className="w-3.5 h-3.5" />
                 Kirim ke WA Saya

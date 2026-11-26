@@ -283,7 +283,7 @@ export default function PengeluaranPage() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-semibold shadow-xs active:scale-95 transition-all"
+                  className="flex-1 px-4 py-2 bg-emerald-700 hover:bg-emerald-700 text-white rounded-lg text-sm font-semibold shadow-sm active:scale-95 transition-all"
                 >
                   Simpan
                 </button>

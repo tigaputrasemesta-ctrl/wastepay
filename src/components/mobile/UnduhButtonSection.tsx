@@ -31,7 +31,7 @@ export default function UnduhButtonSection({
     return (
       <div className="p-4 sm:p-5 rounded-2xl bg-emerald-50/90 border border-emerald-200 text-center space-y-1.5 animate-in fade-in">
         <div className="flex items-center justify-center gap-2 font-bold text-xs sm:text-sm text-emerald-900">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
           <span>Aplikasi Sudah Terpasang (Native Mode)</span>
         </div>
         <p className="text-xs text-slate-600 max-w-sm mx-auto leading-relaxed">

@@ -47,7 +47,7 @@ export default function AdminSyncIndicator() {
       <button
         type="button"
         onClick={() => setModalOpen(true)}
-        className={`h-9 inline-flex items-center gap-1.5 px-2.5 rounded-lg text-xs font-medium transition-colors border shadow-xs select-none ${
+        className={`h-9 inline-flex items-center gap-1.5 px-2.5 rounded-lg text-xs font-medium transition-colors border shadow-sm select-none ${
           !isOnline
             ? "bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800"
             : isOfflineReady
@@ -59,9 +59,9 @@ export default function AdminSyncIndicator() {
         {isSyncing ? (
           <RefreshCw className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 animate-spin shrink-0" />
         ) : !isOnline ? (
-          <WifiOff className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+          <WifiOff className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400 shrink-0" />
         ) : isOfflineReady ? (
-          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400 shrink-0" />
         ) : (
           <HardDriveDownload className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
         )}
@@ -119,12 +119,12 @@ export default function AdminSyncIndicator() {
                   <div className="flex items-center gap-1.5 mt-1 font-bold">
                     {isOnline ? (
                       <>
-                        <Wifi className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                        <Wifi className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
                         <span className="text-emerald-700 dark:text-emerald-400">Online</span>
                       </>
                     ) : (
                       <>
-                        <WifiOff className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                        <WifiOff className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
                         <span className="text-amber-700 dark:text-amber-400">Offline</span>
                       </>
                     )}
@@ -136,7 +136,7 @@ export default function AdminSyncIndicator() {
                     Tersimpan di Memori HP
                   </span>
                   <div className="flex items-center gap-1.5 mt-1 font-bold text-slate-800 dark:text-zinc-200">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
                     <span>{totalPelanggan} Pelanggan</span>
                   </div>
                 </div>
@@ -174,7 +174,7 @@ export default function AdminSyncIndicator() {
                   type="button"
                   disabled={isSyncing || !isOnline}
                   onClick={syncDelta}
-                  className="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold flex items-center justify-center gap-2 transition disabled:opacity-50 shadow-xs"
+                  className="w-full py-2.5 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-700 text-white font-bold flex items-center justify-center gap-2 transition disabled:opacity-50 shadow-sm"
                 >
                   <RefreshCw
                     className={`w-4 h-4 ${isSyncing ? "animate-spin" : ""}`}

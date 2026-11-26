@@ -184,7 +184,7 @@ export default function ProdukDetailPage({
         </p>
         <Link
           href="/marketplace"
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0d7a75] text-white rounded-xl text-xs font-bold shadow-xs hover:bg-[#0b6460] transition-all"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0d7a75] text-white rounded-xl text-xs font-bold shadow-sm hover:bg-[#0b6460] transition-all"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Kembali ke Katalog Toko</span>
@@ -264,7 +264,7 @@ export default function ProdukDetailPage({
               </div>
 
               {/* Box Info Penjual Tunggal (Single Seller Official) */}
-              <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-slate-50 dark:from-zinc-900 dark:to-zinc-800/80 border border-emerald-200 dark:border-emerald-800/60 rounded-2xl p-5 shadow-xs space-y-3">
+              <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-slate-50 dark:from-zinc-900 dark:to-zinc-800/80 border border-emerald-200 dark:border-emerald-800/60 rounded-2xl p-5 shadow-sm space-y-3">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-2xl bg-[#0d7a75] text-white flex items-center justify-center font-black text-lg shadow-sm shrink-0">
@@ -275,12 +275,12 @@ export default function ProdukDetailPage({
                         <span className="text-sm font-black text-slate-900 dark:text-white">
                           Toko Resmi UPS HERU
                         </span>
-                        <span className="px-2 py-0.5 bg-emerald-600 text-white text-[10px] font-bold rounded-full">
+                        <span className="px-2 py-0.5 bg-emerald-700 text-white text-[10px] font-bold rounded-full">
                           Terverifikasi
                         </span>
                       </div>
                       <p className="text-xs text-slate-600 dark:text-zinc-400 flex items-center gap-1 mt-0.5">
-                        <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <MapPin className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
                         <span>TPS 3R Kalibaru, Jl. H. Asmawi No. 1, Kec. Cilodong, Kota Depok</span>
                       </p>
                     </div>
@@ -300,7 +300,7 @@ export default function ProdukDetailPage({
               </div>
 
               {/* Description & Benefits */}
-              <div className="bg-white dark:bg-zinc-900 border border-slate-200/90 dark:border-zinc-800 rounded-2xl p-6 shadow-xs space-y-4">
+              <div className="bg-white dark:bg-zinc-900 border border-slate-200/90 dark:border-zinc-800 rounded-2xl p-6 shadow-sm space-y-4">
                 <h3 className="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-[#0d7a75] dark:text-emerald-400" />
                   <span>Deskripsi & Keunggulan Produk</span>
@@ -331,7 +331,7 @@ export default function ProdukDetailPage({
               </div>
 
               {/* Technical Specifications */}
-              <div className="bg-white dark:bg-zinc-900 border border-slate-200/90 dark:border-zinc-800 rounded-2xl p-6 shadow-xs space-y-3">
+              <div className="bg-white dark:bg-zinc-900 border border-slate-200/90 dark:border-zinc-800 rounded-2xl p-6 shadow-sm space-y-3">
                 <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">
                   Spesifikasi Teknis
                 </h3>
@@ -448,7 +448,7 @@ export default function ProdukDetailPage({
                           className="sr-only"
                         />
                         <div className="flex items-center gap-1.5">
-                          <Truck className="w-3.5 h-3.5 text-emerald-600" />
+                          <Truck className="w-3.5 h-3.5 text-emerald-700" />
                           <span>Kurir Armada</span>
                         </div>
                         <span className="text-[10px] font-normal text-slate-500 mt-1">
@@ -472,7 +472,7 @@ export default function ProdukDetailPage({
                           className="sr-only"
                         />
                         <div className="flex items-center gap-1.5">
-                          <Building2 className="w-3.5 h-3.5 text-emerald-600" />
+                          <Building2 className="w-3.5 h-3.5 text-emerald-700" />
                           <span>Ambil di TPS 3R</span>
                         </div>
                         <span className="text-[10px] font-normal text-slate-500 mt-1">
@@ -505,7 +505,7 @@ export default function ProdukDetailPage({
                       <input
                         type="tel"
                         required
-                        placeholder="Contoh: 081234567890"
+                        placeholder="Contoh: 08xxxxxxxxxx"
                         value={noTelepon}
                         onChange={(e) => setNoTelepon(e.target.value)}
                         className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0d7a75]"
@@ -568,7 +568,7 @@ export default function ProdukDetailPage({
                             className="sr-only"
                           />
                           <div className="flex items-center gap-1.5">
-                            <CreditCard className="w-3.5 h-3.5 text-emerald-600" />
+                            <CreditCard className="w-3.5 h-3.5 text-emerald-700" />
                             <span>Duitku Payment</span>
                           </div>
                           <span className="text-[10px] font-normal text-slate-500 mt-1">
@@ -592,7 +592,7 @@ export default function ProdukDetailPage({
                             className="sr-only"
                           />
                           <div className="flex items-center gap-1.5">
-                            <Truck className="w-3.5 h-3.5 text-emerald-600" />
+                            <Truck className="w-3.5 h-3.5 text-emerald-700" />
                             <span>COD / Tunai</span>
                           </div>
                           <span className="text-[10px] font-normal text-slate-500 mt-1">
@@ -625,7 +625,7 @@ export default function ProdukDetailPage({
                       </span>
                     </div>
                     {isGratisOngkir && !isAmbilSendiri && (
-                      <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-medium">
+                      <div className="flex justify-between text-emerald-700 dark:text-emerald-400 font-medium">
                         <span>Diskon Ongkir:</span>
                         <span>-Rp 10.000</span>
                       </div>
@@ -672,7 +672,7 @@ export default function ProdukDetailPage({
                     rel="noopener noreferrer"
                     className="w-full py-2.5 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-200 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2"
                   >
-                    <MessageCircle className="w-4 h-4 text-emerald-600" />
+                    <MessageCircle className="w-4 h-4 text-emerald-700" />
                     <span>Konsultasi Produk Resmi via WhatsApp</span>
                   </a>
                 </div>
@@ -706,7 +706,7 @@ export default function ProdukDetailPage({
                   <Link
                     key={rel.id}
                     href={`/marketplace/${rel.slug}`}
-                    className="group bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-4 shadow-xs hover:border-[#0d7a75] transition-all flex flex-col justify-between space-y-3"
+                    className="group bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-4 shadow-sm hover:border-[#0d7a75] transition-all flex flex-col justify-between space-y-3"
                   >
                     <div className="space-y-2">
                       <div className="w-full h-36 rounded-xl overflow-hidden bg-slate-100 dark:bg-zinc-800 relative">
@@ -717,7 +717,7 @@ export default function ProdukDetailPage({
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                           />
                         ) : (
-                          <Leaf className="w-8 h-8 text-emerald-600/40 m-auto mt-12" />
+                          <Leaf className="w-8 h-8 text-emerald-700/40 m-auto mt-12" />
                         )}
                         <span className="absolute top-2 left-2 text-[10px] font-bold bg-white/90 dark:bg-zinc-900/90 px-2 py-0.5 rounded-md text-slate-700 dark:text-zinc-300">
                           {rel.kategori.replace(/_/g, " ")}

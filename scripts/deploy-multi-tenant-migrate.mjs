@@ -205,6 +205,20 @@ async function main() {
     await client.query(migrationSql);
     console.log("✓ Skema DDL TenantMembership, TenantSubscription, & 36 kolom tenantId selesai diterapkan.");
 
+    // 2b. Jalankan Hardened RLS Policy & Composite Indexes (20261127000000_vps_rls_hardening)
+    const hardeningMigrationPath = path.join(
+      process.cwd(),
+      "prisma",
+      "migrations",
+      "20261127000000_vps_rls_hardening",
+      "migration.sql"
+    );
+    if (fs.existsSync(hardeningMigrationPath)) {
+      const hardeningSql = fs.readFileSync(hardeningMigrationPath, "utf8");
+      await client.query(hardeningSql);
+      console.log("✓ PostgreSQL ENABLE & FORCE ROW LEVEL SECURITY, Tenant Isolation Policy, & Indeks Komposit berhasil diterapkan.");
+    }
+
     // 3. Backfill seluruh baris legacy NULL -> tenant-pilot-upsheru dengan verifikasi total count
     let totalUpdated = 0;
     for (const tableName of TENANT_OPERATIONAL_TABLES) {

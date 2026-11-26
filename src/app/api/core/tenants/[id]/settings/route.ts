@@ -136,7 +136,9 @@ export async function GET(
           paketLangganan: tenant.paketLangganan,
           customDomain: tenant.customDomain,
           status: tenant.status,
+          fiturAktif: tenant.fiturAktif,
         },
+        fiturAktif: tenant.fiturAktif,
         waConfig,
         quotaUsage,
         paymentConfig,
@@ -295,10 +297,20 @@ export async function PUT(
       });
     }
 
+    // 3. Perbarui Konfigurasi Fitur Aktif (Feature Flags)
+    if (body.fiturAktif !== undefined) {
+      await prisma.tenant.update({
+        where: { id: tenant.id },
+        data: {
+          fiturAktif: typeof body.fiturAktif === "object" ? JSON.stringify(body.fiturAktif) : body.fiturAktif,
+        },
+      });
+    }
+
     return NextResponse.json(
       {
         success: true,
-        message: `Pengaturan WhatsApp & Payment Gateway untuk ${tenant.namaMitra} berhasil disimpan!`,
+        message: `Pengaturan layanan & fitur untuk ${tenant.namaMitra} berhasil disimpan!`,
       },
       { headers: corsHeaders }
     );

@@ -290,7 +290,7 @@ function RenderIsiArtikel({ isi }: { isi: string }) {
                     className="flex items-start gap-3 bg-slate-50/80 dark:bg-zinc-800/50 p-3.5 sm:p-4 rounded-2xl border border-slate-200/70 dark:border-zinc-700 text-slate-700 dark:text-zinc-300 text-sm sm:text-base leading-relaxed"
                   >
                     <div className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 flex items-center justify-center shrink-0 mt-0.5">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                      <CheckCircle2 className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
                     </div>
                     <div className="flex-1">
                       {renderFormattedInline(bulletText)}

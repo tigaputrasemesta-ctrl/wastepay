@@ -36,9 +36,11 @@ import {
   Navigation,
   MessageSquare,
   BadgeCheck,
+  Menu,
 } from "lucide-react";
 
 export default function O2WHeroCorePortal() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   // ── State Formulir Kemitraan ──
   const [form, setForm] = useState({
     namaLengkap: "",
@@ -267,23 +269,91 @@ export default function O2WHeroCorePortal() {
           </nav>
 
           {/* Action Button */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Link
               href="/login"
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-900 border border-transparent hover:border-slate-800 transition-all flex items-center gap-1.5"
+              className="px-3 sm:px-4 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-900 border border-transparent hover:border-slate-800 transition-all flex items-center gap-1.5"
             >
               <LogIn className="w-3.5 h-3.5" />
               <span>Masuk Portal</span>
             </Link>
             <a
               href="#daftar"
-              className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-105 transition-all flex items-center gap-1.5"
+              className="hidden sm:inline-flex px-4 sm:px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-105 transition-all items-center gap-1.5"
             >
               <span>Gabung Mitra</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </a>
+
+            {/* Mobile Hamburger Toggle */}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-900 border border-slate-800 transition-colors"
+              aria-label="Menu navigasi"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Drawer Menu */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden bg-slate-950/95 border-b border-slate-800 px-4 py-4 space-y-3 backdrop-blur-xl animate-in slide-in-from-top-2">
+            <a
+              href="#solusi"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-2 text-sm font-semibold text-slate-200 hover:text-emerald-400"
+            >
+              Fitur Lengkap
+            </a>
+            <a
+              href="#simulasi"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-2 text-sm font-semibold text-slate-200 hover:text-emerald-400"
+            >
+              Simulasi Cuan
+            </a>
+            <a
+              href="#perbandingan"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-2 text-sm font-semibold text-slate-200 hover:text-emerald-400"
+            >
+              Sebelum vs Sesudah
+            </a>
+            <a
+              href="#contoh-nyata"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-2 text-sm font-semibold text-slate-200 hover:text-emerald-400"
+            >
+              Pilot UPS HERU
+            </a>
+            <a
+              href="#harga"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-2 text-sm font-bold text-emerald-400"
+            >
+              Paket Kemitraan (2 Jt)
+            </a>
+            <a
+              href="#faq"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-2 text-sm font-semibold text-slate-200 hover:text-emerald-400"
+            >
+              Tanya Jawab
+            </a>
+            <div className="pt-2">
+              <a
+                href="#daftar"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full py-2.5 rounded-xl bg-emerald-500 text-slate-950 font-black text-xs text-center flex items-center justify-center gap-1.5"
+              >
+                <span>Gabung Mitra</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </a>
+            </div>
+          </div>
+        )}
       </header>
 
       <main className="flex-1 relative z-10">
@@ -379,7 +449,7 @@ export default function O2WHeroCorePortal() {
                 onClick={() => setActiveTab("pengurus")}
                 className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
                   activeTab === "pengurus"
-                    ? "bg-emerald-500 text-slate-950 shadow-md font-black"
+                    ? "bg-emerald-700 text-slate-950 shadow-md font-black"
                     : "text-slate-400 hover:text-white"
                 }`}
               >
@@ -392,7 +462,7 @@ export default function O2WHeroCorePortal() {
                 onClick={() => setActiveTab("supir")}
                 className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
                   activeTab === "supir"
-                    ? "bg-emerald-500 text-slate-950 shadow-md font-black"
+                    ? "bg-emerald-700 text-slate-950 shadow-md font-black"
                     : "text-slate-400 hover:text-white"
                 }`}
               >
@@ -405,7 +475,7 @@ export default function O2WHeroCorePortal() {
                 onClick={() => setActiveTab("warga")}
                 className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
                   activeTab === "warga"
-                    ? "bg-emerald-500 text-slate-950 shadow-md font-black"
+                    ? "bg-emerald-700 text-slate-950 shadow-md font-black"
                     : "text-slate-400 hover:text-white"
                 }`}
               >
@@ -418,7 +488,7 @@ export default function O2WHeroCorePortal() {
                 onClick={() => setActiveTab("bendahara")}
                 className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
                   activeTab === "bendahara"
-                    ? "bg-emerald-500 text-slate-950 shadow-md font-black"
+                    ? "bg-emerald-700 text-slate-950 shadow-md font-black"
                     : "text-slate-400 hover:text-white"
                 }`}
               >
@@ -1159,7 +1229,7 @@ export default function O2WHeroCorePortal() {
                     <input
                       type="tel"
                       required
-                      placeholder="Contoh: 081234567890"
+                      placeholder="Contoh: 08xxxxxxxxxx"
                       value={form.noWhatsapp}
                       onChange={(e) => setForm({ ...form, noWhatsapp: e.target.value })}
                       className="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-800/80 text-white text-xs outline-none focus:ring-2 focus:ring-emerald-500"

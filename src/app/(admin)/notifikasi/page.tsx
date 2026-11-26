@@ -599,7 +599,7 @@ function NotifikasiContent() {
           <div className="divide-y divide-slate-100">
             {loadingNotif ? (
               <div className="px-4 py-12 text-center text-slate-500 font-medium flex items-center justify-center gap-2">
-                <svg className="w-4 h-4 animate-spin text-emerald-600" viewBox="0 0 24 24" fill="none">
+                <svg className="w-4 h-4 animate-spin text-emerald-700" viewBox="0 0 24 24" fill="none">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                 </svg>
@@ -663,7 +663,7 @@ function NotifikasiContent() {
                             <button
                               onClick={() => handleRetry(n)}
                               disabled={retryingId === n.id}
-                              className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-bold transition flex items-center gap-1 shadow-sm"
+                              className="px-2.5 py-1 rounded-lg bg-emerald-700 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-bold transition flex items-center gap-1 shadow-sm"
                               title="Kirim ulang otomatis via Gateway WhatsApp"
                             >
                               {retryingId === n.id ? (
@@ -768,7 +768,7 @@ function NotifikasiContent() {
                       name="penerima"
                       checked={form.semuaPelanggan}
                       onChange={() => setForm({ ...form, semuaPelanggan: true, pelangganId: "" })}
-                      className="text-emerald-600 focus:ring-emerald-500"
+                      className="text-emerald-700 focus:ring-emerald-500"
                     />
                     Semua Pelanggan Aktif ({pelangganList.length} orang)
                   </label>
@@ -778,7 +778,7 @@ function NotifikasiContent() {
                       name="penerima"
                       checked={!form.semuaPelanggan}
                       onChange={() => setForm({ ...form, semuaPelanggan: false })}
-                      className="text-emerald-600 focus:ring-emerald-500"
+                      className="text-emerald-700 focus:ring-emerald-500"
                     />
                     Pilih Satu Pelanggan Tertentu
                   </label>
@@ -812,7 +812,7 @@ function NotifikasiContent() {
                           href={link}
                           target="_blank"
                           rel="noreferrer"
-                          className="block text-emerald-600 dark:text-emerald-400 hover:underline truncate"
+                          className="block text-emerald-700 dark:text-emerald-400 hover:underline truncate"
                         >
                           🔗 Buka Chat WA #{i + 1}
                         </a>
@@ -834,7 +834,7 @@ function NotifikasiContent() {
                 <button
                   type="submit"
                   disabled={sending}
-                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white shadow-sm transition-colors"
+                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-700 hover:bg-emerald-700 disabled:opacity-50 text-white shadow-sm transition-colors"
                 >
                   {sending ? "Mengirim..." : "Kirim Sekarang"}
                 </button>
@@ -905,7 +905,7 @@ function NotifikasiContent() {
                   type="checkbox"
                   checked={pengumumanForm.penting}
                   onChange={(e) => setPengumumanForm({ ...pengumumanForm, penting: e.target.checked })}
-                  className="rounded text-emerald-600 focus:ring-emerald-500"
+                  className="rounded text-emerald-700 focus:ring-emerald-500"
                 />
                 Tandai sebagai Pengumuman Penting (High Priority)
               </label>
@@ -921,7 +921,7 @@ function NotifikasiContent() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-colors"
+                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-700 hover:bg-emerald-700 text-white shadow-sm transition-colors"
                 >
                   Terbitkan
                 </button>
@@ -1004,7 +1004,7 @@ function TemplateSettingsForm({ showToast }: { showToast: (msg: string, type: 's
         <button
           onClick={handleSave}
           disabled={saving}
-          className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white px-5 py-2.5 rounded-xl font-bold shadow-sm transition-all flex items-center gap-2"
+          className="bg-emerald-700 hover:bg-emerald-700 disabled:opacity-50 text-white px-5 py-2.5 rounded-xl font-bold shadow-sm transition-all flex items-center gap-2"
         >
           {saving ? "Menyimpan..." : "💾 Simpan Perubahan"}
         </button>
@@ -1034,7 +1034,7 @@ function TemplateSettingsForm({ showToast }: { showToast: (msg: string, type: 's
                         return { ...prev, [t.key]: cur + sep + chip };
                       });
                     }}
-                    className="px-2 py-0.5 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[11px] font-mono font-bold border border-emerald-300 shadow-2xs active:scale-95 transition-all"
+                    className="px-2 py-0.5 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[11px] font-mono font-bold border border-emerald-300 shadow-sm active:scale-95 transition-all"
                     title={`Klik untuk menyisipkan ${chip} ke pesan`}
                   >
                     + {chip}

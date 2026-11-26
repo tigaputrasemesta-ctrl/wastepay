@@ -402,11 +402,59 @@ export async function GET(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
-  const q = String(searchParams.get("telp") || searchParams.get("kode") || searchParams.get("q") || "").trim();
+  const q = String(
+    searchParams.get("telp") ||
+    searchParams.get("kode") ||
+    searchParams.get("q") ||
+    searchParams.get("noWa") ||
+    searchParams.get("noTelepon") ||
+    searchParams.get("phone") ||
+    searchParams.get("kodePelanggan") ||
+    ""
+  ).trim();
+
   if (!q) {
-    return NextResponse.json({ error: "Parameter nomor WhatsApp atau kode pelanggan wajib diisi." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Parameter nomor WhatsApp atau kode pelanggan wajib diisi." },
+      { status: 400 }
+    );
   }
 
+  // 1. Cek apakah query adalah nomor tiket komplain langsung (misal: "12" atau "#12" atau "KMP-12")
+  const numericCandidate = q.replace(/^#|^kmp-?/i, "").trim();
+  const ticketId = Number(numericCandidate);
+  if (!isNaN(ticketId) && ticketId > 0 && String(ticketId) === numericCandidate) {
+    const directTicket = await prisma.komplain.findFirst({
+      where: {
+        id: ticketId,
+        ...buildTenantFilter(tenantCtx.tenant.id, tenantCtx.isPilot),
+      },
+      include: {
+        pelanggan: {
+          select: { id: true, nama: true, kodePelanggan: true },
+        },
+      },
+    });
+
+    if (directTicket) {
+      return NextResponse.json({
+        nama: directTicket.pelanggan?.nama || "Pelanggan",
+        kodePelanggan: directTicket.pelanggan?.kodePelanggan || "-",
+        komplain: [
+          {
+            id: directTicket.id,
+            jenis: directTicket.jenis,
+            deskripsi: directTicket.deskripsi,
+            status: directTicket.status,
+            tanggapan: directTicket.tanggapan,
+            createdAt: directTicket.createdAt,
+          },
+        ],
+      });
+    }
+  }
+
+  // 2. Pencarian berdasarkan nomor telepon WhatsApp atau kode pelanggan
   const phoneCandidates = buildPhoneCandidates(q);
   const pelanggan = await prisma.pelanggan.findFirst({
     where: {
@@ -427,7 +475,7 @@ export async function GET(request: Request) {
       kodePelanggan: true,
       komplain: {
         orderBy: { createdAt: "desc" },
-        take: 5,
+        take: 10,
         select: {
           id: true,
           jenis: true,
@@ -441,7 +489,10 @@ export async function GET(request: Request) {
   });
 
   if (!pelanggan) {
-    return NextResponse.json({ error: "Pelanggan tidak ditemukan." }, { status: 404 });
+    return NextResponse.json(
+      { error: "Data pengaduan atau pelanggan tidak ditemukan pada sistem unit ini." },
+      { status: 404 }
+    );
   }
 
   return NextResponse.json({

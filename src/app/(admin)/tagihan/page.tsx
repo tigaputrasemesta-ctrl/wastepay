@@ -887,7 +887,7 @@ export default function TagihanPage() {
         <>
         <button
           onClick={() => setShowKolektifModal(true)}
-          className="px-3.5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-semibold shadow-xs active:scale-[0.98] transition-all flex items-center gap-1.5"
+          className="px-3.5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-semibold shadow-sm active:scale-[0.98] transition-all flex items-center gap-1.5"
           title="Pelunasan kolektif satu pintu untuk seluruh warga di bawah koordinator RT / pengelola"
         >
           <span className="text-sm">👥</span>
@@ -895,7 +895,7 @@ export default function TagihanPage() {
         </button>
         <button
           onClick={handleOpenBlastModal}
-          className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium shadow-xs active:scale-[0.98] transition-all flex items-center gap-1.5"
+          className="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium shadow-sm active:scale-[0.98] transition-all flex items-center gap-1.5"
           title="Kirim pesan WhatsApp massal ke seluruh warga yang belum bayar di RT tertentu"
         >
           <span className="text-sm">📢</span>
@@ -903,7 +903,7 @@ export default function TagihanPage() {
         </button>
         <button
           onClick={() => setShowGenerate(true)}
-          className="px-3.5 py-2 bg-slate-900 dark:bg-zinc-800 hover:bg-slate-800 dark:hover:bg-zinc-700 text-white rounded-lg text-xs font-medium shadow-xs active:scale-[0.98] transition-all flex items-center gap-1.5"
+          className="px-3.5 py-2 bg-slate-900 dark:bg-zinc-800 hover:bg-slate-800 dark:hover:bg-zinc-700 text-white rounded-lg text-xs font-medium shadow-sm active:scale-[0.98] transition-all flex items-center gap-1.5"
         >
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -912,7 +912,7 @@ export default function TagihanPage() {
         </button>
         <button
           onClick={() => { setShowAutoGenerate(true); setAutoResult(null); }}
-          className="px-3.5 py-2 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-800 dark:text-zinc-200 rounded-lg text-xs font-medium shadow-xs active:scale-[0.98] transition-all flex items-center gap-1.5"
+          className="px-3.5 py-2 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-800 dark:text-zinc-200 rounded-lg text-xs font-medium shadow-sm active:scale-[0.98] transition-all flex items-center gap-1.5"
         >
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -924,7 +924,7 @@ export default function TagihanPage() {
         <Link
           href={`/tagihan-cetak?bulan=${bulan || new Date().getMonth() + 1}&tahun=${tahun || new Date().getFullYear()}`}
           target="_blank"
-          className="px-3.5 py-2 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-800 dark:text-zinc-200 rounded-lg text-xs font-medium shadow-xs active:scale-[0.98] transition-all flex items-center gap-1.5"
+          className="px-3.5 py-2 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-800 dark:text-zinc-200 rounded-lg text-xs font-medium shadow-sm active:scale-[0.98] transition-all flex items-center gap-1.5"
         >
           <span>🖨</span>
           <span>Cetak Massal</span>
@@ -932,7 +932,7 @@ export default function TagihanPage() {
         <Link
           href={`/laporan-pembayaran-cetak?bulan=${bulan || new Date().getMonth() + 1}&tahun=${tahun || new Date().getFullYear()}&status=${status || 'all'}`}
           target="_blank"
-          className="px-3.5 py-2 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 rounded-lg text-xs font-medium shadow-xs active:scale-[0.98] transition-all flex items-center gap-1.5"
+          className="px-3.5 py-2 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 rounded-lg text-xs font-medium shadow-sm active:scale-[0.98] transition-all flex items-center gap-1.5"
         >
           <span>📊</span>
           <span>Rekap Laporan</span>
@@ -940,7 +940,7 @@ export default function TagihanPage() {
         <Link
           href={`/rekap-rt-cetak?bulan=${bulan || new Date().getMonth() + 1}&tahun=${tahun || new Date().getFullYear()}${kelurahanId ? `&kelurahanId=${kelurahanId}` : ""}${zonaId ? `&zonaId=${zonaId}` : ""}`}
           target="_blank"
-          className="px-3.5 py-2 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 rounded-lg text-xs font-medium shadow-xs active:scale-[0.98] transition-all flex items-center gap-1.5"
+          className="px-3.5 py-2 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 rounded-lg text-xs font-medium shadow-sm active:scale-[0.98] transition-all flex items-center gap-1.5"
           title="Cetak Formulir Rekap Penagihan RT dengan Kolom Tanda Tangan Warga"
         >
           <span>✍️</span>
@@ -951,7 +951,7 @@ export default function TagihanPage() {
 
       {/* Cashflow Summary Bar */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 rounded-2xl p-4 shadow-xs">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 rounded-2xl p-4 shadow-sm">
           <div className="text-[11px] font-medium text-slate-500 dark:text-zinc-400 uppercase tracking-wider">Total Tagihan</div>
           <div className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-zinc-100 mt-1 tabular-nums">
             {formatRupiah(summaryCashflow.totalTagihan)}
@@ -961,7 +961,7 @@ export default function TagihanPage() {
           </div>
         </div>
 
-        <div className="bg-sky-50/60 dark:bg-sky-950/30 border border-sky-200/80 dark:border-sky-800/50 rounded-2xl p-4 shadow-xs">
+        <div className="bg-sky-50/60 dark:bg-sky-950/30 border border-sky-200/80 dark:border-sky-800/50 rounded-2xl p-4 shadow-sm">
           <div className="text-[11px] font-semibold text-sky-800 dark:text-sky-300 uppercase tracking-wider flex items-center gap-1">
             <span>⚡</span> Penerimaan Digital
           </div>
@@ -973,7 +973,7 @@ export default function TagihanPage() {
           </div>
         </div>
 
-        <div className="bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/50 rounded-2xl p-4 shadow-xs">
+        <div className="bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/50 rounded-2xl p-4 shadow-sm">
           <div className="text-[11px] font-semibold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider flex items-center gap-1">
             <span>💵</span> Tunai Lapangan
           </div>
@@ -985,7 +985,7 @@ export default function TagihanPage() {
           </div>
         </div>
 
-        <div className="bg-rose-50/60 dark:bg-rose-950/30 border border-rose-200/80 dark:border-rose-800/50 rounded-2xl p-4 shadow-xs">
+        <div className="bg-rose-50/60 dark:bg-rose-950/30 border border-rose-200/80 dark:border-rose-800/50 rounded-2xl p-4 shadow-sm">
           <div className="text-[11px] font-semibold text-rose-800 dark:text-rose-300 uppercase tracking-wider flex items-center gap-1">
             <span>⚠️</span> Piutang Tertunggak
           </div>
@@ -1324,7 +1324,7 @@ export default function TagihanPage() {
                             <span className="truncate max-w-[120px]">{t.pelanggan.wilayah.nama}</span>
                           </div>
                         ) : (
-                          <span className="text-[10px] text-amber-600 font-semibold">
+                          <span className="text-[10px] text-amber-700 font-semibold">
                             Belum ada zona
                           </span>
                         )}
@@ -1813,14 +1813,14 @@ export default function TagihanPage() {
                               type="checkbox"
                               checked={filteredAndSortedPreview.length > 0 && filteredAndSortedPreview.every(p => selectedPreviewIds.has(p.pelangganId))}
                               onChange={handleSelectAllPreview}
-                              className="rounded border-slate-300 dark:border-zinc-700 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                              className="rounded border-slate-300 dark:border-zinc-700 text-emerald-700 focus:ring-emerald-500 cursor-pointer"
                             />
                           </th>
                           <th className="px-4 py-2.5 text-left cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-800" onClick={() => togglePreviewSort("kodePelanggan")}>
                             <div className="flex items-center gap-1">
                               Pelanggan
                               {previewSortConfig?.key === "kodePelanggan" && (
-                                <span className="text-emerald-600">{previewSortConfig.direction === "asc" ? "↑" : "↓"}</span>
+                                <span className="text-emerald-700">{previewSortConfig.direction === "asc" ? "↑" : "↓"}</span>
                               )}
                             </div>
                           </th>
@@ -1830,7 +1830,7 @@ export default function TagihanPage() {
                             <div className="flex items-center justify-end gap-1">
                               Nominal (Rp)
                               {previewSortConfig?.key === "jumlah" && (
-                                <span className="text-emerald-600">{previewSortConfig.direction === "asc" ? "↑" : "↓"}</span>
+                                <span className="text-emerald-700">{previewSortConfig.direction === "asc" ? "↑" : "↓"}</span>
                               )}
                             </div>
                           </th>
@@ -1851,7 +1851,7 @@ export default function TagihanPage() {
                                   type="checkbox"
                                   checked={selectedPreviewIds.has(p.pelangganId)}
                                   onChange={() => toggleSelectPreview(p.pelangganId)}
-                                  className="rounded border-slate-300 dark:border-zinc-700 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                                  className="rounded border-slate-300 dark:border-zinc-700 text-emerald-700 focus:ring-emerald-500 cursor-pointer"
                                 />
                               </td>
                               <td className="px-4 py-2.5">
@@ -1912,7 +1912,7 @@ export default function TagihanPage() {
                   type="submit"
                   form="auto-generate-modal-form"
                   disabled={generating || (preview !== null && selectedPreviewIds.size === 0)}
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm hover:shadow active:scale-[0.98] transition-all text-xs font-semibold rounded-lg disabled:opacity-50"
+                  className="px-5 py-2 bg-emerald-700 hover:bg-emerald-700 text-white shadow-sm hover:shadow active:scale-[0.98] transition-all text-xs font-semibold rounded-lg disabled:opacity-50"
                 >
                   {generating ? "Memproses..." : preview ? `Generate (${selectedPreviewIds.size})` : "Generate Semua"}
                 </button>
@@ -1991,7 +1991,7 @@ export default function TagihanPage() {
                     <div className="flex items-center justify-between">
                       <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300">Pilih Pelanggan *</label>
                       {formGenerate.pelangganId && (
-                        <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                        <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
                           Dipilih: {pelangganList.find(p => p.id.toString() === formGenerate.pelangganId)?.nama || formGenerate.pelangganId}
                         </span>
                       )}
@@ -2030,7 +2030,7 @@ export default function TagihanPage() {
                                 <span className="font-semibold">{p.nama}</span>
                                 <span className="ml-1.5 font-mono text-[10px] text-slate-500 dark:text-zinc-400">({p.kodePelanggan})</span>
                               </div>
-                              {isSelected && <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />}
+                              {isSelected && <Check className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400 shrink-0" />}
                             </div>
                           );
                         })}
@@ -2053,7 +2053,7 @@ export default function TagihanPage() {
                 <button
                   type="submit"
                   form="manual-generate-form"
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm hover:shadow active:scale-[0.98] transition-all text-xs font-semibold"
+                  className="px-5 py-2 bg-emerald-700 hover:bg-emerald-700 text-white rounded-lg shadow-sm hover:shadow active:scale-[0.98] transition-all text-xs font-semibold"
                 >
                   Generate Tagihan
                 </button>
@@ -2093,7 +2093,7 @@ export default function TagihanPage() {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Periode</span>
-                    <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                    <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">
                       {bulanList.find((b) => b.value === editNominalModal.bulan.toString())?.label} {editNominalModal.tahun}
                     </span>
                   </div>
@@ -2125,7 +2125,7 @@ export default function TagihanPage() {
                     />
                   </div>
                   {inputNominal && !isNaN(Number(inputNominal)) && (
-                    <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-1.5">
+                    <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 mt-1.5">
                       Terbaca: {formatRupiah(Number(inputNominal))}
                     </p>
                   )}
@@ -2146,7 +2146,7 @@ export default function TagihanPage() {
                 <button
                   type="submit"
                   disabled={isSavingNominal}
-                  className="flex-1 px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-xs shadow-sm transition disabled:opacity-50"
+                  className="flex-1 px-4 py-2.5 rounded-lg bg-emerald-700 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-xs shadow-sm transition disabled:opacity-50"
                 >
                   {isSavingNominal ? "Menyimpan..." : "Simpan Perubahan"}
                 </button>
@@ -2188,7 +2188,7 @@ export default function TagihanPage() {
                         onClick={() => setDurasiBulan(m)}
                         className={`py-2 text-xs font-bold rounded-lg border transition ${
                           durasiBulan === m
-                            ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
+                            ? "bg-emerald-700 text-white border-emerald-600 shadow-sm"
                             : "bg-slate-50 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border-slate-200 dark:border-zinc-700 hover:bg-slate-100"
                         }`}
                       >
@@ -2214,7 +2214,7 @@ export default function TagihanPage() {
                       </span>
                     )}
                   </div>
-                  <p className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 tracking-tight mt-0.5 tabular-nums">
+                  <p className="text-2xl font-extrabold text-emerald-700 dark:text-emerald-400 tracking-tight mt-0.5 tabular-nums">
                     {formatRupiah(showBayar.jumlah * durasiBulan)}
                   </p>
                 </div>
@@ -2311,7 +2311,7 @@ export default function TagihanPage() {
                 <button
                   type="submit"
                   form="bayar-modal-form"
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow-sm active:scale-95 transition-all"
+                  className="px-5 py-2 bg-emerald-700 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow-sm active:scale-95 transition-all"
                 >
                   Konfirmasi Bayar
                 </button>
@@ -2328,7 +2328,7 @@ export default function TagihanPage() {
             {/* Modal Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-900 flex items-center justify-center text-lg">
+                <div className="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-900 flex items-center justify-center text-lg">
                   📢
                 </div>
                 <div>
@@ -2354,7 +2354,7 @@ export default function TagihanPage() {
                     type="button"
                     onClick={() => loadBlastPreview()}
                     disabled={blastLoading}
-                    className="text-xs font-semibold bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-200 border border-slate-200 dark:border-zinc-800 rounded-lg px-3 py-1.5 shadow-xs transition-all disabled:opacity-50"
+                    className="text-xs font-semibold bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-200 border border-slate-200 dark:border-zinc-800 rounded-lg px-3 py-1.5 shadow-sm transition-all disabled:opacity-50"
                   >
                     {blastLoading ? "Memuat..." : "🔄 Refresh Target"}
                   </button>
@@ -2452,7 +2452,7 @@ export default function TagihanPage() {
                         }}
                         className={`text-xs font-medium px-2.5 py-1 rounded-lg border transition-all ${
                           blastZonaId === z.id.toString()
-                            ? "bg-slate-900 dark:bg-zinc-100 text-white dark:text-zinc-900 border-slate-900 dark:border-zinc-100 shadow-xs"
+                            ? "bg-slate-900 dark:bg-zinc-100 text-white dark:text-zinc-900 border-slate-900 dark:border-zinc-100 shadow-sm"
                             : "bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-200 border-slate-200 dark:border-zinc-800"
                         }`}
                       >
@@ -2487,7 +2487,7 @@ export default function TagihanPage() {
                       }}
                       className={`text-xs font-medium px-2.5 py-1 rounded-lg border transition-all ${
                         blastRt === rtVal
-                          ? "bg-slate-900 dark:bg-zinc-100 text-white dark:text-zinc-900 border-slate-900 dark:border-zinc-100 shadow-xs"
+                          ? "bg-slate-900 dark:bg-zinc-100 text-white dark:text-zinc-900 border-slate-900 dark:border-zinc-100 shadow-sm"
                           : "bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-200 border-slate-200 dark:border-zinc-800"
                       }`}
                     >
@@ -2539,15 +2539,15 @@ export default function TagihanPage() {
               {/* Ringkasan Target */}
               {blastPreview && (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  <div className="border border-slate-200/80 dark:border-zinc-800 rounded-lg p-3.5 bg-white dark:bg-zinc-950 shadow-xs">
+                  <div className="border border-slate-200/80 dark:border-zinc-800 rounded-lg p-3.5 bg-white dark:bg-zinc-950 shadow-sm">
                     <p className="text-xs font-semibold text-slate-500 dark:text-zinc-400">Target Warga</p>
                     <p className="text-2xl font-extrabold text-slate-900 dark:text-zinc-100 mt-1 tabular-nums">{blastPreview.totalWarga} <span className="text-xs font-normal text-slate-500 dark:text-zinc-400">Orang</span></p>
                   </div>
-                  <div className="border border-slate-200/80 dark:border-zinc-800 rounded-lg p-3.5 bg-white dark:bg-zinc-950 shadow-xs">
+                  <div className="border border-slate-200/80 dark:border-zinc-800 rounded-lg p-3.5 bg-white dark:bg-zinc-950 shadow-sm">
                     <p className="text-xs font-semibold text-slate-500 dark:text-zinc-400">Total Nominal Tagihan</p>
-                    <p className="text-xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1 tabular-nums">{formatRupiah(blastPreview.totalNominal)}</p>
+                    <p className="text-xl font-extrabold text-emerald-700 dark:text-emerald-400 mt-1 tabular-nums">{formatRupiah(blastPreview.totalNominal)}</p>
                   </div>
-                  <div className="border border-slate-200/80 dark:border-zinc-800 rounded-lg p-3.5 bg-white dark:bg-zinc-950 shadow-xs col-span-2 sm:col-span-1">
+                  <div className="border border-slate-200/80 dark:border-zinc-800 rounded-lg p-3.5 bg-white dark:bg-zinc-950 shadow-sm col-span-2 sm:col-span-1">
                     <p className="text-xs font-semibold text-slate-500 dark:text-zinc-400">Filter Zona & RT</p>
                     <p className="text-xs font-bold text-slate-800 dark:text-zinc-200 mt-1">
                       {blastPreview.zonaNama ? `🏷️ Zona ${blastPreview.zonaNama}` : (blastZonaId ? `Zona #${blastZonaId}` : "Semua Zona")}
@@ -2561,7 +2561,7 @@ export default function TagihanPage() {
               {blastPreview && (
                 <div className="p-3.5 rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-50/70 dark:bg-zinc-950/60 flex items-center justify-between gap-3 text-xs">
                   <div className="flex items-center gap-2.5">
-                    <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
+                    <ShieldCheck className="w-5 h-5 text-emerald-700 shrink-0" />
                     <div>
                       <span className="font-semibold text-slate-800 dark:text-zinc-200">Mode Proteksi Anti-Banned WhatsApp</span>
                       <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-0.5">
@@ -2577,7 +2577,7 @@ export default function TagihanPage() {
 
               {/* Contoh Format Pesan WA */}
               {blastPreview && blastPreview.sampleMessage && (
-                <div className="border border-slate-200/80 dark:border-zinc-800 rounded-lg p-3.5 bg-white dark:bg-zinc-950 shadow-xs">
+                <div className="border border-slate-200/80 dark:border-zinc-800 rounded-lg p-3.5 bg-white dark:bg-zinc-950 shadow-sm">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-semibold text-slate-700 dark:text-zinc-300 flex items-center gap-1.5">
                       <span>💬</span> Contoh Pesan WhatsApp Yang Dikirim
@@ -2598,7 +2598,7 @@ export default function TagihanPage() {
 
               {/* Daftar Penerima Preview */}
               {blastPreview && blastPreview.recipients.length > 0 && (
-                <div className="border border-slate-200/80 dark:border-zinc-800 rounded-lg overflow-hidden shadow-xs">
+                <div className="border border-slate-200/80 dark:border-zinc-800 rounded-lg overflow-hidden shadow-sm">
                   <div className="bg-slate-50/80 dark:bg-zinc-950/80 px-4 py-2.5 flex items-center justify-between border-b border-slate-200 dark:border-zinc-800">
                     <span className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
                       Daftar Warga Target ({blastPreview.recipients.length} dari {blastPreview.totalWarga})
@@ -2659,7 +2659,7 @@ export default function TagihanPage() {
                               })}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-xs font-semibold bg-emerald-50 dark:bg-emerald-950 hover:bg-emerald-100 dark:hover:bg-emerald-900 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800 px-3 py-1.5 rounded-lg transition-all inline-flex items-center gap-1 shadow-xs active:scale-95"
+                              className="text-xs font-semibold bg-emerald-50 dark:bg-emerald-950 hover:bg-emerald-100 dark:hover:bg-emerald-900 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800 px-3 py-1.5 rounded-lg transition-all inline-flex items-center gap-1 shadow-sm active:scale-95"
                               title="Buka WhatsApp dengan pesan tagihan warga ini"
                             >
                               <span>💬</span>
@@ -2711,7 +2711,7 @@ export default function TagihanPage() {
                               href={lnk.link}
                               target="_blank"
                               rel="noreferrer"
-                              className="font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg px-2.5 py-1 text-xs shadow-xs transition-all"
+                              className="font-semibold bg-emerald-700 hover:bg-emerald-700 text-white rounded-lg px-2.5 py-1 text-xs shadow-sm transition-all"
                             >
                               Buka WA ↗
                             </a>
@@ -2737,7 +2737,7 @@ export default function TagihanPage() {
                 type="button"
                 onClick={handleSendBlast}
                 disabled={blastSending || blastLoading || !blastPreview || blastPreview.totalWarga === 0}
-                className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm hover:shadow active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
+                className="px-5 py-2 bg-emerald-700 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm hover:shadow active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
               >
                 {blastSending ? (
                   <>
@@ -2784,7 +2784,7 @@ export default function TagihanPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   download={`bukti-bayar-${previewBuktiModal.nama.replace(/\s+/g, "_")}.jpg`}
-                  className="text-xs font-semibold px-2.5 py-1.5 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-zinc-200 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-700 transition shadow-xs"
+                  className="text-xs font-semibold px-2.5 py-1.5 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-zinc-200 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-700 transition shadow-sm"
                 >
                   ↗ Buka Ukuran Penuh
                 </a>

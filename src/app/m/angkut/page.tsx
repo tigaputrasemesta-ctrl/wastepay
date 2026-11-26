@@ -12,6 +12,11 @@ import { useWakeLock } from "@/hooks/useWakeLock";
 import { playSound, speakText, vibrate } from "@/lib/mobile-feedback";
 import { todayLocalISO } from "@/lib/utils";
 import { toast } from "@/components/Toast";
+import {
+  queueOfflinePickup,
+  syncOfflineQueueToServer,
+  getPendingOfflineActions,
+} from "@/lib/offline-queue";
 
 type Profil = { id: number; nama: string; jabatan: string | null; kelurahan: string | null };
 type Kendaraan = { id: number; nama: string; platNomor: string | null; jenis: string; petugas?: { id: number; nama: string } | null };
@@ -87,6 +92,11 @@ export default function MobileAngkut() {
   const [showTopTools, setShowTopTools] = useState(false);
   const [hideEmptyScheduleAlert, setHideEmptyScheduleAlert] = useState(false);
 
+  // Offline-First Store-and-Forward state
+  const [pendingQueueCount, setPendingQueueCount] = useState<number>(0);
+  const [isOnline, setIsOnline] = useState<boolean>(true);
+  const [isSyncingQueue, setIsSyncingQueue] = useState<boolean>(false);
+
   useEffect(() => {
     setHideEmptyScheduleAlert(false);
   }, [tanggal]);
@@ -130,13 +140,35 @@ export default function MobileAngkut() {
   async function handleQuickPickup(taskId: number) {
     const kId = selectedArmadaId ? Number(selectedArmadaId) : (kendaraanSaya.length > 0 ? kendaraanSaya[0].id : null);
     const body = {
-      status: "diambil",
+      status: "diambil" as const,
       catatan: "Pickup cepat via Proximity GPS (1-Tap)",
       kendaraanId: kId,
       latitude: driverPos?.lat || null,
       longitude: driverPos?.lng || null,
       jenisSampah: "campuran",
     };
+
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      await queueOfflinePickup({
+        taskId,
+        status: body.status,
+        catatan: body.catatan,
+        kendaraanId: body.kendaraanId,
+        latitude: body.latitude,
+        longitude: body.longitude,
+        jenisSampah: body.jenisSampah,
+      });
+      const pending = await getPendingOfflineActions();
+      setPendingQueueCount(pending.length);
+      setData((prev) => prev.map((t) => (t.id === taskId ? { ...t, status: "diambil" } : t)));
+      playSound("success");
+      vibrate("success");
+      speakText("Disimpan offline.");
+      setPesan("✓ Disimpan offline (otomatis sinkron saat online)");
+      dismissActiveTask();
+      return;
+    }
+
     try {
       const res = await fetch(`/api/pengangkutan/${taskId}`, {
         method: "PUT",
@@ -155,18 +187,52 @@ export default function MobileAngkut() {
         setPesan(d.error || "Gagal mencatat pickup");
       }
     } catch {
-      setPesan("Kendala koneksi saat mencatat");
+      await queueOfflinePickup({
+        taskId,
+        status: body.status,
+        catatan: body.catatan,
+        kendaraanId: body.kendaraanId,
+        latitude: body.latitude,
+        longitude: body.longitude,
+        jenisSampah: body.jenisSampah,
+      });
+      const pending = await getPendingOfflineActions();
+      setPendingQueueCount(pending.length);
+      setData((prev) => prev.map((t) => (t.id === taskId ? { ...t, status: "diambil" } : t)));
+      playSound("success");
+      vibrate("success");
+      setPesan("✓ Sinyal terputus. Disimpan ke antrean offline HP");
+      dismissActiveTask();
     }
   }
 
   // Handler Lewati Konsumen Menunggak
   async function handleSkipOverdue(taskId: number, catatan: string) {
     const body = {
-      status: "tidak_diangkut",
+      status: "tidak_diangkut" as const,
       catatan: catatan || "Dilewati: Ada tunggakan iuran belum lunas",
       latitude: driverPos?.lat || null,
       longitude: driverPos?.lng || null,
     };
+
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      await queueOfflinePickup({
+        taskId,
+        status: body.status,
+        catatan: body.catatan,
+        latitude: body.latitude,
+        longitude: body.longitude,
+      });
+      const pending = await getPendingOfflineActions();
+      setPendingQueueCount(pending.length);
+      setData((prev) => prev.map((t) => (t.id === taskId ? { ...t, status: "tidak_diangkut" } : t)));
+      playSound("skip");
+      speakText("Rumah dilewati (offline).");
+      setPesan("✓ Disimpan offline: Rumah dilewati");
+      dismissActiveTask();
+      return;
+    }
+
     try {
       const res = await fetch(`/api/pengangkutan/${taskId}`, {
         method: "PUT",
@@ -184,7 +250,19 @@ export default function MobileAngkut() {
         setPesan(d.error || "Gagal memperbarui status");
       }
     } catch {
-      setPesan("Kendala koneksi saat memperbarui");
+      await queueOfflinePickup({
+        taskId,
+        status: body.status,
+        catatan: body.catatan,
+        latitude: body.latitude,
+        longitude: body.longitude,
+      });
+      const pending = await getPendingOfflineActions();
+      setPendingQueueCount(pending.length);
+      setData((prev) => prev.map((t) => (t.id === taskId ? { ...t, status: "tidak_diangkut" } : t)));
+      playSound("skip");
+      setPesan("✓ Sinyal terputus. Disimpan ke antrean offline HP");
+      dismissActiveTask();
     }
   }
 
@@ -231,6 +309,60 @@ export default function MobileAngkut() {
      
     fetchData();
   }, [fetchData]);
+
+  // Monitor koneksi online/offline & sinkronisasi otomatis antrean
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setIsOnline(navigator.onLine);
+    getPendingOfflineActions().then((actions) => setPendingQueueCount(actions.length)).catch(() => {});
+
+    const handleOnline = async () => {
+      setIsOnline(true);
+      toast("Koneksi internet terhubung kembali. Memulai sinkronisasi...", "info");
+      setIsSyncingQueue(true);
+      try {
+        const res = await syncOfflineQueueToServer();
+        if (res.synced > 0) {
+          toast(`Berhasil mensinkronkan ${res.synced} data penjemputan ke server!`, "success");
+          fetchData();
+        }
+        setPendingQueueCount(res.remaining);
+      } finally {
+        setIsSyncingQueue(false);
+      }
+    };
+
+    const handleOffline = () => {
+      setIsOnline(false);
+      toast("Mode offline aktif. Catatan ritase akan disimpan lokal di perangkat.", "warning");
+    };
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, [fetchData]);
+
+  const handleManualSync = async () => {
+    if (!navigator.onLine) {
+      toast("Perangkat masih dalam kondisi offline.", "warning");
+      return;
+    }
+    setIsSyncingQueue(true);
+    try {
+      const res = await syncOfflineQueueToServer();
+      toast(`Sinkronisasi selesai: ${res.synced} terkirim, ${res.remaining} tertunda.`, res.remaining === 0 ? "success" : "info");
+      setPendingQueueCount(res.remaining);
+      fetchData();
+    } catch {
+      toast("Gagal melakukan sinkronisasi.", "error");
+    } finally {
+      setIsSyncingQueue(false);
+    }
+  };
 
   // Restore trip state dari localStorage
   useEffect(() => {
@@ -356,6 +488,29 @@ export default function MobileAngkut() {
       latitude: form.latitude ? Number(form.latitude) : null,
       longitude: form.longitude ? Number(form.longitude) : null,
     };
+
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      await queueOfflinePickup({
+        taskId: editingId,
+        status: form.status as any,
+        catatan: form.catatan || null,
+        volume: form.volume ? Number(form.volume) : null,
+        berat: form.berat ? Number(form.berat) : null,
+        jenisSampah: form.jenisSampah || null,
+        fotoBukti: form.fotoBukti || null,
+        kendaraanId: form.kendaraanId ? Number(form.kendaraanId) : null,
+        latitude: form.latitude ? Number(form.latitude) : null,
+        longitude: form.longitude ? Number(form.longitude) : null,
+      });
+      const pending = await getPendingOfflineActions();
+      setPendingQueueCount(pending.length);
+      setData((prev) => prev.map((t) => (t.id === editingId ? { ...t, status: form.status } : t)));
+      setPesan(`✓ Disimpan ke antrean offline (${STATUS_META[form.status]?.label || form.status})`);
+      setEditingId(null);
+      setSaving(false);
+      return;
+    }
+
     try {
       const res = await fetch(`/api/pengangkutan/${editingId}`, {
         method: "PUT",
@@ -371,7 +526,23 @@ export default function MobileAngkut() {
         setPesan(d.error || "Gagal menyimpan data");
       }
     } catch {
-      setPesan("Terjadi kendala koneksi saat menyimpan");
+      await queueOfflinePickup({
+        taskId: editingId,
+        status: form.status as any,
+        catatan: form.catatan || null,
+        volume: form.volume ? Number(form.volume) : null,
+        berat: form.berat ? Number(form.berat) : null,
+        jenisSampah: form.jenisSampah || null,
+        fotoBukti: form.fotoBukti || null,
+        kendaraanId: form.kendaraanId ? Number(form.kendaraanId) : null,
+        latitude: form.latitude ? Number(form.latitude) : null,
+        longitude: form.longitude ? Number(form.longitude) : null,
+      });
+      const pending = await getPendingOfflineActions();
+      setPendingQueueCount(pending.length);
+      setData((prev) => prev.map((t) => (t.id === editingId ? { ...t, status: form.status } : t)));
+      setPesan("✓ Sinyal terputus. Disimpan ke antrean offline HP");
+      setEditingId(null);
     } finally {
       setSaving(false);
     }
@@ -445,7 +616,7 @@ export default function MobileAngkut() {
               <button
                 type="button"
                 onClick={handleStartTrip}
-                className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-black rounded-xl shadow-sm transition-all flex items-center gap-1 whitespace-nowrap"
+                className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-500 active:scale-95 text-white text-xs font-black rounded-xl shadow-sm transition-all flex items-center gap-1 whitespace-nowrap"
               >
                 <span>▶️ Mulai</span>
               </button>
@@ -464,7 +635,7 @@ export default function MobileAngkut() {
                 <button
                   type="button"
                   onClick={handleCompleteTrip}
-                  className="px-2 py-1 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-black rounded-xl shadow-sm transition-all flex items-center gap-1 whitespace-nowrap"
+                  className="px-2 py-1 bg-emerald-700 hover:bg-emerald-500 active:scale-95 text-white text-xs font-black rounded-xl shadow-sm transition-all flex items-center gap-1 whitespace-nowrap"
                   title="Selesaikan Rute"
                 >
                   <span>🏁</span>
@@ -477,7 +648,7 @@ export default function MobileAngkut() {
                 <button
                   type="button"
                   onClick={handleResumeTrip}
-                  className="px-2 py-1 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-black rounded-xl shadow-sm transition-all flex items-center gap-1 whitespace-nowrap"
+                  className="px-2 py-1 bg-emerald-700 hover:bg-emerald-500 active:scale-95 text-white text-xs font-black rounded-xl shadow-sm transition-all flex items-center gap-1 whitespace-nowrap"
                   title="Lanjut Rute"
                 >
                   <span>▶️</span>
@@ -513,7 +684,7 @@ export default function MobileAngkut() {
             </div>
 
             {/* Quick Progress Badge (Always visible: e.g. 0/0) */}
-            <div className="px-2 py-1 bg-slate-800/90 text-slate-300 rounded-xl border border-slate-700/80 text-xs font-mono font-bold tabular-nums flex items-center gap-0.5 whitespace-nowrap shadow-xs" title="Progres pengangkutan">
+            <div className="px-2 py-1 bg-slate-800/90 text-slate-300 rounded-xl border border-slate-700/80 text-xs font-mono font-bold tabular-nums flex items-center gap-0.5 whitespace-nowrap shadow-sm" title="Progres pengangkutan">
               <span className="text-emerald-400">{selesaiCount}</span>
               <span className="text-slate-500">/</span>
               <span>{totalCount}</span>
@@ -527,7 +698,7 @@ export default function MobileAngkut() {
               aria-label={showTopTools ? "Sembunyikan panel opsi lanjutan" : "Buka panel opsi lanjutan (Radius, Suara, Scan)"}
               className={`p-1.5 rounded-xl border text-xs font-bold transition-all flex items-center justify-center ${
                 showTopTools
-                  ? "bg-emerald-600 text-white border-emerald-500 shadow-sm"
+                  ? "bg-emerald-700 text-white border-emerald-500 shadow-sm"
                   : "bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border-slate-700"
               }`}
               title={showTopTools ? "Sembunyikan Opsi Lanjutan" : "Buka Opsi Lanjutan (Radius, Suara, Scan)"}
@@ -536,6 +707,29 @@ export default function MobileAngkut() {
             </button>
           </div>
         </div>
+
+        {/* Offline Store-and-Forward Status Banner */}
+        {(!isOnline || pendingQueueCount > 0) && (
+          <div className="p-2.5 rounded-xl border flex items-center justify-between text-xs font-medium shadow-sm transition-colors bg-amber-950/40 border-amber-800 text-amber-200">
+            <div className="flex items-center gap-2">
+              <span className={`w-2.5 h-2.5 rounded-full ${isOnline ? "bg-emerald-500" : "bg-rose-500 animate-pulse"}`} />
+              <span>
+                {!isOnline ? "Mode Offline Aktif" : "Ada Antrean Offline"}
+                {pendingQueueCount > 0 && ` (${pendingQueueCount} ritase tersimpan di HP)`}
+              </span>
+            </div>
+            {pendingQueueCount > 0 && (
+              <button
+                type="button"
+                onClick={handleManualSync}
+                disabled={isSyncingQueue || !isOnline}
+                className="px-2.5 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-[11px] disabled:opacity-50 transition"
+              >
+                {isSyncingQueue ? "Menyinkron..." : "Sinkron Sekarang"}
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Tier 2: Full-Width 50/50 View Switcher (Peta vs Daftar Rute) */}
         <div
@@ -603,7 +797,7 @@ export default function MobileAngkut() {
                     onClick={() => setRadiusMeter(10)}
                     className={`px-2 py-0.5 rounded-md transition-all ${
                       radiusMeter === 10
-                        ? "bg-emerald-600 text-white shadow-xs"
+                        ? "bg-emerald-700 text-white shadow-sm"
                         : "text-slate-400 hover:text-white"
                     }`}
                   >
@@ -614,7 +808,7 @@ export default function MobileAngkut() {
                     onClick={() => setRadiusMeter(20)}
                     className={`px-2 py-0.5 rounded-md transition-all ${
                       radiusMeter === 20
-                        ? "bg-emerald-600 text-white shadow-xs"
+                        ? "bg-emerald-700 text-white shadow-sm"
                         : "text-slate-400 hover:text-white"
                     }`}
                   >
@@ -782,7 +976,7 @@ export default function MobileAngkut() {
                             const nextISO = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
                             setTanggal(nextISO);
                           }}
-                          className="flex-1 py-1.5 px-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-[11px] font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-1"
+                          className="flex-1 py-1.5 px-2.5 bg-emerald-700 hover:bg-emerald-700 active:scale-95 text-white text-[11px] font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-1"
                         >
                           <span>🚚 Lihat Rute Besok (Senin)</span>
                         </button>
@@ -923,7 +1117,7 @@ export default function MobileAngkut() {
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
                     {t.urutan && (
-                      <span className="w-5 h-5 rounded-full bg-emerald-700 text-white text-[10px] font-black flex items-center justify-center shrink-0 shadow-xs">
+                      <span className="w-5 h-5 rounded-full bg-emerald-700 text-white text-[10px] font-black flex items-center justify-center shrink-0 shadow-sm">
                         #{t.urutan}
                       </span>
                     )}

@@ -124,7 +124,7 @@ export default function RevenueIntelligencePage() {
 
       {/* Critical Architecture Principle Warning */}
       <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-3">
-        <ShieldCheck className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+        <ShieldCheck className="w-5 h-5 text-amber-700 dark:text-amber-400 shrink-0 mt-0.5" />
         <div className="space-y-1">
           <p className="font-bold text-sm">Pemisahan Ketat Dana Warga vs Pendapatan Platform</p>
           <p className="leading-relaxed opacity-90">
@@ -154,7 +154,7 @@ export default function RevenueIntelligencePage() {
         </div>
 
         {/* Card 2: Ecosystem GMV */}
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
               Ecosystem GMV
@@ -172,7 +172,7 @@ export default function RevenueIntelligencePage() {
         </div>
 
         {/* Card 3: Saldo Escrow Mitra */}
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">
               Kas Escrow Hak Mitra
@@ -190,7 +190,7 @@ export default function RevenueIntelligencePage() {
         </div>
 
         {/* Card 4: Gateway Processing Fee */}
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
               Gateway Fee (Duitku)
@@ -209,9 +209,9 @@ export default function RevenueIntelligencePage() {
       </div>
 
       {/* 4 Revenue Streams Breakdown */}
-      <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-6 shadow-xs space-y-4">
+      <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm space-y-4">
         <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-          <Layers className="w-5 h-5 text-emerald-600" />
+          <Layers className="w-5 h-5 text-emerald-700" />
           <span>Komposisi Pendapatan O2W HERO</span>
         </h3>
 
@@ -238,7 +238,7 @@ export default function RevenueIntelligencePage() {
       </div>
 
       {/* Virtual Ledger Mutasi Transaksi Terbaru */}
-      <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-xs">
+      <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-sm">
         <div className="p-4 border-b border-slate-100 dark:border-zinc-800 flex items-center justify-between">
           <div>
             <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -288,7 +288,7 @@ export default function RevenueIntelligencePage() {
                   <td className="px-6 py-4 text-xs text-slate-500 font-medium">
                     {row.feeGateway > 0 ? `-Rp ${Number(row.feeGateway).toLocaleString("id-ID")}` : "Rp 0"}
                   </td>
-                  <td className="px-6 py-4 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                  <td className="px-6 py-4 text-xs font-bold text-emerald-700 dark:text-emerald-400">
                     {row.feePlatform > 0 ? `+Rp ${Number(row.feePlatform).toLocaleString("id-ID")}` : "Rp 0"}
                   </td>
                   <td className="px-6 py-4 font-black text-sky-600 dark:text-sky-400">

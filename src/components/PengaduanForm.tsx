@@ -149,7 +149,7 @@ export default function PengaduanForm() {
           onClick={() => setTab("lapor")}
           className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 ${
             tab === "lapor"
-              ? "bg-white text-slate-900 shadow-xs border border-slate-200/60"
+              ? "bg-white text-slate-900 shadow-sm border border-slate-200/60"
               : "text-slate-500 hover:text-slate-900"
           }`}
         >
@@ -164,7 +164,7 @@ export default function PengaduanForm() {
           }}
           className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 ${
             tab === "status"
-              ? "bg-white text-slate-900 shadow-xs border border-slate-200/60"
+              ? "bg-white text-slate-900 shadow-sm border border-slate-200/60"
               : "text-slate-500 hover:text-slate-900"
           }`}
         >
@@ -189,7 +189,7 @@ export default function PengaduanForm() {
           {status === "ok" && successTicket && (
             <div className="p-5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-2 animate-in fade-in duration-200">
               <div className="flex items-center gap-2 font-bold text-sm text-emerald-800">
-                <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
+                <CheckCircle2 size={18} className="text-emerald-700 shrink-0" />
                 <span>Laporan Berhasil Diterbitkan (#{`KMP-${successTicket.id}`})</span>
               </div>
               <p className="text-xs text-emerald-800/90 leading-relaxed">
@@ -207,7 +207,7 @@ export default function PengaduanForm() {
           {status === "gagal" && duplicateTicket && (
             <div className="p-5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 space-y-2 animate-in fade-in duration-200">
               <div className="flex items-center gap-2 font-bold text-sm text-amber-800">
-                <ShieldAlert size={18} className="text-amber-600 shrink-0" />
+                <ShieldAlert size={18} className="text-amber-700 shrink-0" />
                 <span>Laporan Masih Dalam Penanganan (#KMP-{duplicateTicket.id})</span>
               </div>
               <p className="text-xs text-amber-800/90 leading-relaxed">
@@ -241,7 +241,7 @@ export default function PengaduanForm() {
               id="kode-pelanggan"
               value={kodePelanggan}
               onChange={(e) => setKodePelanggan(e.target.value)}
-              placeholder="Contoh: 081234567890"
+              placeholder="Contoh: 08xxxxxxxxxx"
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all placeholder:text-slate-400"
               required
               autoComplete="tel"
@@ -292,7 +292,7 @@ export default function PengaduanForm() {
             </div>
 
             {foto ? (
-              <div className="relative inline-block rounded-2xl overflow-hidden border border-slate-200 group shadow-xs">
+              <div className="relative inline-block rounded-2xl overflow-hidden border border-slate-200 group shadow-sm">
                 <img src={foto} alt="Preview Bukti" className="h-36 sm:h-44 w-auto object-cover rounded-2xl" />
                 <button
                   type="button"
@@ -322,7 +322,7 @@ export default function PengaduanForm() {
                     type="button"
                     onClick={() => kameraInputRef.current?.click()}
                     disabled={compressing}
-                    className="px-4 py-2.5 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-800 text-xs font-bold rounded-xl flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50 shadow-xs"
+                    className="px-4 py-2.5 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-800 text-xs font-bold rounded-xl flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50 shadow-sm"
                   >
                     <span>📷 Ambil Foto Kamera</span>
                   </button>
@@ -331,7 +331,7 @@ export default function PengaduanForm() {
                     type="button"
                     onClick={() => galeriInputRef.current?.click()}
                     disabled={compressing}
-                    className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 text-xs font-bold rounded-xl flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50 shadow-xs"
+                    className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 text-xs font-bold rounded-xl flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50 shadow-sm"
                   >
                     <span>🖼️ Pilih dari Galeri</span>
                   </button>
@@ -451,7 +451,7 @@ export default function PengaduanForm() {
                   return (
                     <div
                       key={t.id}
-                      className="p-4 rounded-2xl border border-slate-200/80 bg-white hover:border-slate-300 transition-all space-y-2 shadow-xs"
+                      className="p-4 rounded-2xl border border-slate-200/80 bg-white hover:border-slate-300 transition-all space-y-2 shadow-sm"
                     >
                       <div className="flex items-center justify-between gap-2">
                         <span className="font-mono text-xs font-bold text-slate-900">#KMP-{t.id}</span>

@@ -587,16 +587,16 @@
 .bg-green-400.text-black,
 .bg-green-300.text-black,
 button.bg-green-400 {
-  background-color: rgb(5 150 105) !important; /* emerald-600 */
+  background-color: rgb(4 120 87) !important; /* emerald-700 */
   color: #ffffff !important;
-  border-color: rgb(5 150 105) !important;
+  border-color: rgb(4 120 87) !important;
   border-radius: 0.75rem !important;
 }
 
 .bg-green-400.text-black:hover,
 .bg-green-300.text-black:hover,
 button.bg-green-400:hover {
-  background-color: rgb(16 185 129) !important; /* emerald-500 */
+  background-color: rgb(6 95 70) !important; /* emerald-800 */
   color: #ffffff !important;
 }
 

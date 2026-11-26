@@ -735,7 +735,7 @@ export default function WastePayInteractiveMapOSRM({
                 }
                 className={`px-3 py-1.5 rounded-xl text-xs font-black transition shrink-0 ${
                   filterStatus === chip.id
-                    ? 'bg-emerald-600 text-white shadow-xs'
+                    ? 'bg-emerald-700 text-white shadow-sm'
                     : 'text-slate-300 hover:text-white'
                 }`}
               >
@@ -992,7 +992,7 @@ export default function WastePayInteractiveMapOSRM({
       {selectedPin && (
         <div
           data-modal-open="true"
-          className="absolute inset-0 z-[600] bg-slate-950/60 backdrop-blur-xs flex items-end sm:items-center sm:justify-center p-0 sm:p-4 overflow-y-auto animate-in fade-in duration-150"
+          className="absolute inset-0 z-[600] bg-slate-950/60 backdrop-blur-sm flex items-end sm:items-center sm:justify-center p-0 sm:p-4 overflow-y-auto animate-in fade-in duration-150"
           onClick={() => setSelectedPin(null)}
         >
           <div

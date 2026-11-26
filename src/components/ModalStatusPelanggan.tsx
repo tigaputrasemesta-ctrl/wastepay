@@ -85,7 +85,7 @@ export default function ModalStatusPelanggan({
         {/* Header Modal */}
         <div className="px-6 py-4 border-b border-slate-100 dark:border-zinc-800 flex items-center justify-between bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200/60 dark:border-emerald-900 flex items-center justify-center text-emerald-700 dark:text-emerald-400 font-bold shadow-xs">
+            <div className="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200/60 dark:border-emerald-900 flex items-center justify-center text-emerald-700 dark:text-emerald-400 font-bold shadow-sm">
               ⚙️
             </div>
             <div>
@@ -144,19 +144,19 @@ export default function ModalStatusPelanggan({
               onClick={() => setSelectedStatus("aktif")}
               className={`p-3.5 rounded-lg border-2 transition-all cursor-pointer flex items-start gap-3.5 ${
                 selectedStatus === "aktif"
-                  ? "border-emerald-600 bg-emerald-50/60 dark:bg-emerald-950/40 shadow-xs"
+                  ? "border-emerald-600 bg-emerald-50/60 dark:bg-emerald-950/40 shadow-sm"
                   : "border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700 bg-white dark:bg-zinc-950"
               }`}
             >
               <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
-                selectedStatus === "aktif" ? "bg-emerald-600 text-white" : "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300"
+                selectedStatus === "aktif" ? "bg-emerald-700 text-white" : "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300"
               }`}>
                 <Play className="w-4 h-4 fill-current" />
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold text-slate-900 dark:text-zinc-100">Aktif (Layanan Berjalan Normal)</span>
-                  {selectedStatus === "aktif" && <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 font-bold" />}
+                  {selectedStatus === "aktif" && <Check className="w-4 h-4 text-emerald-700 dark:text-emerald-400 font-bold" />}
                 </div>
                 <p className="text-xs text-slate-600 dark:text-zinc-400 mt-1 leading-relaxed">
                   Pelanggan terjadwal di rute harian armada truk pickup dan menerima tagihan bulanan rutin.
@@ -169,7 +169,7 @@ export default function ModalStatusPelanggan({
               onClick={() => setSelectedStatus("nonaktif")}
               className={`p-3.5 rounded-lg border-2 transition-all cursor-pointer flex items-start gap-3.5 ${
                 selectedStatus === "nonaktif"
-                  ? "border-slate-700 dark:border-zinc-600 bg-slate-100/90 dark:bg-zinc-800/80 shadow-xs"
+                  ? "border-slate-700 dark:border-zinc-600 bg-slate-100/90 dark:bg-zinc-800/80 shadow-sm"
                   : "border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700 bg-white dark:bg-zinc-950"
               }`}
             >
@@ -199,7 +199,7 @@ export default function ModalStatusPelanggan({
               onClick={() => setSelectedStatus("libur")}
               className={`p-3.5 rounded-lg border-2 transition-all cursor-pointer flex items-start gap-3.5 ${
                 selectedStatus === "libur"
-                  ? "border-amber-500 bg-amber-50/70 dark:bg-amber-950/40 shadow-xs"
+                  ? "border-amber-500 bg-amber-50/70 dark:bg-amber-950/40 shadow-sm"
                   : "border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700 bg-white dark:bg-zinc-950"
               }`}
             >
@@ -211,7 +211,7 @@ export default function ModalStatusPelanggan({
               <div className="flex-1">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold text-slate-900 dark:text-zinc-100">Libur (Cuti Pengangkutan Sementara)</span>
-                  {selectedStatus === "libur" && <Check className="w-4 h-4 text-amber-600 dark:text-amber-400 font-bold" />}
+                  {selectedStatus === "libur" && <Check className="w-4 h-4 text-amber-700 dark:text-amber-400 font-bold" />}
                 </div>
                 <p className="text-xs text-slate-600 dark:text-zinc-400 mt-1 leading-relaxed">
                   Penjemputan sampah dijeda sementara (misal: mudik lebaran atau rumah sedang renovasi). Data pelanggan tetap terdaftar aktif dalam sistem.
@@ -249,9 +249,9 @@ export default function ModalStatusPelanggan({
             type="button"
             onClick={handleSave}
             disabled={loading}
-            className={`px-5 py-2 rounded-lg text-white text-xs font-semibold shadow-xs transition active:scale-95 flex items-center gap-2 disabled:opacity-50 ${
+            className={`px-5 py-2 rounded-lg text-white text-xs font-semibold shadow-sm transition active:scale-95 flex items-center gap-2 disabled:opacity-50 ${
               selectedStatus === "aktif"
-                ? "bg-emerald-600 hover:bg-emerald-700"
+                ? "bg-emerald-700 hover:bg-emerald-700"
                 : selectedStatus === "nonaktif"
                 ? "bg-slate-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:bg-slate-800 dark:hover:bg-zinc-200"
                 : "bg-amber-600 hover:bg-amber-700"

@@ -31,6 +31,7 @@ import {
   Check,
   Trash2,
   AlertTriangle,
+  Sliders,
 } from "lucide-react";
 
 interface TenantItem {
@@ -72,9 +73,10 @@ function TenantsContent() {
     dbConnectionString: "",
   });
 
-  // State Pengaturan WhatsApp (2 Nomor Mitra) & Payment Gateway / Komisi
+  // State Pengaturan WhatsApp (2 Nomor Mitra) & Payment Gateway / Komisi / Fitur
   const [selectedTenantForConfig, setSelectedTenantForConfig] = useState<TenantItem | null>(null);
-  const [activeConfigTab, setActiveConfigTab] = useState<"wa" | "payment">("wa");
+  const [activeConfigTab, setActiveConfigTab] = useState<"wa" | "payment" | "features">("wa");
+  const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
   const [configLoading, setConfigLoading] = useState(false);
   const [configSaving, setConfigSaving] = useState(false);
 
@@ -186,6 +188,16 @@ function TenantsContent() {
         if (data.waConfig) setWaConfig(data.waConfig);
         if (data.quotaUsage) setQuotaUsage(data.quotaUsage);
         if (data.paymentConfig) setPaymentConfig(data.paymentConfig);
+        if (data.fiturAktif) {
+          try {
+            const parsed = typeof data.fiturAktif === "string" ? JSON.parse(data.fiturAktif) : data.fiturAktif;
+            setSelectedFeatures(Array.isArray(parsed) ? parsed : []);
+          } catch {
+            setSelectedFeatures([]);
+          }
+        } else {
+          setSelectedFeatures(["marketplace", "artikel", "ai_command", "pickup_incidental", "sticker", "transit_tpa", "chat_internal", "absensi_klaim"]);
+        }
       }
     } catch (e) {
       console.error("Gagal load config tenant:", e);
@@ -239,6 +251,7 @@ function TenantsContent() {
           waConfig,
           quotaUsage,
           paymentConfig,
+          fiturAktif: selectedFeatures,
         }),
       });
       const data = await res.json();
@@ -518,7 +531,7 @@ function TenantsContent() {
 
                   <td className="px-6 py-4">
                     {t.dbType === "dedicated_db" ? (
-                      <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">
+                      <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">
                         <Database className="w-3 h-3" /> Dedicated DB (Per Tenant)
                       </span>
                     ) : (
@@ -529,7 +542,7 @@ function TenantsContent() {
                   </td>
 
                   <td className="px-6 py-4">
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
                       <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                       {t.status}
                     </span>
@@ -899,7 +912,7 @@ function TenantsContent() {
                 onClick={() => setActiveConfigTab("wa")}
                 className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
                   activeConfigTab === "wa"
-                    ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/25"
+                    ? "bg-emerald-700 text-white shadow-md shadow-emerald-600/25"
                     : "text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
                 }`}
               >
@@ -917,6 +930,18 @@ function TenantsContent() {
               >
                 <CreditCard className="w-4 h-4" />
                 <span>Payment Gateway &amp; Komisi</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveConfigTab("features")}
+                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
+                  activeConfigTab === "features"
+                    ? "bg-purple-600 text-white shadow-md shadow-purple-600/25"
+                    : "text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
+                }`}
+              >
+                <Sliders className="w-4 h-4" />
+                <span>Modul &amp; Fitur Aktif</span>
               </button>
             </div>
 
@@ -952,7 +977,7 @@ function TenantsContent() {
                             className="mt-1"
                           />
                           <div>
-                            <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                            <p className="text-xs font-bold text-emerald-700 dark:text-emerald-400">
                               Nomor Mitra Mandiri (Dedicated)
                             </p>
                             <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
@@ -1100,7 +1125,7 @@ function TenantsContent() {
                             type="button"
                             disabled={fonnteCheck.loading}
                             onClick={() => handleCheckFonnte(1)}
-                            className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-600/20 disabled:opacity-50"
+                            className="px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-600/20 disabled:opacity-50"
                           >
                             {fonnteCheck.loading ? (
                               <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -1266,7 +1291,7 @@ function TenantsContent() {
                         <span className="text-xs font-bold text-amber-500 uppercase tracking-wider flex items-center gap-1.5">
                           <Percent className="w-3.5 h-3.5" /> Kuota Pesan &amp; Biaya Layanan WhatsApp
                         </span>
-                        <span className="text-[11px] text-amber-600 dark:text-amber-400 font-bold">
+                        <span className="text-[11px] text-amber-700 dark:text-amber-400 font-bold">
                           {quotaUsage.pesanTerkirim.toLocaleString("id-ID")} Pesan Terkirim Bulan Ini
                         </span>
                       </div>
@@ -1293,7 +1318,7 @@ function TenantsContent() {
                             type="number"
                             value={quotaUsage.kuotaTopup}
                             onChange={(e) => setQuotaUsage({ ...quotaUsage, kuotaTopup: Number(e.target.value) })}
-                            className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs font-bold text-emerald-600"
+                            className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs font-bold text-emerald-700"
                           />
                           <p className="text-[10px] text-slate-400 mt-1">Tidak pernah hangus</p>
                         </div>
@@ -1488,7 +1513,7 @@ function TenantsContent() {
                               className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs font-bold"
                             />
                           </div>
-                          <p className="text-[10px] text-emerald-600 mt-1">MDR Duitku 0.7% (~Rp 210)</p>
+                          <p className="text-[10px] text-emerald-700 mt-1">MDR Duitku 0.7% (~Rp 210)</p>
                         </div>
 
                         <div>
@@ -1574,6 +1599,96 @@ function TenantsContent() {
                             className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-xs font-bold"
                           />
                         </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 3: FEATURE FLAGS & MODUL TENANT */}
+                {activeConfigTab === "features" && (
+                  <div className="space-y-6">
+                    <div className="p-4 rounded-2xl bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 space-y-2">
+                      <h3 className="text-xs font-bold text-purple-900 dark:text-purple-300 uppercase tracking-wider flex items-center gap-2">
+                        <Sliders className="w-4 h-4" />
+                        Feature Flags &amp; Modul Tenant (1 Database Multi-Tenant)
+                      </h3>
+                      <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                        Pilih modul opsional yang dapat diakses oleh tenant ini. Modul yang dinonaktifkan akan otomatis disembunyikan dari sidebar, navbar publik, dan API route.
+                      </p>
+                    </div>
+
+                    {/* Modul Inti Permanen */}
+                    <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-2">
+                      <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5" /> Modul Inti Permanen (Selalu Aktif)
+                      </span>
+                      <div className="flex flex-wrap gap-2 pt-1">
+                        {[
+                          "Dashboard",
+                          "Pusat Pelanggan",
+                          "Tagihan Retribusi",
+                          "Kasir & QRIS",
+                          "Log Pengangkutan",
+                          "Tim Petugas",
+                          "Armada Kendaraan",
+                          "Laporan Keuangan",
+                          "Pengaturan",
+                        ].map((name) => (
+                          <span
+                            key={name}
+                            className="px-2.5 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-950/70 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold"
+                          >
+                            ✓ {name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Modul Pilihan Opsional */}
+                    <div className="space-y-3">
+                      <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
+                        Modul Tambahan &amp; Operasional Pilihan
+                      </label>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {[
+                          { key: "marketplace", label: "Marketplace / Toko Kompos", desc: "Katalog produk olahan kompos & kasir pupuk" },
+                          { key: "artikel", label: "Edukasi & CMS Artikel", desc: "Publikasi berita edukasi pemilahan sampah" },
+                          { key: "ai_command", label: "AI Command Hub & Approval", desc: "Otomasi AI perintah suara/teks & approval gate" },
+                          { key: "pickup_incidental", label: "Jemput Sampah Insidental", desc: "Layanan on-demand sampah puing, ranting, kasur" },
+                          { key: "sticker", label: "Cetak Barcode QR Pelanggan", desc: "Generator stiker tempel rumah warga" },
+                          { key: "transit_tpa", label: "Titik Transit & Manifest TPA", desc: "Pencatatan depo transit & tonase TPA resmi" },
+                          { key: "chat_internal", label: "Chat Koordinasi Petugas", desc: "Komunikasi real-time admin ↔ supir lapangan" },
+                          { key: "absensi_klaim", label: "Presensi GPS & Klaim Dana", desc: "Absen selfie supir & reimbursement operasional" },
+                        ].map((feat) => {
+                          const isChecked = selectedFeatures.includes(feat.key);
+                          return (
+                            <label
+                              key={feat.key}
+                              className={`p-3.5 rounded-2xl border cursor-pointer flex items-start gap-3 transition-all ${
+                                isChecked
+                                  ? "bg-purple-50/50 dark:bg-purple-950/20 border-purple-500 shadow-sm"
+                                  : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 opacity-75 hover:opacity-100"
+                              }`}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={isChecked}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedFeatures([...selectedFeatures, feat.key]);
+                                  } else {
+                                    setSelectedFeatures(selectedFeatures.filter((k) => k !== feat.key));
+                                  }
+                                }}
+                                className="mt-0.5 w-4 h-4 rounded text-purple-600 focus:ring-purple-500"
+                              />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs font-bold text-slate-900 dark:text-white leading-tight">{feat.label}</p>
+                                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{feat.desc}</p>
+                              </div>
+                            </label>
+                          );
+                        })}
                       </div>
                     </div>
                   </div>

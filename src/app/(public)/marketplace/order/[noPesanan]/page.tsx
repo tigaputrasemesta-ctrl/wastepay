@@ -324,7 +324,7 @@ export default function MarketplaceOrderDetailPage({
             </div>
             <div className="flex justify-between text-slate-600 dark:text-zinc-400">
               <span>Biaya Layanan Gateway:</span>
-              <span className="font-bold text-emerald-600 dark:text-emerald-400">GRATIS</span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">GRATIS</span>
             </div>
             <div className="flex justify-between font-black text-sm text-slate-900 dark:text-zinc-100 pt-2 border-t border-slate-200 dark:border-zinc-700">
               <span>Total Tagihan Akhir:</span>

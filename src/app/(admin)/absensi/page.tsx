@@ -165,7 +165,7 @@ export default function AbsensiPage() {
                 type="button"
                 onClick={() => handleAbsen("masuk")}
                 disabled={actionLoading}
-                className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-extrabold text-xs shadow-lg shadow-emerald-900/40 transition-all flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-emerald-700 hover:bg-emerald-500 active:scale-95 text-white font-extrabold text-xs shadow-lg shadow-emerald-900/40 transition-all flex items-center justify-center gap-2"
               >
                 <span>▶</span>
                 <span>{actionLoading ? "Memproses GPS..." : "Absen Masuk Sekarang"}</span>
@@ -323,7 +323,7 @@ export default function AbsensiPage() {
                         <span className="font-semibold text-slate-700">
                           {row.waktuSelesai
                             ? format(new Date(row.waktuSelesai), "dd MMM, HH:mm", { locale: id })
-                            : <span className="text-amber-600 italic">Sedang bertugas</span>}
+                            : <span className="text-amber-700 italic">Sedang bertugas</span>}
                         </span>
                       </div>
                     </div>

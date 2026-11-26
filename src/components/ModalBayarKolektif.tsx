@@ -246,12 +246,12 @@ export default function ModalBayarKolektif({
   const currentInduk = indukList.find((i) => String(i.id) === selectedIndukId);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-white dark:bg-zinc-900 rounded-3xl border border-slate-200 dark:border-zinc-800 shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden">
         {/* Header Modal */}
         <div className="px-6 py-4.5 border-b border-slate-100 dark:border-zinc-800 flex items-center justify-between bg-slate-50/80 dark:bg-zinc-900/80">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center text-lg font-bold shadow-xs">
+            <div className="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center text-lg font-bold shadow-sm">
               👥
             </div>
             <div>
@@ -277,7 +277,7 @@ export default function ModalBayarKolektif({
             /* TAMPILAN KWITANSI RESMI KOLEKTIF SETELAH BERHASIL */
             <div className="space-y-6 animate-in fade-in">
               <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-2xl flex items-center gap-3 text-emerald-900 dark:text-emerald-200 text-xs">
-                <Check className="w-5 h-5 text-emerald-600 shrink-0" />
+                <Check className="w-5 h-5 text-emerald-700 shrink-0" />
                 <div>
                   <p className="font-extrabold text-sm">{settlementResult.message}</p>
                   <p className="text-xs text-emerald-700 dark:text-emerald-300">
@@ -287,7 +287,7 @@ export default function ModalBayarKolektif({
               </div>
 
               {/* Area Kwitansi Printable */}
-              <div id="print-area-kolektif" className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-2xl p-6 shadow-xs space-y-5">
+              <div id="print-area-kolektif" className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm space-y-5">
                 <div className="flex justify-between items-start border-b pb-4 border-slate-100 dark:border-zinc-800">
                   <div>
                     <span className="text-[10px] uppercase font-bold tracking-wider text-purple-700 bg-purple-50 dark:bg-purple-950 px-2 py-0.5 rounded border border-purple-200">
@@ -325,7 +325,7 @@ export default function ModalBayarKolektif({
                   </div>
                   <div className="text-right">
                     <span className="text-slate-400 block font-medium">Total Terbayar:</span>
-                    <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
+                    <span className="text-2xl font-black text-emerald-700 dark:text-emerald-400">
                       {formatRupiah(settlementResult.summary.totalNominal)}
                     </span>
                     <p className="text-slate-500 capitalize">
@@ -364,7 +364,7 @@ export default function ModalBayarKolektif({
                         <td colSpan={4} className="px-3 py-2 text-right uppercase text-slate-600">
                           Total Pelunasan ({settlementResult.items.length} Rumah):
                         </td>
-                        <td className="px-3 py-2 text-right text-emerald-600 dark:text-emerald-400 text-sm">
+                        <td className="px-3 py-2 text-right text-emerald-700 dark:text-emerald-400 text-sm">
                           {formatRupiah(settlementResult.summary.totalNominal)}
                         </td>
                       </tr>
@@ -420,7 +420,7 @@ export default function ModalBayarKolektif({
                     ))}
                   </select>
                   {indukList.length === 0 && !loadingInduk && (
-                    <p className="text-[11px] text-amber-600 mt-1">
+                    <p className="text-[11px] text-amber-700 mt-1">
                       Belum ada pelanggan bertipe Induk Kolektif. Atur di menu Pelanggan.
                     </p>
                   )}

@@ -14,6 +14,8 @@ import {
   CORE_TENANT,
   PILOT_TENANT,
   normalizeHost,
+  isFeatureEnabled,
+  type TenantFeatureKey,
   type TenantContext,
 } from "@/lib/tenant";
 
@@ -102,6 +104,7 @@ const API_ROLE_MAP: Record<string, number> = {
   "GET:/api/core/crm": 100,
   "POST:/api/core/crm": 100,
   "PATCH:/api/core/crm": 100,
+  "GET:/api/core/mitra/register": 100,
   "PATCH:/api/core/mitra/register": 100,
 
   // Data Kontrol Kontak WA & Blast Calon Pelanggan (admin+)
@@ -442,8 +445,27 @@ function getRoleLevel(role: string): number {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // 1. Validasi Keamanan Host & Resolusi Tenant Context (Tolak domain liar)
-  const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+  // 1. Validasi Keamanan Host & Resolusi Tenant Context (Tolak domain liar & spoofing)
+  const hasProxyHeader = Boolean(request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip"));
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  const hostHeader = request.headers.get("host") || "";
+  const rawHost = (hasProxyHeader && forwardedHost) ? forwardedHost : (hostHeader || forwardedHost || "");
+
+  // Di produksi, tolak akses langsung melalui raw IP VPS (wajib melalui domain resmi / reverse proxy)
+  if (process.env.NODE_ENV === "production") {
+    const cleanHost = normalizeHost(rawHost);
+    if (cleanHost === "43.173.40.166" || cleanHost.startsWith("43.173.40.166:")) {
+      return new NextResponse(
+        JSON.stringify({
+          error: "Misdirected Request",
+          message: "Akses langsung melalui IP VPS mentah dilarang pada mode produksi. Gunakan domain resmi.",
+          host: rawHost,
+        }),
+        { status: 421, headers: { "Content-Type": "application/json" } }
+      );
+    }
+  }
+
   const tenantCtx = await resolveTenantWithDbFallback(rawHost);
 
   if (!tenantCtx.isValid) {
@@ -542,6 +564,23 @@ function isTenantOnlyPublicPath(lowerPath: string): boolean {
     return NextResponse.next({ request: { headers: reqHeaders } });
   }
 
+  // Rate limit untuk pendaftaran mitra publik (maksimal 3 permintaan / jam per IP)
+  if (pathname === "/api/core/mitra/register" && request.method === "POST") {
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      request.headers.get("x-real-ip") ||
+      "unknown";
+    const key = `mitra-register:${ip}`;
+    if (!(await allowAttempt(key, { max: 3, windowMs: 60 * 60 * 1000 }))) {
+      const retry = retryAfterSeconds(key);
+      return NextResponse.json(
+        { error: `Terlalu banyak permintaan pendaftaran mitra. Coba lagi dalam ${Math.ceil(retry / 60)} menit.` },
+        { status: 429, headers: { "Retry-After": String(retry) } }
+      );
+    }
+    return NextResponse.next({ request: { headers: reqHeaders } });
+  }
+
   // Auth API, publik API, dan API mobile (background GPS) — dicek di handler masing-masing.
   // /api/mobile/tracking memakai token header (x-tracking-token), bukan cookie sesi,
   // karena dipanggil dari service native Android yang tidak membawa cookie + Origin header.
@@ -552,8 +591,7 @@ function isTenantOnlyPublicPath(lowerPath: string): boolean {
     pathname.startsWith("/api/marketplace") ||
     pathname.startsWith("/api/pickup") ||
     pathname.startsWith("/api/pembayaran/search") ||
-    pathname.startsWith("/api/integrasi/google-contacts/callback") ||
-    (pathname === "/api/core/mitra/register" && request.method === "POST")
+    pathname.startsWith("/api/integrasi/google-contacts/callback")
   ) {
     return NextResponse.next({ request: { headers: reqHeaders } });
   }
@@ -891,6 +929,31 @@ function isTenantOnlyPublicPath(lowerPath: string): boolean {
       const url = new URL("/dashboard", request.url);
       url.searchParams.set("notice", "core_scope_only");
       return NextResponse.redirect(url);
+    }
+
+    // Proteksi Feature Flags per Tenant
+    const FEATURE_PAGE_MAP: Record<string, TenantFeatureKey> = {
+      "/manajemen-marketplace": "marketplace",
+      "/manajemen-artikel": "artikel",
+      "/ai-command": "ai_command",
+      "/pickup-insidental": "pickup_incidental",
+      "/sticker": "sticker",
+      "/transit": "transit_tpa",
+      "/tpa": "transit_tpa",
+      "/chat": "chat_internal",
+      "/absensi": "absensi_klaim",
+      "/klaim": "absensi_klaim",
+    };
+
+    for (const [prefix, featKey] of Object.entries(FEATURE_PAGE_MAP)) {
+      if (pathname === prefix || pathname.startsWith(prefix + "/")) {
+        if (!isFeatureEnabled(tenantCtx.tenant, featKey)) {
+          const url = new URL("/dashboard", request.url);
+          url.searchParams.set("notice", "feature_disabled");
+          return NextResponse.redirect(url);
+        }
+        break;
+      }
     }
   }
 

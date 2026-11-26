@@ -150,7 +150,7 @@ export default function SaasBillingPage() {
 
       {/* KPI Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
             Total Nilai Faktur / Billing
           </span>
@@ -162,11 +162,11 @@ export default function SaasBillingPage() {
           </p>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs">
-          <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm">
+          <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
             Komisi & Fee SaaS Platform
           </span>
-          <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">
+          <div className="text-2xl font-black text-emerald-700 dark:text-emerald-400 mt-1">
             {loading ? "..." : `Rp ${totalPlatformFee.toLocaleString("id-ID")}`}
           </div>
           <p className="text-xs text-slate-500 dark:text-zinc-400 mt-2">
@@ -174,7 +174,7 @@ export default function SaasBillingPage() {
           </p>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-xs">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm">
           <span className="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">
             Mitra Aktif Ditagih
           </span>
@@ -188,7 +188,7 @@ export default function SaasBillingPage() {
       </div>
 
       {/* Filter and Table */}
-      <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-xs">
+      <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-sm">
         <div className="p-4 border-b border-slate-100 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="relative w-full sm:w-80">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -197,7 +197,7 @@ export default function SaasBillingPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Cari nama mitra atau invoice..."
-              className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800 text-slate-900 dark:text-zinc-100 focus:outline-hidden focus:ring-2 focus:ring-sky-500"
+              className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800 text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-sky-500"
             />
           </div>
 
@@ -254,7 +254,7 @@ export default function SaasBillingPage() {
                   <td className="px-6 py-4 font-black text-slate-900 dark:text-white">
                     Rp {Number(inv.nominalGross).toLocaleString("id-ID")}
                   </td>
-                  <td className="px-6 py-4 font-bold text-emerald-600 dark:text-emerald-400">
+                  <td className="px-6 py-4 font-bold text-emerald-700 dark:text-emerald-400">
                     Rp {Number(inv.feePlatform).toLocaleString("id-ID")}
                   </td>
                   <td className="px-6 py-4 text-xs text-slate-400">
@@ -275,7 +275,7 @@ export default function SaasBillingPage() {
 
       {/* Modal Tambah Invoice */}
       {showModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-150">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-150">
           <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl max-w-md w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 flex items-center justify-between shrink-0">
               <h3 className="text-base font-bold text-slate-900 dark:text-white">

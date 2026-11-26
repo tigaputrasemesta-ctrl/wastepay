@@ -25,8 +25,8 @@ export function scopeTenantWhere<T extends Record<string, any>>(
 
 /**
  * Bangun filter `where` Prisma yang terisolasi pada `tenantId`.
- * Hanya untuk tenant percontohan (`allowPilotNullFallback = true`), data lama dengan `tenantId: null`
- * tetap terbaca agar kompatibel mundur sebelum backfill penuh.
+ * Default `allowPilotNullFallback = false` (seluruh data baru terisolasi ketat).
+ * Fallback ke NULL hanya aktif jika eksplisit diaktifkan saat masa transisi backfill.
  */
 export function buildTenantFilter(tenantId: string, allowPilotNullFallback = false) {
   if (allowPilotNullFallback) {

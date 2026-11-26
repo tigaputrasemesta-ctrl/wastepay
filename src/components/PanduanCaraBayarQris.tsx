@@ -137,7 +137,7 @@ export function PanduanCaraBayarQris({ defaultOpen = false }: { defaultOpen?: bo
   const currentGuide = GUIDES.find((g) => g.id === activeTab) || GUIDES[0];
 
   return (
-    <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xs overflow-hidden transition-all">
+    <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden transition-all">
       {/* Header Accordion Toggle */}
       <button
         type="button"
@@ -145,7 +145,7 @@ export function PanduanCaraBayarQris({ defaultOpen = false }: { defaultOpen?: bo
         className="w-full px-5 py-4 flex items-center justify-between text-left bg-gradient-to-r from-slate-50 via-white to-emerald-50/30 hover:bg-slate-100/60 transition"
       >
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-xs shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-emerald-700 text-white flex items-center justify-center font-bold text-sm shadow-sm shrink-0">
             QR
           </div>
           <div>
@@ -213,7 +213,7 @@ export function PanduanCaraBayarQris({ defaultOpen = false }: { defaultOpen?: bo
                   onClick={() => setActiveTab(g.id)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
                     activeTab === g.id
-                      ? "bg-emerald-700 text-white shadow-xs"
+                      ? "bg-emerald-700 text-white shadow-sm"
                       : "bg-slate-100 hover:bg-slate-200 text-slate-700"
                   }`}
                 >

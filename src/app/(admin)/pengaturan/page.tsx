@@ -707,7 +707,7 @@ export default function PengaturanPage() {
               <button
                 onClick={() => setShowDedupConfirm(true)}
                 disabled={dedupLoading}
-                className="bg-amber-600 hover:bg-amber-700 active:scale-95 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-xs hover:shadow-sm transition-all flex items-center gap-1.5"
+                className="bg-amber-600 hover:bg-amber-700 active:scale-95 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-sm hover:shadow-sm transition-all flex items-center gap-1.5"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -717,7 +717,7 @@ export default function PengaturanPage() {
             )}
             <button
               onClick={openCreateWilayah}
-              className="bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-xs hover:shadow-sm transition-all flex items-center gap-1.5"
+              className="bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm hover:shadow-sm transition-all flex items-center gap-1.5"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -748,7 +748,7 @@ export default function PengaturanPage() {
             <button
               onClick={() => setShowDedupConfirm(true)}
               disabled={dedupLoading}
-              className="shrink-0 bg-amber-700 hover:bg-amber-800 active:scale-95 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-xs transition-all self-end md:self-center"
+              className="shrink-0 bg-amber-700 hover:bg-amber-800 active:scale-95 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-sm transition-all self-end md:self-center"
             >
               {dedupLoading ? "Memproses..." : "🧹 Gabung & Bersihkan Sekarang"}
             </button>
@@ -821,7 +821,7 @@ export default function PengaturanPage() {
         <div className="mt-5">
           {filteredWilayahList.length === 0 ? (
             <div className="text-center py-12 px-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50/50">
-              <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-center justify-center mx-auto mb-3 text-slate-400">
+              <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-center mx-auto mb-3 text-slate-400">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
@@ -837,7 +837,7 @@ export default function PengaturanPage() {
               {wilayahList.length === 0 && (
                 <button
                   onClick={openCreateWilayah}
-                  className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-xs transition-all inline-flex items-center gap-1.5"
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition-all inline-flex items-center gap-1.5"
                 >
                   <span>+ Tambah Blok Sekarang</span>
                 </button>
@@ -1083,7 +1083,7 @@ export default function PengaturanPage() {
                   <button
                     onClick={handleGoogleSync}
                     disabled={googleSyncing}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs shadow-sm transition-all"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs shadow-sm transition-all"
                   >
                     <span>{googleSyncing ? "⏳" : "🔄"}</span>
                     {googleSyncing ? "Sedang Sinkronisasi..." : "Sinkronkan Kontak ke Google Sekarang"}
@@ -1159,7 +1159,7 @@ export default function PengaturanPage() {
             <div className="flex flex-wrap items-center justify-between gap-3 mb-2.5">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-bold text-slate-800">📊 Pemakaian Kuota WhatsApp Periode Ini</span>
-                <span className="text-[11px] px-2 py-0.5 rounded bg-emerald-600 text-white font-medium">
+                <span className="text-[11px] px-2 py-0.5 rounded bg-emerald-700 text-white font-medium">
                   {waSettings.provider.toUpperCase()}
                 </span>
               </div>
@@ -1201,7 +1201,7 @@ export default function PengaturanPage() {
             <div className="p-4 rounded-xl border-2 border-emerald-100 bg-emerald-50/20 space-y-3">
               <div className="flex items-center justify-between pb-2 border-b border-emerald-100">
                 <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">1</span>
+                  <span className="w-6 h-6 rounded-full bg-emerald-700 text-white flex items-center justify-center text-xs font-bold">1</span>
                   <span className="font-bold text-slate-800 text-sm">Nomor 1: Operasional Utama</span>
                 </div>
                 <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
@@ -1301,7 +1301,7 @@ export default function PengaturanPage() {
             <button
               type="submit"
               disabled={savingWa}
-              className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-200 transition-all flex items-center gap-2 disabled:opacity-50"
+              className="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-200 transition-all flex items-center gap-2 disabled:opacity-50"
             >
               {savingWa ? (
                 <>
@@ -1370,7 +1370,7 @@ export default function PengaturanPage() {
                           PAJAK_DAERAH_RATE: parseFloat(e.target.value) || 0,
                         })
                       }
-                      className="w-full pl-3.5 pr-8 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-xs"
+                      className="w-full pl-3.5 pr-8 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm"
                     />
                     <span className="absolute right-3 top-2.5 text-xs font-bold text-slate-400 pointer-events-none">
                       %
@@ -1407,7 +1407,7 @@ export default function PengaturanPage() {
                           DENDA_KETERLAMBATAN_RATE: parseFloat(e.target.value) || 0,
                         })
                       }
-                      className="w-full pl-3.5 pr-8 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-xs"
+                      className="w-full pl-3.5 pr-8 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-sm"
                     />
                     <span className="absolute right-3 top-2.5 text-xs font-bold text-slate-400 pointer-events-none">
                       %
@@ -1459,10 +1459,10 @@ export default function PengaturanPage() {
                         key={chip.label}
                         type="button"
                         onClick={() => insertWaChip(chip.label)}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white hover:bg-emerald-50 hover:text-emerald-800 hover:border-emerald-300 border border-slate-200 text-xs font-mono font-medium text-slate-700 active:scale-95 transition-all shadow-2xs group"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white hover:bg-emerald-50 hover:text-emerald-800 hover:border-emerald-300 border border-slate-200 text-xs font-mono font-medium text-slate-700 active:scale-95 transition-all shadow-sm group"
                         title={chip.desc}
                       >
-                        <span className="text-emerald-600 font-bold group-hover:scale-110 transition-transform">+</span>
+                        <span className="text-emerald-700 font-bold group-hover:scale-110 transition-transform">+</span>
                         <span>{chip.label}</span>
                       </button>
                     ))}
@@ -1486,7 +1486,7 @@ export default function PengaturanPage() {
                 <button
                   type="submit"
                   disabled={tarifSaving}
-                  className="bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-xs hover:shadow transition-all flex items-center justify-center gap-2 disabled:opacity-50 w-full sm:w-auto"
+                  className="bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm hover:shadow transition-all flex items-center justify-center gap-2 disabled:opacity-50 w-full sm:w-auto"
                 >
                   {tarifSaving ? "Menyimpan Perubahan..." : "💾 Simpan Parameter Tarif & Template WA"}
                 </button>
@@ -1496,7 +1496,7 @@ export default function PengaturanPage() {
 
           {/* KOLOM KANAN (40%): LIVE WHATSAPP BUBBLE PREVIEW (#DCF8C6) */}
           <div className="lg:col-span-5 w-full">
-            <div className="bg-slate-900/5 p-4 rounded-3xl border border-slate-200/80 shadow-xs">
+            <div className="bg-slate-900/5 p-4 rounded-3xl border border-slate-200/80 shadow-sm">
               <div className="flex items-center justify-between mb-3 px-1">
                 <div className="flex items-center gap-2">
                   <span className="text-sm">📱</span>
@@ -1539,7 +1539,7 @@ export default function PengaturanPage() {
 
                 {/* Date Pill Divider */}
                 <div className="py-2.5 flex justify-center">
-                  <span className="bg-white/90 shadow-2xs text-[10px] font-bold text-slate-600 px-3 py-0.5 rounded-lg border border-slate-200/50">
+                  <span className="bg-white/90 shadow-sm text-[10px] font-bold text-slate-600 px-3 py-0.5 rounded-lg border border-slate-200/50">
                     HARI INI
                   </span>
                 </div>
@@ -1759,7 +1759,7 @@ export default function PengaturanPage() {
                 <button
                   type="button"
                   onClick={() => setShowAdvancedRtRw(!showAdvancedRtRw)}
-                  className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center gap-1.5"
+                  className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center gap-1.5"
                 >
                   <span>{showAdvancedRtRw ? "▼ Sembunyikan" : "▶ Tampilkan"} Pengaturan Tambahan (Zona & RT/RW)</span>
                 </button>
@@ -1825,7 +1825,7 @@ export default function PengaturanPage() {
                 <button
                   type="submit"
                   disabled={savingWilayah}
-                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-700 hover:bg-emerald-700 text-white shadow-sm transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
                 >
                   {savingWilayah ? (
                     <>

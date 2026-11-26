@@ -62,7 +62,7 @@ export default async function ArtikelPage() {
 
         <div className="space-y-2 border-b border-slate-200/80 dark:border-zinc-800 pb-6">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100/80 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 rounded-full text-xs font-extrabold uppercase tracking-wide border border-emerald-200/60 dark:border-emerald-800/60">
-            <BookOpen className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <BookOpen className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
             <span>Pusat Edukasi & Informasi Lingkungan</span>
           </div>
           <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-zinc-100">

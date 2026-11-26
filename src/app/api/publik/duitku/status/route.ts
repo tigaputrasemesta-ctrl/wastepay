@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getDuitkuTransactionStatus } from "@/lib/duitku";
 import { syncDuitkuPayment } from "@/lib/duitku-sync";
 import { allowAttempt, retryAfterSeconds } from "@/lib/rate-limit";
+import { getTenantFromRequest } from "@/lib/tenant";
 
 /**
  * GET /api/publik/duitku/status?orderId=DW-...
@@ -27,6 +28,8 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "orderId atau invoice wajib diisi" }, { status: 400 });
   }
 
+  const tenantCtx = await getTenantFromRequest(request);
+
   const dt = orderIdParam
     ? await prisma.duitkuTransaction.findUnique({
         where: { orderId: orderIdParam },
@@ -47,6 +50,14 @@ export async function GET(request: Request) {
 
   if (!dt) {
     return NextResponse.json({ error: "Transaksi tidak ditemukan" }, { status: 404 });
+  }
+
+  // Cross-tenant protection: jika request berasal dari domain tenant, pastikan transaksi milik tenant tersebut
+  if (tenantCtx.isValid && !tenantCtx.isCore) {
+    const belongsToTenant = dt.tenantId === tenantCtx.tenant.id || (tenantCtx.isPilot && !dt.tenantId);
+    if (!belongsToTenant) {
+      return NextResponse.json({ error: "Transaksi tidak ditemukan pada instansi ini" }, { status: 404 });
+    }
   }
 
   const orderId = dt.orderId;

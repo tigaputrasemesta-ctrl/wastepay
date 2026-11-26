@@ -714,7 +714,7 @@ function ArmadaFasilitasContent() {
                 <button
                   type="submit"
                   form="kendaraan-form"
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-xs transition"
+                  className="px-5 py-2 bg-emerald-700 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition"
                 >
                   Simpan Armada
                 </button>
@@ -792,7 +792,7 @@ function ArmadaFasilitasContent() {
                 <button
                   type="submit"
                   form="transit-form"
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-xs transition"
+                  className="px-5 py-2 bg-emerald-700 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition"
                 >
                   Simpan Titik Transit
                 </button>
@@ -873,7 +873,7 @@ function ArmadaFasilitasContent() {
                 <button
                   type="submit"
                   form="tpa-form"
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-xs transition"
+                  className="px-5 py-2 bg-emerald-700 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition"
                 >
                   Simpan TPA
                 </button>

@@ -30,7 +30,7 @@ import "./invoice.css";
 
 /**
  * Masking nomor telepon untuk halaman publik (anti-enumerasi nomor lengkap):
- * 081234567890 → 0812••••7890.
+ * 081299887766 → 0812••••7766.
  */
 function maskNoTelepon(no: string | null | undefined): string {
   if (!no) return "-";
@@ -108,7 +108,7 @@ export default async function InvoiceTagihanPage({
         <div className="invoice-toolbar">
           <div className="invoice-toolbar-left">
             <Link
-              href={`/bayar-tagihan?invoice=${encodeURIComponent(tagihan.noInvoice || "")}`}
+              href={`/bayar?invoice=${encodeURIComponent(tagihan.noInvoice || "")}`}
               className="invoice-back-link"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -215,12 +215,12 @@ export default async function InvoiceTagihanPage({
             <div className="invoice-parties-section">
               <div className="party-box party-issuer">
                 <div className="party-heading">DITERBITKAN OLEH:</div>
-                <div className="party-main-name">{perusahaan.nama} DEPOK</div>
+                <div className="party-main-name">{perusahaan.nama} {tenantCtx.tenant.branding?.kota ? tenantCtx.tenant.branding.kota.toUpperCase() : "DEPOK"}</div>
                 <div className="party-desc">
                   <p>Penyelenggara Layanan Pengangkutan Sampah Terpadu & TPS 3R</p>
                   <p>{perusahaan.alamat}</p>
-                  <p>Kota Depok, Jawa Barat</p>
-                  <div className="party-chip">LAYANAN RESMI KOTA DEPOK</div>
+                  <p>{tenantCtx.tenant.branding?.kota || "Kota Depok"}</p>
+                  <div className="party-chip">LAYANAN RESMI {(tenantCtx.tenant.branding?.kota || "KOTA DEPOK").toUpperCase()}</div>
                 </div>
               </div>
 
@@ -320,7 +320,7 @@ export default async function InvoiceTagihanPage({
 
                 <div className="invoice-legal-note">
                   <div className="legal-icon">
-                    <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
                   </div>
@@ -450,7 +450,7 @@ export default async function InvoiceTagihanPage({
 
                 <div className="sign-seal-area">
                   <div className="digital-seal">
-                    <svg className="w-4 h-4 text-emerald-600 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-emerald-700 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
                     <span>TERVALIDASI SECARA ELEKTRONIK</span>

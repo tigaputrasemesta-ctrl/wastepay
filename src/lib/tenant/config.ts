@@ -203,13 +203,11 @@ export const KNOWN_TENANTS: TenantConfig[] = [
 /**
  * Daftar domain internal, lokal, dan IP VPS yang sah untuk healthcheck & development
  */
-export const ALLOWED_INTERNAL_HOSTS = new Set([
-  "localhost",
-  "127.0.0.1",
-  "0.0.0.0",
-  "43.173.40.166",
-  "capacitor://localhost",
-]);
+export const ALLOWED_INTERNAL_HOSTS = new Set(
+  process.env.NODE_ENV === "production"
+    ? ["localhost", "127.0.0.1", "0.0.0.0", "capacitor://localhost"]
+    : ["localhost", "127.0.0.1", "0.0.0.0", "43.173.40.166", "capacitor://localhost"]
+);
 
 /**
  * Global In-Memory Dynamic Tenant Registry Cache

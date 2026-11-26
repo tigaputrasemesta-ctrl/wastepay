@@ -412,7 +412,7 @@ export default function UsersPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="bg-white rounded-xl border border-purple-100 p-4 shadow-xs">
+        <div className="bg-white rounded-xl border border-purple-100 p-4 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-[11px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider">
               {isCore ? "Tim Platform O2W" : "Admin Mitra"}
@@ -429,7 +429,7 @@ export default function UsersPage() {
           </p>
         </div>
 
-        <div className="bg-white rounded-xl border border-sky-100 p-4 shadow-xs">
+        <div className="bg-white rounded-xl border border-sky-100 p-4 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-[11px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider">
               Admin Mitra
@@ -442,32 +442,32 @@ export default function UsersPage() {
           <p className="text-[11px] text-sky-600 mt-0.5">Pengelola TPS 3R & KSM</p>
         </div>
 
-        <div className="bg-white rounded-xl border border-amber-100 p-4 shadow-xs">
+        <div className="bg-white rounded-xl border border-amber-100 p-4 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-[11px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider">
               Staf Lapangan
             </span>
-            <span className="p-1 bg-amber-50 text-amber-600 rounded-md">
+            <span className="p-1 bg-amber-50 text-amber-700 rounded-md">
               <HardHat className="w-4 h-4" />
             </span>
           </div>
           <p className="text-2xl font-black text-amber-900 mt-2">{metrics.operasionalCount}</p>
-          <p className="text-[11px] text-amber-600 mt-0.5">Driver & Petugas Mitra</p>
+          <p className="text-[11px] text-amber-700 mt-0.5">Driver & Petugas Mitra</p>
         </div>
 
-        <div className="bg-white rounded-xl border border-emerald-100 p-4 shadow-xs">
+        <div className="bg-white rounded-xl border border-emerald-100 p-4 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-[11px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider">
               Akun Aktif
             </span>
-            <span className="p-1 bg-emerald-50 text-emerald-600 rounded-md">
+            <span className="p-1 bg-emerald-50 text-emerald-700 rounded-md">
               <CheckCircle2 className="w-4 h-4" />
             </span>
           </div>
           <p className="text-2xl font-black text-emerald-900 mt-2">
             {metrics.activeCount} <span className="text-xs font-medium text-slate-400">/ {metrics.totalCount}</span>
           </p>
-          <p className="text-[11px] text-emerald-600 mt-0.5">Status Aktif Beroperasi</p>
+          <p className="text-[11px] text-emerald-700 mt-0.5">Status Aktif Beroperasi</p>
         </div>
       </div>
 
@@ -582,7 +582,7 @@ export default function UsersPage() {
       )}
 
       {/* Search & Filter Bar */}
-      <div className="bg-white rounded-xl border border-slate-200 p-3 sm:p-4 shadow-xs flex flex-col md:flex-row gap-3 items-center justify-between">
+      <div className="bg-white rounded-xl border border-slate-200 p-3 sm:p-4 shadow-sm flex flex-col md:flex-row gap-3 items-center justify-between">
         <div className="relative w-full md:w-80">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
@@ -704,7 +704,7 @@ export default function UsersPage() {
                           </span>
                         ) : isPilot ? (
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            <Building2 className="w-3.5 h-3.5 text-emerald-600" />
+                            <Building2 className="w-3.5 h-3.5 text-emerald-700" />
                             UPS HERU Kota Depok
                           </span>
                         ) : u.tenant?.namaMitra ? (
@@ -887,7 +887,7 @@ export default function UsersPage() {
 
       {/* Modal Tambah Pengguna */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-150">
           <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-lg max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div>
@@ -1079,7 +1079,7 @@ export default function UsersPage() {
                 <button
                   type="submit"
                   disabled={savingAdd}
-                  className="flex-1 px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white rounded-lg text-xs font-bold shadow-xs hover:shadow transition disabled:opacity-50"
+                  className="flex-1 px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white rounded-lg text-xs font-bold shadow-sm hover:shadow transition disabled:opacity-50"
                 >
                   {savingAdd ? "Menyimpan..." : "Simpan Pengguna"}
                 </button>
@@ -1091,7 +1091,7 @@ export default function UsersPage() {
 
       {/* Modal Edit Pengguna */}
       {editUser && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-150">
           <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-lg max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div>
@@ -1200,7 +1200,7 @@ export default function UsersPage() {
                 <button
                   type="submit"
                   disabled={savingEdit}
-                  className="flex-1 px-4 py-2 bg-sky-700 hover:bg-sky-800 text-white rounded-lg text-xs font-bold shadow-xs hover:shadow transition disabled:opacity-50"
+                  className="flex-1 px-4 py-2 bg-sky-700 hover:bg-sky-800 text-white rounded-lg text-xs font-bold shadow-sm hover:shadow transition disabled:opacity-50"
                 >
                   {savingEdit ? "Memperbarui..." : "Simpan Perubahan"}
                 </button>
@@ -1212,7 +1212,7 @@ export default function UsersPage() {
 
       {/* Modal Ubah Password */}
       {passwordUser && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-150">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-150">
           <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-sm max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div>
@@ -1255,7 +1255,7 @@ export default function UsersPage() {
                 <button
                   type="submit"
                   disabled={savingPassword}
-                  className="flex-1 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold shadow-xs hover:shadow transition disabled:opacity-50"
+                  className="flex-1 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold shadow-sm hover:shadow transition disabled:opacity-50"
                 >
                   {savingPassword ? "Menyimpan..." : "Update Password"}
                 </button>

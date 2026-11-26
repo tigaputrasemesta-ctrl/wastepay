@@ -61,7 +61,8 @@ export async function GET(request: Request) {
         }
       }
     });
-    if (dt?.pembayaran?.tagihan?.noInvoice) {
+    const belongs = dt && (dt.tenantId === tenantCtx.tenant.id || (tenantCtx.isPilot && !dt.tenantId));
+    if (belongs && dt?.pembayaran?.tagihan?.noInvoice) {
       invoice = dt.pembayaran.tagihan.noInvoice;
     }
   }

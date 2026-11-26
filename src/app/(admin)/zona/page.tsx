@@ -543,7 +543,7 @@ export default function ZonasiPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/80 pb-6">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="p-2 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-200/60 shadow-2xs">
+            <span className="p-2 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-200/60 shadow-sm">
               <Compass className="w-5 h-5" />
             </span>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
@@ -562,14 +562,14 @@ export default function ZonasiPage() {
         <div className="flex items-center gap-2.5 flex-wrap">
           <button
             onClick={openCreateKelurahan}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold shadow-2xs transition active:scale-95"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold shadow-sm transition active:scale-95"
           >
             <Building2 className="w-4 h-4 text-slate-500" />
             <span>+ Kelurahan</span>
           </button>
           <button
             onClick={() => openCreateZona()}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-xs transition active:scale-95"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-sm transition active:scale-95"
           >
             <Plus className="w-4 h-4" />
             <span>+ Tambah Zona Angkut</span>
@@ -579,7 +579,7 @@ export default function ZonasiPage() {
 
       {/* ── STATS METRICS ── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Kecamatan</span>
             <span className="p-1.5 bg-sky-50 text-sky-700 rounded-lg">
@@ -590,7 +590,7 @@ export default function ZonasiPage() {
           <p className="text-[11px] text-slate-500 mt-0.5">Area induk terdaftar</p>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Kelurahan</span>
             <span className="p-1.5 bg-emerald-50 text-emerald-700 rounded-lg">
@@ -601,7 +601,7 @@ export default function ZonasiPage() {
           <p className="text-[11px] text-slate-500 mt-0.5">Pusat penentu zona</p>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-emerald-700 uppercase tracking-wider">Zona Angkut</span>
             <span className="p-1.5 bg-emerald-700 text-white rounded-lg">
@@ -612,7 +612,7 @@ export default function ZonasiPage() {
           <p className="text-[11px] text-slate-500 mt-0.5">Zona operasional aktif</p>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">RT / Wilayah</span>
             <span className="p-1.5 bg-purple-50 text-purple-700 rounded-lg">
@@ -625,7 +625,7 @@ export default function ZonasiPage() {
       </div>
 
       {/* ── FILTER & SEARCH BAR ── */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs space-y-3">
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           {/* Search Box */}
           <div className="relative flex-1">
@@ -671,7 +671,7 @@ export default function ZonasiPage() {
             onClick={() => setSelectedKecamatan("all")}
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
               selectedKecamatan === "all"
-                ? "bg-slate-900 text-white shadow-2xs"
+                ? "bg-slate-900 text-white shadow-sm"
                 : "bg-slate-100 text-slate-600 hover:bg-slate-200/80"
             }`}
           >
@@ -685,7 +685,7 @@ export default function ZonasiPage() {
                 onClick={() => setSelectedKecamatan(kec)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
                   selectedKecamatan === kec
-                    ? "bg-emerald-700 text-white shadow-2xs"
+                    ? "bg-emerald-700 text-white shadow-sm"
                     : "bg-slate-100 text-slate-600 hover:bg-slate-200/80"
                 }`}
               >
@@ -713,7 +713,7 @@ export default function ZonasiPage() {
           </p>
           <button
             onClick={openCreateKelurahan}
-            className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-xs"
+            className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-sm"
           >
             <Plus className="w-4 h-4" />
             <span>Tambah Kelurahan Pertama</span>
@@ -730,7 +730,7 @@ export default function ZonasiPage() {
                 {/* Kecamatan Section Header */}
                 <div className="flex items-center justify-between gap-3 bg-gradient-to-r from-slate-100/90 to-slate-50/50 p-3.5 rounded-2xl border border-slate-200/80">
                   <div className="flex items-center gap-2.5">
-                    <span className="p-2 bg-white rounded-xl shadow-2xs border border-slate-200/60 text-slate-700">
+                    <span className="p-2 bg-white rounded-xl shadow-sm border border-slate-200/60 text-slate-700">
                       <Building2 className="w-4 h-4" />
                     </span>
                     <div>
@@ -742,7 +742,7 @@ export default function ZonasiPage() {
                       </p>
                     </div>
                   </div>
-                  <span className="text-xs font-bold px-3 py-1 bg-white border border-slate-200 rounded-full text-slate-600 shadow-2xs">
+                  <span className="text-xs font-bold px-3 py-1 bg-white border border-slate-200 rounded-full text-slate-600 shadow-sm">
                     {kelList.length} Kelurahan
                   </span>
                 </div>
@@ -757,7 +757,7 @@ export default function ZonasiPage() {
                     return (
                       <div
                         key={kel.id}
-                        className="bg-white rounded-3xl border border-slate-200/90 shadow-xs overflow-hidden transition-all"
+                        className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden transition-all"
                       >
                         {/* ── KELURAHAN CARD HEADER ── */}
                         <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/60 border-b border-slate-100">
@@ -809,7 +809,7 @@ export default function ZonasiPage() {
                           <div className="flex items-center gap-1.5 self-end sm:self-center">
                             <button
                               onClick={() => openCreateZona(kel.id)}
-                              className="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-2xs active:scale-95 transition"
+                              className="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-sm active:scale-95 transition"
                               title="Tambah Zona Angkut di Kelurahan ini"
                             >
                               <Plus className="w-3.5 h-3.5" />
@@ -887,14 +887,14 @@ export default function ZonasiPage() {
                                   return (
                                     <div
                                       key={z.id}
-                                      className="relative bg-white rounded-2xl p-4 border border-slate-200/80 shadow-2xs hover:shadow-sm transition-all group flex flex-col justify-between"
+                                      className="relative bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm hover:shadow-sm transition-all group flex flex-col justify-between"
                                     >
                                       <div>
                                         {/* Top bar: Warna + Nama + Actions */}
                                         <div className="flex items-start justify-between gap-2 mb-2">
                                           <div className="flex items-center gap-2 min-w-0">
                                             <span
-                                              className="w-3.5 h-3.5 rounded-full ring-2 ring-white shadow-xs shrink-0"
+                                              className="w-3.5 h-3.5 rounded-full ring-2 ring-white shadow-sm shrink-0"
                                               style={{ backgroundColor: z.warna || "#10b981" }}
                                               title={z.warna || ""}
                                             />
@@ -951,7 +951,7 @@ export default function ZonasiPage() {
                                             </button>
                                           </div>
                                           {zRTs.length === 0 ? (
-                                            <p className="text-[11px] text-amber-600 font-medium">
+                                            <p className="text-[11px] text-amber-700 font-medium">
                                               ⏳ Belum ada RT terhubung
                                             </p>
                                           ) : (
@@ -1030,7 +1030,7 @@ export default function ZonasiPage() {
           <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div className="flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <Building2 className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
                 <h3 className="font-semibold text-slate-900 dark:text-zinc-100 text-base">
                   {modalKelurahan.data ? "Edit Kelurahan" : "Tambah Kelurahan Baru"}
                 </h3>
@@ -1115,7 +1115,7 @@ export default function ZonasiPage() {
                   type="submit"
                   form="kelurahan-modal-form"
                   disabled={saving}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors disabled:opacity-60"
+                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors disabled:opacity-60"
                 >
                   {saving ? "Menyimpan…" : "Simpan Kelurahan"}
                 </button>
@@ -1131,7 +1131,7 @@ export default function ZonasiPage() {
           <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-lg max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div className="flex items-center gap-2">
-                <Layers className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <Layers className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
                 <div>
                   <h3 className="font-semibold text-slate-900 dark:text-zinc-100 text-base">
                     {modalZona.data ? "Edit Zona Angkut" : "Tambah Zona Angkut Baru"}
@@ -1266,7 +1266,7 @@ export default function ZonasiPage() {
                                     });
                                   }
                                 }}
-                                className="rounded text-emerald-600 focus:ring-emerald-500"
+                                className="rounded text-emerald-700 focus:ring-emerald-500"
                               />
                               <span className="truncate">{rt.nama}</span>
                             </label>
@@ -1317,7 +1317,7 @@ export default function ZonasiPage() {
                                 });
                               }
                             }}
-                            className="rounded text-emerald-600 focus:ring-emerald-500"
+                            className="rounded text-emerald-700 focus:ring-emerald-500"
                           />
                           <span className="truncate">{p.nama}</span>
                         </label>
@@ -1342,7 +1342,7 @@ export default function ZonasiPage() {
                   type="submit"
                   form="zona-modal-form"
                   disabled={saving}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors disabled:opacity-60"
+                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors disabled:opacity-60"
                 >
                   {saving ? "Menyimpan…" : "Simpan Zona"}
                 </button>
@@ -1451,7 +1451,7 @@ export default function ZonasiPage() {
                   type="submit"
                   form="rt-modal-form"
                   disabled={saving}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors disabled:opacity-60"
+                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors disabled:opacity-60"
                 >
                   {saving ? "Menyimpan…" : "Simpan RT"}
                 </button>
@@ -1484,7 +1484,7 @@ export default function ZonasiPage() {
               <p className="text-xs text-slate-600 dark:text-zinc-400">
                 Pilih RT mana saja di Kelurahan{" "}
                 <span className="font-semibold text-slate-900 dark:text-zinc-100">{modalAturRT.kelurahan.nama}</span> yang masuk ke dalam{" "}
-                <span className="font-semibold text-emerald-600 dark:text-emerald-400">{modalAturRT.zona.nama}</span>:
+                <span className="font-semibold text-emerald-700 dark:text-emerald-400">{modalAturRT.zona.nama}</span>:
               </p>
 
               {modalAturRT.kelurahan.wilayah.length === 0 ? (
@@ -1514,7 +1514,7 @@ export default function ZonasiPage() {
                               setSelectedRTForZona((prev) => prev.filter((id) => id !== rt.id));
                             }
                           }}
-                          className="rounded text-emerald-600 focus:ring-emerald-500"
+                          className="rounded text-emerald-700 focus:ring-emerald-500"
                         />
                         <span className="truncate">{rt.nama}</span>
                       </label>
@@ -1536,7 +1536,7 @@ export default function ZonasiPage() {
                 type="button"
                 onClick={handleSaveAturRT}
                 disabled={saving}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors disabled:opacity-60"
+                className="px-4 py-2 bg-emerald-700 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors disabled:opacity-60"
               >
                 {saving ? "Menyimpan…" : "Simpan Cakupan RT"}
               </button>

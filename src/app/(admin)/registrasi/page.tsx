@@ -501,7 +501,7 @@ export default function DaftarPelangganPage() {
                 <select
                   value={form.zonaId}
                   onChange={(e) => setForm({ ...form, zonaId: e.target.value, ruteId: "" })}
-                  className="input border-2 border-emerald-500 font-bold text-emerald-950 shadow-xs"
+                  className="input border-2 border-emerald-500 font-bold text-emerald-950 shadow-sm"
                 >
                   <option value="">— Pilih Zona Area Pickup —</option>
                   {availableZonas.map((z) => (
@@ -625,7 +625,7 @@ export default function DaftarPelangganPage() {
             {/* Bagian Operasional & Jadwal Multi-Hari */}
             <div className="p-4 sm:p-5 rounded-2xl border-2 border-emerald-600/20 bg-emerald-50/20 space-y-4">
               <div className="flex items-center gap-2 border-b border-emerald-900/10 pb-3">
-                <span className="w-7 h-7 rounded-xl bg-emerald-700 text-white text-sm flex items-center justify-center font-black shadow-xs">
+                <span className="w-7 h-7 rounded-xl bg-emerald-700 text-white text-sm flex items-center justify-center font-black shadow-sm">
                   🚚
                 </span>
                 <div>
@@ -756,7 +756,7 @@ export default function DaftarPelangganPage() {
                         onClick={() => toggleHari(h)}
                         className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                           isSelected
-                            ? "bg-emerald-700 text-white shadow-xs scale-[1.02]"
+                            ? "bg-emerald-700 text-white shadow-sm scale-[1.02]"
                             : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200"
                         }`}
                       >
@@ -991,7 +991,7 @@ export default function DaftarPelangganPage() {
               </div>
 
               {/* Konfirmasi Operasional Penjemputan */}
-              <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 shadow-xs">
+              <div className="p-3.5 rounded-xl bg-white border border-slate-200/80 shadow-sm">
                 <p className="label !mb-2 text-xs font-semibold text-slate-500">OPERASIONAL &amp; PENJEMPUTAN</p>
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
                   <div>

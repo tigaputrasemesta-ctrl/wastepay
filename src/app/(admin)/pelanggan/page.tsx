@@ -140,7 +140,7 @@ function StickerBarcodeItem({ p, idx }: { p: Pelanggan; idx: number }) {
 
   return (
     <div
-      className="print-card print-preserve relative w-[92mm] h-[54mm] !bg-white !text-black p-2.5 flex flex-col overflow-hidden border border-slate-300 rounded-xl shadow-xs print:shadow-none print:border-black print:rounded-none select-none"
+      className="print-card print-preserve relative w-[92mm] h-[54mm] !bg-white !text-black p-2.5 flex flex-col overflow-hidden border border-slate-300 rounded-xl shadow-sm print:shadow-none print:border-black print:rounded-none select-none"
       style={{ breakInside: "avoid", backgroundColor: "#ffffff", color: "#000000" }}
     >
       <div className="flex items-center justify-between border-b-2 border-black pb-1">
@@ -532,7 +532,7 @@ function PelangganContent() {
   // Unduh template CSV
   const handleDownloadTemplate = () => {
     const headers = "nama,noTelepon,alamat,rtRw,patokanLokasi,kategori,kelurahan,zona,customTarif,catatan";
-    const sample1 = 'Budi Santoso,081234567890,"Jl. Margonda Raya No. 12",001/005,"Dekat Masjid Al-Ikhlas",level_1,Pancoran Mas,Zona A,50000,"Pagar Hitam"';
+    const sample1 = 'Budi Santoso,081299887766,"Jl. Margonda Raya No. 12",001/005,"Dekat Masjid Al-Ikhlas",level_1,Pancoran Mas,Zona A,50000,"Pagar Hitam"';
     const sample2 = 'Siti Aminah,628987654321,"Jl. Keadilan No. 45",003/002,"Sebelah Toko Berkah",level_2,Depok Jaya,Zona B,60000,"Rumah Tingkat"';
     const csvContent = "data:text/csv;charset=utf-8," + [headers, sample1, sample2].join("\n");
     const encodedUri = encodeURI(csvContent);
@@ -790,7 +790,7 @@ function PelangganContent() {
               fetchData(true);
             }}
             disabled={refreshing}
-            className="h-9 px-3 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-200 text-xs font-medium transition-colors flex items-center gap-1.5 shadow-xs active:scale-[0.98] disabled:opacity-50"
+            className="h-9 px-3 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-200 text-xs font-medium transition-colors flex items-center gap-1.5 shadow-sm active:scale-[0.98] disabled:opacity-50"
             title="Muat ulang data pelanggan terbaru dari server"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-slate-500 dark:text-zinc-400 ${refreshing ? "animate-spin" : ""}`} />
@@ -798,7 +798,7 @@ function PelangganContent() {
           </button>
           <Link
             href="/registrasi"
-            className="h-9 px-3 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-200 text-xs font-medium transition-colors flex items-center gap-1.5 shadow-xs active:scale-[0.98]"
+            className="h-9 px-3 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-200 text-xs font-medium transition-colors flex items-center gap-1.5 shadow-sm active:scale-[0.98]"
           >
             <FileText size={14} className="text-slate-500 dark:text-zinc-400" />
             <span>Formulir</span>
@@ -806,7 +806,7 @@ function PelangganContent() {
           <button
             type="button"
             onClick={handleExportExcel}
-            className="h-9 px-3 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-emerald-50/70 dark:bg-emerald-950/40 hover:bg-emerald-100/70 dark:hover:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 text-xs font-medium transition-colors flex items-center gap-1.5 shadow-xs active:scale-[0.98]"
+            className="h-9 px-3 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-emerald-50/70 dark:bg-emerald-950/40 hover:bg-emerald-100/70 dark:hover:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 text-xs font-medium transition-colors flex items-center gap-1.5 shadow-sm active:scale-[0.98]"
             title="Ekspor ke Excel / CSV"
           >
             <Download size={14} className="text-emerald-700 dark:text-emerald-400" />
@@ -815,7 +815,7 @@ function PelangganContent() {
           <button
             type="button"
             onClick={() => setShowImportModal(true)}
-            className="h-9 px-3 rounded-lg border border-sky-200 dark:border-sky-800 bg-sky-50/70 dark:bg-sky-950/40 hover:bg-sky-100/70 dark:hover:bg-sky-950/70 text-sky-800 dark:text-sky-300 text-xs font-medium transition-colors flex items-center gap-1.5 shadow-xs active:scale-[0.98]"
+            className="h-9 px-3 rounded-lg border border-sky-200 dark:border-sky-800 bg-sky-50/70 dark:bg-sky-950/40 hover:bg-sky-100/70 dark:hover:bg-sky-950/70 text-sky-800 dark:text-sky-300 text-xs font-medium transition-colors flex items-center gap-1.5 shadow-sm active:scale-[0.98]"
             title="Import data pelanggan dari berkas CSV"
           >
             <Upload size={14} className="text-sky-700 dark:text-sky-400" />
@@ -827,14 +827,14 @@ function PelangganContent() {
               ...(filterKategori ? { kategori: filterKategori } : {}),
               ...(filterKelurahan ? { kelurahanId: filterKelurahan } : {}),
             }).toString()}`}
-            className="h-9 px-3 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-200 text-xs font-medium transition-colors flex items-center gap-1.5 shadow-xs active:scale-[0.98]"
+            className="h-9 px-3 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-200 text-xs font-medium transition-colors flex items-center gap-1.5 shadow-sm active:scale-[0.98]"
           >
             <Printer size={14} className="text-slate-500 dark:text-zinc-400" />
             <span>Cetak</span>
           </Link>
           <button
             onClick={openCreate}
-            className="h-9 px-3.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium shadow-xs transition-colors flex items-center gap-1.5 active:scale-[0.98]"
+            className="h-9 px-3.5 rounded-lg bg-emerald-700 hover:bg-emerald-700 text-white text-xs font-medium shadow-sm transition-colors flex items-center gap-1.5 active:scale-[0.98]"
           >
             <Plus size={14} strokeWidth={2} />
             <span>Tambah Pelanggan</span>
@@ -848,7 +848,7 @@ function PelangganContent() {
           onClick={() => { setMainTab("data"); setFilterStatus(""); setPage(1); }}
           className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all shrink-0 ${
             mainTab === "data"
-              ? "bg-slate-900 dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-xs"
+              ? "bg-slate-900 dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-sm"
               : "text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-100/70 dark:hover:bg-zinc-800/70"
           }`}
         >
@@ -865,7 +865,7 @@ function PelangganContent() {
           onClick={() => { setMainTab("approval"); setFilterStatus("calon"); setPage(1); }}
           className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all shrink-0 ${
             mainTab === "approval"
-              ? "bg-amber-600 text-white shadow-xs"
+              ? "bg-amber-600 text-white shadow-sm"
               : "text-amber-800 dark:text-amber-300 bg-amber-50/70 dark:bg-amber-950/40 hover:bg-amber-100/70 dark:hover:bg-amber-900/40 border border-amber-200/80 dark:border-amber-800/50"
           }`}
         >
@@ -882,7 +882,7 @@ function PelangganContent() {
           onClick={() => { setMainTab("sticker"); setPage(1); }}
           className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all shrink-0 ${
             mainTab === "sticker"
-              ? "bg-slate-900 dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-xs"
+              ? "bg-slate-900 dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-sm"
               : "text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-100/70 dark:hover:bg-zinc-800/70"
           }`}
         >
@@ -952,7 +952,7 @@ function PelangganContent() {
                   }}
                   className={`p-3 rounded-2xl border-2 transition-all cursor-pointer select-none print:border-0 print:p-0 ${
                     isChecked
-                      ? "border-emerald-600 dark:border-emerald-500 bg-emerald-50/20 dark:bg-emerald-950/20 shadow-xs"
+                      ? "border-emerald-600 dark:border-emerald-500 bg-emerald-50/20 dark:bg-emerald-950/20 shadow-sm"
                       : "border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-slate-300 dark:hover:border-zinc-700 opacity-60 print:hidden"
                   }`}
                 >
@@ -978,7 +978,7 @@ function PelangganContent() {
         <>
           {/* Alert Banner Approval Pelanggan Baru */}
       {calonList.length > 0 && (
-        <div className="mb-6 p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/50 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-in fade-in">
+        <div className="mb-6 p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/50 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-in fade-in">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 flex items-center justify-center shrink-0 border border-amber-200/60 dark:border-amber-800/40">
               <Bell size={18} strokeWidth={2} />
@@ -1004,7 +1004,7 @@ function PelangganContent() {
                 setFilterStatus(filterStatus === "calon" ? "" : "calon");
                 setPage(1);
               }}
-              className="w-full sm:w-auto px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 active:scale-98 text-white text-xs font-medium transition shadow-xs flex items-center justify-center gap-1.5"
+              className="w-full sm:w-auto px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 active:scale-98 text-white text-xs font-medium transition shadow-sm flex items-center justify-center gap-1.5"
             >
               <span>{filterStatus === "calon" ? "Lihat Semua Pelanggan" : "Tinjau Pendaftar Baru"}</span>
             </button>
@@ -1019,7 +1019,7 @@ function PelangganContent() {
           onClick={() => { setFilterStatus(""); setPage(1); }}
           className={`px-3 py-1.5 rounded-xl font-medium transition shrink-0 flex items-center gap-1.5 ${
             filterStatus === ""
-              ? "bg-slate-900 dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-xs"
+              ? "bg-slate-900 dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-sm"
               : "bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-50 dark:hover:bg-zinc-800"
           }`}
         >
@@ -1035,7 +1035,7 @@ function PelangganContent() {
           onClick={() => { setFilterStatus("calon"); setPage(1); }}
           className={`px-3 py-1.5 rounded-xl font-medium transition shrink-0 flex items-center gap-1.5 ${
             filterStatus === "calon"
-              ? "bg-amber-600 text-white shadow-xs"
+              ? "bg-amber-600 text-white shadow-sm"
               : "bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/50 text-amber-800 dark:text-amber-300 hover:bg-amber-100/60 dark:hover:bg-amber-900/40"
           }`}
         >
@@ -1051,7 +1051,7 @@ function PelangganContent() {
           onClick={() => { setFilterStatus("aktif"); setPage(1); }}
           className={`px-3 py-1.5 rounded-xl font-medium transition shrink-0 flex items-center gap-1.5 ${
             filterStatus === "aktif"
-              ? "bg-emerald-700 text-white shadow-xs"
+              ? "bg-emerald-700 text-white shadow-sm"
               : "bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-50 dark:hover:bg-zinc-800"
           }`}
         >
@@ -1067,7 +1067,7 @@ function PelangganContent() {
           onClick={() => { setFilterStatus("nonaktif"); setPage(1); }}
           className={`px-3 py-1.5 rounded-xl font-medium transition shrink-0 flex items-center gap-1.5 ${
             filterStatus === "nonaktif"
-              ? "bg-slate-800 dark:bg-zinc-700 text-white shadow-xs"
+              ? "bg-slate-800 dark:bg-zinc-700 text-white shadow-sm"
               : "bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-50 dark:hover:bg-zinc-800"
           }`}
         >
@@ -1084,7 +1084,7 @@ function PelangganContent() {
             onClick={() => { setFilterStatus("libur"); setPage(1); }}
             className={`px-3 py-1.5 rounded-xl font-medium transition shrink-0 flex items-center gap-1.5 ${
               filterStatus === "libur"
-                ? "bg-amber-600 text-white shadow-xs"
+                ? "bg-amber-600 text-white shadow-sm"
                 : "bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-50 dark:hover:bg-zinc-800"
             }`}
           >
@@ -1108,7 +1108,7 @@ function PelangganContent() {
               placeholder="Cari nama, alamat, no. WhatsApp, kode..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full pl-10 pr-12 py-2 border border-slate-200/80 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-normal text-slate-800 dark:text-zinc-200 placeholder:text-slate-400 dark:placeholder:text-zinc-500 transition-all shadow-xs"
+              className="w-full pl-10 pr-12 py-2 border border-slate-200/80 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-normal text-slate-800 dark:text-zinc-200 placeholder:text-slate-400 dark:placeholder:text-zinc-500 transition-all shadow-sm"
             />
             {searchInput ? (
               <button
@@ -1125,7 +1125,7 @@ function PelangganContent() {
           </div>
           <button
             onClick={() => setShowFilter((v) => !v)}
-            className={`flex items-center gap-2 px-3.5 py-2 border rounded-xl font-medium text-xs transition-all shadow-xs ${
+            className={`flex items-center gap-2 px-3.5 py-2 border rounded-xl font-medium text-xs transition-all shadow-sm ${
               showFilter || [filterKelurahan, filterStatus, filterKategori].filter(Boolean).length > 0
                 ? "bg-slate-900 dark:bg-zinc-100 border-slate-900 dark:border-zinc-100 text-white dark:text-zinc-900"
                 : "bg-white dark:bg-zinc-900 border-slate-200/80 dark:border-zinc-800 text-slate-700 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-zinc-800"
@@ -1134,7 +1134,7 @@ function PelangganContent() {
             <SlidersHorizontal className="w-3.5 h-3.5" strokeWidth={1.75} />
             <span>Filter</span>
             {[filterKelurahan, filterZona, filterStatus, filterKategori, filterGps].filter(Boolean).length > 0 && (
-              <span className="bg-emerald-600 text-white px-1.5 py-0.2 rounded-full text-[10px] font-semibold">
+              <span className="bg-emerald-700 text-white px-1.5 py-0.2 rounded-full text-[10px] font-semibold">
                 {[filterKelurahan, filterZona, filterStatus, filterKategori, filterGps].filter(Boolean).length}
               </span>
             )}
@@ -1244,7 +1244,7 @@ function PelangganContent() {
       {/* Adaptive Dual-View: Desktop Table (hidden md:block) & Mobile Smart Cards (md:hidden) */}
       <div className="space-y-4">
         {/* DESKTOP TABLE VIEW (>= md: 768px) - Overflow-x-auto to prevent clipping Aksi buttons */}
-        <div className="hidden md:block bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 overflow-x-auto shadow-xs">
+        <div className="hidden md:block bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 overflow-x-auto shadow-sm">
           <table className="w-full min-w-[960px] text-sm text-left border-collapse">
             <thead>
               <tr className="bg-slate-50/75 dark:bg-zinc-950/60 text-slate-500 dark:text-zinc-400 font-semibold text-[11px] uppercase tracking-wider border-b border-slate-200/80 dark:border-zinc-800">
@@ -1261,7 +1261,7 @@ function PelangganContent() {
                       }
                       setSelectedIds(next);
                     }}
-                    className="rounded border-slate-300 dark:border-zinc-700 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                    className="rounded border-slate-300 dark:border-zinc-700 text-emerald-700 focus:ring-emerald-500 cursor-pointer"
                     title="Pilih Semua Halaman Ini"
                   />
                 </th>
@@ -1302,7 +1302,7 @@ function PelangganContent() {
                           else next.add(p.id);
                           setSelectedIds(next);
                         }}
-                        className="rounded border-slate-300 dark:border-zinc-700 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                        className="rounded border-slate-300 dark:border-zinc-700 text-emerald-700 focus:ring-emerald-500 cursor-pointer"
                       />
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
@@ -1319,7 +1319,7 @@ function PelangganContent() {
                             unoptimized
                             width={34}
                             height={34}
-                            className="w-8 h-8 object-cover rounded-lg border border-slate-200/80 dark:border-zinc-700 shrink-0 shadow-xs"
+                            className="w-8 h-8 object-cover rounded-lg border border-slate-200/80 dark:border-zinc-700 shrink-0 shadow-sm"
                           />
                         ) : (
                           <div className="w-8 h-8 border border-emerald-200/60 dark:border-emerald-800/60 bg-emerald-50/60 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 rounded-lg shrink-0 flex items-center justify-center text-xs font-semibold">
@@ -1386,7 +1386,7 @@ function PelangganContent() {
                             <span className="truncate max-w-[120px]">{p.wilayah.zona.nama}</span>
                           </div>
                         ) : (
-                          <span className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">
+                          <span className="text-[10px] text-amber-700 dark:text-amber-400 font-medium">
                             Belum ada zona
                           </span>
                         )}
@@ -1484,7 +1484,7 @@ function PelangganContent() {
                           <button
                             type="button"
                             onClick={() => setApprovalTarget(p)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:scale-98 text-white text-xs font-medium shadow-xs transition"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-700 hover:bg-emerald-500 active:scale-98 text-white text-xs font-medium shadow-sm transition"
                             title="Approval Admin Pusat & Tetapkan Zona Pickup"
                           >
                             <ShieldCheck size={13} />
@@ -1494,7 +1494,7 @@ function PelangganContent() {
                           <button
                             type="button"
                             onClick={() => setStatusTarget({ pelanggan: p, initialTargetStatus: "nonaktif" })}
-                            className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200/80 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-amber-50 dark:hover:bg-amber-950/40 hover:text-amber-700 dark:hover:text-amber-400 hover:border-amber-200 dark:hover:border-amber-800 text-slate-500 dark:text-zinc-400 transition-colors shadow-xs"
+                            className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200/80 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-amber-50 dark:hover:bg-amber-950/40 hover:text-amber-700 dark:hover:text-amber-400 hover:border-amber-200 dark:hover:border-amber-800 text-slate-500 dark:text-zinc-400 transition-colors shadow-sm"
                             title="Jeda / Nonaktifkan Layanan"
                           >
                             <Pause size={12} className="fill-current" />
@@ -1503,7 +1503,7 @@ function PelangganContent() {
                           <button
                             type="button"
                             onClick={() => setStatusTarget({ pelanggan: p, initialTargetStatus: "aktif" })}
-                            className="inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-emerald-200/80 dark:border-emerald-800/60 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-[11px] font-medium transition-colors shadow-xs"
+                            className="inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-emerald-200/80 dark:border-emerald-800/60 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-[11px] font-medium transition-colors shadow-sm"
                             title="Aktifkan Kembali Layanan"
                           >
                             <Play size={10} className="fill-current" />
@@ -1512,7 +1512,7 @@ function PelangganContent() {
                         )}
                         <Link
                           href={`/pelanggan/${p.id}`}
-                          className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200/80 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-700 hover:text-slate-900 dark:hover:text-zinc-100 text-slate-500 dark:text-zinc-400 transition-colors shadow-xs"
+                          className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200/80 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-700 hover:text-slate-900 dark:hover:text-zinc-100 text-slate-500 dark:text-zinc-400 transition-colors shadow-sm"
                           title="Lihat Detail"
                         >
                           <Eye size={13} strokeWidth={1.75} />
@@ -1520,7 +1520,7 @@ function PelangganContent() {
                         <button
                           type="button"
                           onClick={() => openEdit(p)}
-                          className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200/80 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-700 hover:text-slate-900 dark:hover:text-zinc-100 text-slate-500 dark:text-zinc-400 transition-colors shadow-xs"
+                          className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200/80 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-700 hover:text-slate-900 dark:hover:text-zinc-100 text-slate-500 dark:text-zinc-400 transition-colors shadow-sm"
                           title="Edit Data"
                         >
                           <Pencil size={13} strokeWidth={1.75} />
@@ -1528,7 +1528,7 @@ function PelangganContent() {
                         <button
                           type="button"
                           onClick={() => setDeleteTarget(p)}
-                          className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200/80 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-200 dark:hover:border-rose-800 text-slate-400 dark:text-zinc-500 transition-colors shadow-xs"
+                          className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200/80 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-200 dark:hover:border-rose-800 text-slate-400 dark:text-zinc-500 transition-colors shadow-sm"
                           title="Hapus atau Nonaktifkan"
                         >
                           <Trash2 size={13} strokeWidth={1.75} />
@@ -1545,12 +1545,12 @@ function PelangganContent() {
         {/* MOBILE SMART CARDS VIEW (< md: 768px, Responsif & Fitur Lengkap) */}
         <div className="md:hidden space-y-3">
           {paginatedPelanggan.length === 0 ? (
-            <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 p-8 text-center text-xs font-normal text-slate-500 dark:text-zinc-400 shadow-xs">
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 p-8 text-center text-xs font-normal text-slate-500 dark:text-zinc-400 shadow-sm">
               Belum ada data pelanggan yang sesuai kriteria pencarian
             </div>
           ) : (
             paginatedPelanggan.map((p) => (
-              <div key={p.id} className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 p-4 shadow-xs space-y-3">
+              <div key={p.id} className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 p-4 shadow-sm space-y-3">
                 {/* Header Card */}
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-2.5 min-w-0">
@@ -1563,7 +1563,7 @@ function PelangganContent() {
                         else next.add(p.id);
                         setSelectedIds(next);
                       }}
-                      className="rounded border-slate-300 dark:border-zinc-700 text-emerald-600 focus:ring-emerald-500 cursor-pointer w-4 h-4 shrink-0"
+                      className="rounded border-slate-300 dark:border-zinc-700 text-emerald-700 focus:ring-emerald-500 cursor-pointer w-4 h-4 shrink-0"
                     />
                     {p.fotoRumah ? (
                       <Image
@@ -1660,7 +1660,7 @@ function PelangganContent() {
                       <button
                         type="button"
                         onClick={() => setApprovalTarget(p)}
-                        className="py-2 px-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs flex items-center justify-center gap-1.5 shadow-xs active:scale-98 transition-all"
+                        className="py-2 px-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-500 text-white font-medium text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-98 transition-all"
                       >
                         <ShieldCheck size={13} />
                         <span>Approval</span>
@@ -1720,7 +1720,7 @@ function PelangganContent() {
 
         {/* Pagination Controls Terpadu */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-2.5 border border-slate-200/80 dark:border-zinc-800 rounded-2xl bg-white dark:bg-zinc-900 shadow-xs text-xs font-normal text-slate-600 dark:text-zinc-400">
+          <div className="flex items-center justify-between px-4 py-2.5 border border-slate-200/80 dark:border-zinc-800 rounded-2xl bg-white dark:bg-zinc-900 shadow-sm text-xs font-normal text-slate-600 dark:text-zinc-400">
             <div>
               Halaman <span className="font-semibold text-slate-900 dark:text-zinc-100 font-mono">{page}</span> dari <span className="font-semibold text-slate-900 dark:text-zinc-100 font-mono">{totalPages}</span>
             </div>
@@ -1728,7 +1728,7 @@ function PelangganContent() {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="inline-flex items-center gap-1 px-3 py-1.5 bg-white dark:bg-zinc-800 border border-slate-200/80 dark:border-zinc-700 rounded-lg text-xs font-medium text-slate-700 dark:text-zinc-200 disabled:opacity-40 hover:bg-slate-50 dark:hover:bg-zinc-700 transition-colors shadow-xs"
+                className="inline-flex items-center gap-1 px-3 py-1.5 bg-white dark:bg-zinc-800 border border-slate-200/80 dark:border-zinc-700 rounded-lg text-xs font-medium text-slate-700 dark:text-zinc-200 disabled:opacity-40 hover:bg-slate-50 dark:hover:bg-zinc-700 transition-colors shadow-sm"
               >
                 <ChevronLeft size={13} />
                 <span>Prev</span>
@@ -1736,7 +1736,7 @@ function PelangganContent() {
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="inline-flex items-center gap-1 px-3 py-1.5 bg-white dark:bg-zinc-800 border border-slate-200/80 dark:border-zinc-700 rounded-lg text-xs font-medium text-slate-700 dark:text-zinc-200 disabled:opacity-40 hover:bg-slate-50 dark:hover:bg-zinc-700 transition-colors shadow-xs"
+                className="inline-flex items-center gap-1 px-3 py-1.5 bg-white dark:bg-zinc-800 border border-slate-200/80 dark:border-zinc-700 rounded-lg text-xs font-medium text-slate-700 dark:text-zinc-200 disabled:opacity-40 hover:bg-slate-50 dark:hover:bg-zinc-700 transition-colors shadow-sm"
               >
                 <span>Next</span>
                 <ChevronRight size={13} />
@@ -1813,7 +1813,7 @@ function PelangganContent() {
                           ? "border-rose-400 focus:ring-rose-500/20 focus:border-rose-500"
                           : "border-slate-200 dark:border-zinc-800 focus:ring-emerald-500/20 focus:border-emerald-500"
                       }`}
-                      placeholder="6281234567890"
+                      placeholder="628xxxxxxxxxx"
                       required
                     />
                     <p className="text-[10px] text-slate-400 dark:text-zinc-500 mt-1">Otomatis diformat ke 628... (format resmi WhatsApp)</p>
@@ -1821,7 +1821,7 @@ function PelangganContent() {
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5 flex items-center justify-between">
                       <span>Kode Pelanggan</span>
-                      <label className="inline-flex items-center gap-1 cursor-pointer font-normal text-[11px] text-emerald-600 dark:text-emerald-400">
+                      <label className="inline-flex items-center gap-1 cursor-pointer font-normal text-[11px] text-emerald-700 dark:text-emerald-400">
                         <input
                           type="checkbox"
                           checked={form.syncKodePelanggan}
@@ -1833,7 +1833,7 @@ function PelangganContent() {
                               kodePelanggan: checked ? prev.noTelepon : prev.kodePelanggan,
                             }));
                           }}
-                          className="rounded text-emerald-600 focus:ring-emerald-500 w-3.5 h-3.5"
+                          className="rounded text-emerald-700 focus:ring-emerald-500 w-3.5 h-3.5"
                         />
                         <span>Ikuti No. WA</span>
                       </label>
@@ -1848,7 +1848,7 @@ function PelangganContent() {
                           ? "bg-slate-50 dark:bg-zinc-900/50 text-slate-500 dark:text-zinc-400 border-slate-200 dark:border-zinc-800 cursor-not-allowed"
                           : "bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 border-slate-200 dark:border-zinc-800 focus:ring-emerald-500/20 focus:border-emerald-500"
                       }`}
-                      placeholder="Contoh: 6281234567890"
+                      placeholder="Contoh: 628xxxxxxxxxx"
                     />
                     <p className="text-[10px] text-slate-400 dark:text-zinc-500 mt-1">
                       {form.syncKodePelanggan
@@ -1903,7 +1903,7 @@ function PelangganContent() {
                           value="mandiri"
                           checked={form.skemaBayar === "mandiri"}
                           onChange={() => setForm({ ...form, skemaBayar: "mandiri", indukKolektifId: "" })}
-                          className="text-emerald-600 focus:ring-emerald-500"
+                          className="text-emerald-700 focus:ring-emerald-500"
                         />
                         <span>🏠 Mandiri</span>
                       </label>
@@ -1918,7 +1918,7 @@ function PelangganContent() {
                           value="kolektif_induk"
                           checked={form.skemaBayar === "kolektif_induk"}
                           onChange={() => setForm({ ...form, skemaBayar: "kolektif_induk", indukKolektifId: "" })}
-                          className="text-amber-600 focus:ring-amber-500"
+                          className="text-amber-700 focus:ring-amber-500"
                         />
                         <span>👑 Induk Koordinator RT</span>
                       </label>
@@ -2123,7 +2123,7 @@ function PelangganContent() {
                 <button
                   type="submit"
                   form="pelanggan-form"
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm active:scale-95 transition-all flex items-center gap-1.5"
+                  className="px-5 py-2 bg-emerald-700 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm active:scale-95 transition-all flex items-center gap-1.5"
                 >
                   {editing ? "Simpan Perubahan" : "Tambah Pelanggan"}
                 </button>
@@ -2183,7 +2183,7 @@ function PelangganContent() {
             <button
               type="button"
               onClick={() => setBulkModal("status")}
-              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium rounded-xl border border-slate-700 transition flex items-center gap-1.5 whitespace-nowrap shadow-xs"
+              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium rounded-xl border border-slate-700 transition flex items-center gap-1.5 whitespace-nowrap shadow-sm"
             >
               <SlidersHorizontal size={13} />
               <span>Ubah Status</span>
@@ -2192,7 +2192,7 @@ function PelangganContent() {
             <button
               type="button"
               onClick={() => setBulkModal("zona")}
-              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium rounded-xl border border-slate-700 transition flex items-center gap-1.5 whitespace-nowrap shadow-xs"
+              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium rounded-xl border border-slate-700 transition flex items-center gap-1.5 whitespace-nowrap shadow-sm"
             >
               <MapPin size={13} />
               <span>Pindah Zona</span>
@@ -2205,7 +2205,7 @@ function PelangganContent() {
                 setMainTab("sticker");
                 showToast(`${selectedIds.size} pelanggan terpilih dibuka di tab Stiker`, "info");
               }}
-              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium rounded-xl transition flex items-center gap-1.5 whitespace-nowrap shadow-xs"
+              className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-500 text-white text-xs font-medium rounded-xl transition flex items-center gap-1.5 whitespace-nowrap shadow-sm"
             >
               <Tag size={13} />
               <span>Cetak Stiker</span>
@@ -2229,7 +2229,7 @@ function PelangganContent() {
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div>
                 <h2 className="font-semibold text-base tracking-tight text-slate-900 dark:text-zinc-100 flex items-center gap-2">
-                  <FileSpreadsheet className="text-emerald-600 w-5 h-5" />
+                  <FileSpreadsheet className="text-emerald-700 w-5 h-5" />
                   <span>Import Data Pelanggan (CSV)</span>
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-zinc-400">
@@ -2257,7 +2257,7 @@ function PelangganContent() {
                 <button
                   type="button"
                   onClick={handleDownloadTemplate}
-                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-xs transition flex items-center gap-1.5 shrink-0"
+                  className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-sm transition flex items-center gap-1.5 shrink-0"
                 >
                   <Download size={13} />
                   <span>Unduh Template CSV</span>
@@ -2336,7 +2336,7 @@ function PelangganContent() {
                 type="button"
                 onClick={handleProcessImport}
                 disabled={importLoading || importPreview.length === 0}
-                className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold text-xs rounded-lg shadow-sm active:scale-95 transition-all flex items-center gap-1.5"
+                className="px-5 py-2 bg-emerald-700 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold text-xs rounded-lg shadow-sm active:scale-95 transition-all flex items-center gap-1.5"
               >
                 <Upload size={13} className={importLoading ? "animate-spin" : ""} />
                 <span>{importLoading ? "Mengimpor..." : `Mulai Import (${importPreview.length} Baris)`}</span>
@@ -2407,7 +2407,7 @@ function PelangganContent() {
                 type="button"
                 onClick={handleBulkActionSubmit}
                 disabled={bulkLoading}
-                className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold text-xs rounded-lg shadow-sm transition flex items-center gap-1.5"
+                className="px-5 py-2 bg-emerald-700 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold text-xs rounded-lg shadow-sm transition flex items-center gap-1.5"
               >
                 {bulkLoading ? "Memproses..." : "Terapkan Perubahan"}
               </button>
@@ -2464,7 +2464,7 @@ function PelangganContent() {
                 type="button"
                 onClick={handleBulkActionSubmit}
                 disabled={bulkLoading || !bulkZonaId}
-                className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold text-xs rounded-lg shadow-sm transition flex items-center gap-1.5"
+                className="px-5 py-2 bg-emerald-700 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold text-xs rounded-lg shadow-sm transition flex items-center gap-1.5"
               >
                 {bulkLoading ? "Memindahkan..." : "Pindahkan Sekarang"}
               </button>

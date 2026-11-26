@@ -198,7 +198,7 @@ _Laporan resmi sistem operasional WastePay_`;
       <div className="p-4 space-y-4">
         {/* Info Jalur Aktif Hari Tersebut */}
         {data?.rute && (
-          <div className="bg-white rounded-xl p-3 border border-slate-200/80 shadow-xs">
+          <div className="bg-white rounded-xl p-3 border border-slate-200/80 shadow-sm">
             <div className="flex items-start gap-2.5">
               <div className="p-2 bg-emerald-100 text-emerald-800 rounded-lg shrink-0 mt-0.5">
                 <MapPin className="w-4 h-4" />
@@ -220,10 +220,10 @@ _Laporan resmi sistem operasional WastePay_`;
 
         {/* Progress Bar & Capaian */}
         {data && (
-          <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs">
+          <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                <TrendingUp className="w-4 h-4 text-emerald-600" /> Progress Rit Hari Ini
+                <TrendingUp className="w-4 h-4 text-emerald-700" /> Progress Rit Hari Ini
               </span>
               <span className="text-lg font-black text-emerald-700">
                 {data.ringkasan.persentase}%
@@ -280,23 +280,23 @@ _Laporan resmi sistem operasional WastePay_`;
             <div className="bg-emerald-50/70 border border-emerald-200/80 rounded-xl p-3">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-bold text-emerald-800">Berhasil Diambil</span>
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-700" />
               </div>
               <p className="text-2xl font-black text-emerald-900 mt-1">
                 {data.ringkasan.diambil}
               </p>
-              <p className="text-[10px] text-emerald-600 mt-0.5">Rumah selesai dijemput</p>
+              <p className="text-[10px] text-emerald-700 mt-0.5">Rumah selesai dijemput</p>
             </div>
 
             <div className="bg-amber-50/70 border border-amber-200/80 rounded-xl p-3">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-bold text-amber-800">Rumah Kosong</span>
-                <Home className="w-4 h-4 text-amber-600" />
+                <Home className="w-4 h-4 text-amber-700" />
               </div>
               <p className="text-2xl font-black text-amber-900 mt-1">
                 {data.ringkasan.kosong}
               </p>
-              <p className="text-[10px] text-amber-600 mt-0.5">Nihil / tidak ada sampah</p>
+              <p className="text-[10px] text-amber-700 mt-0.5">Nihil / tidak ada sampah</p>
             </div>
 
             <div className="bg-rose-50/70 border border-rose-200/80 rounded-xl p-3">
@@ -327,7 +327,7 @@ _Laporan resmi sistem operasional WastePay_`;
         {data && data.ringkasan.totalTarget > 0 && (
           <button
             onClick={shareWhatsApp}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-sm active:scale-98 transition-all"
+            className="w-full bg-emerald-700 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-sm active:scale-98 transition-all"
           >
             <Share2 className="w-4 h-4" />
             <span>Bagikan Laporan ke WhatsApp</span>
@@ -335,7 +335,7 @@ _Laporan resmi sistem operasional WastePay_`;
         )}
 
         {/* Riwayat Titik Pengangkutan Terbaru */}
-        <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs">
+        <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm">
           <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-3">
             Aktivitas Penjemputan Terbaru
           </h2>

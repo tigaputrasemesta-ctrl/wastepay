@@ -102,7 +102,14 @@ export default async function PublicLayout({
       </main>
 
       {/* Global Comprehensive Municipal Footer */}
-      <PublicFooter />
+      <PublicFooter
+        brandName={brandName}
+        city={city}
+        logoUrl={logoUrl}
+        whatsappDigits={whatsappDigits}
+        alamatKantor={tenant.branding?.alamat}
+        email={tenant.branding?.emailKontak}
+      />
 
       {/* Mobile-First Fixed Bottom Navigation Bar (md:hidden) */}
       <MobileBottomNav />

@@ -135,7 +135,7 @@ export default function SurveiDetailPage() {
           {data.status === "calon" && (
             <button
               onClick={() => setShowApprovalModal(true)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-xs active:scale-95"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-sm active:scale-95"
             >
               <ShieldCheck className="w-4 h-4" />
               <span>Approval &amp; Tentukan Zona</span>
@@ -146,7 +146,7 @@ export default function SurveiDetailPage() {
 
       {/* Banner Approval & Zona */}
       {data.status === "calon" && (
-        <div className="p-4 bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-teal-500/10 border border-amber-500/30 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+        <div className="p-4 bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-teal-500/10 border border-amber-500/30 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
           <div className="flex items-start sm:items-center gap-3">
             <span className="text-2xl">⏳</span>
             <div>
@@ -161,7 +161,7 @@ export default function SurveiDetailPage() {
           </div>
           <button
             onClick={() => setShowApprovalModal(true)}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-xs whitespace-nowrap active:scale-95"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-sm whitespace-nowrap active:scale-95"
           >
             <ShieldCheck className="w-4 h-4" />
             <span>Approval &amp; Tentukan Zona</span>

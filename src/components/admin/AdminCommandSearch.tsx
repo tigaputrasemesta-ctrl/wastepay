@@ -50,6 +50,19 @@ import {
 } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import { isCoreHostname } from "@/lib/tenant/url-helper";
+import { resolveTenantByHost } from "@/lib/tenant/config";
+import { isFeatureEnabled, type TenantFeatureKey } from "@/lib/tenant/features";
+
+const MENU_TO_FEATURE: Record<string, TenantFeatureKey> = {
+  "/pickup-insidental": "pickup_incidental",
+  "/marketplace": "marketplace",
+  "/manajemen-marketplace": "marketplace",
+  "/manajemen-artikel": "artikel",
+  "/artikel": "artikel",
+  "/ai-command": "ai_command",
+  "/chat": "chat_internal",
+  "/absensi": "absensi_klaim",
+};
 
 type CommandItem = {
   id: string;
@@ -68,6 +81,7 @@ export default function AdminCommandSearch() {
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isCore, setIsCore] = useState(false);
+  const [activeTenant, setActiveTenant] = useState<any>(null);
   const router = useRouter();
   const { resolvedTheme, setTheme } = useTheme();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -75,7 +89,9 @@ export default function AdminCommandSearch() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setIsCore(isCoreHostname(window.location.hostname));
+      const res = resolveTenantByHost(window.location.hostname);
+      setIsCore(res.isCore);
+      setActiveTenant(res.tenant);
     }
   }, []);
 
@@ -400,7 +416,7 @@ export default function AdminCommandSearch() {
       {
         id: "nav-setting",
         title: "Pengaturan Sistem",
-        desc: "Konfigurasi instansi UPS HERU, rekening, dan backup",
+        desc: "Konfigurasi instansi, rekening penerimaan, dan backup database",
         category: "Navigasi",
         keywords: ["pengaturan", "setting", "profil", "instansi", "backup"],
         icon: Settings,
@@ -495,9 +511,20 @@ export default function AdminCommandSearch() {
         })
       : commandItems.filter((item) => {
           if (!item.href) return true;
-          return !CORE_EXCLUSIVE_PREFIXES.some((prefix) =>
+          const isCoreOnly = CORE_EXCLUSIVE_PREFIXES.some((prefix) =>
             item.href === prefix || item.href?.startsWith(prefix + "/")
           );
+          if (isCoreOnly) return false;
+
+          // Filter berdasarkan fiturAktif tenant
+          for (const [path, featKey] of Object.entries(MENU_TO_FEATURE)) {
+            if (item.href === path || item.href.startsWith(path + "/")) {
+              if (activeTenant && !isFeatureEnabled(activeTenant, featKey)) {
+                return false;
+              }
+            }
+          }
+          return true;
         });
 
     if (!query.trim()) return baseItems;
@@ -509,7 +536,7 @@ export default function AdminCommandSearch() {
       const matchCategory = item.category.toLowerCase().includes(q);
       return matchTitle || matchDesc || matchKeywords || matchCategory;
     });
-  }, [commandItems, query, isCore]);
+  }, [commandItems, query, isCore, activeTenant]);
 
   // Keyboard shortcut listener (Ctrl+K / Cmd+K)
   useEffect(() => {
@@ -588,13 +615,13 @@ export default function AdminCommandSearch() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Cari menu atau tekan Ctrl+K"
-        className="flex items-center gap-2.5 h-9 px-3 rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-900/80 hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200 transition-colors text-xs font-medium shadow-xs w-36 sm:w-64 justify-between select-none"
+        className="flex items-center gap-2.5 h-9 px-3 rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-900/80 hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200 transition-colors text-xs font-medium shadow-sm w-36 sm:w-64 justify-between select-none"
       >
         <span className="flex items-center gap-2 truncate">
           <Search className="w-3.5 h-3.5 shrink-0" />
           <span className="truncate">Cari menu &amp; aksi...</span>
         </span>
-        <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs font-semibold text-slate-500 dark:text-zinc-400 font-mono shadow-xs">
+        <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs font-semibold text-slate-500 dark:text-zinc-400 font-mono shadow-sm">
           <Command className="w-2.5 h-2.5" />K
         </kbd>
       </button>
@@ -656,7 +683,7 @@ export default function AdminCommandSearch() {
                       onMouseEnter={() => setSelectedIndex(index)}
                       className={`flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer transition-colors ${
                         isSelected
-                          ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-950 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/60 shadow-xs"
+                          ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-950 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/60 shadow-sm"
                           : "hover:bg-slate-50 dark:hover:bg-zinc-800/60 text-slate-700 dark:text-zinc-300 border border-transparent"
                       }`}
                     >
@@ -664,7 +691,7 @@ export default function AdminCommandSearch() {
                         <div
                           className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
                             isSelected
-                              ? "bg-emerald-600 text-white shadow-xs"
+                              ? "bg-emerald-700 text-white shadow-sm"
                               : "bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400"
                           }`}
                         >
@@ -694,7 +721,7 @@ export default function AdminCommandSearch() {
                           {item.category}
                         </span>
                         {isSelected && (
-                          <ArrowRight className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                          <ArrowRight className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
                         )}
                       </div>
                     </div>
@@ -720,7 +747,7 @@ export default function AdminCommandSearch() {
                 </span>
               </div>
               <span className="text-xs text-slate-500 dark:text-zinc-400">
-                UPS HERU Quick Command
+                {activeTenant?.branding?.namaMitra || (isCore ? "O2W HERO" : "UPS HERU")} Quick Command
               </span>
             </div>
           </div>

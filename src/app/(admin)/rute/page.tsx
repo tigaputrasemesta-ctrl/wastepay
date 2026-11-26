@@ -828,7 +828,7 @@ function RuteContent() {
               type="button"
               disabled={syncingAll}
               onClick={handleSyncAll}
-              className="px-3.5 py-2.5 rounded-xl text-sm font-bold border border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 transition-all flex items-center gap-2 shadow-xs disabled:opacity-60"
+              className="px-3.5 py-2.5 rounded-xl text-sm font-bold border border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 transition-all flex items-center gap-2 shadow-sm disabled:opacity-60"
               title="Sinkronkan seluruh pelanggan di zona/kelurahan ke master rute dan jadwal penjemputan"
             >
               <RefreshCw className={`w-4 h-4 ${syncingAll ? "animate-spin" : ""}`} />
@@ -947,7 +947,7 @@ function RuteContent() {
                             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
                               <span>{r.kendaraan.jenis === "dump_truck" ? "🚛" : r.kendaraan.jenis === "pickup" ? "🛺" : "🛞"}</span>
                               <span>{r.kendaraan.nama}</span>
-                              {r.kendaraan.platNomor && <span className="text-[10px] text-emerald-600 font-mono">({r.kendaraan.platNomor})</span>}
+                              {r.kendaraan.platNomor && <span className="text-[10px] text-emerald-700 font-mono">({r.kendaraan.platNomor})</span>}
                             </span>
                           ) : (
                             <span className="text-slate-400 text-xs">—</span>
@@ -959,7 +959,7 @@ function RuteContent() {
                             <button
                               type="button"
                               onClick={() => openDetailPelangganRute(r)}
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold bg-sky-50 text-sky-800 border border-sky-200 hover:bg-sky-100 transition shadow-xs"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold bg-sky-50 text-sky-800 border border-sky-200 hover:bg-sky-100 transition shadow-sm"
                               title="Lihat warga dan atur hari layanan pickup"
                             >
                               <User className="w-3.5 h-3.5" />
@@ -1105,7 +1105,7 @@ function RuteContent() {
             <select
               value={filterArmada}
               onChange={(e) => setFilterArmada(e.target.value)}
-              className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 shadow-xs"
+              className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 shadow-sm"
             >
               <option value="">Semua Armada / Mobil</option>
               {kendaraanList.map((k) => (
@@ -1150,7 +1150,7 @@ function RuteContent() {
               onClick={() => setFilterArmada("")}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 border ${
                 filterArmada === ""
-                  ? "bg-slate-900 text-white border-slate-900 shadow-xs"
+                  ? "bg-slate-900 text-white border-slate-900 shadow-sm"
                   : "bg-white text-slate-600 hover:bg-slate-50 border-slate-200"
               }`}
             >
@@ -1162,7 +1162,7 @@ function RuteContent() {
                 onClick={() => setFilterArmada(filterArmada === k.id.toString() ? "" : k.id.toString())}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 border flex items-center gap-1.5 ${
                   filterArmada === k.id.toString()
-                    ? "bg-emerald-700 text-white border-emerald-700 shadow-xs"
+                    ? "bg-emerald-700 text-white border-emerald-700 shadow-sm"
                     : "bg-white text-slate-700 hover:bg-emerald-50/50 border-slate-200"
                 }`}
               >
@@ -1240,7 +1240,7 @@ function RuteContent() {
                         </td>
                         <td className="px-4 py-3 text-slate-700 font-medium">
                           {j.rute.kendaraan ? (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-bold bg-amber-50 text-amber-900 border border-amber-200/80 shadow-xs">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-bold bg-amber-50 text-amber-900 border border-amber-200/80 shadow-sm">
                               <span>{j.rute.kendaraan.jenis === "dump_truck" ? "🚛" : "🛺"}</span>
                               <span>{j.rute.kendaraan.nama}</span>
                               {j.rute.kendaraan.platNomor && (
@@ -1307,8 +1307,8 @@ function RuteContent() {
             {/* Header Modal */}
             <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center justify-center font-bold shadow-xs shrink-0">
-                  <Truck className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 flex items-center justify-center font-bold shadow-sm shrink-0">
+                  <Truck className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
                 </div>
                 <div className="min-w-0">
                   <h2 className="text-base font-semibold text-slate-900 dark:text-zinc-100 leading-tight tracking-tight truncate">
@@ -1415,7 +1415,7 @@ function RuteContent() {
                                 onClick={() => setRuteForm((f) => ({ ...f, hari: p.value }))}
                                 className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
                                   isCurrent
-                                    ? "bg-emerald-700 text-white shadow-xs"
+                                    ? "bg-emerald-700 text-white shadow-sm"
                                     : "bg-slate-100 hover:bg-slate-200 text-slate-700"
                                 }`}
                               >
@@ -1442,7 +1442,7 @@ function RuteContent() {
                                 }}
                                 className={`py-2 px-2 text-xs font-bold rounded-xl border transition flex items-center sm:flex-col justify-between sm:justify-center gap-1 min-h-[44px] ${
                                   isSelected
-                                    ? "bg-emerald-700 text-white border-emerald-700 shadow-xs"
+                                    ? "bg-emerald-700 text-white border-emerald-700 shadow-sm"
                                     : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50 hover:border-slate-300"
                                 }`}
                               >
@@ -1606,7 +1606,7 @@ function RuteContent() {
                           onClick={() => setSelectedKelurahanFilter("all_with_zones")}
                           className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition ${
                             selectedKelurahanFilter === "all_with_zones"
-                              ? "bg-emerald-700 text-white shadow-xs"
+                              ? "bg-emerald-700 text-white shadow-sm"
                               : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-100"
                           }`}
                         >
@@ -1619,7 +1619,7 @@ function RuteContent() {
                             onClick={() => setSelectedKelurahanFilter(k.id.toString())}
                             className={`px-3 py-1.5 rounded-xl font-semibold whitespace-nowrap transition flex items-center gap-1.5 ${
                               selectedKelurahanFilter === k.id.toString()
-                                ? "bg-emerald-700 text-white shadow-xs"
+                                ? "bg-emerald-700 text-white shadow-sm"
                                 : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-100"
                             }`}
                           >
@@ -1668,7 +1668,7 @@ function RuteContent() {
                         <div className="bg-emerald-50 border border-emerald-200/80 rounded-xl p-3">
                           <div className="flex items-center justify-between mb-2">
                             <span className="text-xs font-bold text-emerald-900 flex items-center gap-1.5">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
                               {ruteForm.zonaIds.length} Zona Terpilih untuk Rute Ini:
                             </span>
                             <button
@@ -1687,7 +1687,7 @@ function RuteContent() {
                               return (
                                 <span
                                   key={zId}
-                                  className="inline-flex items-center gap-1.5 pl-2.5 pr-1.5 py-1 rounded-lg text-xs font-semibold bg-white border border-emerald-300 text-emerald-900 shadow-xs"
+                                  className="inline-flex items-center gap-1.5 pl-2.5 pr-1.5 py-1 rounded-lg text-xs font-semibold bg-white border border-emerald-300 text-emerald-900 shadow-sm"
                                 >
                                   <span className="text-[10px] text-slate-500 font-normal">[{kelNama}]</span>
                                   <span>{z.nama}</span>
@@ -1723,7 +1723,7 @@ function RuteContent() {
                                 onClick={() => toggleZona(z)}
                                 className={`p-3 rounded-xl border text-xs cursor-pointer transition flex items-center justify-between gap-2.5 min-h-[52px] ${
                                   checked
-                                    ? "bg-emerald-50/90 border-emerald-400 text-emerald-950 font-semibold shadow-xs"
+                                    ? "bg-emerald-50/90 border-emerald-400 text-emerald-950 font-semibold shadow-sm"
                                     : "bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50"
                                 }`}
                               >
@@ -1826,7 +1826,7 @@ function RuteContent() {
                     <button
                       type="button"
                       onClick={() => setRuteModalTab("zona")}
-                      className="px-4 py-2 bg-slate-800 hover:bg-slate-900 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-xs transition flex items-center gap-1"
+                      className="px-4 py-2 bg-slate-800 hover:bg-slate-900 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-sm transition flex items-center gap-1"
                     >
                       <span>Cakupan Zona</span>
                       <span>→</span>
@@ -1834,7 +1834,7 @@ function RuteContent() {
                   ) : null}
                   <button
                     type="submit"
-                    className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-sm hover:shadow active:scale-[0.98] transition flex items-center gap-2"
+                    className="px-5 py-2 bg-emerald-700 hover:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-sm hover:shadow active:scale-[0.98] transition flex items-center gap-2"
                   >
                     <Truck className="w-4 h-4" />
                     <span>{editingRute ? "Simpan Perubahan" : "Buat Rute"}</span>
@@ -1922,7 +1922,7 @@ function RuteContent() {
                             setJadwalForm((prev) => ({ ...prev, selectedHariList: days }));
                           }
                         }}
-                        className="text-[11px] text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 font-semibold"
+                        className="text-[11px] text-emerald-700 dark:text-emerald-400 hover:text-emerald-700 font-semibold"
                       >
                         Ikuti Hari Rute
                       </button>
@@ -1961,7 +1961,7 @@ function RuteContent() {
                               }}
                               className={`py-2 px-1 text-xs rounded-xl font-bold transition border text-center ${
                                 selected
-                                  ? "bg-emerald-600 border-emerald-700 text-white shadow-xs"
+                                  ? "bg-emerald-700 border-emerald-700 text-white shadow-sm"
                                   : "bg-white dark:bg-zinc-950 border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-800"
                               }`}
                             >
@@ -2000,7 +2000,7 @@ function RuteContent() {
                 <button
                   type="submit"
                   form="jadwal-pelanggan-form"
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors"
+                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors"
                 >
                   {editingJadwal ? "Simpan Jadwal" : "Tambah Jadwal"}
                 </button>
@@ -2083,7 +2083,7 @@ function RuteContent() {
                 type="button"
                 disabled={syncingRuteId === modalPelangganRute.rute.id}
                 onClick={() => handleSyncSingleRute(modalPelangganRute.rute!.id, modalPelangganRute.rute!.nama)}
-                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-xs flex items-center gap-1.5 shrink-0 self-start sm:self-auto transition disabled:opacity-50"
+                className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-sm flex items-center gap-1.5 shrink-0 self-start sm:self-auto transition disabled:opacity-50"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${syncingRuteId === modalPelangganRute.rute.id ? "animate-spin" : ""}`} />
                 <span>Sinkronkan Warga Baru</span>
@@ -2108,7 +2108,7 @@ function RuteContent() {
             <div className="p-6 overflow-y-auto space-y-3 flex-1 bg-slate-50/50 dark:bg-zinc-950/50 min-h-0">
               {modalPelangganRute.loading ? (
                 <div className="py-12 text-center text-slate-500 dark:text-zinc-400 text-xs flex flex-col items-center justify-center gap-2">
-                  <RefreshCw className="w-5 h-5 animate-spin text-emerald-600 dark:text-emerald-400" />
+                  <RefreshCw className="w-5 h-5 animate-spin text-emerald-700 dark:text-emerald-400" />
                   <span>Memuat data pelanggan rute ini...</span>
                 </div>
               ) : displayedPelangganRute.length === 0 ? (
@@ -2134,7 +2134,7 @@ function RuteContent() {
                   return (
                     <div
                       key={p.id}
-                      className="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-2xs hover:border-slate-300 transition"
+                      className="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-sm hover:border-slate-300 transition"
                     >
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3">
                         <div>
@@ -2196,7 +2196,7 @@ function RuteContent() {
                                 onClick={() => handleToggleHariPelanggan(modalPelangganRute.rute!.id, p.id, activeDays, h)}
                                 className={`px-2.5 py-1 rounded-xl text-xs font-bold transition border ${
                                   isSelected
-                                    ? "bg-emerald-600 border-emerald-700 text-white shadow-xs"
+                                    ? "bg-emerald-700 border-emerald-700 text-white shadow-sm"
                                     : "bg-white dark:bg-zinc-800 border-slate-200 dark:border-zinc-700 text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-700"
                                 } disabled:opacity-50`}
                               >
@@ -2220,7 +2220,7 @@ function RuteContent() {
               <button
                 type="button"
                 onClick={() => setModalPelangganRute((prev) => ({ ...prev, isOpen: false, rute: null }))}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-xs transition"
+                className="px-4 py-2 bg-emerald-700 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-sm transition"
               >
                 Selesai
               </button>

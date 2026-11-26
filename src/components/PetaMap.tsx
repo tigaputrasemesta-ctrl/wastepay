@@ -74,7 +74,7 @@ class MapErrorBoundary extends Component<
           <button
             type="button"
             onClick={() => this.setState({ hasError: false })}
-            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow-lg shadow-emerald-900/30"
+            className="px-4 py-2 bg-emerald-700 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow-lg shadow-emerald-900/30"
           >
             Muat Ulang Peta
           </button>
@@ -701,7 +701,7 @@ export default function PetaMap({
 
           {/* Brand Pill */}
           <div className={`hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-full border text-[11px] font-bold ${
-            isDark ? "bg-slate-900 border-slate-800 text-slate-200" : "bg-emerald-50 border-emerald-300 text-emerald-900 shadow-xs"
+            isDark ? "bg-slate-900 border-slate-800 text-slate-200" : "bg-emerald-50 border-emerald-300 text-emerald-900 shadow-sm"
           }`}>
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span className="tracking-wide uppercase font-mono">
@@ -795,7 +795,7 @@ export default function PetaMap({
               href={`/api/peta/buku-pdf?mode=1halaman${token ? `&t=${encodeURIComponent(token)}` : ""}`}
               target="_blank"
               rel="noreferrer"
-              className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-bold transition shadow-xs ${
+              className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-bold transition shadow-sm ${
                 isDark
                   ? "bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 border-sky-500/30"
                   : "bg-sky-50 hover:bg-sky-100 text-sky-800 border-sky-300"
@@ -811,7 +811,7 @@ export default function PetaMap({
               href={`/api/peta/buku-pdf?mode=all${token ? `&t=${encodeURIComponent(token)}` : ""}`}
               target="_blank"
               rel="noreferrer"
-              className={`hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-bold transition shadow-xs ${
+              className={`hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-bold transition shadow-sm ${
                 isDark
                   ? "bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
                   : "bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-300"
@@ -831,7 +831,7 @@ export default function PetaMap({
                   setSalinToast(true);
                   setTimeout(() => setSalinToast(false), 3000);
                 }}
-                className={`hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-bold transition shadow-xs ${
+                className={`hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[11px] font-bold transition shadow-sm ${
                   isDark
                     ? "bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border-amber-500/30"
                     : "bg-amber-50 hover:bg-amber-100 text-amber-800 border-amber-300"
@@ -880,7 +880,7 @@ export default function PetaMap({
               onClick={() => setTileMode("osm")}
               className={`px-2.5 py-1 rounded-lg transition ${
                 tileMode === "osm"
-                  ? "bg-emerald-600 text-white font-extrabold shadow-sm"
+                  ? "bg-emerald-700 text-white font-extrabold shadow-sm"
                   : isDark ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
               }`}
               title="Peta Terang / Siang"
@@ -892,7 +892,7 @@ export default function PetaMap({
               onClick={() => setTileMode("esri-satellite")}
               className={`px-2.5 py-1 rounded-lg transition ${
                 tileMode === "esri-satellite"
-                  ? "bg-emerald-600 text-white font-extrabold shadow-sm"
+                  ? "bg-emerald-700 text-white font-extrabold shadow-sm"
                   : isDark ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
               }`}
               title="Foto udara satelit"
@@ -924,7 +924,7 @@ export default function PetaMap({
                 modeCluster === "cluster"
                   ? isDark
                     ? "bg-amber-400 text-slate-950 font-black shadow-sm"
-                    : "bg-emerald-600 text-white font-black shadow-sm"
+                    : "bg-emerald-700 text-white font-black shadow-sm"
                   : isDark ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
               }`}
               title="Kelompokkan pelanggan yang berdekatan ke dalam cluster angka"
@@ -939,7 +939,7 @@ export default function PetaMap({
                 modeCluster === "single"
                   ? isDark
                     ? "bg-amber-400 text-slate-950 font-black shadow-sm"
-                    : "bg-emerald-600 text-white font-black shadow-sm"
+                    : "bg-emerald-700 text-white font-black shadow-sm"
                   : isDark ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
               }`}
               title="Tampilkan setiap rumah warga sebagai titik marker individual (single pin)"
@@ -960,7 +960,7 @@ export default function PetaMap({
                 modeWarnaMarker === "tagihan"
                   ? isDark
                     ? "bg-amber-400 text-slate-950 font-black shadow-sm"
-                    : "bg-emerald-600 text-white font-black shadow-sm"
+                    : "bg-emerald-700 text-white font-black shadow-sm"
                   : isDark ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
               }`}
               title="Warna pin berdasarkan status pembayaran (Lunas/Tunggakan)"
@@ -975,7 +975,7 @@ export default function PetaMap({
                 modeWarnaMarker === "blok"
                   ? isDark
                     ? "bg-amber-400 text-slate-950 font-black shadow-sm"
-                    : "bg-emerald-600 text-white font-black shadow-sm"
+                    : "bg-emerald-700 text-white font-black shadow-sm"
                   : isDark ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
               }`}
               title="Warna pin dibedakan berdasarkan Blok / Wilayah Pickup"
@@ -989,12 +989,12 @@ export default function PetaMap({
           <button
             type="button"
             onClick={() => setTampilkanKomplain((v) => !v)}
-            className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] font-bold border transition flex items-center gap-1.5 shadow-xs ${
+            className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] font-bold border transition flex items-center gap-1.5 shadow-sm ${
               tampilkanKomplain
                 ? "bg-rose-600 text-white border-rose-600 shadow-rose-900/30"
                 : isDark
                 ? "bg-slate-900/80 text-slate-400 border-slate-800 hover:text-white"
-                : "bg-white text-slate-600 border-slate-200 hover:text-slate-900 shadow-xs"
+                : "bg-white text-slate-600 border-slate-200 hover:text-slate-900 shadow-sm"
             }`}
             title={tampilkanKomplain ? "Sembunyikan pin pengaduan komplain warga" : "Tampilkan pin pengaduan komplain warga"}
           >
@@ -1018,7 +1018,7 @@ export default function PetaMap({
               onClick={() => setLayerMenuOpen((o) => !o)}
               className={`p-2 rounded-xl border transition flex items-center gap-1.5 text-xs font-semibold ${
                 layerMenuOpen
-                  ? isDark ? "bg-amber-400 text-slate-950 border-amber-400" : "bg-emerald-600 text-white border-emerald-600 shadow-sm"
+                  ? isDark ? "bg-amber-400 text-slate-950 border-amber-400" : "bg-emerald-700 text-white border-emerald-600 shadow-sm"
                   : isDark ? "bg-slate-900 hover:bg-slate-800 text-slate-200 border-slate-700/80" : "bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200"
               }`}
               title="Kontrol Layer GIS"
@@ -1078,7 +1078,7 @@ export default function PetaMap({
                           onClick={() => setModeCluster("cluster")}
                           className={`py-1.5 px-2 rounded-lg text-center transition flex items-center justify-center gap-1 ${
                             modeCluster === "cluster"
-                              ? isDark ? "bg-amber-400 text-slate-950 shadow-xs" : "bg-emerald-600 text-white shadow-xs"
+                              ? isDark ? "bg-amber-400 text-slate-950 shadow-sm" : "bg-emerald-700 text-white shadow-sm"
                               : isDark ? "bg-slate-800 text-slate-300 hover:bg-slate-700" : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
                           }`}
                         >
@@ -1089,7 +1089,7 @@ export default function PetaMap({
                           onClick={() => setModeCluster("single")}
                           className={`py-1.5 px-2 rounded-lg text-center transition flex items-center justify-center gap-1 ${
                             modeCluster === "single"
-                              ? isDark ? "bg-amber-400 text-slate-950 shadow-xs" : "bg-emerald-600 text-white shadow-xs"
+                              ? isDark ? "bg-amber-400 text-slate-950 shadow-sm" : "bg-emerald-700 text-white shadow-sm"
                               : isDark ? "bg-slate-800 text-slate-300 hover:bg-slate-700" : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
                           }`}
                         >
@@ -1110,7 +1110,7 @@ export default function PetaMap({
                           onClick={() => setModeWarnaMarker("tagihan")}
                           className={`py-1.5 px-2 rounded-lg text-center transition flex items-center justify-center gap-1 ${
                             modeWarnaMarker === "tagihan"
-                              ? isDark ? "bg-amber-400 text-slate-950 shadow-xs" : "bg-emerald-600 text-white shadow-xs"
+                              ? isDark ? "bg-amber-400 text-slate-950 shadow-sm" : "bg-emerald-700 text-white shadow-sm"
                               : isDark ? "bg-slate-800 text-slate-300 hover:bg-slate-700" : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
                           }`}
                         >
@@ -1121,7 +1121,7 @@ export default function PetaMap({
                           onClick={() => setModeWarnaMarker("blok")}
                           className={`py-1.5 px-2 rounded-lg text-center transition flex items-center justify-center gap-1 ${
                             modeWarnaMarker === "blok"
-                              ? isDark ? "bg-amber-400 text-slate-950 shadow-xs" : "bg-emerald-600 text-white shadow-xs"
+                              ? isDark ? "bg-amber-400 text-slate-950 shadow-sm" : "bg-emerald-700 text-white shadow-sm"
                               : isDark ? "bg-slate-800 text-slate-300 hover:bg-slate-700" : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
                           }`}
                         >
@@ -1530,7 +1530,7 @@ export default function PetaMap({
                               <Gauge className="w-3 h-3 text-amber-500" />
                               Kapasitas Muatan Sampah
                             </span>
-                            <span className="font-mono text-amber-600 font-bold">{capacityPercent}%</span>
+                            <span className="font-mono text-amber-700 font-bold">{capacityPercent}%</span>
                           </div>
                           <div className={`w-full h-1.5 rounded-full overflow-hidden ${isDark ? "bg-slate-800" : "bg-slate-200"}`}>
                             <div
@@ -1719,7 +1719,7 @@ export default function PetaMap({
                     className={`rounded-xl px-2.5 py-1.5 text-[11px] outline-none cursor-pointer border ${
                       isDark
                         ? "bg-slate-900 border-slate-700 text-slate-200"
-                        : "bg-white border-slate-200 text-slate-800 shadow-xs"
+                        : "bg-white border-slate-200 text-slate-800 shadow-sm"
                     }`}
                   >
                     <option value="semua">Semua Wilayah</option>
@@ -1736,7 +1736,7 @@ export default function PetaMap({
                     className={`rounded-xl px-2.5 py-1.5 text-[11px] outline-none cursor-pointer border ${
                       isDark
                         ? "bg-slate-900 border-slate-700 text-slate-200"
-                        : "bg-white border-slate-200 text-slate-800 shadow-xs"
+                        : "bg-white border-slate-200 text-slate-800 shadow-sm"
                     }`}
                   >
                     <option value="semua">Semua Status</option>
@@ -1758,7 +1758,7 @@ export default function PetaMap({
                         filterTagihan === "semua"
                           ? isDark
                             ? "bg-amber-400 text-slate-950 font-bold"
-                            : "bg-emerald-600 text-white font-bold shadow-xs"
+                            : "bg-emerald-700 text-white font-bold shadow-sm"
                           : isDark
                           ? "text-slate-400 hover:text-white"
                           : "text-slate-600 hover:text-slate-900"
@@ -1771,7 +1771,7 @@ export default function PetaMap({
                       onClick={() => setFilterTagihan("lunas")}
                       className={`px-2 py-0.5 rounded-lg transition ${
                         filterTagihan === "lunas"
-                          ? "bg-emerald-600 text-white font-bold shadow-xs"
+                          ? "bg-emerald-700 text-white font-bold shadow-sm"
                           : isDark
                           ? "text-slate-400 hover:text-white"
                           : "text-slate-600 hover:text-slate-900"
@@ -1784,7 +1784,7 @@ export default function PetaMap({
                       onClick={() => setFilterTagihan("tunggakan")}
                       className={`px-2 py-0.5 rounded-lg transition ${
                         filterTagihan === "tunggakan"
-                          ? "bg-rose-600 text-white font-bold shadow-xs"
+                          ? "bg-rose-600 text-white font-bold shadow-sm"
                           : isDark
                           ? "text-slate-400 hover:text-white"
                           : "text-slate-600 hover:text-slate-900"
@@ -1811,7 +1811,7 @@ export default function PetaMap({
                     href={`/api/peta/buku-pdf?mode=1halaman${token ? `&t=${encodeURIComponent(token)}` : ""}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="w-full py-2 px-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl font-bold text-[11px] flex items-center justify-center gap-1.5 transition shadow-xs text-center"
+                    className="w-full py-2 px-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl font-bold text-[11px] flex items-center justify-center gap-1.5 transition shadow-sm text-center"
                     title="Unduh Peta Sebaran 1 Halaman yang memuat seluruh titik koordinat pelanggan (1.242 Titik)"
                   >
                     <MapPin className="w-3.5 h-3.5" />
@@ -1822,7 +1822,7 @@ export default function PetaMap({
                       href={`/api/peta/buku-pdf?mode=all${token ? `&t=${encodeURIComponent(token)}` : ""}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex-1 py-1.5 px-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold text-[10px] flex items-center justify-center gap-1 transition shadow-xs text-center"
+                      className="flex-1 py-1.5 px-2 bg-emerald-700 hover:bg-emerald-500 text-white rounded-lg font-bold text-[10px] flex items-center justify-center gap-1 transition shadow-sm text-center"
                       title="Unduh Buku Peta PDF Seluruh Pelanggan (1.242 Lembar Lengkap)"
                     >
                       <span>📑 Buku Master (1.242 Hal)</span>
@@ -1831,7 +1831,7 @@ export default function PetaMap({
                       href={`/api/peta/buku-pdf?mode=unpaid${token ? `&t=${encodeURIComponent(token)}` : ""}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="py-1.5 px-2 bg-rose-600 hover:bg-rose-500 text-white rounded-lg font-bold text-[10px] flex items-center justify-center gap-1 transition shadow-xs text-center"
+                      className="py-1.5 px-2 bg-rose-600 hover:bg-rose-500 text-white rounded-lg font-bold text-[10px] flex items-center justify-center gap-1 transition shadow-sm text-center"
                       title="Unduh Buku Peta Khusus Pelanggan Menunggak (406 Lembar)"
                     >
                       <span>⚠️ Buku Tertunggak</span>
@@ -1861,7 +1861,7 @@ export default function PetaMap({
                             : "bg-emerald-50 border-emerald-500 text-slate-900 shadow-sm ring-1 ring-emerald-500/30"
                           : isDark
                           ? "bg-[#1a1d24] hover:bg-[#20242e] border-slate-800 text-slate-300"
-                          : "bg-white hover:bg-slate-50 border-slate-200 text-slate-700 shadow-xs"
+                          : "bg-white hover:bg-slate-50 border-slate-200 text-slate-700 shadow-sm"
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2">
@@ -1870,7 +1870,7 @@ export default function PetaMap({
                             {p.nama}
                           </p>
                           <p className={`text-[10px] truncate mt-0.5 ${isDark ? "text-slate-400" : "text-slate-500"}`}>
-                            <span className="font-mono text-emerald-600 font-bold">{p.kodePelanggan}</span> ·{" "}
+                            <span className="font-mono text-emerald-700 font-bold">{p.kodePelanggan}</span> ·{" "}
                             {p.alamat || "Alamat tidak tersedia"}
                           </p>
                         </div>
@@ -1931,7 +1931,7 @@ export default function PetaMap({
                   className={`w-full rounded-xl px-3 py-2 text-xs outline-none cursor-pointer border ${
                     isDark
                       ? "bg-slate-900 border-slate-700 text-slate-200"
-                      : "bg-white border-slate-200 text-slate-800 shadow-xs"
+                      : "bg-white border-slate-200 text-slate-800 shadow-sm"
                   }`}
                 >
                   <option value="semua">— Tampilkan Semua Rute —</option>
@@ -1946,7 +1946,7 @@ export default function PetaMap({
                   <div className={`p-2.5 rounded-xl border text-xs space-y-1 ${
                     isDark
                       ? "bg-sky-500/10 border-sky-500/30 text-sky-200"
-                      : "bg-sky-50 border-sky-200 text-sky-900 shadow-xs"
+                      : "bg-sky-50 border-sky-200 text-sky-900 shadow-sm"
                   }`}>
                     <p className="font-bold">
                       {ruteTerpilih.nama} · {ruteTerpilih.hari}
@@ -1975,7 +1975,7 @@ export default function PetaMap({
                     className={`p-2.5 rounded-xl border flex items-center gap-3 transition cursor-pointer ${
                       isDark
                         ? "bg-[#1a1d24] hover:bg-[#20242e] border-slate-800 text-slate-300"
-                        : "bg-white hover:bg-slate-50 border-slate-200 text-slate-700 shadow-xs"
+                        : "bg-white hover:bg-slate-50 border-slate-200 text-slate-700 shadow-sm"
                     }`}
                   >
                     <span className={`w-6 h-6 rounded-full text-xs font-bold font-mono flex items-center justify-center shrink-0 border ${
@@ -2027,7 +2027,7 @@ export default function PetaMap({
                     onClick={() => setModeWarnaMarker("tagihan")}
                     className={`px-1.5 py-0.5 rounded transition ${
                       modeWarnaMarker === "tagihan"
-                        ? isDark ? "bg-amber-400 text-slate-950 font-black" : "bg-emerald-600 text-white font-black shadow-xs"
+                        ? isDark ? "bg-amber-400 text-slate-950 font-black" : "bg-emerald-700 text-white font-black shadow-sm"
                         : "text-slate-500 hover:text-slate-900"
                     }`}
                     title="Tampilkan warna status pembayaran tagihan"
@@ -2039,7 +2039,7 @@ export default function PetaMap({
                     onClick={() => setModeWarnaMarker("blok")}
                     className={`px-1.5 py-0.5 rounded transition ${
                       modeWarnaMarker === "blok"
-                        ? isDark ? "bg-amber-400 text-slate-950 font-black" : "bg-emerald-600 text-white font-black shadow-xs"
+                        ? isDark ? "bg-amber-400 text-slate-950 font-black" : "bg-emerald-700 text-white font-black shadow-sm"
                         : "text-slate-500 hover:text-slate-900"
                     }`}
                     title="Tampilkan warna per blok pickup"
@@ -2127,7 +2127,7 @@ export default function PetaMap({
               isDark ? "border-slate-800 bg-[#13161c]" : "border-slate-200 bg-slate-50"
             }`}>
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-bold text-sm shadow-xs">
+                <div className="w-8 h-8 rounded-xl bg-emerald-700 text-white flex items-center justify-center font-bold text-sm shadow-sm">
                   {inspectorKendaraan ? "🚛" : inspectorPelanggan ? "👤" : inspectorKomplain ? "🚨" : "📍"}
                 </div>
                 <div>
@@ -2174,7 +2174,7 @@ export default function PetaMap({
                 <div className="space-y-4">
                   {/* Status Banner */}
                   <div className={`p-3 rounded-2xl border flex items-center justify-between ${
-                    isDark ? "bg-amber-500/10 border-amber-500/30" : "bg-emerald-50 border-emerald-200 shadow-xs"
+                    isDark ? "bg-amber-500/10 border-amber-500/30" : "bg-emerald-50 border-emerald-200 shadow-sm"
                   }`}>
                     <div>
                       <p className={`text-[10px] uppercase font-bold tracking-wider ${
@@ -2205,7 +2205,7 @@ export default function PetaMap({
 
                   {/* Driver Card */}
                   <div className={`p-3 rounded-2xl border space-y-2 ${
-                    isDark ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-200 shadow-xs"
+                    isDark ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-200 shadow-sm"
                   }`}>
                     <p className={`text-[10px] uppercase font-bold ${isDark ? "text-slate-400" : "text-slate-500"}`}>
                       Pengemudi / Petugas
@@ -2215,7 +2215,7 @@ export default function PetaMap({
                         <div className={`w-9 h-9 rounded-full border flex items-center justify-center font-bold ${
                           isDark
                             ? "bg-slate-800 border-slate-700 text-amber-400"
-                            : "bg-white border-slate-200 text-emerald-600 shadow-xs"
+                            : "bg-white border-slate-200 text-emerald-700 shadow-sm"
                         }`}>
                           {inspectorKendaraan.pengemudi ? inspectorKendaraan.pengemudi[0] : "S"}
                         </div>
@@ -2238,25 +2238,25 @@ export default function PetaMap({
                     </p>
                     <div className="grid grid-cols-2 gap-2">
                       <div className={`p-3 rounded-xl border ${
-                        isDark ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-200 shadow-xs"
+                        isDark ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-200 shadow-sm"
                       }`}>
                         <span className={`text-[10px] ${isDark ? "text-slate-400" : "text-slate-500"}`}>Kapasitas Muatan</span>
                         <p className={`text-base font-extrabold font-mono mt-0.5 ${
-                          isDark ? "text-amber-400" : "text-amber-600"
+                          isDark ? "text-amber-400" : "text-amber-700"
                         }`}>78%</p>
                         <span className={`text-[9px] ${isDark ? "text-slate-500" : "text-slate-400"}`}>± 3.1 / 4.0 Ton</span>
                       </div>
                       <div className={`p-3 rounded-xl border ${
-                        isDark ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-200 shadow-xs"
+                        isDark ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-200 shadow-sm"
                       }`}>
                         <span className={`text-[10px] ${isDark ? "text-slate-400" : "text-slate-500"}`}>Kecepatan Rerata</span>
                         <p className={`text-base font-extrabold font-mono mt-0.5 ${
-                          isDark ? "text-emerald-400" : "text-emerald-600"
+                          isDark ? "text-emerald-400" : "text-emerald-700"
                         }`}>24 km/h</p>
                         <span className={`text-[9px] ${isDark ? "text-slate-500" : "text-slate-400"}`}>Lancar dalam kota</span>
                       </div>
                       <div className={`p-3 rounded-xl border ${
-                        isDark ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-200 shadow-xs"
+                        isDark ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-200 shadow-sm"
                       }`}>
                         <span className={`text-[10px] ${isDark ? "text-slate-400" : "text-slate-500"}`}>Akurasi GPS</span>
                         <p className={`text-base font-extrabold font-mono mt-0.5 ${
@@ -2267,7 +2267,7 @@ export default function PetaMap({
                         <span className={`text-[9px] ${isDark ? "text-slate-500" : "text-slate-400"}`}>Sinyal Satelit Kuat</span>
                       </div>
                       <div className={`p-3 rounded-xl border ${
-                        isDark ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-200 shadow-xs"
+                        isDark ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-200 shadow-sm"
                       }`}>
                         <span className={`text-[10px] ${isDark ? "text-slate-400" : "text-slate-500"}`}>Pembaruan GPS</span>
                         <p className={`text-xs font-bold mt-1 font-mono ${
@@ -2318,7 +2318,7 @@ export default function PetaMap({
 
                   {/* Customer Information */}
                   <div className={`p-3 rounded-2xl border space-y-3 ${
-                    isDark ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-200 shadow-xs"
+                    isDark ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-200 shadow-sm"
                   }`}>
                     <div>
                       <span className={`text-[10px] uppercase ${isDark ? "text-slate-400" : "text-slate-500"}`}>
@@ -2354,7 +2354,7 @@ export default function PetaMap({
 
                     {/* Interactive Editor Rubah Blok / Wilayah Layanan */}
                     <div className={`p-3 rounded-2xl border space-y-2 mt-1 ${
-                      isDark ? "bg-[#12151b] border-slate-800" : "bg-emerald-50/70 border-emerald-200/90 shadow-xs"
+                      isDark ? "bg-[#12151b] border-slate-800" : "bg-emerald-50/70 border-emerald-200/90 shadow-sm"
                     }`}>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1.5">
@@ -2366,7 +2366,7 @@ export default function PetaMap({
                           </span>
                         </div>
                         {savingBlokId === inspectorPelanggan.id && (
-                          <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-1 animate-pulse">
+                          <span className="text-[10px] text-emerald-700 font-bold flex items-center gap-1 animate-pulse">
                             <RefreshCw className="w-3 h-3 animate-spin" /> Menyimpan...
                           </span>
                         )}
@@ -2387,7 +2387,7 @@ export default function PetaMap({
                           className={`w-full rounded-xl px-2.5 py-2 text-xs font-bold outline-none cursor-pointer border transition ${
                             isDark
                               ? "bg-slate-900 border-slate-700 text-slate-100 focus:border-amber-400"
-                              : "bg-white border-slate-300 text-slate-800 focus:border-emerald-600 shadow-xs"
+                              : "bg-white border-slate-300 text-slate-800 focus:border-emerald-600 shadow-sm"
                           }`}
                         >
                           <option value="">— Belum Ditentukan / Tanpa Blok —</option>
@@ -2405,7 +2405,7 @@ export default function PetaMap({
                               : isDark ? "bg-rose-500/20 text-rose-300 border border-rose-500/30" : "bg-rose-100 text-rose-800 border border-rose-200"
                           }`}>
                             {toastBlokMsg.type === "success" ? (
-                              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+                              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-700" />
                             ) : (
                               <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
                             )}
@@ -2451,7 +2451,7 @@ export default function PetaMap({
                   {/* Riwayat Tagihan */}
                   {inspectorPelanggan.riwayatTagihan && inspectorPelanggan.riwayatTagihan.length > 0 && (
                     <div className={`p-3 rounded-2xl border space-y-2 ${
-                      isDark ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-200 shadow-xs"
+                      isDark ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-200 shadow-sm"
                     }`}>
                       <span className={`text-[10px] font-bold uppercase ${isDark ? "text-slate-400" : "text-slate-500"}`}>
                         Riwayat Tagihan
@@ -2483,7 +2483,7 @@ export default function PetaMap({
                       href={`https://wa.me/${inspectorPelanggan.noTelepon.replace(/\D/g, "").replace(/^0/, "62")}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition shadow-md shadow-emerald-950/20"
+                      className="w-full py-2.5 px-4 bg-emerald-700 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition shadow-md shadow-emerald-950/20"
                     >
                       <Phone className="w-4 h-4" />
                       <span>Chat WhatsApp Warga ({inspectorPelanggan.noTelepon})</span>
@@ -2508,7 +2508,7 @@ export default function PetaMap({
                 <div className="space-y-4">
                   {/* Complaint Status Banner */}
                   <div className={`p-3 rounded-2xl border flex items-center justify-between ${
-                    isDark ? "bg-rose-500/10 border-rose-500/30" : "bg-rose-50 border-rose-200 shadow-xs"
+                    isDark ? "bg-rose-500/10 border-rose-500/30" : "bg-rose-50 border-rose-200 shadow-sm"
                   }`}>
                     <div>
                       <p className={`text-[10px] uppercase font-bold tracking-wider ${
@@ -2535,7 +2535,7 @@ export default function PetaMap({
 
                   {/* Complaint Description */}
                   <div className={`p-3 rounded-2xl border space-y-2 ${
-                    isDark ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-200 shadow-xs"
+                    isDark ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-200 shadow-sm"
                   }`}>
                     <p className={`text-[10px] uppercase font-bold ${isDark ? "text-slate-400" : "text-slate-500"}`}>
                       Isi Pengaduan Warga
@@ -2554,7 +2554,7 @@ export default function PetaMap({
 
                   {/* Reporter Info */}
                   <div className={`p-3 rounded-2xl border space-y-2 ${
-                    isDark ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-200 shadow-xs"
+                    isDark ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-200 shadow-sm"
                   }`}>
                     <p className={`text-[10px] uppercase font-bold ${isDark ? "text-slate-400" : "text-slate-500"}`}>
                       Data Pelapor
@@ -2562,7 +2562,7 @@ export default function PetaMap({
                     <p className={`text-xs font-bold ${isDark ? "text-slate-100" : "text-slate-900"}`}>
                       {inspectorKomplain.pelanggan.nama}
                     </p>
-                    <p className="text-[11px] text-emerald-600 font-mono font-bold">
+                    <p className="text-[11px] text-emerald-700 font-mono font-bold">
                       ID: {inspectorKomplain.pelanggan.kodePelanggan}
                     </p>
                   </div>
@@ -2573,7 +2573,7 @@ export default function PetaMap({
                       href={`https://wa.me/${inspectorKomplain.pelanggan.noTelepon.replace(/\D/g, "").replace(/^0/, "62")}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition shadow-md shadow-emerald-950/20"
+                      className="w-full py-2.5 px-4 bg-emerald-700 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition shadow-md shadow-emerald-950/20"
                     >
                       <Phone className="w-4 h-4" />
                       <span>Hubungi Pelapor via WA</span>
@@ -2586,7 +2586,7 @@ export default function PetaMap({
               {inspectorTransit && (
                 <div className="space-y-4">
                   <div className={`p-3 rounded-2xl border space-y-1 ${
-                    isDark ? "bg-amber-500/10 border-amber-500/30" : "bg-amber-50 border-amber-200 shadow-xs"
+                    isDark ? "bg-amber-500/10 border-amber-500/30" : "bg-amber-50 border-amber-200 shadow-sm"
                   }`}>
                     <p className={`text-[10px] uppercase font-bold ${isDark ? "text-amber-300" : "text-amber-800"}`}>
                       Pusat Transit / TPS 3R
@@ -2601,7 +2601,7 @@ export default function PetaMap({
 
                   {inspectorTransit.catatan && (
                     <div className={`p-3 rounded-2xl border space-y-1 ${
-                      isDark ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-200 shadow-xs"
+                      isDark ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-200 shadow-sm"
                     }`}>
                       <p className={`text-[10px] uppercase font-bold ${isDark ? "text-slate-400" : "text-slate-500"}`}>
                         Catatan Operasional

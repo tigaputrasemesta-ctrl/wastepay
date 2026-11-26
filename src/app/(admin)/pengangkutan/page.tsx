@@ -448,7 +448,7 @@ export default function PengangkutanPage() {
                 <button
                   type="button"
                   onClick={() => handleUpdate(updating)}
-                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-colors"
+                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-700 hover:bg-emerald-700 text-white shadow-sm transition-colors"
                 >
                   Simpan Status
                 </button>

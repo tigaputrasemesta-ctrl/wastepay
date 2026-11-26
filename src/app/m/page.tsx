@@ -355,7 +355,7 @@ export default function MobileHome() {
           <div className="grid grid-cols-3 gap-2 pt-1">
             <Link
               href={selectedKendaraanId ? `/m/angkut?kendaraanId=${selectedKendaraanId}` : "/m/angkut"}
-              className="flex flex-col items-center justify-center p-2 rounded-xl bg-emerald-700 text-white shadow-xs hover:bg-emerald-800 active:scale-95 transition-all"
+              className="flex flex-col items-center justify-center p-2 rounded-xl bg-emerald-700 text-white shadow-sm hover:bg-emerald-800 active:scale-95 transition-all"
             >
               <Truck className="w-4 h-4 mb-1" />
               <span className="text-[10px] font-extrabold leading-tight text-center">Jemput Rute</span>
@@ -378,7 +378,7 @@ export default function MobileHome() {
               }`}
             >
               {openKomplainCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-600 text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-xs animate-bounce">
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-600 text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-sm animate-bounce">
                   {openKomplainCount}
                 </span>
               )}
@@ -451,11 +451,11 @@ export default function MobileHome() {
           {isAngkut && (
             <Link
               href="/m/pickup"
-              className="bg-white border border-teal-200/90 dark:border-teal-900/60 rounded-2xl p-3 shadow-xs hover:border-teal-400 hover:shadow-xs active:scale-[0.98] transition-all flex flex-col justify-between h-[84px] col-span-2 bg-gradient-to-r from-teal-50/60 to-emerald-50/40 dark:from-teal-950/20 dark:to-emerald-950/20"
+              className="bg-white border border-teal-200/90 dark:border-teal-900/60 rounded-2xl p-3 shadow-sm hover:border-teal-400 hover:shadow-sm active:scale-[0.98] transition-all flex flex-col justify-between h-[84px] col-span-2 bg-gradient-to-r from-teal-50/60 to-emerald-50/40 dark:from-teal-950/20 dark:to-emerald-950/20"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-teal-700 text-white flex items-center justify-center shadow-xs">
+                  <div className="w-8 h-8 rounded-xl bg-teal-700 text-white flex items-center justify-center shadow-sm">
                     <PackageCheck className="w-4 h-4" />
                   </div>
                   <div>
@@ -468,7 +468,7 @@ export default function MobileHome() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-teal-600 text-white shadow-2xs">
+                  <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-teal-600 text-white shadow-sm">
                     On-Demand
                   </span>
                   <ChevronRight className="w-4 h-4 text-teal-700" />
@@ -673,7 +673,7 @@ export default function MobileHome() {
               onClick={handleCopyReferral}
               className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1 shrink-0 ${
                 copiedRef
-                  ? "bg-emerald-600 text-white shadow-xs"
+                  ? "bg-emerald-700 text-white shadow-sm"
                   : "bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700"
               }`}
               title="Salin tautan referral"

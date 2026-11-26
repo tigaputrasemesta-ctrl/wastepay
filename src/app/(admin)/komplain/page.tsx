@@ -444,7 +444,7 @@ export default function KomplainPage() {
                       <td className="px-5 py-4 text-slate-700 text-xs max-w-xs">
                         <div className="flex items-start gap-1.5">
                           {k.foto && (
-                            <span className="text-emerald-600 text-sm mt-0.5" title="Ada Foto Bukti">
+                            <span className="text-emerald-700 text-sm mt-0.5" title="Ada Foto Bukti">
                               📷
                             </span>
                           )}
@@ -478,7 +478,7 @@ export default function KomplainPage() {
                           {/* Tombol Teruskan ke WhatsApp Petugas */}
                           <button
                             onClick={() => openForwardModal(k)}
-                            className="inline-flex items-center gap-1.5 text-xs bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold px-3 py-1.5 rounded-xl shadow-sm transition"
+                            className="inline-flex items-center gap-1.5 text-xs bg-emerald-700 hover:bg-emerald-700 active:scale-95 text-white font-bold px-3 py-1.5 rounded-xl shadow-sm transition"
                             title="Teruskan laporan pengaduan ini ke WhatsApp Petugas"
                           >
                             <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
@@ -576,7 +576,7 @@ export default function KomplainPage() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => openForwardModal(k)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-sm transition"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-sm transition"
                       >
                         <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
                           <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.969.54 1.771.814 2.791.814 3.18 0 5.766-2.587 5.767-5.767.001-3.18-2.585-5.766-5.767-5.767zm7.502 5.766c-.001 4.14-3.364 7.503-7.502 7.503-1.282 0-2.482-.323-3.539-.893l-4.492 1.178 1.198-4.377c-.636-1.096-.97-2.355-.97-3.411 0-4.14 3.363-7.503 7.503-7.503 4.139 0 7.502 3.363 7.502 7.502z" />
@@ -610,7 +610,7 @@ export default function KomplainPage() {
             {/* Header Modal */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200/50 dark:border-emerald-900 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200/50 dark:border-emerald-900 text-emerald-700 dark:text-emerald-400 flex items-center justify-center">
                   <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
                     <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.969.54 1.771.814 2.791.814 3.18 0 5.766-2.587 5.767-5.767.001-3.18-2.585-5.766-5.767-5.767zm7.502 5.766c-.001 4.14-3.364 7.503-7.502 7.503-1.282 0-2.482-.323-3.539-.893l-4.492 1.178 1.198-4.377c-.636-1.096-.97-2.355-.97-3.411 0-4.14 3.363-7.503 7.503-7.503 4.139 0 7.502 3.363 7.502 7.502z" />
                   </svg>
@@ -647,7 +647,7 @@ export default function KomplainPage() {
                         setTargetType("petugas");
                         setSelectedPetugasId(recommendedPetugas.id);
                       }}
-                      className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md font-semibold text-[11px] shadow-xs transition"
+                      className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md font-semibold text-[11px] shadow-sm transition"
                     >
                       Pilih Petugas Ini
                     </button>
@@ -759,7 +759,7 @@ export default function KomplainPage() {
                   type="checkbox"
                   checked={autoUpdateStatus}
                   onChange={(e) => setAutoUpdateStatus(e.target.checked)}
-                  className="w-4 h-4 text-emerald-600 rounded border-slate-300 dark:border-zinc-700 focus:ring-emerald-500"
+                  className="w-4 h-4 text-emerald-700 rounded border-slate-300 dark:border-zinc-700 focus:ring-emerald-500"
                 />
                 <span className="text-xs text-slate-700 dark:text-zinc-300 font-medium">
                   Otomatis tandai status komplain ini menjadi <b>&quot;Diproses&quot;</b> setelah diteruskan
@@ -785,7 +785,7 @@ export default function KomplainPage() {
                 </div>
 
                 <div className="bg-[#E5DDD5] dark:bg-zinc-950 p-3 rounded-lg border border-slate-300/80 dark:border-zinc-800 shadow-inner">
-                  <div className="bg-[#DCF8C6] dark:bg-emerald-950/60 p-3 rounded-md shadow-xs text-xs text-slate-800 dark:text-emerald-200 leading-relaxed whitespace-pre-wrap border border-[#c4e8aa] dark:border-emerald-800 max-h-56 overflow-y-auto font-mono text-[11px]">
+                  <div className="bg-[#DCF8C6] dark:bg-emerald-950/60 p-3 rounded-md shadow-sm text-xs text-slate-800 dark:text-emerald-200 leading-relaxed whitespace-pre-wrap border border-[#c4e8aa] dark:border-emerald-800 max-h-56 overflow-y-auto font-mono text-[11px]">
                     {previewPesanWa}
                   </div>
                 </div>
@@ -806,7 +806,7 @@ export default function KomplainPage() {
                 <button
                   type="button"
                   onClick={handleOpenWaMe}
-                  className="w-full sm:w-auto px-4 py-2 bg-white dark:bg-zinc-900 border border-emerald-600 hover:bg-emerald-50 dark:hover:bg-zinc-800 text-emerald-700 dark:text-emerald-400 font-semibold text-xs rounded-lg shadow-xs transition flex items-center justify-center gap-1.5"
+                  className="w-full sm:w-auto px-4 py-2 bg-white dark:bg-zinc-900 border border-emerald-600 hover:bg-emerald-50 dark:hover:bg-zinc-800 text-emerald-700 dark:text-emerald-400 font-semibold text-xs rounded-lg shadow-sm transition flex items-center justify-center gap-1.5"
                 >
                   <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                     <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.969.54 1.771.814 2.791.814 3.18 0 5.766-2.587 5.767-5.767.001-3.18-2.585-5.766-5.767-5.767zm7.502 5.766c-.001 4.14-3.364 7.503-7.502 7.503-1.282 0-2.482-.323-3.539-.893l-4.492 1.178 1.198-4.377c-.636-1.096-.97-2.355-.97-3.411 0-4.14 3.363-7.503 7.503-7.503 4.139 0 7.502 3.363 7.502 7.502z" />
@@ -819,7 +819,7 @@ export default function KomplainPage() {
                 type="button"
                 disabled={forwarding}
                 onClick={handleSendGateway}
-                className="w-full sm:w-auto px-5 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold text-xs rounded-lg shadow-xs active:scale-95 transition flex items-center justify-center gap-1.5"
+                className="w-full sm:w-auto px-5 py-2 bg-emerald-700 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold text-xs rounded-lg shadow-sm active:scale-95 transition flex items-center justify-center gap-1.5"
               >
                 {forwarding ? (
                   <>
@@ -861,7 +861,7 @@ export default function KomplainPage() {
                       <img
                         src={showResolve.foto}
                         alt="Dokumentasi komplain"
-                        className="w-full max-h-48 object-cover rounded-lg border border-slate-200 dark:border-zinc-800 shadow-xs"
+                        className="w-full max-h-48 object-cover rounded-lg border border-slate-200 dark:border-zinc-800 shadow-sm"
                       />
                     </div>
                   )}
@@ -900,7 +900,7 @@ export default function KomplainPage() {
                 <button
                   type="submit"
                   form="resolve-form"
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-xs active:scale-95 transition-all"
+                  className="px-5 py-2 bg-emerald-700 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm active:scale-95 transition-all"
                 >
                   Simpan Status
                 </button>
