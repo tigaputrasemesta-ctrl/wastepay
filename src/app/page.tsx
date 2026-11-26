@@ -32,6 +32,7 @@ import CivicHeroWidget from "@/components/CivicHeroWidget";
 import { generateLocalBusinessJsonLd } from "@/lib/seo";
 import { DEFAULT_ARTIKEL, getArticleCoverImage, cleanArticleSnippet } from "@/lib/default-articles";
 import ArticleImage from "@/components/ArticleImage";
+import ProductImage from "@/components/ProductImage";
 import { NativeGuardedLink } from "@/components/mobile/LandingApkBanner";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import { getLayananImages } from "@/lib/layanan-images";
@@ -690,13 +691,10 @@ export default async function LandingPage() {
                 </div>
 
                 <div className="relative aspect-[16/10] w-full bg-slate-900 overflow-hidden border-b border-slate-100 dark:border-zinc-800">
-                  <img
+                  <ProductImage
                     src="https://images.unsplash.com/photo-1585314062340-f1a5a7c9328d?auto=format&fit=crop&w=800&q=80"
                     alt="Pupuk Kompos Organik TPS 3R UPS HERU 5kg"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-95"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).src = "/images/upsheru-product-fallback.svg";
-                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
                   <span className="absolute bottom-2.5 left-3.5 text-[11px] font-bold text-white drop-shadow flex items-center gap-1.5 z-10">
@@ -763,13 +761,10 @@ export default async function LandingPage() {
                 </div>
 
                 <div className="relative aspect-[16/10] w-full bg-slate-900 overflow-hidden border-b border-slate-100 dark:border-zinc-800">
-                  <img
+                  <ProductImage
                     src="https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=600&q=80"
                     alt="Pupuk Organik Cair POC UPS HERU 1 Liter"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-95"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).src = "/images/upsheru-product-fallback.svg";
-                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
                   <span className="absolute bottom-2.5 left-3.5 text-[11px] font-bold text-white drop-shadow flex items-center gap-1.5 z-10">
@@ -836,13 +831,10 @@ export default async function LandingPage() {
                 </div>
 
                 <div className="relative aspect-[16/10] w-full bg-slate-900 overflow-hidden border-b border-slate-100 dark:border-zinc-800">
-                  <img
+                  <ProductImage
                     src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=600&q=80"
                     alt="Tempat Sampah Pilah 2 in 1 UPS HERU"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-95"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).src = "/images/upsheru-product-fallback.svg";
-                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
                   <span className="absolute bottom-2.5 left-3.5 text-[11px] font-bold text-white drop-shadow flex items-center gap-1.5 z-10">
