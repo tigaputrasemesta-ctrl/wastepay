@@ -240,6 +240,8 @@ function PelangganContent() {
   const [form, setForm] = useState({
     nama: "",
     noTelepon: "",
+    kodePelanggan: "",
+    syncKodePelanggan: true,
     kategori: "level_1",
     customTarif: "",
     alamat: "",
@@ -407,6 +409,8 @@ function PelangganContent() {
     setForm({
       nama: "",
       noTelepon: "",
+      kodePelanggan: "",
+      syncKodePelanggan: true,
       kategori: "level_1",
       customTarif: "",
       alamat: "",
@@ -436,6 +440,8 @@ function PelangganContent() {
     setForm({
       nama: p.nama,
       noTelepon: p.noTelepon,
+      kodePelanggan: p.kodePelanggan || p.noTelepon || "",
+      syncKodePelanggan: true,
       kategori: p.kategori || "level_1",
       customTarif: p.customTarif ? p.customTarif.toString() : "",
       alamat: p.alamat,
@@ -1796,7 +1802,11 @@ function PelangganContent() {
                         let val = e.target.value.replace(/[^0-9+]/g, "");
                         if (val.startsWith("0")) val = "62" + val.slice(1);
                         if (val.startsWith("+62")) val = "62" + val.slice(3);
-                        setForm({ ...form, noTelepon: val });
+                        setForm((prev) => ({
+                          ...prev,
+                          noTelepon: val,
+                          kodePelanggan: prev.syncKodePelanggan ? val : prev.kodePelanggan,
+                        }));
                       }}
                       className={`w-full px-3 py-2 bg-white dark:bg-zinc-950 border rounded-lg focus:outline-none focus:ring-2 text-sm font-medium text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 ${
                         phoneDuplicate
@@ -1807,6 +1817,44 @@ function PelangganContent() {
                       required
                     />
                     <p className="text-[10px] text-slate-400 dark:text-zinc-500 mt-1">Otomatis diformat ke 628... (format resmi WhatsApp)</p>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5 flex items-center justify-between">
+                      <span>Kode Pelanggan</span>
+                      <label className="inline-flex items-center gap-1 cursor-pointer font-normal text-[11px] text-emerald-600 dark:text-emerald-400">
+                        <input
+                          type="checkbox"
+                          checked={form.syncKodePelanggan}
+                          onChange={(e) => {
+                            const checked = e.target.checked;
+                            setForm((prev) => ({
+                              ...prev,
+                              syncKodePelanggan: checked,
+                              kodePelanggan: checked ? prev.noTelepon : prev.kodePelanggan,
+                            }));
+                          }}
+                          className="rounded text-emerald-600 focus:ring-emerald-500 w-3.5 h-3.5"
+                        />
+                        <span>Ikuti No. WA</span>
+                      </label>
+                    </label>
+                    <input
+                      type="text"
+                      value={form.kodePelanggan}
+                      disabled={form.syncKodePelanggan}
+                      onChange={(e) => setForm((prev) => ({ ...prev, kodePelanggan: e.target.value }))}
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm font-mono ${
+                        form.syncKodePelanggan
+                          ? "bg-slate-50 dark:bg-zinc-900/50 text-slate-500 dark:text-zinc-400 border-slate-200 dark:border-zinc-800 cursor-not-allowed"
+                          : "bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 border-slate-200 dark:border-zinc-800 focus:ring-emerald-500/20 focus:border-emerald-500"
+                      }`}
+                      placeholder="Contoh: 6281234567890"
+                    />
+                    <p className="text-[10px] text-slate-400 dark:text-zinc-500 mt-1">
+                      {form.syncKodePelanggan
+                        ? "Otomatis sinkron dengan No. WA untuk barcode & no. invoice"
+                        : "Kode kustom barcode dan nomor invoice"}
+                    </p>
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300 mb-1.5">Kategori</label>

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { logAudit } from "@/lib/audit";
 import { getSession } from "@/lib/auth";
@@ -86,7 +87,27 @@ export async function PUT(
   try {
     const id = parseInt((await params).id);
     const body = await request.json();
-    const { nama, noTelepon, kategori, alamat, rtRw, fotoRumah, patokanLokasi, latitude, longitude, koordinatSumber, koordinatAkurasi, penanggungjawab, referal, kelurahanId, paketId, status, catatan } = body;
+    const {
+      nama,
+      noTelepon,
+      kodePelanggan,
+      syncKodePelanggan,
+      kategori,
+      alamat,
+      rtRw,
+      fotoRumah,
+      patokanLokasi,
+      latitude,
+      longitude,
+      koordinatSumber,
+      koordinatAkurasi,
+      penanggungjawab,
+      referal,
+      kelurahanId,
+      paketId,
+      status,
+      catatan,
+    } = body;
 
     const session = await getSession();
     if (!session) {
@@ -103,6 +124,70 @@ export async function PUT(
     const recordTenantId = targetPelanggan.tenantId ?? "tenant-pilot-upsheru";
     if (session.role !== "superadmin" && !tenantCtx.isCore && recordTenantId !== currentTenantId) {
       return NextResponse.json({ error: "Forbidden: Pelanggan bukan milik organisasi tenant Anda" }, { status: 403 });
+    }
+
+    // Normalisasi dan deteksi perubahan No. Telepon / WhatsApp & Kode Pelanggan
+    let newPhone: string | undefined = undefined;
+    if (noTelepon !== undefined) {
+      newPhone = String(noTelepon).trim();
+    }
+
+    let newKode: string | undefined = undefined;
+    if (kodePelanggan !== undefined && String(kodePelanggan).trim() !== "") {
+      newKode = String(kodePelanggan).trim();
+    }
+
+    // Deteksi apakah kode pelanggan saat ini berbasis nomor telepon (misal: sama persis, selisih prefix, atau numeric)
+    const oldKodeIsPhone = Boolean(
+      targetPelanggan.kodePelanggan &&
+      (targetPelanggan.kodePelanggan === targetPelanggan.noTelepon ||
+       targetPelanggan.kodePelanggan.replace(/\D/g, "") === (targetPelanggan.noTelepon || "").replace(/\D/g, "") ||
+       /^(08|628|\+628|\d{9,15})$/.test(targetPelanggan.kodePelanggan.trim()))
+    );
+
+    // Sinkronkan kode pelanggan jika:
+    // a) syncKodePelanggan secara eksplisit bernilai true
+    // b) syncKodePelanggan tidak diset, tapi nomor telepon diubah dan kode pelanggan lama berbasis nomor telepon
+    const shouldSyncKode = syncKodePelanggan === true || (syncKodePelanggan === undefined && oldKodeIsPhone);
+
+    if (newPhone !== undefined && newPhone !== targetPelanggan.noTelepon) {
+      // Cek apakah nomor telepon baru sudah dipakai oleh pelanggan lain
+      const conflictPhone = await prisma.pelanggan.findFirst({
+        where: {
+          id: { not: id },
+          deletedAt: null,
+          noTelepon: newPhone,
+        },
+        select: { id: true, nama: true },
+      });
+      if (conflictPhone) {
+        return NextResponse.json(
+          { error: `Nomor WhatsApp ${newPhone} sudah digunakan oleh pelanggan "${conflictPhone.nama}".` },
+          { status: 400 }
+        );
+      }
+
+      if (shouldSyncKode && !newKode) {
+        newKode = newPhone;
+      }
+    }
+
+    if (newKode !== undefined && newKode !== targetPelanggan.kodePelanggan) {
+      // Cek apakah kode pelanggan baru sudah dipakai oleh pelanggan lain
+      const conflictKode = await prisma.pelanggan.findFirst({
+        where: {
+          id: { not: id },
+          deletedAt: null,
+          kodePelanggan: newKode,
+        },
+        select: { id: true, nama: true },
+      });
+      if (conflictKode) {
+        return NextResponse.json(
+          { error: `Kode Pelanggan ${newKode} sudah digunakan oleh pelanggan "${conflictKode.nama}".` },
+          { status: 400 }
+        );
+      }
     }
 
     // Petugas (role petugas) hanya boleh melalui jabatan survei,
@@ -156,7 +241,8 @@ export async function PUT(
       if (koordinatAkurasi !== undefined) fieldSurvei.koordinatAkurasi = koordinatAkurasi ? parseFloat(koordinatAkurasi) : null;
       if (alamat !== undefined) fieldSurvei.alamat = alamat;
       if (rtRw !== undefined) fieldSurvei.rtRw = rtRw;
-      if (noTelepon !== undefined) fieldSurvei.noTelepon = noTelepon;
+      if (newPhone !== undefined) fieldSurvei.noTelepon = newPhone;
+      if (newKode !== undefined) fieldSurvei.kodePelanggan = newKode;
       if (penanggungjawab !== undefined) fieldSurvei.penanggungjawab = penanggungjawab;
       if (referal !== undefined) fieldSurvei.referal = referal;
       if (catatan !== undefined) fieldSurvei.catatan = catatan;
@@ -177,7 +263,8 @@ export async function PUT(
       data.tenantId = recordTenantId;
     }
     if (nama !== undefined) data.nama = nama;
-    if (noTelepon !== undefined) data.noTelepon = noTelepon;
+    if (newPhone !== undefined) data.noTelepon = newPhone;
+    if (newKode !== undefined) data.kodePelanggan = newKode;
     if (kategori !== undefined) data.kategori = kategori;
     if (alamat !== undefined) data.alamat = alamat;
     if (rtRw !== undefined) data.rtRw = rtRw;
@@ -370,10 +457,46 @@ export async function PUT(
       }
     }
 
+    // Jika kodePelanggan berubah, perbarui noInvoice pada tagihan yang masih belum_bayar
+    if (data.kodePelanggan && data.kodePelanggan !== targetPelanggan.kodePelanggan) {
+      try {
+        const unpaidBills = await prisma.tagihan.findMany({
+          where: {
+            pelangganId: id,
+            status: "belum_bayar",
+            deletedAt: null,
+          },
+          select: { id: true, bulan: true, tahun: true },
+        });
+
+        for (const bill of unpaidBills) {
+          const newNoInvoice = generateNoInvoice(String(data.kodePelanggan), bill.bulan, bill.tahun);
+          const existingInv = await prisma.tagihan.findUnique({
+            where: { noInvoice: newNoInvoice },
+            select: { id: true },
+          });
+          if (!existingInv || existingInv.id === bill.id) {
+            await prisma.tagihan.update({
+              where: { id: bill.id },
+              data: { noInvoice: newNoInvoice },
+            });
+          }
+        }
+      } catch (errInvoice) {
+        console.error("Gagal sinkronisasi noInvoice tagihan berjalan:", errInvoice);
+      }
+    }
+
     await logAudit("update", "Pelanggan", id, { id }, { nama: pelanggan.nama, status: pelanggan.status });
 
     return NextResponse.json(pelanggan);
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.code === "P2002" || (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002")) {
+      return NextResponse.json(
+        { error: "Nomor WhatsApp atau Kode Pelanggan ini sudah terdaftar pada pelanggan lain." },
+        { status: 400 }
+      );
+    }
     console.error("PUT /api/pelanggan/[id] error:", err);
     return NextResponse.json({ error: "Gagal mengupdate pelanggan" }, { status: 500 });
   }

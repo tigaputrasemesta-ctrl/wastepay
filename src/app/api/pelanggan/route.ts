@@ -362,8 +362,8 @@ export async function POST(request: Request) {
     // Simpan foto rumah ke file storage jika berupa Base64 terisolasi per tenant
     const savedFotoRumah = await persistBase64Image(fotoRumah, "pelanggan", effectiveTenantId);
 
-    // Kode pelanggan kini menggunakan nomor WhatsApp (noTelepon)
-    const kodePelanggan = noTelepon;
+    // Kode pelanggan kini menggunakan nomor WhatsApp (noTelepon) atau kustom jika disediakan
+    const kodePelanggan = body.kodePelanggan ? String(body.kodePelanggan).trim() : noTelepon;
 
     let pelanggan;
     try {
@@ -480,7 +480,13 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json(pelanggan, { status: 201 });
-  } catch {
+  } catch (err: any) {
+    if (err?.code === "P2002" || (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002")) {
+      return NextResponse.json(
+        { error: "Nomor WhatsApp atau Kode Pelanggan ini sudah terdaftar pada pelanggan lain." },
+        { status: 400 }
+      );
+    }
     return NextResponse.json(
       { error: "Gagal menambah pelanggan" },
       { status: 500 }
