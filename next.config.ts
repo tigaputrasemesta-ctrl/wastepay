@@ -38,11 +38,6 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: "/bayar-tagihan",
-        destination: "/bayar",
-        permanent: true,
-      },
-      {
         source: "/jangkauan",
         destination: "/coverage",
         permanent: true,

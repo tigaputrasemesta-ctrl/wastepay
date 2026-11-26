@@ -25,10 +25,7 @@ export function channelAllowed(paymentMethod?: string | null): boolean {
   const env = process.env.DUITKU_CHANNELS?.trim();
   const allowed = env
     ? env.split(",").map((s) => s.trim().toUpperCase()).filter(Boolean)
-    : [
-        "SQ", "SP", "BC", "M1", "I1", "BR", "BT", "B1", "VA", "VC",
-        "CIMB", "BNI", "BRI", "PERMATA", "MANDIRI", "OVO", "DANA", "GOPAY"
-      ];
+    : ["SQ"]; // Hanya QRIS NusaPay sesuai instruksi resmi
   return allowed.includes(m);
 }
 
@@ -69,8 +66,7 @@ export type DuitkuPaymentMethod = {
 };
 
 /**
- * Daftar channel pembayaran default (fallback) — dipakai jika getPaymentMethods
- * belum aktif/gagal. id dipakai sebagai paymentMethod Duitku.
+ * Daftar channel pembayaran default (fallback) — hanya QRIS NusaPay.
  */
 export const DUITKU_METHODS: any[] = [
   {
@@ -80,53 +76,5 @@ export const DUITKU_METHODS: any[] = [
     icon: "💳",
     imageUrl: "https://images.duitku.com/hotlink-ok/SQ.PNG",
     totalFee: "1500"
-  },
-  {
-    value: "SP",
-    label: "ShopeePay",
-    sublabel: "Aplikasi Shopee & ShopeePay",
-    icon: "🛍️",
-    imageUrl: "https://images.duitku.com/hotlink-ok/SP.PNG",
-    totalFee: "1500"
-  },
-  {
-    value: "BC",
-    label: "Virtual Account BCA",
-    sublabel: "BCA Mobile, myBCA, KlikBCA & ATM BCA",
-    icon: "🏦",
-    imageUrl: "https://images.duitku.com/hotlink-ok/BC.PNG",
-    totalFee: "3000"
-  },
-  {
-    value: "M1",
-    label: "Mandiri Bill",
-    sublabel: "Livin' by Mandiri & ATM Mandiri",
-    icon: "🏦",
-    imageUrl: "https://images.duitku.com/hotlink-ok/M1.PNG",
-    totalFee: "3000"
-  },
-  {
-    value: "I1",
-    label: "Virtual Account BNI",
-    sublabel: "BNI Mobile Banking & ATM BNI",
-    icon: "🏦",
-    imageUrl: "https://images.duitku.com/hotlink-ok/I1.PNG",
-    totalFee: "3000"
-  },
-  {
-    value: "BR",
-    label: "Virtual Account BRI",
-    sublabel: "BRImo & ATM BRI",
-    icon: "🏦",
-    imageUrl: "https://images.duitku.com/hotlink-ok/BR.PNG",
-    totalFee: "3000"
-  },
-  {
-    value: "BT",
-    label: "Permata / Bank Transfer",
-    sublabel: "PermataMobile X & ATM Bersama/Prima",
-    icon: "🏦",
-    imageUrl: "https://images.duitku.com/hotlink-ok/BT.PNG",
-    totalFee: "3000"
   },
 ];

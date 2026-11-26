@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import QRCode from "qrcode";
@@ -202,12 +202,23 @@ export default function BayarPage() {
 }
 
 function BayarPortalContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const invoiceParam = searchParams.get("invoice") || "";
   const merchantOrderId = searchParams.get("merchantOrderId") || "";
   const resultCode = searchParams.get("resultCode");
   const statusParam = searchParams.get("status");
   const kodeParam = searchParams.get("kode") || searchParams.get("noWhatsapp") || searchParams.get("search") || "";
+
+  // Forward ke halaman tiket Skylite yang ultra-responsif di mobile bila ada invoice / callback
+  useEffect(() => {
+    if (invoiceParam) {
+      router.replace(`/bayar-tagihan?invoice=${encodeURIComponent(invoiceParam)}`);
+    } else if (merchantOrderId) {
+      const q = resultCode ? `&resultCode=${encodeURIComponent(resultCode)}` : "";
+      router.replace(`/bayar-tagihan?merchantOrderId=${encodeURIComponent(merchantOrderId)}${q}`);
+    }
+  }, [invoiceParam, merchantOrderId, resultCode, router]);
 
   // === STATE PENCARIAN TAGIHAN ===
   const [kode, setKode] = useState(kodeParam);
@@ -326,7 +337,7 @@ function BayarPortalContent() {
       if (invoiceUrl.startsWith("INV-")) {
         invoiceUrl = "INV/" + invoiceUrl.slice(4);
       }
-      window.location.href = `/bayar?invoice=${encodeURIComponent(invoiceUrl)}`;
+      window.location.href = `/bayar-tagihan?invoice=${encodeURIComponent(invoiceUrl)}`;
       return;
     }
 
@@ -1729,7 +1740,7 @@ function BayarPortalContent() {
                           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                             {t.noInvoice && (
                               <Link
-                                href={`/bayar?invoice=${encodeURIComponent(t.noInvoice)}`}
+                                href={`/bayar-tagihan?invoice=${encodeURIComponent(t.noInvoice)}`}
                                 className="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-sm transition active:scale-95 flex items-center justify-center gap-2"
                               >
                                 <span className="text-sm">💳</span>

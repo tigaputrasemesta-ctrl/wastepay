@@ -3,7 +3,9 @@
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import QRCode from "qrcode";
 import { toast } from "@/components/Toast";
+import { formatRupiah } from "@/lib/utils";
 import {
   formatRupiahSkylite,
   formatTanggalIndo,
@@ -49,7 +51,7 @@ type PaymentChannel = {
   logo: string;
 };
 
-// Saluran pembayaran resmi (QRIS NusaPay, ShopeePay, dan Transfer Bank BCA)
+// Hanya 2 metode pembayaran resmi sesuai instruksi: QRIS NusaPay & Transfer BCA Manual Kode Unik
 const DEFAULT_CHANNELS: PaymentChannel[] = [
   {
     id: "SQ",
@@ -59,16 +61,9 @@ const DEFAULT_CHANNELS: PaymentChannel[] = [
     logo: "https://images.duitku.com/hotlink-ok/SQ.PNG",
   },
   {
-    id: "SP",
-    name: "SHOPEEPAY",
-    fee: "Tanpa biaya admin",
-    isFree: true,
-    logo: "https://images.duitku.com/hotlink-ok/SP.PNG",
-  },
-  {
     id: "BCA_MANUAL",
-    name: "TRANSFER BCA",
-    fee: "Kode Unik",
+    name: "TRANSFER BCA (KODE UNIK)",
+    fee: "Tanpa biaya admin",
     isFree: true,
     logo: "https://images.duitku.com/hotlink-ok/BC.PNG",
   },
@@ -96,30 +91,35 @@ function BayarTagihanContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Forward otomatis ke portal pembayaran utama /bayar
-  useEffect(() => {
-    const qs = searchParams.toString();
-    router.replace(qs ? `/bayar?${qs}` : "/bayar");
-  }, [router, searchParams]);
-
   const invoiceParam = searchParams.get("invoice")?.trim() || "";
+  const merchantOrderId = searchParams.get("merchantOrderId")?.trim() || "";
+  const resultCode = searchParams.get("resultCode")?.trim() || "";
 
-  const [loading, setLoading] = useState(Boolean(invoiceParam));
+  const [loading, setLoading] = useState(Boolean(invoiceParam || merchantOrderId));
   const [tagihan, setTagihan] = useState<DetailTagihan | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [inputInvoice, setInputInvoice] = useState(invoiceParam);
   const [channels, setChannels] = useState<PaymentChannel[]>(DEFAULT_CHANNELS);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [processingPayment, setProcessingPayment] = useState(false);
-  const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
+  const [selectedMethod, setSelectedMethod] = useState<string | null>("SQ");
   const [buktiBayarFile, setBuktiBayarFile] = useState<string | null>(null);
   const [namaPengirim, setNamaPengirim] = useState("");
   const [uploadingBukti, setUploadingBukti] = useState(false);
   const [showUploadForm, setShowUploadForm] = useState(false);
 
+  // === ON-PAGE QRIS MODAL & AUTO-POLLING STATE ===
+  const [onPageQris, setOnPageQris] = useState<{
+    qrDataUrl: string;
+    paymentUrl?: string;
+    orderId: string;
+    amount: number;
+  } | null>(null);
+  const [pollingStatus, setPollingStatus] = useState<string | null>(null);
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 2500);
+    setTimeout(() => setToastMessage(null), 3000);
   };
 
   const handleSalinTeks = (teks: string, label: string) => {
@@ -144,18 +144,22 @@ function BayarTagihanContent() {
     reader.readAsDataURL(file);
   };
 
-  const loadTagihan = useCallback(async (inv: string) => {
-    if (!inv) return;
+  const loadTagihan = useCallback(async (inv?: string, orderId?: string) => {
+    if (!inv && !orderId) return;
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/publik/tagihan-detail?invoice=${encodeURIComponent(inv)}`);
+      const q = inv
+        ? `invoice=${encodeURIComponent(inv)}`
+        : `merchantOrderId=${encodeURIComponent(orderId!)}`;
+      const res = await fetch(`/api/publik/tagihan-detail?${q}`);
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || "Data tagihan tidak ditemukan.");
         setTagihan(null);
       } else {
         setTagihan(data);
+        if (data.noInvoice) setInputInvoice(data.noInvoice);
       }
     } catch {
       setError("Gagal menghubungi server. Silakan coba lagi.");
@@ -168,48 +172,72 @@ function BayarTagihanContent() {
   useEffect(() => {
     if (invoiceParam) {
       loadTagihan(invoiceParam);
+    } else if (merchantOrderId) {
+      loadTagihan(undefined, merchantOrderId);
     } else {
       setLoading(false);
     }
-  }, [invoiceParam, loadTagihan]);
+  }, [invoiceParam, merchantOrderId, loadTagihan]);
 
-  // Muat channel gateway jika tersedia (QRIS NusaPay, ShopeePay + Transfer BCA Manual)
+  useEffect(() => {
+    if (resultCode === "00") {
+      showToast("Pembayaran Berhasil Diverifikasi LUNAS!");
+    }
+  }, [resultCode]);
+
+  // Auto-polling status transaksi saat QRIS on-page terbuka
+  useEffect(() => {
+    if (!onPageQris?.orderId || pollingStatus === "success") return;
+
+    let pollCount = 0;
+    const maxPoll = 40; // 40 x 3s = 2 menit
+    const interval = setInterval(async () => {
+      pollCount++;
+      if (pollCount > maxPoll) {
+        clearInterval(interval);
+        return;
+      }
+      try {
+        const res = await fetch(`/api/publik/duitku/status?orderId=${encodeURIComponent(onPageQris.orderId)}`);
+        const st = await res.json();
+        if (st && (st.statusCode === "00" || st.status === "SUCCESS")) {
+          clearInterval(interval);
+          setPollingStatus("success");
+          setOnPageQris(null);
+          showToast("Pembayaran QRIS Berhasil Diverifikasi LUNAS!");
+          if (tagihan?.noInvoice) {
+            loadTagihan(tagihan.noInvoice);
+          } else if (invoiceParam) {
+            loadTagihan(invoiceParam);
+          }
+        }
+      } catch (err) {
+        console.warn("Polling status error:", err);
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [onPageQris, pollingStatus, tagihan?.noInvoice, invoiceParam, loadTagihan]);
+
+  // Muat channel gateway (hanya SQ NusaPay & BCA Manual)
   useEffect(() => {
     if (!tagihan) return;
-    fetch(`/api/publik/duitku/methods?amount=${tagihan.total}`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.methods && Array.isArray(data.methods) && data.methods.length > 0) {
-          const ALLOWED = new Set(["SQ", "SP"]);
-          const mapped: PaymentChannel[] = data.methods
-            .filter((m: any) => ALLOWED.has(m.paymentMethod?.toUpperCase()))
-            .map((m: any) => {
-              const code = m.paymentMethod.toUpperCase();
-              const isSq = code === "SQ";
-              return {
-                id: code,
-                name: isSq ? "QRIS NUSAPAY" : "SHOPEEPAY",
-                fee: m.totalFee && Number(m.totalFee) > 0 ? `+ ${formatRupiahSkylite(Number(m.totalFee))}` : "Tanpa biaya admin",
-                isFree: !m.totalFee || Number(m.totalFee) === 0,
-                logo: isSq
-                  ? "https://images.duitku.com/hotlink-ok/SQ.PNG"
-                  : "https://images.duitku.com/hotlink-ok/SP.PNG",
-              };
-            });
-          // Tambahkan Transfer BCA Manual
-          mapped.push({
-            id: "BCA_MANUAL",
-            name: "TRANSFER BCA",
-            fee: "Kode Unik",
-            isFree: true,
-            logo: "https://images.duitku.com/hotlink-ok/BC.PNG",
-          });
-          setChannels(mapped);
-        }
-      })
-      .catch(() => {
-        // Fallback ke DEFAULT_CHANNELS
-      });
+    setChannels([
+      {
+        id: "SQ",
+        name: "QRIS NUSAPAY",
+        fee: "Tanpa biaya admin",
+        isFree: true,
+        logo: "https://images.duitku.com/hotlink-ok/SQ.PNG",
+      },
+      {
+        id: "BCA_MANUAL",
+        name: "TRANSFER BCA (KODE UNIK)",
+        fee: "Tanpa biaya admin",
+        isFree: true,
+        logo: "https://images.duitku.com/hotlink-ok/BC.PNG",
+      },
+    ]);
   }, [tagihan]);
 
   const handleSalinInvoice = () => {
@@ -234,18 +262,39 @@ function BayarTagihanContent() {
         body: JSON.stringify({
           kode: tagihan.pelanggan.kodePelanggan,
           tagihanId: tagihan.id,
-          paymentMethod: methodId,
+          paymentMethod: "SQ",
         }),
       });
 
       const data = await res.json();
-      if (res.ok && data.paymentUrl) {
-        // Alihkan langsung ke halaman pembayaran resmi Duitku
-        window.location.assign(data.paymentUrl);
-      } else {
-        toast(data.error || "Gagal membuat transaksi pembayaran. Silakan coba kembali.", "error");
-        setProcessingPayment(false);
+      if (res.ok) {
+        if (data.qrString) {
+          try {
+            const qrDataUrl = await QRCode.toDataURL(data.qrString, {
+              width: 320,
+              margin: 2,
+              color: { dark: "#0f172a", light: "#ffffff" },
+            });
+            setOnPageQris({
+              qrDataUrl,
+              paymentUrl: data.paymentUrl,
+              orderId: data.orderId,
+              amount: tagihan.total,
+            });
+            setPollingStatus("pending");
+            setProcessingPayment(false);
+            return;
+          } catch (qrErr) {
+            console.error("Gagal render QRIS, fallback ke URL:", qrErr);
+          }
+        }
+        if (data.paymentUrl) {
+          window.location.assign(data.paymentUrl);
+          return;
+        }
       }
+      toast(data.error || "Gagal membuat sesi transaksi QRIS. Silakan coba kembali.", "error");
+      setProcessingPayment(false);
     } catch {
       toast("Terjadi kesalahan koneksi ke payment gateway. Silakan refresh dan coba lagi.", "error");
       setProcessingPayment(false);
@@ -551,6 +600,21 @@ function BayarTagihanContent() {
                     ))}
                   </div>
 
+                  {/* TOMBOL BUKA QRIS KEMBALI JIKA SUDAH PILIH SQ */}
+                  {selectedMethod === "SQ" && !onPageQris && (
+                    <div className="mt-4">
+                      <button
+                        type="button"
+                        onClick={() => handleBayar("SQ")}
+                        disabled={processingPayment}
+                        className="w-full py-3.5 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white rounded-2xl text-xs sm:text-sm font-bold shadow-md transition flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
+                      >
+                        <span className="text-base">💳</span>
+                        <span>{processingPayment ? "Menyiapkan QRIS..." : "Tampilkan Barcode QRIS Sekarang"}</span>
+                      </button>
+                    </div>
+                  )}
+
                   {/* KARTU RINCIAN TRANSFER MANUAL BANK BCA */}
                   {selectedMethod === "BCA_MANUAL" && tagihan && (
                     <div className="pp-bca-box">
@@ -684,12 +748,77 @@ function BayarTagihanContent() {
         {/* TOAST MESSAGE */}
         {toastMessage && <div className="pp-toast">✓ {toastMessage}</div>}
 
+        {/* MODAL QRIS ON-PAGE */}
+        {onPageQris && (
+          <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in">
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl p-6 sm:p-8 max-w-sm w-full space-y-4 text-center">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <h3 className="text-sm font-extrabold text-slate-900">Scan QRIS Pembayaran</h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setOnPageQris(null)}
+                  className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center text-sm font-bold"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="bg-white p-3 rounded-2xl border-2 border-slate-200 shadow-inner inline-block mx-auto">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={onPageQris.qrDataUrl}
+                  alt="QRIS Tagihan UPS HERU"
+                  className="w-64 h-64 mx-auto object-contain"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <p className="text-xs text-slate-500 font-medium">Total Pembayaran</p>
+                <p className="text-2xl font-black text-emerald-800">
+                  {formatRupiah(onPageQris.amount)}
+                </p>
+                <p className="text-[11px] text-slate-400 font-mono">Order #{onPageQris.orderId}</p>
+              </div>
+
+              <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-left space-y-1">
+                <p className="text-xs font-bold text-amber-900 flex items-center gap-1.5">
+                  <span className="animate-spin text-sm">⏳</span>
+                  <span>Menunggu Pembayaran Warga...</span>
+                </p>
+                <p className="text-[11px] text-amber-800 leading-tight">
+                  Jika pakai 1 HP: simpan gambar QRIS di bawah, lalu buka aplikasi m-Banking/e-wallet Anda dan pilih <em>Upload QR dari Galeri</em>. Halaman ini otomatis mendeteksi saat lunas.
+                </p>
+              </div>
+
+              <div className="space-y-2 pt-1">
+                <a
+                  href={onPageQris.qrDataUrl}
+                  download={`QRIS-Tagihan-${onPageQris.orderId}.png`}
+                  className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl transition shadow-md flex items-center justify-center gap-2 active:scale-95"
+                >
+                  <span>📥 Simpan Gambar QRIS ke Galeri</span>
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setOnPageQris(null)}
+                  className="w-full py-2 text-slate-500 hover:text-slate-700 text-xs font-semibold"
+                >
+                  Tutup QRIS
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* LOADING MODAL OVERLAY */}
         {processingPayment && (
           <div className="pp-loading-overlay">
             <div className="pp-spinner" />
             <div className="text-base font-bold mb-1">Memproses Pembayaran...</div>
-            <div className="text-xs text-emerald-200">Mengarahkan ke halaman transaksi aman Duitku</div>
+            <div className="text-xs text-emerald-200">Menghubungkan ke gateway QRIS Duitku</div>
           </div>
         )}
       </main>
