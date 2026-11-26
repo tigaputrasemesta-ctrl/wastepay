@@ -724,6 +724,7 @@ export type DisposisiKomplain = {
   deskripsi: string;
   catatanAdmin?: string | null;
   waktuKomplain?: Date | string;
+  selesaiUrl?: string | null;
 };
 
 export function templateDisposisiKomplainPetugas(
@@ -734,57 +735,38 @@ export function templateDisposisiKomplainPetugas(
     : formatTanggalWaktuIndo(new Date()) + " WIB";
 
   const baris = [
-    `🚨 *DISPOSISI PENGADUAN SAMPAH — ${NAMA().toUpperCase()}*`,
-    `ID Tiket: *#KMP-${p.idKomplain}*`,
+    `🚛 *TUGAS JEMPUT SAMPAH (#KMP-${p.idKomplain})*`,
+    `Petugas: *${p.namaPetugas}*`,
     ``,
-    `Kepada Yth. Petugas/Driver: *${p.namaPetugas}*`,
-    `Mohon segera ditindaklanjuti laporan kendala sampah warga berikut:`,
+    `👤 *${p.namaPelanggan}*${p.kodePelanggan ? ` (${p.kodePelanggan})` : ""}${p.noTeleponPelanggan ? ` • ${p.noTeleponPelanggan}` : ""}`,
+    `📍 ${p.alamatPelanggan}${p.patokanLokasi ? `\n🧭 *Patokan*: ${p.patokanLokasi}` : ""}${p.zonaWilayah && p.zonaWilayah !== "-" ? `\n🚛 *Wilayah*: ${p.zonaWilayah}` : ""}`,
     ``,
-    `👤 *Pelanggan* : ${p.namaPelanggan}${p.kodePelanggan ? ` (${p.kodePelanggan})` : ""}`,
+    `⚠️ *Masalah*: ${p.jenisKomplain}`,
+    `💬 "${p.deskripsi}"`,
   ];
 
-  if (p.noTeleponPelanggan) {
-    const cleanNo = p.noTeleponPelanggan.replace(/[^\d]/g, "").replace(/^0/, "62");
-    baris.push(`📱 *Kontak Warga* : https://wa.me/${cleanNo}`);
-  }
-  baris.push(`📍 *Alamat* : ${p.alamatPelanggan}`);
-  if (p.patokanLokasi) {
-    baris.push(`🧭 *Patokan* : ${p.patokanLokasi}`);
-  }
-  if (p.zonaWilayah) {
-    baris.push(`🚛 *Zona / Wilayah* : ${p.zonaWilayah}`);
-  }
-  if (p.googleMapsUrl) {
-    baris.push(`🗺️ *Titik Navigasi Maps* : ${p.googleMapsUrl}`);
-  }
-  if (p.petaPdfUrl) {
-    baris.push(`📄 *Lembar Peta & Foto Rumah (PDF)* : ${p.petaPdfUrl}`);
-  }
-  if (p.fotoKeluhanUrl) {
-    baris.push(`📸 *Foto Keluhan Warga* : ${p.fotoKeluhanUrl}`);
-  }
-
-  baris.push(
-    ``,
-    `⚠️ *Jenis Masalah* : ${p.jenisKomplain}`,
-    `📝 *Isi Keluhan Warga*:`,
-    `"${p.deskripsi}"`
-  );
-
   if (p.catatanAdmin && p.catatanAdmin.trim()) {
-    baris.push(
-      ``,
-      `💬 *Instruksi Khusus Admin*:`,
-      `*${p.catatanAdmin.trim()}*`
-    );
+    baris.push(`📋 *Catatan*: ${p.catatanAdmin.trim()}`);
   }
 
+  const linkBantuan: string[] = [];
+  if (p.googleMapsUrl) linkBantuan.push(`🗺️ Maps: ${p.googleMapsUrl}`);
+  if (p.petaPdfUrl) linkBantuan.push(`📄 Foto Rumah: ${p.petaPdfUrl}`);
+  if (p.fotoKeluhanUrl) linkBantuan.push(`📸 Foto Keluhan: ${p.fotoKeluhanUrl}`);
+
+  if (linkBantuan.length > 0) {
+    baris.push(``, `📌 *BANTUAN LOKASI:*`, ...linkBantuan);
+  }
+
+  const selesaiLink = p.selesaiUrl || `${appBaseUrl()}/pengaduan`;
   baris.push(
     ``,
-    `🗓️ *Waktu Lapor* : ${waktuStr}`,
-    ``,
-    `Mohon kirimkan foto bukti atau update status setelah penanganan selesai di lokasi. Terima kasih! 🙏`,
-    `— *Operasional ${NAMA()}*`
+    `━━━━━━━━━━━━━━━━━━━━━`,
+    `✅ *JIKA SUDAH DIANGKUT, KLIK:*`,
+    `👉 ${selesaiLink}`,
+    `*(Status otomatis selesai & warga ternotifikasi)*`,
+    `━━━━━━━━━━━━━━━━━━━━━`,
+    `🗓️ *Waktu Lapor*: ${waktuStr}`
   );
 
   return {

@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
   templateDisposisiKomplainPetugas,
   templateKonfirmasiPengaduanPelanggan,
+  templateUpdateKomplainPelanggan,
 } from "@/lib/wa";
+import { generateKomplainToken, verifyKomplainToken } from "@/lib/komplain-token";
 
 describe("Pengaduan & Auto-Dispatch Driver Lifecycle", () => {
   type PelangganMock = {
@@ -231,5 +233,74 @@ describe("Pengaduan & Auto-Dispatch Driver Lifecycle", () => {
     expect(t.pesan).toContain("#KMP-142");
     expect(t.pesan).toContain("Bang Supri (Armada 03)");
     expect(t.pesan).toContain("/pengaduan");
+  });
+
+  it("menghasilkan token keamanan 1-klik driver yang konsisten dan anti-tamper", () => {
+    const komplainId = 142;
+    const pelangganId = 12;
+
+    const token = generateKomplainToken(komplainId, pelangganId);
+    expect(token).toBeDefined();
+    expect(token.length).toBe(16);
+
+    // Validasi token yang benar
+    expect(verifyKomplainToken(token, komplainId, pelangganId)).toBe(true);
+
+    // Ditolak jika komplainId atau pelangganId berbeda
+    expect(verifyKomplainToken(token, 999, pelangganId)).toBe(false);
+    expect(verifyKomplainToken(token, komplainId, 888)).toBe(false);
+
+    // Ditolak jika token palsu / diubah
+    expect(verifyKomplainToken("abcdef1234567890", komplainId, pelangganId)).toBe(false);
+    expect(verifyKomplainToken("", komplainId, pelangganId)).toBe(false);
+    expect(verifyKomplainToken(null, komplainId, pelangganId)).toBe(false);
+  });
+
+  it("membuat pesan disposisi driver yang rapi, ringkas, dan memuat tautan 1-klik selesai tanpa login", () => {
+    const token = generateKomplainToken(142, 12);
+    const selesaiUrl = `https://upsheru.com/k/142?t=${token}`;
+
+    const payload = {
+      idKomplain: 142,
+      namaPetugas: "Bang Supri",
+      namaPelanggan: "Ibu Siti",
+      kodePelanggan: "081299887766",
+      noTeleponPelanggan: "081299887766",
+      alamatPelanggan: "Jl. Kandang Ayam RT 02 / RW 05",
+      patokanLokasi: "Rumah pagar hitam",
+      zonaWilayah: "Zona Kalibaru",
+      googleMapsUrl: "https://www.google.com/maps?q=-6.4248,106.8326",
+      petaPdfUrl: "https://upsheru.com/api/pelanggan/12/peta-pdf?t=valid_token",
+      jenisKomplain: "Sampah Tidak Diangkut",
+      deskripsi: "Tong sampah depan rumah belum terangkut",
+      selesaiUrl,
+    };
+
+    const t = templateDisposisiKomplainPetugas(payload);
+
+    // Scannable, ringkas, dan fokus tindakan
+    expect(t.pesan).toContain("TUGAS JEMPUT SAMPAH (#KMP-142)");
+    expect(t.pesan).toContain("Bang Supri");
+    expect(t.pesan).toContain("Ibu Siti");
+    expect(t.pesan).toContain("Rumah pagar hitam");
+    expect(t.pesan).toContain("BANTUAN LOKASI:");
+    expect(t.pesan).toContain("JIKA SUDAH DIANGKUT, KLIK:");
+    expect(t.pesan).toContain(selesaiUrl);
+    // Tidak ada link wa.me mentah yang memakan tempat
+    expect(t.pesan).not.toContain("https://wa.me/");
+  });
+
+  it("membuat template notifikasi pembaruan status selesai kepada warga pelapor", () => {
+    const pesan = templateUpdateKomplainPelanggan({
+      tiketId: 142,
+      namaPelanggan: "Ibu Siti",
+      status: "selesai",
+      tanggapan: "Sampah telah dijemput armada siang ini.",
+    });
+
+    expect(pesan).toContain("#KMP-142");
+    expect(pesan).toContain("Ibu Siti");
+    expect(pesan).toContain("Selesai / Sudah Tertangani ✅");
+    expect(pesan).toContain("Sampah telah dijemput armada siang ini.");
   });
 });

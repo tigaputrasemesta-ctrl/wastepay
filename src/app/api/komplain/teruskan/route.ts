@@ -9,6 +9,8 @@ import {
   templateDisposisiKomplainPetugas,
 } from "@/lib/wa";
 import { formatTanggalWaktuIndo } from "@/lib/invoice-format";
+import { generateKomplainToken } from "@/lib/komplain-token";
+import { getDefaultMapToken } from "@/lib/tv-token";
 
 export async function POST(request: Request) {
   const session = await getSession();
@@ -83,6 +85,15 @@ export async function POST(request: Request) {
       p.rtRw ||
       "-";
 
+    // Lembar Peta PDF & Foto Rumah per Pelanggan (dengan Token Map Resmi)
+    const mapToken = getDefaultMapToken();
+    const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+    const baseUrl = rawHost ? `https://${rawHost}` : (process.env.NEXT_PUBLIC_APP_URL || "https://upsheru.com");
+    const petaPdfUrl = `${baseUrl}/api/pelanggan/${p.id}/peta-pdf?t=${encodeURIComponent(mapToken)}`;
+    const fotoKeluhanUrl = komplain.foto ? `${baseUrl}${komplain.foto}` : null;
+    const komplainToken = generateKomplainToken(komplain.id, p.id);
+    const selesaiUrl = `${baseUrl}/k/${komplain.id}?t=${komplainToken}`;
+
     // Format pesan disposisi WhatsApp
     const { judul, pesan } = templateDisposisiKomplainPetugas({
       idKomplain: komplain.id,
@@ -94,10 +105,13 @@ export async function POST(request: Request) {
       patokanLokasi: p.patokanLokasi,
       zonaWilayah,
       googleMapsUrl,
+      petaPdfUrl,
+      fotoKeluhanUrl,
       jenisKomplain: labelJenis,
       deskripsi: komplain.deskripsi,
       catatanAdmin: catatanAdmin || undefined,
       waktuKomplain: komplain.createdAt,
+      selesaiUrl,
     });
 
     let statusGateway: "terkirim" | "gagal" | "skipped" = "skipped";

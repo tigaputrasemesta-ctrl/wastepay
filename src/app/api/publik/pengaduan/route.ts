@@ -11,6 +11,7 @@ import { formatRupiahSkylite, BULAN_INDO } from "@/lib/invoice-format";
 import { persistBase64Image } from "@/lib/server/media-storage";
 import { getTenantFromRequest, buildTenantFilter } from "@/lib/tenant";
 import { getDefaultMapToken } from "@/lib/tv-token";
+import { generateKomplainToken } from "@/lib/komplain-token";
 
 const JENIS_VALID = ["tidak_diangkut", "sampah_menumpuk", "lainnya"];
 
@@ -271,6 +272,8 @@ export async function POST(request: Request) {
     const baseUrl = rawHost ? `https://${rawHost}` : (process.env.NEXT_PUBLIC_APP_URL || "https://upsheru.com");
     const petaPdfUrl = `${baseUrl}/api/pelanggan/${pelanggan.id}/peta-pdf?t=${encodeURIComponent(mapToken)}`;
     const fotoKeluhanUrl = savedFoto ? `${baseUrl}${savedFoto}` : null;
+    const komplainToken = generateKomplainToken(komplain.id, pelanggan.id);
+    const selesaiUrl = `${baseUrl}/k/${komplain.id}?t=${komplainToken}`;
 
     const labelJenis =
       jenis === "tidak_diangkut"
@@ -304,6 +307,7 @@ export async function POST(request: Request) {
             deskripsi,
             catatanAdmin: namaArmada ? `Armada Penjemput: ${namaArmada}` : undefined,
             waktuKomplain: komplain.createdAt || new Date(),
+            selesaiUrl,
           });
 
           const hasilPetugas = await kirimWhatsApp(assignedPetugas.noTelepon, tDisposisi.pesan);
