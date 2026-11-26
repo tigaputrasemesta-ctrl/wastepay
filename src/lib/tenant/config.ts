@@ -153,12 +153,51 @@ export const MITRA_TEST_TENANT: TenantConfig = {
 };
 
 /**
+ * Tenant Mitra Mandiri PotongLink (potonglink.com)
+ */
+export const POTONGLINK_TENANT: TenantConfig = {
+  id: "tenant-potonglink",
+  slug: "potonglink",
+  namaMitra: "PotongLink",
+  tipe: "mitra_mandiri",
+  domains: [
+    "potonglink.com",
+    "www.potonglink.com",
+    "potonglink.o2whero.com",
+  ],
+  primaryDomain: "potonglink.com",
+  branding: {
+    namaMitra: "PotongLink",
+    tagline: "Unit Pengelolaan & Retribusi Sampah Mandiri",
+    logoUrl: "/images/o2w-logo.svg",
+    warnaTema: "#0284c7",
+    alamat: "Kawasan Layanan Mandiri PotongLink",
+    kota: "Indonesia",
+    emailKontak: "kontak@potonglink.com",
+    whatsappKontak: "+62 812-0000-0000",
+  },
+  dbConfig: {
+    isDedicated: false,
+  },
+  status: "aktif",
+  fitur: {
+    retribusiSampah: true,
+    tabunganSampah: true,
+    jemputSampah: true,
+    jualOfftaker: true,
+    qrisDuitku: true,
+    whatsappNotif: true,
+  },
+};
+
+/**
  * Baseline tenant statis untuk fail-safe lookup
  */
 export const KNOWN_TENANTS: TenantConfig[] = [
   CORE_TENANT,
   PILOT_TENANT,
   MITRA_TEST_TENANT,
+  POTONGLINK_TENANT,
 ];
 
 /**

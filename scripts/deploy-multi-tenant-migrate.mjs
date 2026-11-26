@@ -156,6 +156,16 @@ async function main() {
       ) ON CONFLICT ("id") DO NOTHING;
     `);
 
+    await client.query(`
+      INSERT INTO "Tenant" (
+        "id", "slug", "namaMitra", "tipePengelola", "status", "paketLangganan",
+        "customDomain", "subdomain", "warnaTema", "kota", "provinsi", "createdAt", "updatedAt"
+      ) VALUES (
+        'tenant-potonglink', 'potonglink', 'PotongLink', 'mitra_mandiri', 'aktif', 'starter',
+        'potonglink.com', 'potonglink.o2whero.com', '#0284c7', 'Indonesia', 'Indonesia', NOW(), NOW()
+      ) ON CONFLICT ("id") DO NOTHING;
+    `);
+
     const seedDomains = [
       { tenantId: CORE_TENANT_ID, domain: "o2whero.com", isPrimary: true },
       { tenantId: CORE_TENANT_ID, domain: "www.o2whero.com", isPrimary: false },
@@ -166,6 +176,9 @@ async function main() {
       { tenantId: "tenant-mitra-test", domain: "mitra-test.vercel.app", isPrimary: true },
       { tenantId: "tenant-mitra-test", domain: "www.mitra-test.vercel.app", isPrimary: false },
       { tenantId: "tenant-mitra-test", domain: "mitra-test.o2whero.com", isPrimary: false },
+      { tenantId: "tenant-potonglink", domain: "potonglink.com", isPrimary: true },
+      { tenantId: "tenant-potonglink", domain: "www.potonglink.com", isPrimary: false },
+      { tenantId: "tenant-potonglink", domain: "potonglink.o2whero.com", isPrimary: false },
     ];
     for (const d of seedDomains) {
       await client.query(

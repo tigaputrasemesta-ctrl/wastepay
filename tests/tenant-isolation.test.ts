@@ -49,10 +49,25 @@ describe("Tenant Domain Isolation & Misdirection Guard", () => {
     expect(testTenant.tenant.namaMitra).toBe("Mitra Test");
   });
 
+  it("resolves potonglink.com and aliases as independent tenant", () => {
+    const potonglink = resolveTenantByHost("potonglink.com");
+    expect(potonglink.isValid).toBe(true);
+    expect(potonglink.isCore).toBe(false);
+    expect(potonglink.isPilot).toBe(false);
+    expect(potonglink.tenant.id).toBe("tenant-potonglink");
+    expect(potonglink.tenant.slug).toBe("potonglink");
+    expect(potonglink.tenant.namaMitra).toBe("PotongLink");
+
+    const wwwPotonglink = resolveTenantByHost("www.potonglink.com");
+    expect(wwwPotonglink.isValid).toBe(true);
+    expect(wwwPotonglink.tenant.slug).toBe("potonglink");
+  });
+
   it("permits official domains with isValid = true", () => {
     expect(resolveTenantByHost("o2whero.com").isValid).toBe(true);
     expect(resolveTenantByHost("upsheru.com").isValid).toBe(true);
     expect(resolveTenantByHost("mitra-test.vercel.app").isValid).toBe(true);
+    expect(resolveTenantByHost("potonglink.com").isValid).toBe(true);
     expect(resolveTenantByHost("localhost:3000").isValid).toBe(true);
   });
 });
