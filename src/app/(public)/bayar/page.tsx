@@ -325,8 +325,13 @@ function BayarPortalContent() {
 
   // Lakukan pencarian data tagihan pelanggan
   const lakukanPencarian = useCallback(async (queryTarget: string) => {
-    const query = queryTarget.trim();
+    let query = queryTarget.trim();
     if (!query) return;
+
+    // Normalisasi awalan nomor WhatsApp 08xx menjadi 628xx
+    if (/^08\d+/.test(query)) {
+      query = "628" + query.slice(2);
+    }
 
     // Jika user mengetik invoice, alihkan langsung ke tampilan invoice
     if (query.toUpperCase().startsWith("INV")) {
@@ -1437,12 +1442,13 @@ function BayarPortalContent() {
                   placeholder="cth: 08123456789 atau 628..."
                   value={kode}
                   onChange={(e) => {
-                    let val = e.target.value.replace(/[^0-9a-zA-Z\-/]/g, "");
-                    // Normalisasi instan: ubah 08xx menjadi 628xx
-                    if (/^08\d*/.test(val)) {
-                      val = "628" + val.slice(2);
+                    setKode(e.target.value.replace(/[^0-9a-zA-Z\-/]/g, ""));
+                  }}
+                  onBlur={() => {
+                    // Normalisasi rapi saat selesai mengetik
+                    if (/^08\d+/.test(kode)) {
+                      setKode("628" + kode.slice(2));
                     }
-                    setKode(val);
                   }}
                   disabled={mencari}
                   className="w-full pl-4 pr-32 py-3.5 rounded-2xl border border-slate-200 text-slate-900 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all shadow-xs disabled:opacity-60 disabled:bg-slate-50"
@@ -1737,55 +1743,63 @@ function BayarPortalContent() {
                             </button>
                           </div>
                         ) : (
-                          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                          <div className="flex flex-col gap-2 w-full sm:w-auto">
+                            {/* Tombol Utama: Bayar via QRIS / Bank (Skylite Ticket) */}
                             {t.noInvoice && (
                               <Link
                                 href={`/bayar-tagihan?invoice=${encodeURIComponent(t.noInvoice)}`}
-                                className="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-sm transition active:scale-95 flex items-center justify-center gap-2"
+                                className="px-5 py-3 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-sm transition active:scale-95 flex items-center justify-center sm:justify-start gap-2.5"
                               >
-                                <span className="text-sm">💳</span>
+                                <span className="text-base">💳</span>
                                 <div className="text-left">
-                                  <span className="block leading-tight font-extrabold">Bayar via QRIS / Bank</span>
-                                  <span className="text-xs font-normal text-emerald-100 block leading-tight">Otomatis Lunas • Scan QR</span>
+                                  <span className="block leading-tight font-extrabold text-sm">Bayar Sekarang</span>
+                                  <span className="text-[11px] font-normal text-emerald-100 block leading-tight">QRIS NusaPay & Transfer BCA</span>
                                 </div>
+                                <span className="ml-auto text-emerald-200 font-bold">&rarr;</span>
                               </Link>
                             )}
-                            {t.noInvoice && (
-                              <Link
-                                href={`/invoice-tagihan?invoice=${encodeURIComponent(t.noInvoice)}`}
-                                target="_blank"
-                                className="px-3.5 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 hover:text-slate-900 rounded-xl text-xs font-bold shadow-2xs transition active:scale-95 flex items-center justify-center gap-1.5"
-                                title={`Cetak Faktur Tagihan Bulan ${BULAN[t.bulan - 1]} ${t.tahun}`}
-                              >
-                                <span>📄</span>
-                                <span>Cetak Faktur</span>
-                              </Link>
-                            )}
-                            {(t.activeGateway?.orderId || t.lastGatewayOrderId || t.noInvoice) && (
+
+                            {/* Tombol Konfirmasi Transfer & Sub-Actions */}
+                            <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
                               <button
                                 type="button"
-                                disabled={checkingGateway}
-                                onClick={() => checkGatewayStatus(t.activeGateway?.orderId || t.lastGatewayOrderId || undefined, t.noInvoice)}
-                                className="px-3.5 py-2.5 bg-sky-50 hover:bg-sky-100 disabled:opacity-60 text-sky-800 border border-sky-200/80 rounded-xl text-xs font-bold shadow-2xs transition active:scale-95 flex items-center justify-center gap-1.5"
-                                title="Periksa status pembayaran langsung ke gateway Duitku"
+                                onClick={() => {
+                                  setPilihTagihan(t.id);
+                                  setBukti("");
+                                  setKirimError("");
+                                }}
+                                className="flex-1 min-w-[140px] px-3 py-2 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200/90 rounded-lg text-xs font-bold transition active:scale-95 flex items-center justify-center gap-1.5"
+                                title="Klik di sini jika Anda sudah melakukan transfer bank dan ingin mengunggah foto struk"
                               >
-                                <span className={checkingGateway ? "animate-spin" : ""}>🔄</span>
-                                <span>{checkingGateway ? "Cek..." : "Cek Gateway"}</span>
+                                <span>📸</span>
+                                <span>Sudah Transfer? Kirim Bukti</span>
                               </button>
-                            )}
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setPilihTagihan(t.id);
-                                setBukti("");
-                                setKirimError("");
-                              }}
-                              className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 rounded-xl text-xs font-semibold transition active:scale-95 flex items-center justify-center gap-1.5"
-                              title="Gunakan hanya jika Anda sudah terlanjur transfer manual sebelumnya"
-                            >
-                              <span>📤</span>
-                              <span>Sudah Transfer Bank?</span>
-                            </button>
+
+                              {t.noInvoice && (
+                                <Link
+                                  href={`/invoice-tagihan?invoice=${encodeURIComponent(t.noInvoice)}`}
+                                  target="_blank"
+                                  className="px-2.5 py-2 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 border border-slate-200 rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1"
+                                  title={`Lihat rincian faktur bulan ${BULAN[t.bulan - 1]} ${t.tahun}`}
+                                >
+                                  <span>📄</span>
+                                  <span>Faktur</span>
+                                </Link>
+                              )}
+
+                              {(t.activeGateway?.orderId || t.lastGatewayOrderId) && (
+                                <button
+                                  type="button"
+                                  disabled={checkingGateway}
+                                  onClick={() => checkGatewayStatus(t.activeGateway?.orderId || t.lastGatewayOrderId || undefined, t.noInvoice)}
+                                  className="px-2.5 py-2 bg-sky-50 hover:bg-sky-100 disabled:opacity-60 text-sky-800 border border-sky-200 rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1"
+                                  title="Cek status transaksi ke gateway"
+                                >
+                                  <span className={checkingGateway ? "animate-spin" : ""}>🔄</span>
+                                  <span>{checkingGateway ? "Cek..." : "Status"}</span>
+                                </button>
+                              )}
+                            </div>
                           </div>
                         )
                       )}

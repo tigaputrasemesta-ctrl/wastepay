@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, Suspense } from "react";
+import { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import QRCode from "qrcode";
@@ -94,6 +94,8 @@ function BayarTagihanContent() {
   const invoiceParam = searchParams.get("invoice")?.trim() || "";
   const merchantOrderId = searchParams.get("merchantOrderId")?.trim() || "";
   const resultCode = searchParams.get("resultCode")?.trim() || "";
+  const metodeParam = searchParams.get("metode")?.toLowerCase() || "";
+  const isBcaPreferred = metodeParam === "bca" || metodeParam === "transfer";
 
   const [loading, setLoading] = useState(Boolean(invoiceParam || merchantOrderId));
   const [tagihan, setTagihan] = useState<DetailTagihan | null>(null);
@@ -102,11 +104,12 @@ function BayarTagihanContent() {
   const [channels, setChannels] = useState<PaymentChannel[]>(DEFAULT_CHANNELS);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [processingPayment, setProcessingPayment] = useState(false);
-  const [selectedMethod, setSelectedMethod] = useState<string | null>("SQ");
+  const [selectedMethod, setSelectedMethod] = useState<string | null>(isBcaPreferred ? "BCA_MANUAL" : "SQ");
   const [buktiBayarFile, setBuktiBayarFile] = useState<string | null>(null);
   const [namaPengirim, setNamaPengirim] = useState("");
   const [uploadingBukti, setUploadingBukti] = useState(false);
-  const [showUploadForm, setShowUploadForm] = useState(false);
+  const [showUploadForm, setShowUploadForm] = useState(isBcaPreferred);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // === ON-PAGE QRIS MODAL & AUTO-POLLING STATE ===
   const [onPageQris, setOnPageQris] = useState<{
@@ -677,54 +680,132 @@ function BayarTagihanContent() {
                         <strong>⚠️ PENTING:</strong> Mohon transfer tepat hingga 3 digit terakhir (<strong>{formatRupiahSkylite(totalTransferBca)}</strong>) agar pembayaran dapat dicocokkan & diverifikasi kasir secara cepat.
                       </div>
 
-                      {/* AKSI KONFIRMASI */}
+                      {/* AKSI KONFIRMASI TRANSFER & UPLOAD BUKTI */}
                       <div className="pp-bca-actions">
+                        {/* Tombol Utama: Buka Form Unggah Bukti */}
+                        <button
+                          type="button"
+                          className="pp-btn-confirm-transfer"
+                          onClick={() => setShowUploadForm(!showUploadForm)}
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="text-xl">📸</span>
+                            <div className="text-left">
+                              <span className="block font-extrabold text-sm leading-tight text-white">
+                                {showUploadForm ? "Tutup Form Unggah Bukti" : "Sudah Transfer? Unggah Bukti Pembayaran"}
+                              </span>
+                              <span className="block text-[11px] text-emerald-100 font-normal leading-tight mt-0.5">
+                                Lampirkan foto struk / tangkapan layar m-Banking untuk konfirmasi cepat
+                              </span>
+                            </div>
+                          </div>
+                          <span className="text-sm font-bold text-emerald-200">
+                            {showUploadForm ? "▲" : "▼"}
+                          </span>
+                        </button>
+
+                        {/* FORM UNGGAH BUKTI DENGAN DROPZONE & PREVIEW FOTO */}
+                        {showUploadForm && (
+                          <form onSubmit={handleKirimBuktiTransfer} className="pp-upload-card">
+                            <div className="flex items-center gap-2 mb-3">
+                              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                              <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-800">
+                                Konfirmasi Struk Pembayaran Manual
+                              </h4>
+                            </div>
+
+                            {/* Dropzone & Preview Foto */}
+                            <input
+                              type="file"
+                              ref={fileInputRef}
+                              accept="image/*"
+                              onChange={handleFileChange}
+                              className="hidden"
+                            />
+
+                            {!buktiBayarFile ? (
+                              <div
+                                role="button"
+                                tabIndex={0}
+                                onClick={() => fileInputRef.current?.click()}
+                                className="pp-dropzone"
+                              >
+                                <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-xl mb-1.5 shadow-xs">
+                                  📷
+                                </div>
+                                <div className="text-xs font-bold text-slate-800">
+                                  Ketuk untuk Ambil Foto / Pilih dari Galeri
+                                </div>
+                                <p className="text-[11px] text-slate-500 mt-0.5">
+                                  Maks. 2.5MB (format JPG, PNG, atau WEBP)
+                                </p>
+                              </div>
+                            ) : (
+                              <div className="pp-preview-wrap">
+                                <div className="relative w-full h-44 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 flex items-center justify-center">
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img
+                                    src={buktiBayarFile}
+                                    alt="Preview Bukti Transfer"
+                                    className="max-h-full max-w-full object-contain mx-auto"
+                                  />
+                                </div>
+                                <div className="flex items-center justify-between pt-2">
+                                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+                                    <span>✓</span>
+                                    <span>Foto struk siap dikirim</span>
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setBuktiBayarFile(null);
+                                      if (fileInputRef.current) fileInputRef.current.value = "";
+                                    }}
+                                    className="text-xs font-bold text-rose-600 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 px-2.5 py-1 rounded-lg border border-rose-200 transition"
+                                  >
+                                    ✕ Ganti Foto
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Nama Pengirim */}
+                            <div className="mt-3.5 space-y-1 text-left">
+                              <label className="block text-xs font-bold text-slate-700">
+                                Nama Pemilik Rekening Pengirim (opsional):
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="Contoh: a.n. Budi Santoso"
+                                value={namaPengirim}
+                                onChange={(e) => setNamaPengirim(e.target.value)}
+                                className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-xs font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100"
+                              />
+                            </div>
+
+                            {/* Tombol Kirim Bukti */}
+                            <button
+                              type="submit"
+                              disabled={uploadingBukti || !buktiBayarFile}
+                              className="w-full mt-3.5 py-3 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white rounded-xl text-xs font-bold transition shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                            >
+                              <span>{uploadingBukti ? "⏳" : "🚀"}</span>
+                              <span>{uploadingBukti ? "Mengirim Bukti Transfer..." : "Kirim Bukti Pembayaran Sekarang"}</span>
+                            </button>
+                          </form>
+                        )}
+
+                        {/* Opsi Alternatif: Kirim via WhatsApp */}
                         <a
                           href={waUrlKonfirmasi}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="pp-btn-wa"
+                          className="pp-btn-wa-subtle"
                         >
                           <span>💬</span>
-                          <span>Konfirmasi via WhatsApp (+ Foto Bukti)</span>
+                          <span>Atau Kirim Bukti Langsung ke WhatsApp Admin</span>
+                          <span>↗</span>
                         </a>
-
-                        <button
-                          type="button"
-                          className="text-xs text-slate-600 underline font-semibold text-center hover:text-emerald-700 py-1"
-                          onClick={() => setShowUploadForm(!showUploadForm)}
-                        >
-                          {showUploadForm ? "▲ Sembunyikan Form Upload Bukti" : "▼ Atau Unggah Bukti Transfer Langsung di Sini"}
-                        </button>
-
-                        {showUploadForm && (
-                          <form onSubmit={handleKirimBuktiTransfer} className="pp-upload-box">
-                            <div className="text-xs font-bold text-slate-700 mb-2">Unggah Foto / Screenshot Bukti Transfer:</div>
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={handleFileChange}
-                              className="w-full text-xs text-slate-600 mb-3 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-100 file:text-emerald-800 hover:file:bg-emerald-200 cursor-pointer"
-                              required
-                            />
-
-                            <input
-                              type="text"
-                              placeholder="Nama Pemilik Rekening Pengirim (opsional)"
-                              value={namaPengirim}
-                              onChange={(e) => setNamaPengirim(e.target.value)}
-                              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-emerald-600 mb-3"
-                            />
-
-                            <button
-                              type="submit"
-                              disabled={uploadingBukti || !buktiBayarFile}
-                              className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 disabled:bg-slate-300 text-white rounded-xl text-xs font-bold transition shadow-sm"
-                            >
-                              {uploadingBukti ? "Mengirim Bukti Transfer..." : "Kirim Bukti Pembayaran"}
-                            </button>
-                          </form>
-                        )}
                       </div>
                     </div>
                   )}
