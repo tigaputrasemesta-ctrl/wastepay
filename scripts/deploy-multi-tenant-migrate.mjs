@@ -273,11 +273,12 @@ async function main() {
 
     if (existingAdminRes.rows.length > 0) {
       upsheruUserId = existingAdminRes.rows[0].id;
+      // Jangan pernah menimpa password atau tokenVersion user yang sudah ada agar password tidak ter-reset saat deploy
       await client.query(
-        `UPDATE "User" SET "password" = $1, "role" = 'admin', "tenantId" = $2, "aktif" = true, "tokenVersion" = COALESCE("tokenVersion", 1) + 1, "updatedAt" = NOW() WHERE "id" = $3;`,
-        [defaultAdminHash, PILOT_TENANT_ID, upsheruUserId]
+        `UPDATE "User" SET "role" = 'admin', "tenantId" = $1, "aktif" = true, "updatedAt" = NOW() WHERE "id" = $2;`,
+        [PILOT_TENANT_ID, upsheruUserId]
       );
-      console.log(`✓ User ${upsheruAdminEmail} (ID: ${upsheruUserId}) diperbarui menjadi role 'admin' di ${PILOT_TENANT_ID}.`);
+      console.log(`✓ User ${upsheruAdminEmail} (ID: ${upsheruUserId}) dipastikan role 'admin' di ${PILOT_TENANT_ID} (password pengguna dipertahankan).`);
     } else {
       const insertRes = await client.query(
         `INSERT INTO "User" ("email", "password", "nama", "role", "noTelepon", "aktif", "tenantId", "tokenVersion", "createdAt", "updatedAt")
