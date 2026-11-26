@@ -5,13 +5,14 @@ import { notFound } from "next/navigation";
 import TombolPrintInvoice from "@/components/TombolPrintInvoice";
 
 export const metadata: Metadata = {
-  title: "Faktur Tagihan",
+  title: "Faktur & Kuitansi Tagihan Resmi",
   robots: {
     index: false,
     follow: false,
     noarchive: true,
   },
 };
+
 import {
   getTagihanByNoInvoice,
   hitungRincian,
@@ -53,7 +54,7 @@ const LABEL_KATEGORI: Record<string, string> = {
 
 /**
  * /invoice-tagihan?invoice=INV/XXX/YYYYMM
- * Lembar Faktur Retribusi Sampah Resmi — Desain Modern UPS HERU
+ * Lembar Faktur Retribusi & Kuitansi Pembayaran Resmi — UPS HERU DEPOK
  */
 export default async function InvoiceTagihanPage({
   searchParams,
@@ -77,7 +78,11 @@ export default async function InvoiceTagihanPage({
   const rincian = hitungRincian(tagihan.jumlah, tagihan.denda, pajakRate);
   const lunas = tagihan.status === "lunas";
   const namaPeriode = `${BULAN_INDO[tagihan.bulan - 1]} ${tagihan.tahun}`;
-  const perusahaan = companyInfo();
+  const baseCompany = companyInfo(host);
+  const perusahaan = {
+    ...baseCompany,
+    logoUrl: tenantCtx.tenant.branding?.logoUrl || "/ups-heru-logo.jpg",
+  };
 
   const proto = h.get("x-forwarded-proto") || "http";
   const baseUrl = `${proto}://${host}`;
@@ -85,7 +90,7 @@ export default async function InvoiceTagihanPage({
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(qrData)}`;
 
   const pembayaran = tagihan.pembayaran?.[0];
-  const pembayaranMetode = pembayaran?.metode || "tunai";
+  const pembayaranMetode = pembayaran?.metode || (lunas ? "transfer" : "tunai");
 
   const alamatLengkap = [
     tagihan.pelanggan.alamat,
@@ -116,7 +121,7 @@ export default async function InvoiceTagihanPage({
           <div className="invoice-toolbar-right">
             {!lunas && (
               <Link
-                href={`/bayar-tagihan?invoice=${encodeURIComponent(tagihan.noInvoice || "")}`}
+                href={`/bayar?invoice=${encodeURIComponent(tagihan.noInvoice || "")}`}
                 className="invoice-pay-btn"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -131,42 +136,51 @@ export default async function InvoiceTagihanPage({
 
         {/* Lembar Faktur Fisik / Printable Sheet */}
         <div className="invoice-sheet">
-          {/* Bar Hazard / Aksen Identitas Atas */}
+          {/* Bar Aksen Identitas Resmi Atas */}
           <div className="invoice-brand-stripe" />
 
           <div className="invoice-sheet-inner">
             {/* Header Dokumen Resmi */}
             <div className="invoice-header">
-              <div className="invoice-header-brand">
-                <div className="invoice-logo-mark">
-                  <span className="logo-tps">UPS</span>
-                  <div className="logo-info">
-                    <div className="logo-name">
-                      HERU<span className="logo-dot">.</span>
-                    </div>
-                    <span className="logo-sub">UNIT PENGELOLAAN SAMPAH</span>
-                  </div>
+              <div className="invoice-brand-identity">
+                <div className="invoice-brand-logo-frame">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={perusahaan.logoUrl || "/ups-heru-logo.jpg"}
+                    alt={perusahaan.nama}
+                    className="invoice-official-logo"
+                  />
                 </div>
-                <div className="invoice-org-details">
-                  <p className="org-title">{perusahaan.unit || "Unit Pengelolaan & Retribusi Kebersihan Lingkungan"}</p>
-                  <p className="org-address">{perusahaan.alamat}</p>
-                  <p className="org-contact">
-                    WhatsApp: <strong>{perusahaan.whatsapp}</strong> · Email: {perusahaan.email}
-                  </p>
+                <div className="invoice-brand-text">
+                  <div className="brand-org-name">{perusahaan.nama}</div>
+                  <div className="brand-unit-name">
+                    {perusahaan.unit || "Unit Pengelolaan & Retribusi Kebersihan (TPS 3R)"}
+                  </div>
+                  <div className="brand-address-text">{perusahaan.alamat}</div>
+                  <div className="brand-contact-row">
+                    <span>
+                      WhatsApp: <strong>{perusahaan.whatsapp}</strong>
+                    </span>
+                    <span className="bullet">·</span>
+                    <span>Email: {perusahaan.email}</span>
+                  </div>
                 </div>
               </div>
 
               <div className="invoice-header-title">
-                <div className="doc-badge">{lunas ? "BUKTI PEMBAYARAN SAH" : "SURAT TAGIHAN RESMI"}</div>
-                <h1 className="doc-title">{lunas ? "KUITANSI RETRIBUSI" : "FAKTUR RETRIBUSI & QRIS"}</h1>
-                <p className="doc-sub">
+                <div className={`doc-badge-pill ${lunas ? "badge-lunas" : "badge-unpaid"}`}>
+                  <span className="badge-icon">{lunas ? "✓" : "•"}</span>
+                  <span>{lunas ? "BUKTI PEMBAYARAN SAH & TERVERIFIKASI" : "SURAT TAGIHAN RETRIBUSI RESMI"}</span>
+                </div>
+                <h1 className="doc-title-main">{lunas ? "KUITANSI RESMI" : "FAKTUR TAGIHAN"}</h1>
+                <p className="doc-subtitle">
                   {lunas
                     ? `OFFICIAL RECEIPT — BULAN ${namaPeriode.toUpperCase()}`
-                    : `OFFICIAL RETRIBUTION INVOICE & QRIS — BULAN ${namaPeriode.toUpperCase()}`}
+                    : `OFFICIAL RETRIBUTION INVOICE — BULAN ${namaPeriode.toUpperCase()}`}
                 </p>
-                <div className="doc-invoice-no">
-                  <span>No. Faktur:</span>
-                  <strong>{tagihan.noInvoice}</strong>
+                <div className="doc-invoice-number-chip">
+                  <span className="chip-label">No. Dokumen:</span>
+                  <span className="chip-val font-mono">{tagihan.noInvoice}</span>
                 </div>
               </div>
             </div>
@@ -174,7 +188,7 @@ export default async function InvoiceTagihanPage({
             {/* Status Stamp & Metadata Bar */}
             <div className="invoice-meta-bar">
               <div className="meta-card">
-                <span className="meta-label">Nomor Faktur</span>
+                <span className="meta-label">Nomor Dokumen</span>
                 <span className="meta-value font-mono">{tagihan.noInvoice}</span>
               </div>
               <div className="meta-card">
@@ -182,9 +196,11 @@ export default async function InvoiceTagihanPage({
                 <span className="meta-value uppercase">{namaPeriode}</span>
               </div>
               <div className="meta-card">
-                <span className="meta-label">Tanggal Jatuh Tempo</span>
-                <span className="meta-value font-semibold text-rose-700">
-                  {formatTanggalIndo(tagihan.jatuhTempo)}
+                <span className="meta-label">{lunas ? "Tanggal Pembayaran" : "Tanggal Jatuh Tempo"}</span>
+                <span className={`meta-value font-semibold ${lunas ? "text-emerald-700" : "text-rose-700"}`}>
+                  {lunas && tagihan.tanggalLunas
+                    ? formatTanggalIndo(tagihan.tanggalLunas)
+                    : formatTanggalIndo(tagihan.jatuhTempo)}
                 </span>
               </div>
               <div className="meta-card status-card">
@@ -199,7 +215,7 @@ export default async function InvoiceTagihanPage({
             <div className="invoice-parties-section">
               <div className="party-box party-issuer">
                 <div className="party-heading">DITERBITKAN OLEH:</div>
-                <div className="party-main-name">{perusahaan.nama}</div>
+                <div className="party-main-name">{perusahaan.nama} DEPOK</div>
                 <div className="party-desc">
                   <p>Penyelenggara Layanan Pengangkutan Sampah Terpadu & TPS 3R</p>
                   <p>{perusahaan.alamat}</p>
@@ -214,19 +230,21 @@ export default async function InvoiceTagihanPage({
                 <div className="party-meta-grid">
                   <div className="party-meta-row">
                     <span className="meta-k">ID Pelanggan</span>
-                    <span className="meta-v font-mono font-bold">{tagihan.pelanggan.kodePelanggan}</span>
+                    <span className="meta-v font-mono font-bold text-emerald-800">
+                      {tagihan.pelanggan.kodePelanggan}
+                    </span>
                   </div>
-                  <div className="meta-k-row">
+                  <div className="party-meta-row">
                     <span className="meta-k">Kategori</span>
                     <span className="meta-v">
                       {LABEL_KATEGORI[tagihan.pelanggan.kategori] || tagihan.pelanggan.kategori}
                     </span>
                   </div>
-                  <div className="meta-k-row">
+                  <div className="party-meta-row">
                     <span className="meta-k">Alamat Lengkap</span>
                     <span className="meta-v">{alamatLengkap || "-"}</span>
                   </div>
-                  <div className="meta-k-row">
+                  <div className="party-meta-row">
                     <span className="meta-k">Kontak WA / HP</span>
                     <span className="meta-v font-medium">{maskNoTelepon(tagihan.pelanggan.noTelepon)}</span>
                   </div>
@@ -260,7 +278,9 @@ export default async function InvoiceTagihanPage({
                     </td>
                     <td className="td-period font-medium">{namaPeriode}</td>
                     <td className="td-base text-right tabular-nums">{formatRupiahSkylite(rincian.base)}</td>
-                    {pajakRate > 0 && <td className="td-ppn text-right tabular-nums">{formatRupiahSkylite(rincian.ppn)}</td>}
+                    {pajakRate > 0 && (
+                      <td className="td-ppn text-right tabular-nums">{formatRupiahSkylite(rincian.ppn)}</td>
+                    )}
                     <td className="td-total text-right tabular-nums font-bold">
                       {formatRupiahSkylite(rincian.subTotalPpn)}
                     </td>
@@ -299,9 +319,13 @@ export default async function InvoiceTagihanPage({
                 </div>
 
                 <div className="invoice-legal-note">
-                  <div className="legal-icon">ℹ️</div>
+                  <div className="legal-icon">
+                    <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                  </div>
                   <p className="legal-text">
-                    Faktur retribusi ini adalah dokumen resmi yang sah diterbitkan oleh sistem penagihan terpadu UPS HERU. Retribusi digunakan untuk operasional kebersihan dan kelestarian lingkungan Kota Depok.
+                    Dokumen ini adalah bukti transaksi resmi yang sah diterbitkan oleh sistem penagihan digital UPS HERU Kota Depok. Retribusi dipergunakan untuk pemeliharaan kebersihan dan operasional kelestarian lingkungan.
                   </p>
                 </div>
               </div>
@@ -326,7 +350,7 @@ export default async function InvoiceTagihanPage({
                 ) : null}
 
                 <div className="grand-total-box">
-                  <div className="grand-total-label">TOTAL TAGIHAN</div>
+                  <div className="grand-total-label">TOTAL {lunas ? "PEMBAYARAN" : "TAGIHAN"}</div>
                   <div className="grand-total-amount tabular-nums font-bold">
                     {formatRupiahSkylite(rincian.total)}
                   </div>
@@ -342,33 +366,34 @@ export default async function InvoiceTagihanPage({
                   <div className="paid-settlement-content">
                     <div className="paid-stamp-wrapper">
                       <div className="paid-official-stamp">
-                        <span>LUNAS</span>
-                        <small>UPS HERU DEPOK</small>
+                        <span className="stamp-sub-top">UPS HERU</span>
+                        <span className="stamp-main">LUNAS</span>
+                        <small className="stamp-sub-bot">KOTA DEPOK</small>
                       </div>
                     </div>
                     <div className="paid-meta-list">
                       <div className="paid-meta-item">
-                        <span className="pm-label">Metode Pembayaran:</span>
-                        <span className="pm-value font-bold">{labelMetodePembayaran(pembayaranMetode)}</span>
+                        <span className="pm-label">Metode Pembayaran</span>
+                        <span className="pm-value font-bold text-slate-900">{labelMetodePembayaran(pembayaranMetode)}</span>
                       </div>
                       {tagihan.tanggalLunas && (
                         <div className="paid-meta-item">
-                          <span className="pm-label">Tanggal Lunas:</span>
-                          <span className="pm-value tabular-nums font-semibold">
+                          <span className="pm-label">Waktu Lunas</span>
+                          <span className="pm-value tabular-nums font-semibold text-emerald-700">
                             {formatTanggalWaktuIndo(tagihan.tanggalLunas)}
                           </span>
                         </div>
                       )}
                       <div className="paid-meta-item">
-                        <span className="pm-label">ID Transaksi / Ref:</span>
-                        <span className="pm-value font-mono">
+                        <span className="pm-label">ID Referensi</span>
+                        <span className="pm-value font-mono text-xs">
                           {pembayaran?.duitkuTransaction?.orderId || (pembayaran?.id ? `PAY-${pembayaran.id}` : "PG-AUTO-VERIFIED")}
                         </span>
                       </div>
                       <div className="paid-meta-item">
-                        <span className="pm-label">Verifikator:</span>
-                        <span className="pm-value">
-                          {pembayaran?.verifiedBy?.nama || "Payment Gateway Otomatis UPS HERU"}
+                        <span className="pm-label">Status Verifikasi</span>
+                        <span className="pm-value text-emerald-700 font-semibold">
+                          ✓ Terverifikasi Sistem Resmi
                         </span>
                       </div>
                     </div>
@@ -380,15 +405,21 @@ export default async function InvoiceTagihanPage({
                       <strong>MENUNGGU PEMBAYARAN</strong>
                     </div>
                     <p className="unpaid-guide-text">
-                      Silakan selesaikan pembayaran sebelum tanggal <strong>{formatTanggalIndo(tagihan.jatuhTempo)}</strong> melalui portal online atau transfer perbankan:
+                      Silakan selesaikan pembayaran sebelum tanggal <strong>{formatTanggalIndo(tagihan.jatuhTempo)}</strong> melalui portal pembayaran resmi atau transfer perbankan:
                     </p>
                     <ul className="unpaid-channels-list">
                       <li>• <strong>QRIS</strong> (BCA, Mandiri, BRI, GoPay, OVO, Dana, ShopeePay)</li>
-                      <li>• <strong>Virtual Account</strong> Bank Resmi & Transfer Otomatis</li>
+                      <li>• <strong>Transfer Bank BCA</strong> (Verifikasi Otomatis / Manual)</li>
                       <li>• <strong>Petugas Lapangan</strong> UPS HERU saat penjemputan sampah</li>
                     </ul>
                     <div className="portal-direct-hint">
-                      Portal Pembayaran: <Link href={`/bayar?invoice=${encodeURIComponent(tagihan.noInvoice || "")}`} className="underline font-bold text-emerald-700">{baseUrl}/bayar?invoice={encodeURIComponent(tagihan.noInvoice || "")}</Link>
+                      Portal Pembayaran:{" "}
+                      <Link
+                        href={`/bayar?invoice=${encodeURIComponent(tagihan.noInvoice || "")}`}
+                        className="underline font-bold text-emerald-700"
+                      >
+                        {baseUrl}/bayar?invoice={encodeURIComponent(tagihan.noInvoice || "")}
+                      </Link>
                     </div>
                   </div>
                 )}
@@ -398,26 +429,28 @@ export default async function InvoiceTagihanPage({
               <div className="invoice-qr-box">
                 <div className="qr-frame">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={qrUrl} width={110} height={110} alt="QR-Code Verifikasi Faktur & Pembayaran" />
+                  <img src={qrUrl} width={96} height={96} alt="QR-Code Verifikasi Faktur & Pembayaran" />
                 </div>
                 <div className="qr-text">
                   <span className="qr-headline">{lunas ? "VALIDASI KEASLIAN" : "VALIDASI FAKTUR RESMI"}</span>
                   <span className="qr-sub">
                     {lunas
-                      ? "Scan QR Code untuk memverifikasi keabsahan kuitansi lunas di portal resmi"
-                      : "Scan QR Code dengan kamera ponsel untuk memeriksa keabsahan faktur tagihan ini di portal resmi"}
+                      ? "Pindai QR Code untuk memverifikasi keabsahan kuitansi lunas di portal resmi"
+                      : "Pindai QR Code dengan ponsel untuk memeriksa keabsahan faktur tagihan ini"}
                   </span>
                 </div>
               </div>
 
               {/* Box Pengesahan Resmi */}
               <div className="invoice-sign-box">
-                <span className="sign-city">Kota Depok, {formatTanggalIndo(tagihan.createdAt || tagihan.jatuhTempo)}</span>
+                <span className="sign-city">
+                  Kota Depok, {formatTanggalIndo(tagihan.tanggalLunas || tagihan.createdAt || tagihan.jatuhTempo)}
+                </span>
                 <span className="sign-org">Unit Pengelolaan Retribusi UPS HERU</span>
-                
+
                 <div className="sign-seal-area">
                   <div className="digital-seal">
-                    <svg className="w-5 h-5 text-emerald-700 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-emerald-600 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
                     <span>TERVALIDASI SECARA ELEKTRONIK</span>
@@ -434,10 +467,10 @@ export default async function InvoiceTagihanPage({
             {/* Footer Bawah Lembar Faktur */}
             <div className="invoice-bottom-bar">
               <div className="bottom-left">
-                <span>UPS HERU DEPOK — PENGELOLAAN SAMPAH RAMAH LINGKUNGAN</span>
+                <span>UPS HERU KOTA DEPOK — PENGELOLAAN SAMPAH RAMAH LINGKUNGAN</span>
               </div>
               <div className="bottom-right tabular-nums text-xs">
-                <span>Dokumen di-generate: {formatTanggalWaktuIndo(new Date())}</span>
+                <span>Dokumen dicetak secara digital · {formatTanggalWaktuIndo(new Date())}</span>
               </div>
             </div>
           </div>
@@ -446,7 +479,7 @@ export default async function InvoiceTagihanPage({
         {/* Bawah Halaman (Layar saja) */}
         <div className="invoice-page-foot-screen">
           <p>
-            Memerlukan bantuan terkait faktur ini? Hubungi Customer Care UPS HERU di WhatsApp{" "}
+            Memerlukan bantuan terkait faktur ini? Hubungi Layanan Pelanggan UPS HERU di WhatsApp{" "}
             <a href={`https://wa.me/${perusahaan.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer">
               {perusahaan.whatsapp}
             </a>
