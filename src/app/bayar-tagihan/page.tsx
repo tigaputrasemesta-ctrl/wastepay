@@ -55,17 +55,17 @@ type PaymentChannel = {
 const DEFAULT_CHANNELS: PaymentChannel[] = [
   {
     id: "SQ",
-    name: "QRIS NUSAPAY",
+    name: "QRIS NusaPay",
     fee: "Tanpa biaya admin",
     isFree: true,
-    logo: "https://images.duitku.com/hotlink-ok/SQ.PNG",
+    logo: "/qris.svg",
   },
   {
     id: "BCA_MANUAL",
-    name: "TRANSFER BCA (KODE UNIK)",
+    name: "Transfer BCA (Kode Unik)",
     fee: "Tanpa biaya admin",
     isFree: true,
-    logo: "https://images.duitku.com/hotlink-ok/BC.PNG",
+    logo: "/bca.svg",
   },
 ];
 
@@ -225,17 +225,17 @@ function BayarTagihanContent() {
     setChannels([
       {
         id: "SQ",
-        name: "QRIS NUSAPAY",
+        name: "QRIS NusaPay",
         fee: "Tanpa biaya admin",
         isFree: true,
-        logo: "https://images.duitku.com/hotlink-ok/SQ.PNG",
+        logo: "/qris.svg",
       },
       {
         id: "BCA_MANUAL",
-        name: "TRANSFER BCA (KODE UNIK)",
+        name: "Transfer BCA (Kode Unik)",
         fee: "Tanpa biaya admin",
         isFree: true,
-        logo: "https://images.duitku.com/hotlink-ok/BC.PNG",
+        logo: "/bca.svg",
       },
     ]);
   }, [tagihan]);
@@ -755,7 +755,9 @@ function BayarTagihanContent() {
               <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <h3 className="text-sm font-extrabold text-slate-900">Scan QRIS Pembayaran</h3>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/qris.svg" alt="QRIS" className="h-4 w-auto object-contain" />
+                  <h3 className="text-sm font-extrabold text-slate-900">Scan QRIS NusaPay</h3>
                 </div>
                 <button
                   type="button"

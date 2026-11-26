@@ -479,17 +479,17 @@
   }
 }
 
-/* Grid Channel Pembayaran */
+/* Grid Channel Pembayaran: 2 Kolom Simetris Presisi */
 .pp-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.55rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
 }
 
 @media (max-width: 480px) {
   .pp-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.45rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
   }
 }
 
@@ -498,19 +498,23 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.85rem 0.4rem 0.75rem;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 1rem 0.65rem 0.85rem;
+  min-height: 136px;
   border: 1.5px solid #e2e8f0;
-  border-radius: 16px;
-  background: #fff;
+  border-radius: 18px;
+  background: #ffffff;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   text-align: center;
+  box-shadow: 0 2px 6px -2px rgba(15, 23, 42, 0.05);
 }
 
 .pp-pm:hover {
-  border-color: #a7f3d0;
-  box-shadow: 0 12px 26px -16px rgba(5, 150, 105, 0.5);
+  border-color: #34d399;
+  background: #f8fafc;
+  box-shadow: 0 10px 24px -10px rgba(5, 150, 105, 0.3);
   transform: translateY(-2px);
 }
 
@@ -520,30 +524,73 @@
 
 .pp-pm.active {
   border-color: var(--pp-brand);
-  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.18);
+  background: #f0fdf4;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.18), 0 8px 20px -8px rgba(5, 150, 105, 0.25);
+}
+
+.pp-pm.active::after {
+  content: "✓";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 18px;
+  height: 18px;
+  background: var(--pp-brand);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(5, 150, 105, 0.3);
 }
 
 .pp-pm .logo {
-  height: 38px;
+  height: 48px;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 4px 8px;
+  border-radius: 10px;
+  background: #ffffff;
 }
 
 .pp-pm .logo img {
   max-height: 34px;
-  max-width: 90%;
+  max-width: 100%;
+  width: auto;
+  height: auto;
   object-fit: contain;
+  display: block;
+  margin: 0 auto;
 }
 
 .pp-pm .nm {
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   font-weight: 800;
   color: var(--pp-ink);
-  line-height: 1.25;
+  line-height: 1.3;
   text-transform: uppercase;
   letter-spacing: 0.01em;
+}
+
+@media (max-width: 480px) {
+  .pp-pm {
+    padding: 0.85rem 0.45rem 0.75rem;
+    min-height: 124px;
+    gap: 0.35rem;
+  }
+  .pp-pm .logo {
+    height: 42px;
+  }
+  .pp-pm .logo img {
+    max-height: 28px;
+  }
+  .pp-pm .nm {
+    font-size: 0.68rem;
+  }
 }
 
 /* ── BOX TRANSFER MANUAL BCA ── */
