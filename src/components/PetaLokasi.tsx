@@ -36,6 +36,15 @@ function pinRumah() {
   });
 }
 
+function MapClickHandler({ onChange }: { onChange?: (lat: number, lng: number) => void }) {
+  useMapEvents({
+    click(e: LeafletMouseEvent) {
+      onChange?.(e.latlng.lat, e.latlng.lng);
+    },
+  });
+  return null;
+}
+
 function Titik({
   latitude,
   longitude,
@@ -45,13 +54,6 @@ function Titik({
   longitude: number;
   onChange?: (lat: number, lng: number) => void;
 }) {
-  // Klik pada peta memindahkan titik (hanya saat mode edit).
-  useMapEvents({
-    click(e: LeafletMouseEvent) {
-      onChange?.(e.latlng.lat, e.latlng.lng);
-    },
-  });
-
   return (
     <Marker
       position={[latitude, longitude]}
@@ -130,6 +132,7 @@ export default function PetaLokasi({
         subdomains={tileConfig.subdomains}
         maxZoom={tileConfig.maxZoom}
       />
+      <MapClickHandler onChange={onChange} />
       {valid && (
         <Titik latitude={latitude!} longitude={longitude!} onChange={onChange} />
       )}

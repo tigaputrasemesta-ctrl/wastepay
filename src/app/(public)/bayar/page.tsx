@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import QRCode from "qrcode";
 import { formatRupiah, formatDate } from "@/lib/utils";
 import {
   formatRupiahSkylite,
@@ -238,6 +239,15 @@ function BayarPortalContent() {
   const [statusSukses, setStatusSukses] = useState(
     resultCode === "00" || statusParam === "success"
   );
+
+  // === ON-PAGE QRIS & POLLING STATE ===
+  const [onPageQris, setOnPageQris] = useState<{
+    qrDataUrl: string;
+    paymentUrl?: string;
+    orderId: string;
+    amount: number;
+  } | null>(null);
+  const [pollingStatus, setPollingStatus] = useState<string | null>(null);
 
   // Load detail invoice jika ada di param
   const muatInvoiceDetail = useCallback(async () => {
@@ -518,6 +528,40 @@ function BayarPortalContent() {
     }
   }
 
+  // Auto-polling status transaksi saat QRIS on-page terbuka
+  useEffect(() => {
+    if (!onPageQris?.orderId || pollingStatus === "success") return;
+
+    let pollCount = 0;
+    const maxPoll = 40; // 40 x 3s = 2 menit
+    const interval = setInterval(async () => {
+      pollCount++;
+      if (pollCount > maxPoll) {
+        clearInterval(interval);
+        return;
+      }
+      try {
+        const res = await fetch(`/api/publik/duitku/status?orderId=${encodeURIComponent(onPageQris.orderId)}`);
+        const st = await res.json();
+        if (st && (st.statusCode === "00" || st.status === "SUCCESS")) {
+          clearInterval(interval);
+          setPollingStatus("success");
+          setStatusSukses(true);
+          setOnPageQris(null);
+          if (isInvoiceMode) {
+            muatInvoiceDetail();
+          } else if (kode) {
+            segarkanTagihan(kode);
+          }
+        }
+      } catch (err) {
+        console.warn("Polling status error:", err);
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [onPageQris, pollingStatus, isInvoiceMode, kode, muatInvoiceDetail, segarkanTagihan]);
+
   async function bayarOnlineDuitku(forceNew = false) {
     if (!detail) return;
     if (!pilihMetode) {
@@ -542,13 +586,114 @@ function BayarPortalContent() {
         setBayarError(data.error || "Gagal membuat sesi pembayaran online");
         return;
       }
-      window.location.href = data.paymentUrl;
+
+      // Jika channel QRIS dan mengembalikan qrString, render on-page
+      if (data.qrString) {
+        try {
+          const qrDataUrl = await QRCode.toDataURL(data.qrString, {
+            width: 320,
+            margin: 2,
+            color: { dark: "#0f172a", light: "#ffffff" },
+          });
+          setOnPageQris({
+            qrDataUrl,
+            paymentUrl: data.paymentUrl,
+            orderId: data.orderId,
+            amount: detail.total,
+          });
+          setPollingStatus("pending");
+          return;
+        } catch (qrErr) {
+          console.error("Gagal generate QR Data URL, redirecting:", qrErr);
+        }
+      }
+
+      if (data.paymentUrl) {
+        window.location.href = data.paymentUrl;
+      }
     } catch (err) {
       setBayarError(err instanceof Error ? err.message : "Gagal memulai pembayaran online");
     } finally {
       setBayarLoading(false);
     }
   }
+
+  const renderModalQris = () => {
+    if (!onPageQris) return null;
+    return (
+      <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+        <div className="bg-white dark:bg-zinc-900 rounded-3xl border border-slate-200 dark:border-zinc-800 shadow-2xl p-6 sm:p-8 max-w-sm w-full space-y-5 text-center">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-zinc-800">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+              <h3 className="text-sm font-extrabold text-slate-900 dark:text-zinc-100">Scan QRIS Pembayaran</h3>
+            </div>
+            <button
+              type="button"
+              onClick={() => setOnPageQris(null)}
+              className="w-8 h-8 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-500 hover:text-slate-800 dark:hover:text-zinc-200 flex items-center justify-center text-sm font-bold"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div className="bg-white p-3 rounded-2xl border-2 border-slate-200 dark:border-zinc-700 shadow-inner inline-block mx-auto">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={onPageQris.qrDataUrl}
+              alt="QRIS Tagihan UPS HERU"
+              className="w-64 h-64 mx-auto object-contain"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Total Pembayaran</p>
+            <p className="text-2xl font-black text-emerald-800 dark:text-emerald-400">
+              {formatRupiah(onPageQris.amount)}
+            </p>
+            <p className="text-[11px] text-slate-400 font-mono">Order #{onPageQris.orderId}</p>
+          </div>
+
+          <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 rounded-xl text-left space-y-1">
+            <p className="text-xs font-bold text-amber-900 dark:text-amber-300 flex items-center gap-1.5">
+              <span className="animate-spin text-sm">⏳</span>
+              <span>Menunggu Pembayaran Warga...</span>
+            </p>
+            <p className="text-[11px] text-amber-800 dark:text-amber-400/90 leading-tight">
+              Jika pakai 1 HP: simpan gambar QRIS di bawah, lalu buka aplikasi e-wallet / m-Banking Anda dan pilih <em>Upload QR dari Galeri</em>. Halaman ini otomatis mendeteksi ketika pembayaran lunas.
+            </p>
+          </div>
+
+          <div className="space-y-2 pt-1">
+            <a
+              href={onPageQris.qrDataUrl}
+              download={`QRIS-Tagihan-${onPageQris.orderId}.png`}
+              className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl transition shadow-md flex items-center justify-center gap-2 active:scale-95"
+            >
+              <span>📥 Simpan Gambar QRIS ke Galeri</span>
+            </a>
+            {onPageQris.paymentUrl && (
+              <a
+                href={onPageQris.paymentUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-2 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-300 font-bold text-xs rounded-xl transition flex items-center justify-center gap-1.5"
+              >
+                <span>Buka Portal Duitku ↗</span>
+              </a>
+            )}
+            <button
+              type="button"
+              onClick={() => setOnPageQris(null)}
+              className="w-full py-2 text-slate-500 hover:text-slate-700 dark:text-zinc-400 text-xs font-semibold"
+            >
+              Tutup QRIS
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   const renderModalUpload = () => {
     if (!pilihTagihan) return null;
@@ -1183,6 +1328,7 @@ function BayarPortalContent() {
         )}
 
         {renderModalUpload()}
+        {renderModalQris()}
       </div>
     );
   }
@@ -1351,7 +1497,7 @@ function BayarPortalContent() {
               </div>
 
               <a
-                href="https://wa.me/6281234567890?text=Halo%20Admin%20UPS%20HERU%2C%20saya%20butuh%20bantuan%20cek%20tagihan"
+                href="https://wa.me/6281400782617?text=Halo%20Admin%20UPS%20HERU%2C%20saya%20butuh%20bantuan%20cek%20tagihan"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200/80 hover:bg-emerald-100 text-emerald-800 space-y-1 transition-colors block"
@@ -1668,6 +1814,7 @@ function BayarPortalContent() {
       )}
 
       {renderModalUpload()}
+      {renderModalQris()}
     </div>
   );
 }

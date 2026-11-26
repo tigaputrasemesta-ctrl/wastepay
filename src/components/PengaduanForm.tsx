@@ -72,6 +72,10 @@ export default function PengaduanForm() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (compressing) {
+      toast("Mohon tunggu, foto sedang dikompresi...", "warning");
+      return;
+    }
     setStatus("kirim");
     setPesan("");
     setDuplicateTicket(null);
@@ -372,13 +376,18 @@ export default function PengaduanForm() {
 
           <button
             type="submit"
-            disabled={status === "kirim"}
+            disabled={status === "kirim" || compressing}
             className="w-full py-3.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-2xl text-xs sm:text-sm shadow-md active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {status === "kirim" ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 <span>Mengecek & Mengirimkan Laporan...</span>
+              </>
+            ) : compressing ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Mengompres Foto...</span>
               </>
             ) : (
               <span>Kirim Laporan Pengaduan 📢</span>
@@ -435,6 +444,7 @@ export default function PengaduanForm() {
                 daftarTiket.map((t) => {
                   const isDone = t.status === "selesai";
                   const isProcess = t.status === "proses" || t.status === "diproses";
+                  const isDitolak = t.status === "ditolak" || t.status === "batal";
                   return (
                     <div
                       key={t.id}
@@ -448,10 +458,12 @@ export default function PengaduanForm() {
                               ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                               : isProcess
                               ? "bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1"
-                              : "bg-rose-50 text-rose-700 border border-rose-200"
+                              : isDitolak
+                              ? "bg-rose-50 text-rose-700 border border-rose-200"
+                              : "bg-sky-50 text-sky-700 border border-sky-200"
                           }`}
                         >
-                          {isDone ? "✓ Selesai" : isProcess ? "🚛 Sedang Ditangani" : "⏳ Menunggu Armada"}
+                          {isDone ? "✓ Selesai" : isProcess ? "🚛 Sedang Ditangani" : isDitolak ? "✕ Laporan Ditolak" : "⏳ Menunggu Armada"}
                         </span>
                       </div>
                       <p className="text-xs text-slate-700 font-medium">"{t.deskripsi}"</p>

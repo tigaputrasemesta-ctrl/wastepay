@@ -20,9 +20,9 @@
     "start": "next start",
     "lint": "eslint",
     "check:classes": "node scripts/check-tailwind-classes.mjs",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit",
+    "test": "node ./node_modules/vitest/vitest.mjs run",
+    "test:watch": "node ./node_modules/vitest/vitest.mjs",
     "reminder": "node scripts/reminder-wa.mjs"
   },
   "dependencies": {

@@ -777,6 +777,10 @@ function isTenantOnlyPublicPath(lowerPath: string): boolean {
 
   // ---- Page Routes ----
   if (!payload) {
+    if (pathname === "/komplain" || pathname.startsWith("/komplain/")) {
+      return NextResponse.redirect(new URL("/pengaduan", request.url));
+    }
+
     const isAdminPage = Object.keys(PAGE_ROLES).some(
       (prefix) => pathname === prefix || pathname.startsWith(prefix + "/")
     );

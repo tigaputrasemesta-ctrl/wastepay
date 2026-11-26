@@ -143,12 +143,23 @@ export async function POST(request: Request) {
         orderBy: { id: "desc" },
       });
       if (existing?.duitkuTransaction?.paymentUrl) {
+        let existingQrString: string | null = null;
+        let existingVaNumber: string | null = null;
+        if (existing.duitkuTransaction.rawResponse) {
+          try {
+            const raw = JSON.parse(existing.duitkuTransaction.rawResponse);
+            existingQrString = raw.qrString || null;
+            existingVaNumber = raw.vaNumber || null;
+          } catch {}
+        }
         return NextResponse.json({
           paymentUrl: existing.duitkuTransaction.paymentUrl,
           orderId: existing.duitkuTransaction.orderId,
           reference: existing.duitkuTransaction.reference,
           pembayaranId: existing.id,
           reused: true,
+          qrString: existingQrString,
+          vaNumber: existingVaNumber,
         });
       }
     }
@@ -206,7 +217,14 @@ export async function POST(request: Request) {
         },
       });
 
-      return { p, orderId, reference: dt.reference || null, paymentUrl: dt.paymentUrl || "" };
+      return {
+        p,
+        orderId,
+        reference: dt.reference || null,
+        paymentUrl: dt.paymentUrl || "",
+        qrString: dt.qrString || null,
+        vaNumber: dt.vaNumber || null,
+      };
     });
 
     return NextResponse.json(hasil);

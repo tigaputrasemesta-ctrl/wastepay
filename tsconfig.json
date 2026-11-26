@@ -31,5 +31,14 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", "pi-dev", ".pi", "scratch"]
+  "exclude": [
+    "node_modules",
+    ".next/standalone",
+    "android",
+    "dist",
+    "build",
+    "pi-dev",
+    ".pi",
+    "scratch"
+  ]
 }

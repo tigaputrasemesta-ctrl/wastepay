@@ -95,6 +95,13 @@ function hitungSisaHari(jatuhTempoStr: string): { text: string; isOverdue: boole
 function BayarTagihanContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  // Forward otomatis ke portal pembayaran utama /bayar
+  useEffect(() => {
+    const qs = searchParams.toString();
+    router.replace(qs ? `/bayar?${qs}` : "/bayar");
+  }, [router, searchParams]);
+
   const invoiceParam = searchParams.get("invoice")?.trim() || "";
 
   const [loading, setLoading] = useState(Boolean(invoiceParam));
@@ -234,7 +241,7 @@ function BayarTagihanContent() {
       const data = await res.json();
       if (res.ok && data.paymentUrl) {
         // Alihkan langsung ke halaman pembayaran resmi Duitku
-        window.location.href = data.paymentUrl;
+        window.location.assign(data.paymentUrl);
       } else {
         toast(data.error || "Gagal membuat transaksi pembayaran. Silakan coba kembali.", "error");
         setProcessingPayment(false);

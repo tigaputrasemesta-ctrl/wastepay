@@ -221,42 +221,50 @@ export default async function LandingPage() {
                 Platform operasional resmi {brandName} ({brandCity}). Kami menghubungkan ribuan rumah tangga dan unit usaha dengan kepastian jadwal angkut, pengaduan cepat, dan kemudahan pembayaran retribusi digital via QRIS.
               </p>
 
-              {/* Action Buttons */}
+              {/* Action Buttons: 1. Bayar/Cek (Primary), 2. Pengaduan (Secondary), 3. Daftar (Tertiary) */}
               <div className="space-y-3 pt-1 sm:pt-2">
                 <div className="flex flex-col sm:flex-row flex-wrap gap-2.5 sm:gap-3">
                   <Link
-                    href="/daftar"
-                    className="w-full sm:w-auto min-h-[44px] px-5 py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-bold text-xs sm:text-sm shadow-sm transition-all flex items-center justify-center gap-2 active:scale-95"
+                    href="/bayar"
+                    className="w-full sm:w-auto min-h-[48px] px-6 py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-extrabold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 active:scale-95"
                   >
-                    <Home className="w-4 h-4 shrink-0" />
-                    <span>Daftar Langganan</span>
+                    <QrCode className="w-4 h-4 shrink-0" />
+                    <span>Cek & Bayar Tagihan</span>
                   </Link>
 
                   <Link
-                    href="/pickup"
-                    className="w-full sm:w-auto min-h-[44px] px-5 py-3.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-2 border-emerald-400 dark:border-emerald-700 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95"
+                    href="/pengaduan"
+                    className="w-full sm:w-auto min-h-[48px] px-5 py-3.5 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border-2 border-rose-300 dark:border-rose-800 hover:bg-rose-100 dark:hover:bg-rose-900/60 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95"
                   >
-                    <PackageCheck className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
-                    <span>Pickup Sekali Angkut</span>
+                    <Megaphone className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
+                    <span>Pengaduan Warga</span>
+                  </Link>
+
+                  <Link
+                    href="/daftar"
+                    className="w-full sm:w-auto min-h-[48px] px-5 py-3.5 bg-white dark:bg-zinc-800 text-slate-800 dark:text-zinc-200 border border-slate-300 dark:border-zinc-700 hover:bg-slate-50 dark:hover:bg-zinc-700 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95"
+                  >
+                    <Home className="w-4 h-4 text-slate-600 dark:text-zinc-400 shrink-0" />
+                    <span>Daftar Baru</span>
                   </Link>
                 </div>
 
-                {/* Info Marketplace Produk & Pengaduan Warga */}
+                {/* Sub links: Pickup Sampah Besar & Marketplace */}
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs text-slate-600 dark:text-zinc-400 pt-1">
                   <p className="flex items-center gap-1.5">
-                    <span>Butuh pupuk kompos atau produk olahan?</span>
+                    <span>Sampah besar / puing?</span>
+                    <Link href="/pickup" className="text-emerald-700 dark:text-emerald-400 hover:underline font-bold inline-flex items-center gap-0.5">
+                      <span>Pickup Sekali Angkut</span>
+                      <ChevronRight className="w-3 h-3" />
+                    </Link>
+                  </p>
+                  <span className="hidden sm:inline text-slate-300 dark:text-zinc-700">•</span>
+                  <p className="flex items-center gap-1.5">
+                    <span>Butuh pupuk kompos?</span>
                     <a href="#produk-olahan" className="text-emerald-700 dark:text-emerald-400 hover:underline font-bold inline-flex items-center gap-0.5">
                       <span>Lihat Produk Olahan</span>
                       <ChevronRight className="w-3 h-3" />
                     </a>
-                  </p>
-                  <span className="hidden sm:inline text-slate-300 dark:text-zinc-700">•</span>
-                  <p className="flex items-center gap-1.5">
-                    <span>Sudah langganan?</span>
-                    <Link href="/pengaduan" className="text-rose-700 dark:text-rose-400 hover:text-rose-800 font-bold hover:underline inline-flex items-center gap-0.5">
-                      <span>Pengaduan Warga</span>
-                      <ChevronRight className="w-3 h-3" />
-                    </Link>
                   </p>
                 </div>
               </div>
@@ -1017,15 +1025,15 @@ export default async function LandingPage() {
 
         {/* ── 9. Papan Pengumuman Resmi (Jika Ada) ── */}
         {pengumuman.length > 0 && (
-          <section className="bg-amber-50/70 border-b border-amber-200/80 py-12 px-4 sm:px-6">
+          <section className="bg-amber-50/70 dark:bg-amber-950/20 border-b border-amber-200/80 dark:border-amber-900/50 py-12 px-4 sm:px-6 transition-colors">
             <div className="max-w-6xl mx-auto space-y-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-amber-200/80 text-amber-900 rounded-xl">
+                <div className="p-2 bg-amber-200/80 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 rounded-xl">
                   <Megaphone className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-slate-900">Pengumuman Resmi Warga</h2>
-                  <p className="text-xs text-slate-600">Pemberitahuan terkini seputar operasional dinas pengangkutan</p>
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-zinc-100">Pengumuman Resmi Warga</h2>
+                  <p className="text-xs text-slate-600 dark:text-zinc-400">Pemberitahuan terkini seputar operasional dinas pengangkutan</p>
                 </div>
               </div>
 
@@ -1035,8 +1043,8 @@ export default async function LandingPage() {
                     key={p.id}
                     className={`p-5 rounded-2xl border ${
                       p.penting
-                        ? "bg-white border-rose-300 text-slate-900 shadow-xs"
-                        : "bg-white border-amber-200 text-slate-900 shadow-xs"
+                        ? "bg-white dark:bg-zinc-900 border-rose-300 dark:border-rose-800 text-slate-900 dark:text-zinc-100 shadow-sm"
+                        : "bg-white dark:bg-zinc-900 border-amber-200 dark:border-amber-900/40 text-slate-900 dark:text-zinc-100 shadow-sm"
                     }`}
                   >
                     {p.penting && (
@@ -1044,9 +1052,9 @@ export default async function LandingPage() {
                         Penting
                       </span>
                     )}
-                    <h3 className="text-sm font-bold mb-2">{p.judul}</h3>
-                    <p className="text-xs text-slate-600 leading-relaxed mb-3">{p.isi}</p>
-                    <p className="text-[10px] font-medium text-slate-400">
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-zinc-100 mb-2">{p.judul}</h3>
+                    <p className="text-xs text-slate-600 dark:text-zinc-400 leading-relaxed mb-3">{p.isi}</p>
+                    <p className="text-[10px] font-medium text-slate-400 dark:text-zinc-500">
                       {p.createdAt.toLocaleDateString("id-ID", {
                         day: "numeric",
                         month: "long",

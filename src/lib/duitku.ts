@@ -93,7 +93,7 @@ export function duitkuCallbackUrl(): string {
 /** URL return (redirect setelah pembayaran selesai di Duitku). */
 export function duitkuReturnUrl(): string {
   const base = getAppBaseUrl();
-  return `${base}/bayar-tagihan`;
+  return `${base}/bayar`;
 }
 
 /** HMAC-SHA256 hex lowercase — standar signature Duitku V2 (MD5 obsolete). */

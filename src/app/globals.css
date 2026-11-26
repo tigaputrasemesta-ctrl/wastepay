@@ -528,9 +528,9 @@
     background-color: #27272a !important; /* zinc-800 */
   }
 
-  /* Enforce Shadcn button proportions and radius across all buttons */
-  button:not([class*="rounded-full"]):not([class*="rounded-none"]):not(.pin-jemput):not(.truk-jemput-body):not([class*="leaflet"]),
-  a[class*="px-"][class*="py-"]:not([class*="rounded-full"]):not([class*="rounded-none"]):not([class*="leaflet"]) {
+  /* Enforce Shadcn button proportions only when explicit rounded-* or font-* is not set */
+  button:not([class*="rounded-"]):not(.pin-jemput):not(.truk-jemput-body):not([class*="leaflet"]),
+  a[class*="px-"][class*="py-"]:not([class*="rounded-"]):not([class*="leaflet"]) {
     border-radius: 0.5rem; /* 8px - standard shadcn rounded-lg */
     font-weight: 500;
     letter-spacing: -0.01em;

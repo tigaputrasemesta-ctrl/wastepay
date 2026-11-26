@@ -124,17 +124,81 @@ export default function FormDaftar({
   const [pesan, setPesan] = useState("");
   const [hasil, setHasil] = useState<{ kodePelanggan: string; namaPelanggan: string } | null>(null);
 
-  // Sync Referral from URL query param
+  // Sync Referral & pre-filled fields from URL query param
   useEffect(() => {
-    if (!referal && typeof window !== "undefined") {
-      const sp = new URLSearchParams(window.location.search);
-      const qRef = sp.get("ref") || sp.get("referal");
-      if (qRef && qRef.trim()) {
-        setReferal(qRef.trim());
-        setReferalFromUrl(true);
-      }
+    if (typeof window === "undefined") return;
+    const sp = new URLSearchParams(window.location.search);
+    const qRef = sp.get("ref") || sp.get("referal");
+    if (qRef && qRef.trim()) {
+      setReferal(qRef.trim());
+      setReferalFromUrl(true);
     }
-  }, [referal]);
+    const qKategori = sp.get("kategori");
+    if (qKategori) setKategori(qKategori.toUpperCase());
+    const qKecamatan = sp.get("kecamatan");
+    if (qKecamatan) setKecamatan(qKecamatan);
+    const qKelurahan = sp.get("kelurahan");
+    if (qKelurahan) setKelurahan(qKelurahan);
+    const qLat = parseFloat(sp.get("lat") || "");
+    const qLng = parseFloat(sp.get("lng") || "");
+    if (Number.isFinite(qLat) && Number.isFinite(qLng)) {
+      setGpsData({ lat: qLat, lng: qLng, acc: 10 });
+      setKoordinatSumber("manual");
+    }
+  }, []);
+
+  // Restore draft from sessionStorage on mount (anti tab-reload loss pada HP RAM kecil)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const saved = sessionStorage.getItem("upsheru_daftar_draft_v1");
+      if (saved) {
+        const d = JSON.parse(saved);
+        if (d.nama) setNama(d.nama);
+        if (d.noTelepon) setNoTelepon(d.noTelepon);
+        if (d.kategori) setKategori(d.kategori);
+        if (d.kecamatan) setKecamatan(d.kecamatan);
+        if (d.kelurahan) setKelurahan(d.kelurahan);
+        if (d.alamat) setAlamat(d.alamat);
+        if (d.rt) setRt(d.rt);
+        if (d.rw) setRw(d.rw);
+        if (d.patokanLokasi) setPatokanLokasi(d.patokanLokasi);
+        if (d.jenisLayanan) setJenisLayanan(d.jenisLayanan);
+        if (d.paketId) setPaketId(d.paketId);
+        if (d.currentStep && [1, 2, 3, 4].includes(d.currentStep)) setCurrentStep(d.currentStep);
+        if (d.gpsData) setGpsData(d.gpsData);
+        if (d.koordinatSumber) setKoordinatSumber(d.koordinatSumber);
+        if (d.fotoRumah) setFotoRumah(d.fotoRumah);
+      }
+    } catch (e) {
+      console.warn("Failed to restore draft:", e);
+    }
+  }, []);
+
+  // Save draft to sessionStorage
+  useEffect(() => {
+    if (typeof window === "undefined" || status === "ok") return;
+    try {
+      const draft = {
+        nama,
+        noTelepon,
+        kategori,
+        kecamatan,
+        kelurahan,
+        alamat,
+        rt,
+        rw,
+        patokanLokasi,
+        jenisLayanan,
+        paketId,
+        currentStep,
+        gpsData,
+        koordinatSumber,
+        fotoRumah: fotoRumah && fotoRumah.length < 500000 ? fotoRumah : "",
+      };
+      sessionStorage.setItem("upsheru_daftar_draft_v1", JSON.stringify(draft));
+    } catch {}
+  }, [nama, noTelepon, kategori, kecamatan, kelurahan, alamat, rt, rw, patokanLokasi, jenisLayanan, paketId, currentStep, gpsData, koordinatSumber, fotoRumah, status]);
 
   // Load registration options
   useEffect(() => {
@@ -244,7 +308,7 @@ export default function FormDaftar({
   async function handleFoto(file?: File) {
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      setPesan("File harus berupa gambar (JPG, PNG, atau HEIC).");
+      setPesan("File harus berupa berkas gambar (JPG atau PNG).");
       return;
     }
     setFotoLoading(true);
@@ -309,8 +373,8 @@ export default function FormDaftar({
         setPesan("Silakan pilih kelurahan lokasi penjemputan.");
         return false;
       }
-      if (!alamat || alamat.trim().length < 8) {
-        setPesan("Alamat penjemputan wajib diisi dengan jelas (minimal 8 karakter).");
+      if (!alamat || alamat.trim().length < 10) {
+        setPesan("Alamat penjemputan wajib diisi dengan jelas (minimal 10 karakter).");
         return false;
       }
       return true;
@@ -406,6 +470,9 @@ export default function FormDaftar({
       if (res.ok && data.ok) {
         setHasil({ kodePelanggan: data.kodePelanggan, namaPelanggan: data.namaPelanggan });
         setStatus("ok");
+        if (typeof window !== "undefined") {
+          try { sessionStorage.removeItem("upsheru_daftar_draft_v1"); } catch {}
+        }
         window.scrollTo({ top: 100, behavior: "smooth" });
       } else {
         setStatus("gagal");

@@ -4,6 +4,8 @@ import path from "path";
 export default defineConfig({
   test: {
     exclude: ["**/node_modules/**", "**/pi-dev/**", "**/dist/**"],
+    fileParallelism: false,
+    maxConcurrency: 1,
   },
   resolve: {
     alias: {

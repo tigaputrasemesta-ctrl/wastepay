@@ -115,9 +115,9 @@ export default function PublicNavbar({
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group min-w-0 flex-1 md:flex-initial">
           <img src={logoUrl} alt={`${brandName} Logo`} className="h-10 w-10 sm:h-12 sm:w-12 object-contain rounded-xl shadow-sm group-hover:scale-105 transition-transform shrink-0" />
-          <div className="min-w-0">
-            <div className="flex items-center gap-1.5">
-              <span className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-zinc-100 tracking-tight leading-none">
+          <div className="min-w-0 truncate">
+            <div className="flex items-center gap-1.5 truncate">
+              <span className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-zinc-100 tracking-tight leading-none truncate">
                 {brandName}<span className="text-emerald-700 dark:text-emerald-500">.</span>
               </span>
             </div>
@@ -196,13 +196,13 @@ export default function PublicNavbar({
         <div id="mobile-public-menu" className="md:hidden">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 top-[68px] bg-slate-900/50 backdrop-blur-sm z-30 transition-opacity"
+            className="fixed inset-0 top-[60px] sm:top-[68px] bg-slate-900/50 backdrop-blur-sm z-30 transition-opacity"
             onClick={() => setIsOpen(false)}
             aria-hidden="true"
           />
 
           {/* Drawer Menu Panel */}
-          <div className="relative z-40 bg-white dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800 shadow-xl max-h-[calc(100vh-68px)] overflow-y-auto px-4 py-4 space-y-4">
+          <div className="relative z-40 bg-white dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800 shadow-xl max-h-[calc(100vh-64px)] overflow-y-auto px-4 py-4 space-y-4">
             {/* Nav Items */}
             <div className="space-y-1">
               <span className="text-xs font-extrabold uppercase tracking-wider text-slate-400 dark:text-zinc-500 px-2 block mb-1">
@@ -282,8 +282,8 @@ export default function PublicNavbar({
                     <MessageCircle className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-bold text-emerald-950 dark:text-emerald-200">Pengaduan</p>
-                    <p className="text-xs text-emerald-700 dark:text-emerald-400">Hubungi WhatsApp Bot CS 24 Jam</p>
+                    <p className="font-bold text-emerald-950 dark:text-emerald-200">Bantuan CS WhatsApp</p>
+                    <p className="text-xs text-emerald-700 dark:text-emerald-400">Chat langsung Customer Service</p>
                   </div>
                 </div>
                 <ChevronRight className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />

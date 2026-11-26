@@ -25,13 +25,22 @@ export function channelAllowed(paymentMethod?: string | null): boolean {
   const env = process.env.DUITKU_CHANNELS?.trim();
   const allowed = env
     ? env.split(",").map((s) => s.trim().toUpperCase()).filter(Boolean)
-    : ["SQ", "SP"]; // SQ (QRIS NusaPay) & SP (ShopeePay)
+    : [
+        "SQ", "SP", "BC", "M1", "I1", "BR", "BT", "B1", "VA", "VC",
+        "CIMB", "BNI", "BRI", "PERMATA", "MANDIRI", "OVO", "DANA", "GOPAY"
+      ];
   return allowed.includes(m);
 }
 
 /** Label Indonesia untuk channel pembayaran Duitku. */
 export function duitkuChannelLabel(paymentMethod?: string | null): string {
   const map: Record<string, string> = {
+    BC: "Virtual Account BCA",
+    M1: "Mandiri Bill",
+    I1: "Virtual Account BNI",
+    BR: "Virtual Account BRI",
+    B1: "Virtual Account CIMB",
+    BT: "Permata / Bank Transfer",
     VC: "Virtual Account",
     VA: "Virtual Account",
     QR: "QRIS",
@@ -39,8 +48,6 @@ export function duitkuChannelLabel(paymentMethod?: string | null): string {
     SQ: "QRIS NusaPay",
     OVO: "OVO",
     DANA: "DANA",
-    M1: "Mandiri Bill",
-    BT: "Bank Transfer",
     CIMB: "Virtual Account CIMB",
     BNI: "Virtual Account BNI",
     BRI: "Virtual Account BRI",
@@ -69,7 +76,7 @@ export const DUITKU_METHODS: any[] = [
   {
     value: "SQ",
     label: "QRIS NusaPay",
-    sublabel: "BCA, Mandiri, BRI, BNI, DANA, GoPay, OVO",
+    sublabel: "BCA, Mandiri, BRI, BNI, DANA, GoPay, OVO, ShopeePay",
     icon: "💳",
     imageUrl: "https://images.duitku.com/hotlink-ok/SQ.PNG",
     totalFee: "1500"
@@ -81,5 +88,45 @@ export const DUITKU_METHODS: any[] = [
     icon: "🛍️",
     imageUrl: "https://images.duitku.com/hotlink-ok/SP.PNG",
     totalFee: "1500"
+  },
+  {
+    value: "BC",
+    label: "Virtual Account BCA",
+    sublabel: "BCA Mobile, myBCA, KlikBCA & ATM BCA",
+    icon: "🏦",
+    imageUrl: "https://images.duitku.com/hotlink-ok/BC.PNG",
+    totalFee: "3000"
+  },
+  {
+    value: "M1",
+    label: "Mandiri Bill",
+    sublabel: "Livin' by Mandiri & ATM Mandiri",
+    icon: "🏦",
+    imageUrl: "https://images.duitku.com/hotlink-ok/M1.PNG",
+    totalFee: "3000"
+  },
+  {
+    value: "I1",
+    label: "Virtual Account BNI",
+    sublabel: "BNI Mobile Banking & ATM BNI",
+    icon: "🏦",
+    imageUrl: "https://images.duitku.com/hotlink-ok/I1.PNG",
+    totalFee: "3000"
+  },
+  {
+    value: "BR",
+    label: "Virtual Account BRI",
+    sublabel: "BRImo & ATM BRI",
+    icon: "🏦",
+    imageUrl: "https://images.duitku.com/hotlink-ok/BR.PNG",
+    totalFee: "3000"
+  },
+  {
+    value: "BT",
+    label: "Permata / Bank Transfer",
+    sublabel: "PermataMobile X & ATM Bersama/Prima",
+    icon: "🏦",
+    imageUrl: "https://images.duitku.com/hotlink-ok/BT.PNG",
+    totalFee: "3000"
   },
 ];

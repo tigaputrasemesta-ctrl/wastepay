@@ -54,6 +54,6 @@ export async function persistBase64Image(
       : `/uploads/${subfolder}/${filename}`;
   } catch (err) {
     console.error("[persistBase64Image Error]", err);
-    return dataStr;
+    return null;
   }
 }
