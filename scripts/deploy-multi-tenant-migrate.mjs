@@ -125,6 +125,10 @@ async function main() {
   const { pool, client } = await createConnectedPool();
 
   try {
+    // Aktifkan superadmin bypass untuk sesi migrasi deployment (RLS bypass)
+    await client.query("SET app.is_core_superadmin = 'true';");
+    await client.query("SET app.is_superadmin = 'true';");
+
     // 1. Pastikan Tenant Core & UPS HERU terdaftar sebelum FK atau backfill berjalan
     await client.query(`
       INSERT INTO "Tenant" (
@@ -204,20 +208,6 @@ async function main() {
     const migrationSql = fs.readFileSync(migrationPath, "utf8");
     await client.query(migrationSql);
     console.log("✓ Skema DDL TenantMembership, TenantSubscription, & 36 kolom tenantId selesai diterapkan.");
-
-    // 2b. Jalankan Hardened RLS Policy & Composite Indexes (20261127000000_vps_rls_hardening)
-    const hardeningMigrationPath = path.join(
-      process.cwd(),
-      "prisma",
-      "migrations",
-      "20261127000000_vps_rls_hardening",
-      "migration.sql"
-    );
-    if (fs.existsSync(hardeningMigrationPath)) {
-      const hardeningSql = fs.readFileSync(hardeningMigrationPath, "utf8");
-      await client.query(hardeningSql);
-      console.log("✓ PostgreSQL ENABLE & FORCE ROW LEVEL SECURITY, Tenant Isolation Policy, & Indeks Komposit berhasil diterapkan.");
-    }
 
     // 3. Backfill seluruh baris legacy NULL -> tenant-pilot-upsheru dengan verifikasi total count
     let totalUpdated = 0;
@@ -321,6 +311,20 @@ async function main() {
        WHERE NOT EXISTS (SELECT 1 FROM "TenantSubscription" WHERE "tenantId" = $1);`,
       [PILOT_TENANT_ID]
     );
+
+    // 6. Jalankan Hardened RLS Policy & Composite Indexes (20261127000000_vps_rls_hardening)
+    const hardeningMigrationPath = path.join(
+      process.cwd(),
+      "prisma",
+      "migrations",
+      "20261127000000_vps_rls_hardening",
+      "migration.sql"
+    );
+    if (fs.existsSync(hardeningMigrationPath)) {
+      const hardeningSql = fs.readFileSync(hardeningMigrationPath, "utf8");
+      await client.query(hardeningSql);
+      console.log("✓ PostgreSQL ENABLE & FORCE ROW LEVEL SECURITY, Tenant Isolation Policy, & Indeks Komposit berhasil diterapkan.");
+    }
 
     console.log(`✅ [Pre-Deploy] Migrasi multi-tenant & backfill selesai sempurna (${totalUpdated} baris legacy terhubung ke UPS HERU).`);
   } finally {
