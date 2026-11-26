@@ -146,6 +146,16 @@ async function main() {
       ) ON CONFLICT ("id") DO NOTHING;
     `);
 
+    await client.query(`
+      INSERT INTO "Tenant" (
+        "id", "slug", "namaMitra", "tipePengelola", "status", "paketLangganan",
+        "customDomain", "subdomain", "warnaTema", "kota", "provinsi", "createdAt", "updatedAt"
+      ) VALUES (
+        'tenant-mitra-test', 'mitra-test', 'Mitra Test', 'mitra_mandiri', 'aktif', 'starter',
+        'mitra-test.vercel.app', 'mitra-test.o2whero.com', '#0284c7', 'Kota Mandiri', 'Jawa Barat', NOW(), NOW()
+      ) ON CONFLICT ("id") DO NOTHING;
+    `);
+
     const seedDomains = [
       { tenantId: CORE_TENANT_ID, domain: "o2whero.com", isPrimary: true },
       { tenantId: CORE_TENANT_ID, domain: "www.o2whero.com", isPrimary: false },
@@ -153,6 +163,9 @@ async function main() {
       { tenantId: PILOT_TENANT_ID, domain: "upsheru.com", isPrimary: true },
       { tenantId: PILOT_TENANT_ID, domain: "www.upsheru.com", isPrimary: false },
       { tenantId: PILOT_TENANT_ID, domain: "upsheru.o2whero.com", isPrimary: false },
+      { tenantId: "tenant-mitra-test", domain: "mitra-test.vercel.app", isPrimary: true },
+      { tenantId: "tenant-mitra-test", domain: "www.mitra-test.vercel.app", isPrimary: false },
+      { tenantId: "tenant-mitra-test", domain: "mitra-test.o2whero.com", isPrimary: false },
     ];
     for (const d of seedDomains) {
       await client.query(

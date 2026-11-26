@@ -115,11 +115,50 @@ export const PILOT_TENANT: TenantConfig = {
 };
 
 /**
+ * Tenant Pengujian Mitra Mandiri (mitra-test.vercel.app)
+ */
+export const MITRA_TEST_TENANT: TenantConfig = {
+  id: "tenant-mitra-test",
+  slug: "mitra-test",
+  namaMitra: "Mitra Test",
+  tipe: "mitra_mandiri",
+  domains: [
+    "mitra-test.vercel.app",
+    "www.mitra-test.vercel.app",
+    "mitra-test.o2whero.com",
+  ],
+  primaryDomain: "mitra-test.vercel.app",
+  branding: {
+    namaMitra: "Mitra Test",
+    tagline: "Unit Pengelolaan & Retribusi Sampah Mandiri",
+    logoUrl: "/images/o2w-logo.svg",
+    warnaTema: "#0284c7",
+    alamat: "Kawasan Uji Coba Mitra Mandiri",
+    kota: "Kota Mandiri",
+    emailKontak: "kontak@mitra-test.vercel.app",
+    whatsappKontak: "+62 812-0000-0000",
+  },
+  dbConfig: {
+    isDedicated: false,
+  },
+  status: "aktif",
+  fitur: {
+    retribusiSampah: true,
+    tabunganSampah: true,
+    jemputSampah: true,
+    jualOfftaker: true,
+    qrisDuitku: true,
+    whatsappNotif: true,
+  },
+};
+
+/**
  * Baseline tenant statis untuk fail-safe lookup
  */
 export const KNOWN_TENANTS: TenantConfig[] = [
   CORE_TENANT,
   PILOT_TENANT,
+  MITRA_TEST_TENANT,
 ];
 
 /**

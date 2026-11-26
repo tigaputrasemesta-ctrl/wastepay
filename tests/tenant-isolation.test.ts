@@ -39,9 +39,20 @@ describe("Tenant Domain Isolation & Misdirection Guard", () => {
     expect(phishing.isValid).toBe(false);
   });
 
+  it("resolves mitra-test.vercel.app as independent test tenant", () => {
+    const testTenant = resolveTenantByHost("mitra-test.vercel.app");
+    expect(testTenant.isValid).toBe(true);
+    expect(testTenant.isCore).toBe(false);
+    expect(testTenant.isPilot).toBe(false);
+    expect(testTenant.tenant.id).toBe("tenant-mitra-test");
+    expect(testTenant.tenant.slug).toBe("mitra-test");
+    expect(testTenant.tenant.namaMitra).toBe("Mitra Test");
+  });
+
   it("permits official domains with isValid = true", () => {
     expect(resolveTenantByHost("o2whero.com").isValid).toBe(true);
     expect(resolveTenantByHost("upsheru.com").isValid).toBe(true);
+    expect(resolveTenantByHost("mitra-test.vercel.app").isValid).toBe(true);
     expect(resolveTenantByHost("localhost:3000").isValid).toBe(true);
   });
 });
