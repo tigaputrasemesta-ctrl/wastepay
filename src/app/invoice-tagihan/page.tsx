@@ -108,7 +108,7 @@ export default async function InvoiceTagihanPage({
         <div className="invoice-toolbar">
           <div className="invoice-toolbar-left">
             <Link
-              href={`/bayar?invoice=${encodeURIComponent(tagihan.noInvoice || "")}`}
+              href={`/bayar-tagihan?invoice=${encodeURIComponent(tagihan.noInvoice || "")}`}
               className="invoice-back-link"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -121,7 +121,7 @@ export default async function InvoiceTagihanPage({
           <div className="invoice-toolbar-right">
             {!lunas && (
               <Link
-                href={`/bayar?invoice=${encodeURIComponent(tagihan.noInvoice || "")}`}
+                href={`/bayar-tagihan?invoice=${encodeURIComponent(tagihan.noInvoice || "")}`}
                 className="invoice-pay-btn"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -415,10 +415,10 @@ export default async function InvoiceTagihanPage({
                     <div className="portal-direct-hint">
                       Portal Pembayaran:{" "}
                       <Link
-                        href={`/bayar?invoice=${encodeURIComponent(tagihan.noInvoice || "")}`}
+                        href={`/bayar-tagihan?invoice=${encodeURIComponent(tagihan.noInvoice || "")}`}
                         className="underline font-bold text-emerald-700"
                       >
-                        {baseUrl}/bayar?invoice={encodeURIComponent(tagihan.noInvoice || "")}
+                        {baseUrl}/bayar-tagihan?invoice={encodeURIComponent(tagihan.noInvoice || "")}
                       </Link>
                     </div>
                   </div>

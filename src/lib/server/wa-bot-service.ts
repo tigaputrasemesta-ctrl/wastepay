@@ -347,7 +347,7 @@ export async function processIncomingWaMessage(
           : "⏳ *BELUM BAYAR*";
         const totalNominal = matched.jumlah + (matched.denda || 0);
         const printUrl = `https://upsheru.com/invoice-tagihan?invoice=${encodeURIComponent(matched.noInvoice)}`;
-        const payUrl = `https://upsheru.com/bayar?invoice=${encodeURIComponent(matched.noInvoice)}`;
+        const payUrl = `https://upsheru.com/bayar-tagihan?invoice=${encodeURIComponent(matched.noInvoice)}`;
 
         const reply = [
           `💳 *PEMBAYARAN TAGIHAN — PERIODE ${namaBulan.toUpperCase()} ${matched.tahun}*`,
@@ -374,7 +374,7 @@ export async function processIncomingWaMessage(
     }
 
     const paymentLinkStr = unpaidInvoiceNo
-      ? `https://upsheru.com/bayar?invoice=${encodeURIComponent(unpaidInvoiceNo)}`
+      ? `https://upsheru.com/bayar-tagihan?invoice=${encodeURIComponent(unpaidInvoiceNo)}`
       : (pelanggan?.noTelepon ? `https://upsheru.com/bayar?kode=${pelanggan.noTelepon}` : `https://upsheru.com/bayar`);
 
     const printInvoiceLinkStr = unpaidInvoiceNo
@@ -390,7 +390,7 @@ export async function processIncomingWaMessage(
             const statusLabel = t.status === "tunggakan" ? "⚠️ Menunggak" : "⏳ Berjalan";
             const totalNominal = t.jumlah + (t.denda || 0);
             const linkBayar = t.noInvoice
-              ? `https://upsheru.com/bayar?invoice=${encodeURIComponent(t.noInvoice)}`
+              ? `https://upsheru.com/bayar-tagihan?invoice=${encodeURIComponent(t.noInvoice)}`
               : paymentLinkStr;
             return `• *Periode ${namaBulan} ${t.tahun}* (${formatRupiahSkylite(totalNominal)} — ${statusLabel}):\n  👉 *${linkBayar}*`;
           }),
@@ -840,7 +840,7 @@ export async function processIncomingWaMessage(
     const rincianTagihan = unpaid.slice(0, 6).map((t: any) => {
       const statusLabel = t.status === "tunggakan" ? "⚠️ (Menunggak)" : "⏳ (Berjalan)";
       const bayarBulanStr = t.noInvoice
-        ? `\n   ↳ 💳 Bayar Online: https://upsheru.com/bayar?invoice=${encodeURIComponent(t.noInvoice)}`
+        ? `\n   ↳ 💳 Bayar Online: https://upsheru.com/bayar-tagihan?invoice=${encodeURIComponent(t.noInvoice)}`
         : "";
       return `• Periode *${t.bulan}/${t.tahun}*: ${formatRupiahSkylite(t.jumlah)} ${statusLabel}${bayarBulanStr}`;
     });

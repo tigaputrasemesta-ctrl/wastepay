@@ -55,9 +55,9 @@ export function getTenantEmail(host?: string | null): string {
 export function getTenantBayarUrl(host?: string | null, invoiceNo?: string): string {
   const baseUrl = getTenantAppUrl(host);
   if (invoiceNo) {
-    return `${baseUrl}/bayar?invoice=${encodeURIComponent(invoiceNo)}`;
+    return `${baseUrl}/bayar-tagihan?invoice=${encodeURIComponent(invoiceNo)}`;
   }
-  return `${baseUrl}/bayar`;
+  return `${baseUrl}/bayar-tagihan`;
 }
 
 /**
