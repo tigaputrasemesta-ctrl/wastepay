@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { handleCorsPreflight, buildCorsHeaders } from '@/lib/server/wastepay-backend-core-services';
+import { resolveTenantByHost, buildTenantFilter } from '@/lib/tenant';
+import { DEFAULT_MARKETPLACE_PRODUCTS } from '@/lib/default-products';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,12 +15,28 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+    const tenantCtx = resolveTenantByHost(rawHost);
+
     const { id } = await params;
     const isNum = !isNaN(Number(id));
 
-    const product = await prisma.produk.findFirst({
-      where: isNum ? { id: Number(id) } : { slug: id },
+    const tenantFilter = buildTenantFilter(tenantCtx.tenant.id, tenantCtx.isPilot);
+    const where: any = isNum ? { id: Number(id), ...tenantFilter } : { slug: id, ...tenantFilter };
+
+    let product = await prisma.produk.findFirst({
+      where,
     });
+
+    // Fallback ke default products jika belum ada di database
+    if (!product && tenantCtx.isPilot) {
+      const fallback = DEFAULT_MARKETPLACE_PRODUCTS.find(
+        (p) => (isNum && p.id === Number(id)) || p.slug === id
+      );
+      if (fallback) {
+        product = fallback as any;
+      }
+    }
 
     if (!product) {
       return NextResponse.json(

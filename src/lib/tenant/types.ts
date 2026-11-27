@@ -39,6 +39,7 @@ export interface TenantConfig {
   waConfig?: TenantWaConfig;
   dbConfig: TenantDbConfig;
   status: "aktif" | "suspend" | "maintenance";
+  fiturAktif?: string | string[] | null;
   fitur: {
     retribusiSampah: boolean;
     tabunganSampah: boolean;

@@ -51,7 +51,8 @@ export default function PublicNavbar({
     }
   }, []);
 
-  const tenantForCheck = activeTenant || (fiturAktif ? { fiturAktif } : null);
+  const isPilotDefault = !activeTenant && (brandName === "UPS HERU" || brandName?.toLowerCase().includes("heru"));
+  const tenantForCheck = activeTenant || (fiturAktif ? { fiturAktif } : isPilotDefault ? { slug: "upsheru", id: "tenant-pilot-upsheru" } : null);
   const hasMarketplace = isFeatureEnabled(tenantForCheck, "marketplace");
   const hasArtikel = isFeatureEnabled(tenantForCheck, "artikel");
   const hasPickup = isFeatureEnabled(tenantForCheck, "pickup_incidental");

@@ -95,6 +95,7 @@ export default async function PublicLayout({
         tagline={tagline}
         logoUrl={logoUrl}
         whatsappDigits={whatsappDigits}
+        fiturAktif={tenant.fiturAktif}
       />
 
       <main id="main-content" className="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 focus:outline-none">

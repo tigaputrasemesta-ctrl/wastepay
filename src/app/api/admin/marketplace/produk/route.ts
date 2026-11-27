@@ -17,7 +17,12 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: rbac.error }, { status: rbac.status, headers: buildCorsHeaders(request) });
     }
 
+    const tenantFilter = session?.role === 'superadmin'
+      ? {}
+      : { OR: [{ tenantId: session?.tenantId || 'tenant-pilot-upsheru' }, { tenantId: null }] };
+
     const products = await prisma.produk.findMany({
+      where: tenantFilter,
       orderBy: { id: 'asc' },
     });
 
@@ -68,6 +73,7 @@ export async function POST(request: Request) {
         deskripsi: deskripsi.trim(),
         foto: foto || null,
         aktif: aktif !== undefined ? Boolean(aktif) : true,
+        tenantId: session?.tenantId || 'tenant-pilot-upsheru',
       },
     });
 

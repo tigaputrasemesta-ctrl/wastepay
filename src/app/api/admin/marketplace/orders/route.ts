@@ -13,7 +13,7 @@ export async function GET(request: Request) {
   try {
     const session = await getSession(request);
     const rbac = assertAuthorizedRole(session, ['superadmin', 'admin', 'kasir']);
-    if (!rbac.authorized) {
+    if (!rbac.authorized || !session) {
       return NextResponse.json({ error: rbac.error }, { status: rbac.status, headers: buildCorsHeaders(request) });
     }
 
@@ -24,7 +24,11 @@ export async function GET(request: Request) {
     const page = Math.max(Number(searchParams.get('page')) || 1, 1);
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const tenantFilter = session.role === 'superadmin'
+      ? {}
+      : { OR: [{ tenantId: session.tenantId || 'tenant-pilot-upsheru' }, { tenantId: null }] };
+
+    const where: any = { ...tenantFilter };
     if (status && status !== 'semua') {
       where.status = status;
     }

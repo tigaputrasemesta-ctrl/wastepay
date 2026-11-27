@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { handleCorsPreflight, buildCorsHeaders } from '@/lib/server/wastepay-backend-core-services';
 import { createPayment, isDuitkuEnabled, getAppBaseUrl } from '@/lib/duitku';
+import { resolveTenantByHost } from '@/lib/tenant';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,6 +21,9 @@ function generateNoPesanan(): string {
 
 export async function POST(request: Request) {
   try {
+    const rawHost = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+    const tenantCtx = resolveTenantByHost(rawHost);
+
     const body = await request.json();
     const {
       namaPembeli,
@@ -171,6 +175,7 @@ export async function POST(request: Request) {
           status: initialStatus,
           metodeBayar: finalMetodeBayar,
           buktiBayar: buktiBayarData,
+          tenantId: tenantCtx.tenant.id,
           items: {
             create: validatedItems,
           },

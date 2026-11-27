@@ -546,10 +546,32 @@ function isTenantOnlyPublicPath(lowerPath: string): boolean {
   // /peta dan /peta-lapangan dapat diakses langsung oleh petugas lapangan / publik tanpa perlu login.
   // /peta/tv dilindungi token TV (env TV_VIEW_TOKEN) di dalam page-nya sendiri.
   if (
+    lowerPath === "/" ||
     lowerPath === "/login" ||
     lowerPath === "/login/" ||
     lowerPath === "/bayar" ||
     lowerPath === "/bayar/" ||
+    lowerPath.startsWith("/bayar/") ||
+    lowerPath === "/bayar-tagihan" ||
+    lowerPath.startsWith("/bayar-tagihan/") ||
+    lowerPath === "/daftar" ||
+    lowerPath.startsWith("/daftar/") ||
+    lowerPath === "/tarif" ||
+    lowerPath.startsWith("/tarif/") ||
+    lowerPath === "/pengaduan" ||
+    lowerPath.startsWith("/pengaduan/") ||
+    lowerPath === "/lacak" ||
+    lowerPath.startsWith("/lacak/") ||
+    lowerPath === "/pickup" ||
+    lowerPath.startsWith("/pickup/") ||
+    lowerPath === "/marketplace" ||
+    lowerPath.startsWith("/marketplace/") ||
+    lowerPath === "/artikel" ||
+    lowerPath.startsWith("/artikel/") ||
+    lowerPath === "/unduh" ||
+    lowerPath.startsWith("/unduh/") ||
+    lowerPath === "/mitra" ||
+    lowerPath.startsWith("/mitra/") ||
     lowerPath === "/peta" ||
     lowerPath === "/peta/" ||
     lowerPath.startsWith("/peta/") ||

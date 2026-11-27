@@ -44,7 +44,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = await headers();
-  const host = headersList.get("host") || "";
+  const host = headersList.get("x-forwarded-host") || headersList.get("host") || "";
   const tenantCtx = resolveTenantByHost(host);
 
   if (tenantCtx.isCore) {
@@ -118,7 +118,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function LandingPage() {
   const headersList = await headers();
-  const host = headersList.get("host") || "";
+  const host = headersList.get("x-forwarded-host") || headersList.get("host") || "";
   const tenantCtx = resolveTenantByHost(host);
 
   // Jika domain yang diakses adalah Core Hub (o2whero.com)
@@ -202,6 +202,7 @@ export default async function LandingPage() {
         tagline={brandTagline}
         logoUrl={brandLogo}
         whatsappDigits={whatsappDigits}
+        fiturAktif={tenantCtx.tenant.fiturAktif}
       />
 
       <main id="main-content">

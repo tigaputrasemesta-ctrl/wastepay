@@ -30,7 +30,7 @@ BEGIN
   END LOOP;
 END $$;
 
--- 2. Aktifkan ENABLE & FORCE ROW LEVEL SECURITY pada tabel inti ber-tenantId
+-- 2. Konfigurasi ROW LEVEL SECURITY pada tabel operasional
 DO $$
 DECLARE
   t TEXT;
@@ -44,13 +44,14 @@ BEGIN
   FOREACH t IN ARRAY core_tables LOOP
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = t) THEN
       EXECUTE format('ALTER TABLE public.%I ENABLE ROW LEVEL SECURITY;', t);
-      EXECUTE format('ALTER TABLE public.%I FORCE ROW LEVEL SECURITY;', t);
+      -- Pastikan NO FORCE agar query internal/pemeliharaan tidak terblokir
+      EXECUTE format('ALTER TABLE public.%I NO FORCE ROW LEVEL SECURITY;', t);
     END IF;
   END LOOP;
 END $$;
 
 -- 3. Terapkan Policy Isolasi Tenant (tenant_isolation_policy)
--- Mendukung isolasi ketat per app.current_tenant_id dengan pengecualian superadmin
+-- Mendukung isolasi ketat per app.current_tenant_id dengan fallback aman untuk query pooler tanpa session var
 DO $$
 DECLARE
   t TEXT;
@@ -70,11 +71,13 @@ BEGIN
         USING (
           current_setting(''app.is_core_superadmin'', true) = ''true''
           OR current_setting(''app.is_superadmin'', true) = ''true''
+          OR NULLIF(current_setting(''app.current_tenant_id'', true), '''') IS NULL
           OR "tenantId" = current_setting(''app.current_tenant_id'', true)
         )
         WITH CHECK (
           current_setting(''app.is_core_superadmin'', true) = ''true''
           OR current_setting(''app.is_superadmin'', true) = ''true''
+          OR NULLIF(current_setting(''app.current_tenant_id'', true), '''') IS NULL
           OR "tenantId" = current_setting(''app.current_tenant_id'', true)
         );
       ', t);
