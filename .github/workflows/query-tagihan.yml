@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
   push:
     paths:
+      - 'scripts/analisa-tunggakan-nov2026.mjs'
       - 'scripts/cek-tagihan-november.mjs'
       - '.github/workflows/query-tagihan.yml'
 
@@ -25,8 +26,8 @@ jobs:
       - name: Install Dependencies
         run: npm install pg --no-save
 
-      - name: Execute Query Script
+      - name: Execute Analysis Script
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
-          node scripts/cek-tagihan-november.mjs
+          node scripts/analisa-tunggakan-nov2026.mjs
