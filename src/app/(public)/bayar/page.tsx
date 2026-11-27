@@ -17,6 +17,7 @@ import { DUITKU_METHODS, duitkuChannelLabel } from "@/lib/duitku-channels";
 import AnimatedDumpTruck from "@/components/AnimatedDumpTruck";
 import { PanduanCaraBayarQris } from "@/components/PanduanCaraBayarQris";
 import { resolveTenantByHost } from "@/lib/tenant/config";
+import { downloadQrisVoucherCard } from "@/lib/qris-card";
 
 type TagihanPublik = {
   id: number;
@@ -260,6 +261,31 @@ function BayarPortalContent() {
     amount: number;
   } | null>(null);
   const [pollingStatus, setPollingStatus] = useState<string | null>(null);
+  const [downloadingCard, setDownloadingCard] = useState(false);
+
+  const handleDownloadCard = async () => {
+    if (!onPageQris) return;
+    setDownloadingCard(true);
+    try {
+      await downloadQrisVoucherCard({
+        qrDataUrl: onPageQris.qrDataUrl,
+        amount: onPageQris.amount,
+        orderId: onPageQris.orderId,
+        noInvoice: detail?.noInvoice || invoiceParam,
+        namaPelanggan: detail?.pelanggan.nama,
+        brandName: tenantInfo.brandName,
+        city: tenantInfo.city,
+      });
+    } catch (err) {
+      console.error("Gagal simpan gambar QRIS lengkap:", err);
+      const a = document.createElement("a");
+      a.href = onPageQris.qrDataUrl;
+      a.download = `QRIS-Tagihan-${onPageQris.orderId}.png`;
+      a.click();
+    } finally {
+      setDownloadingCard(false);
+    }
+  };
 
   const [tenantInfo, setTenantInfo] = useState<{ brandName: string; city: string; whatsapp: string }>({
     brandName: "UPS HERU",
@@ -701,13 +727,14 @@ function BayarPortalContent() {
           </div>
 
           <div className="space-y-2 pt-1">
-            <a
-              href={onPageQris.qrDataUrl}
-              download={`QRIS-Tagihan-${onPageQris.orderId}.png`}
-              className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl transition shadow-md flex items-center justify-center gap-2 active:scale-95"
+            <button
+              type="button"
+              onClick={handleDownloadCard}
+              disabled={downloadingCard}
+              className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white font-bold text-xs rounded-xl transition shadow-md flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
             >
-              <span>📥 Simpan Gambar QRIS ke Galeri</span>
-            </a>
+              <span>{downloadingCard ? "Menyimpan Gambar..." : "📥 Simpan Gambar QRIS ke Galeri"}</span>
+            </button>
             {onPageQris.paymentUrl && (
               <a
                 href={onPageQris.paymentUrl}

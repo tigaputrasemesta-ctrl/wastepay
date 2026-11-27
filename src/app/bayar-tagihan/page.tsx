@@ -6,6 +6,7 @@ import Link from "next/link";
 import QRCode from "qrcode";
 import { toast } from "@/components/Toast";
 import { formatRupiah } from "@/lib/utils";
+import { downloadQrisVoucherCard } from "@/lib/qris-card";
 import {
   formatRupiahSkylite,
   formatTanggalIndo,
@@ -119,6 +120,34 @@ function BayarTagihanContent() {
     amount: number;
   } | null>(null);
   const [pollingStatus, setPollingStatus] = useState<string | null>(null);
+  const [downloadingCard, setDownloadingCard] = useState(false);
+
+  const handleDownloadCard = async () => {
+    if (!onPageQris) return;
+    setDownloadingCard(true);
+    try {
+      await downloadQrisVoucherCard({
+        qrDataUrl: onPageQris.qrDataUrl,
+        amount: onPageQris.amount,
+        orderId: onPageQris.orderId,
+        noInvoice: tagihan?.noInvoice || inputInvoice || invoiceParam,
+        namaPelanggan: tagihan?.pelanggan.nama,
+        brandName: "UPS HERU",
+        city: "Kota Depok",
+      });
+      showToast("Gambar voucher QRIS lengkap berhasil disimpan!");
+    } catch (err) {
+      console.error("Gagal menyimpan gambar voucher QRIS lengkap:", err);
+      // Fallback unduh langsung QR Code
+      const a = document.createElement("a");
+      a.href = onPageQris.qrDataUrl;
+      a.download = `QRIS-Tagihan-${onPageQris.orderId}.png`;
+      a.click();
+      showToast("Mengunduh gambar QRIS...");
+    } finally {
+      setDownloadingCard(false);
+    }
+  };
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -877,13 +906,14 @@ function BayarTagihanContent() {
               </div>
 
               <div className="space-y-2 pt-1">
-                <a
-                  href={onPageQris.qrDataUrl}
-                  download={`QRIS-Tagihan-${onPageQris.orderId}.png`}
-                  className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl transition shadow-md flex items-center justify-center gap-2 active:scale-95"
+                <button
+                  type="button"
+                  onClick={handleDownloadCard}
+                  disabled={downloadingCard}
+                  className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white font-bold text-xs rounded-xl transition shadow-md flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
                 >
-                  <span>📥 Simpan Gambar QRIS ke Galeri</span>
-                </a>
+                  <span>{downloadingCard ? "Menyimpan Gambar..." : "📥 Simpan Gambar QRIS ke Galeri"}</span>
+                </button>
                 <button
                   type="button"
                   onClick={() => setOnPageQris(null)}

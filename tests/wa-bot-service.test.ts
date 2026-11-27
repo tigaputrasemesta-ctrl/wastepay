@@ -666,7 +666,7 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
     expect(resNov.intent).toBe("CARA_BAYAR");
     expect(resNov.reply).toContain("PEMBAYARAN TAGIHAN — PERIODE NOVEMBER 2026");
     expect(resNov.reply).toContain("INV%2F081288776655%2F202611");
-    expect(resNov.reply).toContain("https://upsheru.com/bayar?invoice=");
+    expect(resNov.reply).toContain("https://upsheru.com/bayar-tagihan?invoice=");
     expect(resNov.reply).toContain("Total Tagihan: *Rp50.000,-*");
 
     // Request untuk bulan Oktober (tunggakan)
@@ -722,8 +722,8 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
     expect(res.reply).toContain("Pilih bulan tagihan yang ingin Anda bayar:");
     expect(res.reply).toContain("Periode November 2026");
     expect(res.reply).toContain("Periode Oktober 2026");
-    expect(res.reply).toContain("bayar?invoice=INV%2F081377889900%2F202611");
-    expect(res.reply).toContain("bayar?invoice=INV%2F081377889900%2F202610");
+    expect(res.reply).toContain("bayar-tagihan?invoice=INV%2F081377889900%2F202611");
+    expect(res.reply).toContain("bayar-tagihan?invoice=INV%2F081377889900%2F202610");
   });
 
   it("28. Menu Cek Tagihan (Menu 1) menyajikan link 💳 Bayar Online di setiap baris periode tagihan langsung ke web bayar", async () => {
@@ -756,7 +756,7 @@ describe("WhatsApp Bot Service (Fonnte Integration)", () => {
     expect(res.intent).toBe("TAGIHAN");
     expect(res.reply).toContain("RINCIAN TAGIHAN RETRIBUSI SAMPAH");
     expect(res.reply).toContain("Periode *11/2026*: Rp50.000,-");
-    expect(res.reply).toContain("↳ 💳 Bayar Online: https://upsheru.com/bayar?invoice=INV%2F081512345678%2F202611");
+    expect(res.reply).toContain("↳ 💳 Bayar Online: https://upsheru.com/bayar-tagihan?invoice=INV%2F081512345678%2F202611");
     expect(res.reply).toContain("https://upsheru.com/bayar?kode=081512345678");
     expect(res.reply).not.toContain("Cetak QRIS");
     expect(res.reply).not.toContain("invoice-tagihan");
