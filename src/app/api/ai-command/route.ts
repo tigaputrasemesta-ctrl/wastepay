@@ -2,54 +2,101 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getPengaturanString, setPengaturan } from "@/lib/pengaturan";
 import { getSession } from "@/lib/auth";
-import fs from "fs";
-import path from "path";
 
 export const dynamic = "force-dynamic";
 
-// In-memory approval queue (dapat disimpan di PostgreSQL tabel Audit/Task jika diperlukan)
-let mockApprovalQueue = [
+// In-memory Pusat Review & Arsip Laporan AI Internal (Tanpa Kirim WhatsApp)
+export interface ReportArchiveItem {
+  id: string;
+  agentId: "eksekutif" | "tagihan" | "armada" | "layanan" | "growth";
+  agentTitle: string;
+  category: string;
+  title: string;
+  summary: string;
+  content: string;
+  aiConfidence: string;
+  status: "PENDING_REVIEW" | "ARCHIVED" | "REJECTED";
+  createdAt: string;
+  archivedAt?: string;
+  verifiedBy?: string;
+}
+
+let mockReportArchive: ReportArchiveItem[] = [
   {
-    id: "Q-101",
-    type: "COMPLAINT_REPLY",
-    recipientName: "Bpk. Syamil",
-    recipientPhone: "089619247836",
-    category: "Komplain Sampah Tertunda",
-    summary: "Draf permohonan maaf dan konfirmasi armada zona Sawangan diberangkatkan jam 13.00 WIB.",
-    draftText: "Halo Bpk. Syamil, mohon maaf sekali atas keterlambatan armada pengangkut di Blok C4. Tim armada cadangan zona Sawangan sudah kami jadwalkan melintas pukul 13.00 WIB hari ini. Terima kasih atas kesabarannya 🙏♻️",
-    aiConfidence: "98%",
-    status: "PENDING_APPROVAL",
-    createdAt: "Baru saja",
-  },
-  {
-    id: "Q-102",
-    type: "PARTNER_OUTREACH",
-    recipientName: "Ketua BUMDes Pasir Putih",
-    recipientPhone: "081288776655",
-    category: "Penawaran Kemitraan SaaS",
-    summary: "Proposal digitalisasi retribusi & eliminasi tunggakan iuran sampah desa.",
-    draftText: "Yth. Pengurus BUMDes Pasir Putih, kami dari tim UPS HERU (upsheru.com) ingin menawarkan kemitraan sistem retribusi sampah digital berbasis WhatsApp & QRIS instan. Sistem ini membantu BUMDes bebas tunggakan dan memantau rute armada via GPS. Apakah ada waktu luang 15 menit untuk demo singkat?",
-    aiConfidence: "95%",
-    status: "PENDING_APPROVAL",
+    id: "REP-201",
+    agentId: "eksekutif",
+    agentTitle: "Meja Eksekutif & Keuangan",
+    category: "Laporan Finansial & Kas",
+    title: "Audit Arus Kas Retribusi & Kolektibilitas QRIS",
+    summary: "Ringkasan perbandingan penerimaan nontunai QRIS vs penagihan manual berjalan.",
+    content: `# 📊 LAPORAN KAS & KOLEKTIBILITAS QRIS — UPS HERU
+**Periode:** Berjalan November 2026
+**Penyusun:** Meja Eksekutif & Keuangan AI
+
+---
+### 1. Ringkasan Eksekutif
+* Tingkat adopsi pembayaran digital QRIS/Duitku mencapai stabilitas tinggi.
+* Aliran kas masuk tercatat konsisten tanpa adanya selisih saldo di mutasi rekening penampung.
+
+### 2. Rekomendasi Finansial
+1. Prioritaskan penagihan tertarget pada segmen warga berstatus tunggakan > 1 bulan.
+2. Pertahankan insentif edukasi pembayaran tepat waktu untuk meminimalkan penumpukan piutang di akhir bulan.`,
+    aiConfidence: "99%",
+    status: "PENDING_REVIEW",
     createdAt: "10 menit lalu",
   },
   {
-    id: "Q-103",
-    type: "BILLING_REMINDER",
-    recipientName: "Ibu Nurul",
-    recipientPhone: "085712345678",
-    category: "Pengingat Iuran Jatuh Tempo",
-    summary: "Reminder ramah tagihan bulan November 2026 Rp 40.000 dengan link QRIS instan.",
-    draftText: "Halo Ibu Nurul, sekadar mengingatkan tagihan retribusi sampah keluarga untuk periode November 2026 sebesar Rp 40.000,-. Pembayaran instan via QRIS dapat diakses di: https://upsheru.com/bayar?kode=085712345678. Terima kasih banyak atas dukungannya menjaga lingkungan bersih! 😊♻️",
-    aiConfidence: "99%",
-    status: "PENDING_APPROVAL",
+    id: "REP-202",
+    agentId: "tagihan",
+    agentTitle: "Meja Analis Tagihan & Tunggakan",
+    category: "Audit Piutang",
+    title: "Rekap Segmentasi Warga Menunggak > 2 Bulan",
+    summary: "Pemetaan 18 KK prioritas pendekatan langsung di wilayah operasional Sawangan & Beji.",
+    content: `# 📑 AUDIT SEGMENTASI TUNGGAKAN > 2 BULAN — UPS HERU
+**Fokus Wilayah:** Sawangan & Beji
+**Penyusun:** Meja Analis Tagihan & Tunggakan AI
+
+---
+### 1. Analisis Segmentasi Piutang
+* Terdapat kelompok pelanggan dengan riwayat nomor telepon tidak aktif atau ganti kontak WhatsApp.
+* Diperlukan verifikasi fisik oleh petugas penarik iuran saat kunjungan lapangan berkala.
+
+### 2. Langkah Tindak Lanjut Terukur
+1. Lakukan audit kontak gagal dan verifikasi nomor alternatif via pengurus RT/RW setempat.
+2. Terbitkan draf reminder santun dengan tautan bayar instan QRIS sebelum kunjungan door-to-door.`,
+    aiConfidence: "97%",
+    status: "PENDING_REVIEW",
     createdAt: "25 menit lalu",
+  },
+  {
+    id: "REP-203",
+    agentId: "armada",
+    agentTitle: "Meja Analis Armada & Komplain",
+    category: "Evaluasi Lapangan",
+    title: "Evaluasi Rute Armada & Titik Rawan Telat Zona 2",
+    summary: "Analisis kemacetan berkala di jalur arteri penghubung TPS 3R jam 09.30 - 11.00 WIB.",
+    content: `# 🚛 EVALUASI RUTE & TITIK RAWAN TELAT — UPS HERU
+**Zona Operasional:** Wilayah Pengangkutan 2
+**Penyusun:** Meja Analis Armada & Komplain AI
+
+---
+### 1. Temuan Lapangan
+* Jalur arteri lingkar timur mengalami lonjakan volume lalu lintas pada pukul 09.30–11.00 WIB.
+* Efisiensi bahan bakar dapat dioptimalkan dengan memajukan rit pertama pengangkutan ke pukul 07.15 WIB.
+
+### 2. Rekomendasi Efisiensi Armada
+1. Jadwalkan rute perumahan padat sebelum jam sibuk warga berangkat kerja.
+2. Siapkan unit armada cadangan untuk merespons aduan sampah terlewat dalam batas SLA 2 jam.`,
+    aiConfidence: "98%",
+    status: "ARCHIVED",
+    createdAt: "2 jam lalu",
+    archivedAt: "1 jam lalu",
+    verifiedBy: "Admin Operasional",
   },
 ];
 
 /**
- * Helper untuk memanggil Google Gemini Generative Language API secara langsung
- * dengan multi-turn conversation memory dan multi-model fallback yang cerdas
+ * Helper untuk memanggil Google Gemini Generative Language API
  */
 interface ChatHistoryItem {
   role: "user" | "model";
@@ -65,7 +112,6 @@ async function callGemini(
 ): Promise<{ text: string; source: "gemini_live" | "fallback"; errorDetail?: string }> {
   let apiKey = (apiKeyOverride || process.env.GEMINI_API_KEY || "").trim();
   if (!apiKey || apiKey.length < 5) {
-    // Muat otomatis dari tabel database Pengaturan (permanen per server)
     try {
       const dbKey = await getPengaturanString("GEMINI_API_KEY", "");
       if (dbKey && dbKey.trim().length > 5) {
@@ -92,7 +138,6 @@ async function callGemini(
   ];
   const uniqueModels = Array.from(new Set(modelsToTry));
 
-  // Build proper multi-turn contents: alternating user -> model -> user
   const contents: Array<{ role: "user" | "model"; parts: Array<{ text: string }> }> = [];
 
   if (Array.isArray(history) && history.length > 0) {
@@ -108,7 +153,6 @@ async function callGemini(
     }
   }
 
-  // Ensure conversation ends with userPrompt
   const cleanPrompt = (userPrompt || "").trim();
   if (contents.length > 0 && contents[contents.length - 1].role === "user") {
     if (cleanPrompt) {
@@ -118,7 +162,6 @@ async function callGemini(
     contents.push({ role: "user", parts: [{ text: cleanPrompt }] });
   }
 
-  // Fallback if empty
   if (contents.length === 0) {
     contents.push({ role: "user", parts: [{ text: "Berikan status operasional dan ringkasan hari ini." }] });
   }
@@ -166,13 +209,15 @@ async function callGemini(
   return { text: "", source: "fallback", errorDetail: lastError };
 }
 
+/**
+ * Single source of truth untuk metrik operasional dan keuangan
+ */
 async function getLiveTenantStats(req: NextRequest, session: any) {
   const rawHost = req.headers.get("x-forwarded-host") || req.headers.get("host") || "";
   const { resolveTenantByHost } = await import("@/lib/tenant");
   const tenantCtx = resolveTenantByHost(rawHost);
   const tenantId = !tenantCtx.isCore ? tenantCtx.tenant.id : (session?.tenantId || tenantCtx.tenant.id);
 
-  // Ambil metrik riil terisolasi per tenant dari database
   const tenantScope = tenantCtx.isCore && session?.role === "superadmin" ? {} : { tenantId };
 
   const [
@@ -204,6 +249,9 @@ async function getLiveTenantStats(req: NextRequest, session: any) {
   const totalBills = transaksiLunasCount + tagihanBelumBayar;
   const kolektibilitasPersen = totalBills > 0 ? Math.round((transaksiLunasCount / totalBills) * 100) : 100;
 
+  const pendingReviewCount = mockReportArchive.filter((r) => r.status === "PENDING_REVIEW").length;
+  const archivedCount = mockReportArchive.filter((r) => r.status === "ARCHIVED").length;
+
   return {
     totalPelanggan,
     komplainPending,
@@ -213,6 +261,8 @@ async function getLiveTenantStats(req: NextRequest, session: any) {
     kasBulanIniEstimasi,
     tunggakanEstimasi,
     kolektibilitasPersen,
+    pendingReviewCount,
+    archivedCount,
   };
 }
 
@@ -238,13 +288,13 @@ export async function GET(req: NextRequest) {
       stats,
       hasGeminiKey: hasEnvGeminiKey,
       geminiModel: process.env.GEMINI_MODEL || "gemini-3.1-flash-lite",
-      approvalQueue: mockApprovalQueue,
+      reportArchive: mockReportArchive,
       guardrails: {
-        mode: "HUMAN_IN_THE_LOOP",
+        mode: "INTERNAL_REPORTING_ONLY",
+        whatsappEnabled: false,
         strictPricing: true,
         tenantDataIsolation: true,
-        autoReplyWhitelist: ["FAQ_TARIF", "JAM_OPERASIONAL", "LINK_BAYAR_CEK"],
-        approvalRequiredFor: ["KOMPLAIN_WARGA", "PENAWARAN_MITRA_SDR", "BLAST_TAGIHAN_MASSAL"],
+        archiveRequiresReview: true,
       },
     });
   } catch (error: any) {
@@ -273,96 +323,87 @@ export async function POST(req: NextRequest) {
       year: "numeric",
     });
 
-    // ACTION: APPROVE & DISPATCH KE WHATSAPP KONSUMEN / MITRA
-    if (action === "approve_item") {
+    // ACTION: ARCHIVE & VALIDATE REPORT (Sahkan & Arsipkan — Tanpa Kirim WhatsApp)
+    if (action === "archive_report" || action === "approve_item") {
       const { id } = payload;
-      const item = mockApprovalQueue.find((q) => q.id === id);
+      const item = mockReportArchive.find((q) => q.id === id);
 
       if (!item) {
-        return NextResponse.json({ success: false, error: "Item antrean tidak ditemukan" }, { status: 404 });
+        return NextResponse.json({ success: false, error: "Laporan tidak ditemukan" }, { status: 404 });
       }
 
-      // Kirim via Fonnte Gateway ke nomor konsumen/mitra
-      const waApiKey = process.env.WA_API_KEY || "";
-      const waApiUrl = process.env.WA_API_URL || "https://api.fonnte.com/send";
+      item.status = "ARCHIVED";
+      item.archivedAt = "Baru saja";
+      item.verifiedBy = session.nama || "Admin UPS HERU";
 
-      const formPayload = new URLSearchParams();
-      formPayload.append("target", item.recipientPhone);
-      formPayload.append("message", item.draftText);
-      formPayload.append("countryCode", "62");
-
-      let gatewayResult: any = null;
-      try {
-        const resp = await fetch(waApiUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded", Authorization: waApiKey },
-          body: formPayload.toString(),
-        });
-        gatewayResult = await resp.json();
-      } catch (err: any) {
-        gatewayResult = { error: err.message };
-      }
-
-      item.status = "APPROVED_AND_SENT";
+      const liveStats = await getLiveTenantStats(req, session);
 
       return NextResponse.json({
         success: true,
-        message: `Pesan berhasil disetujui Admin dan dikirimkan ke ${item.recipientName} (${item.recipientPhone})`,
-        gatewayResult,
-        updatedQueue: mockApprovalQueue,
+        message: `Laporan "${item.title}" berhasil disahkan dan dipindahkan ke Arsip Terverifikasi.`,
+        updatedArchive: mockReportArchive,
+        stats: liveStats,
       });
     }
 
-    // ACTION: REJECT ITEM
-    if (action === "reject_item") {
+    // ACTION: REJECT / DELETE REPORT DRAFT
+    if (action === "delete_report" || action === "reject_item") {
       const { id } = payload;
-      const item = mockApprovalQueue.find((q) => q.id === id);
-      if (item) {
-        item.status = "REJECTED";
+      const index = mockReportArchive.findIndex((q) => q.id === id);
+      if (index !== -1) {
+        mockReportArchive.splice(index, 1);
       }
+      const liveStats = await getLiveTenantStats(req, session);
       return NextResponse.json({
         success: true,
-        message: "Draf AI berhasil ditolak oleh Admin.",
-        updatedQueue: mockApprovalQueue,
+        message: "Draf laporan berhasil dihapus dari antrean review.",
+        updatedArchive: mockReportArchive,
+        stats: liveStats,
       });
     }
 
-    // ACTION: UPDATE DRAFT BY ADMIN
+    // ACTION: UPDATE DRAFT CONTENT
     if (action === "update_draft") {
-      const { id, newText } = payload;
-      const item = mockApprovalQueue.find((q) => q.id === id);
+      const { id, newText, newTitle } = payload;
+      const item = mockReportArchive.find((q) => q.id === id);
       if (item) {
-        item.draftText = newText;
-        item.summary = "Draf telah dikoreksi oleh Admin.";
+        item.content = newText;
+        if (newTitle) item.title = newTitle;
+        item.summary = "Draf laporan telah diedit & disesuaikan oleh Admin.";
       }
       return NextResponse.json({
         success: true,
-        message: "Draf berhasil diperbarui.",
-        updatedQueue: mockApprovalQueue,
+        message: "Perubahan isi draf laporan berhasil disimpan.",
+        updatedArchive: mockReportArchive,
       });
     }
 
-    // ACTION: CREATE APPROVAL ITEM (Dari Live Chat atau Generator)
-    if (action === "create_approval_item") {
-      const { type, recipientName, recipientPhone, category, summary, draftText } = payload || {};
-      const newItem = {
-        id: `Q-${Date.now().toString().slice(-4)}`,
-        type: type || "CHAT_AGENT_DRAFT",
-        recipientName: recipientName || "Warga / Calon Mitra",
-        recipientPhone: recipientPhone || "081532843224",
-        category: category || "Draf Komunikasi AI",
-        summary: summary || "Draf dibuat dari Live Chat AI Console",
-        draftText: draftText || "",
+    // ACTION: CREATE REPORT ITEM (Simpan ke Pusat Laporan dari Chat / Skill)
+    if (action === "create_report_item" || action === "create_approval_item") {
+      const { agentId, agentTitle, category, title, summary, content, draftText } = payload || {};
+      const finalContent = content || draftText || "";
+      const newItem: ReportArchiveItem = {
+        id: `REP-${Date.now().toString().slice(-4)}`,
+        agentId: agentId || "eksekutif",
+        agentTitle: agentTitle || "Meja Eksekutif & Keuangan",
+        category: category || "Laporan Operasional",
+        title: title || `Laporan Analisis dari ${agentTitle || "Meja AI"}`,
+        summary: summary || "Laporan baru siap direview dan diarsipkan ke Pusat Laporan.",
+        content: finalContent,
         aiConfidence: "98%",
-        status: "PENDING_APPROVAL",
+        status: "PENDING_REVIEW",
         createdAt: "Baru saja",
       };
-      mockApprovalQueue.unshift(newItem);
+
+      mockReportArchive.unshift(newItem);
+      const liveStats = await getLiveTenantStats(req, session);
+
       return NextResponse.json({
         success: true,
-        message: `Draf berhasil dimasukkan ke Antrean Persetujuan untuk ${newItem.recipientName}!`,
-        updatedQueue: mockApprovalQueue,
+        message: `Laporan "${newItem.title}" berhasil disimpan ke Pusat Review Laporan!`,
+        updatedArchive: mockReportArchive,
         newItem,
+        stats: liveStats,
       });
     }
 
@@ -379,11 +420,9 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, error: "API Key tidak boleh kosong" }, { status: 400 });
       }
 
-      // Update in-memory
       process.env.GEMINI_API_KEY = cleanKey;
       process.env.GEMINI_MODEL = "gemini-flash-lite-latest";
 
-      // 1. Simpan permanen ke PostgreSQL DB (Pengaturan) agar otomatis aktif bagi semua login
       try {
         await setPengaturan("GEMINI_API_KEY", cleanKey);
         await setPengaturan("GEMINI_MODEL", "gemini-flash-lite-latest");
@@ -391,7 +430,6 @@ export async function POST(req: NextRequest) {
         console.warn("[Save Pengaturan DB warning]", e);
       }
 
-      // Jika skipTest aktif, langsung return sukses
       if (skipTest) {
         return NextResponse.json({
           success: true,
@@ -399,9 +437,8 @@ export async function POST(req: NextRequest) {
         });
       }
 
-      // Jika user meminta uji koneksi
       const testResult = await callGemini(
-        "Anda asisten verifikasi.",
+        "Anda asisten verifikasi UPS HERU.",
         "Jawab 'OK' jika terhubung.",
         cleanKey
       );
@@ -420,18 +457,17 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // ACTION: GENERATE DAILY REPORT
+    // ACTION: GENERATE DAILY REPORT (Single Source of Truth)
     if (action === "daily_report") {
       const liveStats = await getLiveTenantStats(req, session);
 
       const systemPrompt = `Anda adalah Head of Financial & Operations Analytics untuk platform pengelolaan sampah UPS HERU (upsheru.com).
-Susunlah Laporan Eksekutif Harian yang sangat profesional, terstruktur, padat data, dan menyertakan rekomendasi strategis untuk Owner & Manajemen UPS HERU. Gunakan format Markdown dengan emoji yang elegan.
+Susunlah Laporan Eksekutif Harian yang sangat profesional, terstruktur, padat data, dan menyertakan rekomendasi strategis untuk Owner & Manajemen UPS HERU. Gunakan format Markdown dengan struktur rapi.
 
 ATURAN INTEGRITAS DATA KETAT (STRICT DATA INTEGRITY INVARIANT):
 1. Anda HANYA diperbolehkan menggunakan angka metrik riil dari parameter live database yang diberikan di bawah.
-2. DILARANG KERAS mengarang, memodifikasi, atau memakai angka contoh/hardcoded lain (seperti angka 542 KK, 65 KK, dll).
-3. Jika metrik bernilai 0 atau sedang berjalan, laporkan apa adanya secara objektif dengan rekomendasi operasional yang relevan.
-4. Gunakan nama brand resmi "UPS HERU" (upsheru.com) secara konsisten di seluruh teks laporan.`;
+2. DILARANG KERAS mengarang, memodifikasi, atau memakai angka contoh/hardcoded lain.
+3. Gunakan nama brand resmi "UPS HERU" (upsheru.com) secara konsisten di seluruh teks laporan.`;
 
       const userPrompt = `Buatkan Laporan Eksekutif Harian per tanggal ${dateFormatted} dengan parameter database LIVE resmi UPS HERU:
 - Total Pelanggan Aktif: ${liveStats.totalPelanggan.toLocaleString("id-ID")} KK
@@ -445,29 +481,28 @@ ATURAN INTEGRITAS DATA KETAT (STRICT DATA INTEGRITY INVARIANT):
 
       let finalReport = aiRes.text;
       if (!finalReport) {
-        finalReport = `📊 *LAPORAN EKSEKUTIF HARIAN UPS HERU AI*
-📅 Tanggal: ${dateFormatted}
-👤 Yth. Owner & Manajemen UPS HERU
+        finalReport = `# 📊 LAPORAN EKSEKUTIF HARIAN — UPS HERU
+**Tanggal:** ${dateFormatted}
+**Kepada:** Owner & Manajemen UPS HERU (upsheru.com)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-💰 *1. METRIK FINANSIAL & RETRIBUSI*
-• Total Pelanggan Aktif: *${liveStats.totalPelanggan.toLocaleString("id-ID")} KK*
-• Pembayaran Terverifikasi (QRIS/Duitku): *${liveStats.transaksiLunasCount.toLocaleString("id-ID")} Tagihan (${liveStats.kolektibilitasPersen}% Kolektibilitas)*
-• Estimasi Kas Terkumpul: *Rp ${liveStats.kasBulanIniEstimasi.toLocaleString("id-ID")},-*
-• Sisa Tagihan Berjalan / Tertunggak: *${liveStats.tagihanBelumBayar.toLocaleString("id-ID")} Tagihan (~Rp ${liveStats.tunggakanEstimasi.toLocaleString("id-ID")},-)*
+### 💰 1. METRIK FINANSIAL & RETRIBUSI
+* Total Pelanggan Aktif: **${liveStats.totalPelanggan.toLocaleString("id-ID")} KK**
+* Pembayaran Terverifikasi (QRIS/Duitku): **${liveStats.transaksiLunasCount.toLocaleString("id-ID")} Tagihan** (${liveStats.kolektibilitasPersen}% Kolektibilitas)
+* Estimasi Kas Terkumpul: **Rp ${liveStats.kasBulanIniEstimasi.toLocaleString("id-ID")},-**
+* Sisa Tagihan Berjalan / Tertunggak: **${liveStats.tagihanBelumBayar.toLocaleString("id-ID")} Tagihan** (~Rp ${liveStats.tunggakanEstimasi.toLocaleString("id-ID")},-)
 
-🚛 *2. OPERASIONAL ARMADA & LAPANGAN*
-• Status Rute Angkut: *Tuntas di Seluruh Zona Aktif Kota Depok*
-• Pengaduan Perlu Ditindak: *${liveStats.komplainPending.toLocaleString("id-ID")} Laporan (Pantauan Live Operasional)*
-• Dispatched ke Petugas: *Normal & Berjalan Sesuai Jadwal*
+### 🚛 2. OPERASIONAL ARMADA & LAPANGAN
+* Status Rute Angkut: **Tuntas di Seluruh Zona Aktif Kota Depok**
+* Pengaduan Perlu Ditindak: **${liveStats.komplainPending.toLocaleString("id-ID")} Laporan** (Status Baru & Diproses)
+* Dispatched ke Petugas: **Normal & Berjalan Sesuai Jadwal**
 
-🤝 *3. EKOSISTEM LAYANAN & RETRIBUSI*
-• Entitas Operasional: *UPS HERU Kota Depok*
-• Fokus Utama: *Pelayanan Pengangkutan Terjadwal & Kemudahan Bayar QRIS*
+### 🤝 3. EKOSISTEM LAYANAN & RETRIBUSI
+* Entitas Operasional: **UPS HERU Kota Depok**
+* Fokus Utama: **Pelayanan Pengangkutan Terjadwal & Kemudahan Bayar QRIS**
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-💡 _Batasan AI (Guardrails):_
-Semua draf komunikasi ke konsumen dan mitra berada dalam status PENDING APPROVAL di antrean dashboard sebelum dikirim.`;
+*Laporan ini disimpan otomatis di Pusat Review & Arsip Laporan AI untuk dokumentasi internal manajemen.*`;
       }
 
       return NextResponse.json({
@@ -477,99 +512,162 @@ Semua draf komunikasi ke konsumen dan mitra berada dalam status PENDING APPROVAL
       });
     }
 
-    // ACTION: GENERATE SDR PITCH
-    if (action === "sdr_pitch") {
-      const target = payload?.target || "BUMDes & KSM Pengelola Sampah Mandiri";
+    // ACTION: RUN 15 SPECIALIZED REPORT SKILLS ACROSS 5 DESKS
+    if (action === "run_skill") {
+      const { skillId, agentId } = payload || {};
+      const liveStats = await getLiveTenantStats(req, session);
 
-      const systemPrompt = `Anda adalah B2B Sales Development Representative (SDR) spesialis kemitraan digitalisasi pengelolaan sampah dari UPS HERU AI (upsheru.com).
-Tulis surat penawaran kemitraan resmi yang sangat persuasif, fokus pada solusi eliminasi tunggakan iuran sampah via WhatsApp QRIS otomatis, dan efisiensi rute armada GPS. Gunakan nama resmi UPS HERU secara konsisten.`;
+      // Ambil data pendukung dari DB
+      const [sampleUnpaid, sampleKomplain, sampleDrivers] = await Promise.all([
+        prisma.tagihan.findMany({
+          where: { status: { in: ["belum_bayar", "tunggakan"] } },
+          take: 6,
+          include: { pelanggan: { select: { nama: true, noTelepon: true, alamat: true } } },
+          orderBy: { createdAt: "desc" },
+        }).catch(() => []),
+        prisma.komplain.findMany({
+          where: { status: { in: ["baru", "diproses"] } },
+          take: 5,
+          include: { pelanggan: { select: { nama: true, alamat: true } } },
+          orderBy: { createdAt: "desc" },
+        }).catch(() => []),
+        prisma.petugas.findMany({
+          where: { aktif: true },
+          take: 4,
+          select: { nama: true, jabatan: true },
+        }).catch(() => []),
+      ]);
 
-      const userPrompt = `Buatkan draf surat penawaran resmi kemitraan untuk: ${target}.
-Sertakan perbandingan biaya manual vs sistem digital UPS HERU AI, serta Call-to-Action (CTA) untuk demo online 15 menit.`;
+      const unpaidSampleStr = sampleUnpaid.length > 0
+        ? sampleUnpaid.map((t, i) => `${i + 1}. ${t.pelanggan?.nama || 'Warga'} (${t.pelanggan?.alamat || 'Blok'}) - Rp ${t.jumlah.toLocaleString('id-ID')}`).join("\n")
+        : "Semua tagihan berjalan tertib.";
 
-      const aiRes = await callGemini(systemPrompt, userPrompt, clientGeminiKey);
+      const komplainSampleStr = sampleKomplain.length > 0
+        ? sampleKomplain.map((k, i) => `${i + 1}. [${k.status.toUpperCase()}] ${k.judul} (${k.pelanggan?.alamat || 'Lokasi'})`).join("\n")
+        : "Tidak ada keluhan tertunda.";
 
-      let finalPitch = aiRes.text;
-      if (!finalPitch) {
-        finalPitch = `### DRAF PENAWARAN KEMITRAAN UPS HERU AI (SDR AGENT)
-🎯 Target: ${target}
+      const driverSampleStr = sampleDrivers.length > 0
+        ? sampleDrivers.map((d, i) => `${i + 1}. ${d.nama} (${d.jabatan || 'Driver'})`).join("\n")
+        : "Armada 1-3 aktif.";
 
----
-#### Subjek: Digitalisasi Pengelolaan Sampah & Solusi Iuran Tertunggak untuk ${target}
+      let skillTitle = "Laporan Analisis AI";
+      let systemPrompt = "";
+      let userPrompt = "";
 
-Yth. Pengurus ${target},
-
-Berdasarkan pengalaman operasional kami di platform UPS HERU (upsheru.com), kendala terbesar pengelola sampah lingkungan adalah tingginya angka tunggakan warga karena penagihan manual door-to-door yang menyita waktu.
-
-Melalui kemitraan platform UPS HERU AI (upsheru.com), kami menghadirkan solusi menyeluruh untuk ${target}:
-1. 📲 *Blast WhatsApp Tagihan Otomatis:* Warga menerima rincian iuran lengkap dengan link pembayaran QRIS instan yang langsung terverifikasi otomatis detik itu juga.
-2. 🗺️ *Optimasi Rute Armada GPS:* Meminimalisir komplain sampah terlewat di gang sempit pemukiman.
-3. 📊 *Dashboard Keuangan Transparan:* Pengurus dapat memantau kas masuk dan status warga per RT/RW secara real-time.
-
-Sistem berbasis pembagian hasil yang sangat ringan tanpa perlu biaya server di awal. 
-Apakah Bapak/Ibu berkenan jika tim kami mendemokan simulasi sistem ini secara online selama 15 menit?
-
-Hormat kami,
-Tim Ekosistem Kemitraan UPS HERU AI
-https://upsheru.com | WhatsApp: +62 814-0078-2617`;
+      // 1. MEJA EKSEKUTIF
+      if (skillId === "kas_qris") {
+        skillTitle = "Laporan Arus Kas Masuk & Realisasi QRIS";
+        systemPrompt = `Anda adalah Analis Finansial Senior UPS HERU (upsheru.com). Susun Laporan Arus Kas Masuk & Realisasi QRIS dalam format Markdown rapi dan padat metrik riil. STRICT DATA INTEGRITY: Gunakan hanya data resmi live di bawah. Dilarang mengarang angka.`;
+        userPrompt = `Parameter: Total Pelanggan ${liveStats.totalPelanggan} KK, Kas Terkumpul Rp ${liveStats.kasBulanIniEstimasi.toLocaleString("id-ID")}, Transaksi Lunas ${liveStats.transaksiLunasCount} tagihan, Rasio Kolektibilitas ${liveStats.kolektibilitasPersen}%.`;
+      } else if (skillId === "audit_selisih") {
+        skillTitle = "Audit Selisih Tagihan & Rekonsiliasi Nontunai";
+        systemPrompt = `Anda adalah Auditor Finansial Internal UPS HERU (upsheru.com). Susun dokumen Audit Selisih Tagihan & Rekonsiliasi Nontunai dalam Markdown. Evaluasi status tagihan belum bayar vs transaksi terverifikasi gateway. STRICT DATA INTEGRITY.`;
+        userPrompt = `Parameter: Tagihan Berjalan Belum Bayar ${liveStats.tagihanBelumBayar} KK (Estimasi Piutang Rp ${liveStats.tunggakanEstimasi.toLocaleString("id-ID")}), Transaksi Lunas ${liveStats.transaksiLunasCount}.`;
+      } else if (skillId === "ringkasan_pimpinan") {
+        skillTitle = "Ringkasan Pimpinan (Executive Briefing)";
+        systemPrompt = `Anda adalah Chief of Staff AI UPS HERU (upsheru.com). Susun Ringkasan Strategis Pimpinan dengan poin penting, tantangan operasional, dan action plan hari ini. STRICT DATA INTEGRITY.`;
+        userPrompt = `Parameter: ${liveStats.totalPelanggan} KK Aktif, Kas Rp ${liveStats.kasBulanIniEstimasi.toLocaleString("id-ID")}, Kolektibilitas ${liveStats.kolektibilitasPersen}%, Pengaduan Aktif ${liveStats.komplainPending} tiket.`;
       }
 
-      return NextResponse.json({
-        success: true,
-        result: finalPitch,
-        engine: aiRes.source,
-      });
-    }
+      // 2. MEJA ANALIS TAGIHAN
+      else if (skillId === "rekap_tunggakan") {
+        skillTitle = "Rekapitulasi Tunggakan Aktif Warga";
+        systemPrompt = `Anda adalah Billing & Arrears Specialist UPS HERU (upsheru.com). Susun Rekapitulasi Tunggakan Aktif dalam Markdown terstruktur dengan rekomendasi penagihan santun. STRICT DATA INTEGRITY.`;
+        userPrompt = `Data: ${liveStats.tagihanBelumBayar} KK nunggak (~Rp ${liveStats.tunggakanEstimasi.toLocaleString("id-ID")}). Contoh sampel:\n${unpaidSampleStr}`;
+      } else if (skillId === "segmentasi_2bln") {
+        skillTitle = "Segmentasi Tagihan > 2 Bulan (Prioritas Khusus)";
+        systemPrompt = `Anda adalah Analis Piutang Kritis UPS HERU (upsheru.com). Susun analisis segmentasi tunggakan usia > 2 bulan dan rekomendasi intervensi lapangan ramah lingkungan. STRICT DATA INTEGRITY.`;
+        userPrompt = `Data: Total ${liveStats.tagihanBelumBayar} KK belum bayar, total estimasi piutang Rp ${liveStats.tunggakanEstimasi.toLocaleString("id-ID")}.`;
+      } else if (skillId === "audit_kontak") {
+        skillTitle = "Audit Kontak Gagal & Verifikasi Nomor Warga";
+        systemPrompt = `Anda adalah Data Integrity Officer UPS HERU (upsheru.com). Susun laporan audit kualitas kontak pelanggan untuk menjamin penyampaian invoice digital berjalan lancar. STRICT DATA INTEGRITY.`;
+        userPrompt = `Data: Basis data ${liveStats.totalPelanggan} KK aktif. Identifikasi potensi kontak salah format atau nomor tidak aktif.`;
+      }
 
-    // ACTION: GENERATE CONTENT SCRIPT
-    if (action === "content_script") {
-      const topic = payload?.topic || "Edukasi Retribusi Sampah & Kemudahan Bayar QRIS";
+      // 3. MEJA ANALIS ARMADA
+      else if (skillId === "sebaran_komplain") {
+        skillTitle = "Sebaran Pengaduan Armada per RW/Wilayah";
+        systemPrompt = `Anda adalah Fleet Operations Analyst UPS HERU (upsheru.com). Susun pemetaan sebaran komplain warga dan status penanganan armada di lapangan. STRICT DATA INTEGRITY.`;
+        userPrompt = `Data: ${liveStats.komplainPending} komplain pending/proses. Sampel terkini:\n${komplainSampleStr}`;
+      } else if (skillId === "evaluasi_rute") {
+        skillTitle = "Evaluasi Efisiensi Rute & Kinerja Pengemudi";
+        systemPrompt = `Anda adalah Route Optimization Specialist UPS HERU (upsheru.com). Susun evaluasi jadwal keberangkatan armada dan ketepatan rute bak sampah. STRICT DATA INTEGRITY.`;
+        userPrompt = `Data: Petugas aktif:\n${driverSampleStr}. Aduan tertunda: ${liveStats.komplainPending} tiket.`;
+      } else if (skillId === "titik_rawan") {
+        skillTitle = "Titik Rawan Telat Pengangkutan & Mitigasi";
+        systemPrompt = `Anda adalah Hazard & Bottleneck Analyst UPS HERU (upsheru.com). Identifikasi titik kemacetan akses TPS3R dan mitigasi rute cadangan. STRICT DATA INTEGRITY.`;
+        userPrompt = `Data: Wilayah Kota Depok, ${liveStats.totalPelanggan} KK terlayani, ${liveStats.komplainPending} komplain terpantau.`;
+      }
 
-      const systemPrompt = `Anda adalah Viral Content Strategist untuk kampanye kebersihan lingkungan dan teknologi digital UPS HERU (upsheru.com).
-Susunlah naskah video pendek (TikTok / Instagram Reels / Shorts) durasi 50 detik yang edukatif, memicu rasa peduli lingkungan, dan memperkenalkan kemudahan bayar retribusi QRIS.`;
+      // 4. MEJA LAYANAN WARGA
+      else if (skillId === "kategori_aduan") {
+        skillTitle = "Rekapitulasi Kategori Aduan Warga";
+        systemPrompt = `Anda adalah Citizen Experience Analyst UPS HERU (upsheru.com). Kategorisasi keluhan warga (keterlambatan, ceceran, permohonan khusus) dan solusi preventifnya. STRICT DATA INTEGRITY.`;
+        userPrompt = `Data: ${liveStats.komplainPending} komplain aktif. Sampel aduan:\n${komplainSampleStr}`;
+      } else if (skillId === "sla_tiket") {
+        skillTitle = "Laporan Service Level Agreement (SLA) Respon Tiket";
+        systemPrompt = `Anda adalah SLA & Quality Assurance Officer UPS HERU (upsheru.com). Susun laporan waktu tanggap tiket keluhan dengan target penyelesaian < 2 jam. STRICT DATA INTEGRITY.`;
+        userPrompt = `Data: ${liveStats.komplainPending} tiket menunggu/dalam proses dari ${liveStats.totalPelanggan} KK aktif.`;
+      } else if (skillId === "tren_faq") {
+        skillTitle = "Tren Pertanyaan & Kebutuhan Informasi Warga (FAQ)";
+        systemPrompt = `Anda adalah Customer Education Specialist UPS HERU (upsheru.com). Analisis topik pertanyaan yang paling sering diajukan warga seputar tarif, jadwal, dan pembayaran QRIS.`;
+        userPrompt = `Konteks: Platform UPS HERU Kota Depok, kemudahan pembayaran QRIS instan, retribusi terjadwal.`;
+      }
 
-      const userPrompt = `Topik: ${topic}. Sertakan 3 pilihan Hook viral pembuka dan run-down adegan (visual, teks di layar, suara voiceover).`;
+      // 5. MEJA GROWTH & B2B
+      else if (skillId === "upsell_tarif") {
+        skillTitle = "Analisis Peluang Penyesuaian & Upsell Tarif";
+        systemPrompt = `Anda adalah Growth & Pricing Strategist UPS HERU (upsheru.com). Evaluasi klasifikasi tarif warga, niaga kecil, dan potensi peningkatan nilai layanan. STRICT DATA INTEGRITY.`;
+        userPrompt = `Data: ${liveStats.totalPelanggan} KK aktif, realisasi kas Rp ${liveStats.kasBulanIniEstimasi.toLocaleString("id-ID")}.`;
+      } else if (skillId === "klaster_baru") {
+        skillTitle = "Pemetaan Potensi Ekspansi Klaster Baru";
+        systemPrompt = `Anda adalah B2B Expansion Analyst UPS HERU (upsheru.com). Analisis potensi kemitraan dengan KSM, BUMDes, atau pengembang perumahan baru di sekitar Depok.`;
+        userPrompt = `Data: Basis terbukti ${liveStats.totalPelanggan} KK, ${liveStats.kolektibilitasPersen}% kolektibilitas QRIS, reputasi armada terpercaya.`;
+      } else if (skillId === "pertumbuhan_kk") {
+        skillTitle = "Rekapitulasi Pertumbuhan Pelanggan (KK)";
+        systemPrompt = `Anda adalah Retention & User Acquisition Analyst UPS HERU (upsheru.com). Susun laporan pertumbuhan pendaftaran KK baru dan retensi pelanggan bulanan. STRICT DATA INTEGRITY.`;
+        userPrompt = `Data: Total ${liveStats.totalPelanggan} KK terdaftar aktif, ${liveStats.transaksiLunasCount} KK aktif bayar bulan berjalan.`;
+      }
 
       const aiRes = await callGemini(systemPrompt, userPrompt, clientGeminiKey);
 
       let finalContent = aiRes.text;
       if (!finalContent) {
-        finalContent = `### NASKAH KONTEN MEDIA SOSIAL (TIKTOK / REELS / SHORTS 50 DETIK)
-📌 Topik: ${topic}
-🎯 Target Audiens: Warga Perumahan & Ibu Rumah Tangga
+        finalContent = `# 📑 ${skillTitle.toUpperCase()} — UPS HERU
+**Tanggal:** ${dateFormatted}
+**Meja Kerja:** ${agentId || "Analis Spesialis"} AI
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
----
-#### 3 PILIHAN VIRAL HOOKS:
-1. *Curiosity:* "Ternyata ini rahasia kenapa komplek sebelah selalu wangi bebas tumpukan sampah!"
-2. *Contrarian:* "Jangan salahkan petugas sampah telat datang kalau iuran bulanan 30 ribu aja masih nunggak!"
-3. *Story:* "Apa yang terjadi kalau dalam 3 hari sampah satu komplek gak ada yang jemput?"
+### 📌 1. FOKUS AUDIT & DATA RIIL
+* Total Pelanggan Terkait: **${liveStats.totalPelanggan.toLocaleString("id-ID")} KK**
+* Kolektibilitas Kas Berjalan: **${liveStats.kolektibilitasPersen}%** (Realisasi Kas: Rp ${liveStats.kasBulanIniEstimasi.toLocaleString("id-ID")},-)
+* Tagihan Perlu Ditindak: **${liveStats.tagihanBelumBayar.toLocaleString("id-ID")} KK** (~Rp ${liveStats.tunggakanEstimasi.toLocaleString("id-ID")},-)
+* Tiket Pengaduan Terbuka: **${liveStats.komplainPending.toLocaleString("id-ID")} Aduan**
 
----
-#### RUN-DOWN NASKAH VIDEO:
-• [00-03s] *Hook Visual:* Kamera cepat menyorot tumpukan kantong sampah di pagar rumah.
-  *VO:* "Pernah kesel pagi-pagi mau berangkat kerja sampah depan rumah belum diangkut?"
-• [03-15s] *Masalah:* B-roll petugas armada mendorong bak sampah di tengah terik matahari.
-  *VO:* "Tapi tahu gak? Operasional armada butuh bensin, perawatan rutin, dan gaji petugas yang kerja dari subuh."
-• [15-35s] *Solusi UPS HERU:* Screenshot notifikasi WhatsApp tagihan + scan QRIS di HP.
-  *VO:* "Di mitra UPS HERU, bayar iuran sampah sekarang segampang beli kopi. Cukup buka WA, klik link, scan QRIS langsung dari m-Banking kamu!"
-• [35-50s] *CTA:* Senyum warga dan halaman rumah yang asri bersih.
-  *VO:* "Yuk tertib retribusi demi lingkungan sehat. Cek status tagihan rumahmu di upsheru.com!"`;
+### 🎯 2. REKOMENDASI INTERNAL MEJA SPESIALIS
+1. Pertahankan koordinasi sinkron antara armada pengangkutan dan rekapitulasi data tagihan digital.
+2. Gunakan tautan bayar online QRIS instan resmi (https://upsheru.com/bayar) pada setiap rekonsiliasi.
+3. Laporkan draf rekomendasi ini ke Pusat Review & Arsip Laporan AI untuk pengesahan internal manajemen.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*Laporan resmi disusun oleh Meja Spesialis AI UPS HERU.*`;
       }
 
       return NextResponse.json({
         success: true,
+        skillId,
+        skillTitle,
         result: finalContent,
         engine: aiRes.source,
       });
     }
 
-    // ACTION: CHAT DENGAN AI (DENGAN ROLE, MEMORI MULTI-TURN & GROUNDING DATABASE DINAMIS)
+    // ACTION: CHAT DENGAN 5 MEJA SPESIALIS
     if (action === "chat") {
       const message = payload?.message || "";
-      const role = payload?.role || "copilot"; // 'sdr' | 'content' | 'support' | 'copilot'
+      const agentId = payload?.agentId || payload?.role || "eksekutif";
       const history = Array.isArray(payload?.history) ? payload.history : [];
 
-      // Ekstraksi kata kunci pencarian dinamis dari pesan pengguna
       const cleanMsg = message.toLowerCase().trim();
       const stopWords = new Set(["ada", "apa", "ini", "itu", "dan", "yang", "dari", "ke", "di", "tolong", "buatkan", "siapa", "bagaimana", "apakah", "berapa", "untuk", "pesan", "chat", "sama", "pada", "draf"]);
       const searchTerms = cleanMsg
@@ -593,7 +691,7 @@ Susunlah naskah video pendek (TikTok / Instagram Reels / Shorts) durasi 50 detik
           take: 5,
           include: {
             tagihan: {
-              where: { status: { in: ["belum_bayar", "tertunggak"] } },
+              where: { status: { in: ["belum_bayar", "tunggakan"] } },
               take: 2,
               orderBy: { createdAt: "desc" },
             },
@@ -601,7 +699,6 @@ Susunlah naskah video pendek (TikTok / Instagram Reels / Shorts) durasi 50 detik
         }).catch(() => []);
       }
 
-      // Query database riil untuk grounding data komprehensif
       const [
         totalPelanggan,
         tagihanBelumBayar,
@@ -612,12 +709,12 @@ Susunlah naskah video pendek (TikTok / Instagram Reels / Shorts) durasi 50 detik
         activePetugas,
       ] = await Promise.all([
         prisma.pelanggan.count({ where: { status: "aktif" } }).catch(() => 1245),
-        prisma.tagihan.count({ where: { status: { in: ["belum_bayar", "tertunggak"] } } }).catch(() => 78),
-        prisma.komplain.count({ where: { status: "pending" } }).catch(() => 0),
+        prisma.tagihan.count({ where: { status: { in: ["belum_bayar", "tunggakan"] } } }).catch(() => 78),
+        prisma.komplain.count({ where: { status: { in: ["baru", "diproses"] } } }).catch(() => 0),
         prisma.tagihan.count({ where: { status: "lunas" } }).catch(() => 1731),
         prisma.tagihan.findMany({
-          where: { status: { in: ["belum_bayar", "tertunggak"] } },
-          take: 8,
+          where: { status: { in: ["belum_bayar", "tunggakan"] } },
+          take: 6,
           include: { pelanggan: { select: { nama: true, noTelepon: true, alamat: true, kodePelanggan: true } } },
           orderBy: { createdAt: "desc" },
         }).catch(() => []),
@@ -634,105 +731,94 @@ Susunlah naskah video pendek (TikTok / Instagram Reels / Shorts) durasi 50 detik
       ]);
 
       const unpaidSampleText = unpaidSample.length > 0
-        ? unpaidSample.map((u: any, i: number) => `${i+1}. ${u.pelanggan?.nama || 'Warga'} (Telp: ${u.pelanggan?.noTelepon || '-'}) [${u.pelanggan?.alamat || 'Blok Lingkungan'}] - Tagihan: Rp ${(u.jumlah || 40000).toLocaleString('id-ID')}`).join("\n")
-        : "1. Bpk. Syamil (089619247836) [Sawangan Blok C4] - Rp 40.000\n2. Ibu Nurul (085712345678) [Sawangan Blok A2] - Rp 40.000";
+        ? unpaidSample.map((u: any, i: number) => `${i+1}. ${u.pelanggan?.nama || 'Warga'} (${u.pelanggan?.alamat || 'Blok'}) - Tagihan: Rp ${(u.jumlah || 40000).toLocaleString('id-ID')}`).join("\n")
+        : "Tidak ada data piutang.";
 
       const matchedText = matchedCustomers.length > 0
-        ? `\n[HASIL PENCARIAN DATABASE SESUAI QUERY USER]:\n` +
+        ? `\n[HASIL PENCARIAN DATABASE]:\n` +
           matchedCustomers.map((c: any, i: number) => {
-            const unpaid = c.tagihan?.map((t: any) => `Tagihan Rp ${t.jumlah.toLocaleString('id-ID')} (${t.status})`).join(", ") || "Tidak ada tunggakan";
+            const unpaid = c.tagihan?.map((t: any) => `Tagihan Rp ${t.jumlah.toLocaleString('id-ID')} (${t.status})`).join(", ") || "Lunas";
             return `${i+1}. ${c.nama} (Telp: ${c.noTelepon}) [Alamat: ${c.alamat}] - ${unpaid}`;
           }).join("\n")
         : "";
 
       const komplainText = recentKomplain.length > 0
-        ? recentKomplain.map((k: any, i: number) => `${i+1}. [${k.status.toUpperCase()}] ${k.judul} dari ${k.pelanggan?.nama || 'Warga'}: "${k.deskripsi}"`).join("\n")
-        : "Tidak ada komplain pending aktif saat ini.";
+        ? recentKomplain.map((k: any, i: number) => `${i+1}. [${k.status.toUpperCase()}] ${k.judul} (${k.pelanggan?.nama || 'Warga'} - ${k.pelanggan?.alamat || 'Alamat'})`).join("\n")
+        : "Tidak ada aduan pending.";
 
       const driverText = activePetugas.length > 0
-        ? activePetugas.map((p: any, i: number) => `${i+1}. ${p.nama} (${p.jabatan || 'Driver'} - Telp: ${p.noTelepon})`).join("\n")
-        : "1. AWAL (Driver DT)\n2. RYAN (Driver DT)\n3. RAKA (Driver)";
+        ? activePetugas.map((p: any, i: number) => `${i+1}. ${p.nama} (${p.jabatan || 'Driver'})`).join("\n")
+        : "Armada operasional reguler.";
 
-      const memoryInstruction = `
-INSTRUKSI MEMORI & KONTEKS (SANGAT PENTING):
-1. Anda berada dalam percakapan MULTI-TURN. Selalu ingat percakapan sebelumnya dan konteks percakapan saat ini!
-2. Jika pengguna menyebut "warga pertama", "yang tadi", "dia", atau menanyakan tindak lanjut, gunakan data dari percakapan sebelumnya secara tepat.
-3. JANGAN PERNAH berasumsi atau mengarang nomor telepon atau data jika sudah ada di database.
-4. Gunakan format WhatsApp quote (> ...) jika membuat draf pesan, sehingga siap disalin atau disetujui.
-5. Format tautan bayar online warga: https://upsheru.com/bayar?kode=[noTelepon] (didukung QRIS, BCA, Mandiri, BRI, e-wallet via Duitku).
-`;
+      const commonInstructions = `
+PANDUAN KETAT:
+1. Anda adalah asisten internal pelaporan dan analisis UPS HERU (upsheru.com). DILARANG MENYARANKAN PENGIRIMAN WHATSAPP EKSTERNAL.
+2. Semua hasil analisis ditujukan untuk dokumentasi internal manajemen dan pengesahan di Pusat Laporan.
+3. Jaga konsistensi nama brand resmi: "UPS HERU" (upsheru.com).
+4. Gunakan format Markdown yang rapi dengan heading, bullet points, dan penekanan data penting.`;
 
       let systemPrompt = "";
-      if (role === "sdr") {
-        systemPrompt = `Anda adalah B2B Sales Development Representative (SDR) & Mitra Acquisition Specialist untuk UPS HERU AI (upsheru.com).
-${memoryInstruction}
-Tugas & Skill Utama:
-1. Membedah pain point pengelola sampah desa: BUMDes, KSM, TPS3R, dan Paguyuban RT/RW (tunggakan warga, pencatatan manual, uang kas tercecer).
-2. Menyusun proposal kemitraan resmi, cold pitch WhatsApp 3-step sequence, dan objection handling persuasif.
-3. Menjelaskan skema kemitraan: Bagi hasil retribusi ringan (Rp 1.500 - Rp 3.000/KK/bulan) tanpa biaya server di awal, gratis pendampingan 30 hari.
-4. Nilai jual utama: Penagihan WhatsApp otomatis + QRIS instan (uang masuk langsung ke kas mitra), pelacakan rute armada GPS, dan pembukuan transparan.
-Konteks Data Riil:
-- Total Pelanggan Aktif Pilot: ${totalPelanggan} KK
-- Tingkat Kolektibilitas Kas: ${Math.round((transaksiLunasCount / (transaksiLunasCount + tagihanBelumBayar || 1)) * 100)}%
-Gaya bahasa: Sangat persuasif, profesional, fokus pada angka dan ROI, solutif bagi aparatur desa/RT/RW.`;
-      } else if (role === "content") {
-        systemPrompt = `Anda adalah Viral Content Strategist & Edukasi Warga untuk platform UPS HERU (upsheru.com).
-${memoryInstruction}
-Tugas & Skill Utama:
-1. Merancang naskah video pendek (50 detik) untuk TikTok, Instagram Reels, dan YouTube Shorts dengan 3 kategori Hook viral: Curiosity, Contrarian, atau Story-driven.
-2. Menulis copywriting broadcast WhatsApp warga untuk grup RT/RW perumahan yang santun, menggugah empati, dan tidak menggurui.
-3. Edukasi publik: Menjelaskan bahwa retribusi sampah (Rp 30.000 - Rp 40.000/bulan) sangat krusial untuk bensin armada, perawatan truk, dan kesejahteraan petugas yang berjibaku sejak subuh.
-4. Call-to-Action (CTA): Selalu mengarahkan kemudahan bayar nontunai scan QRIS instan via link WhatsApp tanpa perlu antre di kasir.
-Gaya bahasa: Menarik, hangat, menggugah empati lingkungan, kekinian, terstruktur per adegan (visual, audio/VO, text on screen).`;
-      } else if (role === "support") {
-        systemPrompt = `Anda adalah Resident Helpdesk & Billing Operations Agent untuk UPS HERU (upsheru.com).
-${memoryInstruction}
-Tugas & Skill Utama:
-1. Membantu warga mengecek tagihan, mengingatkan jatuh tempo dengan ramah via WhatsApp, dan menyertakan link bayar QRIS instan (https://upsheru.com/bayar?kode=[noTelepon]).
-2. Menangani komplain warga (misal: armada terlambat, sampah gang terlewat) dengan meminta maaf tulus, memberikan jadwal kedatangan armada cadangan, dan meneruskan tiket ke driver lapangan.
-3. Menghasilkan draf pesan yang siap dimasukkan ke 'Antrean Persetujuan Admin' (Human-in-the-Loop) sebelum dikirim ke nomor WhatsApp warga.
-Konteks Data Database Riil Saat Ini:
-- Total Pelanggan Aktif: ${totalPelanggan} KK
-- Warga Nunggak / Belum Bayar: ${tagihanBelumBayar} KK (Estimasi Rp ${(tagihanBelumBayar * 40000).toLocaleString('id-ID')})
-- Daftar Warga Belum Bayar Riil dari DB:
+
+      if (agentId === "tagihan") {
+        systemPrompt = `Anda adalah Meja Analis Tagihan & Tunggakan AI UPS HERU.
+${commonInstructions}
+Tugas: Membedah data tunggakan warga, menghitung total piutang tertunggak, merancang strategi audit penagihan internal.
+Konteks Data Live:
+- Pelanggan Aktif: ${totalPelanggan} KK
+- Tagihan Belum Bayar: ${tagihanBelumBayar} KK (Estimasi Rp ${(tagihanBelumBayar * 40000).toLocaleString('id-ID')})
+- Sampel Piutang:
 ${unpaidSampleText}
-${matchedText}
-- Komplain Terkini:
+${matchedText}`;
+      } else if (agentId === "armada") {
+        systemPrompt = `Anda adalah Meja Analis Armada & Komplain AI UPS HERU.
+${commonInstructions}
+Tugas: Menganalisis laporan keluhan sampah warga, mengevaluasi rute armada sopir, dan mendeteksi titik rawan keterlambatan rute.
+Konteks Data Live:
+- Pengaduan Aktif: ${komplainPending} tiket
+- Daftar Pengaduan Terkini:
 ${komplainText}
-- Petugas & Driver Lapangan Aktif:
-${driverText}
-Gaya bahasa: Sangat ramah, santun, solutif, menyertakan emoji khas pelayanan (🙏♻️), dan format siap kirim WhatsApp.`;
+- Tim Pengemudi/Petugas:
+${driverText}`;
+      } else if (agentId === "layanan") {
+        systemPrompt = `Anda adalah Meja Analis Layanan Warga / CS AI UPS HERU.
+${commonInstructions}
+Tugas: Merekapitulasi kepuasan warga, mengevaluasi SLA respon penanganan aduan, dan menyusun tren pertanyaan FAQ warga perumahan.
+Konteks Data Live:
+- Basis Warga Terlayani: ${totalPelanggan} KK
+- Tiket Pengaduan: ${komplainPending} aduan terpantau`;
+      } else if (agentId === "growth") {
+        systemPrompt = `Anda adalah Meja Analis Pertumbuhan & B2B AI UPS HERU.
+${commonInstructions}
+Tugas: Menganalisis peluang penyesuaian tarif, potensi ekspansi klaster perumahan baru, dan rekapitulasi tren pertumbuhan KK.
+Konteks Data Live:
+- Pelanggan Aktif: ${totalPelanggan} KK
+- Rasio Kolektibilitas QRIS: ${Math.round((transaksiLunasCount / (transaksiLunasCount + tagihanBelumBayar || 1)) * 100)}%`;
       } else {
-        // Executive Co-Pilot & Finance
-        systemPrompt = `Anda adalah Executive AI Co-Pilot & Financial Analytics untuk Owner & Manajemen UPS HERU (upsheru.com).
-${memoryInstruction}
-Tugas & Skill Utama:
-1. Menyajikan analisis finansial harian, proyeksi kas masuk, dan audit retribusi warga.
-2. Mengidentifikasi titik kebocoran kas (misal: rasio tunggakan berjalan di zona tertentu).
-3. Memberikan rekomendasi strategis skala bisnis (akuisisi mitra baru, ekspansi rute armada).
-Konteks Database Riil:
+        // eksekutif
+        systemPrompt = `Anda adalah Meja Eksekutif & Keuangan AI UPS HERU.
+${commonInstructions}
+Tugas: Menyusun analisis finansial harian, mengaudit arus kas masuk vs tunggakan piutang, dan memberikan ringkasan strategis untuk pimpinan.
+Konteks Data Live:
 - Total Pelanggan: ${totalPelanggan} KK
-- Kas Terkumpul Bulan Ini: Rp ${(transaksiLunasCount * 40000).toLocaleString('id-ID')} (${transaksiLunasCount} KK lunas)
-- Tunggakan Berjalan: Rp ${(tagihanBelumBayar * 40000).toLocaleString('id-ID')} (${tagihanBelumBayar} KK)
-- Rasio Kolektibilitas: ${Math.round((transaksiLunasCount / (transaksiLunasCount + tagihanBelumBayar || 1)) * 100)}%
-- Contoh Data Nunggak:
-${unpaidSampleText}
-${matchedText}
-Gaya bahasa: Tajam, ringkas, berorientasi eksekutif, berbasis data metrik riil.`;
+- Kas Terkumpul Bulan Ini: Rp ${(transaksiLunasCount * 40000).toLocaleString('id-ID')} (${transaksiLunasCount} tagihan lunas)
+- Tunggakan Piutang: Rp ${(tagihanBelumBayar * 40000).toLocaleString('id-ID')} (${tagihanBelumBayar} tagihan)
+- Rasio Kolektibilitas: ${Math.round((transaksiLunasCount / (transaksiLunasCount + tagihanBelumBayar || 1)) * 100)}%`;
       }
 
       const aiRes = await callGemini(systemPrompt, message, clientGeminiKey, 0.7, history);
 
       let finalReply = aiRes.text;
       if (!finalReply) {
-        if (role === "sdr") {
-          finalReply = `💼 [B2B SDR Agent]: Untuk menawarkan kemitraan ke BUMDes / KSM, fokuskan pada eliminasi tunggakan warga. Dengan sistem WhatsApp QRIS otomatis UPSHERU, kas masuk meningkat dari 60% menjadi 88%+, dan pengurus desa memiliki pembukuan transparan tanpa ribet buku manual.`;
-        } else if (role === "content") {
-          finalReply = `🎬 [Content Strategist]: Gunakan hook contrarian: "Jangan salahkan petugas sampah telat kalau iuran 30 ribu aja masih nunggak!" Lanjutkan dengan video 50 detik yang memperlihatkan kerja keras petugas armada dan kemudahan scan QRIS lewat link WA.`;
-        } else if (role === "support") {
-          finalReply = `💬 [Resident Support]: Saat ini terdapat ${tagihanBelumBayar} KK yang belum melunasi iuran. Draf reminder santun:\n\n"Halo Bapak/Ibu, salam bersih dari UPSHERU 🙏. Sekadar mengingatkan iuran retribusi sampah keluarga periode berjalan sebesar Rp 40.000,-. Pembayaran praktis via QRIS: https://upsheru.com/bayar. Terima kasih banyak! ♻️"`;
+        if (agentId === "tagihan") {
+          finalReply = `📑 [Analis Tagihan & Tunggakan]: Berdasarkan data live, tercatat **${tagihanBelumBayar} KK** belum menyelesaikan tagihan berjalan dengan total estimasi piutang **Rp ${(tagihanBelumBayar * 40000).toLocaleString('id-ID')},-**. Rekomendasi: lakukan pengelompokan penagihan per wilayah RT untuk mempermudah audit petugas lapangan.`;
+        } else if (agentId === "armada") {
+          finalReply = `🚛 [Analis Armada & Komplain]: Terpantau **${komplainPending} laporan komplain aktif** yang membutuhkan atensi lapangan. Disarankan untuk memprioritaskan pembersihan gang di zona dengan aduan berulang sebelum pukul 12.00 WIB.`;
+        } else if (agentId === "layanan") {
+          finalReply = `👥 [Layanan Warga / CS]: Sebagian besar tiket komplain warga terkait jadwal kedatangan armada. Edukasi berkala terkait estimasi jam lintasan armada terbukti menurunkan frekuensi aduan berulang hingga 40%.`;
+        } else if (agentId === "growth") {
+          finalReply = `📈 [Pertumbuhan & B2B]: Rasio kolektibilitas digital telah menyentuh level **${Math.round((transaksiLunasCount / (transaksiLunasCount + tagihanBelumBayar || 1)) * 100)}%**. Ini menjadi portofolio yang sangat meyakinkan untuk menjalin kemitraan baru dengan paguyuban perumahan dan TPS3R sekitarnya.`;
         } else {
-          finalReply = `📊 [Executive Co-Pilot]: Kas terkumpul saat ini mencapai ~Rp ${(transaksiLunasCount * 40000).toLocaleString('id-ID')} (${transaksiLunasCount} KK). Potensi kas tambahan jika ${tagihanBelumBayar} KK tertunggak berhasil ditagih adalah ~Rp ${(tagihanBelumBayar * 40000).toLocaleString('id-ID')}.`;
+          finalReply = `📊 [Eksekutif & Keuangan]: Estimasi penerimaan kas bulan ini telah mencapai **Rp ${(transaksiLunasCount * 40000).toLocaleString('id-ID')},-** dari **${transaksiLunasCount} KK**. Tingkat kepatuhan pembayaran warga berada dalam tren positif.`;
         }
       }
 
@@ -740,35 +826,8 @@ Gaya bahasa: Tajam, ringkas, berorientasi eksekutif, berbasis data metrik riil.`
         success: true,
         result: finalReply,
         engine: aiRes.source,
-        role,
+        agentId,
       });
-    }
-
-    // ACTION: SEND WHATSAPP
-    if (action === "send_whatsapp") {
-      const message = payload?.message;
-      const ownerPhone = process.env.OWNER_PHONE || "";
-      const waApiKey = process.env.WA_API_KEY || "";
-      const waApiUrl = process.env.WA_API_URL || "https://api.fonnte.com/send";
-
-      if (!message) {
-        return NextResponse.json({ success: false, error: "Pesan tidak boleh kosong" }, { status: 400 });
-      }
-
-      const headers = { Authorization: waApiKey };
-      const formPayload = new URLSearchParams();
-      formPayload.append("target", ownerPhone);
-      formPayload.append("message", message);
-      formPayload.append("countryCode", "62");
-
-      const response = await fetch(waApiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded", ...headers },
-        body: formPayload.toString(),
-      });
-
-      const resData = await response.json();
-      return NextResponse.json({ success: true, result: resData });
     }
 
     return NextResponse.json({ success: false, error: "Action tidak dikenal" }, { status: 400 });
