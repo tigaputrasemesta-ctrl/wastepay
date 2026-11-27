@@ -736,7 +736,7 @@ export default async function DashboardPage() {
         </div>
         <Link
           href="/ai-command"
-          className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-2 transition shadow-sm whitespace-nowrap self-stretch sm:self-auto justify-center"
+          className="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold flex items-center gap-2 transition shadow-sm whitespace-nowrap self-stretch sm:self-auto justify-center"
         >
           <span>Buka AI Hub &amp; Review Draf</span>
           <ArrowRight size={14} />

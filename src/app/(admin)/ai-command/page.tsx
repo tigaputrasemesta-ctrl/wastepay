@@ -66,12 +66,35 @@ export default function AiCommandHubPage() {
   const [loadingAction, setLoadingAction] = useState(false);
   const [engineSource, setEngineSource] = useState<"gemini_live" | "fallback">("fallback");
 
-  const [activeRole, setActiveRole] = useState<"copilot" | "sdr" | "content" | "support">("copilot");
+  type AgentRole = "copilot" | "sdr" | "content" | "support";
+
+  interface ChatMessage {
+    sender: "owner" | "ai";
+    text: string;
+    time: string;
+    role?: AgentRole;
+    canQueueApproval?: boolean;
+  }
+
+  const [activeRole, setActiveRole] = useState<AgentRole>("copilot");
   const [chatInput, setChatInput] = useState("");
   const [isChatting, setIsChatting] = useState(false);
+  const [lastRefreshed, setLastRefreshed] = useState<string>("");
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  const roleMeta = {
+  const roleMeta: Record<
+    AgentRole,
+    {
+      id: AgentRole;
+      title: string;
+      badge: string;
+      icon: any;
+      color: string;
+      skills: string[];
+      prompts: string[];
+      greeting: string;
+    }
+  > = {
     copilot: {
       id: "copilot",
       title: "Executive Co-Pilot",
@@ -98,7 +121,7 @@ export default function AiCommandHubPage() {
         "Bagaimana membantah keberatan 'aplikasi digital terlalu mahal'?",
         "Tulis 3-step pesan WhatsApp outreach ke pengurus KSM",
       ],
-      greeting: "Halo! Saya B2B SDR Agent UPSHERU. Tugas saya memprospek dan mengakuisisi BUMDes, KSM, dan TPS3R agar bermitra dengan platform digital WastePay.",
+      greeting: "Halo! Saya B2B SDR Agent UPS HERU. Tugas saya memprospek dan mengakuisisi BUMDes, KSM, dan TPS3R agar bermitra dengan platform digital UPS HERU.",
     },
     content: {
       id: "content",
@@ -112,7 +135,7 @@ export default function AiCommandHubPage() {
         "Tulis pesan broadcast santun untuk grup WA warga RT",
         "Buat 3 hook kontroversial tentang bahaya buang sampah liar",
       ],
-      greeting: "Halo! Saya Viral Content Strategist UPSHERU. Saya merancang konten edukasi publik agar warga sadar pentingnya membayar retribusi tepat waktu via scan QRIS.",
+      greeting: "Halo! Saya Viral Content Strategist UPS HERU. Saya merancang konten edukasi publik agar warga sadar pentingnya membayar retribusi tepat waktu via scan QRIS.",
     },
     support: {
       id: "support",
@@ -130,20 +153,48 @@ export default function AiCommandHubPage() {
     },
   };
 
-  const [chatMessages, setChatMessages] = useState<
-    Array<{ sender: "owner" | "ai"; text: string; time: string; role?: string }>
-  >([
-    {
-      sender: "ai",
-      text: "Halo Bapak/Ibu Owner. AI Agent Engine UPSHERU telah aktif dengan 4 Role Spesialis (Co-Pilot, B2B SDR, Content Strategist, & Support Ops). Pilih role di atas untuk berganti fokus tugas dan skill!",
-      time: "Baru saja",
-      role: "copilot",
-    },
-  ]);
+  const [chatHistories, setChatHistories] = useState<Record<AgentRole, ChatMessage[]>>({
+    copilot: [
+      {
+        sender: "ai",
+        text: roleMeta.copilot.greeting,
+        time: "Baru saja",
+        role: "copilot",
+        canQueueApproval: false,
+      },
+    ],
+    sdr: [
+      {
+        sender: "ai",
+        text: roleMeta.sdr.greeting,
+        time: "Baru saja",
+        role: "sdr",
+        canQueueApproval: false,
+      },
+    ],
+    content: [
+      {
+        sender: "ai",
+        text: roleMeta.content.greeting,
+        time: "Baru saja",
+        role: "content",
+        canQueueApproval: false,
+      },
+    ],
+    support: [
+      {
+        sender: "ai",
+        text: roleMeta.support.greeting,
+        time: "Baru saja",
+        role: "support",
+        canQueueApproval: false,
+      },
+    ],
+  });
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chatMessages, isChatting]);
+  }, [chatHistories, activeRole, isChatting]);
 
   const [activeOutputTitle, setActiveOutputTitle] = useState("Laporan Eksekutif Harian");
   const [activeOutputContent, setActiveOutputContent] = useState<string>("");
@@ -190,9 +241,16 @@ export default function AiCommandHubPage() {
         if (data.approvalQueue) {
           setApprovalQueue(data.approvalQueue);
         }
+        const timeNow = new Date().toLocaleTimeString("id-ID", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+        setLastRefreshed(timeNow);
       }
     } catch (e) {
       console.error("Gagal load data:", e);
+      setNotification("❌ Gagal memuat data metrik terbaru.");
     } finally {
       setLoadingStats(false);
     }
@@ -341,19 +399,45 @@ export default function AiCommandHubPage() {
     }
   };
 
-  const handleSwitchRole = (newRole: "copilot" | "sdr" | "content" | "support") => {
+  const handleSaveAndApproveItem = async (id: string, textToSave: string) => {
+    setLoadingAction(true);
+    try {
+      // 1. Simpan draf terbaru
+      const resSave = await fetch("/api/ai-command", {
+        method: "POST",
+        headers: getHeaders(),
+        body: JSON.stringify({ action: "update_draft", payload: { id, newText: textToSave } }),
+      });
+      const dataSave = await resSave.json();
+      if (!dataSave.success) {
+        setNotification("Gagal menyimpan draf: " + (dataSave.error || ""));
+        return;
+      }
+      setEditingItemId(null);
+
+      // 2. Setujui dan kirim draf terbaru ke WhatsApp
+      const resApprove = await fetch("/api/ai-command", {
+        method: "POST",
+        headers: getHeaders(),
+        body: JSON.stringify({ action: "approve_item", payload: { id } }),
+      });
+      const dataApprove = await resApprove.json();
+      if (dataApprove.success) {
+        setNotification(dataApprove.message);
+        if (dataApprove.updatedQueue) setApprovalQueue([...dataApprove.updatedQueue]);
+      } else {
+        setNotification("Gagal menyetujui: " + dataApprove.error);
+      }
+    } catch (err: any) {
+      setNotification("Error: " + err.message);
+    } finally {
+      setLoadingAction(false);
+    }
+  };
+
+  const handleSwitchRole = (newRole: AgentRole) => {
     if (newRole === activeRole) return;
     setActiveRole(newRole);
-    const timeNow = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
-    setChatMessages((prev) => [
-      ...prev,
-      {
-        sender: "ai",
-        text: roleMeta[newRole].greeting,
-        time: timeNow,
-        role: newRole,
-      },
-    ]);
   };
 
   const handleAddToApprovalQueue = async (text: string, title?: string) => {
@@ -392,14 +476,18 @@ export default function AiCommandHubPage() {
 
   const handleResetChat = () => {
     const timeNow = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
-    setChatMessages([
-      {
-        sender: "ai",
-        text: `Halo Boss! Sesi baru telah di-reset untuk **${roleMeta[activeRole].title}**. Seluruh konteks percakapan sebelumnya telah dibersihkan. Silakan mulai instruksi baru.`,
-        time: timeNow,
-        role: activeRole,
-      },
-    ]);
+    setChatHistories((prev) => ({
+      ...prev,
+      [activeRole]: [
+        {
+          sender: "ai",
+          text: `Halo Boss! Sesi baru telah di-reset untuk **${roleMeta[activeRole].title}**. Seluruh konteks percakapan sebelumnya telah dibersihkan. Silakan mulai instruksi baru.`,
+          time: timeNow,
+          role: activeRole,
+          canQueueApproval: false,
+        },
+      ],
+    }));
   };
 
   const handleSendChat = async (e?: React.FormEvent, customMsg?: string) => {
@@ -408,14 +496,21 @@ export default function AiCommandHubPage() {
     if (!userMsg || isChatting) return;
 
     const timeNow = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+    const currentMessages = chatHistories[activeRole] || [];
 
     // Multi-turn conversation history (ambil hingga 12 pesan sebelumnya untuk mempertahankan konteks)
-    const historyPayload = chatMessages.slice(-12).map((m) => ({
+    const historyPayload = currentMessages.slice(-12).map((m) => ({
       role: m.sender === "owner" ? ("user" as const) : ("model" as const),
       text: m.text,
     }));
 
-    setChatMessages((prev) => [...prev, { sender: "owner", text: userMsg, time: timeNow }]);
+    setChatHistories((prev) => ({
+      ...prev,
+      [activeRole]: [
+        ...(prev[activeRole] || []),
+        { sender: "owner", text: userMsg, time: timeNow, role: activeRole },
+      ],
+    }));
     setChatInput("");
     setIsChatting(true);
 
@@ -435,33 +530,50 @@ export default function AiCommandHubPage() {
       });
       const data = await res.json();
       if (data.success && data.result) {
-        setChatMessages((prev) => [
+        setChatHistories((prev) => ({
           ...prev,
-          { sender: "ai", text: data.result, time: timeNow, role: activeRole },
-        ]);
+          [activeRole]: [
+            ...(prev[activeRole] || []),
+            {
+              sender: "ai",
+              text: data.result,
+              time: timeNow,
+              role: activeRole,
+              canQueueApproval: true,
+            },
+          ],
+        }));
       } else {
-        setChatMessages((prev) => [
+        setChatHistories((prev) => ({
           ...prev,
-          {
-            sender: "ai",
-            text: data.error
-              ? `⚠️ Sistem: ${data.error}`
-              : "Instruksi diterima, namun terjadi kendala respon dari server.",
-            time: timeNow,
-            role: activeRole,
-          },
-        ]);
+          [activeRole]: [
+            ...(prev[activeRole] || []),
+            {
+              sender: "ai",
+              text: data.error
+                ? `⚠️ Sistem: ${data.error}`
+                : "Instruksi diterima, namun terjadi kendala respon dari server.",
+              time: timeNow,
+              role: activeRole,
+              canQueueApproval: false,
+            },
+          ],
+        }));
       }
     } catch (err: any) {
-      setChatMessages((prev) => [
+      setChatHistories((prev) => ({
         ...prev,
-        {
-          sender: "ai",
-          text: `⚠️ Kendala jaringan: ${err.message || "Gagal menghubungi server"}`,
-          time: timeNow,
-          role: activeRole,
-        },
-      ]);
+        [activeRole]: [
+          ...(prev[activeRole] || []),
+          {
+            sender: "ai",
+            text: `⚠️ Kendala jaringan: ${err.message || "Gagal menghubungi server"}`,
+            time: timeNow,
+            role: activeRole,
+            canQueueApproval: false,
+          },
+        ],
+      }));
     } finally {
       setIsChatting(false);
     }
@@ -505,29 +617,35 @@ export default function AiCommandHubPage() {
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
       {/* Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-5">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-5">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="p-2 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 rounded-lg">
-              <Bot className="w-6 h-6" />
+          <div className="flex flex-wrap items-center gap-2.5">
+            <span className="p-2 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 rounded-xl shadow-sm">
+              <Bot className="w-5 h-5" />
             </span>
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
               AI Agent Command Hub & Approval Gate
             </h1>
-            <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-              <ShieldCheck className="w-3 h-3 text-emerald-700" /> Human-in-the-Loop Active
+            <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/70 whitespace-nowrap">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" /> Human-in-the-Loop Active
             </span>
           </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Pusat kendali komunikasi Owner dengan AI Agent. Terhubung langsung ke Google Gemini API dengan antrean moderasi sebelum pesan dikirim.
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-zinc-400 mt-1">
+            Pusat kendali komunikasi Owner & Manajemen dengan AI Agent UPS HERU. Terhubung langsung ke Google Gemini API dengan antrean moderasi sebelum pesan dikirim.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2.5 flex-shrink-0">
+          {lastRefreshed && (
+            <span className="text-[11px] text-slate-500 dark:text-zinc-400 font-mono hidden sm:inline-block whitespace-nowrap">
+              Diperbarui: {lastRefreshed}
+            </span>
+          )}
+
           {isGeminiConnected ? (
             <button
               onClick={() => setShowKeyModal(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100 transition"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100 transition whitespace-nowrap"
             >
               <Zap className="w-3.5 h-3.5 text-emerald-500" />
               Gemini Terhubung Permanen
@@ -535,7 +653,7 @@ export default function AiCommandHubPage() {
           ) : (
             <button
               onClick={() => setShowKeyModal(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800 hover:bg-amber-100 transition animate-pulse"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800 hover:bg-amber-100 transition animate-pulse whitespace-nowrap"
             >
               <Key className="w-3.5 h-3.5 text-amber-700" />
               Hubungkan Gemini API Key
@@ -545,10 +663,10 @@ export default function AiCommandHubPage() {
           <button
             onClick={fetchData}
             disabled={loadingStats}
-            className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors"
+            className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-slate-700 dark:text-zinc-300 transition-colors whitespace-nowrap disabled:opacity-60"
           >
-            <RefreshCw className={`w-4 h-4 ${loadingStats ? "animate-spin" : ""}`} />
-            Refresh Data
+            <RefreshCw className={`w-3.5 h-3.5 ${loadingStats ? "animate-spin text-emerald-700" : ""}`} />
+            <span>{loadingStats ? "Memuat..." : "Refresh Data"}</span>
           </button>
         </div>
       </div>
@@ -644,50 +762,64 @@ export default function AiCommandHubPage() {
 
       {/* Metrik Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-800 shadow-sm">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl p-4 border border-gray-200 dark:border-zinc-800 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Total Pelanggan Aktif</p>
-            <Users className="w-4 h-4 text-emerald-700" />
+            <p className="text-[11px] font-bold text-slate-600 dark:text-zinc-400 uppercase tracking-wider">Total Pelanggan Aktif</p>
+            <Users className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
           </div>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
-            {loadingStats ? "..." : (stats?.totalPelanggan || 0).toLocaleString("id-ID") + " KK"}
-          </p>
-          <p className="text-xs text-gray-500 mt-1">Kolektibilitas QRIS: 88%</p>
+          <div className="mt-2">
+            <p className="text-2xl font-black text-slate-900 dark:text-white">
+              {loadingStats ? "..." : (stats?.totalPelanggan || 0).toLocaleString("id-ID") + " KK"}
+            </p>
+            <p className="text-xs text-slate-600 dark:text-zinc-400 mt-1 font-medium">
+              Kolektibilitas QRIS: {(stats as any)?.kolektibilitasPersen || 88}%
+            </p>
+          </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-800 shadow-sm">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl p-4 border border-gray-200 dark:border-zinc-800 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Sisa Tunggakan</p>
+            <p className="text-[11px] font-bold text-slate-600 dark:text-zinc-400 uppercase tracking-wider">Sisa Tunggakan</p>
             <AlertTriangle className="w-4 h-4 text-amber-500" />
           </div>
-          <p className="text-2xl font-bold text-amber-700 dark:text-amber-400 mt-2">
-            {loadingStats ? "..." : (stats?.tagihanBelumBayar || 0).toLocaleString("id-ID") + " Tagihan"}
-          </p>
-          <p className="text-xs text-gray-500 mt-1">
-            ~Rp {stats ? stats.tunggakanEstimasi.toLocaleString("id-ID") : "..."}
-          </p>
+          <div className="mt-2">
+            <p className="text-2xl font-black text-amber-700 dark:text-amber-400">
+              {loadingStats ? "..." : (stats?.tagihanBelumBayar || 0).toLocaleString("id-ID") + " Tagihan"}
+            </p>
+            <p className="text-xs text-slate-600 dark:text-zinc-400 mt-1 font-medium">
+              ~Rp {stats ? stats.tunggakanEstimasi.toLocaleString("id-ID") : "..."}
+            </p>
+          </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-800 shadow-sm">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl p-4 border border-gray-200 dark:border-zinc-800 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Pengaduan Perlu Ditindak</p>
+            <p className="text-[11px] font-bold text-slate-600 dark:text-zinc-400 uppercase tracking-wider">Pengaduan Aktif</p>
             <ShieldAlert className="w-4 h-4 text-blue-500" />
           </div>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
-            {loadingStats ? "..." : (stats?.komplainPending || 0).toLocaleString("id-ID") + " Laporan Baru / Proses"}
-          </p>
-          <p className="text-xs text-emerald-700 mt-1 font-medium">Pantauan live operasional</p>
+          <div className="mt-2">
+            <p className="text-2xl font-black text-slate-900 dark:text-white">
+              {loadingStats ? "..." : (stats?.komplainPending || 0).toLocaleString("id-ID") + " Laporan"}
+            </p>
+            <p className="text-xs text-slate-600 dark:text-zinc-400 mt-1 font-medium">
+              Baru & diproses • Pantauan live
+            </p>
+          </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-800 shadow-sm">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl p-4 border border-gray-200 dark:border-zinc-800 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Antrean Review AI</p>
+            <p className="text-[11px] font-bold text-slate-600 dark:text-zinc-400 uppercase tracking-wider">Antrean Review AI</p>
             <CheckCircle2 className="w-4 h-4 text-purple-500" />
           </div>
-          <p className="text-2xl font-bold text-purple-600 dark:text-purple-400 mt-2">
-            {approvalQueue.filter((q) => q.status === "PENDING_APPROVAL").length} Draf
-          </p>
-          <p className="text-xs text-purple-600 mt-1">Menunggu persetujuan Anda</p>
+          <div className="mt-2">
+            <p className="text-2xl font-black text-purple-700 dark:text-purple-400">
+              {approvalQueue.filter((q) => q.status === "PENDING_APPROVAL").length} Draf
+            </p>
+            <p className="text-xs text-purple-700 dark:text-purple-300 mt-1 font-medium">
+              Menunggu persetujuan Anda
+            </p>
+          </div>
         </div>
       </div>
 
@@ -738,64 +870,91 @@ export default function AiCommandHubPage() {
 
                 {editingItemId === item.id ? (
                   <div className="mt-2.5 space-y-2">
+                    <div className="flex items-center justify-between text-[11px] text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 px-2 py-1 rounded-md border border-amber-200 dark:border-amber-900/50 font-medium">
+                      <span>✏️ Mode Edit Aktif</span>
+                      <span className="text-[10px]">Simpan sebelum dikirim</span>
+                    </div>
                     <textarea
                       value={editedText}
                       onChange={(e) => setEditedText(e.target.value)}
-                      className="w-full text-xs p-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                      className="w-full text-xs p-2.5 rounded-xl border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 font-sans"
                       rows={4}
                     />
-                    <div className="flex gap-1.5 justify-end">
+                    <div className="flex flex-wrap gap-1.5 justify-end">
                       <button
+                        type="button"
                         onClick={() => setEditingItemId(null)}
-                        className="px-2 py-1 text-[11px] rounded border border-gray-300 text-gray-600"
+                        className="px-2.5 py-1 text-[11px] rounded-lg border border-gray-300 dark:border-zinc-700 text-slate-700 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800 transition"
                       >
                         Batal
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleSaveEdit(item.id)}
-                        className="px-2 py-1 text-[11px] rounded bg-emerald-700 text-white"
+                        disabled={loadingAction || !editedText.trim()}
+                        className="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-slate-800 hover:bg-slate-900 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-white transition disabled:opacity-50"
                       >
                         Simpan Draf
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSaveAndApproveItem(item.id, editedText)}
+                        disabled={loadingAction || !editedText.trim()}
+                        className="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white transition shadow-sm disabled:opacity-50 flex items-center gap-1"
+                      >
+                        <Check className="w-3.5 h-3.5" />
+                        Simpan & Kirim
                       </button>
                     </div>
                   </div>
                 ) : (
-                  <div className="mt-2 p-2.5 rounded-lg bg-gray-50 dark:bg-gray-800/70 border border-gray-100 dark:border-gray-700/60 font-mono text-[11px] text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
+                  <div className="mt-2 p-2.5 rounded-lg bg-gray-50 dark:bg-zinc-800/70 border border-gray-100 dark:border-zinc-700/60 font-mono text-[11px] text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
                     "{item.draftText}"
                   </div>
                 )}
               </div>
 
-              <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                <span className="text-[10px] text-gray-400">{item.createdAt}</span>
+              <div className="mt-4 pt-3 border-t border-gray-100 dark:border-zinc-800 flex items-center justify-between">
+                <span className="text-[10px] text-slate-500 dark:text-zinc-400 font-medium">{item.createdAt}</span>
 
                 {item.status === "PENDING_APPROVAL" && (
                   <div className="flex items-center gap-1.5">
-                    <button
-                      onClick={() => {
-                        setEditingItemId(item.id);
-                        setEditedText(item.draftText);
-                      }}
-                      className="p-1.5 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
-                      title="Edit Draf"
-                    >
-                      <Edit3 className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => handleRejectItem(item.id)}
-                      className="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded"
-                      title="Tolak Draf"
-                    >
-                      <XCircle className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => handleApproveItem(item.id)}
-                      disabled={loadingAction}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-lg bg-emerald-700 hover:bg-emerald-700 text-white transition shadow-sm"
-                    >
-                      <Check className="w-3.5 h-3.5" />
-                      Setujui & Kirim
-                    </button>
+                    {editingItemId === item.id ? (
+                      <span className="text-[11px] font-semibold text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50">
+                        Sedang Diedit
+                      </span>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingItemId(item.id);
+                            setEditedText(item.draftText);
+                          }}
+                          className="p-1.5 text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded transition"
+                          title="Edit Draf"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleRejectItem(item.id)}
+                          className="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded transition"
+                          title="Tolak Draf"
+                        >
+                          <XCircle className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleApproveItem(item.id)}
+                          disabled={loadingAction}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white transition shadow-sm disabled:opacity-50"
+                        >
+                          <Check className="w-3.5 h-3.5" />
+                          Setujui & Kirim
+                        </button>
+                      </>
+                    )}
                   </div>
                 )}
 
@@ -817,17 +976,17 @@ export default function AiCommandHubPage() {
       {/* Main Dual Workspace */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Side: Interactive Chat Console with Specialized AI Agents (5 Cols) */}
-        <div className="lg:col-span-5 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 flex flex-col h-[600px] shadow-sm">
+        <div className="lg:col-span-5 bg-white dark:bg-zinc-900 rounded-2xl border border-gray-200 dark:border-zinc-800 flex flex-col min-h-[580px] h-[640px] shadow-sm overflow-hidden">
           {/* Header Console & Active Model */}
-          <div className="p-3.5 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
+          <div className="p-3.5 border-b border-gray-200 dark:border-zinc-800 flex items-center justify-between bg-white dark:bg-zinc-900">
             <div className="flex items-center gap-2">
-              <MessageSquare className="w-4 h-4 text-emerald-500" />
-              <span className="font-semibold text-sm text-gray-900 dark:text-white">
+              <MessageSquare className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+              <span className="font-bold text-sm text-slate-900 dark:text-white">
                 Live AI Specialist Hub
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] text-gray-400 font-mono">
+              <span className="text-[11px] text-slate-600 dark:text-zinc-300 font-mono">
                 {isGeminiConnected ? "Gemini Live" : "Fallback Engine"}
               </span>
               <span className={`inline-block w-2 h-2 rounded-full ${isGeminiConnected ? "bg-emerald-500 animate-pulse" : "bg-amber-400"}`}></span>
@@ -835,7 +994,7 @@ export default function AiCommandHubPage() {
                 type="button"
                 onClick={handleResetChat}
                 title="Reset Sesi Percakapan & Bersihkan Memori"
-                className="ml-1 p-1 rounded-lg text-gray-400 hover:text-red-500 hover:bg-gray-100 dark:hover:bg-zinc-800 transition"
+                className="ml-1 p-1 rounded-lg text-slate-500 hover:text-red-600 hover:bg-gray-100 dark:hover:bg-zinc-800 transition"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
               </button>
@@ -843,7 +1002,7 @@ export default function AiCommandHubPage() {
           </div>
 
           {/* Interactive Role Switcher Tabs */}
-          <div className="p-2.5 bg-gray-50/80 dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800 space-y-2">
+          <div className="p-2.5 bg-slate-50/80 dark:bg-zinc-950/40 border-b border-gray-200 dark:border-zinc-800 space-y-2">
             <div className="grid grid-cols-4 gap-1">
               {(Object.keys(roleMeta) as Array<keyof typeof roleMeta>).map((rKey) => {
                 const r = roleMeta[rKey];
@@ -856,11 +1015,11 @@ export default function AiCommandHubPage() {
                     onClick={() => handleSwitchRole(rKey)}
                     className={`py-1.5 px-1 rounded-xl text-center flex flex-col items-center gap-0.5 transition ${
                       isActive
-                        ? "bg-white dark:bg-zinc-800 shadow-sm border border-emerald-500/40 text-emerald-700 dark:text-emerald-300 font-bold"
-                        : "text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100/60 dark:hover:bg-zinc-800/40"
+                        ? "bg-white dark:bg-zinc-800 shadow-sm border border-emerald-500/50 text-emerald-800 dark:text-emerald-300 font-bold"
+                        : "text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-white hover:bg-gray-100/80 dark:hover:bg-zinc-800/60 font-medium"
                     }`}
                   >
-                    <IconComponent className={`w-3.5 h-3.5 ${isActive ? "text-emerald-700 dark:text-emerald-400" : "text-gray-400"}`} />
+                    <IconComponent className={`w-3.5 h-3.5 ${isActive ? "text-emerald-700 dark:text-emerald-400" : "text-slate-500 dark:text-zinc-400"}`} />
                     <span className="text-[10px] leading-tight truncate w-full">{r.title.split(" ")[0]}</span>
                   </button>
                 );
@@ -868,12 +1027,13 @@ export default function AiCommandHubPage() {
             </div>
 
             {/* Active Skills & Database Access Bar */}
-            <div className="flex flex-wrap items-center gap-1.5 text-[10px] pt-0.5">
-              <span className="text-slate-700 dark:text-zinc-200 font-bold whitespace-nowrap">Skill Aktif:</span>
+            <div className="flex flex-wrap items-center gap-1.5 text-[11px] pt-0.5 select-none">
+              <span className="text-slate-700 dark:text-zinc-300 font-bold whitespace-nowrap">Skill Aktif:</span>
               {roleMeta[activeRole].skills.map((skill, sIdx) => (
                 <span
                   key={sIdx}
-                  className="px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 whitespace-nowrap font-medium"
+                  title="Kapabilitas otomatis spesialis"
+                  className="px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 whitespace-nowrap font-medium text-[10px] cursor-default"
                 >
                   ✓ {skill}
                 </span>
@@ -882,8 +1042,8 @@ export default function AiCommandHubPage() {
           </div>
 
           {/* Chat Messages Log */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-3 text-xs">
-            {chatMessages.map((msg, idx) => (
+          <div className="flex-1 p-4 overflow-y-auto space-y-3 text-xs bg-white dark:bg-zinc-900">
+            {(chatHistories[activeRole] || []).map((msg, idx) => (
               <div
                 key={idx}
                 className={`flex flex-col ${
@@ -894,37 +1054,37 @@ export default function AiCommandHubPage() {
                   className={`max-w-[88%] rounded-2xl p-3 leading-relaxed ${
                     msg.sender === "owner"
                       ? "bg-emerald-700 text-white rounded-br-none"
-                      : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-none border border-gray-200/50 dark:border-gray-700/50"
+                      : "bg-slate-100 dark:bg-zinc-800 text-slate-900 dark:text-zinc-100 rounded-bl-none border border-slate-200/80 dark:border-zinc-700/80"
                   }`}
                 >
                   <p className="whitespace-pre-wrap">{msg.text}</p>
 
-                  {/* Tombol aksi langsung ke antrean approval jika respon memuat draf pesan */}
-                  {msg.sender === "ai" && msg.text.length > 50 && (
-                    <div className="mt-2.5 pt-2 border-t border-gray-200/60 dark:border-gray-700/60 flex justify-end">
+                  {/* Tombol aksi langsung ke antrean approval hanya untuk respons AI aktif (bukan greeting) */}
+                  {msg.sender === "ai" && msg.canQueueApproval && msg.text.length > 30 && (
+                    <div className="mt-2.5 pt-2 border-t border-gray-200/60 dark:border-zinc-700/60 flex justify-end">
                       <button
                         type="button"
                         onClick={() => handleAddToApprovalQueue(msg.text)}
                         disabled={loadingAction}
                         className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 transition shadow-sm"
                       >
-                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
+                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
                         + Masukkan ke Antrean Approval
                       </button>
                     </div>
                   )}
                 </div>
-                <span className="text-[10px] text-gray-400 mt-1 px-1">{msg.time}</span>
+                <span className="text-[10px] text-slate-500 dark:text-zinc-400 mt-1 px-1 font-medium">{msg.time}</span>
               </div>
             ))}
 
             {isChatting && (
               <div className="flex flex-col items-start">
-                <div className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-2xl rounded-bl-none p-3 text-xs flex items-center gap-2">
+                <div className="bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 rounded-2xl rounded-bl-none p-3 text-xs flex items-center gap-2 border border-slate-200/70 dark:border-zinc-700/70">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce"></span>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce [animation-delay:0.2s]"></span>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce [animation-delay:0.4s]"></span>
-                  <span className="text-[11px] text-gray-500 italic">
+                  <span className="text-[11px] text-slate-500 dark:text-zinc-400 italic">
                     {roleMeta[activeRole].title} sedang memproses data...
                   </span>
                 </div>
@@ -934,14 +1094,14 @@ export default function AiCommandHubPage() {
           </div>
 
           {/* Quick Prompts Bar Berdasarkan Role Aktif */}
-          <div className="px-3 py-1.5 border-t border-gray-100 dark:border-gray-800/80 flex gap-1.5 overflow-x-auto text-[11px] bg-gray-50/50 dark:bg-zinc-900/60">
+          <div className="p-2.5 border-t border-gray-100 dark:border-zinc-800/80 flex flex-wrap gap-1.5 text-[11px] bg-slate-50/70 dark:bg-zinc-950/40">
             {roleMeta[activeRole].prompts.map((p, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => handleSendChat(undefined, p)}
                 disabled={isChatting}
-                className="whitespace-nowrap px-2.5 py-1 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 border border-gray-200 dark:border-gray-700 text-[10px] font-medium transition shadow-sm"
+                className="text-left px-2.5 py-1 rounded-lg bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 hover:text-emerald-700 dark:hover:text-emerald-400 hover:border-emerald-300 dark:hover:border-emerald-700 border border-gray-200 dark:border-zinc-700 text-[10px] font-medium transition shadow-sm leading-snug"
               >
                 💡 {p}
               </button>
@@ -949,19 +1109,19 @@ export default function AiCommandHubPage() {
           </div>
 
           {/* Chat Input Form */}
-          <form onSubmit={handleSendChat} className="p-3 border-t border-gray-200 dark:border-gray-800 flex gap-2 bg-white dark:bg-gray-900">
+          <form onSubmit={handleSendChat} className="p-3 border-t border-gray-200 dark:border-zinc-800 flex gap-2 bg-white dark:bg-zinc-900">
             <input
               type="text"
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
               disabled={isChatting}
               placeholder={isChatting ? `${roleMeta[activeRole].title} sedang mengetik...` : `Tanyakan ke ${roleMeta[activeRole].title}...`}
-              className="flex-1 text-xs px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
+              className="flex-1 text-xs px-3 py-2 rounded-xl border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
             />
             <button
               type="submit"
               disabled={isChatting || !chatInput.trim()}
-              className="p-2 bg-emerald-700 hover:bg-emerald-700 text-white rounded-xl transition disabled:opacity-50"
+              className="p-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl transition disabled:opacity-50 cursor-pointer shadow-sm"
             >
               <Send className="w-4 h-4" />
             </button>
@@ -969,49 +1129,51 @@ export default function AiCommandHubPage() {
         </div>
 
         {/* Right Side: Live Report Deliverable Canvas (7 Cols) */}
-        <div className="lg:col-span-7 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 flex flex-col h-[600px] shadow-sm">
-          <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
+        <div className="lg:col-span-7 bg-white dark:bg-zinc-900 rounded-2xl border border-gray-200 dark:border-zinc-800 flex flex-col min-h-[580px] h-[640px] shadow-sm overflow-hidden">
+          <div className="p-4 border-b border-gray-200 dark:border-zinc-800 flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-zinc-900">
             <div className="flex items-center gap-2">
-              <FileText className="w-4 h-4 text-emerald-500" />
-              <h2 className="font-semibold text-sm text-gray-900 dark:text-white">
+              <FileText className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+              <h2 className="font-bold text-sm text-slate-900 dark:text-white">
                 {activeOutputTitle}
               </h2>
               {engineSource === "gemini_live" && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-mono font-medium">
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-mono font-medium">
                   Live Gemini
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               <button
+                type="button"
                 onClick={handleCopy}
                 disabled={!activeOutputContent}
-                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition"
+                className="inline-flex items-center justify-center gap-1.5 w-[96px] min-w-[96px] px-2.5 py-1.5 text-xs font-semibold rounded-lg border border-gray-300 dark:border-zinc-700 hover:bg-gray-50 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-200 transition whitespace-nowrap flex-shrink-0 disabled:opacity-50"
               >
-                {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                {copied ? "Tersalin" : "Salin"}
+                {copied ? <Check className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-slate-500 dark:text-zinc-400" />}
+                <span>{copied ? "Tersalin" : "Salin"}</span>
               </button>
               <button
+                type="button"
                 onClick={handleSendToWhatsApp}
                 disabled={loadingAction || !activeOutputContent}
-                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md bg-emerald-700 hover:bg-emerald-700 text-white transition"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white transition flex-shrink-0 whitespace-nowrap shadow-sm disabled:opacity-50"
               >
                 <Share2 className="w-3.5 h-3.5" />
-                Kirim ke WA Saya
+                <span>Kirim ke WA Saya</span>
               </button>
             </div>
           </div>
 
           <div className="flex-1 p-5 overflow-y-auto text-xs text-slate-800 dark:text-zinc-200 bg-slate-50/50 dark:bg-zinc-950/40 select-text">
             {loadingAction ? (
-              <div className="h-full flex flex-col items-center justify-center text-gray-400 gap-2">
-                <RefreshCw className="w-6 h-6 animate-spin text-emerald-500" />
+              <div className="h-full flex flex-col items-center justify-center text-slate-400 dark:text-zinc-500 gap-2">
+                <RefreshCw className="w-6 h-6 animate-spin text-emerald-700" />
                 <p className="text-xs">AI Agent sedang menyusun dokumen...</p>
               </div>
             ) : activeOutputContent ? (
               <MarkdownReportView content={activeOutputContent} />
             ) : (
-              <div className="h-full flex items-center justify-center text-gray-400 text-xs">
+              <div className="h-full flex items-center justify-center text-slate-400 dark:text-zinc-500 text-xs">
                 Pilih salah satu tombol trigger di atas untuk menghasilkan output.
               </div>
             )}

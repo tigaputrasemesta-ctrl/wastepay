@@ -31,17 +31,46 @@ export default function MarkdownReportView({ content }: MarkdownReportViewProps)
     };
 
     const parseInlineFormatting = (text: string): React.ReactNode => {
-      // Parse **bold** and `code`
-      const parts = text.split(/(\*\*.*?\*\*|`.*?`)/g);
+      if (!text) return null;
+      // Match:
+      // 1. ***bold italic***
+      // 2. **bold**
+      // 3. *italic* (tidak diawali/diakhiri spasi di dalam bintang)
+      // 4. `code`
+      // 5. _italic_
+      const tokenRegex = /(\*\*\*[\s\S]+?\*\*\*|\*\*[\s\S]+?\*\*|\*(?!\s)[^*]+?(?<!\s)\*|`[^`]+`|_(?!\s)[^_]+?(?<!\s)_)/g;
+      const parts = text.split(tokenRegex);
       return parts.map((part, i) => {
-        if (part.startsWith("**") && part.endsWith("**")) {
+        if (!part) return null;
+        if (part.startsWith("***") && part.endsWith("***") && part.length >= 6) {
+          return (
+            <strong key={i} className="font-bold text-slate-900 dark:text-white">
+              <em className="italic">{part.slice(3, -3)}</em>
+            </strong>
+          );
+        }
+        if (part.startsWith("**") && part.endsWith("**") && part.length >= 4) {
           return (
             <strong key={i} className="font-bold text-slate-900 dark:text-white">
               {part.slice(2, -2)}
             </strong>
           );
         }
-        if (part.startsWith("`") && part.endsWith("`")) {
+        if (part.startsWith("*") && part.endsWith("*") && part.length >= 2) {
+          return (
+            <em key={i} className="italic text-slate-800 dark:text-zinc-200">
+              {part.slice(1, -1)}
+            </em>
+          );
+        }
+        if (part.startsWith("_") && part.endsWith("_") && part.length >= 2) {
+          return (
+            <em key={i} className="italic text-slate-800 dark:text-zinc-200">
+              {part.slice(1, -1)}
+            </em>
+          );
+        }
+        if (part.startsWith("`") && part.endsWith("`") && part.length >= 2) {
           return (
             <code
               key={i}
@@ -67,10 +96,17 @@ export default function MarkdownReportView({ content }: MarkdownReportViewProps)
       // Flush accumulated bullet list if regular line encountered
       flushList();
 
-      // Horizontal Divider
-      if (trimmed === "---" || trimmed === "***" || trimmed === "___") {
+      // Horizontal Divider (markdown standard & box drawing characters)
+      if (
+        trimmed === "---" ||
+        trimmed === "***" ||
+        trimmed === "___" ||
+        /^━+$/.test(trimmed) ||
+        /^─+$/.test(trimmed) ||
+        /^-{3,}$/.test(trimmed)
+      ) {
         elements.push(
-          <hr key={`hr-${index}`} className="my-4 border-slate-200 dark:border-zinc-800" />
+          <hr key={`hr-${index}`} className="my-3.5 border-slate-200 dark:border-zinc-800" />
         );
         return;
       }

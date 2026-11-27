@@ -28,7 +28,7 @@ let mockApprovalQueue = [
     recipientPhone: "081288776655",
     category: "Penawaran Kemitraan SaaS",
     summary: "Proposal digitalisasi retribusi & eliminasi tunggakan iuran sampah desa.",
-    draftText: "Yth. Pengurus BUMDes Pasir Putih, kami dari tim UPSHERU (o2whero.com) ingin menawarkan kemitraan sistem retribusi sampah digital berbasis WhatsApp & QRIS instan. Sistem ini membantu BUMDes bebas tunggakan dan memantau rute armada via GPS. Apakah ada waktu luang 15 menit untuk demo singkat?",
+    draftText: "Yth. Pengurus BUMDes Pasir Putih, kami dari tim UPS HERU (upsheru.com) ingin menawarkan kemitraan sistem retribusi sampah digital berbasis WhatsApp & QRIS instan. Sistem ini membantu BUMDes bebas tunggakan dan memantau rute armada via GPS. Apakah ada waktu luang 15 menit untuk demo singkat?",
     aiConfidence: "95%",
     status: "PENDING_APPROVAL",
     createdAt: "10 menit lalu",
@@ -166,6 +166,56 @@ async function callGemini(
   return { text: "", source: "fallback", errorDetail: lastError };
 }
 
+async function getLiveTenantStats(req: NextRequest, session: any) {
+  const rawHost = req.headers.get("x-forwarded-host") || req.headers.get("host") || "";
+  const { resolveTenantByHost } = await import("@/lib/tenant");
+  const tenantCtx = resolveTenantByHost(rawHost);
+  const tenantId = !tenantCtx.isCore ? tenantCtx.tenant.id : (session?.tenantId || tenantCtx.tenant.id);
+
+  // Ambil metrik riil terisolasi per tenant dari database
+  const tenantScope = tenantCtx.isCore && session?.role === "superadmin" ? {} : { tenantId };
+
+  const [
+    totalPelanggan,
+    komplainPending,
+    tagihanBelumBayar,
+    totalMitra,
+    transaksiLunasCount,
+    tunggakanSum,
+    kasBulanIniSum,
+  ] = await Promise.all([
+    prisma.pelanggan.count({ where: { status: "aktif", ...tenantScope } }).catch(() => 0),
+    prisma.komplain.count({ where: { status: { in: ["baru", "diproses"] }, ...tenantScope } }).catch(() => 0),
+    prisma.tagihan.count({ where: { status: { in: ["belum_bayar", "tunggakan"] }, ...tenantScope } }).catch(() => 0),
+    tenantCtx.isCore ? prisma.tenant.count().catch(() => 1) : Promise.resolve(1),
+    prisma.tagihan.count({ where: { status: "lunas", ...tenantScope } }).catch(() => 0),
+    prisma.tagihan.aggregate({
+      where: { status: { in: ["belum_bayar", "tunggakan"] }, ...tenantScope },
+      _sum: { jumlah: true },
+    }).catch(() => ({ _sum: { jumlah: 0 } })),
+    prisma.tagihan.aggregate({
+      where: { status: "lunas", ...tenantScope },
+      _sum: { jumlah: true },
+    }).catch(() => ({ _sum: { jumlah: 0 } })),
+  ]);
+
+  const kasBulanIniEstimasi = kasBulanIniSum._sum.jumlah || (transaksiLunasCount * 40000);
+  const tunggakanEstimasi = tunggakanSum._sum.jumlah || (tagihanBelumBayar * 40000);
+  const totalBills = transaksiLunasCount + tagihanBelumBayar;
+  const kolektibilitasPersen = totalBills > 0 ? Math.round((transaksiLunasCount / totalBills) * 100) : 100;
+
+  return {
+    totalPelanggan,
+    komplainPending,
+    tagihanBelumBayar,
+    totalMitra,
+    transaksiLunasCount,
+    kasBulanIniEstimasi,
+    tunggakanEstimasi,
+    kolektibilitasPersen,
+  };
+}
+
 export async function GET(req: NextRequest) {
   try {
     let dbKey = "";
@@ -180,47 +230,8 @@ export async function GET(req: NextRequest) {
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const rawHost = req.headers.get("x-forwarded-host") || req.headers.get("host") || "";
-    const { resolveTenantByHost } = await import("@/lib/tenant");
-    const tenantCtx = resolveTenantByHost(rawHost);
-    const tenantId = !tenantCtx.isCore ? tenantCtx.tenant.id : (session.tenantId || tenantCtx.tenant.id);
 
-    // Ambil metrik riil terisolasi per tenant dari database WastePay
-    const tenantScope = tenantCtx.isCore && session.role === "superadmin" ? {} : { tenantId };
-
-    const [
-      totalPelanggan,
-      komplainPending,
-      tagihanBelumBayar,
-      totalMitra,
-      transaksiLunasCount,
-      tunggakanSum,
-      kasBulanIniSum,
-    ] = await Promise.all([
-      prisma.pelanggan.count({ where: { status: "aktif", ...tenantScope } }).catch(() => 0),
-      prisma.komplain.count({ where: { status: { in: ["baru", "diproses"] }, ...tenantScope } }).catch(() => 0),
-      prisma.tagihan.count({ where: { status: { in: ["belum_bayar", "tunggakan"] }, ...tenantScope } }).catch(() => 0),
-      tenantCtx.isCore ? prisma.tenant.count().catch(() => 1) : Promise.resolve(1),
-      prisma.tagihan.count({ where: { status: "lunas", ...tenantScope } }).catch(() => 0),
-      prisma.tagihan.aggregate({
-        where: { status: { in: ["belum_bayar", "tunggakan"] }, ...tenantScope },
-        _sum: { jumlah: true },
-      }).catch(() => ({ _sum: { jumlah: 0 } })),
-      prisma.tagihan.aggregate({
-        where: { status: "lunas", ...tenantScope },
-        _sum: { jumlah: true },
-      }).catch(() => ({ _sum: { jumlah: 0 } })),
-    ]);
-
-    const stats = {
-      totalPelanggan,
-      komplainPending,
-      tagihanBelumBayar,
-      totalMitra,
-      transaksiLunasCount,
-      kasBulanIniEstimasi: kasBulanIniSum._sum.jumlah || (transaksiLunasCount * 40000),
-      tunggakanEstimasi: tunggakanSum._sum.jumlah || (tagihanBelumBayar * 40000),
-    };
+    const stats = await getLiveTenantStats(req, session);
 
     return NextResponse.json({
       success: true,
@@ -411,39 +422,48 @@ export async function POST(req: NextRequest) {
 
     // ACTION: GENERATE DAILY REPORT
     if (action === "daily_report") {
-      const systemPrompt = `Anda adalah Head of Financial & Operations Analytics untuk platform pengelolaan sampah UPSHERU (upsheru.com) dan Core SaaS O2W HERO (o2whero.com).
-Susunlah Laporan Eksekutif Harian yang sangat profesional, terstruktur, padat data, dan menyertakan rekomendasi strategis untuk Owner. Gunakan format Markdown dengan emoji yang elegan.`;
+      const liveStats = await getLiveTenantStats(req, session);
 
-      const userPrompt = `Buatkan Laporan Eksekutif Harian per tanggal ${dateFormatted} dengan parameter database:
-- Pelanggan Aktif: 542 KK
-- Tagihan Lunas Terverifikasi: 477 KK (Estimasi Rp 19.080.000,-)
-- Sisa Tagihan Berjalan / Tertunggak: 65 KK (Estimasi Rp 2.600.000,-)
-- Komplain Armada Hari Ini: 0 Laporan Pending (Semua rute tertangani)
-- Ekosistem Mitra: UPS HERU (Pilot) + 2 Mitra KSM aktif di Sawangan Depok.`;
+      const systemPrompt = `Anda adalah Head of Financial & Operations Analytics untuk platform pengelolaan sampah UPS HERU (upsheru.com).
+Susunlah Laporan Eksekutif Harian yang sangat profesional, terstruktur, padat data, dan menyertakan rekomendasi strategis untuk Owner & Manajemen UPS HERU. Gunakan format Markdown dengan emoji yang elegan.
+
+ATURAN INTEGRITAS DATA KETAT (STRICT DATA INTEGRITY INVARIANT):
+1. Anda HANYA diperbolehkan menggunakan angka metrik riil dari parameter live database yang diberikan di bawah.
+2. DILARANG KERAS mengarang, memodifikasi, atau memakai angka contoh/hardcoded lain (seperti angka 542 KK, 65 KK, dll).
+3. Jika metrik bernilai 0 atau sedang berjalan, laporkan apa adanya secara objektif dengan rekomendasi operasional yang relevan.
+4. Gunakan nama brand resmi "UPS HERU" (upsheru.com) secara konsisten di seluruh teks laporan.`;
+
+      const userPrompt = `Buatkan Laporan Eksekutif Harian per tanggal ${dateFormatted} dengan parameter database LIVE resmi UPS HERU:
+- Total Pelanggan Aktif: ${liveStats.totalPelanggan.toLocaleString("id-ID")} KK
+- Tagihan Lunas Terverifikasi: ${liveStats.transaksiLunasCount.toLocaleString("id-ID")} Tagihan (Estimasi Kas Masuk: Rp ${liveStats.kasBulanIniEstimasi.toLocaleString("id-ID")},-)
+- Sisa Tagihan Berjalan / Tertunggak: ${liveStats.tagihanBelumBayar.toLocaleString("id-ID")} Tagihan (Estimasi Tunggakan: Rp ${liveStats.tunggakanEstimasi.toLocaleString("id-ID")},-)
+- Tingkat Kolektibilitas Pembayaran: ${liveStats.kolektibilitasPersen}%
+- Pengaduan Armada & Sampah Perlu Ditindak: ${liveStats.komplainPending.toLocaleString("id-ID")} Laporan (Status Baru & Diproses)
+- Wilayah Operasional: UPS HERU Kota Depok (Layanan Terpadu TPS 3R & Armada Pengangkutan Sampah).`;
 
       const aiRes = await callGemini(systemPrompt, userPrompt, clientGeminiKey);
 
       let finalReport = aiRes.text;
       if (!finalReport) {
-        finalReport = `📊 *LAPORAN EKSEKUTIF HARIAN UPSHERU AI*
+        finalReport = `📊 *LAPORAN EKSEKUTIF HARIAN UPS HERU AI*
 📅 Tanggal: ${dateFormatted}
-👤 Yth. Owner UPSHERU / O2W HERO
+👤 Yth. Owner & Manajemen UPS HERU
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 💰 *1. METRIK FINANSIAL & RETRIBUSI*
-• Total Pelanggan Aktif: *542 KK*
-• Pembayaran Terverifikasi (QRIS/Duitku): *477 KK (88% Kolektibilitas)*
-• Estimasi Kas Terkumpul: *Rp 19.080.000,-*
-• Sisa Tagihan Berjalan / Tertunggak: *65 KK (~Rp 2.600.000,-)*
+• Total Pelanggan Aktif: *${liveStats.totalPelanggan.toLocaleString("id-ID")} KK*
+• Pembayaran Terverifikasi (QRIS/Duitku): *${liveStats.transaksiLunasCount.toLocaleString("id-ID")} Tagihan (${liveStats.kolektibilitasPersen}% Kolektibilitas)*
+• Estimasi Kas Terkumpul: *Rp ${liveStats.kasBulanIniEstimasi.toLocaleString("id-ID")},-*
+• Sisa Tagihan Berjalan / Tertunggak: *${liveStats.tagihanBelumBayar.toLocaleString("id-ID")} Tagihan (~Rp ${liveStats.tunggakanEstimasi.toLocaleString("id-ID")},-)*
 
 🚛 *2. OPERASIONAL ARMADA & LAPANGAN*
-• Status Rute Angkut: *Tuntas di Seluruh Zona Aktif*
-• Pengaduan Tertunda: *0 Laporan (100% Selesai)*
-• Dispatched ke Petugas: *Normal & Lancar*
+• Status Rute Angkut: *Tuntas di Seluruh Zona Aktif Kota Depok*
+• Pengaduan Perlu Ditindak: *${liveStats.komplainPending.toLocaleString("id-ID")} Laporan (Pantauan Live Operasional)*
+• Dispatched ke Petugas: *Normal & Berjalan Sesuai Jadwal*
 
-🤝 *3. EKOSISTEM SAAS & KEMITRAAN*
-• Mitra Aktif: *UPS HERU (Pilot) + 2 Mitra KSM*
-• Prospek Pipeline: *BUMDes & TPS3R Sawangan & sekitarnya*
+🤝 *3. EKOSISTEM LAYANAN & RETRIBUSI*
+• Entitas Operasional: *UPS HERU Kota Depok*
+• Fokus Utama: *Pelayanan Pengangkutan Terjadwal & Kemudahan Bayar QRIS*
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 💡 _Batasan AI (Guardrails):_
@@ -461,17 +481,17 @@ Semua draf komunikasi ke konsumen dan mitra berada dalam status PENDING APPROVAL
     if (action === "sdr_pitch") {
       const target = payload?.target || "BUMDes & KSM Pengelola Sampah Mandiri";
 
-      const systemPrompt = `Anda adalah B2B Sales Development Representative (SDR) spesialis kemitraan digitalisasi pengelolaan sampah dari UPSHERU AI (o2whero.com).
-Tulis surat penawaran kemitraan resmi yang sangat persuasif, fokus pada solusi eliminasi tunggakan iuran sampah via WhatsApp QRIS otomatis, dan efisiensi rute armada GPS.`;
+      const systemPrompt = `Anda adalah B2B Sales Development Representative (SDR) spesialis kemitraan digitalisasi pengelolaan sampah dari UPS HERU AI (upsheru.com).
+Tulis surat penawaran kemitraan resmi yang sangat persuasif, fokus pada solusi eliminasi tunggakan iuran sampah via WhatsApp QRIS otomatis, dan efisiensi rute armada GPS. Gunakan nama resmi UPS HERU secara konsisten.`;
 
       const userPrompt = `Buatkan draf surat penawaran resmi kemitraan untuk: ${target}.
-Sertakan perbandingan biaya manual vs sistem digital UPSHERU AI, serta Call-to-Action (CTA) untuk demo online 15 menit.`;
+Sertakan perbandingan biaya manual vs sistem digital UPS HERU AI, serta Call-to-Action (CTA) untuk demo online 15 menit.`;
 
       const aiRes = await callGemini(systemPrompt, userPrompt, clientGeminiKey);
 
       let finalPitch = aiRes.text;
       if (!finalPitch) {
-        finalPitch = `### DRAF PENAWARAN KEMITRAAN UPSHERU AI (SDR AGENT)
+        finalPitch = `### DRAF PENAWARAN KEMITRAAN UPS HERU AI (SDR AGENT)
 🎯 Target: ${target}
 
 ---
@@ -479,9 +499,9 @@ Sertakan perbandingan biaya manual vs sistem digital UPSHERU AI, serta Call-to-A
 
 Yth. Pengurus ${target},
 
-Berdasarkan pengalaman operasional kami di platform UPSHERU (upsheru.com), kendala terbesar pengelola sampah lingkungan adalah tingginya angka tunggakan warga karena penagihan manual door-to-door yang menyita waktu.
+Berdasarkan pengalaman operasional kami di platform UPS HERU (upsheru.com), kendala terbesar pengelola sampah lingkungan adalah tingginya angka tunggakan warga karena penagihan manual door-to-door yang menyita waktu.
 
-Melalui kemitraan platform UPSHERU AI (o2whero.com), kami menghadirkan solusi menyeluruh untuk ${target}:
+Melalui kemitraan platform UPS HERU AI (upsheru.com), kami menghadirkan solusi menyeluruh untuk ${target}:
 1. 📲 *Blast WhatsApp Tagihan Otomatis:* Warga menerima rincian iuran lengkap dengan link pembayaran QRIS instan yang langsung terverifikasi otomatis detik itu juga.
 2. 🗺️ *Optimasi Rute Armada GPS:* Meminimalisir komplain sampah terlewat di gang sempit pemukiman.
 3. 📊 *Dashboard Keuangan Transparan:* Pengurus dapat memantau kas masuk dan status warga per RT/RW secara real-time.
@@ -490,7 +510,7 @@ Sistem berbasis pembagian hasil yang sangat ringan tanpa perlu biaya server di a
 Apakah Bapak/Ibu berkenan jika tim kami mendemokan simulasi sistem ini secara online selama 15 menit?
 
 Hormat kami,
-Tim Ekosistem Kemitraan UPSHERU AI
+Tim Ekosistem Kemitraan UPS HERU AI
 https://upsheru.com | WhatsApp: +62 814-0078-2617`;
       }
 
@@ -505,7 +525,7 @@ https://upsheru.com | WhatsApp: +62 814-0078-2617`;
     if (action === "content_script") {
       const topic = payload?.topic || "Edukasi Retribusi Sampah & Kemudahan Bayar QRIS";
 
-      const systemPrompt = `Anda adalah Viral Content Strategist untuk kampanye kebersihan lingkungan dan teknologi digital UPSHERU.
+      const systemPrompt = `Anda adalah Viral Content Strategist untuk kampanye kebersihan lingkungan dan teknologi digital UPS HERU (upsheru.com).
 Susunlah naskah video pendek (TikTok / Instagram Reels / Shorts) durasi 50 detik yang edukatif, memicu rasa peduli lingkungan, dan memperkenalkan kemudahan bayar retribusi QRIS.`;
 
       const userPrompt = `Topik: ${topic}. Sertakan 3 pilihan Hook viral pembuka dan run-down adegan (visual, teks di layar, suara voiceover).`;
@@ -530,8 +550,8 @@ Susunlah naskah video pendek (TikTok / Instagram Reels / Shorts) durasi 50 detik
   *VO:* "Pernah kesel pagi-pagi mau berangkat kerja sampah depan rumah belum diangkut?"
 • [03-15s] *Masalah:* B-roll petugas armada mendorong bak sampah di tengah terik matahari.
   *VO:* "Tapi tahu gak? Operasional armada butuh bensin, perawatan rutin, dan gaji petugas yang kerja dari subuh."
-• [15-35s] *Solusi UPSHERU:* Screenshot notifikasi WhatsApp tagihan + scan QRIS di HP.
-  *VO:* "Di mitra UPSHERU, bayar iuran sampah sekarang segampang beli kopi. Cukup buka WA, klik link, scan QRIS langsung dari m-Banking kamu!"
+• [15-35s] *Solusi UPS HERU:* Screenshot notifikasi WhatsApp tagihan + scan QRIS di HP.
+  *VO:* "Di mitra UPS HERU, bayar iuran sampah sekarang segampang beli kopi. Cukup buka WA, klik link, scan QRIS langsung dari m-Banking kamu!"
 • [35-50s] *CTA:* Senyum warga dan halaman rumah yang asri bersih.
   *VO:* "Yuk tertib retribusi demi lingkungan sehat. Cek status tagihan rumahmu di upsheru.com!"`;
       }
@@ -644,7 +664,7 @@ INSTRUKSI MEMORI & KONTEKS (SANGAT PENTING):
 
       let systemPrompt = "";
       if (role === "sdr") {
-        systemPrompt = `Anda adalah B2B Sales Development Representative (SDR) & Mitra Acquisition Specialist untuk UPSHERU AI & O2W HERO (upsheru.com & o2whero.com).
+        systemPrompt = `Anda adalah B2B Sales Development Representative (SDR) & Mitra Acquisition Specialist untuk UPS HERU AI (upsheru.com).
 ${memoryInstruction}
 Tugas & Skill Utama:
 1. Membedah pain point pengelola sampah desa: BUMDes, KSM, TPS3R, dan Paguyuban RT/RW (tunggakan warga, pencatatan manual, uang kas tercecer).
@@ -656,7 +676,7 @@ Konteks Data Riil:
 - Tingkat Kolektibilitas Kas: ${Math.round((transaksiLunasCount / (transaksiLunasCount + tagihanBelumBayar || 1)) * 100)}%
 Gaya bahasa: Sangat persuasif, profesional, fokus pada angka dan ROI, solutif bagi aparatur desa/RT/RW.`;
       } else if (role === "content") {
-        systemPrompt = `Anda adalah Viral Content Strategist & Edukasi Warga untuk platform UPSHERU (upsheru.com).
+        systemPrompt = `Anda adalah Viral Content Strategist & Edukasi Warga untuk platform UPS HERU (upsheru.com).
 ${memoryInstruction}
 Tugas & Skill Utama:
 1. Merancang naskah video pendek (50 detik) untuk TikTok, Instagram Reels, dan YouTube Shorts dengan 3 kategori Hook viral: Curiosity, Contrarian, atau Story-driven.
@@ -665,7 +685,7 @@ Tugas & Skill Utama:
 4. Call-to-Action (CTA): Selalu mengarahkan kemudahan bayar nontunai scan QRIS instan via link WhatsApp tanpa perlu antre di kasir.
 Gaya bahasa: Menarik, hangat, menggugah empati lingkungan, kekinian, terstruktur per adegan (visual, audio/VO, text on screen).`;
       } else if (role === "support") {
-        systemPrompt = `Anda adalah Resident Helpdesk & Billing Operations Agent untuk UPSHERU (upsheru.com).
+        systemPrompt = `Anda adalah Resident Helpdesk & Billing Operations Agent untuk UPS HERU (upsheru.com).
 ${memoryInstruction}
 Tugas & Skill Utama:
 1. Membantu warga mengecek tagihan, mengingatkan jatuh tempo dengan ramah via WhatsApp, dan menyertakan link bayar QRIS instan (https://upsheru.com/bayar?kode=[noTelepon]).
@@ -684,7 +704,7 @@ ${driverText}
 Gaya bahasa: Sangat ramah, santun, solutif, menyertakan emoji khas pelayanan (🙏♻️), dan format siap kirim WhatsApp.`;
       } else {
         // Executive Co-Pilot & Finance
-        systemPrompt = `Anda adalah Executive AI Co-Pilot & Financial Analytics untuk Owner UPSHERU & O2W HERO.
+        systemPrompt = `Anda adalah Executive AI Co-Pilot & Financial Analytics untuk Owner & Manajemen UPS HERU (upsheru.com).
 ${memoryInstruction}
 Tugas & Skill Utama:
 1. Menyajikan analisis finansial harian, proyeksi kas masuk, dan audit retribusi warga.
