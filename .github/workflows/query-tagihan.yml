@@ -1,0 +1,32 @@
+name: Query Tagihan November
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/cek-tagihan-november.mjs'
+      - '.github/workflows/query-tagihan.yml'
+
+jobs:
+  query:
+    name: Query Tagihan PostgreSQL Production
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Dependencies
+        run: npm install pg --no-save
+
+      - name: Execute Query Script
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          node scripts/cek-tagihan-november.mjs

@@ -5,6 +5,9 @@ on:
     branches:
       - master
       - main
+    paths-ignore:
+      - '.github/workflows/query-tagihan.yml'
+      - 'scripts/cek-tagihan-november.mjs'
   workflow_dispatch:
 
 permissions:
