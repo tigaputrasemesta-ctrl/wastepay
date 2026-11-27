@@ -350,17 +350,17 @@ export default function DaftarPelangganPage() {
 
       {/* Progress Steps */}
       <div className="mb-8">
-        <div className="flex items-center">
+        <div className="flex items-center justify-between">
           {STEPS.map((s, idx) => {
             const selesai = step > s.id;
             const aktif = step === s.id;
             return (
               <div key={s.id} className={`flex items-center ${idx < STEPS.length - 1 ? "flex-1" : ""}`}>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 shrink-0">
                   <div
-                    className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
+                    className={`w-9 h-9 shrink-0 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
                       selesai
-                        ? "bg-emerald-700 text-white"
+                        ? "bg-emerald-700 text-white shadow-sm"
                         : aktif
                         ? "bg-emerald-100 text-emerald-700 ring-2 ring-emerald-500 ring-offset-2"
                         : "bg-slate-100 text-slate-600 border border-slate-200"
@@ -375,15 +375,16 @@ export default function DaftarPelangganPage() {
                     )}
                   </div>
                   <span
-                    className={`text-xs font-medium hidden sm:inline ${
-                      aktif ? "text-slate-900 font-semibold" : selesai ? "text-slate-600" : "text-slate-600"
+                    className={`text-xs font-medium hidden lg:inline max-w-[130px] truncate ${
+                      aktif ? "text-slate-900 font-bold" : selesai ? "text-slate-600" : "text-slate-500"
                     }`}
+                    title={s.label}
                   >
                     {s.label}
                   </span>
                 </div>
                 {idx < STEPS.length - 1 && (
-                  <div className={`flex-1 h-0.5 mx-3 ${selesai ? "bg-emerald-500" : "bg-slate-200"}`} />
+                  <div className={`flex-1 h-0.5 mx-2 sm:mx-3 ${selesai ? "bg-emerald-500" : "bg-slate-200"}`} />
                 )}
               </div>
             );
@@ -425,27 +426,35 @@ export default function DaftarPelangganPage() {
             <div>
               <label className="label">Kategori Pelanggan <span className="text-red-600">*</span></label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
-                {KATEGORI_OPTIONS.map((k) => (
-                  <label
-                    key={k.value}
-                    className={`rounded-2xl flex flex-col items-center gap-1.5 px-3 py-3.5 border cursor-pointer transition-all ${
-                      form.kategori === k.value
-                        ? "border-emerald-500 bg-emerald-50/50 shadow-sm"
-                        : "border-slate-200 hover:border-slate-300 bg-white"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="kategori"
-                      value={k.value}
-                      checked={form.kategori === k.value}
-                      onChange={(e) => setForm({ ...form, kategori: e.target.value })}
-                      className="hidden"
-                    />
-                    <span className="text-xl">{k.icon}</span>
-                    <span className="text-xs font-semibold text-slate-700 text-center leading-tight">{k.label}</span>
-                  </label>
-                ))}
+                {KATEGORI_OPTIONS.map((k) => {
+                  const tarifObj = kategoriTarifList.find(
+                    (kt) => kt.kategori === k.value || kt.kategori.toLowerCase() === k.value.toLowerCase()
+                  );
+                  return (
+                    <label
+                      key={k.value}
+                      className={`rounded-2xl flex flex-col items-center gap-1.5 px-3 py-3.5 border cursor-pointer transition-all ${
+                        form.kategori === k.value
+                          ? "border-emerald-500 bg-emerald-50/50 shadow-sm ring-1 ring-emerald-500"
+                          : "border-slate-200 hover:border-slate-300 bg-white"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="kategori"
+                        value={k.value}
+                        checked={form.kategori === k.value}
+                        onChange={(e) => setForm({ ...form, kategori: e.target.value })}
+                        className="hidden"
+                      />
+                      <span className="text-xl">{k.icon}</span>
+                      <span className="text-xs font-semibold text-slate-800 text-center leading-tight">{k.label}</span>
+                      <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/80 mt-0.5">
+                        {tarifObj ? `${formatRupiah(tarifObj.tarif)}/bln` : "Rp .../bln"}
+                      </span>
+                    </label>
+                  );
+                })}
               </div>
             </div>
 

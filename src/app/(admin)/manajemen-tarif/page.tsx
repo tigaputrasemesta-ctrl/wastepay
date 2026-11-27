@@ -135,7 +135,18 @@ function TarifContent() {
         fetch("/api/admin/pickup/kategori"),
       ]);
 
-      if (katRes.ok) setKategoris(await katRes.json());
+      if (katRes.ok) {
+        const rawKat: KategoriTarif[] = await katRes.json();
+        const sortedKat = [...rawKat].sort((a, b) => {
+          const numA = parseInt(a.kategori.replace(/\D/g, "") || "0", 10);
+          const numB = parseInt(b.kategori.replace(/\D/g, "") || "0", 10);
+          if (numA !== 0 && numB !== 0 && numA !== numB) {
+            return numA - numB;
+          }
+          return a.kategori.localeCompare(b.kategori, undefined, { numeric: true });
+        });
+        setKategoris(sortedKat);
+      }
       if (paketRes.ok) setPakets(await paketRes.json());
       if (pickupRes.ok) {
         const pickupData = await pickupRes.json();

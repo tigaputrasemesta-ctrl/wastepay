@@ -2,9 +2,18 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
-  const kategoriTarif = await prisma.kategoriTarif.findMany({
-    orderBy: { kategori: "asc" },
+  const kategoriTarif = await prisma.kategoriTarif.findMany();
+
+  // Natural numeric sort: Level 1, Level 2, ... Level 10
+  kategoriTarif.sort((a, b) => {
+    const numA = parseInt(a.kategori.replace(/\D/g, "") || "0", 10);
+    const numB = parseInt(b.kategori.replace(/\D/g, "") || "0", 10);
+    if (numA !== 0 && numB !== 0 && numA !== numB) {
+      return numA - numB;
+    }
+    return a.kategori.localeCompare(b.kategori, undefined, { numeric: true });
   });
+
   return NextResponse.json(kategoriTarif);
 }
 

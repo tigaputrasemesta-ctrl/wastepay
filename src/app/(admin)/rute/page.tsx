@@ -1103,18 +1103,6 @@ function RuteContent() {
           {/* Filters & Fleet Picker */}
           <div className="flex gap-3 mb-4 flex-wrap items-center">
             <select
-              value={filterArmada}
-              onChange={(e) => setFilterArmada(e.target.value)}
-              className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 shadow-sm"
-            >
-              <option value="">Semua Armada / Mobil</option>
-              {kendaraanList.map((k) => (
-                <option key={k.id} value={k.id}>
-                  {k.jenis === "dump_truck" ? "🚛" : "🛺"} {k.nama} {k.platNomor ? `(${k.platNomor})` : ""}
-                </option>
-              ))}
-            </select>
-            <select
               value={filterHari}
               onChange={(e) => setFilterHari(e.target.value)}
               className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"

@@ -115,7 +115,7 @@ export default function CivicHeroWidget({
         </div>
         <div className="px-1.5 sm:px-2">
           <span className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider block">Pelanggan</span>
-          <span className="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-zinc-100">2.450+ KK</span>
+          <span className="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-zinc-100">1.250+ KK</span>
         </div>
       </div>
 

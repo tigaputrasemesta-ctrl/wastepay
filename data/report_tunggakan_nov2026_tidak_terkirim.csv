@@ -1,0 +1,3 @@
+No,ID Pelanggan,Nama Warga,No Telepon Asli,No Invoice,Jumlah Tagihan,Zona,Alasan Gagal / Tidak Terkirim
+1,"976","Bokul ziah","01219005867","INV/01219005867/202611",40000,"BLOK BAKUNG","Bukan format nomor HP Indonesia (tidak diawali 08/628)"
+2,"953","Pak heri","08956198701712","INV/08956198701712/202611",40000,"BLOK GG NIMAN","Gagal Kirim Fonnte: target input invalid"

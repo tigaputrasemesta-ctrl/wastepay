@@ -3,13 +3,15 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Truck, LogIn, Smartphone, ShieldCheck, Loader2, Database, Sparkles, ArrowLeft } from "lucide-react";
+import { Truck, LogIn, Smartphone, ShieldCheck, Loader2, Database, Sparkles, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { NativeGuardedLink } from "@/components/mobile/LandingApkBanner";
 import ThemeToggle from "@/components/ThemeToggle";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isCore, setIsCore] = useState(false);
@@ -160,21 +162,51 @@ export default function LoginPage() {
               <label htmlFor="password" className="block text-sm font-semibold text-slate-700 dark:text-zinc-300 mb-2">
                 Kata Sandi
               </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className={`w-full bg-white dark:bg-zinc-950 border border-slate-300 dark:border-zinc-700 rounded-lg px-4 py-2.5 text-slate-900 dark:text-zinc-100 text-sm outline-none transition-all placeholder:text-slate-400 dark:placeholder-zinc-500 ${
-                  isCore
-                    ? "focus:ring-2 focus:ring-sky-600/20 focus:border-sky-600"
-                    : "focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600"
-                }`}
-                placeholder="••••••••"
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={`w-full bg-white dark:bg-zinc-950 border border-slate-300 dark:border-zinc-700 rounded-lg pl-4 pr-11 py-2.5 text-slate-900 dark:text-zinc-100 text-sm outline-none transition-all placeholder:text-slate-400 dark:placeholder-zinc-500 ${
+                    isCore
+                      ? "focus:ring-2 focus:ring-sky-600/20 focus:border-sky-600"
+                      : "focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600"
+                  }`}
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300 transition-colors p-1"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between text-xs sm:text-sm">
+              <label className="flex items-center gap-2 cursor-pointer select-none text-slate-600 dark:text-zinc-400">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="rounded border-slate-300 dark:border-zinc-700 text-emerald-600 focus:ring-emerald-500 w-4 h-4"
+                />
+                <span>Ingat Saya</span>
+              </label>
+              <a
+                href="https://wa.me/6281400782617?text=Halo%20Admin%20UPS%20HERU,%20saya%20butuh%20bantuan%20reset%20kata%20sandi%20akun."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-emerald-700 dark:text-emerald-400 hover:underline"
+              >
+                Lupa Kata Sandi?
+              </a>
             </div>
 
             {error && (

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import MarkdownReportView from "@/components/admin/MarkdownReportView";
 import {
   Bot,
   Sparkles,
@@ -649,7 +650,7 @@ export default function AiCommandHubPage() {
             <Users className="w-4 h-4 text-emerald-700" />
           </div>
           <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
-            {loadingStats ? "..." : stats?.totalPelanggan.toLocaleString("id-ID") + " KK"}
+            {loadingStats ? "..." : (stats?.totalPelanggan || 0).toLocaleString("id-ID") + " KK"}
           </p>
           <p className="text-xs text-gray-500 mt-1">Kolektibilitas QRIS: 88%</p>
         </div>
@@ -660,7 +661,7 @@ export default function AiCommandHubPage() {
             <AlertTriangle className="w-4 h-4 text-amber-500" />
           </div>
           <p className="text-2xl font-bold text-amber-700 dark:text-amber-400 mt-2">
-            {loadingStats ? "..." : (stats?.tagihanBelumBayar || 0) + " KK"}
+            {loadingStats ? "..." : (stats?.tagihanBelumBayar || 0).toLocaleString("id-ID") + " Tagihan"}
           </p>
           <p className="text-xs text-gray-500 mt-1">
             ~Rp {stats ? stats.tunggakanEstimasi.toLocaleString("id-ID") : "..."}
@@ -669,13 +670,13 @@ export default function AiCommandHubPage() {
 
         <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-800 shadow-sm">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Pengaduan Pending</p>
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Pengaduan Perlu Ditindak</p>
             <ShieldAlert className="w-4 h-4 text-blue-500" />
           </div>
           <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
-            {loadingStats ? "..." : stats?.komplainPending + " Laporan"}
+            {loadingStats ? "..." : (stats?.komplainPending || 0).toLocaleString("id-ID") + " Laporan Baru / Proses"}
           </p>
-          <p className="text-xs text-emerald-700 mt-1 font-medium">Semua rute terjadwal</p>
+          <p className="text-xs text-emerald-700 mt-1 font-medium">Pantauan live operasional</p>
         </div>
 
         <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-800 shadow-sm">
@@ -719,7 +720,7 @@ export default function AiCommandHubPage() {
                   ? "bg-emerald-50/40 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800 opacity-80"
                   : item.status === "REJECTED"
                   ? "bg-gray-50 dark:bg-gray-800/40 border-gray-200 dark:border-gray-800 opacity-60"
-                  : "bg-white dark:bg-gray-850 border-gray-200 dark:border-gray-700 shadow-sm"
+                  : "bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 shadow-sm"
               }`}
             >
               <div>
@@ -834,7 +835,7 @@ export default function AiCommandHubPage() {
                 type="button"
                 onClick={handleResetChat}
                 title="Reset Sesi Percakapan & Bersihkan Memori"
-                className="ml-1 p-1 rounded-lg text-gray-400 hover:text-red-500 hover:bg-gray-100 dark:hover:bg-gray-850 transition"
+                className="ml-1 p-1 rounded-lg text-gray-400 hover:text-red-500 hover:bg-gray-100 dark:hover:bg-zinc-800 transition"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
               </button>
@@ -842,7 +843,7 @@ export default function AiCommandHubPage() {
           </div>
 
           {/* Interactive Role Switcher Tabs */}
-          <div className="p-2.5 bg-gray-50/80 dark:bg-gray-850 border-b border-gray-200 dark:border-gray-800 space-y-2">
+          <div className="p-2.5 bg-gray-50/80 dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800 space-y-2">
             <div className="grid grid-cols-4 gap-1">
               {(Object.keys(roleMeta) as Array<keyof typeof roleMeta>).map((rKey) => {
                 const r = roleMeta[rKey];
@@ -855,8 +856,8 @@ export default function AiCommandHubPage() {
                     onClick={() => handleSwitchRole(rKey)}
                     className={`py-1.5 px-1 rounded-xl text-center flex flex-col items-center gap-0.5 transition ${
                       isActive
-                        ? "bg-white dark:bg-gray-800 shadow-sm border border-emerald-500/40 text-emerald-700 dark:text-emerald-300 font-bold"
-                        : "text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100/60 dark:hover:bg-gray-800/40"
+                        ? "bg-white dark:bg-zinc-800 shadow-sm border border-emerald-500/40 text-emerald-700 dark:text-emerald-300 font-bold"
+                        : "text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100/60 dark:hover:bg-zinc-800/40"
                     }`}
                   >
                     <IconComponent className={`w-3.5 h-3.5 ${isActive ? "text-emerald-700 dark:text-emerald-400" : "text-gray-400"}`} />
@@ -867,8 +868,8 @@ export default function AiCommandHubPage() {
             </div>
 
             {/* Active Skills & Database Access Bar */}
-            <div className="flex items-center gap-1.5 overflow-x-auto text-[10px] pt-0.5">
-              <span className="text-gray-400 font-medium whitespace-nowrap">Skill Aktif:</span>
+            <div className="flex flex-wrap items-center gap-1.5 text-[10px] pt-0.5">
+              <span className="text-slate-700 dark:text-zinc-200 font-bold whitespace-nowrap">Skill Aktif:</span>
               {roleMeta[activeRole].skills.map((skill, sIdx) => (
                 <span
                   key={sIdx}
@@ -933,7 +934,7 @@ export default function AiCommandHubPage() {
           </div>
 
           {/* Quick Prompts Bar Berdasarkan Role Aktif */}
-          <div className="px-3 py-1.5 border-t border-gray-100 dark:border-gray-800/80 flex gap-1.5 overflow-x-auto text-[11px] bg-gray-50/50 dark:bg-gray-850/50">
+          <div className="px-3 py-1.5 border-t border-gray-100 dark:border-gray-800/80 flex gap-1.5 overflow-x-auto text-[11px] bg-gray-50/50 dark:bg-zinc-900/60">
             {roleMeta[activeRole].prompts.map((p, idx) => (
               <button
                 key={idx}
@@ -1001,16 +1002,16 @@ export default function AiCommandHubPage() {
             </div>
           </div>
 
-          <div className="flex-1 p-5 overflow-y-auto font-mono text-xs text-gray-800 dark:text-gray-200 bg-gray-50/50 dark:bg-gray-950/40 whitespace-pre-wrap leading-relaxed select-text">
+          <div className="flex-1 p-5 overflow-y-auto text-xs text-slate-800 dark:text-zinc-200 bg-slate-50/50 dark:bg-zinc-950/40 select-text">
             {loadingAction ? (
               <div className="h-full flex flex-col items-center justify-center text-gray-400 gap-2">
                 <RefreshCw className="w-6 h-6 animate-spin text-emerald-500" />
-                <p>AI Agent sedang menyusun dokumen...</p>
+                <p className="text-xs">AI Agent sedang menyusun dokumen...</p>
               </div>
             ) : activeOutputContent ? (
-              activeOutputContent
+              <MarkdownReportView content={activeOutputContent} />
             ) : (
-              <div className="h-full flex items-center justify-center text-gray-400">
+              <div className="h-full flex items-center justify-center text-gray-400 text-xs">
                 Pilih salah satu tombol trigger di atas untuk menghasilkan output.
               </div>
             )}

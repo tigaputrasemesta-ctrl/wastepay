@@ -8,8 +8,9 @@ import { useToast } from "@/components/Toast";
 import { duitkuChannelLabel } from "@/lib/duitku-channels";
 import { useUser } from "@/hooks/useUser";
 import { hitungRincian, buildDirectWaLinkTagihan } from "@/lib/invoice-format";
-import { X, Search, Check, AlertCircle, Sparkles, Send, Upload, ExternalLink, RefreshCw, Printer, ShieldCheck, FileText } from "lucide-react";
+import { X, Search, Check, AlertCircle, Sparkles, Send, Upload, ExternalLink, RefreshCw, Printer, ShieldCheck, FileText, ChevronDown } from "lucide-react";
 import ModalBayarKolektif from "@/components/ModalBayarKolektif";
+import ClientPortal from "@/components/ui/ClientPortal";
 
 const METODE_LABEL: Record<string, string> = {
   tunai: "Tunai",
@@ -198,6 +199,7 @@ export default function TagihanPage() {
 
   // Bayar Kolektif Modal State
   const [showKolektifModal, setShowKolektifModal] = useState(false);
+  const [showActionDropdown, setShowActionDropdown] = useState(false);
 
   // Blast WA Modal State
   const [showBlastModal, setShowBlastModal] = useState(false);
@@ -883,81 +885,119 @@ export default function TagihanPage() {
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-        {!isPetugas && (
-        <>
-        <button
-          onClick={() => setShowKolektifModal(true)}
-          className="px-3.5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-semibold shadow-sm active:scale-[0.98] transition-all flex items-center gap-1.5"
-          title="Pelunasan kolektif satu pintu untuk seluruh warga di bawah koordinator RT / pengelola"
-        >
-          <span className="text-sm">👥</span>
-          <span>Bayar Kolektif</span>
-        </button>
-        <button
-          onClick={handleOpenBlastModal}
-          className="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium shadow-sm active:scale-[0.98] transition-all flex items-center gap-1.5"
-          title="Kirim pesan WhatsApp massal ke seluruh warga yang belum bayar di RT tertentu"
-        >
-          <span className="text-sm">📢</span>
-          <span>Blast WA RT</span>
-        </button>
-        <button
-          onClick={() => setShowGenerate(true)}
-          className="px-3.5 py-2 bg-slate-900 dark:bg-zinc-800 hover:bg-slate-800 dark:hover:bg-zinc-700 text-white rounded-lg text-xs font-medium shadow-sm active:scale-[0.98] transition-all flex items-center gap-1.5"
-        >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          <span>Generate Tagihan</span>
-        </button>
-        <button
-          onClick={() => { setShowAutoGenerate(true); setAutoResult(null); }}
-          className="px-3.5 py-2 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-800 dark:text-zinc-200 rounded-lg text-xs font-medium shadow-sm active:scale-[0.98] transition-all flex items-center gap-1.5"
-        >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-          <span>Auto-Generate</span>
-        </button>
-        </>
-        )}
-        <Link
-          href={`/tagihan-cetak?bulan=${bulan || new Date().getMonth() + 1}&tahun=${tahun || new Date().getFullYear()}`}
-          target="_blank"
-          className="px-3.5 py-2 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-800 dark:text-zinc-200 rounded-lg text-xs font-medium shadow-sm active:scale-[0.98] transition-all flex items-center gap-1.5"
-        >
-          <span>🖨</span>
-          <span>Cetak Massal</span>
-        </Link>
-        <Link
-          href={`/laporan-pembayaran-cetak?bulan=${bulan || new Date().getMonth() + 1}&tahun=${tahun || new Date().getFullYear()}&status=${status || 'all'}`}
-          target="_blank"
-          className="px-3.5 py-2 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 rounded-lg text-xs font-medium shadow-sm active:scale-[0.98] transition-all flex items-center gap-1.5"
-        >
-          <span>📊</span>
-          <span>Rekap Laporan</span>
-        </Link>
-        <Link
-          href={`/rekap-rt-cetak?bulan=${bulan || new Date().getMonth() + 1}&tahun=${tahun || new Date().getFullYear()}${kelurahanId ? `&kelurahanId=${kelurahanId}` : ""}${zonaId ? `&zonaId=${zonaId}` : ""}`}
-          target="_blank"
-          className="px-3.5 py-2 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 rounded-lg text-xs font-medium shadow-sm active:scale-[0.98] transition-all flex items-center gap-1.5"
-          title="Cetak Formulir Rekap Penagihan RT dengan Kolom Tanda Tangan Warga"
-        >
-          <span>✍️</span>
-          <span>Rekap RT (TTD)</span>
-        </Link>
+          {!isPetugas && (
+            <>
+              {/* Primary Action Button */}
+              <button
+                type="button"
+                onClick={() => { setShowAutoGenerate(true); setAutoResult(null); }}
+                className="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-600 active:scale-[0.98] text-white rounded-lg text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>+ Auto-Generate</span>
+              </button>
+
+              {/* Secondary Action Button */}
+              <button
+                type="button"
+                onClick={() => setShowKolektifModal(true)}
+                className="px-3 py-2 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/60 rounded-lg text-xs font-semibold shadow-sm active:scale-[0.98] transition-all flex items-center gap-1.5"
+                title="Pelunasan kolektif satu pintu untuk seluruh warga di bawah koordinator RT / pengelola"
+              >
+                <span>👥</span>
+                <span>Bayar Kolektif</span>
+              </button>
+            </>
+          )}
+
+          {/* Unified Dropdown Action Menu */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowActionDropdown((prev) => !prev)}
+              className="px-3 py-2 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-800 dark:text-zinc-200 rounded-lg text-xs font-semibold shadow-sm active:scale-[0.98] transition-all flex items-center gap-1.5"
+            >
+              <span>Aksi &amp; Cetak</span>
+              <ChevronDown className="w-3 h-3 text-slate-400" />
+            </button>
+
+            {showActionDropdown && (
+              <>
+                <div
+                  className="fixed inset-0 z-20"
+                  onClick={() => setShowActionDropdown(false)}
+                />
+                <div className="absolute right-0 mt-1.5 w-60 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl shadow-xl py-1.5 z-30 text-xs text-slate-700 dark:text-zinc-200 animate-in fade-in zoom-in-95 duration-100">
+                  {!isPetugas && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowActionDropdown(false);
+                          handleOpenBlastModal();
+                        }}
+                        className="w-full text-left px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-zinc-800 flex items-center gap-2"
+                      >
+                        <span>📢</span>
+                        <span>Blast WA per RT</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowActionDropdown(false);
+                          setShowGenerate(true);
+                        }}
+                        className="w-full text-left px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-zinc-800 flex items-center gap-2"
+                      >
+                        <span>⚡</span>
+                        <span>Generate Manual</span>
+                      </button>
+                      <div className="my-1 border-t border-slate-100 dark:border-zinc-800" />
+                    </>
+                  )}
+                  <Link
+                    href={`/tagihan-cetak?bulan=${bulan || new Date().getMonth() + 1}&tahun=${tahun || new Date().getFullYear()}`}
+                    target="_blank"
+                    onClick={() => setShowActionDropdown(false)}
+                    className="w-full text-left px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-zinc-800 flex items-center gap-2 block"
+                  >
+                    <span>🖨️</span>
+                    <span>Cetak Tagihan Massal</span>
+                  </Link>
+                  <Link
+                    href={`/laporan-pembayaran-cetak?bulan=${bulan || new Date().getMonth() + 1}&tahun=${tahun || new Date().getFullYear()}&status=${status || 'all'}`}
+                    target="_blank"
+                    onClick={() => setShowActionDropdown(false)}
+                    className="w-full text-left px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-zinc-800 flex items-center gap-2 block"
+                  >
+                    <span>📊</span>
+                    <span>Rekap Laporan Pembayaran</span>
+                  </Link>
+                  <Link
+                    href={`/rekap-rt-cetak?bulan=${bulan || new Date().getMonth() + 1}&tahun=${tahun || new Date().getFullYear()}${kelurahanId ? `&kelurahanId=${kelurahanId}` : ""}${zonaId ? `&zonaId=${zonaId}` : ""}`}
+                    target="_blank"
+                    onClick={() => setShowActionDropdown(false)}
+                    className="w-full text-left px-3.5 py-2 hover:bg-slate-50 dark:hover:bg-zinc-800 flex items-center gap-2 block"
+                  >
+                    <span>✍️</span>
+                    <span>Rekap Formulir TTD RT</span>
+                  </Link>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Cashflow Summary Bar */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
         <div className="bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 rounded-2xl p-4 shadow-sm">
-          <div className="text-[11px] font-medium text-slate-500 dark:text-zinc-400 uppercase tracking-wider">Total Tagihan</div>
+          <div className="text-[11px] font-medium text-slate-500 dark:text-zinc-400 uppercase tracking-wider">Total Tagihan (Filter Aktif)</div>
           <div className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-zinc-100 mt-1 tabular-nums">
             {formatRupiah(summaryCashflow.totalTagihan)}
           </div>
           <div className="text-[10px] text-slate-500 dark:text-zinc-400 mt-1">
-            {tagihan.length} tagihan terdata
+            {tagihan.length.toLocaleString('id-ID')} tagihan terfilter
           </div>
         </div>
 
@@ -1249,17 +1289,17 @@ export default function TagihanPage() {
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
             {/* Desktop Table View (>= md: 768px) */}
             <div className="hidden md:block overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full min-w-[1020px] text-sm">
                 <thead>
-                  <tr className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 text-xs uppercase tracking-wider">
-                    <th className="text-left px-4 py-3 font-semibold cursor-pointer hover:bg-slate-100" onClick={() => handleSort("kode")}>
+                  <tr className="bg-slate-50 dark:bg-zinc-950 text-slate-600 dark:text-zinc-400 font-semibold border-b border-slate-200 dark:border-zinc-800 text-xs uppercase tracking-wider">
+                    <th className="text-left px-4 py-3 font-semibold cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-900" onClick={() => handleSort("kode")}>
                       Kode
                       {sortConfig.key === "kode" && (
                         <span className="ml-1">{sortConfig.direction === "asc" ? "▲" : "▼"}</span>
                       )}
                     </th>
                     <th className="text-left px-4 py-3 font-semibold">No. Invoice</th>
-                    <th className="text-left px-4 py-3 font-semibold cursor-pointer hover:bg-slate-100" onClick={() => handleSort("nama")}>
+                    <th className="text-left px-4 py-3 font-semibold cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-900" onClick={() => handleSort("nama")}>
                       Pelanggan
                       {sortConfig.key === "nama" && (
                         <span className="ml-1">{sortConfig.direction === "asc" ? "▲" : "▼"}</span>
@@ -1269,7 +1309,7 @@ export default function TagihanPage() {
                     <th className="text-right px-4 py-3 font-semibold">Jumlah</th>
                     <th className="text-left px-4 py-3 font-semibold">Jatuh Tempo</th>
                     <th className="text-center px-4 py-3 font-semibold">Status</th>
-                    <th className="text-center px-4 py-3 font-semibold">Pembayaran</th>
+                    <th className="text-center px-4 py-3 font-semibold sticky right-0 bg-slate-50 dark:bg-zinc-950 shadow-[-4px_0_8px_rgba(0,0,0,0.04)] z-10">Aksi &amp; Pembayaran</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1279,9 +1319,9 @@ export default function TagihanPage() {
                     <tr><td colSpan={8} className="px-4 py-8 text-center text-slate-600 font-medium">Belum ada tagihan</td></tr>
                   ) : (
                     displayedTagihan.map((t) => (
-                  <tr key={t.id} className="border-b border-slate-100 hover:bg-slate-50/60 transition">
+                  <tr key={t.id} className="border-b border-slate-100 dark:border-zinc-800/60 hover:bg-slate-50/60 dark:hover:bg-zinc-800/40 transition">
                     <td className="px-4 py-3">
-                      <code className="text-xs font-mono font-medium text-slate-700 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-md">
+                      <code className="text-xs font-mono font-medium text-slate-700 dark:text-zinc-300 bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 px-1.5 py-0.5 rounded-md">
                         {t.pelanggan.kodePelanggan}
                       </code>
                     </td>
@@ -1300,19 +1340,19 @@ export default function TagihanPage() {
                       )}
                     </td>
                     <td className="px-4 py-3 max-w-[240px]">
-                      <div className="font-semibold text-slate-900">{t.pelanggan.nama}</div>
+                      <div className="font-semibold text-slate-900 dark:text-zinc-100">{t.pelanggan.nama}</div>
                       <div className="text-xs text-slate-500 font-mono">{t.pelanggan.noTelepon || "—"}</div>
                       {t.pelanggan.alamat && (
-                        <div className="text-xs text-slate-600 truncate max-w-[220px]" title={t.pelanggan.alamat}>
+                        <div className="text-xs text-slate-600 dark:text-zinc-400 truncate max-w-[220px]" title={t.pelanggan.alamat}>
                           {t.pelanggan.alamat}
                         </div>
                       )}
                       <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                        <div className="inline-flex items-center px-2 py-0.5 bg-slate-100 rounded-md text-[10px] font-semibold text-slate-600">
+                        <div className="inline-flex items-center px-2 py-0.5 bg-slate-100 dark:bg-zinc-800 rounded-md text-[10px] font-semibold text-slate-600 dark:text-zinc-400">
                           {t.pelanggan.kelurahan?.nama ?? "—"}
                         </div>
                         {t.pelanggan.wilayah?.zona ? (
-                          <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 border border-emerald-200/80 rounded-md text-[10px] font-bold text-emerald-800">
+                          <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 rounded-md text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
                             <span
                               className="w-1.5 h-1.5 rounded-full shrink-0"
                               style={{ backgroundColor: t.pelanggan.wilayah.zona.warna || "#10b981" }}
@@ -1320,11 +1360,11 @@ export default function TagihanPage() {
                             <span className="truncate max-w-[120px]">{t.pelanggan.wilayah.zona.nama}</span>
                           </div>
                         ) : t.pelanggan.wilayah?.nama ? (
-                          <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 border border-emerald-200/80 rounded-md text-[10px] font-bold text-emerald-800">
+                          <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 rounded-md text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
                             <span className="truncate max-w-[120px]">{t.pelanggan.wilayah.nama}</span>
                           </div>
                         ) : (
-                          <span className="text-[10px] text-amber-700 font-semibold">
+                          <span className="text-[10px] text-amber-700 dark:text-amber-400 font-semibold">
                             Belum ada zona
                           </span>
                         )}
@@ -1335,29 +1375,29 @@ export default function TagihanPage() {
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-slate-700 font-medium">
+                    <td className="px-4 py-3 text-slate-700 dark:text-zinc-300 font-medium">
                       {bulanList.find((b) => b.value === t.bulan.toString())?.label} {t.tahun}
                     </td>
-                    <td className="px-4 py-3 text-right font-semibold text-slate-900 tabular-nums">
+                    <td className="px-4 py-3 text-right font-semibold text-slate-900 dark:text-zinc-100 tabular-nums">
                       {formatRupiah(t.jumlah + (t.denda || 0))}
                       {t.denda ? <span className="block text-xs text-rose-600 font-medium">+ denda {formatRupiah(t.denda)}</span> : null}
                     </td>
-                    <td className="px-4 py-3 text-slate-600 font-medium text-xs">
+                    <td className="px-4 py-3 text-slate-600 dark:text-zinc-400 font-medium text-xs">
                       <div>{formatDate(t.jatuhTempo)}</div>
-                      <div className="text-[10px] text-slate-600 font-normal">
+                      <div className="text-[10px] text-slate-500 dark:text-zinc-500 font-normal">
                         Siklus tgl {new Date(t.jatuhTempo).getDate()}
                       </div>
                     </td>
                     <td className="px-4 py-3 text-center">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                        t.status === "lunas" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
-                        t.status === "tunggakan" ? "bg-rose-50 text-rose-700 border border-rose-200" :
-                        "bg-amber-50 text-amber-700 border border-amber-200"
+                        t.status === "lunas" ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60" :
+                        t.status === "tunggakan" ? "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60" :
+                        "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60"
                       }`}>
                         {t.status === "belum_bayar" ? "Belum Bayar" : t.status === "lunas" ? "Lunas" : "Tunggakan"}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-3 text-center sticky right-0 bg-white dark:bg-zinc-900 shadow-[-4px_0_8px_rgba(0,0,0,0.04)] z-10">
                       {t.status !== "lunas" ? (
                         <div className="inline-flex items-center gap-1.5 justify-center flex-wrap">
                           <button
@@ -1739,8 +1779,15 @@ export default function TagihanPage() {
 
       {/* Modal Auto Generate */}
       {showAutoGenerate && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
-          <div className="bg-white dark:bg-zinc-900 w-full max-w-2xl max-h-[90vh] flex flex-col rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden text-slate-900 dark:text-zinc-100">
+        <ClientPortal onClose={() => { setShowAutoGenerate(false); setAutoResult(null); setPreview(null); }}>
+          <div
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999] p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto"
+            onClick={() => { setShowAutoGenerate(false); setAutoResult(null); setPreview(null); }}
+          >
+            <div
+              className="bg-white dark:bg-zinc-900 w-full max-w-2xl max-h-[90vh] flex flex-col rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden text-slate-900 dark:text-zinc-100"
+              onClick={(e) => e.stopPropagation()}
+            >
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div>
                 <h2 className="font-semibold text-slate-900 dark:text-zinc-100 text-base tracking-tight">Auto-Generate Tagihan</h2>
@@ -1920,12 +1967,20 @@ export default function TagihanPage() {
             </form>
           </div>
         </div>
+        </ClientPortal>
       )}
 
       {/* Modal Generate */}
       {showGenerate && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
-          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
+        <ClientPortal onClose={() => setShowGenerate(false)}>
+          <div
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999] p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto"
+            onClick={() => setShowGenerate(false)}
+          >
+            <div
+              className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100"
+              onClick={(e) => e.stopPropagation()}
+            >
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div>
                 <h2 className="font-semibold text-slate-900 dark:text-zinc-100 text-base tracking-tight">Generate Tagihan Manual</h2>
@@ -2061,12 +2116,20 @@ export default function TagihanPage() {
             </form>
           </div>
         </div>
+        </ClientPortal>
       )}
 
       {/* Modal Edit Nominal Tagihan */}
       {editNominalModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-150 overflow-y-auto">
-          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
+        <ClientPortal onClose={() => setEditNominalModal(null)}>
+          <div
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 animate-in fade-in duration-150 overflow-y-auto"
+            onClick={() => setEditNominalModal(null)}
+          >
+            <div
+              className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100"
+              onClick={(e) => e.stopPropagation()}
+            >
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div>
                 <h2 className="font-semibold text-slate-900 dark:text-zinc-100 text-base tracking-tight">Ubah Nominal Tagihan</h2>
@@ -2154,12 +2217,20 @@ export default function TagihanPage() {
             </form>
           </div>
         </div>
+        </ClientPortal>
       )}
 
       {/* Modal Bayar */}
       {showBayar && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
-          <div className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100">
+        <ClientPortal onClose={() => setShowBayar(null)}>
+          <div
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999] p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto"
+            onClick={() => setShowBayar(null)}
+          >
+            <div
+              className="bg-white dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden w-full max-w-md max-h-[90vh] flex flex-col text-slate-900 dark:text-zinc-100"
+              onClick={(e) => e.stopPropagation()}
+            >
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div>
                 <h2 className="font-semibold text-slate-900 dark:text-zinc-100 text-base tracking-tight">Catat Pembayaran</h2>
@@ -2319,12 +2390,20 @@ export default function TagihanPage() {
             </form>
           </div>
         </div>
+        </ClientPortal>
       )}
 
       {/* Modal Blast WA Tagihan per RT */}
       {showBlastModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
-          <div className="bg-white dark:bg-zinc-900 w-full max-w-3xl max-h-[90vh] flex flex-col rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden text-slate-900 dark:text-zinc-100">
+        <ClientPortal onClose={() => { setShowBlastModal(false); setBlastResult(null); }}>
+          <div
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999] p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto"
+            onClick={() => { setShowBlastModal(false); setBlastResult(null); }}
+          >
+            <div
+              className="bg-white dark:bg-zinc-900 w-full max-w-3xl max-h-[90vh] flex flex-col rounded-xl border border-slate-200 dark:border-zinc-800 shadow-2xl overflow-hidden text-slate-900 dark:text-zinc-100"
+              onClick={(e) => e.stopPropagation()}
+            >
             {/* Modal Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50 shrink-0">
               <div className="flex items-center gap-3">
@@ -2756,56 +2835,59 @@ export default function TagihanPage() {
             </div>
           </div>
         </div>
+        </ClientPortal>
       )}
       {/* Modal Lightbox Foto Bukti Pembayaran */}
       {previewBuktiModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150 overflow-y-auto"
-          onClick={() => setPreviewBuktiModal(null)}
-        >
+        <ClientPortal onClose={() => setPreviewBuktiModal(null)}>
           <div
-            className="relative bg-white dark:bg-zinc-900 rounded-xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-zinc-100"
-            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150 overflow-y-auto"
+            onClick={() => setPreviewBuktiModal(null)}
           >
-            <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
-              <div>
-                <h3 className="font-semibold text-slate-900 dark:text-zinc-100 text-sm tracking-tight">
-                  Foto Bukti Pembayaran
-                </h3>
-                <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
-                  {previewBuktiModal.nama} {previewBuktiModal.kode ? `(${previewBuktiModal.kode})` : ""} •{" "}
-                  {previewBuktiModal.nominal ? formatRupiah(previewBuktiModal.nominal) : ""} •{" "}
-                  <span className="capitalize">{labelMetode(previewBuktiModal.metode || "")}</span>
-                </p>
+            <div
+              className="relative bg-white dark:bg-zinc-900 rounded-xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-zinc-100"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/50">
+                <div>
+                  <h3 className="font-semibold text-slate-900 dark:text-zinc-100 text-sm tracking-tight">
+                    Foto Bukti Pembayaran
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
+                    {previewBuktiModal.nama} {previewBuktiModal.kode ? `(${previewBuktiModal.kode})` : ""} •{" "}
+                    {previewBuktiModal.nominal ? formatRupiah(previewBuktiModal.nominal) : ""} •{" "}
+                    <span className="capitalize">{labelMetode(previewBuktiModal.metode || "")}</span>
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <a
+                    href={previewBuktiModal.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download={`bukti-bayar-${previewBuktiModal.nama.replace(/\s+/g, "_")}.jpg`}
+                    className="text-xs font-semibold px-2.5 py-1.5 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-zinc-200 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-700 transition shadow-sm"
+                  >
+                    ↗ Buka Ukuran Penuh
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => setPreviewBuktiModal(null)}
+                    className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 transition"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <a
-                  href={previewBuktiModal.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  download={`bukti-bayar-${previewBuktiModal.nama.replace(/\s+/g, "_")}.jpg`}
-                  className="text-xs font-semibold px-2.5 py-1.5 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-zinc-200 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-700 transition shadow-sm"
-                >
-                  ↗ Buka Ukuran Penuh
-                </a>
-                <button
-                  type="button"
-                  onClick={() => setPreviewBuktiModal(null)}
-                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 transition"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+              <div className="p-4 flex items-center justify-center bg-slate-900/5 dark:bg-black/40 overflow-auto flex-1 max-h-[70vh]">
+                <img
+                  src={previewBuktiModal.url}
+                  alt="Bukti Pembayaran"
+                  className="max-h-full max-w-full object-contain rounded-lg shadow-sm"
+                />
               </div>
-            </div>
-            <div className="p-4 flex items-center justify-center bg-slate-900/5 dark:bg-black/40 overflow-auto flex-1 max-h-[70vh]">
-              <img
-                src={previewBuktiModal.url}
-                alt="Bukti Pembayaran"
-                className="max-h-full max-w-full object-contain rounded-lg shadow-sm"
-              />
             </div>
           </div>
-        </div>
+        </ClientPortal>
       )}
 
       {/* Modal Bayar Kolektif Satu Pintu */}

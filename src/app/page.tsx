@@ -193,7 +193,7 @@ export default async function LandingPage() {
   const brandEmail = tenantCtx.tenant.branding?.emailKontak || "kontak@upsheru.com";
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 font-sans selection:bg-emerald-700 selection:text-white overflow-x-hidden transition-colors pb-20 md:pb-0">
+    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 font-sans selection:bg-emerald-700 selection:text-white overflow-x-clip transition-colors pb-20 md:pb-0">
       <JsonLd data={generateLocalBusinessJsonLd()} />
 
       {/* ── Primary Public Navbar ── */}

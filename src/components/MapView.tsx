@@ -911,45 +911,89 @@ function ClusterPins({
   return null;
 }
 
-// Pin komplain live (tidak di-cluster biar selalu terlihat).
+// Pin komplain live (mendukung mode cluster agar tidak menutupi peta).
+function clusterKomplainIcon(cluster: L.MarkerCluster) {
+  const count = cluster.getChildCount();
+  return L.divIcon({
+    html: `<div style="width:34px;height:34px;border-radius:9999px;background:#e11d48;color:white;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;border:2.5px solid white;box-shadow:0 4px 12px rgba(225,29,72,0.45);cursor:pointer;"><span style="position:relative;top:-0.5px;">${count}</span></div>`,
+    className: "custom-cluster-komplain",
+    iconSize: L.point(34, 34),
+  });
+}
+
 function PinsKomplain({
   komplain,
   selectedKomplainId,
   onPilih,
   isMovingRef,
+  modeCluster = "cluster",
 }: {
   komplain: KomplainPeta[];
   selectedKomplainId: number | null;
   onPilih: (id: number) => void;
   isMovingRef?: React.MutableRefObject<boolean>;
+  modeCluster?: "cluster" | "single";
 }) {
-  return (
-    <>
-      {komplain.map((k) => {
-        const pos = k.posisi as [number, number];
-        return (
-          <Marker
-            key={`komplain-${k.id}`}
-            position={pos}
-            icon={buatIconKomplain(KOMPLAIN_WARNA[k.status] ?? "#ff5c5c", k.id === selectedKomplainId, k.status === "baru", k)}
-            bubblingMouseEvents={false}
-            eventHandlers={{
-              click: (e) => {
-                if (isMovingRef?.current) return;
-                if (e.originalEvent && (e.originalEvent as MouseEvent).button !== 0) return;
-                L.DomEvent.stopPropagation(e as any);
-                onPilih(k.id);
-              },
-            }}
-          >
-            <Popup closeButton={false} autoPan={false}>
-              <div dangerouslySetInnerHTML={{ __html: popupKomplainHtml(k) }} />
-            </Popup>
-          </Marker>
-        );
-      })}
-    </>
-  );
+  const map = useMap();
+  const groupRef = useRef<L.MarkerClusterGroup | L.LayerGroup | null>(null);
+
+  useEffect(() => {
+    const isSingle = modeCluster === "single";
+    const group = isSingle
+      ? L.layerGroup()
+      : L.markerClusterGroup({
+          maxClusterRadius: 35,
+          showCoverageOnHover: false,
+          disableClusteringAtZoom: 18,
+          iconCreateFunction: clusterKomplainIcon,
+        });
+
+    groupRef.current = group;
+    const markersToAdd: L.Marker[] = [];
+
+    for (const k of komplain) {
+      const pos = k.posisi as [number, number];
+      if (!pos || isNaN(pos[0]) || isNaN(pos[1])) continue;
+
+      const marker = L.marker(pos, {
+        icon: buatIconKomplain(
+          KOMPLAIN_WARNA[k.status] ?? "#ff5c5c",
+          k.id === selectedKomplainId,
+          k.status === "baru",
+          k
+        ),
+      });
+
+      marker.on("click", (e) => {
+        if (isMovingRef?.current) return;
+        if (e.originalEvent && (e.originalEvent as MouseEvent).button !== 0) return;
+        L.DomEvent.stopPropagation(e as any);
+        onPilih(k.id);
+      });
+
+      marker.bindPopup(popupKomplainHtml(k), {
+        closeButton: false,
+        autoPan: false,
+      });
+
+      markersToAdd.push(marker);
+    }
+
+    if (isSingle) {
+      markersToAdd.forEach((m) => (group as L.LayerGroup).addLayer(m));
+    } else {
+      (group as L.MarkerClusterGroup).addLayers(markersToAdd);
+    }
+
+    map.addLayer(group);
+
+    return () => {
+      map.removeLayer(group);
+      group.clearLayers();
+    };
+  }, [komplain, selectedKomplainId, onPilih, isMovingRef, modeCluster, map]);
+
+  return null;
 }
 
 // Lacak pergerakan / zoom peta agar klik hantu dari scroll-wheel / drag diabaikan
@@ -1500,13 +1544,14 @@ export default function MapView({
             />
           ))}
 
-      {/* Pengaduan live */}
+      {/* Pengaduan live (mendukung clustering & single pin) */}
       {tampilkanKomplain && komplain.length > 0 && (
         <PinsKomplain
           komplain={komplain}
           selectedKomplainId={selectedKomplainId}
           onPilih={setSelectedKomplainId}
           isMovingRef={isMovingRef}
+          modeCluster={modeCluster}
         />
       )}
 

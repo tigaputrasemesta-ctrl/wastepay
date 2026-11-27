@@ -194,12 +194,22 @@ export async function GET(req: NextRequest) {
       tagihanBelumBayar,
       totalMitra,
       transaksiLunasCount,
+      tunggakanSum,
+      kasBulanIniSum,
     ] = await Promise.all([
       prisma.pelanggan.count({ where: { status: "aktif", ...tenantScope } }).catch(() => 0),
-      prisma.komplain.count({ where: { status: "pending", ...tenantScope } }).catch(() => 0),
-      prisma.tagihan.count({ where: { status: { in: ["belum_bayar", "tertunggak"] }, ...tenantScope } }).catch(() => 0),
+      prisma.komplain.count({ where: { status: { in: ["baru", "diproses"] }, ...tenantScope } }).catch(() => 0),
+      prisma.tagihan.count({ where: { status: { in: ["belum_bayar", "tunggakan"] }, ...tenantScope } }).catch(() => 0),
       tenantCtx.isCore ? prisma.tenant.count().catch(() => 1) : Promise.resolve(1),
       prisma.tagihan.count({ where: { status: "lunas", ...tenantScope } }).catch(() => 0),
+      prisma.tagihan.aggregate({
+        where: { status: { in: ["belum_bayar", "tunggakan"] }, ...tenantScope },
+        _sum: { jumlah: true },
+      }).catch(() => ({ _sum: { jumlah: 0 } })),
+      prisma.tagihan.aggregate({
+        where: { status: "lunas", ...tenantScope },
+        _sum: { jumlah: true },
+      }).catch(() => ({ _sum: { jumlah: 0 } })),
     ]);
 
     const stats = {
@@ -208,8 +218,8 @@ export async function GET(req: NextRequest) {
       tagihanBelumBayar,
       totalMitra,
       transaksiLunasCount,
-      kasBulanIniEstimasi: transaksiLunasCount * 40000,
-      tunggakanEstimasi: tagihanBelumBayar * 40000,
+      kasBulanIniEstimasi: kasBulanIniSum._sum.jumlah || (transaksiLunasCount * 40000),
+      tunggakanEstimasi: tunggakanSum._sum.jumlah || (tagihanBelumBayar * 40000),
     };
 
     return NextResponse.json({

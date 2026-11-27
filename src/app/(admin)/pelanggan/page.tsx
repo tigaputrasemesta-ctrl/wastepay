@@ -173,6 +173,35 @@ function StickerBarcodeItem({ p, idx }: { p: Pelanggan; idx: number }) {
   );
 }
 
+function PelangganAvatar({ src, nama, size = 32 }: { src?: string | null; nama: string; size?: number }) {
+  const [hasError, setHasError] = useState(false);
+  const initial = (nama && nama.trim() ? nama.trim().charAt(0) : "?").toUpperCase();
+
+  if (!src || hasError) {
+    return (
+      <div
+        className="border border-emerald-200/60 dark:border-emerald-800/60 bg-emerald-50/60 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 rounded-lg shrink-0 flex items-center justify-center font-bold text-xs select-none shadow-sm"
+        style={{ width: size, height: size }}
+      >
+        {initial}
+      </div>
+    );
+  }
+
+  return (
+    <Image
+      src={src}
+      alt={`Foto ${nama}`}
+      unoptimized
+      width={size}
+      height={size}
+      onError={() => setHasError(true)}
+      className="object-cover rounded-lg border border-slate-200/80 dark:border-zinc-700 shrink-0 shadow-sm"
+      style={{ width: size, height: size }}
+    />
+  );
+}
+
 export default function PelangganPage() {
   return (
     <Suspense fallback={<div className="p-6 text-sm text-slate-500 font-medium">Memuat Data Pelanggan...</div>}>
@@ -1110,17 +1139,13 @@ function PelangganContent() {
               onChange={(e) => setSearchInput(e.target.value)}
               className="w-full pl-10 pr-12 py-2 border border-slate-200/80 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs font-normal text-slate-800 dark:text-zinc-200 placeholder:text-slate-400 dark:placeholder:text-zinc-500 transition-all shadow-sm"
             />
-            {searchInput ? (
+            {searchInput && (
               <button
                 onClick={() => { setSearchInput(""); setSearch(""); }}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-zinc-500 hover:text-rose-500 dark:hover:text-rose-400 transition-colors"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
-            ) : (
-              <div className="hidden sm:flex items-center gap-0.5 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-[10px] font-mono text-slate-400 dark:text-zinc-500 bg-slate-100 dark:bg-zinc-800 border border-slate-200/60 dark:border-zinc-700 px-1.5 py-0.5 rounded">
-                <span>⌘</span>K
-              </div>
             )}
           </div>
           <button
@@ -1245,7 +1270,7 @@ function PelangganContent() {
       <div className="space-y-4">
         {/* DESKTOP TABLE VIEW (>= md: 768px) - Overflow-x-auto to prevent clipping Aksi buttons */}
         <div className="hidden md:block bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 overflow-x-auto shadow-sm">
-          <table className="w-full min-w-[960px] text-sm text-left border-collapse">
+          <table className="w-full min-w-[1040px] text-sm text-left border-collapse">
             <thead>
               <tr className="bg-slate-50/75 dark:bg-zinc-950/60 text-slate-500 dark:text-zinc-400 font-semibold text-[11px] uppercase tracking-wider border-b border-slate-200/80 dark:border-zinc-800">
                 <th className="px-3 py-3 w-10 text-center">
@@ -1272,7 +1297,7 @@ function PelangganContent() {
                 <th className="px-4 py-3 whitespace-nowrap">Tarif</th>
                 <th className="px-4 py-3 whitespace-nowrap">Status</th>
                 <th className="px-4 py-3 whitespace-nowrap">Tanggal</th>
-                <th className="px-4 py-3 text-center whitespace-nowrap">Aksi</th>
+                <th className="px-4 py-3 text-center whitespace-nowrap sticky right-0 bg-slate-50 dark:bg-zinc-950 shadow-[-4px_0_8px_rgba(0,0,0,0.04)] z-10">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-zinc-800/60 text-slate-700 dark:text-zinc-300">
@@ -1312,20 +1337,7 @@ function PelangganContent() {
                     </td>
                     <td className="px-4 py-3 min-w-[200px]">
                       <div className="flex items-center gap-3">
-                        {p.fotoRumah ? (
-                          <Image
-                            src={p.fotoRumah}
-                            alt={`Foto ${p.nama}`}
-                            unoptimized
-                            width={34}
-                            height={34}
-                            className="w-8 h-8 object-cover rounded-lg border border-slate-200/80 dark:border-zinc-700 shrink-0 shadow-sm"
-                          />
-                        ) : (
-                          <div className="w-8 h-8 border border-emerald-200/60 dark:border-emerald-800/60 bg-emerald-50/60 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 rounded-lg shrink-0 flex items-center justify-center text-xs font-semibold">
-                            {p.nama ? p.nama.charAt(0).toUpperCase() : "?"}
-                          </div>
-                        )}
+                        <PelangganAvatar src={p.fotoRumah} nama={p.nama} size={32} />
                         <div>
                           <div className="font-semibold text-slate-900 dark:text-zinc-100 text-xs tracking-tight flex items-center gap-1.5 flex-wrap">
                             <span>{p.nama}</span>
@@ -1478,7 +1490,7 @@ function PelangganContent() {
                     <td className="px-4 py-3 text-slate-500 dark:text-zinc-400 text-xs font-normal whitespace-nowrap">
                       {formatDate(p.createdAt)}
                     </td>
-                    <td className="px-4 py-3 text-center whitespace-nowrap">
+                    <td className="px-4 py-3 text-center whitespace-nowrap sticky right-0 bg-white dark:bg-zinc-900 shadow-[-4px_0_8px_rgba(0,0,0,0.04)] z-10">
                       <div className="flex items-center justify-center gap-1">
                         {p.status === "calon" ? (
                           <button
@@ -1565,20 +1577,7 @@ function PelangganContent() {
                       }}
                       className="rounded border-slate-300 dark:border-zinc-700 text-emerald-700 focus:ring-emerald-500 cursor-pointer w-4 h-4 shrink-0"
                     />
-                    {p.fotoRumah ? (
-                      <Image
-                        src={p.fotoRumah}
-                        alt={`Foto ${p.nama}`}
-                        unoptimized
-                        width={40}
-                        height={40}
-                        className="w-10 h-10 object-cover rounded-xl border border-slate-200/80 dark:border-zinc-700 shrink-0"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200/70 dark:border-emerald-800/60 flex items-center justify-center font-semibold text-emerald-800 dark:text-emerald-300 text-xs shrink-0">
-                        {p.nama ? p.nama.charAt(0).toUpperCase() : "?"}
-                      </div>
-                    )}
+                    <PelangganAvatar src={p.fotoRumah} nama={p.nama} size={40} />
                     <div className="min-w-0">
                       <h4 className="font-semibold text-slate-900 dark:text-zinc-100 text-sm truncate">{p.nama}</h4>
                       <span className="inline-block text-[10px] font-mono font-medium text-slate-600 dark:text-zinc-400 bg-slate-100 dark:bg-zinc-800 border border-slate-200/60 dark:border-zinc-700 px-1.5 py-0.2 rounded mt-0.5">

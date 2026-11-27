@@ -43,6 +43,19 @@ const NAMA_BULAN = [
   "Jul", "Agu", "Sep", "Okt", "Nov", "Des",
 ];
 
+function formatNominalSingkat(num: number): string {
+  if (num >= 1_000_000_000) {
+    return `Rp ${(num / 1_000_000_000).toFixed(1).replace(/\.0$/, "")}M`;
+  }
+  if (num >= 1_000_000) {
+    return `Rp ${(num / 1_000_000).toFixed(0)}jt`;
+  }
+  if (num >= 1_000) {
+    return `Rp ${(num / 1_000).toFixed(0)}rb`;
+  }
+  return `Rp ${num}`;
+}
+
 async function getStats(tenantId: string, isPilot: boolean) {
   const tenantWhere = buildTenantFilter(tenantId, isPilot);
   const now = new Date();
@@ -411,8 +424,8 @@ export default async function DashboardPage() {
     {
       no: "01",
       label: "Total Pelanggan",
-      value: String(stats.totalPelanggan),
-      sub: `${stats.pelangganAktif} pelanggan aktif`,
+      value: (stats.totalPelanggan || 0).toLocaleString("id-ID"),
+      sub: `${(stats.pelangganAktif || 0).toLocaleString("id-ID")} pelanggan aktif`,
       iconBg: "bg-blue-50/80 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border-blue-200/60 dark:border-blue-800/60",
       badgeBg: "bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300",
       icon: <Users size={18} strokeWidth={1.75} />,
@@ -421,7 +434,7 @@ export default async function DashboardPage() {
       no: "02",
       label: "Tagihan Bulan Ini",
       value: formatRupiah(tagihanBulanIni),
-      sub: `${stats.tagihanBulanIni} tagihan tertunda`,
+      sub: `${(stats.tagihanBulanIni || 0).toLocaleString("id-ID")} tagihan tertunda`,
       iconBg: "bg-amber-50/80 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border-amber-200/60 dark:border-amber-800/60",
       badgeBg: "bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300",
       icon: <FileText size={18} strokeWidth={1.75} />,
@@ -438,7 +451,7 @@ export default async function DashboardPage() {
     {
       no: "04",
       label: "Komplain Baru",
-      value: String(stats.komplainBaru),
+      value: (stats.komplainBaru || 0).toLocaleString("id-ID"),
       sub: stats.komplainBaru > 0 ? "Perlu segera ditindak" : "Semua terselesaikan",
       iconBg: stats.komplainBaru > 0
         ? "bg-rose-50/80 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border-rose-200/60 dark:border-rose-800/60"
@@ -703,29 +716,29 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* AI Agent Engine Banner Card */}
-      <div className="bg-gradient-to-r from-emerald-950/40 via-slate-900/60 to-zinc-900 border border-emerald-500/30 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+      {/* AI Agent Engine Banner Card - High Contrast WCAG AAA Compliant */}
+      <div className="bg-slate-900 dark:bg-zinc-900 border border-emerald-500/40 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-md">
         <div className="flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 flex-shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 flex-shrink-0">
             <Bot size={22} />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-white">UPSHERU AI Agent Engine & Approval Gate</h3>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className="text-sm font-bold text-white tracking-tight">UPSHERU AI Agent Engine &amp; Approval Gate</h3>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/25 text-emerald-300 border border-emerald-500/40">
                 Human-in-the-Loop Active
               </span>
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-200 dark:text-zinc-300 font-medium mt-1 leading-relaxed max-w-3xl">
               Otomasi pelaporan harian eksekutif, draf penawaran kemitraan BUMDes/KSM, dan moderasi chat pengaduan warga sebelum dikirim ke WhatsApp.
             </p>
           </div>
         </div>
         <Link
           href="/ai-command"
-          className="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-2 transition shadow-sm whitespace-nowrap self-stretch sm:self-auto justify-center"
+          className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-2 transition shadow-sm whitespace-nowrap self-stretch sm:self-auto justify-center"
         >
-          <span>Buka AI Hub & Review Draf</span>
+          <span>Buka AI Hub &amp; Review Draf</span>
           <ArrowRight size={14} />
         </Link>
       </div>
@@ -827,25 +840,52 @@ export default async function DashboardPage() {
             </div>
           </div>
 
-          <div className="flex-1 flex items-end gap-2 sm:gap-4 h-52 border-b border-slate-100 dark:border-zinc-800 pb-3">
-            {bulanLabels.map((m, i) => {
-              const masuk = pemasukanTren[i];
-              const keluar = pengeluaranTren[i];
-              const hMasuk = Math.max(4, Math.round((masuk / maxTren) * 100));
-              const hKeluar = Math.max(4, Math.round((keluar / maxTren) * 100));
-              return (
-                <div key={m.label} className="flex-1 flex flex-col items-center h-full group">
-                  <div className="flex-1 w-full flex items-end justify-center gap-1 sm:gap-2" title={`${m.label} — Pemasukan ${formatRupiah(masuk)} · Pengeluaran ${formatRupiah(keluar)}`}>
-                    <div className="w-3.5 sm:w-5 bg-emerald-500 rounded-t-md transition-all group-hover:bg-emerald-600" style={{ height: `${hMasuk}%` }} />
-                    <div className="w-3.5 sm:w-5 bg-rose-400 rounded-t-md transition-all group-hover:bg-rose-500" style={{ height: `${hKeluar}%` }} />
-                  </div>
-                </div>
-              );
-            })}
+          {/* Chart with Y-Axis and Horizontal Gridlines */}
+          <div className="flex-1 flex gap-2">
+            {/* Y-Axis Labels */}
+            <div className="flex flex-col justify-between text-[10px] font-mono text-slate-400 dark:text-zinc-500 text-right pr-1 pb-3 select-none h-52 w-14 shrink-0">
+              <span>{formatNominalSingkat(maxTren)}</span>
+              <span>{formatNominalSingkat(Math.round(maxTren * 0.66))}</span>
+              <span>{formatNominalSingkat(Math.round(maxTren * 0.33))}</span>
+              <span>Rp 0</span>
+            </div>
+
+            {/* Bars & Gridlines Container */}
+            <div className="relative flex-1 h-52 border-b border-slate-200 dark:border-zinc-800 pb-3">
+              {/* Horizontal Gridlines */}
+              <div className="absolute inset-0 flex flex-col justify-between pointer-events-none pb-3">
+                <div className="border-b border-dashed border-slate-200/80 dark:border-zinc-800 w-full" />
+                <div className="border-b border-dashed border-slate-200/80 dark:border-zinc-800 w-full" />
+                <div className="border-b border-dashed border-slate-200/80 dark:border-zinc-800 w-full" />
+                <div className="w-full" />
+              </div>
+
+              {/* Bars */}
+              <div className="relative z-10 flex items-end gap-2 sm:gap-4 h-full">
+                {bulanLabels.map((m, i) => {
+                  const masuk = pemasukanTren[i];
+                  const keluar = pengeluaranTren[i];
+                  const hMasuk = Math.max(4, Math.round((masuk / maxTren) * 100));
+                  const hKeluar = Math.max(4, Math.round((keluar / maxTren) * 100));
+                  return (
+                    <div key={m.label} className="flex-1 flex flex-col items-center h-full group">
+                      <div className="flex-1 w-full flex items-end justify-center gap-1 sm:gap-2" title={`${m.label} — Pemasukan ${formatRupiah(masuk)} · Pengeluaran ${formatRupiah(keluar)}`}>
+                        <div className="w-3.5 sm:w-5 bg-emerald-500 rounded-t-md transition-all group-hover:bg-emerald-600 shadow-sm" style={{ height: `${hMasuk}%` }} />
+                        <div className="w-3.5 sm:w-5 bg-rose-400 rounded-t-md transition-all group-hover:bg-rose-500 shadow-sm" style={{ height: `${hKeluar}%` }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-4 mt-2">
-            {bulanLabels.map((m) => <span key={m.label} className="flex-1 text-center text-xs font-mono text-slate-500 dark:text-zinc-400 pt-1">{m.label}</span>)}
+          <div className="flex items-center gap-2 sm:gap-4 mt-2 pl-16">
+            {bulanLabels.map((m) => (
+              <span key={m.label} className="flex-1 text-center text-xs font-mono text-slate-500 dark:text-zinc-400 pt-1">
+                {m.label}
+              </span>
+            ))}
           </div>
         </div>
 

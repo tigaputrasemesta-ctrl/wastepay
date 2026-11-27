@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import {
   Search,
@@ -77,6 +78,7 @@ type CommandItem = {
 };
 
 export default function AdminCommandSearch() {
+  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -88,12 +90,24 @@ export default function AdminCommandSearch() {
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setMounted(true);
     if (typeof window !== "undefined") {
       const res = resolveTenantByHost(window.location.hostname);
       setIsCore(res.isCore);
       setActiveTenant(res.tenant);
     }
   }, []);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (open) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [open]);
 
   const commandItems: CommandItem[] = useMemo(() => {
     return [
@@ -626,10 +640,10 @@ export default function AdminCommandSearch() {
         </kbd>
       </button>
 
-      {/* ── COMMAND SEARCH MODAL ── */}
-      {open && (
+      {/* ── COMMAND SEARCH MODAL (Rendered to document.body via Portal) ── */}
+      {mounted && open && createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-start justify-center pt-[10vh] px-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150"
+          className="fixed inset-0 z-[9999] flex items-start justify-center pt-[10vh] px-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150"
           onClick={() => setOpen(false)}
         >
           <div
@@ -703,7 +717,7 @@ export default function AdminCommandSearch() {
                               {item.title}
                             </span>
                             {item.badge && (
-                              <span className="px-1.5 py-0.5 rounded text-xs font-bold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300">
+                              <span className="px-1.5 py-0.5 rounded text-xs font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">
                                 {item.badge}
                               </span>
                             )}
@@ -751,7 +765,8 @@ export default function AdminCommandSearch() {
               </span>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

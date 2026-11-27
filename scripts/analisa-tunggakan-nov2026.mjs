@@ -78,7 +78,8 @@ async function run() {
         p.alamat,
         p."rtRw",
         COALESCE(w.nama, '-') as wilayah,
-        COALESCE(z.nama, 'Tanpa Zona') as zona
+        COALESCE(z.nama, 'Tanpa Zona') as zona,
+        p."deletedAt" as "pelangganDeletedAt"
       FROM "Tagihan" t
       JOIN "Pelanggan" p ON t."pelangganId" = p.id
       LEFT JOIN "Wilayah" w ON p."wilayahId" = w.id
@@ -87,7 +88,7 @@ async function run() {
         AND t.status = 'tunggakan'
         AND (t."tenantId" = 'tenant-pilot-upsheru' OR t."tenantId" IS NULL)
         AND t."deletedAt" IS NULL
-        AND p."deletedAt" IS NULL
+        
       ORDER BY z.nama ASC, p.nama ASC;
     `;
 
@@ -143,6 +144,8 @@ async function run() {
         zona: r.zona,
         wilayah: r.wilayah,
         alamat: r.alamat,
+        pelangganDeletedAt: r.pelangganDeletedAt,
+        isDeleted: Boolean(r.pelangganDeletedAt),
       })),
     };
 

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useOfflineSync } from "@/lib/use-offline-sync";
+import ClientPortal from "@/components/ui/ClientPortal";
 import {
   HardDriveDownload,
   RefreshCw,
@@ -47,7 +48,7 @@ export default function AdminSyncIndicator() {
       <button
         type="button"
         onClick={() => setModalOpen(true)}
-        className={`h-9 inline-flex items-center gap-1.5 px-2.5 rounded-lg text-xs font-medium transition-colors border shadow-sm select-none ${
+        className={`h-9 inline-flex items-center gap-1.5 px-2.5 rounded-lg text-xs font-medium transition-colors border shadow-sm select-none shrink-0 whitespace-nowrap ${
           !isOnline
             ? "bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800"
             : isOfflineReady
@@ -66,7 +67,7 @@ export default function AdminSyncIndicator() {
           <HardDriveDownload className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
         )}
 
-        <span className="hidden sm:inline">
+        <span className="hidden sm:inline whitespace-nowrap">
           {isSyncing
             ? "Sinkron..."
             : !isOnline
@@ -75,15 +76,22 @@ export default function AdminSyncIndicator() {
             ? `HP Sync (${totalPelanggan})`
             : "Simpan ke HP"}
         </span>
-        <span className="sm:hidden text-xs">
-          {isSyncing ? "Sync" : isOfflineReady ? "HP" : "Cache"}
+        <span className="sm:hidden text-xs whitespace-nowrap">
+          {isSyncing ? "Sync" : !isOnline ? "Offline" : isOfflineReady ? "HP" : "Cache"}
         </span>
       </button>
 
       {/* ── Modal Pengaturan Offline & Sinkronisasi ── */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150 overflow-y-auto">
-          <div className="bg-white dark:bg-zinc-900 rounded-xl max-w-md w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 dark:border-zinc-800 overflow-hidden text-slate-800 dark:text-zinc-100">
+        <ClientPortal onClose={() => setModalOpen(false)}>
+          <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150 overflow-y-auto"
+            onClick={() => setModalOpen(false)}
+          >
+            <div
+              className="bg-white dark:bg-zinc-900 rounded-xl max-w-md w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 dark:border-zinc-800 overflow-hidden text-slate-800 dark:text-zinc-100"
+              onClick={(e) => e.stopPropagation()}
+            >
             {/* Modal Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-zinc-800 bg-slate-50/80 dark:bg-zinc-950/80 shrink-0">
               <div className="flex items-center gap-2.5">
@@ -214,6 +222,7 @@ export default function AdminSyncIndicator() {
             </div>
           </div>
         </div>
+        </ClientPortal>
       )}
     </>
   );

@@ -684,12 +684,12 @@ export default function PetaMap({
       {/* ── TOP UNIFIED TELEMETRY & COMMAND BAR (Gojek / Clean Mobility Style) ── */}
       <header className={`h-14 ${isDark ? "bg-[#16191f] border-slate-800/80 text-white" : "bg-white/95 border-slate-200/90 text-slate-800 shadow-sm"} border-b px-3 sm:px-4 flex items-center justify-between gap-3 shrink-0 z-30 backdrop-blur-md`}>
         {/* Left Brand & Metric Pills */}
-        <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto no-scrollbar shrink-0">
           {/* Sidebar Toggle Button */}
           <button
             type="button"
             onClick={() => setSidebarOpen((s) => !s)}
-            className={`p-1.5 rounded-xl border transition-colors ${
+            className={`p-1.5 rounded-xl border transition-colors shrink-0 ${
               isDark
                 ? "bg-slate-800/70 hover:bg-slate-700 text-slate-300 hover:text-white border-slate-700/80"
                 : "bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200"
@@ -700,11 +700,11 @@ export default function PetaMap({
           </button>
 
           {/* Brand Pill */}
-          <div className={`hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-full border text-[11px] font-bold ${
+          <div className={`hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-full border text-[11px] font-bold shrink-0 whitespace-nowrap ${
             isDark ? "bg-slate-900 border-slate-800 text-slate-200" : "bg-emerald-50 border-emerald-300 text-emerald-900 shadow-sm"
           }`}>
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="tracking-wide uppercase font-mono">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+            <span className="tracking-wide uppercase font-mono shrink-0 whitespace-nowrap">
               🗺️ {tenant?.namaMitra || "CLEAN GIS"} • {tenant?.kota || "INDONESIA"}
             </span>
           </div>

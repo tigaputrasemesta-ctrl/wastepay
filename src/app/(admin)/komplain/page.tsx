@@ -347,7 +347,7 @@ export default function KomplainPage() {
         </div>
 
         {/* Status Filter Tabs */}
-        <div className="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200/70 self-start sm:self-auto overflow-x-auto">
+        <div className="flex flex-wrap items-center gap-1.5 bg-slate-100 dark:bg-zinc-800/80 p-1.5 rounded-2xl border border-slate-200/70 dark:border-zinc-700 self-start sm:self-auto">
           {[
             { id: "semua", label: "Semua", count: komplain.length },
             { id: "baru", label: "Baru", count: komplain.filter((k) => k.status === "baru").length },
@@ -382,15 +382,15 @@ export default function KomplainPage() {
       <div className="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-sm">
         {/* Desktop Table View (>= md: 768px) */}
         <div className="hidden md:block overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[980px] text-sm">
             <thead>
-              <tr className="bg-slate-50 text-slate-600 font-bold text-xs border-b border-slate-200">
+              <tr className="bg-slate-50 dark:bg-zinc-950 text-slate-600 dark:text-zinc-400 font-bold text-xs border-b border-slate-200 dark:border-zinc-800">
                 <th className="text-left px-5 py-4 whitespace-nowrap">ID & Tanggal</th>
                 <th className="text-left px-5 py-4 whitespace-nowrap">Pelanggan & Lokasi</th>
                 <th className="text-left px-5 py-4 whitespace-nowrap">Jenis</th>
                 <th className="text-left px-5 py-4">Isi Keluhan</th>
                 <th className="text-center px-4 py-4 whitespace-nowrap">Status</th>
-                <th className="text-right px-5 py-4 whitespace-nowrap">Aksi Penanganan</th>
+                <th className="text-right px-5 py-4 whitespace-nowrap sticky right-0 bg-slate-50 dark:bg-zinc-950 shadow-[-4px_0_8px_rgba(0,0,0,0.04)] z-10">Aksi Penanganan</th>
               </tr>
             </thead>
             <tbody className="text-slate-800 divide-y divide-slate-100">
@@ -473,15 +473,15 @@ export default function KomplainPage() {
                         </span>
                       </td>
 
-                      <td className="px-5 py-4 text-right whitespace-nowrap">
+                      <td className="px-5 py-4 text-right whitespace-nowrap sticky right-0 bg-white dark:bg-zinc-900 shadow-[-4px_0_8px_rgba(0,0,0,0.04)] z-10">
                         <div className="flex items-center justify-end gap-2">
                           {/* Tombol Teruskan ke WhatsApp Petugas */}
                           <button
                             onClick={() => openForwardModal(k)}
-                            className="inline-flex items-center gap-1.5 text-xs bg-emerald-700 hover:bg-emerald-700 active:scale-95 text-white font-bold px-3 py-1.5 rounded-xl shadow-sm transition"
+                            className="inline-flex items-center gap-1.5 text-xs bg-emerald-700 hover:bg-emerald-600 active:scale-95 text-white font-bold px-3 py-1.5 rounded-xl shadow-sm transition whitespace-nowrap shrink-0"
                             title="Teruskan laporan pengaduan ini ke WhatsApp Petugas"
                           >
-                            <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                            <svg className="w-3.5 h-3.5 fill-current shrink-0" viewBox="0 0 24 24">
                               <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.969.54 1.771.814 2.791.814 3.18 0 5.766-2.587 5.767-5.767.001-3.18-2.585-5.766-5.767-5.767zm7.502 5.766c-.001 4.14-3.364 7.503-7.502 7.503-1.282 0-2.482-.323-3.539-.893l-4.492 1.178 1.198-4.377c-.636-1.096-.97-2.355-.97-3.411 0-4.14 3.363-7.503 7.503-7.503 4.139 0 7.502 3.363 7.502 7.502z" />
                             </svg>
                             <span>Teruskan WA</span>
@@ -491,7 +491,7 @@ export default function KomplainPage() {
                           {k.status !== "selesai" && (
                             <button
                               onClick={() => setShowResolve(k)}
-                              className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300/80 px-3 py-1.5 rounded-xl font-bold transition shadow-sm"
+                              className="text-xs bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 border border-slate-300/80 dark:border-zinc-700 px-3 py-1.5 rounded-xl font-bold transition shadow-sm whitespace-nowrap shrink-0"
                             >
                               Selesaikan
                             </button>

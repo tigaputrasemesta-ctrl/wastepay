@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { ROLE_LABELS, getAllowedMenus } from "@/lib/rbac";
 import { isCoreHostname } from "@/lib/tenant/url-helper";
 import { resolveTenantByHost } from "@/lib/tenant/config";
@@ -76,7 +76,6 @@ const menuConfig: Record<string, MenuItemDef> = {
   dashboard: { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   "ai-command": { label: "AI Agent Hub", href: "/ai-command", icon: Bot },
   daftar: { label: "Daftar Baru", href: "/registrasi", icon: UserPlus },
-  survei: { label: "Survei Lapangan", href: "/survei", icon: ClipboardCheck },
   pelanggan: { label: "Pusat Pelanggan", href: "/pelanggan", icon: Users },
   peta: { label: "Peta Wilayah", href: "/peta", icon: MapPin },
   zona: { label: "Zonasi & Wilayah", href: "/zona", icon: Layers },
@@ -84,13 +83,12 @@ const menuConfig: Record<string, MenuItemDef> = {
   tagihan: { label: "Tagihan Retribusi", href: "/tagihan", icon: Receipt },
   petugas: { label: "Tim Petugas", href: "/petugas", icon: UserCheck },
   rute: { label: "Rute Pengangkutan", href: "/rute", icon: Route },
-  jadwal: { label: "Jadwal Armada", href: "/jadwal", icon: Calendar },
+  jadwal: { label: "Jadwal Armada", href: "/rute?tab=jadwal", icon: Calendar },
   pengangkutan: { label: "Log Ritase Sampah", href: "/pengangkutan", icon: Truck },
   komplain: { label: "Tiket Komplain", href: "/komplain", icon: MessageSquareWarning },
   chat: { label: "Chat Koordinasi", href: "/chat", icon: MessageCircle },
   kendaraan: { label: "Armada Kendaraan", href: "/kendaraan", icon: Car },
   transit: { label: "Titik Transit", href: "/transit", icon: Navigation },
-  sticker: { label: "Cetak Barcode QR", href: "/pelanggan-cetak", icon: QrCode },
   pengeluaran: { label: "Biaya Operasional", href: "/pengeluaran", icon: Wallet },
   laporan: { label: "Laporan Keuangan", href: "/laporan", icon: BarChart3 },
   pengumuman: { label: "Pengumuman Warga", href: "/pengumuman", icon: Megaphone },
@@ -137,8 +135,6 @@ const MENU_GROUP: Record<string, string> = {
   pelanggan: "pelanggan",
   "data-kontrol": "pelanggan",
   daftar: "pelanggan",
-  survei: "pelanggan",
-  sticker: "pelanggan",
   komplain: "pelanggan",
   chat: "pelanggan",
 
@@ -171,7 +167,7 @@ const MENU_GROUPS = [
   { key: "sistem", label: "Sistem & Personalia" },
 ];
 
-export default function Sidebar({
+function SidebarInner({
   className,
   isMobileDrawer = false,
   onClose,
@@ -181,6 +177,8 @@ export default function Sidebar({
   onClose?: () => void;
 } = {}) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentTab = searchParams ? searchParams.get("tab") : null;
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -479,8 +477,18 @@ export default function Sidebar({
                 <div id={`menu-group-${group.key}`} className="space-y-0.5">
                   {group.items.map((item) => {
                     const Icon = item.icon;
-                    const isActive =
-                      pathname === item.href || pathname.startsWith(item.href + "/");
+                    const isJadwal = item.href.includes("tab=jadwal") || item.href === "/jadwal";
+                    const isRute = item.href === "/rute";
+
+                    let isActive = false;
+                    if (isJadwal) {
+                      isActive = pathname === "/rute" && currentTab === "jadwal";
+                    } else if (isRute) {
+                      isActive = pathname === "/rute" && currentTab !== "jadwal";
+                    } else {
+                      isActive =
+                        pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href + "/"));
+                    }
 
                     return (
                       <Link
@@ -549,5 +557,17 @@ export default function Sidebar({
         </button>
       </div>
     </aside>
+  );
+}
+
+export default function Sidebar(props: {
+  className?: string;
+  isMobileDrawer?: boolean;
+  onClose?: () => void;
+} = {}) {
+  return (
+    <Suspense fallback={<aside className={cn("bg-white dark:bg-zinc-950 border-r border-slate-200/80 dark:border-zinc-800/80", props.className)} />}>
+      <SidebarInner {...props} />
+    </Suspense>
   );
 }
