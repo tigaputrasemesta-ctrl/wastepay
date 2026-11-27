@@ -169,7 +169,8 @@ export function buildDirectWaLinkTagihan(t: {
   const invoice =
     t.noInvoice ||
     (t.pelanggan.kodePelanggan ? generateNoInvoice(t.pelanggan.kodePelanggan, t.bulan, t.tahun) : "-");
-  const payUrl = `${baseUrl}/bayar-tagihan?invoice=${encodeURIComponent(invoice)}`;
+  const safeInvoice = invoice.trim().replace(/[^a-zA-Z0-9_\-\/]/g, "");
+  const payUrl = `${baseUrl}/bayar-tagihan?invoice=${safeInvoice}`;
   const periode = `${BULAN_INDO[t.bulan - 1] || ""} ${t.tahun}`;
   const totalFormatted = formatRupiahSkylite(total);
   const jtFormatted = t.jatuhTempo ? formatTanggalIndo(t.jatuhTempo) : "-";

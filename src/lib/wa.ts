@@ -219,7 +219,9 @@ export function appBaseUrl(host?: string): string {
 
 /** Link halaman tagihan publik untuk satu invoice (absolut jika APP_URL diisi). */
 export function paymentLink(noInvoice: string): string {
-  const q = `?invoice=${encodeURIComponent(noInvoice)}`;
+  // Gunakan format bersih tanpa meng-encode '/' menjadi '%2F' agar tautan WhatsApp tidak terpotong
+  const safeInvoice = noInvoice.trim().replace(/[^a-zA-Z0-9_\-\/]/g, "");
+  const q = `?invoice=${safeInvoice}`;
   const base = appBaseUrl();
   return base ? `${base}/bayar-tagihan${q}` : `/bayar-tagihan${q}`;
 }
@@ -502,7 +504,7 @@ export async function templateLaporanPembayaranOwner(
   baris.push(
     ``,
     `📊 *Pantau Dashboard*:`,
-    `👉 ${appBaseUrl()}/pembayaran`,
+    `👉 ${appBaseUrl()}/tagihan`,
     ``,
     `— Sistem Notifikasi ${NAMA()}`
   );

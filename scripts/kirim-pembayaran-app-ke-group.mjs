@@ -146,7 +146,7 @@ async function main() {
       `📅 *Waktu*         : ${waktuStr}`,
       ``,
       `📊 *Pantau Dashboard*:`,
-      `👉 https://upsheru.com/pembayaran`,
+      `👉 https://upsheru.com/tagihan`,
       ``,
       `— Sistem Notifikasi UPS HERU`,
     ].join("\n");

@@ -38,9 +38,9 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: "/bayar-tagihan",
-        destination: "/bayar",
-        permanent: true,
+        source: "/pembayaran",
+        destination: "/tagihan",
+        permanent: false,
       },
       {
         source: "/petalapangan",
