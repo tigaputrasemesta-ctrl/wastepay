@@ -37,7 +37,8 @@ import {
   Handshake,
   AlertTriangle,
   CheckCircle2,
-  FileSpreadsheet
+  FileSpreadsheet,
+  ExternalLink
 } from "lucide-react";
 import { getAllCached, getOfflineDB } from "@/lib/offline-storage";
 
@@ -99,6 +100,9 @@ type Pelanggan = {
   wilayah?: { id: number; nama: string; zonaId?: number | null; zona?: { id: number; nama: string; warna?: string | null } | null } | null;
   paket?: Paket | null;
   createdAt: string;
+  kondisiAkun?: string | null;
+  alasanKendala?: string | null;
+  terakhirFollowUp?: string | null;
   _count?: {
     tagihan?: number;
     pembayaran?: number;
@@ -107,6 +111,78 @@ type Pelanggan = {
 };
 
 type ZonaOption = { id: number; nama: string; warna?: string | null; kelurahanId: number };
+
+type HealthReason = {
+  tipe: "no_hp" | "tunggakan" | "gps_foto" | "survei";
+  text: string;
+  icon: string;
+};
+
+function getPelangganHealth(p: Pelanggan) {
+  if (p.status !== "aktif") {
+    return {
+      isBermasalah: false,
+      isValid: false,
+      alasan: [] as HealthReason[],
+      label: p.status === "calon" ? "Menunggu Approval" : p.status === "nonaktif" ? "Nonaktif" : "Libur",
+    };
+  }
+
+  const alasan: HealthReason[] = [];
+
+  // 1. Cek dari database kondisiAkun
+  if (p.kondisiAkun === "bermasalah" || p.kondisiAkun === "butuh_survei") {
+    alasan.push({
+      tipe: p.kondisiAkun === "butuh_survei" ? "survei" : "tunggakan",
+      text: p.alasanKendala || (p.kondisiAkun === "butuh_survei" ? "Perlu Survei Lapangan" : "Bermasalah"),
+      icon: p.kondisiAkun === "butuh_survei" ? "🚨" : "⚠️",
+    });
+  }
+
+  // 2. Cek Kelengkapan GPS / Foto
+  const missingGps = p.latitude == null || p.longitude == null || p.latitude === 0;
+  const missingFoto = !p.fotoRumah;
+  if (missingGps && missingFoto) {
+    alasan.push({ tipe: "gps_foto", text: "GPS & Foto Belum Ada", icon: "📍" });
+  } else if (missingGps) {
+    alasan.push({ tipe: "gps_foto", text: "GPS Belum Ada", icon: "📍" });
+  } else if (missingFoto) {
+    alasan.push({ tipe: "gps_foto", text: "Foto Rumah Belum Ada", icon: "📷" });
+  }
+
+  // 3. Cek Catatan Kata Kunci Lapangan
+  const cat = (p.catatan || "").toLowerCase();
+  if (cat.includes("mati") || cat.includes("centang 1") || cat.includes("salah nomor") || cat.includes("ganti hp") || cat.includes("tidak aktif")) {
+    if (!alasan.some((a) => a.tipe === "no_hp")) {
+      alasan.push({ tipe: "no_hp", text: "No. HP Mati / Centang 1", icon: "🔴" });
+    }
+  }
+  if (cat.includes("survei") || cat.includes("cek fisik") || cat.includes("tinjau ulang") || cat.includes("patokan")) {
+    if (!alasan.some((a) => a.tipe === "survei")) {
+      alasan.push({ tipe: "survei", text: "Perlu Survei Lapangan", icon: "🚨" });
+    }
+  }
+  if (cat.includes("nunggak") || cat.includes("tunggakan") || cat.includes("ghosting") || cat.includes("janji")) {
+    if (!alasan.some((a) => a.tipe === "tunggakan")) {
+      alasan.push({ tipe: "tunggakan", text: "Tunggakan / Ghosting", icon: "⚠️" });
+    }
+  }
+
+  // 4. Cek Rasio Tagihan vs Pembayaran
+  if (p._count && p._count.tagihan && p._count.tagihan > 1 && (p._count.pembayaran === 0 || (p._count.tagihan - (p._count.pembayaran || 0) >= 2))) {
+    if (!alasan.some((a) => a.tipe === "tunggakan")) {
+      alasan.push({ tipe: "tunggakan", text: `Nunggak (${p._count.tagihan - (p._count.pembayaran || 0)} Bulan)`, icon: "⚠️" });
+    }
+  }
+
+  const isBermasalah = alasan.length > 0;
+  return {
+    isBermasalah,
+    isValid: !isBermasalah,
+    alasan,
+    label: isBermasalah ? "Bermasalah" : "Valid / Lancar",
+  };
+}
 
 function StickerBarcodeItem({ p, idx }: { p: Pelanggan; idx: number }) {
   const ref = useRef<SVGSVGElement | null>(null);
@@ -246,6 +322,8 @@ function PelangganContent() {
   const [filterKelurahan, setFilterKelurahan] = useState("");
   const [filterZona, setFilterZona] = useState("");
   const [filterStatus, setFilterStatus] = useState(initialMainTab === "approval" ? "calon" : "");
+  const [filterHealth, setFilterHealth] = useState<"" | "valid" | "bermasalah">("");
+  const [subFilterMasalah, setSubFilterMasalah] = useState<"all" | "no_hp" | "tunggakan" | "gps_foto" | "survei">("all");
   const [filterKategori, setFilterKategori] = useState("");
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -713,14 +791,49 @@ function PelangganContent() {
     }
   };
 
-  const { calonList, aktifList, nonaktifList, liburList } = useMemo(() => {
+  const { calonList, aktifList, nonaktifList, liburList, validList, bermasalahList } = useMemo(() => {
+    const calon: Pelanggan[] = [];
+    const aktif: Pelanggan[] = [];
+    const nonaktif: Pelanggan[] = [];
+    const libur: Pelanggan[] = [];
+    const valid: Pelanggan[] = [];
+    const bermasalah: Pelanggan[] = [];
+
+    (pelanggan || []).forEach((p) => {
+      if (!p) return;
+      if (p.status === "calon") calon.push(p);
+      else if (p.status === "nonaktif") nonaktif.push(p);
+      else if (p.status === "libur") libur.push(p);
+      else {
+        aktif.push(p);
+        const h = getPelangganHealth(p);
+        if (h.isBermasalah) bermasalah.push(p);
+        else valid.push(p);
+      }
+    });
+
     return {
-      calonList: pelanggan.filter((p) => p.status === "calon"),
-      aktifList: pelanggan.filter((p) => p.status === "aktif"),
-      nonaktifList: pelanggan.filter((p) => p.status === "nonaktif"),
-      liburList: pelanggan.filter((p) => p.status === "libur"),
+      calonList: calon,
+      aktifList: aktif,
+      nonaktifList: nonaktif,
+      liburList: libur,
+      validList: valid,
+      bermasalahList: bermasalah,
     };
   }, [pelanggan]);
+
+  const subFilterCounts = useMemo(() => {
+    const counts = { all: bermasalahList.length, no_hp: 0, tunggakan: 0, gps_foto: 0, survei: 0 };
+    bermasalahList.forEach((p) => {
+      const h = getPelangganHealth(p);
+      h.alasan.forEach((a) => {
+        if (a.tipe in counts) {
+          counts[a.tipe as keyof typeof counts]++;
+        }
+      });
+    });
+    return counts;
+  }, [bermasalahList]);
 
   const calonCount = statusCounts.calon || calonList.length;
   const aktifCount = statusCounts.aktif || aktifList.length;
@@ -732,12 +845,27 @@ function PelangganContent() {
     if (!Array.isArray(pelanggan)) return [];
     return pelanggan.filter((p) => {
       if (!p) return false;
-      if (filterGps === "ada" && (p.latitude == null || p.longitude == null)) return false;
-      if (filterGps === "belum" && (p.latitude != null && p.longitude != null)) return false;
+
+      // Filter kesehatan akun jika aktif
+      if (filterHealth === "valid") {
+        if (p.status !== "aktif") return false;
+        const h = getPelangganHealth(p);
+        if (h.isBermasalah) return false;
+      } else if (filterHealth === "bermasalah") {
+        if (p.status !== "aktif") return false;
+        const h = getPelangganHealth(p);
+        if (!h.isBermasalah) return false;
+        if (subFilterMasalah !== "all") {
+          if (!h.alasan.some((a) => a.tipe === subFilterMasalah)) return false;
+        }
+      }
+
+      if (filterGps === "ada" && (p.latitude == null || p.longitude == null || p.latitude === 0)) return false;
+      if (filterGps === "belum" && (p.latitude != null && p.longitude != null && p.latitude !== 0)) return false;
       if (filterSkemaBayar && (p.skemaBayar || "mandiri") !== filterSkemaBayar) return false;
       return true;
     });
-  }, [pelanggan, filterGps, filterSkemaBayar]);
+  }, [pelanggan, filterHealth, subFilterMasalah, filterGps, filterSkemaBayar]);
 
   const paginatedPelanggan = useMemo(() => {
     return filteredPelanggan.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
@@ -1042,26 +1170,64 @@ function PelangganContent() {
       )}
 
       {/* Quick Status Tabs */}
-      <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-1 text-xs">
+      <div className="flex items-center gap-1.5 mb-3 overflow-x-auto pb-1 text-xs scrollbar-none">
         <button
           type="button"
-          onClick={() => { setFilterStatus(""); setPage(1); }}
+          onClick={() => { setFilterStatus(""); setFilterHealth(""); setPage(1); }}
           className={`px-3 py-1.5 rounded-xl font-medium transition shrink-0 flex items-center gap-1.5 ${
-            filterStatus === ""
+            filterStatus === "" && filterHealth === ""
               ? "bg-slate-900 dark:bg-zinc-100 text-white dark:text-zinc-900 shadow-sm"
               : "bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-50 dark:hover:bg-zinc-800"
           }`}
         >
           <span>Semua</span>
           <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono tabular-nums ${
-            filterStatus === "" ? "bg-slate-800 dark:bg-zinc-300 text-slate-200 dark:text-zinc-800" : "bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400"
+            filterStatus === "" && filterHealth === "" ? "bg-slate-800 dark:bg-zinc-300 text-slate-200 dark:text-zinc-800" : "bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400"
           }`}>
             {totalCount}
           </span>
         </button>
+
+        {/* Tab 🟢 Valid / Lancar */}
         <button
           type="button"
-          onClick={() => { setFilterStatus("calon"); setPage(1); }}
+          onClick={() => { setFilterStatus("aktif"); setFilterHealth("valid"); setPage(1); }}
+          className={`px-3 py-1.5 rounded-xl font-medium transition shrink-0 flex items-center gap-1.5 ${
+            filterStatus === "aktif" && filterHealth === "valid"
+              ? "bg-emerald-700 text-white shadow-sm"
+              : "bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/70 dark:border-emerald-900/50 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100/70"
+          }`}
+        >
+          <span>🟢 Valid / Lancar</span>
+          <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono tabular-nums font-semibold ${
+            filterStatus === "aktif" && filterHealth === "valid" ? "bg-emerald-800 text-white" : "bg-emerald-100 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-200"
+          }`}>
+            {validList.length}
+          </span>
+        </button>
+
+        {/* Tab ⚠️ Bermasalah */}
+        <button
+          type="button"
+          onClick={() => { setFilterStatus("aktif"); setFilterHealth("bermasalah"); setSubFilterMasalah("all"); setPage(1); }}
+          className={`px-3 py-1.5 rounded-xl font-medium transition shrink-0 flex items-center gap-1.5 ${
+            filterStatus === "aktif" && filterHealth === "bermasalah"
+              ? "bg-rose-600 text-white shadow-sm"
+              : "bg-rose-50/60 dark:bg-rose-950/30 border border-rose-200/70 dark:border-rose-900/50 text-rose-800 dark:text-rose-300 hover:bg-rose-100/70"
+          }`}
+        >
+          <span>⚠️ Bermasalah</span>
+          <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono tabular-nums font-semibold ${
+            filterStatus === "aktif" && filterHealth === "bermasalah" ? "bg-rose-800 text-white" : "bg-rose-100 dark:bg-rose-900 text-rose-900 dark:text-rose-200"
+          }`}>
+            {bermasalahList.length}
+          </span>
+        </button>
+
+        {/* Tab Menunggu Approval (Calon) */}
+        <button
+          type="button"
+          onClick={() => { setFilterStatus("calon"); setFilterHealth(""); setPage(1); }}
           className={`px-3 py-1.5 rounded-xl font-medium transition shrink-0 flex items-center gap-1.5 ${
             filterStatus === "calon"
               ? "bg-amber-600 text-white shadow-sm"
@@ -1075,25 +1241,11 @@ function PelangganContent() {
             {calonCount}
           </span>
         </button>
+
+        {/* Tab Nonaktif */}
         <button
           type="button"
-          onClick={() => { setFilterStatus("aktif"); setPage(1); }}
-          className={`px-3 py-1.5 rounded-xl font-medium transition shrink-0 flex items-center gap-1.5 ${
-            filterStatus === "aktif"
-              ? "bg-emerald-700 text-white shadow-sm"
-              : "bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 hover:bg-slate-50 dark:hover:bg-zinc-800"
-          }`}
-        >
-          <span>Aktif</span>
-          <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono tabular-nums font-medium ${
-            filterStatus === "aktif" ? "bg-emerald-800 text-white" : "bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-400"
-          }`}>
-            {aktifCount}
-          </span>
-        </button>
-        <button
-          type="button"
-          onClick={() => { setFilterStatus("nonaktif"); setPage(1); }}
+          onClick={() => { setFilterStatus("nonaktif"); setFilterHealth(""); setPage(1); }}
           className={`px-3 py-1.5 rounded-xl font-medium transition shrink-0 flex items-center gap-1.5 ${
             filterStatus === "nonaktif"
               ? "bg-slate-800 dark:bg-zinc-700 text-white shadow-sm"
@@ -1107,10 +1259,11 @@ function PelangganContent() {
             {nonaktifCount}
           </span>
         </button>
+
         {liburCount > 0 && (
           <button
             type="button"
-            onClick={() => { setFilterStatus("libur"); setPage(1); }}
+            onClick={() => { setFilterStatus("libur"); setFilterHealth(""); setPage(1); }}
             className={`px-3 py-1.5 rounded-xl font-medium transition shrink-0 flex items-center gap-1.5 ${
               filterStatus === "libur"
                 ? "bg-amber-600 text-white shadow-sm"
@@ -1126,6 +1279,100 @@ function PelangganContent() {
           </button>
         )}
       </div>
+
+      {/* Quick Sub-Filter Chips & CTA saat Tab Bermasalah Aktif */}
+      {filterHealth === "bermasalah" && (
+        <div className="mb-4 space-y-2.5">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs scrollbar-none">
+            <span className="text-[11px] font-semibold text-slate-500 dark:text-zinc-400 mr-1 shrink-0">
+              Kategori Kendala:
+            </span>
+            <button
+              type="button"
+              onClick={() => { setSubFilterMasalah("all"); setPage(1); }}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition shrink-0 ${
+                subFilterMasalah === "all"
+                  ? "bg-rose-700 text-white shadow-sm"
+                  : "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-900"
+              }`}
+            >
+              Semua Masalah ({subFilterCounts.all})
+            </button>
+            <button
+              type="button"
+              onClick={() => { setSubFilterMasalah("no_hp"); setPage(1); }}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition shrink-0 ${
+                subFilterMasalah === "no_hp"
+                  ? "bg-rose-700 text-white shadow-sm"
+                  : "bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-800"
+              }`}
+            >
+              🔴 No. HP Mati / Ganti ({subFilterCounts.no_hp})
+            </button>
+            <button
+              type="button"
+              onClick={() => { setSubFilterMasalah("tunggakan"); setPage(1); }}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition shrink-0 ${
+                subFilterMasalah === "tunggakan"
+                  ? "bg-rose-700 text-white shadow-sm"
+                  : "bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-800"
+              }`}
+            >
+              ⚠️ Tunggakan ({subFilterCounts.tunggakan})
+            </button>
+            <button
+              type="button"
+              onClick={() => { setSubFilterMasalah("gps_foto"); setPage(1); }}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition shrink-0 ${
+                subFilterMasalah === "gps_foto"
+                  ? "bg-rose-700 text-white shadow-sm"
+                  : "bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-800"
+              }`}
+            >
+              📍 Belum GPS / Foto ({subFilterCounts.gps_foto})
+            </button>
+            <button
+              type="button"
+              onClick={() => { setSubFilterMasalah("survei"); setPage(1); }}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition shrink-0 ${
+                subFilterMasalah === "survei"
+                  ? "bg-rose-700 text-white shadow-sm"
+                  : "bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-800"
+              }`}
+            >
+              🚨 Butuh Survei Ulang ({subFilterCounts.survei})
+            </button>
+          </div>
+
+          <div className="p-3 bg-gradient-to-r from-rose-50 via-amber-50 to-emerald-50 dark:from-rose-950/30 dark:via-amber-950/20 dark:to-emerald-950/30 border border-rose-200/80 dark:border-rose-900/50 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-sm">
+            <div className="flex items-center gap-2.5">
+              <span className="text-xl">🛠️</span>
+              <div>
+                <div className="text-xs font-bold text-slate-900 dark:text-zinc-100 flex items-center gap-2">
+                  <span>Pusat Tindak Lanjut & Survei Lapangan</span>
+                  <span className="bg-rose-100 text-rose-700 dark:bg-rose-900/60 dark:text-rose-300 text-[10px] px-2 py-0.2 rounded-full font-bold">
+                    {filteredPelanggan.length} Terpilih
+                  </span>
+                </div>
+                <div className="text-[11px] text-slate-500 dark:text-zinc-400">
+                  Pelanggan memerlukan verifikasi kontak, pelunasan tunggakan, atau survei ulang ke rumah warga.
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <a
+                href="/followup.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold transition shadow-sm"
+              >
+                <span>📱 Buka Alat Follow-Up Lapangan (PIN: 2026)</span>
+                <ExternalLink size={12} strokeWidth={2.5} />
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Search + Filter mode */}
       <div className="mb-5">
@@ -1308,12 +1555,16 @@ function PelangganContent() {
                   </td>
                 </tr>
               ) : (
-                paginatedPelanggan.map((p) => (
+                paginatedPelanggan.map((p) => {
+                  const health = getPelangganHealth(p);
+                  return (
                   <tr
                     key={p.id}
                     className={`transition-colors ${
                       selectedIds.has(p.id)
                         ? "bg-emerald-50/50 dark:bg-emerald-950/20 hover:bg-emerald-50/70 dark:hover:bg-emerald-950/30"
+                        : health.isBermasalah
+                        ? "bg-rose-50/25 dark:bg-rose-950/10 hover:bg-rose-50/50 dark:hover:bg-rose-950/25 border-l-4 border-l-rose-500"
                         : "hover:bg-slate-50/60 dark:hover:bg-zinc-800/40"
                     }`}
                   >
@@ -1341,6 +1592,26 @@ function PelangganContent() {
                         <div>
                           <div className="font-semibold text-slate-900 dark:text-zinc-100 text-xs tracking-tight flex items-center gap-1.5 flex-wrap">
                             <span>{p.nama}</span>
+                            {/* Health Badges */}
+                            {health.isBermasalah ? (
+                              <div className="inline-flex items-center gap-1 flex-wrap">
+                                {health.alasan.map((a, idx) => (
+                                  <span
+                                    key={idx}
+                                    className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] font-bold bg-rose-100 text-rose-700 dark:bg-rose-950/80 dark:text-rose-300 border border-rose-200 dark:border-rose-900"
+                                  >
+                                    <span>{a.icon}</span>
+                                    <span>{a.text}</span>
+                                  </span>
+                                ))}
+                              </div>
+                            ) : health.isValid ? (
+                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                                <CheckCircle2 size={10} />
+                                <span>Valid</span>
+                              </span>
+                            ) : null}
+
                             {p.skemaBayar === "kolektif_induk" && (
                               <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300 dark:bg-amber-950 dark:text-amber-300" title={`Induk Kolektif: ${p.namaGrupKolektif || p.nama}`}>
                                 👑 Induk {p._count?.anggotaKolektif ? `(${p._count.anggotaKolektif} warga)` : ""}
@@ -1537,6 +1808,24 @@ function PelangganContent() {
                         >
                           <Pencil size={13} strokeWidth={1.75} />
                         </button>
+                        {/* Tombol Survei Lapangan */}
+                        <Link
+                          href={`/survei/${p.id}`}
+                          className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200/80 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-amber-50 dark:hover:bg-amber-950/40 hover:text-amber-700 dark:hover:text-amber-400 hover:border-amber-200 text-slate-500 dark:text-zinc-400 transition-colors shadow-sm"
+                          title="Lembar Survei / Verifikasi Lapangan"
+                        >
+                          <ClipboardCheck size={13} strokeWidth={1.75} />
+                        </Link>
+                        {/* Tombol Chat WA Cepat */}
+                        <a
+                          href={`https://wa.me/${p.noTelepon.replace(/\D/g, "").replace(/^0/, "62")}?text=${encodeURIComponent(`Halo Bapak/Ibu ${p.nama}, salam dari petugas UPS HERU terkait layanan kebersihan.`)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200/80 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:text-emerald-700 dark:hover:text-emerald-400 hover:border-emerald-200 text-slate-500 dark:text-zinc-400 transition-colors shadow-sm"
+                          title="Chat WhatsApp Warga"
+                        >
+                          <MessageCircle size={13} strokeWidth={1.75} />
+                        </a>
                         <button
                           type="button"
                           onClick={() => setDeleteTarget(p)}
@@ -1548,7 +1837,8 @@ function PelangganContent() {
                       </div>
                     </td>
                   </tr>
-                ))
+                );
+              })
               )}
             </tbody>
           </table>
@@ -1561,8 +1851,17 @@ function PelangganContent() {
               Belum ada data pelanggan yang sesuai kriteria pencarian
             </div>
           ) : (
-            paginatedPelanggan.map((p) => (
-              <div key={p.id} className="bg-white dark:bg-zinc-900 rounded-2xl border border-slate-200/80 dark:border-zinc-800 p-4 shadow-sm space-y-3">
+            paginatedPelanggan.map((p) => {
+              const health = getPelangganHealth(p);
+              return (
+              <div
+                key={p.id}
+                className={`bg-white dark:bg-zinc-900 rounded-2xl border p-4 shadow-sm space-y-3 transition-colors ${
+                  health.isBermasalah
+                    ? "border-rose-300 dark:border-rose-900/60 bg-rose-50/15 dark:bg-rose-950/10"
+                    : "border-slate-200/80 dark:border-zinc-800"
+                }`}
+              >
                 {/* Header Card */}
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-2.5 min-w-0">
@@ -1579,7 +1878,27 @@ function PelangganContent() {
                     />
                     <PelangganAvatar src={p.fotoRumah} nama={p.nama} size={40} />
                     <div className="min-w-0">
-                      <h4 className="font-semibold text-slate-900 dark:text-zinc-100 text-sm truncate">{p.nama}</h4>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <h4 className="font-semibold text-slate-900 dark:text-zinc-100 text-sm truncate">{p.nama}</h4>
+                        {health.isBermasalah ? (
+                          <div className="flex items-center gap-1 flex-wrap">
+                            {health.alasan.map((a, idx) => (
+                              <span
+                                key={idx}
+                                className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[9px] font-bold bg-rose-100 text-rose-700 dark:bg-rose-950/80 dark:text-rose-300 border border-rose-200 dark:border-rose-900"
+                              >
+                                <span>{a.icon}</span>
+                                <span>{a.text}</span>
+                              </span>
+                            ))}
+                          </div>
+                        ) : health.isValid ? (
+                          <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[9px] font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                            <CheckCircle2 size={9} />
+                            <span>Valid</span>
+                          </span>
+                        ) : null}
+                      </div>
                       <span className="inline-block text-[10px] font-mono font-medium text-slate-600 dark:text-zinc-400 bg-slate-100 dark:bg-zinc-800 border border-slate-200/60 dark:border-zinc-700 px-1.5 py-0.2 rounded mt-0.5">
                         {p.kodePelanggan}
                       </span>
@@ -1685,35 +2004,47 @@ function PelangganContent() {
                     )}
                   </div>
 
-                  {/* Row 2: Detail, Edit, Hapus */}
-                  <div className="grid grid-cols-3 gap-2">
+                  {/* Row 2: Detail, Survei, Edit, Hapus */}
+                  <div className="grid grid-cols-4 gap-1.5">
                     <Link
                       href={`/pelanggan/${p.id}`}
-                      className="py-1.5 px-2 rounded-xl bg-white dark:bg-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 font-medium text-xs flex items-center justify-center gap-1 border border-slate-200/80 dark:border-zinc-700 active:scale-98 transition-all"
+                      className="py-1.5 px-1 rounded-xl bg-white dark:bg-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 font-medium text-[11px] flex items-center justify-center gap-1 border border-slate-200/80 dark:border-zinc-700 active:scale-98 transition-all"
+                      title="Lihat Detail"
                     >
-                      <Eye size={13} />
+                      <Eye size={12} />
                       <span>Detail</span>
+                    </Link>
+                    <Link
+                      href={`/survei/${p.id}`}
+                      className="py-1.5 px-1 rounded-xl bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 text-amber-800 dark:text-amber-300 font-medium text-[11px] flex items-center justify-center gap-1 border border-amber-200/80 dark:border-amber-800 active:scale-98 transition-all"
+                      title="Survei Lapangan"
+                    >
+                      <ClipboardCheck size={12} />
+                      <span>Survei</span>
                     </Link>
                     <button
                       type="button"
                       onClick={() => openEdit(p)}
-                      className="py-1.5 px-2 rounded-xl bg-white dark:bg-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 font-medium text-xs flex items-center justify-center gap-1 border border-slate-200/80 dark:border-zinc-700 active:scale-98 transition-all"
+                      className="py-1.5 px-1 rounded-xl bg-white dark:bg-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 font-medium text-[11px] flex items-center justify-center gap-1 border border-slate-200/80 dark:border-zinc-700 active:scale-98 transition-all"
+                      title="Edit Data"
                     >
-                      <Pencil size={13} />
+                      <Pencil size={12} />
                       <span>Edit</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => setDeleteTarget(p)}
-                      className="py-1.5 px-2 rounded-xl bg-white dark:bg-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-500 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 font-medium text-xs flex items-center justify-center gap-1 border border-slate-200/80 dark:border-zinc-700 hover:border-rose-200 dark:hover:border-rose-900 active:scale-98 transition-all"
+                      className="py-1.5 px-1 rounded-xl bg-white dark:bg-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-500 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 font-medium text-[11px] flex items-center justify-center gap-1 border border-slate-200/80 dark:border-zinc-700 hover:border-rose-200 dark:hover:border-rose-900 active:scale-98 transition-all"
+                      title="Hapus / Nonaktifkan"
                     >
-                      <Trash2 size={13} />
+                      <Trash2 size={12} />
                       <span>Hapus</span>
                     </button>
                   </div>
                 </div>
               </div>
-            ))
+            );
+          })
           )}
         </div>
 

@@ -8,7 +8,7 @@ import { generateNoInvoice } from "@/lib/invoice";
 import { hitungJatuhTempoKonsumen } from "@/lib/tagihan";
 import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 import { tetapkanJadwalDanPetugasPelanggan } from "@/lib/penugasan-jadwal";
-import { ensureArmadaRuteSchema, ensureKolektifSchema } from "@/lib/db-patch";
+import { ensureArmadaRuteSchema, ensureKolektifSchema, ensureKesehatanSchema } from "@/lib/db-patch";
 import { resolveTenantByHost } from "@/lib/tenant";
 import { persistBase64Image } from "@/lib/server/media-storage";
 
@@ -16,6 +16,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
   await ensureKolektifSchema();
+  await ensureKesehatanSchema();
   const { searchParams } = new URL(request.url);
   const search = searchParams.get("search") || "";
   const wilayahId = searchParams.get("wilayahId");
@@ -102,6 +103,10 @@ export async function GET(request: Request) {
   }
   if (status) {
     where.status = status;
+  }
+  const kondisiAkunParam = searchParams.get("kondisiAkun");
+  if (kondisiAkunParam) {
+    (where as Record<string, unknown>).kondisiAkun = kondisiAkunParam;
   }
   if (kategori) {
     where.kategori = kategori;

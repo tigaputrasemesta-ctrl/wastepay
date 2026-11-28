@@ -68,3 +68,29 @@ export async function ensureKolektifSchema() {
     console.warn("[ensureKolektifSchema] notice:", err);
   }
 }
+
+let isKesehatanPatchDone = false;
+
+/**
+ * Self-healing schema migration: memastikan kolom kondisiAkun, alasanKendala,
+ * dan terakhirFollowUp sudah ada di tabel Pelanggan.
+ */
+export async function ensureKesehatanSchema() {
+  if (isKesehatanPatchDone) return;
+  try {
+    await prisma.$executeRawUnsafe(`
+      ALTER TABLE "Pelanggan" ADD COLUMN IF NOT EXISTS "kondisiAkun" TEXT DEFAULT 'sehat';
+      ALTER TABLE "Pelanggan" ADD COLUMN IF NOT EXISTS "alasanKendala" TEXT;
+      ALTER TABLE "Pelanggan" ADD COLUMN IF NOT EXISTS "terakhirFollowUp" TIMESTAMP;
+      CREATE INDEX IF NOT EXISTS "Pelanggan_kondisiAkun_idx" ON "Pelanggan"("kondisiAkun");
+    `).catch(async () => {
+      await prisma.$executeRawUnsafe(`ALTER TABLE "Pelanggan" ADD COLUMN IF NOT EXISTS "kondisiAkun" TEXT DEFAULT 'sehat';`).catch(() => {});
+      await prisma.$executeRawUnsafe(`ALTER TABLE "Pelanggan" ADD COLUMN IF NOT EXISTS "alasanKendala" TEXT;`).catch(() => {});
+      await prisma.$executeRawUnsafe(`ALTER TABLE "Pelanggan" ADD COLUMN IF NOT EXISTS "terakhirFollowUp" TIMESTAMP;`).catch(() => {});
+    });
+
+    isKesehatanPatchDone = true;
+  } catch (err) {
+    console.warn("[ensureKesehatanSchema] notice:", err);
+  }
+}

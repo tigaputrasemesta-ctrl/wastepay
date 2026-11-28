@@ -181,6 +181,10 @@ model Pelanggan {
   indukKolektif    Pelanggan? @relation("KolektifRelasi", fields: [indukKolektifId], references: [id], onDelete: SetNull)
   anggotaKolektif  Pelanggan[] @relation("KolektifRelasi")
   namaGrupKolektif String?   // Misal: "RT 02 RW 05 Kalibaru" atau "Kontrakan Pak Haji"
+  // Status Kesehatan & Verifikasi Operasional: sehat | bermasalah | butuh_survei
+  kondisiAkun      String?   @default("sehat")
+  alasanKendala    String?   // cth: "no_hp_mati", "nunggak_kronis", "belum_gps_foto", "rumah_tutup"
+  terakhirFollowUp DateTime? // Catatan tanggal follow-up terakhir
   wilayahId        Int? // legacy: nullable — calon/daftar mandiri belum tentu punya RT
   kelurahanId      Int? // canonical: satu kelurahan membawahi banyak pelanggan (scope petugas & kode)
   paketId          Int?
