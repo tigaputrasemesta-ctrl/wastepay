@@ -1,0 +1,1010 @@
+[
+  {
+    "id": 1,
+    "nama": "Ibu ezar",
+    "phone": "088817477861",
+    "waPhone": "6288817477861",
+    "rawPhone": "88817477861",
+    "zona": "Blok Bakung",
+    "nominal": 50000,
+    "alamat": "Gang meran, Kel. Cilodong",
+    "patokan": "-",
+    "lat": -6.4324324324324325,
+    "lng": 106.83337383504269,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.4324324324324325,106.83337383504269",
+    "invoiceNo": "INV/088817477861/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F088817477861%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *Ibu ezar*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/088817477861/202611\n💰 *Total*       : Rp 50.000\n📌 *Wilayah*     : Blok Bakung\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F088817477861%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/6288817477861?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*Ibu%20ezar*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F088817477861%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2050.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Bakung%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F088817477861%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Tumatritis",
+        "noHp": "+6281384235002",
+        "waPhone": "6281384235002",
+        "jarakMeter": 12,
+        "alamat": "Jalan rayabbakung, Kel. Cilodong",
+        "waUrl": "https://wa.me/6281384235002?text=Halo%20Tumatritis%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Ibu%20ezar%20di%20Blok%20Bakung.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "Apotik",
+        "noHp": "+6281290911579",
+        "waPhone": "6281290911579",
+        "jarakMeter": 12,
+        "alamat": "Dekat perumah pgri, Kel. Cilodong",
+        "waUrl": "https://wa.me/6281290911579?text=Halo%20Apotik%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Ibu%20ezar%20di%20Blok%20Bakung.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "nama": "Ibu fera",
+    "phone": "08120629962",
+    "waPhone": "628120629962",
+    "rawPhone": "8120629962",
+    "zona": "Blok Bakung",
+    "nominal": 50000,
+    "alamat": "Gang meran, Kel. Cilodong",
+    "patokan": "-",
+    "lat": -6.4324324324324325,
+    "lng": 106.83327154558413,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.4324324324324325,106.83327154558413",
+    "invoiceNo": "INV/08120629962/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F08120629962%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *Ibu fera*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/08120629962/202611\n💰 *Total*       : Rp 50.000\n📌 *Wilayah*     : Blok Bakung\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F08120629962%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/628120629962?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*Ibu%20fera*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F08120629962%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2050.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Bakung%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F08120629962%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Tumatritis",
+        "noHp": "+6281384235002",
+        "waPhone": "6281384235002",
+        "jarakMeter": 12,
+        "alamat": "Jalan rayabbakung, Kel. Cilodong",
+        "waUrl": "https://wa.me/6281384235002?text=Halo%20Tumatritis%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Ibu%20fera%20di%20Blok%20Bakung.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "Apotik",
+        "noHp": "+6281290911579",
+        "waPhone": "6281290911579",
+        "jarakMeter": 12,
+        "alamat": "Dekat perumah pgri, Kel. Cilodong",
+        "waUrl": "https://wa.me/6281290911579?text=Halo%20Apotik%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Ibu%20fera%20di%20Blok%20Bakung.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "nama": "Ibu yuli",
+    "phone": "082208420371",
+    "waPhone": "6282208420371",
+    "rawPhone": "82208420371",
+    "zona": "Blok Bakung",
+    "nominal": 50000,
+    "alamat": "Gang jawa bakung, Kel. Cilodong",
+    "patokan": "-",
+    "lat": -6.4324324324324325,
+    "lng": 106.83360357943614,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.4324324324324325,106.83360357943614",
+    "invoiceNo": "INV/082208420371/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F082208420371%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *Ibu yuli*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/082208420371/202611\n💰 *Total*       : Rp 50.000\n📌 *Wilayah*     : Blok Bakung\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F082208420371%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/6282208420371?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*Ibu%20yuli*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F082208420371%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2050.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Bakung%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F082208420371%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Tumatritis",
+        "noHp": "+6281384235002",
+        "waPhone": "6281384235002",
+        "jarakMeter": 12,
+        "alamat": "Jalan rayabbakung, Kel. Cilodong",
+        "waUrl": "https://wa.me/6281384235002?text=Halo%20Tumatritis%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Ibu%20yuli%20di%20Blok%20Bakung.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "Apotik",
+        "noHp": "+6281290911579",
+        "waPhone": "6281290911579",
+        "jarakMeter": 12,
+        "alamat": "Dekat perumah pgri, Kel. Cilodong",
+        "waUrl": "https://wa.me/6281290911579?text=Halo%20Apotik%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Ibu%20yuli%20di%20Blok%20Bakung.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "nama": "DONA",
+    "phone": "081210123412",
+    "waPhone": "6281210123412",
+    "rawPhone": "81210123412",
+    "zona": "Blok Bawah Dmiles + SMP 6",
+    "nominal": 50000,
+    "alamat": "Bawah smp 6, Kel. Kalibaru",
+    "patokan": "-",
+    "lat": -6.4380657,
+    "lng": 106.8290466,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.4380657,106.8290466",
+    "invoiceNo": "INV/081210123412/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F081210123412%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *DONA*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/081210123412/202611\n💰 *Total*       : Rp 50.000\n📌 *Wilayah*     : Blok Bawah Dmiles + SMP 6\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F081210123412%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/6281210123412?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*DONA*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F081210123412%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2050.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Bawah%20Dmiles%20%2B%20SMP%206%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F081210123412%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Hj dalih bu rini",
+        "noHp": "+6281220947139",
+        "waPhone": "6281220947139",
+        "jarakMeter": 27,
+        "alamat": "Bawah smp 6, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6281220947139?text=Halo%20Hj%20dalih%20bu%20rini%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20DONA%20di%20Blok%20Bawah%20Dmiles%20%2B%20SMP%206.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "Ainah",
+        "noHp": "+6285777420029",
+        "waPhone": "6285777420029",
+        "jarakMeter": 33,
+        "alamat": "Bawah smp 6, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6285777420029?text=Halo%20Ainah%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20DONA%20di%20Blok%20Bawah%20Dmiles%20%2B%20SMP%206.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "nama": "Ibu een",
+    "phone": "08129127647",
+    "waPhone": "628129127647",
+    "rawPhone": "8129127647",
+    "zona": "Blok Bawah Dmiles + SMP 6",
+    "nominal": 50000,
+    "alamat": "Bawah smp6, Kel. Kalibaru",
+    "patokan": "-",
+    "lat": -6.4324324324324325,
+    "lng": 106.83472278157747,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.4324324324324325,106.83472278157747",
+    "invoiceNo": "INV/08129127647/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F08129127647%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *Ibu een*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/08129127647/202611\n💰 *Total*       : Rp 50.000\n📌 *Wilayah*     : Blok Bawah Dmiles + SMP 6\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F08129127647%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/628129127647?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*Ibu%20een*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F08129127647%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2050.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Bawah%20Dmiles%20%2B%20SMP%206%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F08129127647%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Syafik",
+        "noHp": "+6289654581249",
+        "waPhone": "6289654581249",
+        "jarakMeter": 12,
+        "alamat": "Bawah smp 6, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6289654581249?text=Halo%20Syafik%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Ibu%20een%20di%20Blok%20Bawah%20Dmiles%20%2B%20SMP%206.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "Ibu yuni",
+        "noHp": "+6287878892060",
+        "waPhone": "6287878892060",
+        "jarakMeter": 12,
+        "alamat": "Bawah smp6, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6287878892060?text=Halo%20Ibu%20yuni%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Ibu%20een%20di%20Blok%20Bawah%20Dmiles%20%2B%20SMP%206.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "nama": "Ibu mika",
+    "phone": "088207162971",
+    "waPhone": "6288207162971",
+    "rawPhone": "88207162971",
+    "zona": "Blok Bawah Dmiles + SMP 6",
+    "nominal": 40000,
+    "alamat": "Bawah saphire, Kel. Kalibaru",
+    "patokan": "-",
+    "lat": -6.4376527,
+    "lng": 106.82988139999999,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.4376527,106.82988139999999",
+    "invoiceNo": "INV/088207162971/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F088207162971%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *Ibu mika*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/088207162971/202611\n💰 *Total*       : Rp 40.000\n📌 *Wilayah*     : Blok Bawah Dmiles + SMP 6\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F088207162971%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/6288207162971?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*Ibu%20mika*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F088207162971%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2040.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Bawah%20Dmiles%20%2B%20SMP%206%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F088207162971%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Ibu nawa",
+        "noHp": "+6289656348769",
+        "waPhone": "6289656348769",
+        "jarakMeter": 6,
+        "alamat": "Bawah smp 6, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6289656348769?text=Halo%20Ibu%20nawa%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Ibu%20mika%20di%20Blok%20Bawah%20Dmiles%20%2B%20SMP%206.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "NISA SAWAL",
+        "noHp": "+6282383995557",
+        "waPhone": "6282383995557",
+        "jarakMeter": 22,
+        "alamat": "Bawah saphir, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6282383995557?text=Halo%20NISA%20SAWAL%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Ibu%20mika%20di%20Blok%20Bawah%20Dmiles%20%2B%20SMP%206.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "nama": "Ibu Nur",
+    "phone": "081385988533",
+    "waPhone": "6281385988533",
+    "rawPhone": "81385988533",
+    "zona": "Blok Bawah Dmiles + SMP 6",
+    "nominal": 40000,
+    "alamat": "Bawah smp6, Kel. Kalibaru",
+    "patokan": "-",
+    "lat": -6.4382215,
+    "lng": 106.8283303,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.4382215,106.8283303",
+    "invoiceNo": "INV/081385988533/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F081385988533%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *Ibu Nur*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/081385988533/202611\n💰 *Total*       : Rp 40.000\n📌 *Wilayah*     : Blok Bawah Dmiles + SMP 6\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F081385988533%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/6281385988533?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*Ibu%20Nur*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F081385988533%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2040.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Bawah%20Dmiles%20%2B%20SMP%206%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F081385988533%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Aan",
+        "noHp": "+6281585177588",
+        "waPhone": "6281585177588",
+        "jarakMeter": 32,
+        "alamat": "Blok bawah smp 6, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6281585177588?text=Halo%20Aan%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Ibu%20Nur%20di%20Blok%20Bawah%20Dmiles%20%2B%20SMP%206.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "Iwan yusrinal",
+        "noHp": "+6287820925780",
+        "waPhone": "6287820925780",
+        "jarakMeter": 38,
+        "alamat": "Bawah rt lukman, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6287820925780?text=Halo%20Iwan%20yusrinal%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Ibu%20Nur%20di%20Blok%20Bawah%20Dmiles%20%2B%20SMP%206.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "nama": "No 28 heri",
+    "phone": "083872547291",
+    "waPhone": "6283872547291",
+    "rawPhone": "83872547291",
+    "zona": "Blok Bawah Dmiles + SMP 6",
+    "nominal": 40000,
+    "alamat": "Hj puah pecel, Kel. Kalibaru",
+    "patokan": "-",
+    "lat": -6.4382736,
+    "lng": 106.83587,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.4382736,106.83587",
+    "invoiceNo": "INV/083872547291/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F083872547291%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *No 28 heri*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/083872547291/202611\n💰 *Total*       : Rp 40.000\n📌 *Wilayah*     : Blok Bawah Dmiles + SMP 6\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F083872547291%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/6283872547291?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*No%2028%20heri*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F083872547291%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2040.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Bawah%20Dmiles%20%2B%20SMP%206%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F083872547291%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Riama",
+        "noHp": "+6282114746705",
+        "waPhone": "6282114746705",
+        "jarakMeter": 362,
+        "alamat": "Cluster Allesa A4, Gang Hj.Amin, Jl Abdul Gani Raya, RT/RW RT 006 / RW 004, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6282114746705?text=Halo%20Riama%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20No%2028%20heri%20di%20Blok%20Bawah%20Dmiles%20%2B%20SMP%206.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "Ibu inah",
+        "noHp": "+6283139012998",
+        "waPhone": "6283139012998",
+        "jarakMeter": 370,
+        "alamat": "Jalan mandor samin, gang h.saleh, RT/RW RT 001 / RW 006, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6283139012998?text=Halo%20Ibu%20inah%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20No%2028%20heri%20di%20Blok%20Bawah%20Dmiles%20%2B%20SMP%206.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "nama": "Pak heri",
+    "phone": "08956198701712",
+    "waPhone": "628956198701712",
+    "rawPhone": "8956198701712",
+    "zona": "Blok GG Niman",
+    "nominal": 40000,
+    "alamat": "Gang niman, Kel. Kalibaru",
+    "patokan": "-",
+    "lat": -6.4361456,
+    "lng": 106.8408599,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.4361456,106.8408599",
+    "invoiceNo": "INV/08956198701712/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F08956198701712%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *Pak heri*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/08956198701712/202611\n💰 *Total*       : Rp 40.000\n📌 *Wilayah*     : Blok GG Niman\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F08956198701712%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/628956198701712?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*Pak%20heri*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F08956198701712%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2040.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20GG%20Niman%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F08956198701712%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Azam",
+        "noHp": "+62895704276323",
+        "waPhone": "62895704276323",
+        "jarakMeter": 26,
+        "alamat": "Gang niman, Kel. Kalibaru",
+        "waUrl": "https://wa.me/62895704276323?text=Halo%20Azam%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Pak%20heri%20di%20Blok%20GG%20Niman.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "Dwi prawira",
+        "noHp": "+6285945030515",
+        "waPhone": "6285945030515",
+        "jarakMeter": 32,
+        "alamat": "Gang niman, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6285945030515?text=Halo%20Dwi%20prawira%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Pak%20heri%20di%20Blok%20GG%20Niman.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "nama": "AJENG",
+    "phone": "08131048874",
+    "waPhone": "628131048874",
+    "rawPhone": "8131048874",
+    "zona": "Blok Jalan Raya Cilodong",
+    "nominal": 50000,
+    "alamat": "Jln raya sd, Kel. Kalibaru",
+    "patokan": "-",
+    "lat": -6.4413725,
+    "lng": 106.8350962,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.4413725,106.8350962",
+    "invoiceNo": "INV/08131048874/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F08131048874%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *AJENG*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/08131048874/202611\n💰 *Total*       : Rp 50.000\n📌 *Wilayah*     : Blok Jalan Raya Cilodong\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F08131048874%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/628131048874?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*AJENG*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F08131048874%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2050.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Jalan%20Raya%20Cilodong%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F08131048874%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "DTOP",
+        "noHp": "+6285719259002",
+        "waPhone": "6285719259002",
+        "jarakMeter": 6,
+        "alamat": "Jalan raya sd, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6285719259002?text=Halo%20DTOP%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20AJENG%20di%20Blok%20Jalan%20Raya%20Cilodong.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "Broto pecel lele",
+        "noHp": "+6281315784929",
+        "waPhone": "6281315784929",
+        "jarakMeter": 17,
+        "alamat": "Jalan raya cilodong, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6281315784929?text=Halo%20Broto%20pecel%20lele%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20AJENG%20di%20Blok%20Jalan%20Raya%20Cilodong.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "nama": "Bayu",
+    "phone": "089898729991",
+    "waPhone": "6289898729991",
+    "rawPhone": "89898729991",
+    "zona": "Blok Jalan Raya Cilodong",
+    "nominal": 50000,
+    "alamat": "Jl raya abdul rahman tarif 40.000, Kel. Kalibaru",
+    "patokan": "-",
+    "lat": -6.4425857,
+    "lng": 106.8347748,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.4425857,106.8347748",
+    "invoiceNo": "INV/089898729991/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F089898729991%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *Bayu*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/089898729991/202611\n💰 *Total*       : Rp 50.000\n📌 *Wilayah*     : Blok Jalan Raya Cilodong\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F089898729991%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/6289898729991?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*Bayu*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F089898729991%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2050.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Jalan%20Raya%20Cilodong%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F089898729991%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Lion parcel",
+        "noHp": "+628872446050",
+        "waPhone": "628872446050",
+        "jarakMeter": 2,
+        "alamat": "Jln raya abdul gani, Kel. Kalibaru",
+        "waUrl": "https://wa.me/628872446050?text=Halo%20Lion%20parcel%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Bayu%20di%20Blok%20Jalan%20Raya%20Cilodong.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "Honda pak farhan",
+        "noHp": "+6282182320685",
+        "waPhone": "6282182320685",
+        "jarakMeter": 8,
+        "alamat": "Jl raya abdul gani, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6282182320685?text=Halo%20Honda%20pak%20farhan%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Bayu%20di%20Blok%20Jalan%20Raya%20Cilodong.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "nama": "Berkah cell",
+    "phone": "085783095514",
+    "waPhone": "6285783095514",
+    "rawPhone": "85783095514",
+    "zona": "Blok Jalan Raya Cilodong",
+    "nominal": 50000,
+    "alamat": "Jl raya cilodong, Kel. Kalibaru",
+    "patokan": "-",
+    "lat": -6.439272,
+    "lng": 106.8384132,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.439272,106.8384132",
+    "invoiceNo": "INV/085783095514/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F085783095514%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *Berkah cell*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/085783095514/202611\n💰 *Total*       : Rp 50.000\n📌 *Wilayah*     : Blok Jalan Raya Cilodong\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F085783095514%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/6285783095514?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*Berkah%20cell*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F085783095514%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2050.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Jalan%20Raya%20Cilodong%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F085783095514%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Bpk Harry Susanto",
+        "noHp": "+6281239653565",
+        "waPhone": "6281239653565",
+        "jarakMeter": 41,
+        "alamat": "Jl abdul gani raya perumahan puri cilodong residen 1 .Blok B2 no 13, RT/RW RT 005 / RW 003, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6281239653565?text=Halo%20Bpk%20Harry%20Susanto%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Berkah%20cell%20di%20Blok%20Jalan%20Raya%20Cilodong.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "Yanti",
+        "noHp": "+6281398736660",
+        "waPhone": "6281398736660",
+        "jarakMeter": 45,
+        "alamat": "Jalan raya cilodong, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6281398736660?text=Halo%20Yanti%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Berkah%20cell%20di%20Blok%20Jalan%20Raya%20Cilodong.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "nama": "Laundry",
+    "phone": "08989839907",
+    "waPhone": "628989839907",
+    "rawPhone": "8989839907",
+    "zona": "Blok Jalan Raya Cilodong",
+    "nominal": 70000,
+    "alamat": "Jalan raya cilodong abdul gani 1, Kel. Kalibaru",
+    "patokan": "-",
+    "lat": -6.4398079,
+    "lng": 106.8360451,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.4398079,106.8360451",
+    "invoiceNo": "INV/08989839907/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F08989839907%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *Laundry*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/08989839907/202611\n💰 *Total*       : Rp 70.000\n📌 *Wilayah*     : Blok Jalan Raya Cilodong\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F08989839907%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/628989839907?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*Laundry*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F08989839907%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2070.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Jalan%20Raya%20Cilodong%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F08989839907%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Hasanusi / mbeng",
+        "noHp": "+6282237526333",
+        "waPhone": "6282237526333",
+        "jarakMeter": 63,
+        "alamat": "jln. H. Abdul Gani, no. 63 RT RW: 001/004, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6282237526333?text=Halo%20Hasanusi%20%2F%20mbeng%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Laundry%20di%20Blok%20Jalan%20Raya%20Cilodong.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "Umah",
+        "noHp": "+628888102012",
+        "waPhone": "628888102012",
+        "jarakMeter": 3,
+        "alamat": "Jalan raya cilodong abdul gani, Kel. Kalibaru",
+        "waUrl": "https://wa.me/628888102012?text=Halo%20Umah%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Laundry%20di%20Blok%20Jalan%20Raya%20Cilodong.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "nama": "Rifki cat delux",
+    "phone": "08581710970",
+    "waPhone": "628581710970",
+    "rawPhone": "8581710970",
+    "zona": "Blok Jalan Raya Cilodong",
+    "nominal": 50000,
+    "alamat": "Jl raya abdul gani, Kel. Kalibaru",
+    "patokan": "-",
+    "lat": -6.4409662,
+    "lng": 106.8348605,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.4409662,106.8348605",
+    "invoiceNo": "INV/08581710970/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F08581710970%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *Rifki cat delux*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/08581710970/202611\n💰 *Total*       : Rp 50.000\n📌 *Wilayah*     : Blok Jalan Raya Cilodong\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F08581710970%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/628581710970?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*Rifki%20cat%20delux*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F08581710970%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2050.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Jalan%20Raya%20Cilodong%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F08581710970%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Toko Kue Mahkota Rasa",
+        "noHp": "+6283806795971",
+        "waPhone": "6283806795971",
+        "jarakMeter": 9,
+        "alamat": "Jl raya abdul gani, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6283806795971?text=Halo%20Toko%20Kue%20Mahkota%20Rasa%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Rifki%20cat%20delux%20di%20Blok%20Jalan%20Raya%20Cilodong.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "Toko Ucok",
+        "noHp": "+6281287542728",
+        "waPhone": "6281287542728",
+        "jarakMeter": 14,
+        "alamat": "Jl raya abdul gani tarif 60000, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6281287542728?text=Halo%20Toko%20Ucok%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Rifki%20cat%20delux%20di%20Blok%20Jalan%20Raya%20Cilodong.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "nama": "Sahrudin",
+    "phone": "08787880606",
+    "waPhone": "628787880606",
+    "rawPhone": "8787880606",
+    "zona": "Blok Jalan Raya Cilodong",
+    "nominal": 40000,
+    "alamat": "40.000 tagihan, Kel. Kalibaru",
+    "patokan": "-",
+    "lat": -6.4420814,
+    "lng": 106.8352357,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.4420814,106.8352357",
+    "invoiceNo": "INV/08787880606/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F08787880606%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *Sahrudin*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/08787880606/202611\n💰 *Total*       : Rp 40.000\n📌 *Wilayah*     : Blok Jalan Raya Cilodong\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F08787880606%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/628787880606?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*Sahrudin*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F08787880606%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2040.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Jalan%20Raya%20Cilodong%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F08787880606%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Rohim",
+        "noHp": "+6285840146568",
+        "waPhone": "6285840146568",
+        "jarakMeter": 3,
+        "alamat": "Jl raya cilodong, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6285840146568?text=Halo%20Rohim%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Sahrudin%20di%20Blok%20Jalan%20Raya%20Cilodong.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "Toko Dani",
+        "noHp": "+6282312379770",
+        "waPhone": "6282312379770",
+        "jarakMeter": 9,
+        "alamat": "Jl raya cilodong, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6282312379770?text=Halo%20Toko%20Dani%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Sahrudin%20di%20Blok%20Jalan%20Raya%20Cilodong.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "nama": "Ibu sofi",
+    "phone": "0813876279",
+    "waPhone": "62813876279",
+    "rawPhone": "813876279",
+    "zona": "Blok Jl Raya Kebon Duren",
+    "nominal": 40000,
+    "alamat": "Pedati tabroni, Kel. Jatimulya",
+    "patokan": "-",
+    "lat": -6.4324324324324325,
+    "lng": 106.83472278157747,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.4324324324324325,106.83472278157747",
+    "invoiceNo": "INV/0813876279/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F0813876279%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *Ibu sofi*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/0813876279/202611\n💰 *Total*       : Rp 40.000\n📌 *Wilayah*     : Blok Jl Raya Kebon Duren\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F0813876279%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/62813876279?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*Ibu%20sofi*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F0813876279%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2040.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Jl%20Raya%20Kebon%20Duren%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F0813876279%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Bpk ade",
+        "noHp": "+628986997125",
+        "waPhone": "628986997125",
+        "jarakMeter": 12,
+        "alamat": "Pedati tabroni, Kel. Jatimulya",
+        "waUrl": "https://wa.me/628986997125?text=Halo%20Bpk%20ade%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Ibu%20sofi%20di%20Blok%20Jl%20Raya%20Kebon%20Duren.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "Ibu ade",
+        "noHp": "+62895406902270",
+        "waPhone": "62895406902270",
+        "jarakMeter": 12,
+        "alamat": "Pedati tabroni, Kel. Jatimulya",
+        "waUrl": "https://wa.me/62895406902270?text=Halo%20Ibu%20ade%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Ibu%20sofi%20di%20Blok%20Jl%20Raya%20Kebon%20Duren.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "nama": "Madura Refan",
+    "phone": "087772645749",
+    "waPhone": "6287772645749",
+    "rawPhone": "87772645749",
+    "zona": "Blok Jl Raya Kebon Duren",
+    "nominal": 50000,
+    "alamat": "Jln raya kebonduren, Kel. Jatimulya",
+    "patokan": "-",
+    "lat": -6.4296944,
+    "lng": 106.8228185,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.4296944,106.8228185",
+    "invoiceNo": "INV/087772645749/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F087772645749%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *Madura Refan*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/087772645749/202611\n💰 *Total*       : Rp 50.000\n📌 *Wilayah*     : Blok Jl Raya Kebon Duren\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F087772645749%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/6287772645749?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*Madura%20Refan*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F087772645749%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2050.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Jl%20Raya%20Kebon%20Duren%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F087772645749%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Warung fatir",
+        "noHp": "+628567203128",
+        "waPhone": "628567203128",
+        "jarakMeter": 16,
+        "alamat": "Jln raya kebonduren, Kel. Jatimulya",
+        "waUrl": "https://wa.me/628567203128?text=Halo%20Warung%20fatir%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Madura%20Refan%20di%20Blok%20Jl%20Raya%20Kebon%20Duren.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "Vespa",
+        "noHp": "+6282299085548",
+        "waPhone": "6282299085548",
+        "jarakMeter": 17,
+        "alamat": "Jln raya kebonduren, Kel. Jatimulya",
+        "waUrl": "https://wa.me/6282299085548?text=Halo%20Vespa%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Madura%20Refan%20di%20Blok%20Jl%20Raya%20Kebon%20Duren.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "nama": "Indi",
+    "phone": "08977756322",
+    "waPhone": "628977756322",
+    "rawPhone": "8977756322",
+    "zona": "Blok Kampung Sawah",
+    "nominal": 50000,
+    "alamat": "Mts kampung sawah, Kel. Jatimulya",
+    "patokan": "-",
+    "lat": -6.4530708,
+    "lng": 106.82447,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.4530708,106.82447",
+    "invoiceNo": "INV/08977756322/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F08977756322%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *Indi*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/08977756322/202611\n💰 *Total*       : Rp 50.000\n📌 *Wilayah*     : Blok Kampung Sawah\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F08977756322%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/628977756322?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*Indi*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F08977756322%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2050.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Kampung%20Sawah%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F08977756322%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Bpk Yudi Adam",
+        "noHp": "+628977756323",
+        "waPhone": "628977756323",
+        "jarakMeter": 6,
+        "alamat": "Mini Cluster HM Pondok Rajeg Blok A4 No.04, RT/RW RT 002 / RW 002, Kel. Jatimulya",
+        "waUrl": "https://wa.me/628977756323?text=Halo%20Bpk%20Yudi%20Adam%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Indi%20di%20Blok%20Kampung%20Sawah.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "Rezita Avianda",
+        "noHp": "+6285810323990",
+        "waPhone": "6285810323990",
+        "jarakMeter": 10,
+        "alamat": "Mini Cluster Hm Pondok Rajeg, Jalan Kh M Ali, Kampung Sawah (Cluster Barokah) Blok A2/03, RT/RW RT 2 / RW 2, Kel. Jatimulya",
+        "waUrl": "https://wa.me/6285810323990?text=Halo%20Rezita%20Avianda%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Indi%20di%20Blok%20Kampung%20Sawah.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "nama": "Konter",
+    "phone": "085752609709",
+    "waPhone": "6285752609709",
+    "rawPhone": "85752609709",
+    "zona": "Blok Kampung Sawah",
+    "nominal": 50000,
+    "alamat": "Jalan raya kampung sawah, Kel. Jatimulya",
+    "patokan": "-",
+    "lat": -6.4481208,
+    "lng": 106.8276532,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.4481208,106.8276532",
+    "invoiceNo": "INV/085752609709/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F085752609709%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *Konter*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/085752609709/202611\n💰 *Total*       : Rp 50.000\n📌 *Wilayah*     : Blok Kampung Sawah\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F085752609709%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/6285752609709?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*Konter*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F085752609709%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2050.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Kampung%20Sawah%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F085752609709%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Madura",
+        "noHp": "+6287888476838",
+        "waPhone": "6287888476838",
+        "jarakMeter": 14,
+        "alamat": "Jalan raya kampung sawah, Kel. Jatimulya",
+        "waUrl": "https://wa.me/6287888476838?text=Halo%20Madura%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Konter%20di%20Blok%20Kampung%20Sawah.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "Tukang burung",
+        "noHp": "+628998692932",
+        "waPhone": "628998692932",
+        "jarakMeter": 16,
+        "alamat": "Jalan raya kampung sawah, Kel. Jatimulya",
+        "waUrl": "https://wa.me/628998692932?text=Halo%20Tukang%20burung%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Konter%20di%20Blok%20Kampung%20Sawah.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "nama": "Rumbel azzahra",
+    "phone": "0812190086412",
+    "waPhone": "62812190086412",
+    "rawPhone": "812190086412",
+    "zona": "Blok Kp Bulak",
+    "nominal": 50000,
+    "alamat": "Kampung bulak, Kel. Kalibaru",
+    "patokan": "-",
+    "lat": -6.4324324324324325,
+    "lng": 106.83650637143862,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.4324324324324325,106.83650637143862",
+    "invoiceNo": "INV/0812190086412/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F0812190086412%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *Rumbel azzahra*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/0812190086412/202611\n💰 *Total*       : Rp 50.000\n📌 *Wilayah*     : Blok Kp Bulak\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F0812190086412%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/62812190086412?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*Rumbel%20azzahra*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F0812190086412%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2050.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Kp%20Bulak%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F0812190086412%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Ibu egi",
+        "noHp": "+6281385904513",
+        "waPhone": "6281385904513",
+        "jarakMeter": 12,
+        "alamat": "Kampung bulak, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6281385904513?text=Halo%20Ibu%20egi%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Rumbel%20azzahra%20di%20Blok%20Kp%20Bulak.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "Bidan dian kurniati",
+        "noHp": "+62895321488016",
+        "waPhone": "62895321488016",
+        "jarakMeter": 12,
+        "alamat": "Depan sekolah aridho, Kel. Kalibaru",
+        "waUrl": "https://wa.me/62895321488016?text=Halo%20Bidan%20dian%20kurniati%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Rumbel%20azzahra%20di%20Blok%20Kp%20Bulak.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 21,
+    "nama": "Tukang pisang",
+    "phone": "08316831442",
+    "waPhone": "628316831442",
+    "rawPhone": "8316831442",
+    "zona": "Blok Kp Bulak",
+    "nominal": 70000,
+    "alamat": "Kampung bulak, Kel. Kalibaru",
+    "patokan": "-",
+    "lat": -6.4440255,
+    "lng": 106.8411074,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.4440255,106.8411074",
+    "invoiceNo": "INV/08316831442/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F08316831442%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *Tukang pisang*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/08316831442/202611\n💰 *Total*       : Rp 70.000\n📌 *Wilayah*     : Blok Kp Bulak\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F08316831442%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/628316831442?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*Tukang%20pisang*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F08316831442%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2070.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Kp%20Bulak%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F08316831442%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Rongsok logam",
+        "noHp": "+6281221010436",
+        "waPhone": "6281221010436",
+        "jarakMeter": 17,
+        "alamat": "Blok Kampung bulak, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6281221010436?text=Halo%20Rongsok%20logam%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Tukang%20pisang%20di%20Blok%20Kp%20Bulak.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "Marcel motor",
+        "noHp": "+6281225739325",
+        "waPhone": "6281225739325",
+        "jarakMeter": 17,
+        "alamat": "Blok kampung bulak thr, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6281225739325?text=Halo%20Marcel%20motor%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Tukang%20pisang%20di%20Blok%20Kp%20Bulak.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 22,
+    "nama": "Nurkolis",
+    "phone": "0877258411764",
+    "waPhone": "62877258411764",
+    "rawPhone": "877258411764",
+    "zona": "Blok Sasak",
+    "nominal": 200000,
+    "alamat": "Sasak kebon duren, Kel. Kalimulya",
+    "patokan": "-",
+    "lat": -6.432245,
+    "lng": 106.8223381,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.432245,106.8223381",
+    "invoiceNo": "INV/0877258411764/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F0877258411764%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *Nurkolis*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/0877258411764/202611\n💰 *Total*       : Rp 200.000\n📌 *Wilayah*     : Blok Sasak\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F0877258411764%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/62877258411764?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*Nurkolis*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F0877258411764%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%20200.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Sasak%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F0877258411764%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Ibu indri",
+        "noHp": "+6281315318383",
+        "waPhone": "6281315318383",
+        "jarakMeter": 53,
+        "alamat": "Sasak kebon duren, Kel. Kalimulya",
+        "waUrl": "https://wa.me/6281315318383?text=Halo%20Ibu%20indri%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Nurkolis%20di%20Blok%20Sasak.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "Pa sodiq",
+        "noHp": "+6285770151000",
+        "waPhone": "6285770151000",
+        "jarakMeter": 67,
+        "alamat": "Blok sasak, Kel. Kalimulya",
+        "waUrl": "https://wa.me/6285770151000?text=Halo%20Pa%20sodiq%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Nurkolis%20di%20Blok%20Sasak.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 23,
+    "nama": "Mama wulan",
+    "phone": "085777527149",
+    "waPhone": "6285777527149",
+    "rawPhone": "85777527149",
+    "zona": "Blok Setu + Rafael Pete",
+    "nominal": 40000,
+    "alamat": "Blok setu cilodong, Kel. Kalibaru",
+    "patokan": "-",
+    "lat": -6.4413194,
+    "lng": 106.8377494,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.4413194,106.8377494",
+    "invoiceNo": "INV/085777527149/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F085777527149%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *Mama wulan*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/085777527149/202611\n💰 *Total*       : Rp 40.000\n📌 *Wilayah*     : Blok Setu + Rafael Pete\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F085777527149%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/6285777527149?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*Mama%20wulan*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F085777527149%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2040.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Setu%20%2B%20Rafael%20Pete%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F085777527149%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "JAENI",
+        "noHp": "+6285794498002",
+        "waPhone": "6285794498002",
+        "jarakMeter": 7,
+        "alamat": "Hj sugeng + blok setu, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6285794498002?text=Halo%20JAENI%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Mama%20wulan%20di%20Blok%20Setu%20%2B%20Rafael%20Pete.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "SUKUR",
+        "noHp": "+6282210125947",
+        "waPhone": "6282210125947",
+        "jarakMeter": 26,
+        "alamat": "Hj sugeng rafael, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6282210125947?text=Halo%20SUKUR%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Mama%20wulan%20di%20Blok%20Setu%20%2B%20Rafael%20Pete.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 24,
+    "nama": "Waris",
+    "phone": "08129065428",
+    "waPhone": "628129065428",
+    "rawPhone": "8129065428",
+    "zona": "Blok Setu + Rafael Pete",
+    "nominal": 40000,
+    "alamat": "Blok setu po elly, Kel. Kalibaru",
+    "patokan": "-",
+    "lat": -6.442059,
+    "lng": 106.8365413,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.442059,106.8365413",
+    "invoiceNo": "INV/08129065428/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F08129065428%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *Waris*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/08129065428/202611\n💰 *Total*       : Rp 40.000\n📌 *Wilayah*     : Blok Setu + Rafael Pete\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F08129065428%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/628129065428?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*Waris*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F08129065428%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2040.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Setu%20%2B%20Rafael%20Pete%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F08129065428%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Ferry",
+        "noHp": "+6282233029831",
+        "waPhone": "6282233029831",
+        "jarakMeter": 17,
+        "alamat": "Blok setu hj sugeng, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6282233029831?text=Halo%20Ferry%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Waris%20di%20Blok%20Setu%20%2B%20Rafael%20Pete.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "Risma",
+        "noHp": "+6289519701516",
+        "waPhone": "6289519701516",
+        "jarakMeter": 28,
+        "alamat": "Hj sugeng Rafael, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6289519701516?text=Halo%20Risma%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Waris%20di%20Blok%20Setu%20%2B%20Rafael%20Pete.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 25,
+    "nama": "SULIS & TIA",
+    "phone": "087741891799",
+    "waPhone": "6287741891799",
+    "rawPhone": "87741891799",
+    "zona": "Blok Tabroni",
+    "nominal": 80000,
+    "alamat": "Blok tabroni, Kel. Kalimulya",
+    "patokan": "-",
+    "lat": -6.4295664,
+    "lng": 106.8217242,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.4295664,106.8217242",
+    "invoiceNo": "INV/087741891799/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F087741891799%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *SULIS & TIA*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/087741891799/202611\n💰 *Total*       : Rp 80.000\n📌 *Wilayah*     : Blok Tabroni\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F087741891799%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/6287741891799?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*SULIS%20%26%20TIA*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F087741891799%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2080.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Tabroni%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F087741891799%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Rafi / ulfah",
+        "noHp": "+6281292791095",
+        "waPhone": "6281292791095",
+        "jarakMeter": 9,
+        "alamat": "Jl.tabronih no.63 rt01/04 samping musolah al-araf, RT/RW RT 01 / RW 04, Kel. Kalimulya",
+        "waUrl": "https://wa.me/6281292791095?text=Halo%20Rafi%20%2F%20ulfah%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20SULIS%20%26%20TIA%20di%20Blok%20Tabroni.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "BU AGUS",
+        "noHp": "+62895635377264",
+        "waPhone": "62895635377264",
+        "jarakMeter": 13,
+        "alamat": "Blok tabroni, Kel. Kalimulya",
+        "waUrl": "https://wa.me/62895635377264?text=Halo%20BU%20AGUS%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20SULIS%20%26%20TIA%20di%20Blok%20Tabroni.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 26,
+    "nama": "Wulan",
+    "phone": "08821118045",
+    "waPhone": "628821118045",
+    "rawPhone": "8821118045",
+    "zona": "Blok Tabroni",
+    "nominal": 40000,
+    "alamat": "Blok tabroni, Kel. Kalimulya",
+    "patokan": "-",
+    "lat": -6.429656,
+    "lng": 106.8209516,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.429656,106.8209516",
+    "invoiceNo": "INV/08821118045/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F08821118045%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *Wulan*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/08821118045/202611\n💰 *Total*       : Rp 40.000\n📌 *Wilayah*     : Blok Tabroni\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F08821118045%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/628821118045?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*Wulan*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F08821118045%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2040.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20Tabroni%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F08821118045%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Ibu azra",
+        "noHp": "+6285817149762",
+        "waPhone": "6285817149762",
+        "jarakMeter": 4,
+        "alamat": "Jl tabroni no 41, RT/RW RT 001 / RW 004, Kel. Kalimulya",
+        "waUrl": "https://wa.me/6285817149762?text=Halo%20Ibu%20azra%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Wulan%20di%20Blok%20Tabroni.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "KEYLA",
+        "noHp": "+6288218470039",
+        "waPhone": "6288218470039",
+        "jarakMeter": 8,
+        "alamat": "Blok tabroni, Kel. Kalimulya",
+        "waUrl": "https://wa.me/6288218470039?text=Halo%20KEYLA%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20Wulan%20di%20Blok%20Tabroni.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 27,
+    "nama": "ASMANAH",
+    "phone": "089676573809",
+    "waPhone": "6289676573809",
+    "rawPhone": "89676573809",
+    "zona": "Blok YKP Kelapa",
+    "nominal": 40000,
+    "alamat": "Area Blok YKP Kelapa (Zona Blok YKP Kelapa)",
+    "patokan": "Area Blok YKP Kelapa",
+    "lat": -6.250903543616133,
+    "lng": 106.84156563464258,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.250903543616133,106.84156563464258",
+    "invoiceNo": "INV/089676573809/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F089676573809%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *ASMANAH*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/089676573809/202611\n💰 *Total*       : Rp 40.000\n📌 *Wilayah*     : Blok YKP Kelapa\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F089676573809%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/6289676573809?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*ASMANAH*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F089676573809%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2040.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20YKP%20Kelapa%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F089676573809%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "Mamah yefi",
+        "noHp": "+6285296772601",
+        "waPhone": "6285296772601",
+        "jarakMeter": 20199,
+        "alamat": "Ykp kelapa, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6285296772601?text=Halo%20Mamah%20yefi%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20ASMANAH%20di%20Blok%20YKP%20Kelapa.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "Kontrakan rahman",
+        "noHp": "+6285776766019",
+        "waPhone": "6285776766019",
+        "jarakMeter": 20199,
+        "alamat": "Ykp kelapa, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6285776766019?text=Halo%20Kontrakan%20rahman%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20ASMANAH%20di%20Blok%20YKP%20Kelapa.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  },
+  {
+    "id": 28,
+    "nama": "YUSAK",
+    "phone": "083328882649",
+    "waPhone": "6283328882649",
+    "rawPhone": "83328882649",
+    "zona": "Blok YKP Kelapa",
+    "nominal": 40000,
+    "alamat": "Gang damai ykp, Kel. Kalibaru",
+    "patokan": "-",
+    "lat": -6.4374937,
+    "lng": 106.842119,
+    "gmapsUrl": "https://www.google.com/maps?q=-6.4374937,106.842119",
+    "invoiceNo": "INV/083328882649/202611",
+    "invoiceUrl": "https://upsheru.com/bayar-tagihan?invoice=INV%2F083328882649%2F202611",
+    "messageText": "🌿 *Pengingat Iuran Kebersihan — UPS HERU*\n\nYth. Bapak/Ibu Warga *YUSAK*,\n\nSemoga Bapak/Ibu dan keluarga senantiasa sehat.\n\nKami menginformasikan bahwa tagihan iuran pengangkutan sampah UPS HERU periode *November 2026* saat ini belum tercatat:\n\n📄 *No. Tagihan* : INV/083328882649/202611\n💰 *Total*       : Rp 40.000\n📌 *Wilayah*     : Blok YKP Kelapa\n\nPembayaran dapat dilakukan secara praktis via QRIS (semua Bank & E-Wallet) melalui tautan resmi berikut:\n👉 https://upsheru.com/bayar-tagihan?invoice=INV%2F083328882649%2F202611\n\n*(Scan QRIS langsung otomatis terverifikasi lunas tanpa perlu konfirmasi manual)*\n\n💡 *Kendala Layanan atau Mau Bayar Tunai?*\nSilakan langsung balas pesan WhatsApp ini agar kami bantu.\n\nTerima kasih banyak atas kerja sama Bapak/Ibu dalam menjaga kebersihan lingkungan bersama. 🙏✨\n—\n*Unit Pengelolaan Kebersihan (UPS HERU)*\n🌐 www.upsheru.com",
+    "waUrl": "https://wa.me/6283328882649?text=%F0%9F%8C%BF%20*Pengingat%20Iuran%20Kebersihan%20%E2%80%94%20UPS%20HERU*%0A%0AYth.%20Bapak%2FIbu%20Warga%20*YUSAK*%2C%0A%0ASemoga%20Bapak%2FIbu%20dan%20keluarga%20senantiasa%20sehat.%0A%0AKami%20menginformasikan%20bahwa%20tagihan%20iuran%20pengangkutan%20sampah%20UPS%20HERU%20periode%20*November%202026*%20saat%20ini%20belum%20tercatat%3A%0A%0A%F0%9F%93%84%20*No.%20Tagihan*%20%3A%20INV%2F083328882649%2F202611%0A%F0%9F%92%B0%20*Total*%20%20%20%20%20%20%20%3A%20Rp%2040.000%0A%F0%9F%93%8C%20*Wilayah*%20%20%20%20%20%3A%20Blok%20YKP%20Kelapa%0A%0APembayaran%20dapat%20dilakukan%20secara%20praktis%20via%20QRIS%20(semua%20Bank%20%26%20E-Wallet)%20melalui%20tautan%20resmi%20berikut%3A%0A%F0%9F%91%89%20https%3A%2F%2Fupsheru.com%2Fbayar-tagihan%3Finvoice%3DINV%252F083328882649%252F202611%0A%0A*(Scan%20QRIS%20langsung%20otomatis%20terverifikasi%20lunas%20tanpa%20perlu%20konfirmasi%20manual)*%0A%0A%F0%9F%92%A1%20*Kendala%20Layanan%20atau%20Mau%20Bayar%20Tunai%3F*%0ASilakan%20langsung%20balas%20pesan%20WhatsApp%20ini%20agar%20kami%20bantu.%0A%0ATerima%20kasih%20banyak%20atas%20kerja%20sama%20Bapak%2FIbu%20dalam%20menjaga%20kebersihan%20lingkungan%20bersama.%20%F0%9F%99%8F%E2%9C%A8%0A%E2%80%94%0A*Unit%20Pengelolaan%20Kebersihan%20(UPS%20HERU)*%0A%F0%9F%8C%90%20www.upsheru.com",
+    "tetangga": [
+      {
+        "nama": "APRIL",
+        "noHp": "+6289509631510",
+        "waPhone": "6289509631510",
+        "jarakMeter": 4,
+        "alamat": "Gang damai ykp, Kel. Kalibaru",
+        "waUrl": "https://wa.me/6289509631510?text=Halo%20APRIL%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20YUSAK%20di%20Blok%20YKP%20Kelapa.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      },
+      {
+        "nama": "Dwi",
+        "noHp": "+62895612873070",
+        "waPhone": "62895612873070",
+        "jarakMeter": 5,
+        "alamat": "Gang damai ykp, Kel. Kalibaru",
+        "waUrl": "https://wa.me/62895612873070?text=Halo%20Dwi%2C%20maaf%20mengganggu%20sebentar.%20Kami%20dari%20pengelola%20UPS%20HERU%20ingin%20konfirmasi%20nomor%20kontak%20tetangga%20Anda%2C%20Bapak%2FIbu%20YUSAK%20di%20Blok%20YKP%20Kelapa.%20Apakah%20nomor%20beliau%20masih%20aktif%3F%20Terima%20kasih%20banyak%20sebelumnya.%20%F0%9F%99%8F"
+      }
+    ]
+  }
+]
