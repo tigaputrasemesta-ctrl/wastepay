@@ -579,16 +579,225 @@ function generateHtml(customers) {
     }
 
     .toast.show { opacity: 1; }
+
+    /* PIN Lock Screen */
+    .pin-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #090d16;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .pin-card {
+      background: #131d31;
+      border: 1px solid #1e293b;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 360px;
+      padding: 24px 20px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      position: relative;
+    }
+
+    .pin-icon-wrap {
+      width: 58px;
+      height: 58px;
+      margin: 0 auto 12px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+    }
+
+    .pin-badge {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid #059669;
+      color: #34d399;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .pin-title {
+      font-size: 16.5px;
+      font-weight: 800;
+      color: #f8fafc;
+      margin-bottom: 4px;
+    }
+
+    .pin-subtitle {
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.4;
+      margin-bottom: 16px;
+    }
+
+    .pin-dots-row {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .pin-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid #334155;
+      background: transparent;
+      transition: all 0.2s ease;
+    }
+
+    .pin-dot.filled {
+      background: #10b981;
+      border-color: #34d399;
+      box-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
+      transform: scale(1.15);
+    }
+
+    .pin-alert {
+      min-height: 20px;
+      font-size: 11.5px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #f87171;
+      transition: all 0.2s ease;
+    }
+
+    .numpad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .numpad-btn {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #f8fafc;
+      font-size: 20px;
+      font-weight: 700;
+      border-radius: 12px;
+      padding: 12px 0;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    .numpad-btn:active {
+      background: #10b981;
+      color: #0f172a;
+      transform: scale(0.95);
+    }
+
+    .numpad-btn.numpad-action {
+      font-size: 12.5px;
+      color: #94a3b8;
+      background: #0f172a;
+    }
+
+    .pin-footer-hint {
+      margin-top: 16px;
+      font-size: 9.5px;
+      color: #64748b;
+      line-height: 1.35;
+    }
+
+    .btn-lock-nav {
+      background: #1e293b;
+      color: #cbd5e1;
+      border: 1px solid #475569;
+      border-radius: 10px;
+      padding: 2px 8px;
+      font-size: 10.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .btn-lock-nav:active {
+      background: #ef4444;
+      color: #fff;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+
+    .shake { animation: shake 0.4s ease-in-out; }
   </style>
 </head>
 <body>
-<div class="container">
+
+<!-- PIN LOCK SCREEN -->
+<div id="pinLockScreen" class="pin-screen">
+  <div class="pin-card" id="pinCard">
+    <div class="pin-icon-wrap">
+      🔒
+    </div>
+    <span class="pin-badge">🛡️ INTERNAL UPS HERU</span>
+    <h2 class="pin-title">Akses Khusus Terbatas</h2>
+    <p class="pin-subtitle">Portal kerja follow-up ini bersifat internal & sementara.<br>Masukkan 4 digit PIN petugas untuk membuka data:</p>
+
+    <div class="pin-dots-row" id="pinDotsRow">
+      <span class="pin-dot" id="dot-0"></span>
+      <span class="pin-dot" id="dot-1"></span>
+      <span class="pin-dot" id="dot-2"></span>
+      <span class="pin-dot" id="dot-3"></span>
+    </div>
+
+    <div id="pinAlert" class="pin-alert"></div>
+
+    <!-- Mobile Touch Keypad -->
+    <div class="numpad-grid">
+      <button type="button" class="numpad-btn" onclick="pressPin('1')">1</button>
+      <button type="button" class="numpad-btn" onclick="pressPin('2')">2</button>
+      <button type="button" class="numpad-btn" onclick="pressPin('3')">3</button>
+      <button type="button" class="numpad-btn" onclick="pressPin('4')">4</button>
+      <button type="button" class="numpad-btn" onclick="pressPin('5')">5</button>
+      <button type="button" class="numpad-btn" onclick="pressPin('6')">6</button>
+      <button type="button" class="numpad-btn" onclick="pressPin('7')">7</button>
+      <button type="button" class="numpad-btn" onclick="pressPin('8')">8</button>
+      <button type="button" class="numpad-btn" onclick="pressPin('9')">9</button>
+      <button type="button" class="numpad-btn numpad-action" onclick="resetPin()">Hapus</button>
+      <button type="button" class="numpad-btn" onclick="pressPin('0')">0</button>
+      <button type="button" class="numpad-btn numpad-action" onclick="backspacePin()">⌫</button>
+    </div>
+
+    <div class="pin-footer-hint">
+      🔒 Dilindungi enkripsi sesi internal.<br>
+      Ketik langsung di keyboard jika menggunakan PC/Laptop.
+    </div>
+  </div>
+</div>
+
+<div class="container" id="mainAppContainer" style="display:none;">
 
   <!-- Header -->
   <header class="header-bar">
     <div class="title-row">
       <h1>🛠️ ALAT KERJA FOLLOW-UP</h1>
-      <a href="https://upsheru.com" target="_blank" class="badge-domain">🌐 upsheru.com/followup</a>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <a href="https://upsheru.com" target="_blank" class="badge-domain">🌐 upsheru.com/followup</a>
+        <button type="button" class="btn-lock-nav" onclick="lockApp()" title="Kunci Akses">🔒 Kunci</button>
+      </div>
     </div>
 
     <!-- KPI Grid -->
@@ -672,8 +881,109 @@ function generateHtml(customers) {
   const rawCustomers = ${jsonData};
   const STORAGE_KEY = 'UPSHERU_FOLLOWUP_197_STATE';
   const API_SYNC_URL = '/api/publik/followup-sync';
+  const VALID_PINS = ['2026', '7788'];
+  const AUTH_STORAGE_KEY = 'UPSHERU_FOLLOWUP_AUTH_2026';
 
   let currentTab = 'ALL';
+  let enteredPin = '';
+
+  function isUnlocked() {
+    return sessionStorage.getItem(AUTH_STORAGE_KEY) === '1';
+  }
+
+  function pressPin(digit) {
+    if (enteredPin.length >= 4) return;
+    enteredPin += digit;
+    updatePinDots();
+    clearPinAlert();
+    if (enteredPin.length === 4) {
+      setTimeout(verifyPin, 150);
+    }
+  }
+
+  function backspacePin() {
+    if (enteredPin.length > 0) {
+      enteredPin = enteredPin.slice(0, -1);
+      updatePinDots();
+      clearPinAlert();
+    }
+  }
+
+  function resetPin() {
+    enteredPin = '';
+    updatePinDots();
+    clearPinAlert();
+  }
+
+  function updatePinDots() {
+    for (let i = 0; i < 4; i++) {
+      const dot = document.getElementById('dot-' + i);
+      if (dot) {
+        if (i < enteredPin.length) {
+          dot.classList.add('filled');
+        } else {
+          dot.classList.remove('filled');
+        }
+      }
+    }
+  }
+
+  function clearPinAlert() {
+    const alertEl = document.getElementById('pinAlert');
+    if (alertEl) {
+      alertEl.textContent = '';
+      alertEl.style.color = '#f87171';
+    }
+  }
+
+  function verifyPin() {
+    const alertEl = document.getElementById('pinAlert');
+    const cardEl = document.getElementById('pinCard');
+    if (VALID_PINS.includes(enteredPin)) {
+      if (alertEl) {
+        alertEl.style.color = '#34d399';
+        alertEl.textContent = '✅ PIN Benar! Membuka data...';
+      }
+      sessionStorage.setItem(AUTH_STORAGE_KEY, '1');
+      setTimeout(() => {
+        const lockEl = document.getElementById('pinLockScreen');
+        const appEl = document.getElementById('mainAppContainer');
+        if (lockEl) lockEl.style.display = 'none';
+        if (appEl) appEl.style.display = 'block';
+        initApp();
+      }, 350);
+    } else {
+      if (alertEl) {
+        alertEl.style.color = '#f87171';
+        alertEl.textContent = '⚠️ PIN salah! Hubungi Koordinator Lapangan.';
+      }
+      if (cardEl) {
+        cardEl.classList.add('shake');
+        setTimeout(() => cardEl.classList.remove('shake'), 450);
+      }
+      if (navigator.vibrate) {
+        try { navigator.vibrate(200); } catch (e) {}
+      }
+      setTimeout(resetPin, 650);
+    }
+  }
+
+  function lockApp() {
+    sessionStorage.removeItem(AUTH_STORAGE_KEY);
+    location.reload();
+  }
+
+  // Keyboard support for desktop / laptop
+  document.addEventListener('keydown', (e) => {
+    if (isUnlocked()) return;
+    if (e.key >= '0' && e.key <= '9') {
+      pressPin(e.key);
+    } else if (e.key === 'Backspace') {
+      backspacePin();
+    } else if (e.key === 'Escape') {
+      resetPin();
+    }
+  });
 
   function loadState() {
     try {
@@ -1005,8 +1315,11 @@ function generateHtml(customers) {
     try {
       const res = await fetch(API_SYNC_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ updates: userState })
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-followup-pin': '2026'
+        },
+        body: JSON.stringify({ updates: userState, pin: '2026' })
       });
       const data = await res.json();
       if (data.success) {
@@ -1105,10 +1418,25 @@ Laporan dibuat otomatis via Alat Kerja Lapangan UPS HERU.\`;
     showToast('💾 File backup berhasil diunduh!');
   }
 
-  // Init
-  populateZonaFilter();
-  updateKPI();
-  renderCards();
+  function initApp() {
+    populateZonaFilter();
+    updateKPI();
+    renderCards();
+  }
+
+  // Check auth state on load
+  if (isUnlocked()) {
+    const lockEl = document.getElementById('pinLockScreen');
+    const appEl = document.getElementById('mainAppContainer');
+    if (lockEl) lockEl.style.display = 'none';
+    if (appEl) appEl.style.display = 'block';
+    initApp();
+  } else {
+    const lockEl = document.getElementById('pinLockScreen');
+    const appEl = document.getElementById('mainAppContainer');
+    if (lockEl) lockEl.style.display = 'flex';
+    if (appEl) appEl.style.display = 'none';
+  }
 </script>
 </body>
 </html>`;
@@ -1116,10 +1444,16 @@ Laporan dibuat otomatis via Alat Kerja Lapangan UPS HERU.\`;
 
 const htmlContent = generateHtml(masterData);
 
-// 1. Save to Desktop
+// 1. Save to Desktop (if on Windows)
 const desktopPath = 'C:/Users/o2w/Desktop/ALAT_KERJA_FOLLOWUP_UPSHERU.html';
-fs.writeFileSync(desktopPath, htmlContent, 'utf8');
-console.log('Saved to Desktop:', desktopPath);
+try {
+  if (fs.existsSync(path.dirname(desktopPath))) {
+    fs.writeFileSync(desktopPath, htmlContent, 'utf8');
+    console.log('Saved to Desktop:', desktopPath);
+  }
+} catch (e) {
+  // Ignore on non-Windows
+}
 
 // 2. Save to public/followup.html
 const publicFollowup = path.join(__dirname, '..', 'public', 'followup.html');

@@ -5,13 +5,25 @@ import path from 'path';
 export const dynamic = 'force-dynamic';
 
 const UPDATE_FILE = path.join(process.cwd(), 'data', 'followup_updates.json');
+const VALID_PINS = ['2026', '7788'];
 
 function getCorsHeaders() {
   return {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-followup-pin',
   };
+}
+
+function isAuthorizedPin(request: Request, bodyPin?: string | null) {
+  const url = new URL(request.url);
+  const headerPin = request.headers.get('x-followup-pin');
+  const queryPin = url.searchParams.get('pin');
+  return (
+    VALID_PINS.includes(headerPin || '') ||
+    VALID_PINS.includes(queryPin || '') ||
+    VALID_PINS.includes(bodyPin || '')
+  );
 }
 
 export async function OPTIONS() {
@@ -21,7 +33,14 @@ export async function OPTIONS() {
   });
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  if (!isAuthorizedPin(request)) {
+    return NextResponse.json(
+      { success: false, error: 'Akses Ditolak: PIN Otorisasi Dibutuhkan' },
+      { status: 401, headers: getCorsHeaders() }
+    );
+  }
+
   try {
     let data = {};
     if (fs.existsSync(UPDATE_FILE)) {
@@ -41,7 +60,14 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const body = await request.json().catch(() => ({}));
+    if (!isAuthorizedPin(request, body.pin)) {
+      return NextResponse.json(
+        { success: false, error: 'Akses Ditolak: PIN Otorisasi Dibutuhkan' },
+        { status: 401, headers: getCorsHeaders() }
+      );
+    }
+
     const newUpdates = body.updates || {};
 
     let existing = {};
