@@ -50,6 +50,9 @@ next-env.d.ts
 *.db-journal
 *.db-wal
 *.db-shm
+*.db
+/data/chat_wa/
+/data/wa_inbox/
 
 # server & app logs
 *.log

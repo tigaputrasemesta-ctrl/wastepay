@@ -23,7 +23,8 @@ import subprocess
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INBOX_DIR = r"C:\Users\o2w\Desktop\UPSHERU_WA_INBOX\inbox"
 PROCESSED_DIR = r"C:\Users\o2w\Desktop\UPSHERU_WA_INBOX\processed"
-FALLBACK_DIR = r"C:\Users\o2w\Desktop\CHAT WA"
+PROJECT_CHAT_WA_DIR = os.path.join(ROOT_DIR, "data", "chat_wa")
+DESKTOP_CHAT_WA_DIR = r"C:\Users\o2w\Desktop\CHAT WA"
 EXCEL_PATH = r"C:\Users\o2w\Desktop\DATA PELANGGAN BELUM LUNAS NOPEMBER.xlsx"
 MASTER_JSON_PATH = os.path.join(ROOT_DIR, "data", "followup_197_master.json")
 PUBLIC_FOLLOWUP_HTML = os.path.join(ROOT_DIR, "public", "followup.html")
@@ -37,7 +38,7 @@ def print_banner():
     print("=" * 70)
 
 def find_backup_database():
-    """Cari msgstore.db di inbox atau fallback ke folder CHAT WA"""
+    """Cari msgstore.db di inbox, data/chat_wa (proyek), atau Desktop/CHAT WA"""
     inbox_files = [f for f in os.listdir(INBOX_DIR) if f.endswith('.db') or 'msgstore' in f.lower()] if os.path.exists(INBOX_DIR) else []
     
     if inbox_files:
@@ -45,12 +46,17 @@ def find_backup_database():
         print(f"\n📥 Menemukan database baru di Inbox: {inbox_files[0]}")
         return db_file, True
     
-    fallback_db = os.path.join(FALLBACK_DIR, "msgstore.db")
-    if os.path.exists(fallback_db):
-        print(f"\n📂 Menggunakan database aktif dari: {fallback_db}")
-        return fallback_db, False
+    project_db = os.path.join(PROJECT_CHAT_WA_DIR, "msgstore.db")
+    if os.path.exists(project_db):
+        print(f"\n📂 Menggunakan database aktif proyek: {project_db}")
+        return project_db, False
+
+    desktop_db = os.path.join(DESKTOP_CHAT_WA_DIR, "msgstore.db")
+    if os.path.exists(desktop_db):
+        print(f"\n📂 Menggunakan database aktif Desktop: {desktop_db}")
+        return desktop_db, False
     
-    print("\n❌ ERROR: Tidak ada file msgstore.db di Inbox maupun folder CHAT WA!")
+    print("\n❌ ERROR: Tidak ada file msgstore.db di Inbox, data/chat_wa, maupun Desktop!")
     print(f"   Silakan letakkan file backup WhatsApp Anda di: {INBOX_DIR}")
     return None, False
 
