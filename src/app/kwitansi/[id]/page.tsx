@@ -4,6 +4,7 @@ import { getSession } from "@/lib/auth";
 import { getPetugasKelurahan, PETUGAS_SCOPE_ALL } from "@/lib/scope";
 import { getPembayaranById, formatNoKwitansi } from "@/lib/kwitansi";
 import TombolCetak from "@/components/TombolCetak";
+import { formatMediaUrl } from "@/lib/foto";
 import {
   hitungRincian,
   formatRupiahSkylite,
@@ -244,7 +245,7 @@ export default async function KwitansiPage({
                 <span>Lampiran Foto Bukti Asli Pembayaran ({metodeLabel})</span>
               </div>
               <a
-                href={p.buktiBayar}
+                href={formatMediaUrl(p.buktiBayar)}
                 target="_blank"
                 rel="noopener noreferrer"
                 download={`bukti-bayar-${noKwitansi}.jpg`}
@@ -255,7 +256,7 @@ export default async function KwitansiPage({
             </div>
             <div className="mt-4 flex justify-center bg-slate-50 rounded-xl p-3 border border-slate-200 overflow-hidden">
               <img
-                src={p.buktiBayar}
+                src={formatMediaUrl(p.buktiBayar)}
                 alt={`Bukti Pembayaran ${noKwitansi}`}
                 className="max-h-[500px] w-auto max-w-full object-contain rounded-lg shadow-sm"
               />

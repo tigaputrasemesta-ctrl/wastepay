@@ -64,3 +64,47 @@ export async function ekstrakGpsFoto(
   }
   return null;
 }
+
+/**
+ * Normalisasi URL media / bukti bayar / foto rumah:
+ * - Menangani relative path yang kehilangan awalan slash ("uploads/..." -> "/uploads/...")
+ * - Menangani raw base64 tanpa prefix data:image (misal diawali "/9j/" untuk JPEG atau "iVBOR" untuk PNG)
+ * - Membiarkan URL publik atau data URI yang sudah valid
+ */
+export function formatMediaUrl(url: string | null | undefined): string {
+  if (!url) return "";
+  const trimmed = url.trim();
+  if (!trimmed) return "";
+
+  // 1. Raw JPEG base64 (diawali magic bytes /9j/)
+  if (trimmed.startsWith("/9j/") || trimmed.startsWith("/9j+")) {
+    return `data:image/jpeg;base64,${trimmed}`;
+  }
+
+  // 2. Relative path tanpa leading slash
+  if (trimmed.startsWith("uploads/")) {
+    return `/${trimmed}`;
+  }
+
+  // 3. Raw PNG base64
+  if (trimmed.startsWith("iVBORw0KGgo")) {
+    return `data:image/png;base64,${trimmed}`;
+  }
+
+  // 4. Raw WebP base64
+  if (trimmed.startsWith("UklGR")) {
+    return `data:image/webp;base64,${trimmed}`;
+  }
+
+  // 5. Data URI atau URL valid
+  if (trimmed.startsWith("data:") || trimmed.startsWith("/") || trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+    return trimmed;
+  }
+
+  // 6. Fallback untuk raw base64 tanpa identifier
+  if (trimmed.length > 50 && !trimmed.startsWith("{")) {
+    return `data:image/jpeg;base64,${trimmed}`;
+  }
+
+  return trimmed;
+}

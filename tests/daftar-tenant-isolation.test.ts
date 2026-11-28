@@ -46,7 +46,7 @@ vi.mock("../src/lib/audit", () => ({
 }));
 
 vi.mock("../src/lib/server/media-storage", () => ({
-  persistBase64Image: vi.fn().mockResolvedValue("/uploads/pelanggan/test.jpg"),
+  persistBase64Image: vi.fn(async (val) => (val ? "/uploads/pelanggan/test.jpg" : null)),
 }));
 
 vi.mock("../src/lib/penugasan-jadwal", () => ({
@@ -103,6 +103,112 @@ describe("Public /api/publik/daftar multi-tenant assignment", () => {
     expect(res.status).toBe(200);
     const createCall = vi.mocked(prisma.pelanggan.create).mock.calls[0]?.[0];
     expect(createCall?.data?.tenantId).toBe("tenant-pilot-upsheru");
+  });
+
+  it("allows public registration without fotoRumah and without GPS, applying Kota Depok fallback coordinates and survey note", async () => {
+    const req = new NextRequest("https://upsheru.com/api/publik/daftar", {
+      method: "POST",
+      headers: {
+        host: "upsheru.com",
+        "x-forwarded-host": "upsheru.com",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        nama: "Warga Kalibaru",
+        noTelepon: "081299998888",
+        kategori: "level_1",
+        kecamatan: "Cilodong",
+        kelurahan: "Kalibaru",
+        alamat: "Jalan Kalibaru Timur RT 03 RW 05",
+      }),
+    });
+
+    const res = await daftarPost(req);
+    expect(res.status).toBe(200);
+    const createCall = vi.mocked(prisma.pelanggan.create).mock.calls[0]?.[0];
+    expect(createCall?.data?.latitude).toBeCloseTo(-6.424838);
+    expect(createCall?.data?.longitude).toBeCloseTo(106.832667);
+    expect(createCall?.data?.koordinatSumber).toBe("perkiraan_wilayah");
+    expect(createCall?.data?.catatan).toContain("Foto rumah: Survei rute lapangan");
+  });
+
+  it("updates existing calon customer on re-registration instead of throwing duplicate error", async () => {
+    vi.mocked(prisma.pelanggan.findFirst).mockResolvedValueOnce({
+      id: 55,
+      nama: "Calon Lama",
+      status: "calon",
+      kodePelanggan: "6281299998888",
+      deletedAt: null,
+    } as any);
+    vi.mocked(prisma.pelanggan.update).mockResolvedValue({
+      id: 55,
+      nama: "Calon Diperbarui",
+      status: "calon",
+    } as any);
+
+    const req = new NextRequest("https://upsheru.com/api/publik/daftar", {
+      method: "POST",
+      headers: {
+        host: "upsheru.com",
+        "x-forwarded-host": "upsheru.com",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        nama: "Calon Diperbarui",
+        noTelepon: "081299998888",
+        kategori: "level_1",
+        kecamatan: "Cilodong",
+        kelurahan: "Kalibaru",
+        alamat: "Jalan Kalibaru Baru No 123",
+      }),
+    });
+
+    const res = await daftarPost(req);
+    expect(res.status).toBe(200);
+    expect(prisma.pelanggan.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 55 },
+        data: expect.objectContaining({
+          nama: "Calon Diperbarui",
+          status: "calon",
+        }),
+      })
+    );
+    expect(prisma.pelanggan.create).not.toHaveBeenCalled();
+  });
+
+  it("rejects registration if customer is already aktif and directs to payment", async () => {
+    vi.mocked(prisma.pelanggan.findFirst).mockResolvedValueOnce({
+      id: 88,
+      nama: "Warga Aktif",
+      status: "aktif",
+      kodePelanggan: "6281299998888",
+      deletedAt: null,
+    } as any);
+
+    const req = new NextRequest("https://upsheru.com/api/publik/daftar", {
+      method: "POST",
+      headers: {
+        host: "upsheru.com",
+        "x-forwarded-host": "upsheru.com",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        nama: "Warga Aktif Baru",
+        noTelepon: "081299998888",
+        kategori: "level_1",
+        kecamatan: "Cilodong",
+        kelurahan: "Kalibaru",
+        alamat: "Jalan Kalibaru Baru No 123",
+      }),
+    });
+
+    const res = await daftarPost(req);
+    expect(res.status).toBe(400);
+    const json = await res.json();
+    expect(json.error).toContain("sudah terdaftar aktif");
+    expect(prisma.pelanggan.create).not.toHaveBeenCalled();
+    expect(prisma.pelanggan.update).not.toHaveBeenCalled();
   });
 
   it("blocks public customer signup on core host o2whero.com", async () => {

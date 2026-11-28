@@ -18,6 +18,7 @@ import AnimatedDumpTruck from "@/components/AnimatedDumpTruck";
 import { PanduanCaraBayarQris } from "@/components/PanduanCaraBayarQris";
 import { resolveTenantByHost } from "@/lib/tenant/config";
 import { downloadQrisVoucherCard } from "@/lib/qris-card";
+import { kompresGambar } from "@/lib/foto";
 
 type TagihanPublik = {
   id: number;
@@ -428,26 +429,19 @@ function BayarPortalContent() {
     }
   }, [kodeParam, isInvoiceMode, lakukanPencarian]);
 
-  function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) {
-      setKirimError("Ukuran file terlalu besar. Maksimal ukuran gambar bukti pembayaran adalah 2MB.");
-      return;
-    }
     setKirimError("");
-    const reader = new FileReader();
-    reader.onload = async () => {
-      const base64 = reader.result as string;
-      setMengirim(true);
-      try {
-        setBukti(base64);
-      } catch {
-        setKirimError("Gagal mengunggah foto");
-      }
+    setMengirim(true);
+    try {
+      const compressed = await kompresGambar(file);
+      setBukti(compressed);
+    } catch {
+      setKirimError("Gagal memproses foto bukti pembayaran. Silakan coba file lain.");
+    } finally {
       setMengirim(false);
-    };
-    reader.readAsDataURL(file);
+    }
   }
 
   const segarkanTagihan = useCallback(async (queryTarget: string) => {
@@ -860,7 +854,7 @@ function BayarPortalContent() {
                 aria-required={!isTunai}
                 className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer"
               />
-              <p className="text-xs text-slate-500 mt-1">Maksimal ukuran file: 2MB (format JPG, PNG, WEBP)</p>
+              <p className="text-xs text-slate-500 mt-1">Format JPG, PNG, WEBP (otomatis dioptimalkan)</p>
             </div>
 
             {bukti && (

@@ -129,33 +129,35 @@ export async function POST(request: Request) {
     const referal = String(body.referal ?? "").trim();
     const customTarifRaw = body.customTarif ? parseFloat(body.customTarif) : NaN;
     const customTarif = !isNaN(customTarifRaw) ? customTarifRaw : undefined;
-    const latitude = body.latitude ? parseFloat(body.latitude) : null;
-    const longitude = body.longitude ? parseFloat(body.longitude) : null;
-    const koordinatSumber = body.koordinatSumber ? String(body.koordinatSumber) : null;
-    const koordinatAkurasi = body.koordinatAkurasi ? parseFloat(body.koordinatAkurasi) : null;
     const fotoRumah = typeof body.fotoRumah === "string" ? body.fotoRumah.trim() : "";
     const isPetugas = Boolean(body.isPetugas);
 
     // Foto bisa berupa URL /uploads/... atau data URL base64
-    if (fotoRumah && !fotoRumah.startsWith("/uploads/") && (!fotoRumah.startsWith("data:image/") || fotoRumah.length > 2_000_000)) {
+    if (fotoRumah && !fotoRumah.startsWith("/uploads/") && (!fotoRumah.startsWith("data:image/") || fotoRumah.length > 2_500_000)) {
       return NextResponse.json(
-        { error: "Foto rumah tidak valid atau terlalu besar." },
+        { error: "Foto rumah tidak valid atau terlalu besar (maksimal 2.5MB)." },
         { status: 400 }
       );
     }
 
-    if (!fotoRumah) {
-      return NextResponse.json({ error: "Foto rumah wajib diisi." }, { status: 400 });
-    }
-    if (latitude === null || longitude === null || Number.isNaN(latitude) || Number.isNaN(longitude)) {
-      return NextResponse.json({ error: "Titik lokasi GPS wajib diisi." }, { status: 400 });
-    }
+    // Koordinat: gunakan input user jika valid, atau fallback ke titik pusat Kota Depok
+    const latParsed = body.latitude != null ? parseFloat(String(body.latitude)) : NaN;
+    const lngParsed = body.longitude != null ? parseFloat(String(body.longitude)) : NaN;
+    const hasValidGps = !Number.isNaN(latParsed) && !Number.isNaN(lngParsed);
+    const latitude = hasValidGps ? latParsed : -6.424838;
+    const longitude = hasValidGps ? lngParsed : 106.832667;
+    const koordinatSumber = body.koordinatSumber
+      ? String(body.koordinatSumber)
+      : hasValidGps
+      ? "manual"
+      : "perkiraan_wilayah";
+    const koordinatAkurasi = body.koordinatAkurasi ? parseFloat(body.koordinatAkurasi) : hasValidGps ? null : 500;
 
     if (nama.length < 3) {
       return NextResponse.json({ error: "Nama minimal 3 karakter." }, { status: 400 });
     }
     if (!teleponValid(noTelepon)) {
-      return NextResponse.json({ error: "Nomor WhatsApp tidak valid." }, { status: 400 });
+      return NextResponse.json({ error: "Nomor WhatsApp tidak valid (minimal 9 digit angka)." }, { status: 400 });
     }
     if (!kecamatan || !kelurahan) {
       return NextResponse.json(
@@ -164,7 +166,7 @@ export async function POST(request: Request) {
       );
     }
     if (alamat.length < 10) {
-      return NextResponse.json({ error: "Alamat terlalu singkat." }, { status: 400 });
+      return NextResponse.json({ error: "Alamat terlalu singkat (minimal 10 karakter)." }, { status: 400 });
     }
 
     let zonaId = body.zonaId ? parseInt(body.zonaId) : null;
@@ -262,23 +264,47 @@ export async function POST(request: Request) {
     }
 
     // Simpan foto rumah ke file storage jika berupa Base64
-    const savedFotoRumah = await persistBase64Image(fotoRumah, "pelanggan", activeTenantId);
+    const savedFotoRumah = fotoRumah ? await persistBase64Image(fotoRumah, "pelanggan", activeTenantId) : null;
 
     // Kode pelanggan kini menggunakan nomor WhatsApp (noTelepon)
     const kodePelanggan = noTelepon;
     const rtRw = formatRtRw(rt, rw);
 
+    const cleanPhoneDigits = noTelepon.replace(/[^\d]/g, "");
+    const localPhone = cleanPhoneDigits.startsWith("62") ? `0${cleanPhoneDigits.slice(2)}` : cleanPhoneDigits;
+    const intlPhone = cleanPhoneDigits.startsWith("0") ? `62${cleanPhoneDigits.slice(1)}` : cleanPhoneDigits;
+    const phoneCandidates = Array.from(new Set([noTelepon, cleanPhoneDigits, localPhone, intlPhone].filter(Boolean)));
+
+    // Periksa apakah nomor sudah pernah ada di database tenant ini
+    const existingPelanggan = await prisma.pelanggan.findFirst({
+      where: {
+        ...tenantScope,
+        OR: phoneCandidates.map((n) => ({ noTelepon: n })),
+      },
+      select: { id: true, nama: true, status: true, kodePelanggan: true, deletedAt: true },
+    });
+
     let pelanggan;
-    try {
-      pelanggan = await prisma.pelanggan.create({
+    if (existingPelanggan) {
+      if (existingPelanggan.deletedAt === null && existingPelanggan.status === "aktif") {
+        return NextResponse.json(
+          {
+            error: `Nomor WhatsApp ${noTelepon} sudah terdaftar aktif atas nama "${existingPelanggan.nama}". Anda dapat mengecek tagihan langsung di menu Pembayaran.`,
+          },
+          { status: 400 }
+        );
+      }
+
+      // Jika calon atau sebelumnya soft-deleted, lakukan pembaruan data registrasi
+      pelanggan = await prisma.pelanggan.update({
+        where: { id: existingPelanggan.id },
         data: {
           nama,
           noTelepon,
           kategori,
           alamat,
           rtRw: rtRw || null,
-          kodePelanggan,
-          fotoRumah: savedFotoRumah || null,
+          fotoRumah: savedFotoRumah || undefined,
           patokanLokasi: patokanLokasi || null,
           penanggungjawab: penanggungjawab || null,
           referal: referal || null,
@@ -287,30 +313,68 @@ export async function POST(request: Request) {
           longitude,
           koordinatSumber,
           koordinatAkurasi,
-          status: "calon", // belum aktif — tagihan dibuat setelah disetujui
+          status: "calon",
           wilayahId,
           kelurahanId,
           paketId,
-          tenantId: activeTenantId,
+          deletedAt: null,
           catatan: [
-            "Daftar mandiri via website",
+            "Pendaftaran diperbarui mandiri via website",
             `(${kecamatan} / ${kelurahan})`,
             rtRw ? `RT/RW: ${rtRw}` : null,
             tanggalPenagihanCustom ? `Req Tgl Tagihan: ${tanggalPenagihanCustom}` : null,
             jadwalHari ? `Req Hari: ${jadwalHari}` : null,
+            !savedFotoRumah ? "Foto rumah: Survei rute lapangan" : null,
           ]
             .filter(Boolean)
             .join(" | "),
         },
       });
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError && (e as any).code === "P2002") {
-        return NextResponse.json(
-          { error: "Nomor WhatsApp ini sudah pernah didaftarkan. Silakan hubungi admin." },
-          { status: 400 }
-        );
+    } else {
+      try {
+        pelanggan = await prisma.pelanggan.create({
+          data: {
+            nama,
+            noTelepon,
+            kategori,
+            alamat,
+            rtRw: rtRw || null,
+            kodePelanggan,
+            fotoRumah: savedFotoRumah || null,
+            patokanLokasi: patokanLokasi || null,
+            penanggungjawab: penanggungjawab || null,
+            referal: referal || null,
+            customTarif: customTarif ?? (paketHarga ?? undefined),
+            latitude,
+            longitude,
+            koordinatSumber,
+            koordinatAkurasi,
+            status: "calon", // belum aktif — tagihan dibuat setelah disetujui
+            wilayahId,
+            kelurahanId,
+            paketId,
+            tenantId: activeTenantId,
+            catatan: [
+              "Daftar mandiri via website",
+              `(${kecamatan} / ${kelurahan})`,
+              rtRw ? `RT/RW: ${rtRw}` : null,
+              tanggalPenagihanCustom ? `Req Tgl Tagihan: ${tanggalPenagihanCustom}` : null,
+              jadwalHari ? `Req Hari: ${jadwalHari}` : null,
+              !savedFotoRumah ? "Foto rumah: Survei rute lapangan" : null,
+            ]
+              .filter(Boolean)
+              .join(" | "),
+          },
+        });
+      } catch (e) {
+        if (e instanceof Prisma.PrismaClientKnownRequestError && (e as any).code === "P2002") {
+          return NextResponse.json(
+            { error: "Nomor WhatsApp ini sudah pernah didaftarkan. Silakan hubungi admin operasional." },
+            { status: 400 }
+          );
+        }
+        throw e;
       }
-      throw e;
     }
 
     if (zonaId || kendaraanId || petugasId || jadwalHari || ruteId) {

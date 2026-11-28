@@ -77,7 +77,23 @@ export async function GET(request: Request, { params }: Params) {
       }
     }
 
-    return NextResponse.json(pembayaran);
+    let normalizedBukti = pembayaran.buktiBayar;
+    if (normalizedBukti) {
+      const trimmed = normalizedBukti.trim();
+      const isBase64Payload =
+        trimmed.startsWith("data:image/") ||
+        trimmed.startsWith("/9j/") ||
+        trimmed.startsWith("/9j+") ||
+        (!trimmed.startsWith("/") && !trimmed.startsWith("http") && trimmed.length > 200);
+
+      if (trimmed.startsWith("uploads/")) {
+        normalizedBukti = `/${trimmed}`;
+      } else if (isBase64Payload) {
+        normalizedBukti = `/api/pembayaran/${pembayaran.id}/bukti`;
+      }
+    }
+
+    return NextResponse.json({ ...pembayaran, buktiBayar: normalizedBukti });
   } catch (error) {
     console.error("Gagal mengambil detail pembayaran:", error);
     return NextResponse.json({ error: "Gagal mengambil data pembayaran" }, { status: 500 });

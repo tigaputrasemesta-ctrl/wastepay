@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import NextImage from "next/image";
 import exifr from "exifr";
 import { kompresGambar } from "@/lib/foto";
@@ -35,6 +35,11 @@ export default function GeotagPhoto({
   const [processing, setProcessing] = useState(false);
   const [gpsLoading, setGpsLoading] = useState(false);
   const [pesan, setPesan] = useState("");
+  const [fotoError, setFotoError] = useState(false);
+
+  useEffect(() => {
+    setFotoError(false);
+  }, [foto]);
 
   async function handleFile(file: File | undefined) {
     if (!file) return;
@@ -150,13 +155,24 @@ export default function GeotagPhoto({
       <div className="flex items-start gap-4">
         {/* Preview foto */}
         <div className="w-28 h-28 rounded-2xl border border-dashed border-slate-300 overflow-hidden flex items-center justify-center bg-slate-50 text-slate-400 shrink-0">
-          {foto ? (
-            <NextImage src={foto} alt="Foto depan rumah" unoptimized width={112} height={112} className="w-full h-full object-cover" />
+          {foto && !fotoError ? (
+            <NextImage
+              src={foto}
+              alt="Foto depan rumah"
+              unoptimized
+              width={112}
+              height={112}
+              onError={() => setFotoError(true)}
+              className="w-full h-full object-cover"
+            />
           ) : (
-            <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
+            <div className="flex flex-col items-center justify-center p-2 text-center">
+              <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              {fotoError && <span className="text-[10px] text-amber-600 mt-1 font-medium">Gagal memuat</span>}
+            </div>
           )}
         </div>
 

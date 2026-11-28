@@ -169,6 +169,7 @@ export default function FormDaftar({
         if (d.gpsData) setGpsData(d.gpsData);
         if (d.koordinatSumber) setKoordinatSumber(d.koordinatSumber);
         if (d.fotoRumah) setFotoRumah(d.fotoRumah);
+        if (d.cekWaPesan) setCekWaPesan(d.cekWaPesan);
       }
     } catch (e) {
       console.warn("Failed to restore draft:", e);
@@ -195,12 +196,13 @@ export default function FormDaftar({
         gpsData,
         koordinatSumber,
         fotoRumah: fotoRumah && fotoRumah.length < 500000 ? fotoRumah : "",
+        cekWaPesan,
       };
       sessionStorage.setItem("upsheru_daftar_draft_v1", JSON.stringify(draft));
     } catch {}
-  }, [nama, noTelepon, kategori, kecamatan, kelurahan, alamat, rt, rw, patokanLokasi, jenisLayanan, paketId, currentStep, gpsData, koordinatSumber, fotoRumah, status]);
+  }, [nama, noTelepon, kategori, kecamatan, kelurahan, alamat, rt, rw, patokanLokasi, jenisLayanan, paketId, currentStep, gpsData, koordinatSumber, fotoRumah, cekWaPesan, status]);
 
-  // Load registration options
+  // Load registration options & auto-link preselected kelurahan/kecamatan
   useEffect(() => {
     fetch("/api/publik/daftar-options")
       .then((r) => r.json())
@@ -209,9 +211,24 @@ export default function FormDaftar({
         if (d.kategoriTarif && d.kategoriTarif.length > 0) {
           setKategori((prev) => prev || d.kategoriTarif[0].kategori);
         }
+        // Auto-match kecamatan jika kelurahan telah terisi dari URL query / draft
+        if (d.wilayah && d.wilayah.length > 0) {
+          const targetKel = kelurahan || (typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("kelurahan") : "");
+          if (targetKel) {
+            const matchedKec = d.wilayah.find((w: WilayahKec) =>
+              w.kelurahan.some((k: string) => k.toLowerCase() === targetKel.toLowerCase())
+            );
+            if (matchedKec) {
+              setKecamatan((prev) => prev || matchedKec.kecamatan);
+              setKelurahan(
+                matchedKec.kelurahan.find((k: string) => k.toLowerCase() === targetKel.toLowerCase()) || targetKel
+              );
+            }
+          }
+        }
       })
       .catch(() => setOpsi({ wilayah: [], paket: [], kategoriTarif: [], zonas: [], petugas: [], rute: [] }));
-  }, []);
+  }, [kelurahan]);
 
   const kelurahanList = opsi?.wilayah.find((w) => w.kecamatan === kecamatan)?.kelurahan ?? [];
   const tarifKategori = opsi?.kategoriTarif.find((k) => k.kategori === kategori);
@@ -382,12 +399,34 @@ export default function FormDaftar({
     return true;
   }
 
-  function handleNext() {
-    if (validateCurrentStep()) {
-      setCurrentStep((prev) => Math.min(prev + 1, 4) as 1 | 2 | 3 | 4);
-      setPesan("");
-      window.scrollTo({ top: 100, behavior: "smooth" });
+  async function handleNext() {
+    if (currentStep === 1) {
+      if (!nama || nama.trim().length < 3) {
+        setPesan("Nama lengkap wajib diisi minimal 3 karakter.");
+        return;
+      }
+      const clean = noTelepon.replace(/[^\d+]/g, "").replace(/^\+/, "");
+      if (!clean || clean.length < 9) {
+        setPesan("Nomor WhatsApp harus valid minimal 9 digit.");
+        return;
+      }
+      if (!cekWaPesan) {
+        const available = await handleCekNomor();
+        if (!available) {
+          setPesan("Nomor WhatsApp ini sudah terdaftar sebagai pelanggan atau format tidak sesuai.");
+          return;
+        }
+      } else if (cekWaPesan.terdaftar) {
+        setPesan("Nomor WhatsApp ini sudah terdaftar sebagai pelanggan.");
+        return;
+      }
+    } else if (!validateCurrentStep()) {
+      return;
     }
+
+    setCurrentStep((prev) => Math.min(prev + 1, 4) as 1 | 2 | 3 | 4);
+    setPesan("");
+    window.scrollTo({ top: 100, behavior: "smooth" });
   }
 
   function handlePrev() {
@@ -411,26 +450,21 @@ export default function FormDaftar({
     if (!cekWaPesan) {
       const valid = await handleCekNomor();
       if (!valid) {
-        setPesan("Silakan selesaikan pengecekan nomor WhatsApp terlebih dahulu.");
+        setPesan("Silakan periksa nomor WhatsApp Anda terlebih dahulu.");
         setCurrentStep(1);
         return;
       }
     } else if (cekWaPesan.terdaftar) {
-      setPesan("Nomor WhatsApp ini sudah terdaftar. Silakan gunakan nomor lain.");
+      setPesan("Nomor WhatsApp ini sudah terdaftar sebagai pelanggan. Silakan gunakan nomor lain atau cek tagihan.");
       setCurrentStep(1);
       return;
     }
 
-    if (!fotoRumah) {
-      setPesan("Foto tampak depan rumah wajib diunggah untuk verifikasi rute armada.");
-      setCurrentStep(4);
-      return;
-    }
-    if (!gpsData) {
-      setPesan("Titik koordinat GPS wajib ditentukan agar armada dapat menjangkau rumah Anda.");
-      setCurrentStep(4);
-      return;
-    }
+    // Koordinat GPS fallback: jika user belum memilih titik GPS, gunakan titik estimasi Depok
+    const finalLat = gpsData?.lat ?? -6.424838;
+    const finalLng = gpsData?.lng ?? 106.832667;
+    const finalSumber = gpsData ? (koordinatSumber || "gps_perangkat") : "perkiraan_wilayah";
+    const finalAkurasi = gpsData?.acc ?? 500;
 
     setStatus("kirim");
     setPesan("");
@@ -459,11 +493,11 @@ export default function FormDaftar({
           customTarif: customTarif ? customTarif : undefined,
           website,
           fotoRumah: fotoRumah || undefined,
-          latitude: gpsData?.lat,
-          longitude: gpsData?.lng,
+          latitude: finalLat,
+          longitude: finalLng,
           isPetugas,
-          koordinatAkurasi: gpsData?.acc,
-          koordinatSumber: gpsData ? koordinatSumber || "gps_perangkat" : undefined,
+          koordinatAkurasi: finalAkurasi,
+          koordinatSumber: finalSumber,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -1019,9 +1053,13 @@ export default function FormDaftar({
                     id="d-kecamatan"
                     value={kecamatan}
                     onChange={(e) => {
-                      setKecamatan(e.target.value);
-                      setKelurahan("");
-                      setZonaId("");
+                      const newKec = e.target.value;
+                      setKecamatan(newKec);
+                      const validKels = (opsi?.wilayah ?? []).find((w) => w.kecamatan === newKec)?.kelurahan ?? [];
+                      if (kelurahan && !validKels.includes(kelurahan)) {
+                        setKelurahan("");
+                        setZonaId("");
+                      }
                     }}
                     className={`w-full bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all appearance-none cursor-pointer pr-10 text-slate-900 dark:text-zinc-100 ${
                       isPetugas
@@ -1127,7 +1165,7 @@ export default function FormDaftar({
                     : "rounded-xl p-3.5 text-base sm:text-sm min-h-[88px]"
                 }`}
                 required
-                minLength={8}
+                minLength={10}
               />
             </div>
 
@@ -1238,9 +1276,14 @@ export default function FormDaftar({
 
           {/* Upload Foto */}
           <div>
-            <label className="block font-bold text-slate-700 dark:text-zinc-300 text-xs sm:text-sm mb-1.5">
-              Foto Depan Rumah <span className="text-rose-500">*</span>
-            </label>
+            <div className="flex items-center justify-between mb-1.5 flex-wrap gap-1">
+              <label className="font-bold text-slate-700 dark:text-zinc-300 text-xs sm:text-sm">
+                Foto Depan Rumah
+              </label>
+              <span className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+                Bisa Unggah / Difoto Petugas Lapangan
+              </span>
+            </div>
             <input
               ref={kameraRef}
               type="file"
@@ -1314,25 +1357,30 @@ export default function FormDaftar({
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
-                <button
-                  type="button"
-                  onClick={() => kameraRef.current?.click()}
-                  disabled={fotoLoading}
-                  className="w-full border border-emerald-200 dark:border-emerald-800 rounded-2xl font-bold flex items-center justify-center gap-2 bg-emerald-50/60 dark:bg-emerald-950/40 hover:bg-emerald-100 text-emerald-800 dark:text-emerald-300 shadow-sm transition-all disabled:opacity-50 min-h-[48px] py-3 text-xs sm:text-sm active:scale-95"
-                >
-                  <Camera className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
-                  <span>{fotoLoading ? "Memproses..." : "Buka Kamera"}</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => galeriRef.current?.click()}
-                  disabled={fotoLoading}
-                  className="w-full border border-slate-200 dark:border-zinc-700 rounded-2xl font-bold flex items-center justify-center gap-2 bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 shadow-sm transition-all disabled:opacity-50 min-h-[48px] py-3 text-xs sm:text-sm active:scale-95"
-                >
-                  <ImageIcon className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0" />
-                  <span>{fotoLoading ? "Memproses..." : "Pilih Galeri"}</span>
-                </button>
+              <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+                  <button
+                    type="button"
+                    onClick={() => kameraRef.current?.click()}
+                    disabled={fotoLoading}
+                    className="w-full border border-emerald-200 dark:border-emerald-800 rounded-2xl font-bold flex items-center justify-center gap-2 bg-emerald-50/60 dark:bg-emerald-950/40 hover:bg-emerald-100 text-emerald-800 dark:text-emerald-300 shadow-sm transition-all disabled:opacity-50 min-h-[48px] py-3 text-xs sm:text-sm active:scale-95"
+                  >
+                    <Camera className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
+                    <span>{fotoLoading ? "Memproses..." : "Buka Kamera"}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => galeriRef.current?.click()}
+                    disabled={fotoLoading}
+                    className="w-full border border-slate-200 dark:border-zinc-700 rounded-2xl font-bold flex items-center justify-center gap-2 bg-white dark:bg-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 shadow-sm transition-all disabled:opacity-50 min-h-[48px] py-3 text-xs sm:text-sm active:scale-95"
+                  >
+                    <ImageIcon className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0" />
+                    <span>{fotoLoading ? "Memproses..." : "Pilih Galeri"}</span>
+                  </button>
+                </div>
+                <p className="text-[11px] text-slate-500 dark:text-zinc-400 leading-relaxed italic">
+                  💡 Jika tidak memiliki foto saat ini, Anda tetap bisa mendaftar. Petugas survei rute kami akan mendokumentasikannya saat verifikasi jadwal ke lokasi.
+                </p>
               </div>
             )}
 
@@ -1346,9 +1394,14 @@ export default function FormDaftar({
 
           {/* Titik Lokasi GPS & Peta */}
           <div>
-            <label className="block font-bold text-slate-700 dark:text-zinc-300 text-xs sm:text-sm mb-1.5">
-              Titik Lokasi Rumah (GPS) <span className="text-rose-500">*</span>
-            </label>
+            <div className="flex items-center justify-between mb-1.5 flex-wrap gap-1">
+              <label className="font-bold text-slate-700 dark:text-zinc-300 text-xs sm:text-sm">
+                Titik Lokasi Rumah (GPS)
+              </label>
+              <span className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+                Otomatis / Ketuk Peta
+              </span>
+            </div>
 
             <div className="space-y-3">
               <div className="rounded-2xl border border-slate-200 dark:border-zinc-700 overflow-hidden shadow-sm">
@@ -1393,15 +1446,29 @@ export default function FormDaftar({
                 </div>
               ) : (
                 <div className="space-y-2.5">
-                  <button
-                    type="button"
-                    onClick={getGps}
-                    disabled={gpsLoading}
-                    className="w-full border border-emerald-300 dark:border-emerald-700 rounded-2xl font-bold flex items-center justify-center gap-2 bg-emerald-700 hover:bg-emerald-800 text-white shadow-md transition-all disabled:opacity-50 min-h-[48px] py-3 text-sm active:scale-95"
-                  >
-                    <MapPin className={`w-4 h-4 shrink-0 ${gpsLoading ? "animate-bounce" : ""}`} />
-                    <span>{gpsLoading ? "Mengambil Koordinat GPS..." : "Gunakan Titik GPS Saat Ini"}</span>
-                  </button>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={getGps}
+                      disabled={gpsLoading}
+                      className="w-full border border-emerald-300 dark:border-emerald-700 rounded-2xl font-bold flex items-center justify-center gap-2 bg-emerald-700 hover:bg-emerald-800 text-white shadow-md transition-all disabled:opacity-50 min-h-[48px] py-3 text-xs sm:text-sm active:scale-95"
+                    >
+                      <MapPin className={`w-4 h-4 shrink-0 ${gpsLoading ? "animate-bounce" : ""}`} />
+                      <span>{gpsLoading ? "Mengambil GPS..." : "Ambil Titik GPS Akurat"}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setGpsData({ lat: -6.424838, lng: 106.832667, acc: 250 });
+                        setKoordinatSumber("manual");
+                        setPesan("");
+                      }}
+                      className="w-full border border-slate-200 dark:border-zinc-700 rounded-2xl font-bold flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 shadow-sm transition-all min-h-[48px] py-3 text-xs sm:text-sm active:scale-95"
+                    >
+                      <Sparkles className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
+                      <span>Tandai Titik di Peta (Estimasi)</span>
+                    </button>
+                  </div>
 
                   {gpsDenied && (
                     <div className="rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 p-4 space-y-2.5 text-xs text-amber-900 dark:text-amber-200">
@@ -1410,21 +1477,10 @@ export default function FormDaftar({
                         <div>
                           <p className="font-bold text-sm">Izin Lokasi Browser Diblokir</p>
                           <p className="mt-1 leading-relaxed">
-                            Browser Anda belum mengizinkan akses lokasi. Untuk mengaktifkannya:
+                            Browser Anda belum mengizinkan akses lokasi. Anda tetap dapat mengetuk langsung pada peta di atas atau menekan tombol <strong>Tandai Titik di Peta (Estimasi)</strong>.
                           </p>
                         </div>
                       </div>
-                      <ol className="list-decimal pl-6 space-y-1 text-amber-800 dark:text-amber-300 leading-relaxed">
-                        <li>
-                          Ketuk ikon gembok <Lock className="w-3 h-3 inline mx-0.5" aria-hidden="true" /> di samping kolom alamat situs browser Anda
-                        </li>
-                        <li>Pilih menu <strong>Izin Situs (Permissions)</strong></li>
-                        <li>Ubah <strong>Lokasi</strong> menjadi <strong>Izinkan</strong></li>
-                      </ol>
-                      <p className="font-bold pt-1 flex items-start gap-1.5">
-                        <Info className="w-4 h-4 shrink-0 mt-0.5" />
-                        <span>Atau ketuk langsung pada peta di atas untuk menandai letak rumah Anda secara manual.</span>
-                      </p>
                     </div>
                   )}
                 </div>

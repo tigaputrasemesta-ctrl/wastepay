@@ -3,8 +3,9 @@
 import { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { X } from "lucide-react";
+import { X, AlertCircle } from "lucide-react";
 import { formatRupiah, formatDate } from "@/lib/utils";
+import { formatMediaUrl } from "@/lib/foto";
 
 export interface RiwayatPembayaranItem {
   id: number;
@@ -54,6 +55,7 @@ export function TabelRiwayatPemasukan({
     nominal: number;
     metode: string;
   } | null>(null);
+  const [modalImgError, setModalImgError] = useState(false);
 
   // Filter list
   const filtered = useMemo(() => {
@@ -262,15 +264,16 @@ export function TabelRiwayatPemasukan({
                       {item.buktiBayar && (
                         <button
                           type="button"
-                          onClick={() =>
+                          onClick={() => {
+                            setModalImgError(false);
                             setModalFoto({
-                              url: item.buktiBayar!,
+                              url: formatMediaUrl(item.buktiBayar!),
                               nama: item.pelanggan?.nama || "Pelanggan",
                               kode: item.pelanggan?.kodePelanggan || "-",
                               nominal: item.jumlah,
                               metode: item.metode,
-                            })
-                          }
+                            });
+                          }}
                           className="px-2 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold rounded-lg text-[10px] border border-indigo-200 transition"
                           title="Lihat Foto Bukti"
                         >
@@ -325,14 +328,28 @@ export function TabelRiwayatPemasukan({
               </button>
             </div>
 
-            <div className="relative w-full h-80 bg-slate-950 rounded-lg overflow-hidden flex items-center justify-center border border-slate-200 dark:border-zinc-800">
-              <Image
-                src={modalFoto.url}
-                alt="Bukti pembayaran"
-                fill
-                unoptimized
-                className="object-contain"
-              />
+            <div className="relative w-full h-80 bg-slate-950 rounded-lg overflow-hidden flex items-center justify-center border border-slate-200 dark:border-zinc-800 p-2">
+              {modalImgError ? (
+                <div className="text-center p-4 text-slate-400">
+                  <AlertCircle className="w-8 h-8 mx-auto text-amber-500 mb-2" />
+                  <p className="text-xs font-semibold">Foto bukti tidak dapat dimuat atau telah dihapus.</p>
+                  <a
+                    href={modalFoto.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block mt-2 text-xs text-indigo-400 underline font-medium"
+                  >
+                    Buka tautan file langsung
+                  </a>
+                </div>
+              ) : (
+                <img
+                  src={modalFoto.url}
+                  alt="Bukti pembayaran"
+                  className="max-h-full max-w-full object-contain mx-auto rounded"
+                  onError={() => setModalImgError(true)}
+                />
+              )}
             </div>
 
             <div className="mt-4 flex items-center justify-between shrink-0">

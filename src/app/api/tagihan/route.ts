@@ -194,10 +194,34 @@ export async function GET(request: Request) {
     isPaginated ? prisma.tagihan.count({ where }) : Promise.resolve(0),
   ]);
 
+  const mappedTagihan = tagihan.map((t) => ({
+    ...t,
+    pembayaran: Array.isArray(t.pembayaran)
+      ? t.pembayaran.map((p) => {
+          let bukti = p.buktiBayar;
+          if (bukti) {
+            const trimmed = bukti.trim();
+            const isBase64Payload =
+              trimmed.startsWith("data:image/") ||
+              trimmed.startsWith("/9j/") ||
+              trimmed.startsWith("/9j+") ||
+              (!trimmed.startsWith("/") && !trimmed.startsWith("http") && trimmed.length > 200);
+
+            if (trimmed.startsWith("uploads/")) {
+              bukti = `/${trimmed}`;
+            } else if (isBase64Payload) {
+              bukti = `/api/pembayaran/${p.id}/bukti`;
+            }
+          }
+          return { ...p, buktiBayar: bukti };
+        })
+      : t.pembayaran,
+  }));
+
   if (isPaginated) {
     return NextResponse.json(
       {
-        data: tagihan,
+        data: mappedTagihan,
         total,
         page,
         limit,
@@ -209,7 +233,7 @@ export async function GET(request: Request) {
     );
   }
 
-  return NextResponse.json(tagihan, {
+  return NextResponse.json(mappedTagihan, {
     headers: { "X-Total-Count": String(tagihan.length) },
   });
 }

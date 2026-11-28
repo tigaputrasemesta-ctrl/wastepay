@@ -71,6 +71,7 @@ export default function SurveiDetailPage() {
   const [data, setData] = useState<Detail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [fotoError, setFotoError] = useState(false);
   const [showApprovalModal, setShowApprovalModal] = useState(false);
 
   const fetchDetail = () => {
@@ -173,13 +174,21 @@ export default function SurveiDetailPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
           <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wider mb-3">Foto Rumah</p>
-          {data.fotoRumah ? (
+          {data.fotoRumah && !fotoError ? (
             <div className="relative h-64 w-full rounded-xl border border-slate-200/80 bg-slate-100 overflow-hidden">
-              <Image src={data.fotoRumah} alt={`Foto rumah ${data.nama}`} fill className="object-cover" />
+              <Image
+                src={data.fotoRumah}
+                alt={`Foto rumah ${data.nama}`}
+                fill
+                unoptimized
+                onError={() => setFotoError(true)}
+                className="object-cover"
+              />
             </div>
           ) : (
-            <div className="h-64 w-full rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 flex items-center justify-center text-slate-400 font-medium text-sm">
-              Belum Ada Foto
+            <div className="h-64 w-full rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 flex flex-col items-center justify-center text-slate-400 font-medium text-sm p-4 text-center">
+              <span>{fotoError ? "Foto Gagal Dimuat" : "Belum Ada Foto"}</span>
+              {fotoError && <span className="text-xs text-slate-400 mt-1">Berkas gambar rusak atau tidak ditemukan</span>}
             </div>
           )}
         </div>

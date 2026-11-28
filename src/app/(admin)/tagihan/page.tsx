@@ -11,6 +11,7 @@ import { hitungRincian, buildDirectWaLinkTagihan } from "@/lib/invoice-format";
 import { X, Search, Check, AlertCircle, Sparkles, Send, Upload, ExternalLink, RefreshCw, Printer, ShieldCheck, FileText, ChevronDown } from "lucide-react";
 import ModalBayarKolektif from "@/components/ModalBayarKolektif";
 import ClientPortal from "@/components/ui/ClientPortal";
+import { kompresGambar, formatMediaUrl } from "@/lib/foto";
 
 const METODE_LABEL: Record<string, string> = {
   tunai: "Tunai",
@@ -307,6 +308,21 @@ export default function TagihanPage() {
     metode?: string;
     nominal?: number;
   } | null>(null);
+  const [previewBuktiImgError, setPreviewBuktiImgError] = useState(false);
+
+  const openBuktiModal = useCallback((data: {
+    url: string;
+    nama: string;
+    kode?: string;
+    metode?: string;
+    nominal?: number;
+  }) => {
+    setPreviewBuktiImgError(false);
+    setPreviewBuktiModal({
+      ...data,
+      url: formatMediaUrl(data.url),
+    });
+  }, []);
 
   const filteredAndSortedPreview = useMemo(() => {
     if (!preview) return [];
@@ -1068,10 +1084,52 @@ export default function TagihanPage() {
                     {bulanList.find((b) => b.value === p.tagihan.bulan.toString())?.label} {p.tagihan.tahun}
                   </div>
                   {p.buktiBayar && (
-                    <div className="mt-2">
-                      <details className="text-xs">
-                        <summary className="cursor-pointer text-emerald-700 hover:text-emerald-700 font-medium">Lihat bukti transfer</summary>
-                        <Image src={p.buktiBayar} alt="Bukti pembayaran" width={240} height={180} unoptimized className="mt-2 max-h-40 rounded-xl border border-slate-200 object-cover" />
+                    <div className="mt-2.5">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            openBuktiModal({
+                              url: p.buktiBayar!,
+                              nama: p.pelanggan.nama,
+                              kode: p.pelanggan.kodePelanggan,
+                              metode: p.metode,
+                              nominal: p.jumlah,
+                            })
+                          }
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-300 dark:border-emerald-800 rounded-lg transition shadow-sm cursor-pointer"
+                        >
+                          <span>📷</span> Lihat Bukti Transfer
+                        </button>
+                        <a
+                          href={formatMediaUrl(p.buktiBayar)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-slate-500 hover:text-slate-800 dark:text-zinc-400 dark:hover:text-zinc-200 underline font-medium"
+                        >
+                          ↗ Buka Tab Baru
+                        </a>
+                      </div>
+                      <details className="text-xs mt-2">
+                        <summary className="cursor-pointer text-slate-500 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200 font-medium text-[11px]">
+                          Pratinjau Thumbnail
+                        </summary>
+                        <div className="mt-2">
+                          <img
+                            src={formatMediaUrl(p.buktiBayar)}
+                            alt="Bukti pembayaran"
+                            className="max-h-48 max-w-xs rounded-xl border border-slate-200 dark:border-zinc-700 object-contain bg-slate-50 dark:bg-zinc-900 cursor-pointer shadow-sm hover:opacity-90 transition"
+                            onClick={() =>
+                              openBuktiModal({
+                                url: p.buktiBayar!,
+                                nama: p.pelanggan.nama,
+                                kode: p.pelanggan.kodePelanggan,
+                                metode: p.metode,
+                                nominal: p.jumlah,
+                              })
+                            }
+                          />
+                        </div>
                       </details>
                     </div>
                   )}
@@ -1491,7 +1549,7 @@ export default function TagihanPage() {
                                     <button
                                       type="button"
                                       onClick={() =>
-                                        setPreviewBuktiModal({
+                                        openBuktiModal({
                                           url: pb.buktiBayar!,
                                           nama: t.pelanggan.nama,
                                           kode: t.pelanggan.kodePelanggan,
@@ -1699,7 +1757,7 @@ export default function TagihanPage() {
                                     <button
                                       type="button"
                                       onClick={() =>
-                                        setPreviewBuktiModal({
+                                        openBuktiModal({
                                           url: pb.buktiBayar!,
                                           nama: t.pelanggan.nama,
                                           kode: t.pelanggan.kodePelanggan,
@@ -2333,19 +2391,16 @@ export default function TagihanPage() {
                     <input 
                       type="file" 
                       accept="image/*"
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (file) {
-                          if (file.size > 2_000_000) {
-                            showToast("File terlalu besar, maksimal 2MB", "error");
+                          try {
+                            const compressed = await kompresGambar(file);
+                            setFormBayar((prev) => ({ ...prev, buktiBayar: compressed }));
+                          } catch {
+                            showToast("Gagal memproses foto bukti", "error");
                             e.target.value = "";
-                            return;
                           }
-                          const reader = new FileReader();
-                          reader.onload = () => {
-                            setFormBayar((prev) => ({ ...prev, buktiBayar: reader.result as string }));
-                          };
-                          reader.readAsDataURL(file);
                         } else {
                           setFormBayar((prev) => ({ ...prev, buktiBayar: "" }));
                         }
@@ -2879,11 +2934,27 @@ export default function TagihanPage() {
                 </div>
               </div>
               <div className="p-4 flex items-center justify-center bg-slate-900/5 dark:bg-black/40 overflow-auto flex-1 max-h-[70vh]">
-                <img
-                  src={previewBuktiModal.url}
-                  alt="Bukti Pembayaran"
-                  className="max-h-full max-w-full object-contain rounded-lg shadow-sm"
-                />
+                {previewBuktiImgError ? (
+                  <div className="text-center py-8 px-4 text-slate-500 dark:text-zinc-400">
+                    <AlertCircle className="w-10 h-10 mx-auto text-amber-500 mb-2" />
+                    <p className="text-sm font-semibold">Foto bukti tidak dapat dimuat atau telah dihapus.</p>
+                    <a
+                      href={previewBuktiModal.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block mt-3 text-xs text-indigo-600 dark:text-indigo-400 underline font-medium"
+                    >
+                      Buka tautan file langsung
+                    </a>
+                  </div>
+                ) : (
+                  <img
+                    src={previewBuktiModal.url}
+                    alt="Bukti Pembayaran"
+                    className="max-h-full max-w-full object-contain rounded-lg shadow-sm"
+                    onError={() => setPreviewBuktiImgError(true)}
+                  />
+                )}
               </div>
             </div>
           </div>

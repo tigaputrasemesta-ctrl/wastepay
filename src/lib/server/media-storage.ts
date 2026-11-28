@@ -17,7 +17,14 @@ export async function persistBase64Image(
 
   const trimmed = dataStr.trim();
   const isDataUri = trimmed.startsWith("data:image/");
-  const isRawBase64 = !trimmed.startsWith("/") && !trimmed.startsWith("http") && trimmed.length > 500;
+  const isJpegRaw = trimmed.startsWith("/9j/") || trimmed.startsWith("/9j+");
+  const isPngRaw = trimmed.startsWith("iVBORw0KGgo");
+  const isWebpRaw = trimmed.startsWith("UklGR");
+  const isRawBase64 =
+    isJpegRaw ||
+    isPngRaw ||
+    isWebpRaw ||
+    (!trimmed.startsWith("/") && !trimmed.startsWith("http") && trimmed.length > 500);
 
   if (!isDataUri && !isRawBase64) {
     return dataStr; // Sudah berupa URL atau path biasa
@@ -54,6 +61,6 @@ export async function persistBase64Image(
       : `/uploads/${subfolder}/${filename}`;
   } catch (err) {
     console.error("[persistBase64Image Error]", err);
-    return null;
+    return dataStr;
   }
 }

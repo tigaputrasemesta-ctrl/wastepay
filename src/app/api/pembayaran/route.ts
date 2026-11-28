@@ -245,11 +245,8 @@ export async function GET(request: Request) {
     }
   }
 
-  const omitOpt = status === "pending" ? undefined : { buktiBayar: true };
-
   const pembayaran = await prisma.pembayaran.findMany({
     where,
-    ...(omitOpt ? { omit: omitOpt } : {}),
     include: {
       pelanggan: { select: { id: true, nama: true, kodePelanggan: true } },
       tagihan: { select: { bulan: true, tahun: true, jumlah: true } },
@@ -260,5 +257,27 @@ export async function GET(request: Request) {
     orderBy: { createdAt: "desc" },
   });
 
-  return NextResponse.json(pembayaran);
+  // Normalisasi buktiBayar agar hemat bandwidth jika berupa base64 besar,
+  // dan pastikan URL disk / uploads dapat langsung diakses
+  const mapped = pembayaran.map((p) => {
+    let bukti = p.buktiBayar;
+    if (bukti) {
+      const trimmed = bukti.trim();
+      const isBase64Payload =
+        trimmed.startsWith("data:image/") ||
+        trimmed.startsWith("/9j/") ||
+        trimmed.startsWith("/9j+") ||
+        (!trimmed.startsWith("/") && !trimmed.startsWith("http") && trimmed.length > 200);
+
+      if (trimmed.startsWith("uploads/")) {
+        bukti = `/${trimmed}`;
+      } else if (isBase64Payload) {
+        // Base64 dialihkan ke endpoint on-demand agar response JSON tidak membengkak
+        bukti = `/api/pembayaran/${p.id}/bukti`;
+      }
+    }
+    return { ...p, buktiBayar: bukti };
+  });
+
+  return NextResponse.json(mapped);
 }

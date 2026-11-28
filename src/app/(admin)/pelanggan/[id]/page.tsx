@@ -9,7 +9,8 @@ import { formatRupiah, formatDate } from "@/lib/utils";
 import ModalApprovalPelanggan from "@/components/ModalApprovalPelanggan";
 import ModalStatusPelanggan from "@/components/ModalStatusPelanggan";
 import { useToast } from "@/components/Toast";
-import { ShieldCheck, Play, Pause, X } from "lucide-react";
+import { ShieldCheck, Play, Pause, X, AlertTriangle } from "lucide-react";
+import { formatMediaUrl } from "@/lib/foto";
 
 const PetaLokasi = dynamic(() => import("@/components/PetaLokasi"), {
   ssr: false,
@@ -96,6 +97,7 @@ export default function DetailPelangganPage() {
   const { showToast } = useToast();
   const [data, setData] = useState<PelangganDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [fotoError, setFotoError] = useState(false);
   const [showApprovalModal, setShowApprovalModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [editTagihanModal, setEditTagihanModal] = useState<{
@@ -114,6 +116,21 @@ export default function DetailPelangganPage() {
     metode?: string;
     nominal?: number;
   } | null>(null);
+  const [previewBuktiImgError, setPreviewBuktiImgError] = useState(false);
+
+  const openBuktiModal = (data: {
+    url: string;
+    nama: string;
+    kode?: string;
+    metode?: string;
+    nominal?: number;
+  }) => {
+    setPreviewBuktiImgError(false);
+    setPreviewBuktiModal({
+      ...data,
+      url: formatMediaUrl(data.url),
+    });
+  };
 
   async function handleUpdateStatusTagihan() {
     if (!editTagihanModal || !statusBaru) return;
@@ -367,15 +384,22 @@ export default function DetailPelangganPage() {
                 </svg>
                 Foto Depan Rumah
               </h2>
-              {data.fotoRumah ? (
+              {data.fotoRumah && !fotoError ? (
                 <Image
                   src={data.fotoRumah}
                   alt={`Foto depan rumah ${data.nama}`}
                   unoptimized
                   width={800}
                   height={400}
+                  onError={() => setFotoError(true)}
                   className="w-full h-52 object-cover rounded-2xl border border-slate-200/80 dark:border-zinc-700 shadow-sm"
                 />
+              ) : fotoError ? (
+                <div className="w-full h-52 rounded-2xl border-2 border-dashed border-amber-200 dark:border-amber-900/60 bg-amber-50/40 dark:bg-amber-950/20 flex flex-col items-center justify-center text-amber-700 dark:text-amber-400 p-4 text-center">
+                  <AlertTriangle className="w-8 h-8 mb-2 text-amber-500" />
+                  <span className="text-sm font-bold">Foto Tidak Dapat Dimuat</span>
+                  <span className="text-xs text-amber-600/80 dark:text-amber-400/80 mt-1">Berkas gambar rusak atau belum terunggah</span>
+                </div>
               ) : (
                 <div className="w-full h-52 rounded-2xl border-2 border-dashed border-slate-200 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-800/30 flex flex-col items-center justify-center text-slate-400 dark:text-zinc-500">
                   <svg className="w-10 h-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -730,7 +754,7 @@ export default function DetailPelangganPage() {
                               <button
                                 type="button"
                                 onClick={() =>
-                                   setPreviewBuktiModal({
+                                   openBuktiModal({
                                      url: p.buktiBayar!,
                                      nama: data.nama,
                                      kode: data.kodePelanggan,
@@ -1014,11 +1038,27 @@ export default function DetailPelangganPage() {
               </div>
             </div>
             <div className="p-4 flex items-center justify-center bg-slate-950 overflow-auto flex-1 max-h-[70vh]">
-              <img
-                src={previewBuktiModal.url}
-                alt="Bukti Pembayaran"
-                className="max-h-full max-w-full object-contain rounded-lg shadow-sm"
-              />
+              {previewBuktiImgError ? (
+                <div className="text-center py-8 px-4 text-slate-400">
+                  <AlertTriangle className="w-8 h-8 mx-auto text-amber-500 mb-2" />
+                  <p className="text-xs font-semibold">Foto bukti tidak dapat dimuat atau telah dihapus.</p>
+                  <a
+                    href={previewBuktiModal.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block mt-2 text-xs text-indigo-400 underline font-medium"
+                  >
+                    Buka tautan file langsung
+                  </a>
+                </div>
+              ) : (
+                <img
+                  src={previewBuktiModal.url}
+                  alt="Bukti Pembayaran"
+                  className="max-h-full max-w-full object-contain rounded-lg shadow-sm"
+                  onError={() => setPreviewBuktiImgError(true)}
+                />
+              )}
             </div>
           </div>
         </div>

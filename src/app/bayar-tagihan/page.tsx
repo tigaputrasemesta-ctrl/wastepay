@@ -7,6 +7,7 @@ import QRCode from "qrcode";
 import { toast } from "@/components/Toast";
 import { formatRupiah } from "@/lib/utils";
 import { downloadQrisVoucherCard } from "@/lib/qris-card";
+import { kompresGambar } from "@/lib/foto";
 import {
   formatRupiahSkylite,
   formatTanggalIndo,
@@ -162,18 +163,15 @@ function BayarTagihanContent() {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 2.8 * 1024 * 1024) {
-      toast("Ukuran foto bukti transfer maksimal 2.5MB.", "warning");
-      return;
+    try {
+      const compressed = await kompresGambar(file);
+      setBuktiBayarFile(compressed);
+    } catch {
+      toast("Gagal memproses foto. Silakan coba file lain.", "warning");
     }
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setBuktiBayarFile(reader.result as string);
-    };
-    reader.readAsDataURL(file);
   };
 
   const loadTagihan = useCallback(async (inv?: string, orderId?: string) => {
@@ -766,7 +764,7 @@ function BayarTagihanContent() {
                                   Ketuk untuk Ambil Foto / Pilih dari Galeri
                                 </div>
                                 <p className="text-[11px] text-slate-500 mt-0.5">
-                                  Maks. 2.5MB (format JPG, PNG, atau WEBP)
+                                  Format JPG, PNG, atau WEBP (otomatis dioptimalkan)
                                 </p>
                               </div>
                             ) : (

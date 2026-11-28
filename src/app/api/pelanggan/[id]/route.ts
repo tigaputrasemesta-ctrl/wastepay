@@ -77,7 +77,15 @@ export async function GET(
     }
   }
 
-  return NextResponse.json(pelanggan);
+  const normalizedFotoRumah =
+    pelanggan.fotoRumah && pelanggan.fotoRumah.startsWith("uploads/")
+      ? `/${pelanggan.fotoRumah}`
+      : pelanggan.fotoRumah;
+
+  return NextResponse.json({
+    ...pelanggan,
+    fotoRumah: normalizedFotoRumah,
+  });
 }
 
 export async function PUT(
@@ -489,7 +497,15 @@ export async function PUT(
 
     await logAudit("update", "Pelanggan", id, { id }, { nama: pelanggan.nama, status: pelanggan.status });
 
-    return NextResponse.json(pelanggan);
+    const normalizedFotoRumah =
+    pelanggan.fotoRumah && pelanggan.fotoRumah.startsWith("uploads/")
+      ? `/${pelanggan.fotoRumah}`
+      : pelanggan.fotoRumah;
+
+  return NextResponse.json({
+    ...pelanggan,
+    fotoRumah: normalizedFotoRumah,
+  });
   } catch (err: any) {
     if (err?.code === "P2002" || (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002")) {
       return NextResponse.json(

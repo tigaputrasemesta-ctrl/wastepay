@@ -1,5 +1,7 @@
 import https from "https";
 import pg from "pg";
+import { readFile, stat } from "fs/promises";
+import path from "path";
 
 const { Pool } = pg;
 
@@ -177,13 +179,32 @@ export async function generateSinglePelangganMapPdfBuffer(pelangganId: number): 
 
   // Decode Foto Rumah if available
   let fotoBuffer: Buffer | null = null;
-  if (p.fotoRumah && p.fotoRumah.startsWith("data:image")) {
-    try {
-      const match = p.fotoRumah.match(/^data:image\/[a-zA-Z0-9]+;base64,(.+)$/);
-      if (match) {
-        fotoBuffer = Buffer.from(match[1], "base64");
-      }
-    } catch {}
+  if (p.fotoRumah) {
+    const rawFoto = p.fotoRumah.trim();
+    if (rawFoto.startsWith("/uploads/") || rawFoto.startsWith("uploads/")) {
+      try {
+        const cleanRel = rawFoto.replace(/^\/?uploads\/?/, "");
+        const baseUploadsDir = path.resolve(process.cwd(), "public", "uploads");
+        const fullPath = path.resolve(baseUploadsDir, cleanRel);
+        if (fullPath.startsWith(baseUploadsDir)) {
+          const fileStat = await stat(fullPath);
+          if (fileStat.isFile()) {
+            fotoBuffer = await readFile(fullPath);
+          }
+        }
+      } catch {}
+    } else if (rawFoto.startsWith("data:image")) {
+      try {
+        const match = rawFoto.match(/^data:image\/[a-zA-Z0-9+.-]+;base64,([A-Za-z0-9+/=]+)$/);
+        if (match) {
+          fotoBuffer = Buffer.from(match[1], "base64");
+        }
+      } catch {}
+    } else if (!rawFoto.startsWith("/") && !rawFoto.startsWith("http") && rawFoto.length > 50) {
+      try {
+        fotoBuffer = Buffer.from(rawFoto, "base64");
+      } catch {}
+    }
   }
 
   const PDFDocumentModule = await import("pdfkit");

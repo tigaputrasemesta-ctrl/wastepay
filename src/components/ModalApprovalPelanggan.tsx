@@ -89,6 +89,7 @@ export default function ModalApprovalPelanggan({
   const [loadingData, setLoadingData] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [rejecting, setRejecting] = useState(false);
+  const [fotoError, setFotoError] = useState(false);
 
   // Form states
   const [selectedKelurahan, setSelectedKelurahan] = useState("");
@@ -147,6 +148,7 @@ export default function ModalApprovalPelanggan({
   // Sync initial form values from pelanggan
   useEffect(() => {
     if (!pelanggan) return;
+    setFotoError(false);
 
     const initialKelId = pelanggan.kelurahan?.id
       ? pelanggan.kelurahan.id.toString()
@@ -415,20 +417,26 @@ export default function ModalApprovalPelanggan({
                 <span className="text-[10px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider block mb-1.5">
                   Foto Rumah Pendaftar:
                 </span>
-                {pelanggan.fotoRumah ? (
+                {pelanggan.fotoRumah && !fotoError ? (
                   <div className="relative h-28 w-full rounded-lg overflow-hidden border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-950">
                     <Image
                       src={pelanggan.fotoRumah}
                       alt={pelanggan.nama}
                       fill
+                      unoptimized
+                      onError={() => setFotoError(true)}
                       className="object-cover"
                     />
                   </div>
                 ) : (
                   <div className="h-28 rounded-lg border border-dashed border-amber-300 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/30 flex flex-col items-center justify-center text-center p-2">
                     <AlertTriangle className="w-5 h-5 text-amber-700 dark:text-amber-400 mb-1" />
-                    <span className="text-xs font-semibold text-amber-800 dark:text-amber-300">Foto Belum Diambil</span>
-                    <span className="text-[10px] text-amber-700 dark:text-amber-400">Survei petugas belum upload foto</span>
+                    <span className="text-xs font-semibold text-amber-800 dark:text-amber-300">
+                      {fotoError ? "Foto Gagal Dimuat" : "Foto Belum Diambil"}
+                    </span>
+                    <span className="text-[10px] text-amber-700 dark:text-amber-400">
+                      {fotoError ? "Berkas gambar rusak / tidak ditemukan" : "Survei petugas belum upload foto"}
+                    </span>
                   </div>
                 )}
               </div>
